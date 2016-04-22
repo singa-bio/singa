@@ -1,0 +1,13 @@
+#btnSimulate{
+    -fx-background-image: url("simulate.png");   
+	-fx-background-size: 40 40;
+	-fx-background-repeat: stretch;
+    -fx-background-position: center center;
+}
+
+#btnRearrange{
+    -fx-background-image: url("rearrange.png");   
+	-fx-background-size: 40 40;
+	-fx-background-repeat: stretch;
+    -fx-background-position: center center;
+}
