@@ -5,10 +5,11 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.ReactionRate;
+import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.List;
-import java.util.Map;
+
+import static de.bioforscher.units.UnitDictionary.PER_SECOND;
 
 /**
  * A reaction type that calculates the next concentration. Based on reversible
@@ -21,20 +22,8 @@ public class EquilibriumReaction extends Reaction {
     private Quantity<ReactionRate> rateConstantForwards;
     private Quantity<ReactionRate> rateConstantBackwards;
 
-    public EquilibriumReaction(List<ChemicalEntity> substrates, List<ChemicalEntity> products,
-                               Map<ChemicalEntity, Integer> stoichiometricCoefficients, Quantity<ReactionRate> rateConstantForwards,
-                               Quantity<ReactionRate> rateConstantBackwards) {
-        super(substrates, products, stoichiometricCoefficients);
-        this.rateConstantForwards = rateConstantForwards;
-        this.rateConstantBackwards = rateConstantBackwards;
-    }
+    protected EquilibriumReaction() {
 
-    @Override
-    public void updateConcentrations(BioNode node) {
-        calculateVelocity(node);
-        limitReactionRate(node);
-        decreaseSubstrates(node);
-        increaseProducts(node);
     }
 
     public Quantity<ReactionRate> getRateConstantForwards() {
@@ -45,12 +34,28 @@ public class EquilibriumReaction extends Reaction {
         this.rateConstantForwards = rateConstantForwards;
     }
 
+    public void setRateConstantForwards(double rateConstantForwards) {
+        this.rateConstantForwards = Quantities.getQuantity(rateConstantForwards, PER_SECOND);
+    }
+
     public Quantity<ReactionRate> getRateConstantBackwards() {
         return this.rateConstantBackwards;
     }
 
     public void setRateConstantBackwards(Quantity<ReactionRate> rateConstantBackwards) {
         this.rateConstantBackwards = rateConstantBackwards;
+    }
+
+    public void setRateConstantBackwards(double rateConstantBackwards) {
+        this.rateConstantBackwards = Quantities.getQuantity(rateConstantBackwards, PER_SECOND);
+    }
+
+    @Override
+    public void updateConcentrations(BioNode node) {
+        calculateVelocity(node);
+        limitReactionRate(node);
+        decreaseSubstrates(node);
+        increaseProducts(node);
     }
 
     @Override
@@ -91,6 +96,40 @@ public class EquilibriumReaction extends Reaction {
         // v = c(S) * kf - c(P) * kb
         setCurrentVelocity(substrateConcentrationProduct * kforwards.getValue().doubleValue()
                 - productConcentrationProduct * kBackwards.getValue().doubleValue());
+
+    }
+
+    public static class Builder extends Reaction.Builder<EquilibriumReaction, Builder> {
+
+        @Override
+        protected EquilibriumReaction createObject() {
+            return new EquilibriumReaction();
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
+        public Builder rateConstantForwards(Quantity<ReactionRate> rateConstant) {
+            this.topLevelObject.setRateConstantForwards(rateConstant);
+            return this;
+        }
+
+        public Builder rateConstantForwards(double rateConstant) {
+            this.topLevelObject.setRateConstantForwards(rateConstant);
+            return this;
+        }
+
+        public Builder rateConstantBackwards(Quantity<ReactionRate> rateConstant) {
+            this.topLevelObject.setRateConstantBackwards(rateConstant);
+            return this;
+        }
+
+        public Builder rateConstantBackwards(double rateConstant) {
+            this.topLevelObject.setRateConstantBackwards(rateConstant);
+            return this;
+        }
 
     }
 }

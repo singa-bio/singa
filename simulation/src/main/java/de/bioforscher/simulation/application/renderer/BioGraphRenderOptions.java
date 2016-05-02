@@ -1,14 +1,14 @@
 package de.bioforscher.simulation.application.renderer;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import javafx.scene.paint.Color;
 
 public class BioGraphRenderOptions {
 
-    private Species nodeHighlightSpecies;
-    private Species edgeHighlightSpecies;
+    private ChemicalEntity nodeHighlightSpecies;
+    private ChemicalEntity edgeHighlightSpecies;
 
     private ColorScale nodeColorScale;
 
@@ -19,19 +19,19 @@ public class BioGraphRenderOptions {
 
     }
 
-    public Species getNodeHighlightSpecies() {
+    public ChemicalEntity getNodeHighlightSpecies() {
         return this.nodeHighlightSpecies;
     }
 
-    public void setNodeHighlightSpecies(Species species) {
+    public void setNodeHighlightSpecies(ChemicalEntity species) {
         this.nodeHighlightSpecies = species;
     }
 
-    public Species getEdgeHighlightSpecies() {
+    public ChemicalEntity getEdgeHighlightSpecies() {
         return this.edgeHighlightSpecies;
     }
 
-    public void setEdgeHighlightSpecies(Species edgeHighlightSpecies) {
+    public void setEdgeHighlightSpecies(ChemicalEntity edgeHighlightSpecies) {
         this.edgeHighlightSpecies = edgeHighlightSpecies;
     }
 
@@ -48,7 +48,6 @@ public class BioGraphRenderOptions {
     public Color getEdgeColor(BioEdge edge) {
         if (this.edgeHighlightSpecies != null) {
             double opacity = edge.getPermeability(this.edgeHighlightSpecies);
-            ;
             return new Color(0, 0, 0, opacity);
         } else {
             return Color.LIGHTGREY;

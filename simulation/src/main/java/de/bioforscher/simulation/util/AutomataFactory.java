@@ -13,21 +13,13 @@ import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.GraphAutomata;
 import de.bioforscher.simulation.reactions.*;
-import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
-import static de.bioforscher.units.UnitDictionary.PER_SECOND;
-import static tec.units.ri.unit.Units.MINUTE;
-import static tec.units.ri.unit.Units.ONE;
+import static de.bioforscher.units.UnitDictionary.*;
 
 /**
  * A factory class that can be used to create different templates to test
@@ -73,48 +65,33 @@ public class AutomataFactory {
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(dpo, 1);
-            edge.addSpeciesPermeability(ndo, 1);
-            edge.addSpeciesPermeability(oxygen, 1);
+            edge.addPermeability(dpo, 1);
+            edge.addPermeability(ndo, 1);
+            edge.addPermeability(oxygen, 1);
         }
 
         // Environment
         EnvironmentFactory.createFirstOrderReactionTestEnvironment();
 
         // Diffusion model
-        Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
+        Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
-        // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        // Automaton
+        GraphAutomata automaton = new GraphAutomata(graph, recurrenceDiffusion);
 
-        // Rate constant
-        Quantity<ReactionRate> rateConstant = Quantities.getQuantity(0.070, PER_SECOND);
+        FirstOrderReaction firstOrderReaction = new FirstOrderReaction.Builder()
+                .addSubstrate(dpo)
+                .addProduct(ndo)
+                .addProduct(oxygen)
+                .rateConstant(0.07)
+                .build();
+        automaton.addReaction(firstOrderReaction, false);
 
-        // Substrates
-        ArrayList<Species> substrates = new ArrayList<Species>();
-        substrates.add(dpo);
-
-        // Products
-        ArrayList<Species> products = new ArrayList<Species>();
-        products.add(ndo);
-        products.add(oxygen);
-
-        // Stoichiometric Coefficients
-        Map<Species, Integer> stoichiometricCoefficients = new HashMap<Species, Integer>();
-        stoichiometricCoefficients.put(dpo, 1);
-        stoichiometricCoefficients.put(ndo, 1);
-        stoichiometricCoefficients.put(oxygen, 1);
-
-        // Setup reaction
-        FirstOrderReaction reaction = new FirstOrderReaction(substrates, products, stoichiometricCoefficients,
-                rateConstant);
-        automata.addReaction(reaction, false);
-
-        return automata;
+        return automaton;
     }
 
     /**
-     * This automaton simulates a first2DVector-order reaction.
+     * This automaton simulates a second-order reaction.
      *
      * @return
      */
@@ -140,45 +117,26 @@ public class AutomataFactory {
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(bd, 1);
-            edge.addSpeciesPermeability(ot, 1);
+            edge.addPermeability(bd, 1);
+            edge.addPermeability(ot, 1);
         }
 
         // Environment
         EnvironmentFactory.createSecondOrderReactionTestEnvironment();
 
         // Diffusion model
-        Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
+        Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        GraphAutomata automata = new GraphAutomata(graph, recurrenceDiffusion);
 
-        // Rate constant
-        Quantity<ReactionRate> rateConstant = Quantities.getQuantity(0.0614, PER_SECOND);
-
-        // Substrates
-        ArrayList<Species> substrates = new ArrayList<Species>();
-        substrates.add(bd);
-        substrates.add(bd);
-
-        // Products
-        ArrayList<Species> products = new ArrayList<Species>();
-        products.add(ot);
-
-        // Stoichiometric Coefficients
-        Map<Species, Integer> stoichiometricCoefficients = new HashMap<Species, Integer>();
-        stoichiometricCoefficients.put(bd, 1);
-        stoichiometricCoefficients.put(ot, 1);
-
-        // Orders
-        Map<Species, Double> orders = new HashMap<Species, Double>();
-        orders.put(bd, 1.0);
-        orders.put(ot, 1.0);
-
-        // Setup reaction
-        SecondOrderReaction reaction = new SecondOrderReaction(substrates, products, orders, stoichiometricCoefficients,
-                rateConstant);
-        automata.addReaction(reaction, false);
+        SecondOrderReaction secondOrderReaction = new SecondOrderReaction.Builder()
+                .addSubstrate(bd)
+                .addSubstrate(bd)
+                .addProduct(ot)
+                .rateConstant(Quantities.getQuantity(0.0614, PER_SECOND))
+                .build();
+        automata.addReaction(secondOrderReaction, false);
 
         return automata;
     }
@@ -195,8 +153,15 @@ public class AutomataFactory {
                 GraphFactory.buildGridGraph(1, 1, new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0)), false));
 
         // Species
-        Species speciesA = new Species("A", "A", 10.0);
-        Species speciesB = new Species("B", "B", 10.0);
+        Species speciesA = new Species.Builder("CHEBI:00001")
+                .name("A")
+                .molarMass(10.0)
+                .build();
+
+        Species speciesB = new Species.Builder("CHEBI:00002")
+                .name("B")
+                .molarMass(10.0)
+                .build();
 
         for (BioNode node : graph.getNodes()) {
             node.addEntity(speciesA, 1.0);
@@ -204,8 +169,8 @@ public class AutomataFactory {
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(speciesA, 1);
-            edge.addSpeciesPermeability(speciesB, 1);
+            edge.addPermeability(speciesA, 1);
+            edge.addPermeability(speciesB, 1);
         }
 
         // Environment
@@ -217,27 +182,13 @@ public class AutomataFactory {
         // Automata
         GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
 
-        // Rate constant
-        Quantity<ReactionRate> rateForwards = Quantities.getQuantity(10, PER_SECOND);
-
-        // Rate constant
-        Quantity<ReactionRate> rateBackwards = Quantities.getQuantity(10, PER_SECOND);
-
-        // Substrates
-        ArrayList<Species> substrates = new ArrayList<Species>();
-        substrates.add(speciesA);
-
-        // Products
-        ArrayList<Species> products = new ArrayList<Species>();
-        products.add(speciesB);
-
-        Map<Species, Integer> stoichiometricCoefficients = new HashMap<Species, Integer>();
-        stoichiometricCoefficients.put(speciesA, 1);
-        stoichiometricCoefficients.put(speciesB, 1);
-
-        EquilibriumReaction reaction = new EquilibriumReaction(substrates, products, stoichiometricCoefficients,
-                rateForwards, rateBackwards);
-        automata.addReaction(reaction, false);
+        EquilibriumReaction equilibriumReaction = new EquilibriumReaction.Builder()
+                .addSubstrate(speciesA)
+                .addProduct(speciesB)
+                .rateConstantForwards(Quantities.getQuantity(10, PER_SECOND))
+                .rateConstantBackwards(Quantities.getQuantity(10, PER_SECOND))
+                .build();
+        automata.addReaction(equilibriumReaction, false);
 
         return automata;
     }
@@ -270,54 +221,49 @@ public class AutomataFactory {
         Species ga = service.fetchSpecies();
 
         // Enzyme
-        Enzyme enzyme = new Enzyme("Fructose-bisphosphate aldolase");
-        enzyme.setMolarMass(41071 * 2.0);
-        enzyme.setCriticalSubstrate(fp);
-        enzyme.setkM(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE));
-        enzyme.setkCat(Quantities.getQuantity(76, new ProductUnit<ReactionRate>(ONE.divide(MINUTE))));
+        Enzyme aldolase = new Enzyme.Builder("P07752")
+                .name("Fructose-bisphosphate aldolase")
+                .molarMass(82142.0)
+                .criticalSubstrate(fp)
+                .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
+                .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
+                .build();
 
         // set concentrations
         for (BioNode node : graph.getNodes()) {
             node.addEntity(fp, 0.1);
-            node.addEntity(enzyme, 0.2);
+            node.addEntity(aldolase, 0.2);
             node.addEntity(ga, 0);
             node.addEntity(gp, 0);
         }
         // set permeability
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(fp, 1);
-            edge.addSpeciesPermeability(enzyme, 1);
-            edge.addSpeciesPermeability(ga, 1);
-            edge.addSpeciesPermeability(gp, 1);
+            edge.addPermeability(fp, 1);
+            edge.addPermeability(aldolase, 1);
+            edge.addPermeability(ga, 1);
+            edge.addPermeability(gp, 1);
         }
 
         // Environment
         EnvironmentFactory.createEnzymeReactionTestEnvironment();
 
         // Diffusion model
-        Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
+        Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        GraphAutomata automaton = new GraphAutomata(graph, recurrenceDiffusion);
 
         // Reaction
-        ArrayList<Species> substrates = new ArrayList<Species>();
-        substrates.add(fp);
+        EnzymeReaction enzymeReaction = new EnzymeReaction.Builder()
+                .enzyme(aldolase)
+                .addSubstrate(fp)
+                .addProduct(ga)
+                .addProduct(gp)
+                .build();
 
-        ArrayList<Species> products = new ArrayList<Species>();
-        products.add(ga);
-        products.add(gp);
+        automaton.addReaction(enzymeReaction, false);
 
-        Map<Species, Integer> stoichiometricCoefficients = new HashMap<Species, Integer>();
-        stoichiometricCoefficients.put(enzyme, 1);
-        stoichiometricCoefficients.put(ga, 1);
-        stoichiometricCoefficients.put(gp, 1);
-        stoichiometricCoefficients.put(fp, 1);
-
-        EnzymeReaction reaction = new EnzymeReaction(substrates, products, stoichiometricCoefficients, enzyme);
-        automata.addReaction(reaction, false);
-
-        return automata;
+        return automaton;
     }
 
     /**
@@ -361,10 +307,10 @@ public class AutomataFactory {
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(methanol, 1);
-            edge.addSpeciesPermeability(ethyleneGlycol, 1);
-            edge.addSpeciesPermeability(valine, 1);
-            edge.addSpeciesPermeability(sucrose, 1);
+            edge.addPermeability(methanol, 1);
+            edge.addPermeability(ethyleneGlycol, 1);
+            edge.addPermeability(valine, 1);
+            edge.addPermeability(sucrose, 1);
         }
 
         // Environment
@@ -408,7 +354,7 @@ public class AutomataFactory {
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(species, 1);
+            edge.addPermeability(species, 1);
         }
 
         // Environment
@@ -418,10 +364,10 @@ public class AutomataFactory {
         EnvironmentalVariables.getInstance().setTimeStep(timeStep);
 
         // Diffusion model
-        Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
+        Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        GraphAutomata automata = new GraphAutomata(graph, recurrenceDiffusion);
 
         return automata;
     }
@@ -485,75 +431,37 @@ public class AutomataFactory {
         // REACTIONS
 
         // R1
-        // Substrates
-        ArrayList<Species> substrates1 = new ArrayList<Species>();
-        substrates1.add(hydron);
-        substrates1.add(iodide);
-        substrates1.add(iodate);
-        // Products
-        ArrayList<Species> products1 = new ArrayList<Species>();
-        products1.add(hia);
-        products1.add(ia);
-        // Stoichiometric Coefficients
-        Map<Species, Integer> stoichiometricCoefficients1 = new HashMap<Species, Integer>();
-        stoichiometricCoefficients1.put(hydron, 2);
-        stoichiometricCoefficients1.put(iodide, 1);
-        stoichiometricCoefficients1.put(iodate, 1);
-        stoichiometricCoefficients1.put(hia, 1);
-        stoichiometricCoefficients1.put(ia, 1);
-        // Rate constant lit 1.43e3
-        Quantity<ReactionRate> rateConstant1 = Quantities.getQuantity(1.43e3, PER_SECOND);
-        // Setup reaction
-        NthOrderReaction reaction1 = new NthOrderReaction(substrates1, products1, stoichiometricCoefficients1,
-                rateConstant1);
-        automata.addReaction(reaction1, false);
+        NthOrderReaction firstReaction = new NthOrderReaction.Builder()
+                .addSubstrate(hydron, 2)
+                .addSubstrate(iodide)
+                .addSubstrate(iodate)
+                .addProduct(hia)
+                .addProduct(ia)
+                .rateConstant(Quantities.getQuantity(1.43e3, PER_SECOND))
+                .build();
+        automata.addReaction(firstReaction, false);
 
         // R2
-        // Substrates
-        ArrayList<Species> substrates2 = new ArrayList<Species>();
-        substrates2.add(hydron);
-        substrates2.add(ia);
-        substrates2.add(iodide);
-        // Products
-        ArrayList<Species> products2 = new ArrayList<Species>();
-        products2.add(hia);
-        // Stoichiometric Coefficients
-        Map<Species, Integer> stoichiometricCoefficients2 = new HashMap<Species, Integer>();
-        stoichiometricCoefficients2.put(hydron, 1);
-        stoichiometricCoefficients2.put(ia, 1);
-        stoichiometricCoefficients2.put(iodide, 1);
-        stoichiometricCoefficients2.put(hia, 1);
-        // Rate constant lit 2e10
-        Quantity<ReactionRate> rateConstant2 = Quantities.getQuantity(2e4, PER_SECOND);
-        // Setup reaction
-        NthOrderReaction reaction2 = new NthOrderReaction(substrates2, products2, stoichiometricCoefficients2,
-                rateConstant2);
-        automata.addReaction(reaction2, false);
+        NthOrderReaction secondReaction = new NthOrderReaction.Builder()
+                .addSubstrate(hydron)
+                .addSubstrate(ia)
+                .addSubstrate(iodide)
+                .addProduct(hia)
+                .rateConstant(Quantities.getQuantity(2.0e4, PER_SECOND))
+                .build();
+        automata.addReaction(secondReaction, false);
 
         // R3
-        // Substrates
-        ArrayList<Species> substrates3 = new ArrayList<Species>();
-        substrates3.add(hia);
-        substrates3.add(iodide);
-        substrates3.add(hydron);
-        // Products
-        ArrayList<Species> products3 = new ArrayList<Species>();
-        products3.add(diiodine);
-        products3.add(water);
-        // Stoichiometric Coefficients
-        Map<Species, Integer> stoichiometricCoefficients3 = new HashMap<Species, Integer>();
-        stoichiometricCoefficients3.put(hia, 1);
-        stoichiometricCoefficients3.put(iodide, 1);
-        stoichiometricCoefficients3.put(hydron, 1);
-        stoichiometricCoefficients3.put(diiodine, 1);
-        stoichiometricCoefficients3.put(water, 1);
-        // Rate constant lit kf 3.1 10^10 kb 2.2
-        Quantity<ReactionRate> rateConstant3f = Quantities.getQuantity(3.1e4, PER_SECOND);
-        Quantity<ReactionRate> rateConstant3b = Quantities.getQuantity(2.2, PER_SECOND);
-        // Setup reaction
-        EquilibriumReaction reaction3 = new EquilibriumReaction(substrates3, products3, stoichiometricCoefficients3,
-                rateConstant3f, rateConstant3b);
-        automata.addReaction(reaction3, false);
+        EquilibriumReaction thirdReaction = new EquilibriumReaction.Builder()
+                .addSubstrate(hia)
+                .addSubstrate(iodide)
+                .addSubstrate(hydron)
+                .addProduct(diiodine)
+                .addProduct(water)
+                .rateConstantForwards(Quantities.getQuantity(3.1e4, PER_SECOND))
+                .rateConstantBackwards(Quantities.getQuantity(2.2, PER_SECOND))
+                .build();
+        automata.addReaction(thirdReaction, false);
 
         return automata;
     }
@@ -573,7 +481,7 @@ public class AutomataFactory {
         graph.getNode(0).setSource(true);
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addSpeciesPermeability(methanol, 1);
+            edge.addPermeability(methanol, 1);
         }
 
         // Environment

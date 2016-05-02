@@ -1,16 +1,14 @@
 package de.bioforscher.simulation.application.components;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.util.BioGraphUtilities;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -19,27 +17,27 @@ import java.util.Map.Entry;
  *
  * @author Christoph Leberecht
  */
-public class BioGraphContextMenu extends ContextMenu {
+class BioGraphContextMenu extends ContextMenu {
 
     private AutomatonGraph graph;
-    private SimulationCanvas owner;
+    private final SimulationCanvas owner;
 
     private Menu speciesMenu;
     private ToggleGroup speciesGroup;
 
-    public BioGraphContextMenu(AutomatonGraph graph, SimulationCanvas canvas) {
+    BioGraphContextMenu(AutomatonGraph graph, SimulationCanvas canvas) {
         this.graph = graph;
         this.owner = canvas;
         initialize();
     }
 
-    public void initialize() {
+    private void initialize() {
         this.speciesMenu = new Menu("Highlight Species");
         this.speciesGroup = new ToggleGroup();
-        HashMap<String, Species> speciesMap = BioGraphUtilities.generateMapOfEntities(this.graph);
+        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.generateMapOfEntities(this.graph);
         // Add MenuItem for every Species
-        if (!speciesMap.isEmpty()) {
-            fillSpeciesMenu(speciesMap);
+        if (!chemicalEntities.isEmpty()) {
+            fillSpeciesMenu(chemicalEntities);
         } else {
             RadioMenuItem itemCompound = new RadioMenuItem("No species to highlight.");
             itemCompound.setUserData(null);
@@ -51,37 +49,24 @@ public class BioGraphContextMenu extends ContextMenu {
         this.getItems().add(this.speciesMenu);
     }
 
-    public void fillSpeciesMenu(HashMap<String, Species> speciesMap) {
-        for (Entry<String, Species> species : speciesMap.entrySet()) {
+    private void fillSpeciesMenu(Map<String, ChemicalEntity> speciesMap) {
+        for (Entry<String, ChemicalEntity> species : speciesMap.entrySet()) {
             RadioMenuItem speciesMenuItem = setupSpeciesMenuItem(species.getValue());
             this.speciesMenu.getItems().add(speciesMenuItem);
         }
     }
 
-    public RadioMenuItem setupSpeciesMenuItem(Species species) {
+    private RadioMenuItem setupSpeciesMenuItem(final ChemicalEntity species) {
         RadioMenuItem itemCompound = new RadioMenuItem(species.getName());
         itemCompound.setUserData(species);
         itemCompound.setToggleGroup(this.speciesGroup);
         // Add action listener
-        // TODO convert to method reference
-        itemCompound.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent t) {
-                BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(species);
-                BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(species);
-                BioGraphContextMenu.this.owner.draw();
-            }
+        itemCompound.setOnAction(t -> {
+            BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(species);
+            BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(species);
+            BioGraphContextMenu.this.owner.draw();
         });
         return itemCompound;
-    }
-
-    public SimulationCanvas getOwner() {
-        return this.owner;
-    }
-
-    public void setCanvas(SimulationCanvas canvas) {
-        this.owner = canvas;
     }
 
     public AutomatonGraph getGraph() {

@@ -13,7 +13,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 
 import javax.measure.Quantity;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,7 +24,7 @@ import java.util.Map;
 public class SpeciesObserverChart extends LineChart<Number, Number> implements UpdateEventListener<NextEpochEvent> {
 
     private BioNode observedNode;
-    private Map<String, Species> observedSpecies;
+    private Map<String, ChemicalEntity> observedSpecies;
 
     private int maximalPoints;
 
@@ -42,14 +41,14 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
         this.observedNode = observedNode;
     }
 
-    public Map<String, Species> getObservedSpecies() {
+    public Map<String, ChemicalEntity> getObservedSpecies() {
         return observedSpecies;
     }
 
-    public void setObservedSpecies(HashMap<String, Species> observedSpecies) {
+    public void setObservedSpecies(Map<String, ChemicalEntity> observedSpecies) {
         this.observedSpecies = observedSpecies;
-        for (Species compound : observedSpecies.values()) {
-            Series<Number, Number> series = new Series<Number, Number>();
+        for (ChemicalEntity compound : observedSpecies.values()) {
+            Series<Number, Number> series = new Series<>();
             series.setName(compound.getName());
             this.getData().add(series);
         }
@@ -80,7 +79,7 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
 
         for (Series<Number, Number> series : this.getData()) {
             String name = series.getName();
-            Species species = this.getObservedSpecies().get(name);
+            ChemicalEntity species = this.getObservedSpecies().get(name);
             double concentration = concentrations.get(species).getValue().doubleValue();
 
             // all changes to the scene graph must occur on the FX Application
@@ -88,7 +87,7 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
             // be delegated to avoid concurrent modification
             // FIXME possibly a cleaner solution is available
             Platform.runLater(() -> {
-                series.getData().add(new Data<Number, Number>(event.getEpoch(), concentration));
+                series.getData().add(new Data<>(event.getEpoch(), concentration));
                 if (series.getData().size() > maximalPoints) {
                     series.getData().remove(series.getData().size() - maximalPoints);
                 }

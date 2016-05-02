@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.application.components;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.BioGraphConsumer;
 import de.bioforscher.simulation.application.BioGraphProducer;
@@ -77,7 +77,7 @@ public class SimulationCanvas extends Canvas {
     public void handleLeftClick(MouseEvent event) {
         for (BioNode node : this.owner.getGraph().getNodes()) {
             if (isClickedOnNode(event, node)) {
-                Species species = this.renderer.getBioRenderingOptions().getNodeHighlightSpecies();
+                ChemicalEntity species = this.renderer.getBioRenderingOptions().getNodeHighlightSpecies();
                 node.setConcentration(species, this.owner.getConcetrationSlider().getValue());
                 draw();
                 break;

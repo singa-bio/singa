@@ -1,6 +1,5 @@
 package de.bioforscher.simulation.parser;
 
-import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBIParserService;
@@ -11,9 +10,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,14 +42,10 @@ class SBMLContentHandler implements ContentHandler {
     private boolean newSpecies;
 
     SBMLContentHandler() {
-        List<ChemicalEntity> substrates = new ArrayList<>();
-        List<ChemicalEntity> products = new ArrayList<>();
-        Map<ChemicalEntity, Integer> stoichiometricCoefficients = new HashMap<>();
         this.speciesDictionary = new HashMap<>();
         // TODO builder pattern for reactions
         // TODO TEST ME
-        this.reaction = new EnzymeReaction(substrates, products,
-                stoichiometricCoefficients);
+        this.reaction = new EnzymeReaction.Builder().build();
         this.currentSpeciesId = "";
         this.inSpeciesList = false;
         this.inReactantsList = false;

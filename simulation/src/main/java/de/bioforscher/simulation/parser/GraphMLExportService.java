@@ -18,7 +18,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class contains a single static method to export a
@@ -47,7 +47,7 @@ public class GraphMLExportService {
             Element rootElement = doc.createElement("graphml");
             doc.appendChild(rootElement);
 
-            HashMap<String, ChemicalEntity> entityMap = BioGraphUtilities.generateMapOfEntities(graph);
+            Map<String, ChemicalEntity> entityMap = BioGraphUtilities.generateMapOfEntities(graph);
             // x coordiante key
             Element keyXCoordinate = doc.createElement("key");
             keyXCoordinate.setAttribute("id", "x");

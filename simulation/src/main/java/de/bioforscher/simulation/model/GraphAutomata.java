@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.model;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.diffusion.Diffusion;
@@ -103,22 +103,22 @@ public class GraphAutomata implements UpdateEventEmitter<NextEpochEvent> {
                 if (reaction.getClass().equals(EnzymeReaction.class)) {
                     node.addEntity(((EnzymeReaction) reaction).getEnzyme(), 1.0);
                 }
-                for (Species species : reaction.getSubstrates()) {
+                for (ChemicalEntity species : reaction.getSubstrates()) {
                     node.addEntity(species, 1.0);
                 }
-                for (Species species : reaction.getProducts()) {
+                for (ChemicalEntity species : reaction.getProducts()) {
                     node.addEntity(species, 0.0);
                 }
             }
             for (BioEdge edge : this.graph.getEdges()) {
                 if (reaction.getClass().equals(EnzymeReaction.class)) {
-                    edge.addSpeciesPermeability(((EnzymeReaction) reaction).getEnzyme(), 1.0);
+                    edge.addPermeability(((EnzymeReaction) reaction).getEnzyme(), 1.0);
                 }
-                for (Species species : reaction.getSubstrates()) {
-                    edge.addSpeciesPermeability(species, 1.0);
+                for (ChemicalEntity species : reaction.getSubstrates()) {
+                    edge.addPermeability(species, 1.0);
                 }
-                for (Species species : reaction.getProducts()) {
-                    edge.addSpeciesPermeability(species, 1.0);
+                for (ChemicalEntity species : reaction.getProducts()) {
+                    edge.addPermeability(species, 1.0);
                 }
             }
         }
@@ -136,7 +136,7 @@ public class GraphAutomata implements UpdateEventEmitter<NextEpochEvent> {
     public AutomatonGraph next() {
 
         // HelperMap
-        Map<Integer, Map<Species, Quantity<MolarConcentration>>> nextConcentrations = new HashMap<Integer, Map<Species, Quantity<MolarConcentration>>>();
+        Map<Integer, Map<ChemicalEntity, Quantity<MolarConcentration>>> nextConcentrations = new HashMap<>();
 
         // diffusion
         for (BioNode node : this.graph.getNodes()) {

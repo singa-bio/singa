@@ -1,11 +1,11 @@
 package de.bioforscher.simulation.application.components;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.SingaPerferences;
 import javafx.scene.chart.NumberAxis;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A factory class that creates a SpeciesObserverChart with the specified
@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class SpeciesObserverChartFactory {
 
     public static SpeciesObserverChart setupSpeciesObserverChart(BioNode observedNode,
-                                                                 HashMap<String, Species> observedSpecies) {
+                                                                 Map<String, ChemicalEntity> observedSpecies) {
 
         SingaPerferences preferences = new SingaPerferences();
         int maxPoints = preferences.preferences.getInt(SingaPerferences.Plot.MAXIMAL_DATA_POINTS,

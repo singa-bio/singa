@@ -39,6 +39,6 @@ public final class SystemDefaultConstants {
     /**
      * Water as species with ChEBI id.
      */
-    public static final Species WATER = new Species("CHEBI:15377", "water", 18.0153);
+    public static final Species WATER = new Species.Builder("CHEBI:15377").name("Water").molarMass(18.0153).build();
 
 }

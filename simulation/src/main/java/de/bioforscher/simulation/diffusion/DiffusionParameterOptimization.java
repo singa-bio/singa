@@ -29,12 +29,12 @@ public class DiffusionParameterOptimization extends AbstractGridSearch {
 
     static {
         // lookupSpecies.add(new Species("H2"));
-        lookupSpecies.add(new Species("NH3"));
-        lookupSpecies.add(new Species("Benzene"));
-        lookupSpecies.add(new Species("Methanol"));
-        lookupSpecies.add(new Species("Succinic acid"));
-        lookupSpecies.add(new Species("Ethane-1.2-diol"));
-        lookupSpecies.add(new Species("Raffinose"));
+        // lookupSpecies.add(new Species("NH3"));
+        // lookupSpecies.add(new Species("Benzene"));
+        // lookupSpecies.add(new Species("Methanol"));
+        // lookupSpecies.add(new Species("Succinic acid"));
+        // lookupSpecies.add(new Species("Ethane-1.2-diol"));
+        // lookupSpecies.add(new Species("Raffinose"));
     }
 
     public DiffusionParameterOptimization(List<UniqueParameterList<?>> inputParameterList) {

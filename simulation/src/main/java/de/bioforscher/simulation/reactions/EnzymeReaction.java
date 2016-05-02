@@ -1,6 +1,5 @@
 package de.bioforscher.simulation.reactions;
 
-import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
@@ -9,8 +8,6 @@ import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
 
 import javax.measure.Quantity;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A reaction type that calculates the next concentration using Michaelis-Menten
@@ -22,9 +19,8 @@ public class EnzymeReaction extends Reaction {
 
     private Enzyme enzyme;
 
-    public EnzymeReaction(List<ChemicalEntity> substrates, List<ChemicalEntity> products,
-                          Map<ChemicalEntity, Integer> stoichiometricCoefficients) {
-        super(substrates, products, stoichiometricCoefficients);
+    protected EnzymeReaction() {
+
     }
 
     @Override
@@ -47,7 +43,6 @@ public class EnzymeReaction extends Reaction {
     public void calculateVelocity(BioNode node) {
 
         Quantity<MolarConcentration> substrateConcentration = node.getConcentration(this.enzyme.getCriticalSubstrate());
-
         Quantity<MolarConcentration> enzymeConcentration = node.getConcentration(this.enzyme);
 
         // enzyme constants
@@ -59,6 +54,25 @@ public class EnzymeReaction extends Reaction {
         setCurrentVelocity(kCat.getValue().doubleValue() * enzymeConcentration.getValue().doubleValue()
                 * substrateConcentration.getValue().doubleValue()
                 / (kM.getValue().doubleValue() + substrateConcentration.getValue().doubleValue()));
+
+    }
+
+    public static class Builder extends Reaction.Builder<EnzymeReaction, Builder> {
+
+        @Override
+        protected EnzymeReaction createObject() {
+            return new EnzymeReaction();
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
+        public Builder enzyme(Enzyme enzyme) {
+            this.topLevelObject.setEnzyme(enzyme);
+            return this;
+        }
 
     }
 

@@ -1,14 +1,15 @@
 package de.bioforscher.simulation.reactions;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.ReactionRate;
+import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.List;
-import java.util.Map;
+
+import static de.bioforscher.units.UnitDictionary.PER_SECOND;
 
 /**
  * A reaction type that calculates the next concentration. Based on first-order
@@ -20,10 +21,8 @@ public class FirstOrderReaction extends Reaction {
 
     private Quantity<ReactionRate> rateConstant;
 
-    protected FirstOrderReaction(List<Species> substrates, List<Species> products,
-                                 Map<Species, Integer> stoichiometricCoefficients, Quantity<ReactionRate> rateConstant) {
-        super(substrates, products, stoichiometricCoefficients);
-        this.rateConstant = rateConstant;
+    protected FirstOrderReaction() {
+
     }
 
     public Quantity<ReactionRate> getRateConstant() {
@@ -32,6 +31,10 @@ public class FirstOrderReaction extends Reaction {
 
     public void setRateConstant(Quantity<ReactionRate> reactionRate) {
         this.rateConstant = reactionRate;
+    }
+
+    public void setRateConstant(double reactionRate) {
+        this.rateConstant = Quantities.getQuantity(reactionRate, PER_SECOND);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class FirstOrderReaction extends Reaction {
     public void calculateVelocity(BioNode node) {
         // get substrate
         // TODO improve this
-        final Species rateDeterminingSubstrate = this.getSubstrates().get(0);
+        final ChemicalEntity rateDeterminingSubstrate = this.getSubstrates().get(0);
         // concentration of substrate
         final double rateDeterminingConcentration = node.getConcentration(rateDeterminingSubstrate).getValue()
                 .doubleValue();
@@ -56,5 +59,30 @@ public class FirstOrderReaction extends Reaction {
         // v = k * c(A)
         setCurrentVelocity(currentReactionRate.getValue().doubleValue() * rateDeterminingConcentration);
     }
+
+    public static class Builder extends Reaction.Builder<FirstOrderReaction, Builder> {
+
+        @Override
+        protected FirstOrderReaction createObject() {
+            return new FirstOrderReaction();
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
+        public Builder rateConstant(Quantity<ReactionRate> rateConstant) {
+            this.topLevelObject.setRateConstant(rateConstant);
+            return this;
+        }
+
+        public Builder rateConstant(double rateConstant) {
+            this.topLevelObject.setRateConstant(rateConstant);
+            return this;
+        }
+
+    }
+
 
 }

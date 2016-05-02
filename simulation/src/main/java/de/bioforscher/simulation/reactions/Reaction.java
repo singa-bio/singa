@@ -137,6 +137,9 @@ public abstract class Reaction implements ImmediateUpdate {
         Iterator<ChemicalEntity> sIterator = this.substrates.iterator();
         while (sIterator.hasNext()) {
             ChemicalEntity substrate = sIterator.next();
+            if (this.stoichiometricCoefficients.containsKey(substrate)) {
+                sb.append(this.stoichiometricCoefficients.get(substrate)).append(" ");
+            }
             sb.append(substrate.getName().substring(0, 1).toUpperCase()).append(substrate.getName().substring(1));
             if (sIterator.hasNext()) {
                 sb.append(" + ");
@@ -146,6 +149,9 @@ public abstract class Reaction implements ImmediateUpdate {
         Iterator<ChemicalEntity> pIterator = this.products.iterator();
         while (pIterator.hasNext()) {
             ChemicalEntity product = pIterator.next();
+            if (this.stoichiometricCoefficients.containsKey(product)) {
+                sb.append(this.stoichiometricCoefficients.get(product)).append(" ");
+            }
             sb.append(product.getName().substring(0, 1).toUpperCase()).append(product.getName().substring(1));
             if (pIterator.hasNext()) {
                 sb.append(" + ");
@@ -167,7 +173,6 @@ public abstract class Reaction implements ImmediateUpdate {
         protected BuilderType builderObject;
 
         protected abstract TopLevelType createObject();
-
         protected abstract BuilderType getBuilder();
 
         public Builder() {
@@ -182,6 +187,13 @@ public abstract class Reaction implements ImmediateUpdate {
 
         public BuilderType addSubstrate(ChemicalEntity substrate) {
             topLevelObject.addSubstrate(substrate);
+            topLevelObject.addStoichiometricCoefficient(substrate, 1);
+            return builderObject;
+        }
+
+        public BuilderType addSubstrate(ChemicalEntity substrate, int stoichiometricCoefficient) {
+            topLevelObject.addSubstrate(substrate);
+            topLevelObject.addStoichiometricCoefficient(substrate, stoichiometricCoefficient);
             return builderObject;
         }
 
@@ -192,6 +204,13 @@ public abstract class Reaction implements ImmediateUpdate {
 
         public BuilderType addProduct(ChemicalEntity product) {
             topLevelObject.addProduct(product);
+            topLevelObject.addStoichiometricCoefficient(product, 1);
+            return builderObject;
+        }
+
+        public BuilderType addProduct(ChemicalEntity product, int stoichiometricCoefficient) {
+            topLevelObject.addProduct(product);
+            topLevelObject.addStoichiometricCoefficient(product, stoichiometricCoefficient);
             return builderObject;
         }
 

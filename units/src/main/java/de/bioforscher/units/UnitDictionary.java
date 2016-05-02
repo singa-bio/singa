@@ -65,6 +65,9 @@ public final class UnitDictionary extends AbstractSystemOfUnits {
     public static final Unit<ReactionRate> PER_SECOND = addUnit(new ProductUnit<>(ONE.divide(SECOND)),
             ReactionRate.class);
 
+    public static final Unit<ReactionRate> PER_MINUTE = addUnit(new ProductUnit<>(ONE.divide(MINUTE)),
+            ReactionRate.class);
+
     /**
      * The SI unit for dynamic viscosity quantities (standard name
      * <code>Pa.s</code>).

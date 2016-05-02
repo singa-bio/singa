@@ -7,17 +7,13 @@ import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.ReactionRate;
 
 import javax.measure.Quantity;
-import java.util.List;
-import java.util.Map;
 
 public class NthOrderReaction extends Reaction {
 
     private Quantity<ReactionRate> rateConstant;
 
-    public NthOrderReaction(List<ChemicalEntity> substrates, List<ChemicalEntity> products,
-                            Map<ChemicalEntity, Integer> stoichiometricCoefficients, Quantity<ReactionRate> rateConstant) {
-        super(substrates, products, stoichiometricCoefficients);
-        this.rateConstant = rateConstant;
+    protected NthOrderReaction() {
+
     }
 
     public Quantity<ReactionRate> getRateConstant() {
@@ -53,12 +49,28 @@ public class NthOrderReaction extends Reaction {
                 }
             }
         }
-
         // transform rate to given unit
         Quantity<ReactionRate> appliedReactionRate = UnitScaler.rescaleReactionRate(this.rateConstant,
                 EnvironmentalVariables.getInstance().getTimeStep());
-
         setCurrentVelocity(substrateConcentrationProduct * appliedReactionRate.getValue().doubleValue());
+    }
+
+    public static class Builder extends Reaction.Builder<NthOrderReaction, Builder> {
+
+        @Override
+        protected NthOrderReaction createObject() {
+            return new NthOrderReaction();
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
+        public Builder rateConstant(Quantity<ReactionRate> rateConstant) {
+            this.topLevelObject.setRateConstant(rateConstant);
+            return this;
+        }
 
     }
 

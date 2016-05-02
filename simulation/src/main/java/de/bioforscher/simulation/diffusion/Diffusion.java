@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.diffusion;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.units.quantities.MolarConcentration;
 
@@ -23,6 +23,6 @@ public interface Diffusion {
      * @param node The node of interest.
      * @return A mapping of compounds and their next concentrations.
      */
-    public Map<Species, Quantity<MolarConcentration>> calculateConcentration(BioNode node);
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> calculateConcentration(BioNode node);
 
 }

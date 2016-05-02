@@ -1,14 +1,17 @@
 package de.bioforscher.simulation.reactions;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.ReactionRate;
+import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+
+import static de.bioforscher.units.UnitDictionary.PER_SECOND;
 
 /**
  * A reaction type that calculates the next concentration. Based on
@@ -19,13 +22,10 @@ import java.util.Map;
 public class SecondOrderReaction extends Reaction {
 
     private Quantity<ReactionRate> rateConstant;
-    private Map<Species, Double> orders;
+    private Map<ChemicalEntity, Double> orders;
 
-    public SecondOrderReaction(List<Species> substrates, List<Species> products, Map<Species, Double> orders,
-                               Map<Species, Integer> stoichiometricCoefficients, Quantity<ReactionRate> rateConstant) {
-        super(substrates, products, stoichiometricCoefficients);
-        this.orders = orders;
-        initializeRateConstant(rateConstant);
+    protected SecondOrderReaction() {
+        this.orders = new HashMap<>();
     }
 
     private void initializeRateConstant(Quantity<ReactionRate> rateConstant) {
@@ -44,6 +44,14 @@ public class SecondOrderReaction extends Reaction {
         this.rateConstant = rateConstant;
     }
 
+    public void setRateConstant(double rateConstant) {
+        this.rateConstant = Quantities.getQuantity(rateConstant, PER_SECOND);
+    }
+
+    public void addOrder(ChemicalEntity chemicalEntity, double order) {
+        this.orders.put(chemicalEntity, order);
+    }
+
     @Override
     public void updateConcentrations(BioNode node) {
         calculateVelocity(node);
@@ -54,8 +62,8 @@ public class SecondOrderReaction extends Reaction {
 
     @Override
     public void calculateVelocity(BioNode node) {
-        Species substrateA = getSubstrates().get(0);
-        Species substrateB = getSubstrates().get(1);
+        ChemicalEntity substrateA = getSubstrates().get(0);
+        ChemicalEntity substrateB = getSubstrates().get(1);
 
         double substrateAConcentration = node.getConcentration(substrateA).getValue().doubleValue();
         double substrateBConcentration = node.getConcentration(substrateB).getValue().doubleValue();
@@ -70,6 +78,41 @@ public class SecondOrderReaction extends Reaction {
         // calculate velocity v = k * A^a * B^b
         setCurrentVelocity(Math.pow(substrateAConcentration, reactionOrderA)
                 * Math.pow(substrateBConcentration, reactionOrderB) * currentReactionRare.getValue().doubleValue());
+    }
+
+
+    public static class Builder extends Reaction.Builder<SecondOrderReaction, Builder> {
+
+        @Override
+        protected SecondOrderReaction createObject() {
+            return new SecondOrderReaction();
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
+        public Builder rateConstant(Quantity<ReactionRate> rateConstant) {
+            this.topLevelObject.setRateConstant(rateConstant);
+            return this;
+        }
+
+        public Builder rateConstant(double rateConstant) {
+            this.topLevelObject.setRateConstant(rateConstant);
+            return this;
+        }
+
+        public Builder addOrder(ChemicalEntity chemicalEntity, double order) {
+            this.topLevelObject.addOrder(chemicalEntity, order);
+            return this;
+        }
+
+        @Override
+        public SecondOrderReaction build() {
+            this.topLevelObject.initializeRateConstant(this.topLevelObject.rateConstant);
+            return this.topLevelObject;
+        }
     }
 
 }

@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.diffusion;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
@@ -26,15 +26,15 @@ public class RecurrenceDiffusion implements Diffusion {
 
     private static final Logger log = Logger.getLogger(RecurrenceDiffusion.class.getName());
 
-    private Map<Species, Quantity<Diffusivity>> diffusionCoefficients;
+    private Map<ChemicalEntity, Quantity<Diffusivity>> diffusionCoefficients;
 
-    public RecurrenceDiffusion(Map<String, Species> availableSpecies) {
+    public RecurrenceDiffusion(Map<String, ChemicalEntity> availableEntities) {
         this.diffusionCoefficients = new HashMap<>();
-        initializeDiffusionCoefficients(availableSpecies);
+        initializeDiffusionCoefficients(availableEntities);
     }
 
-    public void initializeDiffusionCoefficients(Map<String, Species> availableSpecies) {
-        for (Species species : availableSpecies.values()) {
+    public void initializeDiffusionCoefficients(Map<String, ChemicalEntity> availableSpecies) {
+        for (ChemicalEntity species : availableSpecies.values()) {
             Quantity<Diffusivity> diffusionCoefficient = determineDiffusionCoefficient(species);
             this.diffusionCoefficients.put(species, diffusionCoefficient);
         }
@@ -42,10 +42,10 @@ public class RecurrenceDiffusion implements Diffusion {
     }
 
     @Override
-    public Map<Species, Quantity<MolarConcentration>> calculateConcentration(BioNode node) {
-        Map<Species, Quantity<MolarConcentration>> currentConcentrations = new HashMap<>();
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> calculateConcentration(BioNode node) {
+        Map<ChemicalEntity, Quantity<MolarConcentration>> currentConcentrations = new HashMap<>();
         // for each compound in the node
-        for (Species species : node.getConcentrations().keySet()) {
+        for (ChemicalEntity species : node.getConcentrations().keySet()) {
             // calculate coefficient
             Quantity<Diffusivity> coefficient;
             if (this.diffusionCoefficients.containsKey(species)) {
@@ -67,8 +67,8 @@ public class RecurrenceDiffusion implements Diffusion {
             double currentConcentration = node.getConcentration(species).getValue().doubleValue();
 
             // calculate next concentration
-            double nextConcentration = coefficient.getValue().doubleValue() * neighbourConcentration
-                    + (1 - neighbours * coefficient.getValue().doubleValue()) * currentConcentration;
+            double nextConcentration = coefficient.getValue().doubleValue() * neighbourConcentration + (1 -
+                    neighbours * coefficient.getValue().doubleValue()) * currentConcentration;
 
             // update concentrations
             currentConcentrations.put(species, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
@@ -85,7 +85,7 @@ public class RecurrenceDiffusion implements Diffusion {
      * @param species The species.
      * @return The diffusivity of the species.
      */
-    private Quantity<Diffusivity> determineDiffusionCoefficient(Species species) {
+    private Quantity<Diffusivity> determineDiffusionCoefficient(ChemicalEntity species) {
         Quantity<Diffusivity> diffusivityApproximation = DiffusionUtilities.estimateDiffusivity(species);
         log.log(Level.INFO, "approximated diffusion coefficients for " + species + " to " + diffusivityApproximation);
         return scaleDiffusivity(diffusivityApproximation);
