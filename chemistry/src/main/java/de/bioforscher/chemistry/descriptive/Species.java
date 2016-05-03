@@ -1,9 +1,14 @@
 package de.bioforscher.chemistry.descriptive;
 
+import de.bioforscher.core.annotations.Annotatable;
+import de.bioforscher.core.annotations.Annotation;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 
-public class Species extends ChemicalEntity<ChEBIIdentifier> {
+import java.util.Map;
 
+public class Species extends ChemicalEntity<ChEBIIdentifier> implements Annotatable {
+
+    private Map<Integer, Annotation> annotations;
     private String smilesRepresentation = "No SMILES representation defined.";
 
     protected Species(ChEBIIdentifier identifier) {
@@ -25,6 +30,11 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> {
     @Override
     public String toString() {
         return getIdentifier() + " " + Character.toUpperCase(getName().charAt(0)) + getName().substring(1) + " weight: " + getMolarMass() + " smiles: " + getSmilesRepresentation();
+    }
+
+    @Override
+    public Map<Integer, Annotation> getAnnotations() {
+        return this.annotations;
     }
 
     public static class Builder extends ChemicalEntity.Builder<Species, Builder, ChEBIIdentifier> {
@@ -51,6 +61,11 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> {
             if (smilesRepresentation != null) {
                 this.topLevelObject.setSmilesRepresentation(smilesRepresentation);
             }
+            return this;
+        }
+
+        public Builder addAnnotation(int identifier, Annotation annotation) {
+            this.topLevelObject.addAnnotation(identifier, annotation);
             return this;
         }
 

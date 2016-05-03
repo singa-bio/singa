@@ -15,7 +15,7 @@ public interface XMLParser extends Parser {
     void setFetchResult(String fetchResult);
 
     @Override
-    default public void fetchResource() {
+    default void fetchResource() {
 
         // create stream and connection
         BufferedReader inputStream = null;
@@ -44,7 +44,6 @@ public interface XMLParser extends Parser {
             }
             inputStream.close();
         } catch (IOException e) {
-            // TODO exception
             e.printStackTrace();
         }
 

@@ -1,7 +1,10 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.core.annotations.Annotation;
+import de.bioforscher.core.annotations.AnnotationType;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
+import de.bioforscher.core.identifier.PubChemIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -40,12 +43,16 @@ class PubChemContentHandler implements ContentHandler {
     }
 
     public Species getSpecies() {
+        Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
+                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier(this.pubchemIdentifier));
+
         return new Species.Builder(chebiiIdentifier)
                 .name(this.name)
                 .molarMass(this.molarMass)
                 .smilesRepresentation(this.smilesRepresentation)
+                .addAnnotation(1, pubChemIdentifierAnnotation)
                 .build();
-        //TODO add pubchem identifier to annotations
+
     }
 
     @Override
