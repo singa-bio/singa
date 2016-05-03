@@ -1,7 +1,5 @@
 package de.bioforscher.mathematics.topology;
 
-import de.bioforscher.mathematics.concepts.Dimension;
-
 /**
  * The Euclidean space or plane is a set of points, that satisfy certain
  * relationships, expressible in terms of distance and angle. Two fundamental
@@ -16,7 +14,7 @@ import de.bioforscher.mathematics.concepts.Dimension;
  */
 public class EuclideanSpace implements MetricSpace, TopologicalSpace {
 
-    private final Dimension dimension;
+    private final int dimension;
     private final CoordinateSystem coordinateSystem;
 
     /**
@@ -25,19 +23,8 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
      * @param dimension        The dimension of the space.
      * @param coordinateSystem The used coordinate system.
      */
-    public EuclideanSpace(Dimension dimension, CoordinateSystem coordinateSystem) {
+    public EuclideanSpace(int dimension, CoordinateSystem coordinateSystem) {
         this.dimension = dimension;
-        this.coordinateSystem = coordinateSystem;
-    }
-
-    /**
-     * Creates a new EuclideanSpace.
-     *
-     * @param dimensionality   The dimensionality of the space.
-     * @param coordinateSystem The used coordinate system.
-     */
-    public EuclideanSpace(int dimensionality, CoordinateSystem coordinateSystem) {
-        this.dimension = new Dimension(dimensionality);
         this.coordinateSystem = coordinateSystem;
     }
 
@@ -46,7 +33,7 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
      *
      * @return The dimension of this space.
      */
-    public Dimension getDimension() {
+    public int getDimension() {
         return dimension;
     }
 
@@ -65,7 +52,7 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
      * @return The degrees of freedom, that are available.
      */
     public int getDegreesOfFreedom() {
-        return this.dimension.getDegreesOfFreedom();
+        return this.dimension;
     }
 
     /**

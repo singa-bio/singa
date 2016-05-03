@@ -41,7 +41,7 @@ public class SquareMatrixTests {
     @Test
     public void testIdentityMatrixConstruction() {
         SquareMatrix squareMatrix = MatrixUtilities.generateIdentityMatrix(5);
-        for (int diagonalIndex = 0; diagonalIndex < squareMatrix.getNumberOfColumnDimensions(); diagonalIndex++) {
+        for (int diagonalIndex = 0; diagonalIndex < squareMatrix.getColumnDimension(); diagonalIndex++) {
             assertEquals(1.0, squareMatrix.getElement(diagonalIndex, diagonalIndex), 0.0);
         }
     }

@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.matrices;
 
-import de.bioforscher.mathematics.concepts.Dimension;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
@@ -23,24 +22,16 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
 
     double getElement(int rowIndex, int columnIndex);
 
-    public RegularVector getColumn(int columnIndex);
+    RegularVector getColumn(int columnIndex);
 
-    public Dimension getColumnDimension();
+    int getColumnDimension();
 
-    public RegularVector getRow(int rowIndex);
+    RegularVector getRow(int rowIndex);
 
-    public Dimension getRowDimension();
-
-    default int getNumberOfColumnDimensions() {
-        return getColumnDimension().getDegreesOfFreedom();
-    }
-
-    default int getNumberOfRowDimensions() {
-        return getRowDimension().getDegreesOfFreedom();
-    }
+    int getRowDimension();
 
     default boolean hasSameInnerDimension(Matrix matrix) {
-        return this.getNumberOfColumnDimensions() == matrix.getNumberOfRowDimensions();
+        return this.getColumnDimension() == matrix.getRowDimension();
     }
 
     default void assertThatInnerDimensionsMatch(Matrix matrix) {
@@ -50,7 +41,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     }
 
     default boolean hasSameInnerDimension(Vector vector) {
-        return this.getNumberOfColumnDimensions() == vector.getDimension().getDegreesOfFreedom();
+        return this.getColumnDimension() == vector.getDimension();
     }
 
     default void assertThatInnerDimensionsMatch(Vector vector) {
@@ -61,8 +52,8 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
 
     @Override
     default boolean hasSameDimensions(Matrix matrix) {
-        return this.getRowDimension().equals(matrix.getRowDimension())
-                && this.getColumnDimension().equals(matrix.getColumnDimension());
+        return this.getRowDimension() == matrix.getRowDimension()
+                && this.getColumnDimension() == matrix.getColumnDimension();
     }
 
 }

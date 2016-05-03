@@ -61,7 +61,7 @@ public class Vector3D extends RegularVector {
     }
 
     public static boolean isVector3D(Vector vector) {
-        return vector.getDimension().getDegreesOfFreedom() == 3;
+        return vector.getDimension() == 3;
     }
 
     /**

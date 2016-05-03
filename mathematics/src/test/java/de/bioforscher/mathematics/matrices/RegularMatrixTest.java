@@ -57,15 +57,15 @@ public class RegularMatrixTest {
 
     @Test
     public void testRowDimension() {
-        int rowVector = this.firstRectangularMatrix.getRow(0).getDimension().getDegreesOfFreedom();
-        int rowDimension = this.firstRectangularMatrix.getNumberOfColumnDimensions();
+        int rowVector = this.firstRectangularMatrix.getRow(0).getDimension();
+        int rowDimension = this.firstRectangularMatrix.getColumnDimension();
         assertEquals(rowVector, rowDimension, 0);
     }
 
     @Test
     public void testColumnDimension() {
-        int columnVector = this.firstRectangularMatrix.getColumn(0).getDimension().getDegreesOfFreedom();
-        int columnDimension = this.firstRectangularMatrix.getNumberOfRowDimensions();
+        int columnVector = this.firstRectangularMatrix.getColumn(0).getDimension();
+        int columnDimension = this.firstRectangularMatrix.getRowDimension();
         assertEquals(columnVector, columnDimension, 0);
     }
 

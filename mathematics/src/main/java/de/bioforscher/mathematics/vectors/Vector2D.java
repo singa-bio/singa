@@ -57,7 +57,7 @@ public class Vector2D extends RegularVector {
     }
 
     public static boolean isVector2D(Vector vector) {
-        return vector.getDimension().getDegreesOfFreedom() == 2;
+        return vector.getDimension() == 2;
     }
 
     /**

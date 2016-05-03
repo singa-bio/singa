@@ -7,7 +7,6 @@ import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
  * one or more Dimensions. It provides methods to compare dimensions of
  * different Objects for calculations, that are dimensional sensitive.
  * <p>
- * TODO: not really satisfied with this class.
  *
  * @param <NumberConcept> The number concept.
  * @author Christoph Leberecht

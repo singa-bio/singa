@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.vectors;
 
-import de.bioforscher.mathematics.concepts.Dimension;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.implementations.MinkowskiMetric;
@@ -25,7 +24,7 @@ import static de.bioforscher.mathematics.metrics.model.MetricProvider.EUCLIDEAN_
 public class RegularVector implements Vector {
 
     private final double[] elements;
-    private final Dimension dimension;
+    private final int dimension;
 
     /**
      * Creates a new vector with the given elements.
@@ -34,7 +33,7 @@ public class RegularVector implements Vector {
      */
     public RegularVector(double... elements) {
         this.elements = elements;
-        this.dimension = new Dimension(elements.length);
+        this.dimension = elements.length;
     }
 
     /**
@@ -47,7 +46,8 @@ public class RegularVector implements Vector {
      * @return A new vector with the specified class and values.
      */
     public static <VectorDimension extends RegularVector> VectorDimension createNewVector(double[] elements,
-                                                                                          Class<VectorDimension> typeClass) {
+                                                                                          Class<VectorDimension>
+                                                                                                  typeClass) {
         try {
             return typeClass.getConstructor(double[].class).newInstance(elements);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -77,7 +77,7 @@ public class RegularVector implements Vector {
     }
 
     @Override
-    public Dimension getDimension() {
+    public int getDimension() {
         return this.dimension;
     }
 
@@ -85,11 +85,10 @@ public class RegularVector implements Vector {
      * Returns the string representation of the dimension of this vector.
      *
      * @return The string representation of the dimension of this vector.
-     * @see Dimension
      */
     @Override
     public String getDimensionAsString() {
-        return this.dimension.toString();
+        return String.valueOf(this.dimension);
     }
 
     /**
@@ -102,7 +101,7 @@ public class RegularVector implements Vector {
      */
     @Override
     public boolean hasSameDimensions(Vector vector) {
-        return vector.getDimension().equals(this.dimension);
+        return vector.getDimension() == this.dimension;
     }
 
     /**
@@ -117,8 +116,8 @@ public class RegularVector implements Vector {
     @Override
     public Vector add(Vector summand) {
         assertThatDimensionsMatch(summand);
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
+        double[] values = new double[this.getDimension()];
+        for (int d = 0; d < this.getDimension(); d++) {
             values[d] = this.getElement(d) + summand.getElement(d);
         }
         return new RegularVector(values);
@@ -127,8 +126,8 @@ public class RegularVector implements Vector {
     @Override
     public Vector subtract(Vector subtrahend) {
         assertThatDimensionsMatch(subtrahend);
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
+        double[] values = new double[this.getDimension()];
+        for (int d = 0; d < this.getDimension(); d++) {
             values[d] = this.getElement(d) - subtrahend.getElement(d);
         }
         return new RegularVector(values);
@@ -141,8 +140,8 @@ public class RegularVector implements Vector {
      */
     @Override
     public Vector additivelyInvert() {
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
+        double[] values = new double[this.getDimension()];
+        for (int d = 0; d < this.getDimension(); d++) {
             values[d] = -this.getElement(d);
         }
         return new RegularVector(values);
@@ -150,8 +149,8 @@ public class RegularVector implements Vector {
 
     @Override
     public Vector additiveleyInvertElement(int index) {
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        System.arraycopy(this.elements, 0, values, 0, this.getDimension().getDegreesOfFreedom());
+        double[] values = new double[this.getDimension()];
+        System.arraycopy(this.elements, 0, values, 0, this.getDimension());
         values[index] = -values[index];
         return new RegularVector(values);
     }
@@ -168,18 +167,18 @@ public class RegularVector implements Vector {
     @Override
     public Vector multiply(Vector multiplicand) {
         assertThatDimensionsMatch(multiplicand);
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            values[d] = this.getElement(d) * multiplicand.getElement(d);
+        double[] values = new double[this.getDimension()];
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            values[dimension] = this.getElement(dimension) * multiplicand.getElement(dimension);
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector multiply(double scalar) {
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            values[d] = this.getElement(d) * scalar;
+        double[] values = new double[this.getDimension()];
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            values[dimension] = this.getElement(dimension) * scalar;
         }
         return new RegularVector(values);
     }
@@ -196,18 +195,18 @@ public class RegularVector implements Vector {
     @Override
     public Vector divide(Vector divisor) {
         assertThatDimensionsMatch(divisor);
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            values[d] = this.getElement(d) / divisor.getElement(d);
+        double[] values = new double[this.getDimension()];
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            values[dimension] = this.getElement(dimension) / divisor.getElement(dimension);
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector divide(double scalar) {
-        double[] values = new double[this.getDimension().getDegreesOfFreedom()];
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            values[d] = this.getElement(d) / scalar;
+        double[] values = new double[this.getDimension()];
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            values[dimension] = this.getElement(dimension) / scalar;
         }
         return new RegularVector(values);
     }
@@ -221,8 +220,8 @@ public class RegularVector implements Vector {
     public double dotProduct(Vector vector) {
         assertThatDimensionsMatch(vector);
         double product = 0;
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            product += this.getElement(d) * vector.getElement(d);
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            product += this.getElement(dimension) * vector.getElement(dimension);
         }
         return product;
     }
@@ -230,11 +229,11 @@ public class RegularVector implements Vector {
     @Override
     public RegularMatrix dyadicProduct(Vector vector) {
         assertThatDimensionsMatch(vector);
-        double[][] values = new double[this.getDimension().getDegreesOfFreedom()][vector.getDimension()
-                .getDegreesOfFreedom()];
-        for (int i = 0; i < this.getDimension().getDegreesOfFreedom(); i++) {
-            for (int j = 0; j < vector.getDimension().getDegreesOfFreedom(); j++) {
-                values[i][j] = this.getElement(i) * vector.getElement(j);
+        double[][] values = new double[this.getDimension()][vector.getDimension()];
+        for (int thisDimension = 0; thisDimension < this.getDimension(); thisDimension++) {
+            for (int otherDimension = 0; otherDimension < vector.getDimension(); otherDimension++) {
+                values[thisDimension][otherDimension] = this.getElement(thisDimension) * vector.getElement
+                        (otherDimension);
             }
         }
         return new RegularMatrix(values);
@@ -243,8 +242,8 @@ public class RegularVector implements Vector {
     @Override
     public double getMagnitude() {
         double sum = 0.0;
-        for (int d = 0; d < this.getDimension().getDegreesOfFreedom(); d++) {
-            sum += this.getElement(d) * this.getElement(d);
+        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
+            sum += this.getElement(dimension) * this.getElement(dimension);
         }
         return Math.sqrt(sum);
     }
@@ -315,7 +314,7 @@ public class RegularVector implements Vector {
      */
     @Override
     public String toString() {
-        return "Vector " + this.getDimension() + " "
+        return "Vector " + this.getDimension() + "D "
                 + Arrays.toString(this.elements).replace("[", "(").replace("]", ")");
     }
 

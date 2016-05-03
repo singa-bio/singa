@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.vectors;
 
-import de.bioforscher.mathematics.concepts.Dimension;
 import de.bioforscher.mathematics.concepts.Divisible;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
@@ -39,7 +38,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      *
      * @return The dimension of this vector.
      */
-    Dimension getDimension();
+    int getDimension();
 
     /**
      * Additively inverts (negates) the element at the given index.

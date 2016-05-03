@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.vectors;
 
-import de.bioforscher.mathematics.concepts.Dimension;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 
@@ -14,7 +13,7 @@ import de.bioforscher.mathematics.matrices.RegularMatrix;
 public class Scalar implements Vector {
 
     private final double value;
-    private static final Dimension dimension = new Dimension(1);
+    private static final int dimension = 1;
 
     /**
      * Creates a new scalar with the given value.
@@ -58,7 +57,7 @@ public class Scalar implements Vector {
     }
 
     @Override
-    public Dimension getDimension() {
+    public int getDimension() {
         return Scalar.dimension;
     }
 
@@ -67,16 +66,16 @@ public class Scalar implements Vector {
      *
      * @return The string representation of the dimension of this vector. ( Can
      * only result in "1".)
-     * @see Dimension
+     *
      */
     @Override
     public String getDimensionAsString() {
-        return Scalar.dimension.toString();
+        return String.valueOf(Scalar.dimension) + "D";
     }
 
     @Override
     public boolean hasSameDimensions(Vector element) {
-        return element.getDimension().getDegreesOfFreedom() == 1;
+        return element.getDimension() == 1;
     }
 
     /**

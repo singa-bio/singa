@@ -7,10 +7,10 @@ public class SquareMatrix extends RegularMatrix {
 
     public SquareMatrix(double[][] values) {
         super(values);
-        if (this.getNumberOfColumnDimensions() != this.getNumberOfRowDimensions()) {
+        if (getColumnDimension() != getRowDimension()) {
             throw new IllegalArgumentException(
                     "The SquareMatrix class is designed to handle matrices, where the coulumn dimension is the same as the row dimension. The given array contains "
-                            + getNumberOfRowDimensions() + " rows and " + getNumberOfColumnDimensions() + " columns.");
+                            + getRowDimension() + " rows and " + getColumnDimension() + " columns.");
         }
     }
 
@@ -29,12 +29,12 @@ public class SquareMatrix extends RegularMatrix {
     }
 
     public static boolean isSquare(Matrix matrix) {
-        return matrix.getNumberOfColumnDimensions() == matrix.getNumberOfRowDimensions();
+        return matrix.getColumnDimension() == matrix.getRowDimension();
     }
 
     public Vector getMainDiagonal() {
-        double[] values = new double[getNumberOfRowDimensions()];
-        for (int diagonalIndex = 0; diagonalIndex < getNumberOfRowDimensions(); diagonalIndex++) {
+        double[] values = new double[getRowDimension()];
+        for (int diagonalIndex = 0; diagonalIndex < getRowDimension(); diagonalIndex++) {
             values[diagonalIndex] = getElement(diagonalIndex, diagonalIndex);
         }
         return new RegularVector(values);
@@ -42,7 +42,7 @@ public class SquareMatrix extends RegularMatrix {
 
     public double trace() {
         double sum = 0.0;
-        for (int diagonalIndex = 0; diagonalIndex < getNumberOfRowDimensions(); diagonalIndex++) {
+        for (int diagonalIndex = 0; diagonalIndex < getRowDimension(); diagonalIndex++) {
             sum += this.getElement(diagonalIndex, diagonalIndex);
         }
         return sum;
@@ -50,7 +50,7 @@ public class SquareMatrix extends RegularMatrix {
 
     public double determinant() {
         // https://technomanor.wordpress.com/2012/03/04/determinant-of-n-x-n-square-matrix/
-        return determinant(this.getElements(), this.getNumberOfColumnDimensions());
+        return determinant(this.getElements(), this.getColumnDimension());
     }
 
     private static double determinant(double[][] matrix, int order) {

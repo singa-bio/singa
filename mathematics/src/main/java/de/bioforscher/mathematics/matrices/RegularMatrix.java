@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.matrices;
 
-import de.bioforscher.mathematics.concepts.Dimension;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
@@ -11,8 +10,8 @@ public class RegularMatrix implements Matrix {
 
     private final double[][] elements;
 
-    private final Dimension rowDimension;
-    private final Dimension columnDimension;
+    private final int rowDimension;
+    private final int columnDimension;
 
     public RegularMatrix(double[][] values) {
         this(values, false);
@@ -28,8 +27,8 @@ public class RegularMatrix implements Matrix {
             this.elements = SymmetricMatrix.compactToSymmetricMatrix(values);
         }
 
-        this.rowDimension = new Dimension(values.length);
-        this.columnDimension = new Dimension(values[0].length);
+        this.rowDimension = values.length;
+        this.columnDimension = values[0].length;
     }
 
     public static <MatrixClass extends Matrix> MatrixClass createNewMatrix(double[][] values,
@@ -68,8 +67,8 @@ public class RegularMatrix implements Matrix {
 
     @Override
     public String getDimensionAsString() {
-        return String.valueOf(this.getNumberOfRowDimensions()) + "x"
-                + String.valueOf(this.getNumberOfColumnDimensions());
+        return String.valueOf(this.getRowDimension()) + "x"
+                + String.valueOf(this.getRowDimension());
     }
 
     @Override
@@ -88,30 +87,30 @@ public class RegularMatrix implements Matrix {
     }
 
     @Override
-    public Dimension getRowDimension() {
+    public int getRowDimension() {
         return this.rowDimension;
     }
 
     @Override
     public RegularVector getColumn(int columnNumber) {
-        double[] columnValues = new double[getNumberOfRowDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
+        double[] columnValues = new double[getRowDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             columnValues[rowIndex] = this.elements[rowIndex][columnNumber];
         }
         return new RegularVector(columnValues);
     }
 
     @Override
-    public Dimension getColumnDimension() {
+    public int getColumnDimension() {
         return this.columnDimension;
     }
 
     @Override
     public Matrix add(Matrix summand) {
         assertThatDimensionsMatch(summand);
-        double[][] values = new double[getNumberOfRowDimensions()][getNumberOfColumnDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
                         + summand.getElement(rowIndex, columnIndex);
             }
@@ -122,9 +121,9 @@ public class RegularMatrix implements Matrix {
     @Override
     public Matrix subtract(Matrix subtrahend) {
         assertThatDimensionsMatch(subtrahend);
-        double[][] values = new double[getNumberOfRowDimensions()][getNumberOfColumnDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
                         - subtrahend.getElement(rowIndex, columnIndex);
             }
@@ -134,9 +133,9 @@ public class RegularMatrix implements Matrix {
 
     @Override
     public Matrix multiply(double multiplicand) {
-        double[][] values = new double[getNumberOfRowDimensions()][getNumberOfColumnDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex) * multiplicand;
             }
         }
@@ -146,10 +145,9 @@ public class RegularMatrix implements Matrix {
     @Override
     public Vector multiply(Vector multiplicand) {
         assertThatInnerDimensionsMatch(multiplicand);
-        double[] values = new double[this.getNumberOfRowDimensions()];
-        for (int matrixRowIndex = 0; matrixRowIndex < this.getNumberOfRowDimensions(); matrixRowIndex++) {
-            for (int vectorColumnIndex = 0; vectorColumnIndex < multiplicand.getDimension()
-                    .getDegreesOfFreedom(); vectorColumnIndex++) {
+        double[] values = new double[getRowDimension()];
+        for (int matrixRowIndex = 0; matrixRowIndex < getRowDimension(); matrixRowIndex++) {
+            for (int vectorColumnIndex = 0; vectorColumnIndex < multiplicand.getDimension(); vectorColumnIndex++) {
                 values[matrixRowIndex] += multiplicand.getElement(vectorColumnIndex)
                         * this.getElement(matrixRowIndex, vectorColumnIndex);
             }
@@ -160,12 +158,12 @@ public class RegularMatrix implements Matrix {
     @Override
     public Matrix multiply(Matrix multiplicand) {
         assertThatInnerDimensionsMatch(multiplicand);
-        double[][] values = new double[this.getNumberOfRowDimensions()][multiplicand.getNumberOfColumnDimensions()];
-        for (int multiplierRowIndex = 0; multiplierRowIndex < this.getNumberOfRowDimensions(); multiplierRowIndex++) {
-            for (int multiplicandColumnIndex = 0; multiplicandColumnIndex < multiplicand
-                    .getNumberOfColumnDimensions(); multiplicandColumnIndex++) {
-                for (int multiplierColumnIndex = 0; multiplierColumnIndex < this
-                        .getNumberOfColumnDimensions(); multiplierColumnIndex++) { // aColumn
+        double[][] values = new double[getRowDimension()][multiplicand.getColumnDimension()];
+        for (int multiplierRowIndex = 0; multiplierRowIndex < getRowDimension(); multiplierRowIndex++) {
+            for (int multiplicandColumnIndex = 0; multiplicandColumnIndex < multiplicand.getColumnDimension();
+                 multiplicandColumnIndex++) {
+                for (int multiplierColumnIndex = 0; multiplierColumnIndex < this.getColumnDimension();
+                     multiplierColumnIndex++) { // aColumn
                     values[multiplierRowIndex][multiplicandColumnIndex] += this.getElement(multiplierRowIndex,
                             multiplierColumnIndex)
                             * multiplicand.getElement(multiplierColumnIndex, multiplicandColumnIndex);
@@ -178,9 +176,9 @@ public class RegularMatrix implements Matrix {
     @Override
     public Matrix hadamardMultiply(Matrix multiplicand) {
         assertThatDimensionsMatch(multiplicand);
-        double[][] values = new double[getNumberOfRowDimensions()][getNumberOfColumnDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
                         * multiplicand.getElement(rowIndex, columnIndex);
             }
@@ -190,9 +188,9 @@ public class RegularMatrix implements Matrix {
 
     @Override
     public Matrix additivelyInvert() {
-        double[][] values = new double[getNumberOfRowDimensions()][getNumberOfColumnDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = -this.getElement(rowIndex, columnIndex);
             }
         }
@@ -201,9 +199,9 @@ public class RegularMatrix implements Matrix {
 
     @Override
     public Matrix transpose() {
-        double[][] values = new double[getNumberOfColumnDimensions()][getNumberOfRowDimensions()];
-        for (int rowIndex = 0; rowIndex < getNumberOfRowDimensions(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < getNumberOfColumnDimensions(); columnIndex++) {
+        double[][] values = new double[getColumnDimension()][getRowDimension()];
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[columnIndex][rowIndex] = this.getElement(rowIndex, columnIndex);
             }
         }
@@ -216,8 +214,8 @@ public class RegularMatrix implements Matrix {
         StringBuffer resultString = new StringBuffer();
 
         // Convert to String[][]
-        int cols = this.getNumberOfColumnDimensions();
-        int rows = this.getNumberOfRowDimensions();
+        int cols = getColumnDimension();
+        int rows = getRowDimension();
         String[][] cells = new String[rows][];
         for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
             cells[rowIndex] = new String[cols];
