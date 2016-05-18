@@ -22,7 +22,7 @@ public class DiffusivityRescaling {
 
         Quantity<Diffusivity> diffusionCoefficient = Quantities.getQuantity(1.66e-5, SQUARECENTIMETER_PER_SECOND);
         Quantity<Diffusivity> scaledQuantity = diffusionCoefficient
-                .to(new ProductUnit<Diffusivity>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+                .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
 
         scaledQuantity = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue())
                 .multiply(targetTimeScale.getValue());

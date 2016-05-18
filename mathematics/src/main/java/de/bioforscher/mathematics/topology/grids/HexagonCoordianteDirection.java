@@ -4,14 +4,14 @@ public enum HexagonCoordianteDirection {
 
     East(0),
     NorthEast(1),
-    NothWest(2),
+    NorthWest(2),
     West(3),
     SouthWest(4),
     SouthEast(5);
 
     private final int value;
 
-    private HexagonCoordianteDirection(int value) {
+    HexagonCoordianteDirection(int value) {
         this.value = value;
     }
 

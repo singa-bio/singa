@@ -48,29 +48,25 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
     public Cell[] getNeighborCells(HexagonCoordinate hexagon) {
         short q = hexagon.getQ();
         short r = hexagon.getR();
-        Cell[] result = {this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
+        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
                 this.get(q - 1, r + 1), this.get(q, r + 1)};
-        return result;
     }
 
     public Cell[] getNeighborCells(Cell cell) {
         short q = cell.getQ();
         short r = cell.getR();
-        Cell[] result = {this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
+        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
                 this.get(q - 1, r + 1), this.get(q, r + 1)};
-        return result;
     }
 
     public Cell[] getNeighborCells(short q, short r) {
-        Cell[] result = {this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
+        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
                 this.get(q - 1, r + 1), this.get(q, r + 1)};
-        return result;
     }
 
     public Cell[] getNeighborCells(int q, int r) {
-        Cell[] result = {this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
+        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
                 this.get(q - 1, r + 1), this.get(q, r + 1)};
-        return result;
     }
 
     public Cell get(short q, short r) {
@@ -186,19 +182,15 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
     }
 
     public void setStateOfAllCellsWithRValue(int r, CellState state) {
-        for (HexagonCoordinate hexagon : this.keySet()) {
-            if (hexagon.getR() == r) {
-                this.get(hexagon).setState(state);
-            }
-        }
+        this.keySet().stream().filter(hexagon -> hexagon.getR() == r).forEach(hexagon -> {
+            this.get(hexagon).setState(state);
+        });
     }
 
     public void setStateOfAllCellsWithQValue(int q, CellState state) {
-        for (HexagonCoordinate hexagon : this.keySet()) {
-            if (hexagon.getQ() == q) {
-                this.get(hexagon).setState(state);
-            }
-        }
+        this.keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> {
+            this.get(hexagon).setState(state);
+        });
     }
 
     public static HexagonGrid fillRadom() {

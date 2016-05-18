@@ -10,7 +10,8 @@ public class AbstractIdentifier implements Identifier {
         if (pattern.matcher(identifier).matches()) {
             this.identifier = identifier;
         } else {
-            throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " + this.getClass().getSimpleName().toString() + ".");
+            throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " + this.getClass()
+                    .getSimpleName() + ".");
         }
     }
 

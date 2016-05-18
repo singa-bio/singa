@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class SpaceProvider {
 
-    private final Set<EuclideanSpace> spaces = new HashSet<EuclideanSpace>();
+    private final Set<EuclideanSpace> spaces = new HashSet<>();
 
     private static final SpaceProvider INSTANCE = new SpaceProvider();
 

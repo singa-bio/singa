@@ -11,7 +11,7 @@ public class MultiTreeNode<T> {
 
     public MultiTreeNode(T data) {
         this.data = data;
-        this.children = new ArrayList<MultiTreeNode<T>>();
+        this.children = new ArrayList<>();
     }
 
     public T getData() {

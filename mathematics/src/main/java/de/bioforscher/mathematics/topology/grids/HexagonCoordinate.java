@@ -47,8 +47,7 @@ public class HexagonCoordinate {
         long A = (long) (this.q >= 0 ? 2 * this.q : -2 * this.q - 1);
         long B = (long) (this.r >= 0 ? 2 * this.r : -2 * this.r - 1);
         int C = (int) ((A >= B ? A * A + A + B : A + B * B) / 2);
-        int result = this.q < 0 && this.r < 0 || this.q >= 0 && this.r >= 0 ? C : -C - 1;
-        return result;
+        return this.q < 0 && this.r < 0 || this.q >= 0 && this.r >= 0 ? C : -C - 1;
     }
 
     @Override
@@ -66,10 +65,7 @@ public class HexagonCoordinate {
         if (this.q != other.q) {
             return false;
         }
-        if (this.r != other.r) {
-            return false;
-        }
-        return true;
+        return this.r == other.r;
     }
 
     @Override

@@ -163,10 +163,7 @@ public class Line {
         if (Double.doubleToLongBits(this.slope) != Double.doubleToLongBits(other.slope)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.yIntercept) != Double.doubleToLongBits(other.yIntercept)) {
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(this.yIntercept) == Double.doubleToLongBits(other.yIntercept);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Set;
 
 public final class TableOfElements {
 
-    private final Set<Element> elements = new HashSet<Element>();
+    private final Set<Element> elements = new HashSet<>();
 
     private static final TableOfElements INSTANCE = new TableOfElements();
 

@@ -60,13 +60,13 @@ public class PlotPreferencesControlPanel extends GridPane {
         Label labDataPoints = new Label("Maximal number of values:");
         this.add(labDataPoints, 0, 2, 1, 1);
 
-        spDataPoints = new Spinner<Integer>(1, 1000, maximalPoints);
+        spDataPoints = new Spinner<>(1, 1000, maximalPoints);
         this.add(spDataPoints, 1, 2, 1, 1);
 
         Label labTickSpacing = new Label("Tick spacing:");
         this.add(labTickSpacing, 0, 3, 1, 1);
 
-        spTickSpacing = new Spinner<Integer>(1, 1000, tickSpacing);
+        spTickSpacing = new Spinner<>(1, 1000, tickSpacing);
         this.add(spTickSpacing, 1, 3, 1, 1);
 
         Separator separator2 = new Separator();

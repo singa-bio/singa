@@ -84,7 +84,7 @@ public class Voronoi {
     private void sort(double[] xValuesIn, double[] yValuesIn, int count) {
 
         // list with edges
-        this.allEdges = new LinkedList<VoronoiFaceEdge>();
+        this.allEdges = new LinkedList<>();
 
         // number of sites
         this.nsites = count;
@@ -112,7 +112,7 @@ public class Voronoi {
         // gets list with input sites
 
         // new list of sites and fills it with input sites
-        List<Site> listSites = new ArrayList<Site>(sites.length);
+        List<Site> listSites = new ArrayList<>(sites.length);
         for (Site s : sites) {
             listSites.add(s);
         }
@@ -607,11 +607,7 @@ public class Voronoi {
 
         e = el.ELedge;
         topsite = e.reg[1];
-        if (p.x > topsite.coord.x) {
-            right_of_site = true;
-        } else {
-            right_of_site = false;
-        }
+        right_of_site = p.x > topsite.coord.x;
         if (right_of_site && el.ELpm == LE) {
             return true;
         }
@@ -651,7 +647,7 @@ public class Voronoi {
             t3 = yl - topsite.coord.y;
             above = t1 * t1 > t2 * t2 + t3 * t3;
         }
-        return el.ELpm == LE ? above : !above;
+        return (el.ELpm == LE) == above;
     }
 
     private Site rightreg(Halfedge he) {

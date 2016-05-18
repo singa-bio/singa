@@ -1,7 +1,6 @@
 package de.bioforscher.simulation.application.wizards;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
@@ -15,7 +14,7 @@ import javafx.scene.text.TextFlow;
 import java.io.File;
 
 /**
- * A page in a wizard. Modified after
+ * A page in a wizard. Modified from
  * http://www.java2s.com/Code/Java/JavaFX/StackPanebasedwizard.htm
  *
  * @author Christoph Leberecht
@@ -30,71 +29,43 @@ public abstract class WizardPage extends VBox {
     private TextFlow description;
 
     public WizardPage(String title) {
-        // ID of this Page
         this.setId(title);
-
-        // Title
+        this.setSpacing(5);
         final Text titleText = new Text(title);
-        titleText.setId("pageTitle");
+        titleText.setId("PAGE_TITLE");
         this.getChildren().add(titleText);
 
-        // Description
         this.description = new TextFlow();
-        this.description.setId("pageDescription");
+        this.description.setId("PAGE_DESCRIPTION");
         this.getChildren().add(description);
 
         final Separator separatorTop = new Separator();
-        separatorTop.setId("seperatorTop");
+        separatorTop.setId("SEPARATOR_TOP");
         this.getChildren().add(separatorTop);
 
         Region spring = new Region();
         VBox.setVgrow(spring, Priority.ALWAYS);
-        getChildren().addAll(getContent(), spring, getButtons());
+        getChildren().addAll(getContent(), spring, getFooter());
 
-        this.priorButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                priorPage();
-            }
-        });
+        this.priorButton.setOnAction(this::priorPage);
+        this.nextButton.setOnAction(this::nextPage);
+        this.cancelButton.setOnAction(actionEvent -> getWizard().cancel());
+        this.finishButton.setOnAction(actionEvent -> getWizard().finish());
 
-        this.nextButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                nextPage();
-            }
-        });
-
-        this.cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                getWizard().cancel();
-            }
-        });
-
-        this.finishButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                getWizard().finish();
-            }
-        });
-
-        this.setSpacing(5);
+        // TODO Static reference is not okay
         File f = new File("D:/projects/simulation/target/classes/wizard.css");
         this.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
     }
 
-    public HBox getButtons() {
-
+    private HBox getFooter() {
         Region spring = new Region();
         HBox.setHgrow(spring, Priority.ALWAYS);
-        HBox buttonBar = new HBox(5);
+        HBox footer = new HBox(5);
         this.cancelButton.setCancelButton(true);
         this.finishButton.setDefaultButton(true);
-        buttonBar.getChildren().addAll(spring, this.priorButton, this.nextButton,
+        footer.getChildren().addAll(spring, this.priorButton, this.nextButton,
                 this.cancelButton, this.finishButton);
-        return buttonBar;
-
+        return footer;
     }
 
     public abstract Parent getContent();
@@ -111,16 +82,20 @@ public abstract class WizardPage extends VBox {
         return getWizard().hasPriorPage();
     }
 
+    public void nextPage(ActionEvent event) {
+        nextPage();
+    }
+
     public void nextPage() {
         getWizard().nextPage();
     }
 
-    public void priorPage() {
+    public void priorPage(ActionEvent event) {
         getWizard().priorPage();
     }
 
-    public void navTo(String id) {
-        getWizard().navigateTo(id);
+    public void navigateToPage(String pageIdentifier) {
+        getWizard().navigateTo(pageIdentifier);
     }
 
     public Wizard getWizard() {

@@ -5,17 +5,20 @@ import de.bioforscher.mathematics.graphs.model.RegularNode;
 import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
-import tec.units.ri.quantity.Quantities;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BioGraphUtilities {
 
+    /**
+     * Creates and returns a map that contains all chemical entities that are present in the given graph as values and with the
+     * name of the entity as key.
+     *
+     * @param graph A graph with species
+     * @return All chemical entities in the graph.
+     */
     public static Map<String, ChemicalEntity> generateMapOfEntities(AutomatonGraph graph) {
         Map<String, ChemicalEntity> results = new HashMap<>();
         for (BioNode node : graph.getNodes()) {
@@ -26,21 +29,25 @@ public class BioGraphUtilities {
         return results;
     }
 
+    /**
+     * Populates the given graph with the given chemical entity in the desired concentration.
+     *
+     * @param graph         A graph to populate
+     * @param entity        A chemical entity
+     * @param concentration The desired concentration.
+     */
     public static void fillGraphWithSpecies(AutomatonGraph graph, ChemicalEntity entity, double concentration) {
         for (BioNode node : graph.getNodes()) {
             node.addEntity(entity, concentration);
         }
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(entity, 1.0);
-        }
     }
 
     /**
-     * Casts a graph with nodes and edges to a BioGraph. No new data is
-     * generated. Indices are persistent.
+     * Casts a {@link UndirectedGraph} with nodes and edges to a {@link AutomatonGraph}. No new data is
+     * generated. Indices are persistent. Both Graphs are independently modifiable.
      *
-     * @param undirectedGraph A Graph with normal Edges and Nodes
-     * @return A Graph with BioEdges and BioNodes
+     * @param undirectedGraph The graph to be cast
+     * @return The generated automaton graph.
      */
     public static AutomatonGraph castUndirectedGraphToBioGraph(UndirectedGraph undirectedGraph) {
 
@@ -61,9 +68,5 @@ public class BioGraphUtilities {
         return bioGraph;
     }
 
-    public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
-        EnvironmentalVariables.getInstance().setNodeDistance(
-                Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
-    }
 
 }

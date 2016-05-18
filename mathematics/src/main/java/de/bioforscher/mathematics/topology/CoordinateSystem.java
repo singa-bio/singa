@@ -8,6 +8,6 @@ package de.bioforscher.mathematics.topology;
  */
 public enum CoordinateSystem {
 
-    Cartesian, Polar, Cylindrical, Spherical, Skew;
+    Cartesian, Polar, Cylindrical, Spherical, Skew
 
 }

@@ -98,7 +98,7 @@ public class Vector3D extends RegularVector {
      */
     @Override
     public Vector3D additivelyInvert() {
-        return super.createNewVector(super.additivelyInvert().getElements(), this.getClass());
+        return createNewVector(super.additivelyInvert().getElements(), this.getClass());
     }
 
     /**
@@ -108,7 +108,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted x coordinate.
      */
     public Vector3D invertX() {
-        return super.createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
+        return createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
     }
 
     /**
@@ -118,7 +118,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted y coordinate.
      */
     public Vector3D invertY() {
-        return super.createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
+        return createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
     }
 
     /**
@@ -128,7 +128,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted z coordinate.
      */
     public Vector3D invertZ() {
-        return super.createNewVector(super.additiveleyInvertElement(Z_INDEX).getElements(), this.getClass());
+        return createNewVector(super.additiveleyInvertElement(Z_INDEX).getElements(), this.getClass());
     }
 
     /**
@@ -140,7 +140,7 @@ public class Vector3D extends RegularVector {
      * @return The addition.
      */
     public Vector3D add(Vector3D vector) {
-        return super.createNewVector(super.add(vector).getElements(), this.getClass());
+        return createNewVector(super.add(vector).getElements(), this.getClass());
     }
 
     /**
@@ -152,12 +152,12 @@ public class Vector3D extends RegularVector {
      * @return The subtraction.
      */
     public Vector3D substract(Vector3D vector) {
-        return super.createNewVector(super.subtract(vector).getElements(), this.getClass());
+        return createNewVector(super.subtract(vector).getElements(), this.getClass());
     }
 
     @Override
     public Vector3D multiply(double scalar) {
-        return super.createNewVector(super.multiply(scalar).getElements(), this.getClass());
+        return createNewVector(super.multiply(scalar).getElements(), this.getClass());
     }
 
     /**
@@ -169,12 +169,12 @@ public class Vector3D extends RegularVector {
      * @return The element-wise multiplication.
      */
     public Vector3D multiply(Vector3D vector) {
-        return super.createNewVector(super.multiply(vector).getElements(), this.getClass());
+        return createNewVector(super.multiply(vector).getElements(), this.getClass());
     }
 
     @Override
     public Vector3D divide(double scalar) {
-        return super.createNewVector(super.divide(scalar).getElements(), this.getClass());
+        return createNewVector(super.divide(scalar).getElements(), this.getClass());
     }
 
     /**
@@ -186,12 +186,12 @@ public class Vector3D extends RegularVector {
      * @return The element-wise division.
      */
     public Vector3D divide(Vector3D vector) {
-        return super.createNewVector(super.divide(vector).getElements(), this.getClass());
+        return createNewVector(super.divide(vector).getElements(), this.getClass());
     }
 
     @Override
     public Vector3D normalize() {
-        return super.createNewVector(super.normalize().getElements(), this.getClass());
+        return createNewVector(super.normalize().getElements(), this.getClass());
     }
 
     /**

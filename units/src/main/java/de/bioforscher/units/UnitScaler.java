@@ -16,7 +16,7 @@ public class UnitScaler {
                                                              Quantity<Time> targetScale) {
         // transform to specified unit
         Quantity<ReactionRate> scaledQuantity = unscaledQuantity
-                .to(new ProductUnit<ReactionRate>(ONE.divide(targetScale.getUnit())));
+                .to(new ProductUnit<>(ONE.divide(targetScale.getUnit())));
         // transform to specified amount
         scaledQuantity = scaledQuantity.multiply(targetScale.getValue());
         return scaledQuantity;
@@ -26,7 +26,7 @@ public class UnitScaler {
                                                            Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
         // transform to specified unit
         Quantity<Diffusivity> scaledQuantity = unscaledQuantity
-                .to(new ProductUnit<Diffusivity>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+                .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
         // transform to specified amount
         scaledQuantity = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue())
                 .multiply(targetTimeScale.getValue());

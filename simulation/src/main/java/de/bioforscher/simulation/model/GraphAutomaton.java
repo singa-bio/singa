@@ -24,7 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christoph Leberecht
  */
-public class GraphAutomata implements UpdateEventEmitter<NextEpochEvent> {
+public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
 
     private AutomatonGraph graph;
     private Diffusion diffusion;
@@ -36,11 +36,11 @@ public class GraphAutomata implements UpdateEventEmitter<NextEpochEvent> {
 
     public int epoch;
 
-    public GraphAutomata(AutomatonGraph graph) {
+    public GraphAutomaton(AutomatonGraph graph) {
         this(graph, new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph)));
     }
 
-    public GraphAutomata(AutomatonGraph graph, Diffusion diffusion) {
+    public GraphAutomaton(AutomatonGraph graph, Diffusion diffusion) {
         this.graph = graph;
         this.diffusion = diffusion;
         this.immediateUpdates = new ArrayList<>();
@@ -69,15 +69,13 @@ public class GraphAutomata implements UpdateEventEmitter<NextEpochEvent> {
      * receive updates.
      */
     public void activateWriteObservedNodesToFiles() {
-        for (BioNode node : this.graph.getNodes()) {
-            if (node.isObserved()) {
-                try {
-                    this.updateWriter.addNodeToObserve(node);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        this.graph.getNodes().stream().filter(node -> node.isObserved()).forEach(node -> {
+            try {
+                this.updateWriter.addNodeToObserve(node);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
+        });
     }
 
     public AutomatonGraph getGraph() {

@@ -42,7 +42,7 @@ public class MinkowskiMetric<VectorDimension extends Vector> implements Metric<V
 
     private double getRegularMinkowskiDifference(VectorDimension first, VectorDimension second) {
         double sum = 0;
-        for (int i = 0; i < first.getDimension().getDegreesOfFreedom(); i++) {
+        for (int i = 0; i < first.getDimension(); i++) {
             sum += Math.pow(Math.abs(first.getElement(i) - second.getElement(i)), this.p);
         }
         return Math.pow(sum, 1.0 / this.p);
@@ -50,7 +50,7 @@ public class MinkowskiMetric<VectorDimension extends Vector> implements Metric<V
 
     private double getMaximalDifference(VectorDimension first, VectorDimension second) {
         double maximalDistance = 0.0;
-        for (int i = 0; i < first.getDimension().getDegreesOfFreedom(); i++) {
+        for (int i = 0; i < first.getDimension(); i++) {
             double currentDistance = Math.abs(first.getElement(i) - second.getElement(i));
             if (currentDistance > maximalDistance) {
                 maximalDistance = currentDistance;

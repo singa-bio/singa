@@ -39,9 +39,7 @@ public class UniqueParameterList<Type extends Comparable<Type>> {
     @Override
     public MixedParameterList clone() {
         MixedParameterList newSet = new MixedParameterList();
-        for (ParameterValue<Type> value : parameterValues) {
-            newSet.add(value);
-        }
+        parameterValues.forEach(newSet::add);
         return newSet;
     }
 

@@ -11,7 +11,7 @@ public enum CellState {
 
     private final Color color;
 
-    private CellState(Color color) {
+    CellState(Color color) {
         this.color = color;
     }
 

@@ -32,8 +32,8 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, ? extends Ve
      * @param edgeCapacity The initial capacity for the edge list.
      */
     public AbstractGraph(int nodeCapacity, int edgeCapacity) {
-        this.nodes = new HashMap<Integer, NodeType>(nodeCapacity);
-        this.edges = new HashMap<Integer, EdgeType>(edgeCapacity);
+        this.nodes = new HashMap<>(nodeCapacity);
+        this.edges = new HashMap<>(edgeCapacity);
     }
 
     public int getNextNodeIdentifier() {
@@ -50,7 +50,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, ? extends Ve
      */
     @Override
     public Set<NodeType> getNodes() {
-        return new HashSet<NodeType>(this.nodes.values());
+        return new HashSet<>(this.nodes.values());
     }
 
     /**
@@ -104,7 +104,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, ? extends Ve
      */
     @Override
     public Set<EdgeType> getEdges() {
-        return new HashSet<EdgeType>(this.edges.values());
+        return new HashSet<>(this.edges.values());
     }
 
     /**

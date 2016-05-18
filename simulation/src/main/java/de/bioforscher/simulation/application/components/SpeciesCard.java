@@ -2,7 +2,6 @@ package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBIImageService;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 import javafx.event.ActionEvent;
@@ -25,18 +24,8 @@ public class SpeciesCard extends GridPane {
     private BioGraphSimulation owner;
     private Species species;
 
-    private TextFlow speciesName;
-    private Label speciesWeigth;
     private ImageView speciesImage;
     private Button addButton;
-
-    public SpeciesCard(String chEBIIdentifier, BioGraphSimulation owner) {
-        this.owner = owner;
-        ChEBIParserService chebiService = new ChEBIParserService();
-        chebiService.setResource(chEBIIdentifier);
-        this.species = chebiService.fetchSpecies();
-        initialize();
-    }
 
     public SpeciesCard(Species species, BioGraphSimulation owner) {
         this.owner = owner;
@@ -60,11 +49,11 @@ public class SpeciesCard extends GridPane {
         Text nameText = new Text(this.species.getName());
         nameText.setFont(Font.font(null, FontWeight.BOLD, 18));
 
-        this.speciesName = new TextFlow(nameText);
-        informationBox.getChildren().add(this.speciesName);
+        TextFlow speciesName = new TextFlow(nameText);
+        informationBox.getChildren().add(speciesName);
 
-        this.speciesWeigth = new Label("Weigth: " + this.species.getMolarMass().toString());
-        informationBox.getChildren().add(this.speciesWeigth);
+        Label speciesWeight = new Label("Weight: " + this.species.getMolarMass().toString());
+        informationBox.getChildren().add(speciesWeight);
 
         this.add(informationBox, 1, 0, 1, 1);
 

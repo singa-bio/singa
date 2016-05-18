@@ -85,7 +85,7 @@ public class Vector2D extends RegularVector {
      */
     @Override
     public Vector2D additivelyInvert() {
-        return super.createNewVector(super.additivelyInvert().getElements(), this.getClass());
+        return createNewVector(super.additivelyInvert().getElements(), this.getClass());
     }
 
     /**
@@ -95,7 +95,7 @@ public class Vector2D extends RegularVector {
      * @return A new vector with inverted x coordinate.
      */
     public Vector2D invertX() {
-        return super.createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
+        return createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
     }
 
     /**
@@ -105,7 +105,7 @@ public class Vector2D extends RegularVector {
      * @return A new vector with inverted y coordinate.
      */
     public Vector2D invertY() {
-        return super.createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
+        return createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
     }
 
     /**
@@ -117,7 +117,7 @@ public class Vector2D extends RegularVector {
      * @return The addition.
      */
     public Vector2D add(Vector2D vector) {
-        return super.createNewVector(super.add(vector).getElements(), this.getClass());
+        return createNewVector(super.add(vector).getElements(), this.getClass());
     }
 
     /**
@@ -129,7 +129,7 @@ public class Vector2D extends RegularVector {
      * @return The subtraction.
      */
     public Vector2D subtract(Vector2D vector) {
-        return super.createNewVector(super.subtract(vector).getElements(), this.getClass());
+        return createNewVector(super.subtract(vector).getElements(), this.getClass());
     }
 
     /**
@@ -141,12 +141,12 @@ public class Vector2D extends RegularVector {
      * @return The element-wise multiplication.
      */
     public Vector2D multiply(Vector2D vector) {
-        return super.createNewVector(super.multiply(vector).getElements(), this.getClass());
+        return createNewVector(super.multiply(vector).getElements(), this.getClass());
     }
 
     @Override
     public Vector2D multiply(double scalar) {
-        return super.createNewVector(super.multiply(scalar).getElements(), this.getClass());
+        return createNewVector(super.multiply(scalar).getElements(), this.getClass());
     }
 
     /**
@@ -158,17 +158,17 @@ public class Vector2D extends RegularVector {
      * @return The element-wise division.
      */
     public Vector2D divide(Vector2D vector) {
-        return super.createNewVector(super.divide(vector).getElements(), this.getClass());
+        return createNewVector(super.divide(vector).getElements(), this.getClass());
     }
 
     @Override
     public Vector2D divide(double scalar) {
-        return super.createNewVector(super.divide(scalar).getElements(), this.getClass());
+        return createNewVector(super.divide(scalar).getElements(), this.getClass());
     }
 
     @Override
     public Vector2D normalize() {
-        return super.createNewVector(super.normalize().getElements(), this.getClass());
+        return createNewVector(super.normalize().getElements(), this.getClass());
     }
 
     /**

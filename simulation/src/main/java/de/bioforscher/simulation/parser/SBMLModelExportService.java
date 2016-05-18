@@ -1,12 +1,12 @@
 package de.bioforscher.simulation.parser;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.GraphAutomata;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
-import de.bioforscher.units.UnitUtilitys;
+import de.bioforscher.units.UnitUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -33,9 +33,9 @@ public class SBMLModelExportService {
     private Document document;
     private Element root;
 
-    private GraphAutomata automata;
+    private GraphAutomaton automata;
 
-    public SBMLModelExportService(GraphAutomata automata) throws ParserConfigurationException {
+    public SBMLModelExportService(GraphAutomaton automata) throws ParserConfigurationException {
         log.log(Level.FINER, "Setting up xml documnent.");
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -77,8 +77,8 @@ public class SBMLModelExportService {
     }
 
     private Element createOneDimensionalUnitDefinition(Quantity<?> quantity) {
-        UnitName distanceUnitName = UnitUtilitys.getUnitNameFromUnit(quantity.getUnit());
-        UnitPrefix distancePrefix = UnitUtilitys.getUnitPrefixFromUnit(quantity.getUnit());
+        UnitName distanceUnitName = UnitUtilities.getUnitNameFromUnit(quantity.getUnit());
+        UnitPrefix distancePrefix = UnitUtilities.getUnitPrefixFromUnit(quantity.getUnit());
 
         Element nodeDistanceUnitDefinition = this.document.createElement("unitDefinition");
         nodeDistanceUnitDefinition.setAttribute("id", quantity.getUnit().toString());
@@ -101,17 +101,17 @@ public class SBMLModelExportService {
 
         Element nodeDistanceUnitDefinition = this.document.createElement("unitDefinition");
         nodeDistanceUnitDefinition.setAttribute("id",
-                UnitUtilitys.formatMultidimensionalUnit(quantity.getUnit()));
+                UnitUtilities.formatMultidimensionalUnit(quantity.getUnit()));
 
         Element units = this.document.createElement("listOfUnits");
 
-        UnitPrefix globalPrefix = UnitUtilitys.getUnitPrefixFromDivisor(quantity.getUnit());
+        UnitPrefix globalPrefix = UnitUtilities.getUnitPrefixFromDivisor(quantity.getUnit());
         boolean usedGlaobalPrefix = false;
 
         Map<? extends Unit<?>, Integer> unitsMap = quantity.getUnit().getProductUnits();
         for (Unit<?> unit : unitsMap.keySet()) {
-            UnitName unitName = UnitUtilitys.getUnitNameFromUnit(unit);
-            UnitPrefix prefix = UnitUtilitys.getUnitPrefixFromUnit(unit);
+            UnitName unitName = UnitUtilities.getUnitNameFromUnit(unit);
+            UnitPrefix prefix = UnitUtilities.getUnitPrefixFromUnit(unit);
             Element componentUnit = this.document.createElement("unit");
             componentUnit.setAttribute("kind", unitName.toString().toLowerCase());
             if (prefix != UnitPrefix.NO_PREFIX) {
@@ -167,7 +167,7 @@ public class SBMLModelExportService {
         systemViscosityParameter.setAttribute("id", "SystemViscosity");
         systemViscosityParameter.setAttribute("value",
                 String.valueOf(EnvironmentalVariables.getInstance().getSystemViscosity().getValue().doubleValue()));
-        systemViscosityParameter.setAttribute("units", UnitUtilitys.formatMultidimensionalUnit(
+        systemViscosityParameter.setAttribute("units", UnitUtilities.formatMultidimensionalUnit(
                 EnvironmentalVariables.getInstance().getSystemViscosity().getUnit()));
 
         parameters.appendChild(systemViscosityParameter);

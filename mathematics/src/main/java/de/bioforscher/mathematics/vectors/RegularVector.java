@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import static de.bioforscher.mathematics.metrics.model.MetricProvider.EUCLIDEAN_METRIC;
 
-;
+
 
 /**
  * The {@code RegularVector} class handles the general properties and operations
@@ -302,10 +302,7 @@ public class RegularVector implements Vector {
             return false;
         }
         RegularVector other = (RegularVector) obj;
-        if (!Arrays.equals(this.elements, other.elements)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(this.elements, other.elements);
     }
 
     /**

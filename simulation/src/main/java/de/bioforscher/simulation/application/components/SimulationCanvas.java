@@ -21,7 +21,7 @@ public class SimulationCanvas extends Canvas {
 
     private BioGraphSimulation owner;
 
-    private ConcurrentLinkedQueue<AutomatonGraph> graphQueue = new ConcurrentLinkedQueue<AutomatonGraph>();
+    private ConcurrentLinkedQueue<AutomatonGraph> graphQueue = new ConcurrentLinkedQueue<>();
     private GraphRenderer renderer;
 
     private BioGraphContextMenu graphContextMenu;
@@ -78,7 +78,7 @@ public class SimulationCanvas extends Canvas {
         for (BioNode node : this.owner.getGraph().getNodes()) {
             if (isClickedOnNode(event, node)) {
                 ChemicalEntity species = this.renderer.getBioRenderingOptions().getNodeHighlightSpecies();
-                node.setConcentration(species, this.owner.getConcetrationSlider().getValue());
+                node.setConcentration(species, this.owner.getConcentrationSlider().getValue());
                 draw();
                 break;
             }

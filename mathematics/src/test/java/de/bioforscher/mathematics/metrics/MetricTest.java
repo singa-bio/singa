@@ -22,7 +22,7 @@ public class MetricTest {
 
     @Before
     public void initObjects() {
-        this.jaccard = new JaccardMetric<String>();
+        this.jaccard = new JaccardMetric<>();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class MetricTest {
     public void testMinkowskiMetricWithPLessThanOne() {
         Vector2D first = new Vector2D(0.0, 0.0);
         Vector2D second = new Vector2D(1.0, 1.0);
-        Metric<Vector2D> minkowski = new MinkowskiMetric<Vector2D>(0.5);
+        Metric<Vector2D> minkowski = new MinkowskiMetric<>(0.5);
         minkowski.calculateDistance(first, second);
     }
 

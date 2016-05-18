@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: javax.measure:unit-api:0.8-RC3">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/javax/measure/unit-api/0.8-RC3/unit-api-0.8-RC3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/javax/measure/unit-api/0.8-RC3/unit-api-0.8-RC3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/javax/measure/unit-api/0.8-RC3/unit-api-0.8-RC3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

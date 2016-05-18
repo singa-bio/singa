@@ -3,7 +3,7 @@ package de.bioforscher.simulation.application;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.GraphAutomata;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.util.GraphDrawingTool;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,11 +13,11 @@ public class BioGraphProducer implements Runnable {
     private ConcurrentLinkedQueue<AutomatonGraph> queue;
     private Rectangle rectangle;
     private AutomatonGraph graph;
-    private GraphAutomata automata;
+    private GraphAutomaton automata;
     private Jobs job;
     private int totalIterations;
 
-    public BioGraphProducer(ConcurrentLinkedQueue<AutomatonGraph> queue, AutomatonGraph graph, GraphAutomata automata,
+    public BioGraphProducer(ConcurrentLinkedQueue<AutomatonGraph> queue, AutomatonGraph graph, GraphAutomaton automata,
                             Rectangle rectangle, Jobs job, int iterations) {
         this.queue = queue;
         this.graph = graph;
@@ -27,7 +27,7 @@ public class BioGraphProducer implements Runnable {
         this.totalIterations = iterations;
     }
 
-    public BioGraphProducer(ConcurrentLinkedQueue<AutomatonGraph> queue, AutomatonGraph graph, GraphAutomata automata,
+    public BioGraphProducer(ConcurrentLinkedQueue<AutomatonGraph> queue, AutomatonGraph graph, GraphAutomaton automata,
                             double width, double height, Jobs job) {
         this.queue = queue;
         this.graph = graph;

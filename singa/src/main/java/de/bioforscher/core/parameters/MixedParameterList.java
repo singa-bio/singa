@@ -40,9 +40,7 @@ public class MixedParameterList {
     @Override
     public MixedParameterList clone() {
         MixedParameterList newSet = new MixedParameterList();
-        for (ParameterValue<?> value : parameterValues) {
-            newSet.add(value);
-        }
+        parameterValues.forEach(newSet::add);
         return newSet;
     }
 

@@ -36,8 +36,6 @@ public class LineSegment extends Line {
      * Gets the x-value in respect to a given y-value. If the line segment does
      * not contain a point with this y-value this method returns
      * {@code Double.NaN}.
-     * <p>
-     * TODO: untested
      *
      * @param y The y-value.
      * @return The x-value.
@@ -71,8 +69,6 @@ public class LineSegment extends Line {
      * Gets the y-value in respect to a given x-value. If the line segment does
      * not contain a point with this x-value this method returns
      * {@code Double.NaN}.
-     * <p>
-     * TODO: untested
      *
      * @param x The x-value.
      * @return The y-value.

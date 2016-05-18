@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.core.parameters.*;
 import de.bioforscher.mathematics.algorithms.optimization.AbstractGridSearch;
 import de.bioforscher.mathematics.combinatorics.Permutations;
-import de.bioforscher.simulation.model.GraphAutomata;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.util.AutomataFactory;
 import tec.units.ri.quantity.Quantities;
 
@@ -65,7 +65,7 @@ public class DiffusionParameterOptimization extends AbstractGridSearch {
         int numberOfNodes = numberOfNodesParameter.getValue();
 
         // setup automaton
-        GraphAutomata automata = AutomataFactory
+        GraphAutomaton automata = AutomataFactory
                 .buildDiffusionOptimizationTestAutomata(numberOfNodesParameter.getValue(), timeStep, species);
 
         int observedNode = numberOfNodes * numberOfNodes / 2 - 1;

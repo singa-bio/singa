@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class MetricProvider {
 
-    private final Set<Metric<?>> metrics = new HashSet<Metric<?>>();
+    private final Set<Metric<?>> metrics = new HashSet<>();
 
     private static final MetricProvider INSTANCE = new MetricProvider();
 
@@ -24,10 +24,10 @@ public class MetricProvider {
         return element;
     }
 
-    public static final MinkowskiMetric<Vector> MANHATTAN_METRIC = addElement(new MinkowskiMetric<Vector>(1));
-    public static final MinkowskiMetric<Vector> EUCLIDEAN_METRIC = addElement(new MinkowskiMetric<Vector>(2));
-    public static final MinkowskiMetric<Vector> CHEBYCHEV_METRIC = addElement(new MinkowskiMetric<Vector>(Double.POSITIVE_INFINITY));
-    public static final CosineSimilarity<Vector> COSINE_SIMILARITY = addElement(new CosineSimilarity<Vector>());
-    public static final AngularDistance<Vector> ANGULAR_DISTANCE = addElement(new AngularDistance<Vector>());
+    public static final MinkowskiMetric<Vector> MANHATTAN_METRIC = addElement(new MinkowskiMetric<>(1));
+    public static final MinkowskiMetric<Vector> EUCLIDEAN_METRIC = addElement(new MinkowskiMetric<>(2));
+    public static final MinkowskiMetric<Vector> CHEBYCHEV_METRIC = addElement(new MinkowskiMetric<>(Double.POSITIVE_INFINITY));
+    public static final CosineSimilarity<Vector> COSINE_SIMILARITY = addElement(new CosineSimilarity<>());
+    public static final AngularDistance<Vector> ANGULAR_DISTANCE = addElement(new AngularDistance<>());
 
 }

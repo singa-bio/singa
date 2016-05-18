@@ -42,9 +42,7 @@ public class SymmetricMatrix extends SquareMatrix {
         }
         // fill array with values
         for (int rowIndex = 0; rowIndex < potentialValues.length; rowIndex++) {
-            for (int columnIndex = 0; columnIndex < rowIndex + 1; columnIndex++) {
-                compactedValues[rowIndex][columnIndex] = potentialValues[rowIndex][columnIndex];
-            }
+            System.arraycopy(potentialValues[rowIndex], 0, compactedValues[rowIndex], 0, rowIndex + 1);
         }
         return compactedValues;
     }

@@ -1,6 +1,9 @@
 package de.bioforscher.simulation.application.windows;
 
 import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.units.UnitName;
+import de.bioforscher.units.UnitPrefix;
+import de.bioforscher.units.UnitUtilities;
 import de.bioforscher.units.quantities.DynamicViscosity;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -9,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
@@ -26,8 +30,8 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private Spinner<Double> spTemperature;
     private Spinner<Double> spViscosity;
 
-    private ComboBox<String> cbNodeDistance;
-    private ComboBox<String> cbTimeStep;
+    private ComboBox<Unit<Length>> cbNodeDistance;
+    private ComboBox<Unit<Time>> cbTimeStep;
 
     private Tab owner;
 
@@ -37,7 +41,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         EnvironmentalVariables.getInstance().addObserver(this);
     }
 
-    public void initialize() {
+    private void initialize() {
 
         this.setHgap(10);
         this.setVgap(10);
@@ -47,57 +51,59 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         Label labNodeDistance = new Label("Distance between two nodes:");
         this.add(labNodeDistance, 0, 0, 1, 1);
 
-        this.spNodeDistance = new Spinner<Double>(1, 1000, 250.0);
+        this.spNodeDistance = new Spinner<>(1.0, 1000.0, 250.0);
         this.spNodeDistance.setEditable(true);
         this.spNodeDistance.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.spNodeDistance, 1, 0, 1, 1);
 
-        this.cbNodeDistance = new ComboBox<String>();
-        this.cbNodeDistance.getItems().addAll("nm", "um", "mm");
-        this.cbNodeDistance.setValue("nm");
+        this.cbNodeDistance = new ComboBox<>();
+        this.cbNodeDistance.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix
+                .getDefaultSpacePrefixes(), METRE));
+        this.cbNodeDistance.setValue(NANO(METRE));
         this.cbNodeDistance.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.cbNodeDistance, 2, 0, 1, 1);
 
         // time step
         Label labTimeStep = new Label("Duration of a time step:");
         this.add(labTimeStep, 0, 1, 1, 1);
 
-        this.spTimeStep = new Spinner<Double>(1, 1000, 1.0);
+        this.spTimeStep = new Spinner<>(1.0, 1000.0, 1.0);
         this.spTimeStep.setEditable(true);
-        this.spTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+        this.spTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.spTimeStep, 1, 1, 1, 1);
 
-        this.cbTimeStep = new ComboBox<String>();
-        this.cbTimeStep.getItems().addAll("ns", "us", "ms", "s");
-        this.cbTimeStep.setValue("�s");
-        this.cbTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+        this.cbTimeStep = new ComboBox<>();
+        this.cbTimeStep.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(),
+                SECOND));
+        this.cbTimeStep.setValue(MICRO(SECOND));
+        this.cbTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.cbTimeStep, 2, 1, 1, 1);
 
         // temperature
         Label labTemperature = new Label("System temperature:");
         this.add(labTemperature, 0, 2, 1, 1);
 
-        this.spTemperature = new Spinner<Double>(0, 100, 23.0, 0.1);
+        this.spTemperature = new Spinner<>(0, 100, 23.0, 0.1);
         this.spTemperature.setEditable(true);
         this.spTemperature.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.spTemperature, 1, 2, 1, 1);
 
-        Label labTemperatureUnit = new Label("�C");
+        Label labTemperatureUnit = new Label(UnitName.CELSIUS.getSymbol());
         this.add(labTemperatureUnit, 2, 2, 1, 1);
 
         // viscosity
         Label labViscosity = new Label("System viscosity:");
         this.add(labViscosity, 0, 3, 1, 1);
 
-        this.spViscosity = new Spinner<Double>(0, 100, 1.0, 0.1);
+        this.spViscosity = new Spinner<>(0, 100, 1.0, 0.1);
         this.spViscosity.setEditable(true);
-        this.spViscosity.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnapplied());
+        this.spViscosity.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
         this.add(this.spViscosity, 1, 3, 1, 1);
 
-        Label labViscosityUnit = new Label("mPs");
+        Label labViscosityUnit = new Label(UnitName.PASCAL.getSymbol() + UnitName.SECOND.getSymbol());
         this.add(labViscosityUnit, 2, 3, 1, 1);
 
         Button btnDefaults = new Button("Resore Defaults");
@@ -111,42 +117,13 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         this.add(btnApply, 1, 4, 1, 1);
     }
 
-    public void applyChanges(ActionEvent event) {
-        double nodeDistanceValue = this.spNodeDistance.getValue();
-        Quantity<Length> nodeDistance = null;
-        switch (this.cbNodeDistance.getValue()) {
-            case "nm":
-                nodeDistance = Quantities.getQuantity(nodeDistanceValue, NANO(METRE));
-                break;
-            case "um":
-                nodeDistance = Quantities.getQuantity(nodeDistanceValue, MICRO(METRE));
-                break;
-            case "mm":
-                nodeDistance = Quantities.getQuantity(nodeDistanceValue, MILLI(METRE));
-                break;
-        }
-
-        double timeStepValue = this.spTimeStep.getValue();
-        Quantity<Time> timeStep = null;
-        switch (this.cbTimeStep.getValue()) {
-            case "ns":
-                timeStep = Quantities.getQuantity(timeStepValue, NANO(SECOND));
-                break;
-            case "us":
-                timeStep = Quantities.getQuantity(timeStepValue, MICRO(SECOND));
-                break;
-            case "ms":
-                timeStep = Quantities.getQuantity(timeStepValue, MILLI(SECOND));
-                break;
-            case "s":
-                timeStep = Quantities.getQuantity(timeStepValue, SECOND);
-                break;
-        }
-
-        Quantity<Temperature> systemTemperature = Quantities.getQuantity((double) this.spTemperature.getValue(),
+    private void applyChanges(ActionEvent event) {
+        Quantity<Length> nodeDistance = Quantities.getQuantity(this.spNodeDistance.getValue(), this.cbNodeDistance
+                .getValue());
+        Quantity<Time> timeStep = Quantities.getQuantity(this.spTimeStep.getValue(), this.cbTimeStep.getValue());
+        Quantity<Temperature> systemTemperature = Quantities.getQuantity(this.spTemperature.getValue(),
                 CELSIUS);
-
-        Quantity<DynamicViscosity> systemViscosity = Quantities.getQuantity((double) this.spViscosity.getValue(),
+        Quantity<DynamicViscosity> systemViscosity = Quantities.getQuantity(this.spViscosity.getValue(),
                 MILLI(PASCAL_SECOND));
 
         EnvironmentalVariables.getInstance().setNodeDistance(nodeDistance);
@@ -158,7 +135,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         markChangesAsApplied();
     }
 
-    public void restoreDefault(ActionEvent event) {
+    private void restoreDefault(ActionEvent event) {
         EnvironmentalVariables.getInstance().resetToDefaultValues();
         markChangesAsApplied();
     }
@@ -168,11 +145,11 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         EnvironmentalVariables changedVariables = (EnvironmentalVariables) o;
 
         Quantity<Length> nodeDistance = changedVariables.getNodeDistance();
-        this.cbNodeDistance.setValue(nodeDistance.getUnit().toString());
+        this.cbNodeDistance.setValue(nodeDistance.getUnit());
         this.spNodeDistance.getValueFactory().setValue(nodeDistance.getValue().doubleValue());
 
         Quantity<Time> timeStep = changedVariables.getTimeStep();
-        this.cbTimeStep.setValue(timeStep.getUnit().toString());
+        this.cbTimeStep.setValue(timeStep.getUnit());
         this.spTimeStep.getValueFactory().setValue(timeStep.getValue().doubleValue());
 
         Quantity<Temperature> temperature = changedVariables.getSystemTemperature().to(CELSIUS);
@@ -184,14 +161,14 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         markChangesAsApplied();
     }
 
-    public void markChangesAsUnapplied() {
+    private void markChangesAsUnApplied() {
         String title = this.owner.getText();
         if (!title.contains("*")) {
             this.owner.setText(title + " *");
         }
     }
 
-    public void markChangesAsApplied() {
+    private void markChangesAsApplied() {
         this.owner.setText(this.owner.getText().replace(" *", ""));
     }
 

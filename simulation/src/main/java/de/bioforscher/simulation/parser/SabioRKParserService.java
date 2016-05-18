@@ -30,7 +30,7 @@ public class SabioRKParserService extends AbstractRESTParser {
         this.xmlReader.setContentHandler(new SBMLContentHandler());
 
         setResource("http://sabiork.h-its.org/sabioRestWebServices/searchKineticLaws/sbml");
-        HashMap<String, String> queryMap = new HashMap<String, String>();
+        HashMap<String, String> queryMap = new HashMap<>();
         queryMap.put("q", entryID);
         setQueryMap(queryMap);
     }
@@ -39,15 +39,13 @@ public class SabioRKParserService extends AbstractRESTParser {
     @Override
     public List<Object> parseObjects() {
 
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
 
         InputSource is = new InputSource(new StringReader(getFetchResult().getContent()));
 
         try {
             this.xmlReader.parse(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+        } catch (IOException | SAXException e) {
             e.printStackTrace();
         }
 

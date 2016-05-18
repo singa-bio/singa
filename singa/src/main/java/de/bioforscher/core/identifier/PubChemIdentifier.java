@@ -19,8 +19,7 @@ public class PubChemIdentifier extends AbstractIdentifier {
     public int getConsecutiveNumber() {
         Matcher matcherCHEBI = PATTERN.matcher(getIdentifier());
         if (matcherCHEBI.matches()) {
-            int identifier = Integer.parseInt(matcherCHEBI.group(1));
-            return identifier;
+            return Integer.parseInt(matcherCHEBI.group(1));
         } else {
             return 0;
         }

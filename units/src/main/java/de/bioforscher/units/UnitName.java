@@ -6,13 +6,13 @@ public enum UnitName {
     GRAM("g"),
     SECOND("s"),
     KELVIN("K"),
-    CELSIUS("C"),
+    CELSIUS("\u00BAC"),
     MOLE("mol"),
     PASCAL("Pa");
 
     private final String symbol;
 
-    private UnitName(String symbol) {
+    UnitName(String symbol) {
         this.symbol = symbol;
     }
 

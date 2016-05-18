@@ -5,7 +5,7 @@ public class MultiTree<T> {
     private MultiTreeNode<T> root;
 
     public MultiTree(T rootData) {
-        this.root = new MultiTreeNode<T>(rootData);
+        this.root = new MultiTreeNode<>(rootData);
     }
 
     public MultiTreeNode<T> getRoot() {
@@ -25,9 +25,7 @@ public class MultiTree<T> {
             return;
         }
         System.out.println(node.getData().toString()); // visit() here
-        for (MultiTreeNode<T> n : node.getChildren()) {
-            traversePreOrder(n);
-        }
+        node.getChildren().forEach(this::traversePreOrder);
     }
 
     public void traverseInOrder(MultiTreeNode<T> node) {

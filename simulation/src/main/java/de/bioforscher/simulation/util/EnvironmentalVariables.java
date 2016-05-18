@@ -1,6 +1,7 @@
 package de.bioforscher.simulation.util;
 
 import de.bioforscher.units.quantities.DynamicViscosity;
+import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -76,6 +77,16 @@ public class EnvironmentalVariables extends Observable {
         setChanged();
         notifyObservers();
     }
+
+    /**
+     * @param diameter
+     * @param spanningNodes
+     */
+    public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
+        this.setNodeDistance(
+                Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
+    }
+
 
     public void setSystemTemperature(Quantity<Temperature> systemTemperature) {
         // always in kelvin

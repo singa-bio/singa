@@ -14,13 +14,13 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
 
     public AbstractNode(int identifier) {
         this.identifier = identifier;
-        this.neighbours = new ArrayList<NodeType>();
+        this.neighbours = new ArrayList<>();
     }
 
     public AbstractNode(int identifier, VectorType position) {
         this.identifier = identifier;
         this.position = position;
-        this.neighbours = new ArrayList<NodeType>();
+        this.neighbours = new ArrayList<>();
     }
 
     @Override
@@ -88,10 +88,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         }
         // TODO maybe (surely) this should not happen here
         NodeType other = (NodeType) obj;
-        if (this.identifier != other.getIdentifier()) {
-            return false;
-        }
-        return true;
+        return this.identifier == other.getIdentifier();
     }
 
     @Override

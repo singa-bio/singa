@@ -20,7 +20,7 @@ public class Wizard extends StackPane {
 
     private ObservableList<WizardPage> pages = FXCollections
             .observableArrayList();
-    private Stack<Integer> history = new Stack<Integer>();
+    private Stack<Integer> history = new Stack<>();
 
     public Wizard(WizardPage... pages) {
         this.pages.addAll(pages);

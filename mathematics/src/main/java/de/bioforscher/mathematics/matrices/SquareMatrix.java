@@ -20,8 +20,8 @@ public class SquareMatrix extends RegularMatrix {
 
     public static boolean isSquare(double[][] values) {
         int requiredLength = values.length;
-        for (int rowIndex = 0; rowIndex < requiredLength; rowIndex++) {
-            if (values[rowIndex].length != requiredLength) {
+        for (double[] value : values) {
+            if (value.length != requiredLength) {
                 return false;
             }
         }

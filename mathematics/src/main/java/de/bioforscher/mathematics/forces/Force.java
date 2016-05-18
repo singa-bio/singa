@@ -29,8 +29,6 @@ public interface Force {
         return distance.normalize().multiply(calculateForce(magnitude));
     }
 
-    ;
-
     /**
      * Calculates the strength of the applied force.
      *

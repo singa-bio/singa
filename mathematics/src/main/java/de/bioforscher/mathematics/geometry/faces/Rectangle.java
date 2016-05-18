@@ -6,8 +6,8 @@ import de.bioforscher.mathematics.vectors.Vector2D;
 
 public class Rectangle extends SimplePolygon {
 
-    private static int topLeftVertexIndex = 0;
-    private static int bottomRightVertexIndex = 1;
+    private static final int topLeftVertexIndex = 0;
+    private static final int bottomRightVertexIndex = 1;
 
     public Rectangle(Vector2D topLeftVertex, Vector2D bottomRightVertex) {
         super(topLeftVertex, bottomRightVertex);

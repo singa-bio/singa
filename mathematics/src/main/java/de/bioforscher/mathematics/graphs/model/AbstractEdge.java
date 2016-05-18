@@ -19,7 +19,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
      */
     protected NodeType target;
 
-    public AbstractEdge() {
+    protected AbstractEdge() {
     }
 
     public AbstractEdge(NodeType source, NodeType target) {
@@ -136,10 +136,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
             return false;
         }
         UndirectedEdge other = (UndirectedEdge) obj;
-        if (this.identifier != other.identifier) {
-            return false;
-        }
-        return true;
+        return this.identifier == other.identifier;
     }
 
     @Override

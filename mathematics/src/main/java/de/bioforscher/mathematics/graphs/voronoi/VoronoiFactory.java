@@ -56,9 +56,8 @@ public class VoronoiFactory {
         this.readSpace(rectangle);
         this.readGraph(graph);
         this.voronoi = new Voronoi(10);
-        List<VoronoiFaceEdge> edges = this.voronoi.generateVoronoi(this.xValuesIn, this.yValuesIn, this.minX, this.maxX,
+        return this.voronoi.generateVoronoi(this.xValuesIn, this.yValuesIn, this.minX, this.maxX,
                 this.minY, this.maxY);
-        return edges;
     }
 
 }

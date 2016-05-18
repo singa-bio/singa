@@ -34,10 +34,7 @@ public interface Bounded<Type extends Comparable<Type>> {
      * @return {@code true} if the constraints are met.
      */
     default boolean isInRange(Type value) {
-        if (value.compareTo(getLowerBound()) >= 0 && value.compareTo(getUpperBound()) <= 0) {
-            return true;
-        }
-        return false;
+        return value.compareTo(getLowerBound()) >= 0 && value.compareTo(getUpperBound()) <= 0;
     }
 
     /**

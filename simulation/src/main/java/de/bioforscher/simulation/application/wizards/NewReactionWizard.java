@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -109,7 +108,6 @@ class ChooseMethodPage extends WizardPage {
 class GetSuggestionsPage extends WizardPage {
 
     private TextField tfSearch;
-    private Button btnSearch;
 
     private TableView<EnzymeReaction> tbResults;
     private ObservableList<EnzymeReaction> results;
@@ -137,44 +135,9 @@ class GetSuggestionsPage extends WizardPage {
         // FIXME tfSearch size should be dynamically fit to Component
         tfSearch.setPrefSize(400, 20);
 
-        btnSearch = new Button();
+        Button btnSearch = new Button();
         btnSearch.setId("btnSearch");
-        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent ae) {
-
-                Client client = ClientBuilder.newClient();
-                WebTarget target = client
-                        .target("http://sabiork.h-its.org/sabioRestWebServices/");
-                WebTarget suggestionsPath = target.path("searchKineticLaws")
-                        .path("kinlaws");
-                // Only supported reactions with kCat and km are retrieved
-                WebTarget suggestionsQuery = suggestionsPath.queryParam(
-                        "q",
-                        "Pathway:" + "%22"
-                                + tfSearch.getText().replaceAll(" ", "%20")
-                                + "%22%20AND%20Parametertype:%22kCat%22%20AND%20Parametertype:%22km%22");
-                Invocation.Builder invocationBuilder = suggestionsQuery
-                        .request(MediaType.TEXT_PLAIN);
-                Response response = invocationBuilder.get();
-
-                Pattern pattern = Pattern.compile("<SabioEntryID>(\\d+)");
-                String suggestions = response.readEntity(String.class);
-
-                Matcher matcher = pattern.matcher(suggestions);
-
-                int count = 0;
-
-                while (matcher.find() && count < 10) {
-                    String sabioId = matcher.group(1);
-                    SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
-                            + sabioId);
-                    EnzymeReaction reaction = sabiorkParser.fetchReaction();
-                    results.add(reaction);
-                    count++;
-                }
-            }
-        });
+        btnSearch.setOnAction(this::searchReactions);
 
         btnSearch.setMinSize(30, 20);
 
@@ -185,20 +148,20 @@ class GetSuggestionsPage extends WizardPage {
         results = FXCollections.observableArrayList();
         tbResults.setItems(results);
 
-        TableColumn<EnzymeReaction, String> reactionCol = new TableColumn<EnzymeReaction, String>(
+        TableColumn<EnzymeReaction, String> reactionCol = new TableColumn<>(
                 "Reaction");
         reactionCol.setCellValueFactory(c -> new SimpleStringProperty(c
                 .getValue().getReactionString()));
         reactionCol.setMinWidth(300);
         reactionCol.setPrefWidth(300);
 
-        TableColumn<EnzymeReaction, String> kCatCol = new TableColumn<EnzymeReaction, String>(
+        TableColumn<EnzymeReaction, String> kCatCol = new TableColumn<>(
                 "kCat");
         kCatCol.setCellValueFactory(c -> new SimpleStringProperty(String
                 .valueOf(c.getValue().getEnzyme().getTurnoverNumber())));
         kCatCol.setMinWidth(200);
 
-        TableColumn<EnzymeReaction, String> kmCol = new TableColumn<EnzymeReaction, String>(
+        TableColumn<EnzymeReaction, String> kmCol = new TableColumn<>(
                 "kM");
         kmCol.setCellValueFactory(c -> new SimpleStringProperty(String
                 .valueOf(c.getValue().getEnzyme().getMichaelisConstant())));
@@ -214,6 +177,39 @@ class GetSuggestionsPage extends WizardPage {
         //root.getStylesheets().addAll(
         //			this.getClass().getResource("wizard.css").toExternalForm());
         return new VBox(root);
+    }
+
+    public void searchReactions(ActionEvent event) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client
+                .target("http://sabiork.h-its.org/sabioRestWebServices/");
+        WebTarget suggestionsPath = target.path("searchKineticLaws")
+                .path("kinlaws");
+        // Only supported reactions with kCat and km are retrieved
+        WebTarget suggestionsQuery = suggestionsPath.queryParam(
+                "q",
+                "Pathway:" + "%22"
+                        + tfSearch.getText().replaceAll(" ", "%20")
+                        + "%22%20AND%20Parametertype:%22kCat%22%20AND%20Parametertype:%22km%22");
+        Invocation.Builder invocationBuilder = suggestionsQuery
+                .request(MediaType.TEXT_PLAIN);
+        Response response = invocationBuilder.get();
+
+        Pattern pattern = Pattern.compile("<SabioEntryID>(\\d+)");
+        String suggestions = response.readEntity(String.class);
+
+        Matcher matcher = pattern.matcher(suggestions);
+
+        int count = 0;
+
+        while (matcher.find() && count < 10) {
+            String sabioId = matcher.group(1);
+            SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
+                    + sabioId);
+            EnzymeReaction reaction = sabiorkParser.fetchReaction();
+            results.add(reaction);
+            count++;
+        }
     }
 
     @Override

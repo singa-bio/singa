@@ -19,16 +19,14 @@ public class GraphMLParserService extends AbstractXMLParser {
     public void fetchResource() {
         try {
             this.getXmlReader().parse(getResource());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+        } catch (IOException | SAXException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public List<Object> parseObjects() {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         AutomatonGraph graph = ((GraphMLContentHandler) this.getXmlReader().getContentHandler()).getGraph();
         list.add(graph);
         return list;

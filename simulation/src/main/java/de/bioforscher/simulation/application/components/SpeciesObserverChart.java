@@ -56,7 +56,7 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
 
     public void addSpecies(Species compound) {
         this.observedSpecies.put(compound.getName(), compound);
-        Series<Number, Number> series = new Series<Number, Number>();
+        Series<Number, Number> series = new Series<>();
         series.setName(compound.getName());
         this.getData().add(series);
     }

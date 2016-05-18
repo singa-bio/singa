@@ -5,18 +5,18 @@ import java.math.BigDecimal;
 public class ParameterSampler {
 
     public static UniqueParameterList<Boolean> sample(BooleanParameter parameter) {
-        UniqueParameterList<Boolean> parameterSet = new UniqueParameterList<Boolean>();
-        parameterSet.add(new ParameterValue<Boolean>(parameter, true));
-        parameterSet.add(new ParameterValue<Boolean>(parameter, false));
+        UniqueParameterList<Boolean> parameterSet = new UniqueParameterList<>();
+        parameterSet.add(new ParameterValue<>(parameter, true));
+        parameterSet.add(new ParameterValue<>(parameter, false));
         return parameterSet;
     }
 
     public static UniqueParameterList<Double> sample(DoubleParameter parameter, int numberOfSamples) {
-        UniqueParameterList<Double> parameterSet = new UniqueParameterList<Double>();
+        UniqueParameterList<Double> parameterSet = new UniqueParameterList<>();
         BigDecimal stepSize = calculateStepSize(parameter.getLowerBound(), parameter.getUpperBound(), numberOfSamples);
         BigDecimal nextStep = new BigDecimal(parameter.getLowerBound().toString());
         for (int i = 0; i < numberOfSamples; i++) {
-            parameterSet.add(new ParameterValue<Double>(parameter, nextStep.doubleValue()));
+            parameterSet.add(new ParameterValue<>(parameter, nextStep.doubleValue()));
             nextStep = calculateNextStep(nextStep, stepSize);
         }
         return parameterSet;
@@ -27,11 +27,11 @@ public class ParameterSampler {
             numberOfSamples--;
         }
         numberOfSamples++;
-        UniqueParameterList<Integer> parameterSet = new UniqueParameterList<Integer>();
+        UniqueParameterList<Integer> parameterSet = new UniqueParameterList<>();
         BigDecimal nextStep = new BigDecimal(parameter.getLowerBound().toString());
         BigDecimal stepSize = calculateStepSize(parameter.getLowerBound(), parameter.getUpperBound(), numberOfSamples);
         for (int i = 0; i < numberOfSamples; i++) {
-            parameterSet.add(new ParameterValue<Integer>(parameter, nextStep.intValue()));
+            parameterSet.add(new ParameterValue<>(parameter, nextStep.intValue()));
             nextStep = calculateNextStep(nextStep, stepSize);
         }
         return parameterSet;

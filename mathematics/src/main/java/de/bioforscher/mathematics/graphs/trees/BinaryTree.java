@@ -34,10 +34,7 @@ public class BinaryTree<T> {
     }
 
     public boolean containsNode(T nodeData) {
-        if (findNode(nodeData) != null) {
-            return true;
-        }
-        return false;
+        return findNode(nodeData) != null;
     }
 
     public void appendNodeTo(BinaryTreeNode<T> parentNode, T childData) {
@@ -51,9 +48,9 @@ public class BinaryTree<T> {
                     "Both child nodes of " + parentNode + "are occupied. Unable to append additional child.");
         }
         if (parentNode.getLeft() == null) {
-            parentNode.setLeft(new BinaryTreeNode<T>(childData));
+            parentNode.setLeft(new BinaryTreeNode<>(childData));
         } else {
-            parentNode.setRight(new BinaryTreeNode<T>(childData));
+            parentNode.setRight(new BinaryTreeNode<>(childData));
         }
     }
 

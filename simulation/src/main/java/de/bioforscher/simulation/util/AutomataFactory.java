@@ -11,7 +11,7 @@ import de.bioforscher.simulation.diffusion.RecurrenceDiffusion;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.GraphAutomata;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.reactions.*;
 import tec.units.ri.quantity.Quantities;
 
@@ -38,7 +38,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildFirstOrderReactionExampleAutomata() {
+    public static GraphAutomaton buildFirstOrderReactionExampleAutomata() {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(
@@ -77,7 +77,7 @@ public class AutomataFactory {
         Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automaton
-        GraphAutomata automaton = new GraphAutomata(graph, recurrenceDiffusion);
+        GraphAutomaton automaton = new GraphAutomaton(graph, recurrenceDiffusion);
 
         FirstOrderReaction firstOrderReaction = new FirstOrderReaction.Builder()
                 .addSubstrate(dpo)
@@ -95,7 +95,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildSecondOrderReactionTestAutomata() {
+    public static GraphAutomaton buildSecondOrderReactionTestAutomata() {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(
@@ -128,7 +128,7 @@ public class AutomataFactory {
         Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, recurrenceDiffusion);
+        GraphAutomaton automata = new GraphAutomaton(graph, recurrenceDiffusion);
 
         SecondOrderReaction secondOrderReaction = new SecondOrderReaction.Builder()
                 .addSubstrate(bd)
@@ -146,7 +146,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildEquilibriumReactionTestAutomata() {
+    public static GraphAutomaton buildEquilibriumReactionTestAutomata() {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(
@@ -180,7 +180,7 @@ public class AutomataFactory {
         Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        GraphAutomaton automata = new GraphAutomaton(graph, reccurenceDiffusion);
 
         EquilibriumReaction equilibriumReaction = new EquilibriumReaction.Builder()
                 .addSubstrate(speciesA)
@@ -198,7 +198,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildEnzymeReactionTestAutomata() {
+    public static GraphAutomaton buildEnzymeReactionTestAutomata() {
         // SABIO Entry ID: 28851
         // Kinetic properties of fructose bisphosphate aldolase from Trypanosoma
         // brucei compared to aldolase from rabbit muscle and Staphylococcus
@@ -251,7 +251,7 @@ public class AutomataFactory {
         Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automaton = new GraphAutomata(graph, recurrenceDiffusion);
+        GraphAutomaton automaton = new GraphAutomaton(graph, recurrenceDiffusion);
 
         // Reaction
         EnzymeReaction enzymeReaction = new EnzymeReaction.Builder()
@@ -271,7 +271,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildSmallMoleculeDiffusionTestAutomata(int numberOfNodes, Quantity<Time> timeStep) {
+    public static GraphAutomaton buildSmallMoleculeDiffusionTestAutomata(int numberOfNodes, Quantity<Time> timeStep) {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
@@ -315,17 +315,14 @@ public class AutomataFactory {
 
         // Environment
         EnvironmentFactory.createSmallDiffusionTestEnvironment();
-        BioGraphUtilities.setNodeSpacingToDiameter(EnvironmentalVariables.getInstance().getNodeDistance().multiply(10),
+        EnvironmentalVariables.getInstance().setNodeSpacingToDiameter(EnvironmentalVariables.getInstance().getNodeDistance().multiply(10),
                 numberOfNodes);
         EnvironmentalVariables.getInstance().setTimeStep(timeStep);
 
         // Diffusion model
         Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
-        // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
-
-        return automata;
+        return new GraphAutomaton(graph, reccurenceDiffusion);
     }
 
     /**
@@ -333,8 +330,8 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildDiffusionOptimizationTestAutomata(int numberOfNodes, Quantity<Time> timeStep,
-                                                                       Species species) {
+    public static GraphAutomaton buildDiffusionOptimizationTestAutomata(int numberOfNodes, Quantity<Time> timeStep,
+                                                                        Species species) {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
@@ -359,17 +356,14 @@ public class AutomataFactory {
 
         // Environment
         EnvironmentFactory.createSmallDiffusionTestEnvironment();
-        BioGraphUtilities.setNodeSpacingToDiameter(EnvironmentalVariables.getInstance().getNodeDistance().multiply(10),
+        EnvironmentalVariables.getInstance().setNodeSpacingToDiameter(EnvironmentalVariables.getInstance().getNodeDistance().multiply(10),
                 numberOfNodes);
         EnvironmentalVariables.getInstance().setTimeStep(timeStep);
 
         // Diffusion model
         Diffusion recurrenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
-        // Automata
-        GraphAutomata automata = new GraphAutomata(graph, recurrenceDiffusion);
-
-        return automata;
+        return new GraphAutomaton(graph, recurrenceDiffusion);
     }
 
     /**
@@ -377,7 +371,7 @@ public class AutomataFactory {
      *
      * @return
      */
-    public static GraphAutomata buildNthOrderReactionTestAutomata() {
+    public static GraphAutomaton buildNthOrderReactionTestAutomata() {
 
         // Graph
         AutomatonGraph graph = new AutomatonGraph(1, 1);
@@ -426,7 +420,7 @@ public class AutomataFactory {
         Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
         // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
+        GraphAutomaton automata = new GraphAutomaton(graph, reccurenceDiffusion);
 
         // REACTIONS
 
@@ -466,7 +460,7 @@ public class AutomataFactory {
         return automata;
     }
 
-    public static GraphAutomata buildTreeDiffusionTestAutomata(int depth) {
+    public static GraphAutomaton buildTreeDiffusionTestAutomata(int depth) {
 
         // Graph
         AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(
@@ -490,10 +484,7 @@ public class AutomataFactory {
         // Diffusion model
         Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
 
-        // Automata
-        GraphAutomata automata = new GraphAutomata(graph, reccurenceDiffusion);
-
-        return automata;
+        return new GraphAutomaton(graph, reccurenceDiffusion);
     }
 
 }

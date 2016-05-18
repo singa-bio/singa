@@ -11,7 +11,7 @@ import de.bioforscher.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.simulation.diffusion.Diffusion;
 import de.bioforscher.simulation.diffusion.RecurrenceDiffusion;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.GraphAutomata;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.parser.GraphMLExportService;
 import de.bioforscher.simulation.parser.GraphMLParserService;
 import de.bioforscher.simulation.util.AutomataFactory;
@@ -48,10 +48,10 @@ public class BioGraphSimulation extends Application {
     private SimulationCanvas simulationCanvas;
     private VBox chartContainer;
     private AnchorPane contextAnchor;
-    private Slider concetrationSlider;
+    private Slider concentrationSlider;
 
     private AutomatonGraph graph;
-    private GraphAutomata automata;
+    private GraphAutomaton automata;
     private List<SpeciesObserverChart> charts;
 
     public static void main(String[] args) {
@@ -77,7 +77,7 @@ public class BioGraphSimulation extends Application {
 
         // Stage
         this.stage = stage;
-        this.stage.setTitle("GraphAutomata Simulation");
+        this.stage.setTitle("GraphAutomaton Simulation");
         this.stage.setMinWidth(1200);
         this.stage.setMinHeight(800);
 
@@ -171,7 +171,7 @@ public class BioGraphSimulation extends Application {
         setupConcentrationSlider();
 
         // Add toolbar components
-        toolBar.getItems().addAll(btnSimulate, btnRearrange, this.concetrationSlider);
+        toolBar.getItems().addAll(btnSimulate, btnRearrange, this.concentrationSlider);
 
         // Add Toolbar and Menu
         topContainer.getChildren().addAll(menuBar, toolBar);
@@ -293,20 +293,20 @@ public class BioGraphSimulation extends Application {
     }
 
     public void setupConcentrationSlider() {
-        this.concetrationSlider = new Slider();
-        this.concetrationSlider.setMin(0);
-        this.concetrationSlider.setMax(1);
-        this.concetrationSlider.setValue(1);
-        this.concetrationSlider.setShowTickLabels(true);
-        this.concetrationSlider.setShowTickMarks(true);
-        this.concetrationSlider.setMajorTickUnit(0.5);
-        this.concetrationSlider.setMinorTickCount(4);
+        this.concentrationSlider = new Slider();
+        this.concentrationSlider.setMin(0);
+        this.concentrationSlider.setMax(1);
+        this.concentrationSlider.setValue(1);
+        this.concentrationSlider.setShowTickLabels(true);
+        this.concentrationSlider.setShowTickMarks(true);
+        this.concentrationSlider.setMajorTickUnit(0.5);
+        this.concentrationSlider.setMinorTickCount(4);
     }
 
     public void resetGraph(AutomatonGraph graph) {
         this.graph = graph;
         Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
-        this.automata = new GraphAutomata(graph, reccurenceDiffusion);
+        this.automata = new GraphAutomaton(graph, reccurenceDiffusion);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
         this.simulationCanvas.draw();
@@ -339,12 +339,12 @@ public class BioGraphSimulation extends Application {
         this.contextAnchor = contextAnchor;
     }
 
-    public Slider getConcetrationSlider() {
-        return this.concetrationSlider;
+    public Slider getConcentrationSlider() {
+        return this.concentrationSlider;
     }
 
-    public void setConcetrationSlider(Slider concetrationSlider) {
-        this.concetrationSlider = concetrationSlider;
+    public void setConcentrationSlider(Slider concentrationSlider) {
+        this.concentrationSlider = concentrationSlider;
     }
 
     public AutomatonGraph getGraph() {
@@ -355,11 +355,11 @@ public class BioGraphSimulation extends Application {
         this.graph = graph;
     }
 
-    public GraphAutomata getAutomata() {
+    public GraphAutomaton getAutomata() {
         return this.automata;
     }
 
-    public void setAutomata(GraphAutomata automata) {
+    public void setAutomata(GraphAutomaton automata) {
         this.automata = automata;
     }
 
