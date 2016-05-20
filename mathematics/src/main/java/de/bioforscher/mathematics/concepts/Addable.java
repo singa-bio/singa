@@ -35,7 +35,6 @@ public interface Addable<NumberConcept extends Addable<NumberConcept>> {
      * @param moreSummands The other summands.
      * @return The sum of all Objects.
      */
-    @SafeVarargs
     static <NumberConcept extends Addable<NumberConcept>> NumberConcept sum(NumberConcept firstSummand,
                                                                             NumberConcept... moreSummands) {
         NumberConcept returnValue = firstSummand;

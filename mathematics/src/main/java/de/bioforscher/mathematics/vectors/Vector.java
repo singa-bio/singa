@@ -11,7 +11,7 @@ import de.bioforscher.mathematics.metrics.model.Metrizable;
  * The {@code Vector} interface represents a collection of values where multiple
  * operations are defined.
  * <p>
- * Each implementation is: addable, additively invertible, multipliable,
+ * Each implementation is: addable, subtractable,  additively invertible, multipliable,
  * divisible, and metrizable.
  *
  * @author Christoph Leberecht

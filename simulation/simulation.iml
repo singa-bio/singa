@@ -28,7 +28,6 @@
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-locator:2.4.0-b31" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />
     <orderEntry type="library" name="Maven: uk.ac.ebi.uniprot.kraken:uniprotjapi:2015.11" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.1.6.RELEASE" level="project" />

@@ -6,6 +6,11 @@ import de.bioforscher.mathematics.vectors.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
+ * to store values it provides the fundamental operations of linear algebra. This implementation declares all values
+ * as final.
+ */
 public class RegularMatrix implements Matrix {
 
     private final double[][] elements;
@@ -13,11 +18,26 @@ public class RegularMatrix implements Matrix {
     private final int rowDimension;
     private final int columnDimension;
 
+    /**
+     * Creates a new {@code RegularMatrix} with the given double values. The first index of the double array
+     * represents the row index and the second index represents the column index. <br>
+     * <p>
+     * The following array:
+     * <pre>
+     * {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}} </pre>
+     * result in the matrix:
+     * <pre>
+     * 1.0  2.0  3.0
+     * 4.0  5.0  6.0
+     * 7.0  8.0  9.0 </pre>
+     *
+     * @param values The values of the matrix.
+     */
     public RegularMatrix(double[][] values) {
         this(values, false);
     }
 
-    RegularMatrix(double[][] values, boolean isSymmetric) {
+    protected RegularMatrix(double[][] values, boolean isSymmetric) {
         if (!isSymmetric) {
             if (!RegularMatrix.isWellFormed(values)) {
                 throw new MalformedMatrixException(values);
@@ -26,15 +46,24 @@ public class RegularMatrix implements Matrix {
         } else {
             this.elements = SymmetricMatrix.compactToSymmetricMatrix(values);
         }
-
+        // can only do this because the matrix will be well formed
         this.rowDimension = values.length;
         this.columnDimension = values[0].length;
     }
 
-    public static <MatrixClass extends Matrix> MatrixClass createNewMatrix(double[][] values,
-                                                                           Class<MatrixClass> matrixClass) {
+    /**
+     * Tries to create a new Matrix of the given class with the given values. This method should be used sparingly! Only
+     * matrices can be constructed that provide a double[][] constructor.
+     *
+     * @param values        The values of the matrix.
+     * @param matrixClass   The class of the matrix.
+     * @param <MatrixClass> An implementation of {@link Matrix} that extends the Matrix interface
+     * @return The new matrix.
+     */
+    private static <MatrixClass extends Matrix> MatrixClass createNewMatrix(double[][] values,
+                                                                            Class<MatrixClass> matrixClass) {
         try {
-            return matrixClass.getConstructor(double[][].class).newInstance(values);
+            return matrixClass.getConstructor(double[][].class).newInstance((Object) values);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
@@ -55,6 +84,12 @@ public class RegularMatrix implements Matrix {
         }
     }
 
+    /**
+     * Returns {@code true} if all rows are equal in length and {@code false} otherwise.
+     *
+     * @param potentialValues The potential values of a matrix.
+     * @return {@code true} if all rows are equal in length and {@code false} otherwise.
+     */
     public static boolean isWellFormed(double[][] potentialValues) {
         int requiredLength = potentialValues[0].length;
         for (int rowIndex = 1; rowIndex < potentialValues.length; rowIndex++) {

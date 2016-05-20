@@ -14,12 +14,12 @@ import static org.junit.Assert.*;
 
 public class RegularMatrixTest {
 
-    RegularMatrix squareMatrix;
-    RegularMatrix firstRectangularMatrix;
-    Matrix secondRectangularMatrix;
+    private RegularMatrix squareMatrix;
+    private RegularMatrix firstRectangularMatrix;
+    private Matrix secondRectangularMatrix;
 
-    Matrix fourTimesTwo;
-    Matrix twoTimesThree;
+    private Matrix fourTimesTwo;
+    private Matrix twoTimesThree;
 
     @Before
     public void initialize() {
