@@ -10,6 +10,10 @@ import java.lang.reflect.InvocationTargetException;
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
  * to store values it provides the fundamental operations of linear algebra. This implementation declares all values
  * as final.
+ *
+ * @author Christoph Leberecht
+ * @version 1.1.2
+ * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia: Matrix</a>
  */
 public class RegularMatrix implements Matrix {
 
@@ -42,13 +46,27 @@ public class RegularMatrix implements Matrix {
             if (!RegularMatrix.isWellFormed(values)) {
                 throw new MalformedMatrixException(values);
             }
+            // non symmetric, well formed, possibly rectangular
             this.elements = values;
+            this.rowDimension = values.length;
+            this.columnDimension = values[0].length;
         } else {
-            this.elements = SymmetricMatrix.compactToSymmetricMatrix(values);
+            if (SymmetricMatrix.isCompact(values)) {
+                // symmetric, non well formed, compact
+                this.elements = values;
+            } else {
+                if (!RegularMatrix.isWellFormed(values)) {
+                    throw new MalformedMatrixException(values);
+                }
+                // symmetric, well formed, not compact
+                this.elements = SymmetricMatrix.compactToSymmetricMatrix(values);
+            }
+            // square
+            this.rowDimension = values.length;
+            this.columnDimension = rowDimension;
         }
-        // can only do this because the matrix will be well formed
-        this.rowDimension = values.length;
-        this.columnDimension = values[0].length;
+
+
     }
 
     /**
@@ -255,7 +273,7 @@ public class RegularMatrix implements Matrix {
         for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
             cells[rowIndex] = new String[cols];
             for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
-                cells[rowIndex][columnIndex] = String.format("%.2f", this.elements[rowIndex][columnIndex]);
+                cells[rowIndex][columnIndex] = String.format("%.2f", this.getElement(rowIndex, columnIndex));
             }
         }
 

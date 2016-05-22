@@ -6,6 +6,10 @@ import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
 
 /**
  * The {@code SymmetricMatrix} implementation only stores a the main diagonal and one copy of the symmetric values.
+ *
+ * @author Christoph Leberecht
+ * @version 1.1.0
+ * @see <a href="https://en.wikipedia.org/wiki/Symmetric_matrix">Wikipedia: Symmetric matrix</a>
  */
 public class SymmetricMatrix extends SquareMatrix {
 
@@ -29,8 +33,8 @@ public class SymmetricMatrix extends SquareMatrix {
     }
 
     /**
-     * Returns {@code true} if the potential values are square and symmetric (mirrored at the main diagonal) and
-     * {@code false} otherwise.
+     * Returns {@code true} if the potential values are square and symmetric (mirrored at the main diagonal) and {@code
+     * false} otherwise.
      *
      * @param potentialValues The potential values of a symmetric matrix.
      * @return {@code true} if the potential values are square and symmetric and {@code false} otherwise.
@@ -62,8 +66,8 @@ public class SymmetricMatrix extends SquareMatrix {
     }
 
     /**
-     * Asserts that the given potential values are square and symmetric nd throws an
-     * {@link IncompatibleDimensionsException} otherwise.
+     * Asserts that the given potential values are square and symmetric and throws an {@link
+     * IncompatibleDimensionsException} otherwise.
      *
      * @param potentialValues The potential values of a symmetric matrix.
      * @throws IncompatibleDimensionsException if the given matrix is not square and symmetric.
@@ -72,6 +76,23 @@ public class SymmetricMatrix extends SquareMatrix {
         if (!SymmetricMatrix.isSymmetric(potentialValues)) {
             throw new MalformedMatrixException(potentialValues);
         }
+    }
+
+    /**
+     * Returns {@code true} if the values are already arranged in an jagged array and {@code false} otherwise.
+     *
+     * @param potentialValues The potential values.
+     * @return {@code true} if the values are already arranged in an jagged array and {@code false} otherwise.
+     */
+    public static boolean isCompact(double[][] potentialValues) {
+        int rowLength = 1;
+        for (int rowIndex = 0; rowIndex < potentialValues.length; rowIndex++) {
+            if (potentialValues[rowIndex].length != rowLength) {
+                return false;
+            }
+            rowLength++;
+        }
+        return true;
     }
 
     /**
@@ -114,6 +135,21 @@ public class SymmetricMatrix extends SquareMatrix {
         } else {
             return super.getElement(columnIndex, rowIndex);
         }
+    }
+
+    /**
+     * Returns the complete instead of the compact array of elements.
+     *
+     * @return The complete array of elements.
+     */
+    public double[][] getCompleteElements() {
+        double[][] values = new double[getRowDimension()][getColumnDimension()];
+        for (int rowIndex = 0; rowIndex < this.getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < this.getColumnDimension(); columnIndex++) {
+                values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex);
+            }
+        }
+        return values;
     }
 
     @Override

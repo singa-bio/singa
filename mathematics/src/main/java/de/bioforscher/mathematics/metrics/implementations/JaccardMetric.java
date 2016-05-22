@@ -7,11 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Calculates the distance between two {@code Collection}s, based on a
- * comparison of the the similarity and diversity of both. The Jaccard index is
- * defined as the size of the intersection divided by the size of the union of
- * the sample sets. To infer a metric from the Jaccard index it is neccecary
- * to subtract the Index from 1.
+ * Calculates the distance between two {@code Collection}s, based on a comparison of the the similarity and diversity of
+ * both. The Jaccard index is defined as the size of the intersection divided by the size of the union of the sample
+ * sets. To infer a metric from the Jaccard index it is necessary to subtract the Index from 1.
  *
  * @param <Type> The type of object that is contained in the collection.
  * @author Christoph Leberecht

@@ -183,14 +183,14 @@ public class Scalar implements Vector {
      * The Euclidean distance for one dimension is the absolute difference
      * between their values.
      *
-     * @param vector Another 1D vector.
+     * @param another Another 1D vector.
      * @return The Euclidean distance.
      * @throws IncompatibleDimensionsException if this vector has more than one dimension.
      */
     @Override
-    public double distanceTo(Vector vector) {
-        assertThatDimensionsMatch(vector);
-        return Math.abs(this.subtract(vector).getValue());
+    public double distanceTo(Vector another) {
+        assertThatDimensionsMatch(another);
+        return Math.abs(this.subtract(another).getValue());
     }
 
 }

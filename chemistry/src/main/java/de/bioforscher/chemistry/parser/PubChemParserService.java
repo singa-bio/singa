@@ -35,12 +35,9 @@ public class PubChemParserService extends AbstractXMLParser {
     }
 
     public Species fetchSpecies() {
-
         fetchResource();
         List<Object> list = parseObjects();
-
         return (Species) list.get(0);
-
     }
 
 }

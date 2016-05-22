@@ -4,12 +4,12 @@ import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.implementations.MinkowskiMetric;
 import de.bioforscher.mathematics.metrics.model.Metric;
-import de.bioforscher.mathematics.metrics.model.MetricProvider;
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-import static de.bioforscher.mathematics.metrics.model.MetricProvider.EUCLIDEAN_METRIC;
+import static de.bioforscher.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 
 
@@ -255,14 +255,14 @@ public class RegularVector implements Vector {
      * The Euclidean distance is the "ordinary" (i.e. straight-line) distance
      * between two vectors in Euclidean space.
      *
-     * @param vector Another vector of the same dimension.
+     * @param another Another vector of the same dimension.
      * @return The Euclidean distance.
      * @throws IncompatibleDimensionsException if this vector has another dimension than the given vector.
      * @see MinkowskiMetric
      */
     @Override
-    public double distanceTo(Vector vector) {
-        return EUCLIDEAN_METRIC.calculateDistance(this, vector);
+    public double distanceTo(Vector another) {
+        return EUCLIDEAN_METRIC.calculateDistance(this, another);
     }
 
     /**
@@ -273,7 +273,7 @@ public class RegularVector implements Vector {
      * @param metric The metric to calculate the distance with.
      * @return The distance.
      * @throws IncompatibleDimensionsException if this vector has another dimension than the given vector.
-     * @see MetricProvider
+     * @see VectorMetricProvider
      */
     public double distanceTo(Vector vector, Metric<Vector> metric) {
         return metric.calculateDistance(this, vector);

@@ -5,13 +5,12 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SymmetricMatrixTest {
 
-    SymmetricMatrix trueSymmetricMatrix;
-    Matrix testSymmetricMatrix;
+    private SymmetricMatrix trueSymmetricMatrix;
+    private Matrix testSymmetricMatrix;
 
     @Before
     public void initialize() {
@@ -21,11 +20,18 @@ public class SymmetricMatrixTest {
     }
 
     @Test
-    public void shouldInstantiateSymmetricMatrix() {
+    public void shouldInstantiateWithoutCompactValues() {
         double[][] values = {{1.0, 2.0, 3.0}, {2.0, 4.0, 5.0}, {3.0, 5.0, 8.0}};
         Matrix expected = new SymmetricMatrix(values);
-        assertTrue(
-                Arrays.deepEquals(new double[][]{{1.0}, {2.0, 4.0}, {3.0, 5.0, 8.0}}, expected.getElements()));
+        assertTrue(Arrays.deepEquals(new double[][]{{1.0}, {2.0, 4.0}, {3.0, 5.0, 8.0}}, expected.getElements()));
+    }
+
+    @Test
+    public void shouldInstantiateWithCompactValues() {
+        double[][] correctlyJaggedArray = new double[][]{{1.0}, {2.0, 5.0}, {3.0, 6.0, 9.0}};
+        Matrix expected = new SymmetricMatrix(correctlyJaggedArray);
+        assertTrue(Arrays.deepEquals(new double[][]{{1.0}, {2.0, 5.0}, {3.0, 6.0, 9.0}}, expected.getElements()));
+
     }
 
     @Test
@@ -35,10 +41,18 @@ public class SymmetricMatrixTest {
     }
 
     @Test
-    public void shouldgetRightElements() {
+    public void shouldGetRightElements() {
         assertEquals(3.0, this.trueSymmetricMatrix.getElement(0, 2), 0.0);
         assertEquals(3.0, this.trueSymmetricMatrix.getElement(2, 0), 0.0);
         assertEquals(4.0, this.trueSymmetricMatrix.getElement(1, 1), 0.0);
+    }
+
+    @Test
+    public void shouldCheckForCompactArrays() {
+        double[][] correctlyJaggedArray = new double[][]{{1.0}, {2.0, 5.0}, {3.0, 6.0, 9.0}};
+        assertTrue(SymmetricMatrix.isCompact(correctlyJaggedArray));
+        double[][] inCorrectlyJaggedArray = new double[][]{{1.0}, {2.0, 5.0, 6.0}, {3.0, 6.0, 9.0}};
+        assertFalse(SymmetricMatrix.isCompact(inCorrectlyJaggedArray));
     }
 
     @Test

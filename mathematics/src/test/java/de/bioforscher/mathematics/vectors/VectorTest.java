@@ -2,7 +2,7 @@ package de.bioforscher.mathematics.vectors;
 
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
-import de.bioforscher.mathematics.metrics.model.MetricProvider;
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,7 +70,7 @@ public class VectorTest {
 
     @Test
     public void testDistanceCalculationWithDifferentMetic() {
-        double actual = this.first2DVector.distanceTo(this.second2DVector, MetricProvider.MANHATTAN_METRIC);
+        double actual = this.first2DVector.distanceTo(this.second2DVector, VectorMetricProvider.MANHATTAN_METRIC);
         assertEquals(35.0, actual, 0.0);
     }
 
