@@ -132,9 +132,11 @@ public class AutomataFactory {
 
         SecondOrderReaction secondOrderReaction = new SecondOrderReaction.Builder()
                 .addSubstrate(bd)
-                .addSubstrate(bd)
+                .addSubstrate(bd) // TODO requires at least two substrates by design - maybe change
                 .addProduct(ot)
-                .rateConstant(Quantities.getQuantity(0.0614, PER_SECOND))
+                .rateConstant(Quantities.getQuantity(0.614, PER_SECOND))
+                .addOrder(bd, 1)
+                .addOrder(ot, 1)
                 .build();
         automata.addReaction(secondOrderReaction, false);
 
@@ -375,7 +377,9 @@ public class AutomataFactory {
 
         // Graph
         AutomatonGraph graph = new AutomatonGraph(1, 1);
-        graph.addNode(new BioNode(0));
+        BioNode node = new BioNode(0);
+        node.setPosition(new Vector2D(10, 10));
+        graph.addNode(node);
 
         ChEBIParserService chebiService = new ChEBIParserService();
 

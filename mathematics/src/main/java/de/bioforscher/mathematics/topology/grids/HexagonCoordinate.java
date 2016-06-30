@@ -41,9 +41,8 @@ public class HexagonCoordinate {
 
     @Override
     public int hashCode() {
-        // curtesy :
+        // courtesy :
         // http://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
-        // has to be optimized
         long A = (long) (this.q >= 0 ? 2 * this.q : -2 * this.q - 1);
         long B = (long) (this.r >= 0 ? 2 * this.r : -2 * this.r - 1);
         int C = (int) ((A >= B ? A * A + A + B : A + B * B) / 2);
@@ -62,10 +61,7 @@ public class HexagonCoordinate {
             return false;
         }
         HexagonCoordinate other = (HexagonCoordinate) obj;
-        if (this.q != other.q) {
-            return false;
-        }
-        return this.r == other.r;
+        return this.q == other.q && this.r == other.r;
     }
 
     @Override

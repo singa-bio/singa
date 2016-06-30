@@ -15,11 +15,10 @@ import de.bioforscher.mathematics.vectors.Vector2D;
 public class GraphFactory {
 
     /**
-     * Generates a linear graph with the given number of nodes. Each node will
-     * be connected to its predecessor.
+     * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
      *
      * @param numberOfNodes The number of nodes the graph should contain.
-     * @param boundingBox   A bounding box where the nodes should be positioned.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -34,11 +33,11 @@ public class GraphFactory {
     }
 
     /**
-     * Generates a circular Graph with the given number of nodes. Each node will
-     * be connected to its predecessor and successor.
+     * Generates a circular Graph with the given number of nodes. Each node will be connected to its predecessor and
+     * successor.
      *
      * @param numberOfNodes The number of nodes the circle should contain.
-     * @param boundingBox   A bounding box where the nodes should be positioned.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A circular graph.
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -48,11 +47,10 @@ public class GraphFactory {
     }
 
     /**
-     * Generates a graph with a tree-like structure, where every node is
-     * connected to one predecessor and two successors, thus forming a fractal
-     * structure.
+     * Generates a graph with a tree-like structure, where every node is connected to one predecessor and two
+     * successors, thus forming a fractal structure.
      *
-     * @param depth       The depth of the tree.
+     * @param depth The depth of the tree.
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A tree-like graph.
      */
@@ -69,18 +67,17 @@ public class GraphFactory {
     }
 
     /**
-     * A private method used to grow the tree-like graph structure. The given
-     * graph will be modified!
+     * A private method used to grow the tree-like graph structure. The given graph will be modified!
      *
-     * @param depth       The current depth.
-     * @param graph       The graph to add the new node.
+     * @param depth The current depth.
+     * @param graph The graph to add the new node.
      * @param predecessor The previously added node.
      * @param boundingBox A bounding box where the nodes should be positioned.
      */
     private static void growTree(int depth, UndirectedGraph graph, RegularNode predecessor, Rectangle boundingBox) {
         int next = graph.getNextNodeIdentifier();
         graph.addNode(
-                NodeFactory.createRandomlyPlacedNode(next, new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0))));
+                NodeFactory.createRandomlyPlacedNode(next, boundingBox));
         graph.connect(graph.getNextEdgeIdentifier(), predecessor, graph.getNode(next));
         if (depth > 0) {
             growTree(depth - 1, graph, graph.getNode(next), boundingBox);
@@ -91,12 +88,12 @@ public class GraphFactory {
     /**
      * Generates a randomised graph based on the Erdös - Renyi model.
      *
-     * @param numberOfNodes   The number of nodes the graph should contain.
-     * @param edgePropability The propablility, that two nodes will be connected.
-     * @param boundingBox     A bounding box where the nodes should be positioned.
+     * @param numberOfNodes The number of nodes the graph should contain.
+     * @param edgeProbability The probability, that two nodes will be connected.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A randomized graph.
      */
-    public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgePropability, Rectangle boundingBox) {
+    public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
         UndirectedGraph graph = new UndirectedGraph(numberOfNodes, numberOfNodes);
         for (int i = 0; i < numberOfNodes; i++) {
             graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
@@ -105,7 +102,7 @@ public class GraphFactory {
         for (RegularNode source : graph.getNodes()) {
             for (RegularNode target : graph.getNodes()) {
                 if (!source.equals(target)) {
-                    if (Math.random() < edgePropability) {
+                    if (Math.random() < edgeProbability) {
                         graph.connect(j, source, target);
                         j++;
                     }
@@ -119,10 +116,10 @@ public class GraphFactory {
      * Generates a grid graph with columns and rows.
      *
      * @param boundingBox Rectangle where the Graph is positioned.
-     * @param columns     The Number of columns
-     * @param rows        The Number of rows
-     * @param periodic    Applies periodic boundary condition, if {@code true}.
-     * @return
+     * @param columns The Number of columns
+     * @param rows The Number of rows
+     * @param periodic Applies periodic boundary condition, if {@code true}.
+     * @return A rectangular grid graph.
      */
     public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
 

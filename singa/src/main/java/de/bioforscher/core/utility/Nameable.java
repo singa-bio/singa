@@ -1,4 +1,4 @@
-package de.bioforscher.core.parameters;
+package de.bioforscher.core.utility;
 
 /**
  * The Nameable interface defines an Object that has a useful name attached to

@@ -2,7 +2,7 @@ package de.bioforscher.chemistry.descriptive;
 
 import de.bioforscher.core.identifier.model.Identifiable;
 import de.bioforscher.core.identifier.model.Identifier;
-import de.bioforscher.core.parameters.Nameable;
+import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.units.quantities.MolarMass;
 import tec.units.ri.quantity.Quantities;
 

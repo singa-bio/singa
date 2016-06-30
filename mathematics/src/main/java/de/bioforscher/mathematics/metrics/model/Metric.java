@@ -19,7 +19,7 @@ public interface Metric<Type> {
      * Calculates the distance between both Objects. The order of the input does not matter as every metric is
      * symmetric.
      *
-     * @param first  The first object.
+     * @param first The first object.
      * @param second The first2DVector object.
      * @return Their distance.
      */
@@ -30,7 +30,7 @@ public interface Metric<Type> {
      * indices of the list are preserved (the distance from the first to the second element in the list can be retrieved
      * with {@code getElement(0,1)} or {@code getElement(1,0)}).
      *
-     * @param list      The list of elements.
+     * @param list The list of elements.
      * @param <SubType> The type or a subtype of this Metric type.
      * @return A {@link SymmetricMatrix} (in this case called distance matrix) with the pairwise distances.
      * @see <a href="https://en.wikipedia.org/wiki/Distance_matrix">Wikipedia: Distance matrix</a>

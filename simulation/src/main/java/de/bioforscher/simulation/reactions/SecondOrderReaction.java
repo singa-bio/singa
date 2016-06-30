@@ -29,10 +29,12 @@ public class SecondOrderReaction extends Reaction {
     }
 
     private void initializeRateConstant(Quantity<ReactionRate> rateConstant) {
-        if (getSubstrates().get(0).equals(getSubstrates().get(1))) {
-            this.rateConstant = rateConstant.multiply(0.5);
-        } else {
-            this.rateConstant = rateConstant;
+        if (getSubstrates().size() > 1) {
+            if (getSubstrates().get(0).equals(getSubstrates().get(1))) {
+                this.rateConstant = rateConstant.multiply(0.5);
+            } else {
+                this.rateConstant = rateConstant;
+            }
         }
     }
 
@@ -55,6 +57,7 @@ public class SecondOrderReaction extends Reaction {
     @Override
     public void updateConcentrations(BioNode node) {
         calculateVelocity(node);
+        System.out.println(getCurrentVelocity());
         limitReactionRate(node);
         decreaseSubstrates(node);
         increaseProducts(node);
@@ -69,7 +72,7 @@ public class SecondOrderReaction extends Reaction {
         double substrateBConcentration = node.getConcentration(substrateB).getValue().doubleValue();
 
         // transform rate to given unit
-        Quantity<ReactionRate> currentReactionRare = UnitScaler.rescaleReactionRate(this.rateConstant,
+        Quantity<ReactionRate> currentReactionRate = UnitScaler.rescaleReactionRate(this.rateConstant,
                 EnvironmentalVariables.getInstance().getTimeStep());
 
         double reactionOrderA = this.orders.get(substrateA);
@@ -77,7 +80,7 @@ public class SecondOrderReaction extends Reaction {
 
         // calculate velocity v = k * A^a * B^b
         setCurrentVelocity(Math.pow(substrateAConcentration, reactionOrderA)
-                * Math.pow(substrateBConcentration, reactionOrderB) * currentReactionRare.getValue().doubleValue());
+                * Math.pow(substrateBConcentration, reactionOrderB) * currentReactionRate.getValue().doubleValue());
     }
 
 

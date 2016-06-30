@@ -1,14 +1,14 @@
 package de.bioforscher.mathematics.graphs.model;
 
+import de.bioforscher.mathematics.vectors.Vector2D;
+
 /**
  * The graph class contains {@link Node}s connected by {@link Edge}s.
  *
- * @param <NodeType> The type of node.
- * @param <EdgeType> The type of edge.
  * @author Christoph Leberecht
  * @version 1.0.1
  */
-public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge> {
+public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, Vector2D> {
 
     public UndirectedGraph() {
 

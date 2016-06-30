@@ -13,8 +13,8 @@ import org.xml.sax.SAXException;
 class PubChemContentHandler implements ContentHandler {
 
     // species attributes
-    private ChEBIIdentifier chebiiIdentifier;
-    private String pubchemIdentifier;
+    private ChEBIIdentifier chebiIdentifier;
+    private String pubChemIdentifier;
     private String name;
     private String smilesRepresentation;
     private double molarMass;
@@ -44,9 +44,9 @@ class PubChemContentHandler implements ContentHandler {
 
     public Species getSpecies() {
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
-                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier(this.pubchemIdentifier));
+                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier(this.pubChemIdentifier));
 
-        return new Species.Builder(chebiiIdentifier)
+        return new Species.Builder(chebiIdentifier)
                 .name(this.name)
                 .molarMass(this.molarMass)
                 .smilesRepresentation(this.smilesRepresentation)
@@ -62,7 +62,7 @@ class PubChemContentHandler implements ContentHandler {
         switch (currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
-                this.pubchemIdentifier = new String(ch, start, length);
+                this.pubChemIdentifier = new String(ch, start, length);
                 break;
             }
             case "TOCHeading": {
@@ -102,7 +102,7 @@ class PubChemContentHandler implements ContentHandler {
                     String potentialChebiIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialChebiIdentifier).matches()) {
                         // set chebi identifier
-                        this.chebiiIdentifier = new ChEBIIdentifier(potentialChebiIdentifier);
+                        this.chebiIdentifier = new ChEBIIdentifier(potentialChebiIdentifier);
                         this.inSynonyms = false;
                         this.inSynonymsInformation = false;
                     }

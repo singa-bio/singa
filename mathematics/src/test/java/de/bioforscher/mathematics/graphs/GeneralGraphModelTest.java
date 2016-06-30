@@ -6,6 +6,8 @@ import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.graphs.util.NodeFactory;
+import de.bioforscher.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.mathematics.vectors.Vector2D;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class GeneralGraphModelTest {
 
-    Rectangle boundingBox;
+    private Rectangle boundingBox;
 
     @Before
     public void initialize() {
@@ -58,6 +60,13 @@ public class GeneralGraphModelTest {
         for (UndirectedEdge edge : linearGraph.getEdges()) {
             assertFalse(edge.containsNode(unexpectedNodeIdentifier));
         }
+    }
+
+    @Test
+    public void shouldConvertCoordinateToIdentifier() {
+        RectangularGridCoordinateConverter rgc = new RectangularGridCoordinateConverter(7, 7);
+        assertEquals(26, rgc.convert(new Vector2D(3, 5)));
+        assertArrayEquals(new Vector2D(3, 5).getElements(), rgc.convert(26).getElements(), 0.0);
     }
 
 }

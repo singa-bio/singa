@@ -4,7 +4,8 @@ import de.bioforscher.mathematics.vectors.Vector;
 
 import java.util.*;
 
-public abstract class AbstractGraph<NodeType extends Node<NodeType, ? extends Vector>, EdgeType extends Edge<NodeType>>
+public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>, EdgeType extends
+        Edge<NodeType>, VectorType extends Vector>
         implements Graph<NodeType, EdgeType> {
 
     /**
@@ -126,13 +127,15 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, ? extends Ve
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        edge.setIdentifier(identifier);
-        edge.setSource(source);
-        edge.setTarget(target);
+        assert edge != null;
         connectWithEdge(identifier, source, target, edge);
     }
 
-    protected void connectWithEdge(int identifier, NodeType source, NodeType target, EdgeType edge) {
+    protected void connectWithEdge(int identifier, NodeType source, NodeType target, EdgeType
+            edge) {
+        edge.setIdentifier(identifier);
+        edge.setSource(source);
+        edge.setTarget(target);
         this.edges.put(identifier, edge);
         source.addNeighbour(target);
         target.addNeighbour(source);

@@ -2,8 +2,8 @@ package de.bioforscher.mathematics.vectors;
 
 /**
  * The {@code Vector3D} class handles the general properties and operations of
- * two dimensional vectors. Basically this is an regular vector with the
- * constraint, that it can only contain three values. This fascade can be used
+ * three dimensional vectors. Basically this is an regular vector with the
+ * constraint, that it can only contain three values. This facade can be used
  * to handle three dimensional vectors without dimensional violations.
  * Additionally it is able to perform operations that are solely defined for 3D
  * vectors.
@@ -19,7 +19,7 @@ public class Vector3D extends RegularVector {
     public static final int X_INDEX = 0;
 
     /**
-     * The index of the y (first2DVector) element or coordinate.
+     * The index of the y (second) element or coordinate.
      */
     public static final int Y_INDEX = 1;
 
@@ -151,7 +151,7 @@ public class Vector3D extends RegularVector {
      * @param vector Another 3D vector.
      * @return The subtraction.
      */
-    public Vector3D substract(Vector3D vector) {
+    public Vector3D subtract(Vector3D vector) {
         return createNewVector(super.subtract(vector).getElements(), this.getClass());
     }
 

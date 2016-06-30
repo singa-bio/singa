@@ -33,6 +33,11 @@ public class Scalar implements Vector {
         return this.value;
     }
 
+    @Override
+    public <V extends Vector> V as(Class<V> matrixClass) {
+        return null;
+    }
+
     /**
      * Returns the value of this vector.
      * <p>

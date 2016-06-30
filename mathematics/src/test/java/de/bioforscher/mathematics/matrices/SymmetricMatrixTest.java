@@ -76,4 +76,13 @@ public class SymmetricMatrixTest {
         assertTrue(Arrays.deepEquals(actual.getElements(), expected.getElements()));
     }
 
+    @Test
+    public void shouldRetrieveValueForLabel() {
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        lsm.setRowLabel("L1", 0);
+        lsm.setRowLabel("L2", 1);
+        lsm.setRowLabel("L3", 2);
+        assertEquals(3.0, lsm.getValueForLabel("L1", "L3"), 0.0);
+    }
+
 }

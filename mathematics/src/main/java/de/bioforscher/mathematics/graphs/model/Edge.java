@@ -1,6 +1,6 @@
 package de.bioforscher.mathematics.graphs.model;
 
-public interface Edge<NodeType extends Node<?, ?>> {
+public interface Edge<NodeType extends Node<NodeType, ?>> {
 
     int getIdentifier();
 

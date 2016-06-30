@@ -19,6 +19,8 @@ import de.bioforscher.mathematics.metrics.model.Metrizable;
  */
 public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector> {
 
+    <V extends Vector> V as(Class<V> matrixClass);
+
     /**
      * Returns an element of this vector.
      *

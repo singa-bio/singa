@@ -12,11 +12,9 @@ import java.util.Arrays;
 import static de.bioforscher.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 
-
 /**
- * The {@code RegularVector} class handles the general properties and operations
- * of vectors. A vector is a composition of elements (double values) that
- * specify the position of a point in a multidimensional topology.
+ * The {@code RegularVector} class handles the general properties and operations of vectors. A vector is a composition
+ * of elements (double values) that specify the position of a point in a multidimensional topology.
  *
  * @author Christoph Leberecht
  * @version 2.0.1
@@ -37,16 +35,15 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * A factory method for the creation of a new specific vector. This method
-     * can be used when the dimensionality of the resulting vector is known in
-     * advance.
+     * A factory method for the creation of a new specific vector. This method can be used when the dimensionality of
+     * the resulting vector is known in advance.
      *
-     * @param elements  The elements of this vector.
+     * @param elements The elements of this vector.
      * @param typeClass The class of the resulting vector.
      * @return A new vector with the specified class and values.
      */
-    public static <VectorDimension extends RegularVector> VectorDimension createNewVector(double[] elements,
-                                                                                          Class<VectorDimension>
+    public static <VectorDimension extends Vector> VectorDimension createNewVector(double[] elements,
+                                                                                   Class<VectorDimension>
                                                                                                   typeClass) {
         try {
             return typeClass.getConstructor(double[].class).newInstance(elements);
@@ -57,10 +54,10 @@ public class RegularVector implements Vector {
         }
     }
 
-    public <VectorClass extends RegularVector> VectorClass as(Class<VectorClass> vectorClass) {
-        if (Vector2D.isVector2D(this) && vectorClass.getSimpleName().equals("Vector2D")) {
+    public <VectorClass extends Vector> VectorClass as(Class<VectorClass> vectorClass) {
+        if (Vector2D.isVector2D(this) && vectorClass.equals(Vector2D.class)) {
             return createNewVector(this.getElements(), vectorClass);
-        } else if (Vector3D.isVector3D(this) && vectorClass.getSimpleName().equals("Vector3D")) {
+        } else if (Vector3D.isVector3D(this) && vectorClass.equals(Vector3D.class)) {
             return createNewVector(this.getElements(), vectorClass);
         }
         return null;
@@ -92,12 +89,10 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * Determines whether this vector has the same dimension as the given
-     * vector.
+     * Determines whether this vector has the same dimension as the given vector.
      *
      * @param vector Another vector.
-     * @return {@code true} if, and only if this vector has the same dimension
-     * as the given vector.
+     * @return {@code true} if, and only if this vector has the same dimension as the given vector.
      */
     @Override
     public boolean hasSameDimensions(Vector vector) {
@@ -105,9 +100,8 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * The addition is an algebraic operation that returns a new vector where
-     * each element of this vector is added to the corresponding element in the
-     * given vector.
+     * The addition is an algebraic operation that returns a new vector where each element of this vector is added to
+     * the corresponding element in the given vector.
      *
      * @param summand Another vector of the same dimension.
      * @return The addition.
@@ -156,9 +150,8 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * The element-wise multiplication is an algebraic operation that returns a
-     * new vector where each element of the calling vector is multiplied by the
-     * corresponding element of the called vector.
+     * The element-wise multiplication is an algebraic operation that returns a new vector where each element of the
+     * calling vector is multiplied by the corresponding element of the called vector.
      *
      * @param multiplicand Another vector of the same dimension.
      * @return The element-wise multiplication.
@@ -184,9 +177,8 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * The element-wise division is an algebraic operation that returns a new
-     * vector where each element of the calling vector is divided by the
-     * corresponding element of the called vector.
+     * The element-wise division is an algebraic operation that returns a new vector where each element of the calling
+     * vector is divided by the corresponding element of the called vector.
      *
      * @param divisor Another vector of the same dimension.
      * @return The element-wise division.
@@ -249,11 +241,9 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * This method calculates the Eucledian distance between this vector and the
-     * given vector.
+     * This method calculates the Eucledian distance between this vector and the given vector.
      * <p>
-     * The Euclidean distance is the "ordinary" (i.e. straight-line) distance
-     * between two vectors in Euclidean space.
+     * The Euclidean distance is the "ordinary" (i.e. straight-line) distance between two vectors in Euclidean space.
      *
      * @param another Another vector of the same dimension.
      * @return The Euclidean distance.
@@ -266,8 +256,7 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * This method calculates the distance between this vector and the given
-     * vector with the given metric.
+     * This method calculates the distance between this vector and the given vector with the given metric.
      *
      * @param vector Another vector of the same dimension.
      * @param metric The metric to calculate the distance with.
@@ -306,8 +295,8 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * Returns the string representation of this Vector. The string consists of
-     * the dimensionality and the actual coordinates of the vector.
+     * Returns the string representation of this Vector. The string consists of the dimensionality and the actual
+     * coordinates of the vector.
      */
     @Override
     public String toString() {

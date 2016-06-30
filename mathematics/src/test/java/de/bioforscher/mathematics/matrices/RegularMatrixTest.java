@@ -103,8 +103,7 @@ public class RegularMatrixTest {
 
     @Test
     public void testSummation() {
-        Matrix addition = Addable.sum(this.firstRectangularMatrix, this.firstRectangularMatrix,
-                this.firstRectangularMatrix);
+        Matrix addition = Addable.sum(Arrays.asList(firstRectangularMatrix, firstRectangularMatrix, firstRectangularMatrix));
         assertTrue(Arrays.deepEquals(new double[][]{{3.0, 6.0}, {9.0, 12.0}, {15.0, 18.0}},
                 addition.getElements()));
     }

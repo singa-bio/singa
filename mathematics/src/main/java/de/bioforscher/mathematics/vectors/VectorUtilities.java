@@ -1,7 +1,9 @@
 package de.bioforscher.mathematics.vectors;
 
+import de.bioforscher.mathematics.concepts.Addable;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -35,6 +37,13 @@ public class VectorUtilities {
         return new Vector2D(x, y);
     }
 
+    /**
+     * Compares all values of the given index for all given vectors and returns the largest value found.
+     *
+     * @param index The index of the value, that is to be compared.
+     * @param vectors A collection of Vectors.
+     * @return The maximal value of the given index.
+     */
     public static double getMaximalValueForIndex(int index, Vector... vectors) {
         double maximalValue = -Double.MAX_VALUE;
         for (Vector vector : vectors) {
@@ -45,6 +54,12 @@ public class VectorUtilities {
         return maximalValue;
     }
 
+    /**
+     * Compares all values of the given index for all given vectors and returns the smallest value found.
+     * @param index The index of the value, that is to be compared.
+     * @param vectors A collection of Vectors.
+     * @return The minimal value of the given index.
+     */
     public static double getMinimalValueForIndex(int index, Vector... vectors) {
         double minimalValue = Double.MAX_VALUE;
         for (Vector vector : vectors) {
@@ -53,6 +68,10 @@ public class VectorUtilities {
             }
         }
         return minimalValue;
+    }
+
+    public static Vector getCentroid(Collection<Vector> vectors) {
+        return Addable.sum(vectors).divide(vectors.size());
     }
 
 }

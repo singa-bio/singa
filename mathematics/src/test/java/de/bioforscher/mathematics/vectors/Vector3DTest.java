@@ -39,7 +39,7 @@ public class Vector3DTest {
 
     @Test
     public void substract3DVectors() {
-        Vector3D substraction = first.substract(second);
+        Vector3D substraction = first.subtract(second);
         assertArrayEquals(new double[]{-5.0, -5.0, -5.0}, substraction.getElements(), 0.0);
     }
 
@@ -91,5 +91,6 @@ public class Vector3DTest {
         assertArrayEquals(new double[]{1 / Math.sqrt(14.0), Math.sqrt(2.0 / 7.0), 3 / Math.sqrt(14.0)}, normalization.getElements(), 1e-15);
         assertEquals(1.0, normalization.getMagnitude(), 1e-15);
     }
+
 
 }
