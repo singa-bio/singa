@@ -63,7 +63,6 @@ public class SecondOrderReaction extends Reaction {
         increaseProducts(node);
     }
 
-    @Override
     public void calculateVelocity(BioNode node) {
         ChemicalEntity substrateA = getSubstrates().get(0);
         ChemicalEntity substrateB = getSubstrates().get(1);

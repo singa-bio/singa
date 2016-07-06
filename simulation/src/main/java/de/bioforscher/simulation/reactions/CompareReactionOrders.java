@@ -56,7 +56,6 @@ public class CompareReactionOrders {
         System.out.println(nodeFirst.getConcentration(nitricOxide));
         System.out.println(nodeFirst.getConcentration(diOxygen));
 
-
     }
 
 

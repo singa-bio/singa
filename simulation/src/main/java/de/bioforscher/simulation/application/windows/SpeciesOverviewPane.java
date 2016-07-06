@@ -4,7 +4,6 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.components.SpeciesCard;
-import de.bioforscher.simulation.model.ImmediateUpdate;
 import de.bioforscher.simulation.reactions.Reaction;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -116,8 +115,7 @@ public class SpeciesOverviewPane extends BorderPane {
 
     private void fillTreeGroupedByReaction() {
         this.rootItem.getChildren().clear();
-        for (ImmediateUpdate update : this.owner.getAutomata().getImmediateUpdates()) {
-            Reaction reaction = (Reaction) update;
+        for (Reaction reaction : this.owner.getAutomata().getReactions()) {
             TreeItem<String> reactionItem = createReactionTreeItem(reaction.getReactionString());
             this.rootItem.getChildren().add(reactionItem);
             for (ChemicalEntity entity : reaction.getSubstrates()) {

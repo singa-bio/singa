@@ -61,7 +61,6 @@ public class EpochUpdateWriter implements UpdateEventListener<NextEpochEvent> {
         writeHeader(node);
     }
 
-
     private void createFolderStructure() {
         Path workspacefolder = Paths.get(this.workspacePath.toString(), this.folder.toString());
         try {

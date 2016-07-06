@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.diffusion;
+package de.bioforscher.simulation.model.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;

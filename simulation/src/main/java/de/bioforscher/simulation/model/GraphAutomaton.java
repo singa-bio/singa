@@ -3,18 +3,16 @@ package de.bioforscher.simulation.model;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.diffusion.Diffusion;
-import de.bioforscher.simulation.diffusion.RecurrenceDiffusion;
+import de.bioforscher.simulation.model.awesome.modules.diffusion.FreeDiffusion;
+import de.bioforscher.simulation.model.deprecated.Diffusion;
+import de.bioforscher.simulation.model.deprecated.RecurrenceDiffusion;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import de.bioforscher.simulation.reactions.EnzymeReaction;
 import de.bioforscher.simulation.reactions.Reaction;
 import de.bioforscher.simulation.util.BioGraphUtilities;
-import de.bioforscher.units.quantities.MolarConcentration;
 
-import javax.measure.Quantity;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -27,9 +25,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
 
     private AutomatonGraph graph;
-    private Diffusion diffusion;
+    private FreeDiffusion diffusion;
 
-    private List<ImmediateUpdate> immediateUpdates;
+    private List<Reaction> reactions;
     private Map<String, ChemicalEntity> species;
 
     private CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> listeners;
@@ -44,8 +42,8 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
 
     public GraphAutomaton(AutomatonGraph graph, Diffusion diffusion) {
         this.graph = graph;
-        this.diffusion = diffusion;
-        this.immediateUpdates = new ArrayList<>();
+        this.diffusion = new FreeDiffusion();
+        this.reactions = new ArrayList<>();
         this.listeners = new CopyOnWriteArrayList<>();
         initializeChemicalEntitiesFromGraph(this.graph);
         initialize();
@@ -102,7 +100,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
      *                            with a concentration of 0 mol/l.
      */
     public void addReaction(Reaction reaction, boolean resetConcentrations) {
-        this.immediateUpdates.add(reaction);
+        this.reactions.add(reaction);
         if (resetConcentrations) {
             for (BioNode node : this.graph.getNodes()) {
                 if (reaction.getClass().equals(EnzymeReaction.class)) {
@@ -127,10 +125,6 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
                 }
             }
         }
-        if (this.diffusion.getClass().equals(RecurrenceDiffusion.class)) {
-            ((RecurrenceDiffusion) this.diffusion)
-                    .initializeDiffusionCoefficients(BioGraphUtilities.generateMapOfEntities(this.graph));
-        }
     }
 
     /**
@@ -140,27 +134,17 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
      */
     public AutomatonGraph next() {
 
-        // HelperMap
-        Map<Integer, Map<ChemicalEntity, Quantity<MolarConcentration>>> nextConcentrations = new HashMap<>();
-
-        // diffusion
-        for (BioNode node : this.graph.getNodes()) {
-            if (node.isObserved()) {
-                emitNextEpochEvent(node);
-            }
-            if (!node.isSource()) {
-                nextConcentrations.put(node.getIdentifier(), this.diffusion.calculateConcentration(node));
-            } else {
-                nextConcentrations.put(node.getIdentifier(), node.getConcentrations());
-            }
-        }
+        this.diffusion.applyTo(this.graph);
 
         // update
         for (BioNode node : this.graph.getNodes()) {
-            node.setConcentrations(nextConcentrations.get(node.getIdentifier()));
-            // apply immediate updates
-            for (ImmediateUpdate update : this.immediateUpdates) {
-                update.updateConcentrations(node);
+            //    node.setConcentrations(nextConcentrations.get(node.getIdentifier()));
+            // applyTo immediate updates
+            for (Reaction reaction : this.reactions) {
+                reaction.updateConcentrations(node);
+            }
+            if (node.isObserved()) {
+                emitNextEpochEvent(node);
             }
         }
 
@@ -175,8 +159,8 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     }
 
 
-    public List<ImmediateUpdate> getImmediateUpdates() {
-        return this.immediateUpdates;
+    public List<Reaction> getReactions() {
+        return this.reactions;
     }
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> getListeners() {
@@ -184,7 +168,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     }
 
     public Map<String, ChemicalEntity> getSpecies() {
-        return species;
+        return this.species;
     }
 
     public void setSpecies(Map<String, ChemicalEntity> species) {

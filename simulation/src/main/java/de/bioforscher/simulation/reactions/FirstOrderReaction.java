@@ -45,7 +45,6 @@ public class FirstOrderReaction extends Reaction {
         increaseProducts(node);
     }
 
-    @Override
     public void calculateVelocity(BioNode node) {
         // get substrate
         // TODO improve this

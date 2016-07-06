@@ -2,7 +2,6 @@ package de.bioforscher.simulation.reactions;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.ImmediateUpdate;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
@@ -15,7 +14,7 @@ import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
  *
  * @author Christoph Leberecht
  */
-public abstract class Reaction implements ImmediateUpdate {
+public abstract class Reaction {
 
     private List<ChemicalEntity> substrates;
     private List<ChemicalEntity> products;
@@ -28,7 +27,6 @@ public abstract class Reaction implements ImmediateUpdate {
         this.stoichiometricCoefficients = new HashMap<>();
     }
 
-    @Override
     public abstract void updateConcentrations(BioNode node);
 
     public List<ChemicalEntity> getSubstrates() {

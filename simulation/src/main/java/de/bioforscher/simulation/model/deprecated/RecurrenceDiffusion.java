@@ -1,7 +1,8 @@
-package de.bioforscher.simulation.diffusion;
+package de.bioforscher.simulation.model.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.awesome.modules.diffusion.DiffusionUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.Diffusivity;

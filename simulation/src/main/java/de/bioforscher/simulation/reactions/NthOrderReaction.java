@@ -32,7 +32,6 @@ public class NthOrderReaction extends Reaction {
         increaseProducts(node);
     }
 
-    @Override
     public void calculateVelocity(BioNode node) {
 
         // product of substrates

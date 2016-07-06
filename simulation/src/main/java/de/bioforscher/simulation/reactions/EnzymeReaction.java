@@ -39,7 +39,6 @@ public class EnzymeReaction extends Reaction {
         this.enzyme = enzyme;
     }
 
-    @Override
     public void calculateVelocity(BioNode node) {
 
         Quantity<MolarConcentration> substrateConcentration = node.getConcentration(this.enzyme.getCriticalSubstrate());
