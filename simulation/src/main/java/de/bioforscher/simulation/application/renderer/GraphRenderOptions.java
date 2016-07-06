@@ -37,7 +37,7 @@ public class GraphRenderOptions {
     }
 
     public double getStandardNodeDiameter() {
-        return standardNodeDiameter;
+        return this.standardNodeDiameter;
     }
 
     public void setStandardNodeDiameter(double standardNodeDiameter) {
@@ -45,7 +45,7 @@ public class GraphRenderOptions {
     }
 
     public Color getStandardNodeColor() {
-        return standardNodeColor;
+        return this.standardNodeColor;
     }
 
     public void setStandardNodeColor(Color standardNodeColor) {
@@ -53,7 +53,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isRenderNodes() {
-        return renderNodes;
+        return this.renderNodes;
     }
 
     public void setRenderNodes(boolean renderNodes) {
@@ -61,7 +61,7 @@ public class GraphRenderOptions {
     }
 
     public Color getStandardEdgeColor() {
-        return standardEdgeColor;
+        return this.standardEdgeColor;
     }
 
     public void setStandardEdgeColor(Color standardEdgeColor) {
@@ -69,7 +69,7 @@ public class GraphRenderOptions {
     }
 
     public double getStanderdEdgeWidth() {
-        return standerdEdgeWidth;
+        return this.standerdEdgeWidth;
     }
 
     public void setStanderdEdgeWidth(double standerdEdgeWidth) {
@@ -77,7 +77,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isRenderEdges() {
-        return renderEdges;
+        return this.renderEdges;
     }
 
     public void setRenderEdges(boolean renderEdges) {
@@ -85,7 +85,7 @@ public class GraphRenderOptions {
     }
 
     public double getVoronoiEdgeWidth() {
-        return voronoiEdgeWidth;
+        return this.voronoiEdgeWidth;
     }
 
     public void setVoronoiEdgeWidth(double voronoiEdgeWidth) {
@@ -93,7 +93,7 @@ public class GraphRenderOptions {
     }
 
     public Color getVoronoiEdgeColor() {
-        return voronoiEdgeColor;
+        return this.voronoiEdgeColor;
     }
 
     public void setVoronoiEdgeColor(Color voronoiEdgeColor) {
@@ -101,7 +101,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isRenderVoronoi() {
-        return renderVoronoi;
+        return this.renderVoronoi;
     }
 
     public void setRenderVoronoi(boolean renderVoronoi) {
@@ -109,7 +109,7 @@ public class GraphRenderOptions {
     }
 
     public Color getBackgroundColor() {
-        return backgroundColor;
+        return this.backgroundColor;
     }
 
     public void setBackgroundColor(Color backgroundColor) {

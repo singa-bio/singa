@@ -25,7 +25,7 @@ public class SimulationSpace {
 
     public void reinitialize(double width, double height) {
         this.rectangle = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
-        System.out.println(rectangle);
+        System.out.println(this.rectangle);
     }
 
     public Rectangle getRectangle() {

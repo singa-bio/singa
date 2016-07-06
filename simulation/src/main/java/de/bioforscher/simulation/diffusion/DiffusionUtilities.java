@@ -31,7 +31,7 @@ public final class DiffusionUtilities {
      * 0.0000000834) <br>
      * From: Young, M., Carroad, P., and Bell, R. (1980). Estimation of
      * diffusion coefficients of proteins. Biotechnology and Bioengineering,
-     * 22(5):947�955.
+     * 22(5):947-955.
      */
     public static final Quantity<Dimensionless> YOUNG_DIFFUSION_COEFFICIENT_CONSTANT = Quantities.getQuantity(8.34e-8,
             ONE);
@@ -40,7 +40,7 @@ public final class DiffusionUtilities {
      * Diffusion calculation coefficient [dimensionless] (7.4e-8 = 0.000000074)
      * <br>
      * From: Wilke, C. and Chang, P. (1955). Correlation of diffusion
-     * coefficients in dilute solutions. AIChE Journal, 1(2):264�270.
+     * coefficients in dilute solutions. AIChE Journal, 1(2):264-270.
      */
     public static final Quantity<Dimensionless> WILKE_DIFFUSION_COEFFICIENT_CONSTANT = Quantities.getQuantity(7.4e-8,
             ONE);
@@ -49,7 +49,7 @@ public final class DiffusionUtilities {
      * Association parameter to define the effective molecular weight of the
      * solvent. <br>
      * From: Wilke, C. and Chang, P. (1955). Correlation of diffusion
-     * coefficients in dilute solutions. AIChE Journal, 1(2):264�270.
+     * coefficients in dilute solutions. AIChE Journal, 1(2):264-270.
      */
     public static final Quantity<Dimensionless> WILKE_ASSOCIATION_WATER = Quantities.getQuantity(2.26, ONE);
 

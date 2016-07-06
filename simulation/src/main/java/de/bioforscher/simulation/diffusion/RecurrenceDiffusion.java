@@ -87,6 +87,7 @@ public class RecurrenceDiffusion implements Diffusion {
      */
     private Quantity<Diffusivity> determineDiffusionCoefficient(ChemicalEntity species) {
         Quantity<Diffusivity> diffusivityApproximation = DiffusionUtilities.estimateDiffusivity(species);
+        this.diffusionCoefficients.put(species, diffusivityApproximation);
         log.log(Level.INFO, "approximated diffusion coefficients for " + species + " to " + diffusivityApproximation);
         return scaleDiffusivity(diffusivityApproximation);
     }

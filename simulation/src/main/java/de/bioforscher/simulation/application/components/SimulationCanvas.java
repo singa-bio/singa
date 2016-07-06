@@ -30,7 +30,7 @@ public class SimulationCanvas extends Canvas {
         super(SimulationSpace.getInstance().getWidth(), SimulationSpace.getInstance().getHeight());
         this.owner = owner;
         this.renderer = new GraphRenderer(this);
-        this.graphContextMenu = new BioGraphContextMenu(this.owner.getGraph(), this);
+        this.graphContextMenu = new BioGraphContextMenu(this.owner.getAutomata(), this);
         this.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
     }
 
@@ -115,7 +115,7 @@ public class SimulationCanvas extends Canvas {
     }
 
     public void resetGraphContextMenu() {
-        this.graphContextMenu = new BioGraphContextMenu(this.owner.getGraph(), this);
+        this.graphContextMenu = new BioGraphContextMenu(this.owner.getAutomata(), this);
     }
 
 }

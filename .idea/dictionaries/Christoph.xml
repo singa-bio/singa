@@ -4,6 +4,7 @@
       <w>chebyshev</w>
       <w>jaccard</w>
       <w>tchebychev</w>
+      <w>ungrouped</w>
     </words>
   </dictionary>
 </component>

@@ -46,12 +46,13 @@ public class BioGraphRenderOptions {
     }
 
     public Color getEdgeColor(BioEdge edge) {
-        if (this.edgeHighlightSpecies != null) {
-            double opacity = edge.getPermeability(this.edgeHighlightSpecies);
-            return new Color(0, 0, 0, opacity);
-        } else {
+        // TODO currently not implemented
+        // if (this.edgeHighlightSpecies != null) {
+        //     double opacity = edge.getPermeability(this.edgeHighlightSpecies);
+        //     return new Color(0, 0, 0, opacity);
+        // } else {
             return Color.LIGHTGREY;
-        }
+        // }
 
     }
 

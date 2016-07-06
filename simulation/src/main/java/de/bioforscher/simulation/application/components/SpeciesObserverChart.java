@@ -34,7 +34,7 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
     }
 
     public BioNode getObservedNode() {
-        return observedNode;
+        return this.observedNode;
     }
 
     public void setObservedNode(BioNode observedNode) {
@@ -42,7 +42,7 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
     }
 
     public Map<String, ChemicalEntity> getObservedSpecies() {
-        return observedSpecies;
+        return this.observedSpecies;
     }
 
     public void setObservedSpecies(Map<String, ChemicalEntity> observedSpecies) {
@@ -88,14 +88,14 @@ public class SpeciesObserverChart extends LineChart<Number, Number> implements U
             // FIXME possibly a cleaner solution is available
             Platform.runLater(() -> {
                 series.getData().add(new Data<>(event.getEpoch(), concentration));
-                if (series.getData().size() > maximalPoints) {
-                    series.getData().remove(series.getData().size() - maximalPoints);
+                if (series.getData().size() > this.maximalPoints) {
+                    series.getData().remove(series.getData().size() - this.maximalPoints);
                 }
             });
 
         }
 
-        ((NumberAxis) this.getXAxis()).setLowerBound(event.getEpoch() - maximalPoints);
+        ((NumberAxis) this.getXAxis()).setLowerBound(event.getEpoch() - this.maximalPoints);
         ((NumberAxis) this.getXAxis()).setUpperBound(event.getEpoch() - 1);
 
     }

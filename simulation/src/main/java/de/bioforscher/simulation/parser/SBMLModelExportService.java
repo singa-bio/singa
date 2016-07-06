@@ -189,7 +189,7 @@ public class SBMLModelExportService {
     private Element createSpecies() {
         log.log(Level.FINER, "Creating species for SBML.");
         Element listOfSpecies = this.document.createElement("listOfSpecies");
-        Map<String, ChemicalEntity> speciesMap = BioGraphUtilities.generateMapOfEntities(automata.getGraph());
+        Map<String, ChemicalEntity> speciesMap = BioGraphUtilities.generateMapOfEntities(this.automata.getGraph());
         for (String speciesName : speciesMap.keySet()) {
             Element species = this.document.createElement("species");
             species.setAttribute("id", speciesMap.get(speciesName).getIdentifier().toString());

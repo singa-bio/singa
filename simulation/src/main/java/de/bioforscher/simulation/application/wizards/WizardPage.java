@@ -29,15 +29,17 @@ public abstract class WizardPage extends VBox {
     private TextFlow description;
 
     public WizardPage(String title) {
+
         this.setId(title);
         this.setSpacing(5);
+
         final Text titleText = new Text(title);
         titleText.setId("PAGE_TITLE");
         this.getChildren().add(titleText);
 
         this.description = new TextFlow();
         this.description.setId("PAGE_DESCRIPTION");
-        this.getChildren().add(description);
+        this.getChildren().add(this.description);
 
         final Separator separatorTop = new Separator();
         separatorTop.setId("SEPARATOR_TOP");
@@ -61,8 +63,6 @@ public abstract class WizardPage extends VBox {
         Region spring = new Region();
         HBox.setHgrow(spring, Priority.ALWAYS);
         HBox footer = new HBox(5);
-        this.cancelButton.setCancelButton(true);
-        this.finishButton.setDefaultButton(true);
         footer.getChildren().addAll(spring, this.priorButton, this.nextButton,
                 this.cancelButton, this.finishButton);
         return footer;

@@ -1,8 +1,7 @@
 package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.model.GraphAutomaton;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
@@ -19,14 +18,13 @@ import java.util.Map.Entry;
  */
 class BioGraphContextMenu extends ContextMenu {
 
-    private AutomatonGraph graph;
     private final SimulationCanvas owner;
-
+    private GraphAutomaton graphAutomaton;
     private Menu speciesMenu;
     private ToggleGroup speciesGroup;
 
-    BioGraphContextMenu(AutomatonGraph graph, SimulationCanvas canvas) {
-        this.graph = graph;
+    BioGraphContextMenu(GraphAutomaton graphAutomaton, SimulationCanvas canvas) {
+        this.graphAutomaton = graphAutomaton;
         this.owner = canvas;
         initialize();
     }
@@ -34,7 +32,7 @@ class BioGraphContextMenu extends ContextMenu {
     private void initialize() {
         this.speciesMenu = new Menu("Highlight Species");
         this.speciesGroup = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.generateMapOfEntities(this.graph);
+        Map<String, ChemicalEntity> chemicalEntities = graphAutomaton.getSpecies();
         // Add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {
             fillSpeciesMenu(chemicalEntities);
@@ -60,7 +58,6 @@ class BioGraphContextMenu extends ContextMenu {
         RadioMenuItem itemCompound = new RadioMenuItem(species.getName());
         itemCompound.setUserData(species);
         itemCompound.setToggleGroup(this.speciesGroup);
-        // Add action listener
         itemCompound.setOnAction(t -> {
             BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(species);
             BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(species);
@@ -69,13 +66,12 @@ class BioGraphContextMenu extends ContextMenu {
         return itemCompound;
     }
 
-    public AutomatonGraph getGraph() {
-        return this.graph;
+    public GraphAutomaton getGraphAutomaton() {
+        return this.graphAutomaton;
     }
 
-    public void setGraph(AutomatonGraph graph) {
-        this.graph = graph;
-        initialize();
+    public void setGraphAutomaton(GraphAutomaton graphAutomaton) {
+        this.graphAutomaton = graphAutomaton;
     }
 
 }

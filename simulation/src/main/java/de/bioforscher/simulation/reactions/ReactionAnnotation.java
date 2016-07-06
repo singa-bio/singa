@@ -16,7 +16,7 @@ public class ReactionAnnotation {
     }
 
     public String getTissue() {
-        return tissue;
+        return this.tissue;
     }
 
     public void setTissue(String tissue) {
@@ -24,7 +24,7 @@ public class ReactionAnnotation {
     }
 
     public String getOrganism() {
-        return organism;
+        return this.organism;
     }
 
     public void setOrganism(String organism) {
@@ -32,7 +32,7 @@ public class ReactionAnnotation {
     }
 
     public String getPathway() {
-        return pathway;
+        return this.pathway;
     }
 
     public void setPathway(String pathway) {

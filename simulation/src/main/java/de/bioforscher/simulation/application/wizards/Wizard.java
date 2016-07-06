@@ -2,6 +2,7 @@ package de.bioforscher.simulation.application.wizards;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
@@ -24,23 +25,23 @@ public class Wizard extends StackPane {
 
     public Wizard(WizardPage... pages) {
         this.pages.addAll(pages);
+        this.setPadding(new Insets(10, 10, 10, 10));
         navigateTo(0);
-        setStyle("-fx-padding: 10; -fx-background-color: white;");
     }
 
     public void nextPage() {
         if (hasNextPage()) {
-            navigateTo(curPageIdx + 1);
+            navigateTo(this.curPageIdx + 1);
         }
     }
 
     public WizardPage getCurrentPage() {
-        return this.pages.get(curPageIdx);
+        return this.pages.get(this.curPageIdx);
     }
 
     public WizardPage getNextPage() {
         if (hasNextPage()) {
-            return this.pages.get(curPageIdx + 1);
+            return this.pages.get(this.curPageIdx + 1);
         } else {
             return null;
         }
@@ -48,29 +49,29 @@ public class Wizard extends StackPane {
 
     public void priorPage() {
         if (hasPriorPage()) {
-            navigateTo(history.pop(), false);
+            navigateTo(this.history.pop(), false);
         }
     }
 
     public boolean hasNextPage() {
-        return (curPageIdx < pages.size() - 1);
+        return (this.curPageIdx < this.pages.size() - 1);
     }
 
     public boolean hasPriorPage() {
-        return !history.isEmpty();
+        return !this.history.isEmpty();
     }
 
     public void navigateTo(int nextPageIdx, boolean pushHistory) {
-        if (nextPageIdx < 0 || nextPageIdx >= pages.size())
+        if (nextPageIdx < 0 || nextPageIdx >= this.pages.size())
             return;
-        if (curPageIdx != UNDEFINED) {
+        if (this.curPageIdx != UNDEFINED) {
             if (pushHistory) {
-                history.push(curPageIdx);
+                this.history.push(this.curPageIdx);
             }
         }
 
-        WizardPage nextPage = pages.get(nextPageIdx);
-        curPageIdx = nextPageIdx;
+        WizardPage nextPage = this.pages.get(nextPageIdx);
+        this.curPageIdx = nextPageIdx;
         getChildren().clear();
         getChildren().add(nextPage);
         nextPage.manageButtons();
@@ -83,7 +84,7 @@ public class Wizard extends StackPane {
     public void navigateTo(String id) {
         Node page = lookup("#" + id);
         if (page != null) {
-            int nextPageIdx = pages.indexOf(page);
+            int nextPageIdx = this.pages.indexOf(page);
             if (nextPageIdx != UNDEFINED) {
                 navigateTo(nextPageIdx);
             }

@@ -28,7 +28,9 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
 
     private AutomatonGraph graph;
     private Diffusion diffusion;
+
     private List<ImmediateUpdate> immediateUpdates;
+    private Map<String, ChemicalEntity> species;
 
     private CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> listeners;
 
@@ -45,7 +47,12 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
         this.diffusion = diffusion;
         this.immediateUpdates = new ArrayList<>();
         this.listeners = new CopyOnWriteArrayList<>();
+        initializeChemicalEntitiesFromGraph(this.graph);
         initialize();
+    }
+
+    private void initializeChemicalEntitiesFromGraph(AutomatonGraph graph) {
+        this.species = BioGraphUtilities.generateMapOfEntities(graph);
     }
 
     public void initialize() {
@@ -167,9 +174,20 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
         emitEvent(event);
     }
 
+
+    public List<ImmediateUpdate> getImmediateUpdates() {
+        return this.immediateUpdates;
+    }
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> getListeners() {
         return this.listeners;
     }
 
+    public Map<String, ChemicalEntity> getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(Map<String, ChemicalEntity> species) {
+        this.species = species;
+    }
 }

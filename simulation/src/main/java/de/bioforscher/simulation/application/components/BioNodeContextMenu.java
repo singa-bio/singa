@@ -15,7 +15,6 @@ public class BioNodeContextMenu extends ContextMenu {
     private BioGraphSimulation owner;
 
     public BioNodeContextMenu(BioNode node, BioGraphSimulation owner) {
-        super();
         this.node = node;
         this.owner = owner;
         initialize();
@@ -52,7 +51,7 @@ public class BioNodeContextMenu extends ContextMenu {
     }
 
     public BioNode getNode() {
-        return node;
+        return this.node;
     }
 
     public void setNode(BioNode node) {

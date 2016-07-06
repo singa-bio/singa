@@ -55,8 +55,8 @@ class SBMLContentHandler implements ContentHandler {
 
     public EnzymeReaction getReaction() {
         // build enzyme
-        Enzyme enzyme = new Enzyme.Builder(enzymeIdentifier)
-                .name(enzymeName)
+        Enzyme enzyme = new Enzyme.Builder(this.enzymeIdentifier)
+                .name(this.enzymeName)
                 .turnoverNumber(this.turnoverNumber)
                 .michaelisConstant(this.michaelisConstant)
                 .criticalSubstrate(this.criticalSubstrate)
@@ -157,7 +157,7 @@ class SBMLContentHandler implements ContentHandler {
                         chebiParserService.setResource(identifier);
                         Species Species = chebiParserService.fetchSpecies();
                         if (Species != null) {
-                            this.speciesDictionary.put(currentSpeciesId, Species);
+                            this.speciesDictionary.put(this.currentSpeciesId, Species);
                             this.newSpecies = false;
                         }
                     }
@@ -167,7 +167,7 @@ class SBMLContentHandler implements ContentHandler {
                     if (matcherUniProt.find()) {
                         String uniProtId = matcherUniProt.group(1);
                         this.enzymeIdentifier = new UniProtIdentifier(uniProtId);
-                        this.enzymeName = currentSpeciesName;
+                        this.enzymeName = this.currentSpeciesName;
                         this.newSpecies = false;
                     }
                 }
@@ -185,13 +185,13 @@ class SBMLContentHandler implements ContentHandler {
                 int stoichiometry = Integer.parseInt(atts.getValue("stoichiometry"));
                 String speciesId = atts.getValue("species");
                 this.reaction.getStoichiometricCoefficients().put(
-                        speciesDictionary.get(speciesId), stoichiometry);
+                        this.speciesDictionary.get(speciesId), stoichiometry);
                 if (this.inReactantsList) {
                     this.reaction.getSubstrates().add(
-                            speciesDictionary.get(speciesId));
+                            this.speciesDictionary.get(speciesId));
                 } else if (this.inProductsList) {
                     this.reaction.getProducts().add(
-                            speciesDictionary.get(speciesId));
+                            this.speciesDictionary.get(speciesId));
                 }
                 break;
             }
@@ -211,7 +211,7 @@ class SBMLContentHandler implements ContentHandler {
                 if (matcherKM.find()) {
                     String speciesId = matcherKM.group(1);
                     // critical substrate
-                    this.criticalSubstrate = speciesDictionary.get(speciesId);
+                    this.criticalSubstrate = this.speciesDictionary.get(speciesId);
                     this.michaelisConstant = Double.valueOf(atts.getValue("value"));
                 }
             }

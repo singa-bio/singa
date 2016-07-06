@@ -5,7 +5,8 @@ import de.bioforscher.simulation.application.components.SimulationCanvas;
 import de.bioforscher.simulation.application.components.SpeciesObserverChart;
 import de.bioforscher.simulation.application.windows.EnvironmentalOptionsControlPanel;
 import de.bioforscher.simulation.application.windows.PlotPreferencesControlPanel;
-import de.bioforscher.simulation.application.windows.SearchSpeciesPanel;
+import de.bioforscher.simulation.application.windows.SpeciesOverviewPane;
+import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.simulation.diffusion.Diffusion;
@@ -21,6 +22,10 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -28,12 +33,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static tec.units.ri.unit.MetricPrefix.MICRO;
+import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
@@ -61,7 +70,7 @@ public class BioGraphSimulation extends Application {
 
         log.log(Level.INFO, "setup automaton");
         // Automata
-        this.automata = AutomataFactory.buildSecondOrderReactionTestAutomata();
+        this.automata = AutomataFactory.buildSmallMoleculeDiffusionTestAutomata(10, Quantities.getQuantity(0.1, MICRO(SECOND)));
         // this.automata =
         // AutomataFactory.buildDiffusionOptimizationTestAutomata(20,
         // Quantities.getQuantity(0.1, MICRO(SECOND)));
@@ -91,33 +100,51 @@ public class BioGraphSimulation extends Application {
 
         // New Graph
         MenuItem mINewGraph = new MenuItem("New Graph ...");
+        mINewGraph.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         mINewGraph.setOnAction(this::startGraphWizard);
 
         // Open Graph
-        MenuItem mILoadBioGraph = new MenuItem("Load BioGraph ...");
+        MenuItem mILoadBioGraph = new MenuItem("Open BioGraph ...");
+        mILoadBioGraph.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         mILoadBioGraph.setOnAction(this::loadBioGraph);
 
         // Save Graph
         MenuItem mISaveGraph = new MenuItem("Save BioGraph ...");
+        mISaveGraph.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         mISaveGraph.setOnAction(this::saveBioGraph);
 
         // Adding Species
         MenuItem mIAddSpecies = new MenuItem("Add Species ...");
+        mIAddSpecies.setAccelerator(new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN));
         mIAddSpecies.setOnAction(this::showSearchSpeciesPanel);
 
         // Adding Reactions
         MenuItem mIAddReaction = new MenuItem("Add Reaction ...");
+        mIAddReaction.setAccelerator(new KeyCodeCombination(KeyCode.R,
+                KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN));
         mIAddReaction.setOnAction(this::startReactionWizard);
 
         menuFile.getItems().addAll(mINewGraph, mILoadBioGraph, mISaveGraph, new SeparatorMenuItem(), mIAddSpecies,
                 mIAddReaction);
 
+        // Edit Menu
         Menu menuEdit = new Menu("Edit");
+
+        // View Menu
         Menu menuView = new Menu("View");
+
+        // Species Overview
+        MenuItem mISpeciesOverview = new MenuItem("Species", new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
+        mISpeciesOverview.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN));
+        mISpeciesOverview.setOnAction(this::showSpeciesOverview);
+
+        menuView.getItems().addAll(mISpeciesOverview);
 
         Menu menuPreferences = new Menu("Preferences");
 
         MenuItem mIPlot = new MenuItem("Plot preferences");
+        mIPlot.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.ALT_DOWN));
         mIPlot.setOnAction(this::showPlotPreferencesControlPanel);
 
         menuPreferences.getItems().add(mIPlot);
@@ -202,11 +229,27 @@ public class BioGraphSimulation extends Application {
     }
 
     public void showSearchSpeciesPanel(ActionEvent event) {
-        int width = 300;
-        int height = 500;
-        Stage speciesStage = prepareUtilityWindow(width, height, "Species");
-        SearchSpeciesPanel speciesCard = new SearchSpeciesPanel(this);
-        speciesStage.setScene(new Scene(speciesCard, width, height));
+        int width = 600;
+        int height = 530;
+        Stage speciesStage = prepareUtilityWindow(width, height, "Search Species...");
+        AddSpeciesWizard speciesWizard = new AddSpeciesWizard(speciesStage, this);
+        speciesStage.setScene(new Scene(speciesWizard, width, height));
+        speciesStage.sizeToScene();
+        speciesStage.showAndWait();
+        if (speciesWizard.getSpeciesToAdd() != null) {
+            speciesWizard.getSpeciesToAdd().stream().forEach(species -> {
+                this.automata.getSpecies().put(species.getName(), species);
+                this.simulationCanvas.resetGraphContextMenu();
+            });
+        }
+    }
+
+    public void showSpeciesOverview(ActionEvent event) {
+        int width = 800;
+        int height = 600;
+        Stage speciesStage = prepareUtilityWindow(width, height, "Species Overview");
+        SpeciesOverviewPane speciesOverviewPane = new SpeciesOverviewPane(this);
+        speciesStage.setScene(new Scene(speciesOverviewPane, width, height));
         speciesStage.sizeToScene();
         speciesStage.showAndWait();
     }
@@ -304,6 +347,7 @@ public class BioGraphSimulation extends Application {
         this.automata = new GraphAutomaton(graph, reccurenceDiffusion);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
+        this.simulationCanvas.resetGraphContextMenu();
         this.simulationCanvas.draw();
     }
 

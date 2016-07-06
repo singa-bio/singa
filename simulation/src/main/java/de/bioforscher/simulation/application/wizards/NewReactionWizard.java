@@ -41,7 +41,7 @@ public class NewReactionWizard extends Wizard {
 
     @Override
     public void finish() {
-        owner.close();
+        this.owner.close();
         if (this.getCurrentPage().getClass()
                 .equals(YourReactionPage.class)) {
             setReaction(((YourReactionPage) this.getCurrentPage())
@@ -52,11 +52,11 @@ public class NewReactionWizard extends Wizard {
     @Override
     public void cancel() {
         System.out.println("Cancelled");
-        owner.close();
+        this.owner.close();
     }
 
     public EnzymeReaction getReaction() {
-        return reaction;
+        return this.reaction;
     }
 
     public void setReaction(EnzymeReaction reaction) {
@@ -75,15 +75,15 @@ class ChooseMethodPage extends WizardPage {
         super("Choose a method to create your reaction.");
         setDescription("The Reaction can either be created using data from the SABIO-RK Biochemical Reaction Kinetics Database or it can be described manually using the graphical user interface.");
 
-        nextButton.setDisable(true);
-        finishButton.setDisable(true);
+        this.nextButton.setDisable(true);
+        this.finishButton.setDisable(true);
 
-        rbSABIO.setToggleGroup(tgMethods);
-        rbManual.setToggleGroup(tgMethods);
+        this.rbSABIO.setToggleGroup(this.tgMethods);
+        this.rbManual.setToggleGroup(this.tgMethods);
 
-        tgMethods.selectedToggleProperty().addListener(
+        this.tgMethods.selectedToggleProperty().addListener(
                 (observableValue, oldToggle, newToggle) -> {
-                    nextButton.setDisable(false);
+                    this.nextButton.setDisable(false);
                 });
 
     }
@@ -91,15 +91,15 @@ class ChooseMethodPage extends WizardPage {
     @Override
     public Parent getContent() {
 
-        rbSABIO = new RadioButton("Automatically using SABIO-RK.");
-        rbManual = new RadioButton("Manually using the user interface.");
+        this.rbSABIO = new RadioButton("Automatically using SABIO-RK.");
+        this.rbManual = new RadioButton("Manually using the user interface.");
 
-        return new VBox(rbSABIO, rbManual);
+        return new VBox(this.rbSABIO, this.rbManual);
     }
 
     @Override
     public void nextPage() {
-        if (tgMethods.getSelectedToggle().equals(rbSABIO)) {
+        if (this.tgMethods.getSelectedToggle().equals(this.rbSABIO)) {
             super.nextPage();
         }
     }
@@ -116,10 +116,10 @@ class GetSuggestionsPage extends WizardPage {
         super("Search Reactions");
         setDescription("You can search the SABIO-RK Reaction Database for Biochemical Reactions. Enter a search term and choose the desiered entry.");
 
-        nextButton.disableProperty().bind(
-                tbResults.getSelectionModel().selectedItemProperty().isNull());
-        finishButton.disableProperty().bind(
-                tbResults.getSelectionModel().selectedItemProperty().isNull());
+        this.nextButton.disableProperty().bind(
+                this.tbResults.getSelectionModel().selectedItemProperty().isNull());
+        this.finishButton.disableProperty().bind(
+                this.tbResults.getSelectionModel().selectedItemProperty().isNull());
     }
 
     @Override
@@ -131,9 +131,9 @@ class GetSuggestionsPage extends WizardPage {
         searchBox.setPadding(new Insets(5));
         searchBox.setSpacing(5);
 
-        tfSearch = new TextField("Search Term (e.g. glycolysis classical)");
+        this.tfSearch = new TextField("Search Term (e.g. glycolysis classical)");
         // FIXME tfSearch size should be dynamically fit to Component
-        tfSearch.setPrefSize(400, 20);
+        this.tfSearch.setPrefSize(400, 20);
 
         Button btnSearch = new Button();
         btnSearch.setId("btnSearch");
@@ -141,12 +141,12 @@ class GetSuggestionsPage extends WizardPage {
 
         btnSearch.setMinSize(30, 20);
 
-        searchBox.getChildren().addAll(tfSearch, btnSearch);
+        searchBox.getChildren().addAll(this.tfSearch, btnSearch);
 
-        tbResults = new TableView<>();
+        this.tbResults = new TableView<>();
 
-        results = FXCollections.observableArrayList();
-        tbResults.setItems(results);
+        this.results = FXCollections.observableArrayList();
+        this.tbResults.setItems(this.results);
 
         TableColumn<EnzymeReaction, String> reactionCol = new TableColumn<>(
                 "Reaction");
@@ -167,12 +167,12 @@ class GetSuggestionsPage extends WizardPage {
                 .valueOf(c.getValue().getEnzyme().getMichaelisConstant())));
         kmCol.setMinWidth(200);
 
-        tbResults.getColumns().add(reactionCol);
-        tbResults.getColumns().add(kCatCol);
-        tbResults.getColumns().add(kmCol);
+        this.tbResults.getColumns().add(reactionCol);
+        this.tbResults.getColumns().add(kCatCol);
+        this.tbResults.getColumns().add(kmCol);
 
         root.setTop(searchBox);
-        root.setCenter(tbResults);
+        root.setCenter(this.tbResults);
 
         //root.getStylesheets().addAll(
         //			this.getClass().getResource("wizard.css").toExternalForm());
@@ -189,7 +189,7 @@ class GetSuggestionsPage extends WizardPage {
         WebTarget suggestionsQuery = suggestionsPath.queryParam(
                 "q",
                 "Pathway:" + "%22"
-                        + tfSearch.getText().replaceAll(" ", "%20")
+                        + this.tfSearch.getText().replaceAll(" ", "%20")
                         + "%22%20AND%20Parametertype:%22kCat%22%20AND%20Parametertype:%22km%22");
         Invocation.Builder invocationBuilder = suggestionsQuery
                 .request(MediaType.TEXT_PLAIN);
@@ -207,7 +207,7 @@ class GetSuggestionsPage extends WizardPage {
             SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
                     + sabioId);
             EnzymeReaction reaction = sabiorkParser.fetchReaction();
-            results.add(reaction);
+            this.results.add(reaction);
             count++;
         }
     }
@@ -215,7 +215,7 @@ class GetSuggestionsPage extends WizardPage {
     @Override
     public void nextPage() {
         YourReactionPage page = (YourReactionPage) getWizard().getNextPage();
-        EnzymeReaction reaction = tbResults.getSelectionModel()
+        EnzymeReaction reaction = this.tbResults.getSelectionModel()
                 .getSelectedItem();
         page.setReaction(reaction);
         ((NewReactionWizard) getWizard()).setReaction(reaction);
@@ -238,10 +238,10 @@ class YourReactionPage extends WizardPage {
     public Parent getContent() {
 
         StackPane stack = new StackPane();
-        reactionText = new Text(" ");
-        reactionText.setId("txtReaction");
+        this.reactionText = new Text(" ");
+        this.reactionText.setId("txtReaction");
 
-        stack.getChildren().add(reactionText);
+        stack.getChildren().add(this.reactionText);
         VBox.setVgrow(stack, Priority.ALWAYS);
 
         File f = new File("D:/projects/simulation/target/classes/wizard.css");
@@ -253,7 +253,7 @@ class YourReactionPage extends WizardPage {
     }
 
     public EnzymeReaction getReaction() {
-        return reaction;
+        return this.reaction;
     }
 
     public void setReaction(EnzymeReaction reaction) {

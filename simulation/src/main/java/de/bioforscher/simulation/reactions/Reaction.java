@@ -133,27 +133,22 @@ public abstract class Reaction implements ImmediateUpdate {
 
     public String getReactionString() {
         // #fancy
+        return collectEntitiesAsString(this.substrates) +
+                " \u27f6 " +
+                collectEntitiesAsString(this.products);
+    }
+
+    private String collectEntitiesAsString(List<ChemicalEntity> entities) {
         StringBuilder sb = new StringBuilder();
-        Iterator<ChemicalEntity> sIterator = this.substrates.iterator();
-        while (sIterator.hasNext()) {
-            ChemicalEntity substrate = sIterator.next();
-            if (this.stoichiometricCoefficients.containsKey(substrate)) {
-                sb.append(this.stoichiometricCoefficients.get(substrate)).append(" ");
+        Iterator<ChemicalEntity> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            ChemicalEntity entity = iterator.next();
+            if (this.stoichiometricCoefficients.containsKey(entity) &&
+                    this.stoichiometricCoefficients.get(entity) > 1) {
+                sb.append(this.stoichiometricCoefficients.get(entity)).append(" ");
             }
-            sb.append(substrate.getName().substring(0, 1).toUpperCase()).append(substrate.getName().substring(1));
-            if (sIterator.hasNext()) {
-                sb.append(" + ");
-            }
-        }
-        sb.append(" -> ");
-        Iterator<ChemicalEntity> pIterator = this.products.iterator();
-        while (pIterator.hasNext()) {
-            ChemicalEntity product = pIterator.next();
-            if (this.stoichiometricCoefficients.containsKey(product)) {
-                sb.append(this.stoichiometricCoefficients.get(product)).append(" ");
-            }
-            sb.append(product.getName().substring(0, 1).toUpperCase()).append(product.getName().substring(1));
-            if (pIterator.hasNext()) {
+            sb.append(entity.getName().substring(0, 1).toUpperCase()).append(entity.getName().substring(1));
+            if (iterator.hasNext()) {
                 sb.append(" + ");
             }
         }
@@ -176,52 +171,52 @@ public abstract class Reaction implements ImmediateUpdate {
         protected abstract BuilderType getBuilder();
 
         public Builder() {
-            topLevelObject = createObject();
-            builderObject = getBuilder();
+            this.topLevelObject = createObject();
+            this.builderObject = getBuilder();
         }
 
         public BuilderType setSubstrate(List<ChemicalEntity> substrates) {
-            topLevelObject.setSubstrates(substrates);
-            return builderObject;
+            this.topLevelObject.setSubstrates(substrates);
+            return this.builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity substrate) {
-            topLevelObject.addSubstrate(substrate);
-            topLevelObject.addStoichiometricCoefficient(substrate, 1);
-            return builderObject;
+            this.topLevelObject.addSubstrate(substrate);
+            this.topLevelObject.addStoichiometricCoefficient(substrate, 1);
+            return this.builderObject;
         }
 
         public BuilderType addSubstrate(ChemicalEntity substrate, int stoichiometricCoefficient) {
-            topLevelObject.addSubstrate(substrate);
-            topLevelObject.addStoichiometricCoefficient(substrate, stoichiometricCoefficient);
-            return builderObject;
+            this.topLevelObject.addSubstrate(substrate);
+            this.topLevelObject.addStoichiometricCoefficient(substrate, stoichiometricCoefficient);
+            return this.builderObject;
         }
 
         public BuilderType setProducts(List<ChemicalEntity> products) {
-            topLevelObject.setProducts(products);
-            return builderObject;
+            this.topLevelObject.setProducts(products);
+            return this.builderObject;
         }
 
         public BuilderType addProduct(ChemicalEntity product) {
-            topLevelObject.addProduct(product);
-            topLevelObject.addStoichiometricCoefficient(product, 1);
-            return builderObject;
+            this.topLevelObject.addProduct(product);
+            this.topLevelObject.addStoichiometricCoefficient(product, 1);
+            return this.builderObject;
         }
 
         public BuilderType addProduct(ChemicalEntity product, int stoichiometricCoefficient) {
-            topLevelObject.addProduct(product);
-            topLevelObject.addStoichiometricCoefficient(product, stoichiometricCoefficient);
-            return builderObject;
+            this.topLevelObject.addProduct(product);
+            this.topLevelObject.addStoichiometricCoefficient(product, stoichiometricCoefficient);
+            return this.builderObject;
         }
 
         public BuilderType setStoichiometricCoefficients(Map<ChemicalEntity, Integer> coefficients) {
-            topLevelObject.setStoichiometricCoefficients(coefficients);
-            return builderObject;
+            this.topLevelObject.setStoichiometricCoefficients(coefficients);
+            return this.builderObject;
         }
 
         public BuilderType addStoichiometricCoefficient(ChemicalEntity entity, int coefficient) {
-            topLevelObject.addStoichiometricCoefficient(entity, coefficient);
-            return builderObject;
+            this.topLevelObject.addStoichiometricCoefficient(entity, coefficient);
+            return this.builderObject;
         }
 
         public TopLevelType build() {

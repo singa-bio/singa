@@ -47,23 +47,23 @@ public class EnvironmentalVariables extends Observable {
     }
 
     public Quantity<Length> getNodeDistance() {
-        return nodeDistance;
+        return this.nodeDistance;
     }
 
     public Quantity<Temperature> getSystemTemperature() {
-        return systemTemperature;
+        return this.systemTemperature;
     }
 
     public Quantity<DynamicViscosity> getSystemViscosity() {
-        return systemViscosity;
+        return this.systemViscosity;
     }
 
     public Quantity<Time> getTimeStep() {
-        return timeStep;
+        return this.timeStep;
     }
 
     public boolean isCellularEnvironment() {
-        return isCellularEnvironment;
+        return this.isCellularEnvironment;
     }
 
     public void setCellularEnvironment(boolean isCellularEnvironment) {
@@ -109,9 +109,9 @@ public class EnvironmentalVariables extends Observable {
 
     @Override
     public String toString() {
-        return "EnvironmentalVariables [nodeDistance=" + nodeDistance
-                + ", timeStep=" + timeStep + ", systemTemperature="
-                + systemTemperature + ", systemViscosity=" + systemViscosity
+        return "EnvironmentalVariables [nodeDistance=" + this.nodeDistance
+                + ", timeStep=" + this.timeStep + ", systemTemperature="
+                + this.systemTemperature + ", systemViscosity=" + this.systemViscosity
                 + "]";
     }
 
