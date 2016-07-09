@@ -1,6 +1,7 @@
 package de.bioforscher.simulation.reactions;
 
 import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.simulation.deprecated.NthOrderReaction;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Christoph on 23.04.2016.
+ * @deprecated
  */
 public class ReactionTest {
 

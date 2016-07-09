@@ -1,8 +1,8 @@
-package de.bioforscher.simulation.model.deprecated;
+package de.bioforscher.simulation.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.awesome.modules.diffusion.DiffusionUtilities;
+import de.bioforscher.simulation.modules.diffusion.DiffusionUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.Diffusivity;
@@ -22,6 +22,7 @@ import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
  * The class is used to simulate diffusion as described by Fick.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public class RecurrenceDiffusion implements Diffusion {
 

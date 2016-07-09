@@ -1,7 +1,6 @@
-package de.bioforscher.simulation.model.awesome;
+package de.bioforscher.simulation.modules.model;
 
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.simulation.model.awesome.modules.model.Module;
 
 import java.util.Set;
 

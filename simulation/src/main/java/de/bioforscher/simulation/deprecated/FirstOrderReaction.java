@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.reactions;
+package de.bioforscher.simulation.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
@@ -16,6 +16,7 @@ import static de.bioforscher.units.UnitDictionary.PER_SECOND;
  * reactions.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public class FirstOrderReaction extends Reaction {
 

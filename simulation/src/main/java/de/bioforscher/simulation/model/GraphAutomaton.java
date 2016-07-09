@@ -3,12 +3,12 @@ package de.bioforscher.simulation.model;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.model.awesome.modules.diffusion.FreeDiffusion;
-import de.bioforscher.simulation.model.deprecated.Diffusion;
-import de.bioforscher.simulation.model.deprecated.RecurrenceDiffusion;
+import de.bioforscher.simulation.deprecated.Diffusion;
+import de.bioforscher.simulation.deprecated.Reaction;
+import de.bioforscher.simulation.deprecated.RecurrenceDiffusion;
+import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import de.bioforscher.simulation.reactions.EnzymeReaction;
-import de.bioforscher.simulation.reactions.Reaction;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
      * receive updates.
      */
     public void activateWriteObservedNodesToFiles() {
-        this.graph.getNodes().stream().filter(node -> node.isObserved()).forEach(node -> {
+        this.graph.getNodes().stream().filter(BioNode::isObserved).forEach(node -> {
             try {
                 this.updateWriter.addNodeToObserve(node);
             } catch (IOException e) {

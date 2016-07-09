@@ -1,9 +1,10 @@
-package de.bioforscher.simulation.reactions;
+package de.bioforscher.simulation.deprecated;
 
 /**
  * This class can be used to annotate a reaction. Currently not in use.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public class ReactionAnnotation {
 

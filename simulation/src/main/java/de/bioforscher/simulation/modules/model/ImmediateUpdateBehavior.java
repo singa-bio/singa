@@ -1,13 +1,14 @@
-package de.bioforscher.simulation.model.awesome.modules.model;
+package de.bioforscher.simulation.modules.model;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.simulation.deprecated.Reaction;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
 
 /**
  * This {@link UpdateBehavior} calculates an update and applies it immediately. This behavior should by applied to
  * modules that don't require neighbor nodes to calculate their next state (e.g. most {@link
- * de.bioforscher.simulation.reactions.Reaction}s). Modules that implement {@link ImmediateUpdateBehavior} are mostly
+ * Reaction}s). Modules that implement {@link ImmediateUpdateBehavior} are mostly
  * "embarrassingly parallel".
  *
  * @see <a href="https://en.wikipedia.org/wiki/Embarrassingly_parallel">Wikipedia: Embarrassingly parallel</a>

@@ -1,11 +1,11 @@
-package de.bioforscher.simulation.model.awesome.modules.diffusion;
+package de.bioforscher.simulation.modules.diffusion;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.awesome.modules.model.CumulativeUpdateBehavior;
-import de.bioforscher.simulation.model.awesome.modules.model.Module;
-import de.bioforscher.simulation.model.awesome.modules.model.PotentialUpdate;
+import de.bioforscher.simulation.modules.model.CumulativeUpdateBehavior;
+import de.bioforscher.simulation.modules.model.Module;
+import de.bioforscher.simulation.modules.model.PotentialUpdate;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.Diffusivity;

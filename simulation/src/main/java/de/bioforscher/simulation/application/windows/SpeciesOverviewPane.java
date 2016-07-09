@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.components.SpeciesCard;
-import de.bioforscher.simulation.reactions.Reaction;
+import de.bioforscher.simulation.deprecated.Reaction;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;

@@ -6,13 +6,13 @@ import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.simulation.deprecated.*;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.GraphAutomaton;
-import de.bioforscher.simulation.model.deprecated.Diffusion;
-import de.bioforscher.simulation.model.deprecated.RecurrenceDiffusion;
-import de.bioforscher.simulation.reactions.*;
+import de.bioforscher.simulation.reactions.EnzymeReaction;
+import de.bioforscher.simulation.reactions.EquilibriumReaction;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

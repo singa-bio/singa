@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.model.deprecated;
+package de.bioforscher.simulation.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
@@ -14,6 +14,7 @@ import java.util.Map;
  * given node.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public interface Diffusion {
 

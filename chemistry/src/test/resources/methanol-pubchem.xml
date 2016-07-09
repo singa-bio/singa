@@ -1951,7 +1951,8 @@
                 <Reference>Goldfrank, L.R. (ed). Goldfrank&apos;s Toxicologic Emergencies. 7th Edition McGraw-Hill New
                     York, New York 2002., p. 982
                 </Reference>
-                <StringValue>The rate of absorption /of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                <StringValue>The rateConstant of absorption /of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     from the gastrointestinal tract is approximately/... 8.4 mg/sq cm/hr. Time to peak serum
                     concentration... after ingestion /is/... 30-60 minutes for &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;...
@@ -2014,12 +2015,14 @@
                     alcohol&lt;/a&gt; content. Using urinary &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl
                     alcohol&lt;/a&gt; concentrations as an index of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl alcohol&lt;/a&gt;
-                    absorption, it was concluded that the rate of absorption was proportional to the concentration of
+                    absorption, it was concluded that the rateConstant of absorption was proportional to the
+                    concentration of
                     the vapor inhaled. Exposure to &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl
                     alcohol&lt;/a&gt; vapor at a concentration of 1,430 mg/cu m (approximately 1,100 ppm) for 2 1/2 hr
                     resulted in a urinary &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl
                     alcohol&lt;/a&gt; concentration of 2.56 mg/100 mL. Exposure periods were not sufficiently long to
-                    determine whether the rate of excretion would increase to equal the rate of absorption. An exposure
+                    determine whether the rateConstant of excretion would increase to equal the rateConstant of
+                    absorption. An exposure
                     period of 3-4 hr was all that could be reasonably tolerated. The threshold of intoxication was
                     calculated for these two workers as 2,800 ppm (3,670 mg/cu m) and 3,000 ppm (3,930 mg/cu m)
                     respectively.
@@ -2088,9 +2091,11 @@
                 <Reference>Bingham, E.; Cohrssen, B.; Powell, C.H.; Patty&apos;s Toxicology Volumes 1-9 5th ed. John
                     Wiley &amp; Sons. New York, N.Y. (2001)., p. V6 p.375
                 </Reference>
-                <StringValue>The rate of elimination for &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                <StringValue>The rateConstant of elimination for &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     from the blood is much lower than that of &lt;a class=&quot;pubchem-internal-link CID-702&quot;
-                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;. The rate of
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;. The
+                    rateConstant of
                     &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     disappearance from the blood also depends on dose. Elimination follows first order kinetics. The rat
                     and the monkey have similar capabilities for eliminating &lt;a class=&quot;pubchem-internal-link
@@ -2212,9 +2217,10 @@
                 <Reference>Bingham, E.; Cohrssen, B.; Powell, C.H.; Patty&apos;s Toxicology Volumes 1-9 5th ed. John
                     Wiley &amp; Sons. New York, N.Y. (2001)., p. V6 p.382
                 </Reference>
-                <StringValue>The dermal uptake rate of liquid &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                <StringValue>The dermal uptake rateConstant of liquid &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt; applied to
-                    the forearm of human volunteers was 11.5 mg/sq cm/hr. An absorption rate of 0.145 mg/sq cm/min was
+                    the forearm of human volunteers was 11.5 mg/sq cm/hr. An absorption rateConstant of 0.145 mg/sq
+                    cm/min was
                     observed after application to the forearm for 15 min, increasing to 0.22 and then decreasing to
                     0.185 mg/sq cm/min after 35 and 60 min, respectively. When 15 mL of &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
@@ -2293,7 +2299,8 @@
                 <Reference>WHO; Environ Health Criteria 196: Methanol p.58 (1997). Available from, as of July 14, 2005:
                     http://www.inchem.org/documents/ehc/ehc/ehc196.htm
                 </Reference>
-                <StringValue>Skin absorption rate studies of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                <StringValue>Skin absorption rateConstant studies of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     ranging from 0.031-0.241 mg/sq cm per min conducted in human volunteers showed that an average of
                     0.192 mg &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;/sq
                     cm per min is absorbed through direct contact of the skin to &lt;a class=&quot;pubchem-internal-link
@@ -2332,7 +2339,8 @@
                 <Reference>WHO; Environ Health Criteria 196: Methanol p.58 (1997). Available from, as of July 14, 2005:
                     http://www.inchem.org/documents/ehc/ehc/ehc196.htm
                 </Reference>
-                <StringValue>The rate of absorption into the skin has been found to be higher with M-85 (85% &lt;a
+                <StringValue>The rateConstant of absorption into the skin has been found to be higher with M-85 (85%
+                    &lt;a
                     class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;-15%
                     gasoline) than with pure &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;.
                     The gasoline was suggested to act by drying out the skin allowing the &lt;a class=&quot;pubchem-internal-link
@@ -2354,13 +2362,15 @@
                     concentration-time data were consistent with saturable maternal elimination and apparent first-order
                     transfer between maternal and conceptual compartments. At distribution equilibrium, conceptual &lt;a
                     class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    concentrations exceeded those in the dam by approximately 25%. The initial rate of conceptual
+                    concentrations exceeded those in the dam by approximately 25%. The initial rateConstant of
+                    conceptual
                     permeation of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     was proportional to the reciprocal of maternal blood &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     concentration (r2 = 0.910). The data indicated that high circulating maternal &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    concentrations decrease the rate of presentation of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                    concentrations decrease the rateConstant of presentation of &lt;a class=&quot;pubchem-internal-link
+                    CID-887&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt; and 3H2O
                     to the conceptus, and, depending on the severity of the decrease, fetal hypoxia could also result
                 </StringValue>
@@ -2496,7 +2506,8 @@
                 <StringValue>Metabolism of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     occurs in a three-step process initially involving oxidation to &lt;a class=&quot;pubchem-internal-link
                     CID-712&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formaldehyde&quot;&gt;formaldehyde&lt;/a&gt;
-                    by hepatic alcohol dehydrogenase, which is a saturable rate-limiting process. In the second step,
+                    by hepatic alcohol dehydrogenase, which is a saturable rateConstant-limiting process. In the second
+                    step,
                     &lt;a class=&quot;pubchem-internal-link CID-712&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formaldehyde&quot;&gt;formaldehyde&lt;/a&gt;
                     is oxidized by aldehyde dehydrogenase to &lt;a class=&quot;pubchem-internal-link CID-284&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formic%20acid&quot;&gt;formic
                     acid&lt;/a&gt; or &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
@@ -2561,7 +2572,7 @@
                 </Reference>
                 <StringValue>Oxidation of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     appears to occur by coupled peroxidative reactions catalyzed by hepatic catalase, and in rats occurs
-                    at a much slower rate (25 mg/kg/hr) than oxidation of &lt;a class=&quot;pubchem-internal-link
+                    at a much slower rateConstant (25 mg/kg/hr) than oxidation of &lt;a class=&quot;pubchem-internal-link
                     CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;
                     (175 mg/kg/hr).
                 </StringValue>
@@ -2581,7 +2592,8 @@
                     and &lt;a class=&quot;pubchem-internal-link CID-284&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formic%20acid&quot;&gt;formic
                     acid&lt;/a&gt;. Oxidation of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;,
                     like that of &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;,
-                    proceeds at a rate that is independent of its concentration in the blood. However, the rate is only
+                    proceeds at a rateConstant that is independent of its concentration in the blood. However, the
+                    rateConstant is only
                     one-seventh that of the oxidation of &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;,
                     and complete oxidation and excretion of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     thus usually require several days.
@@ -2659,7 +2671,8 @@
                     toxicity was allowed to develop, it was reversed after &lt;a class=&quot;pubchem-internal-link
                     CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                     treatment. ...At low concentrations &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    metabolism follows zero-order kinetics at a rate of 8.5 mg/dL/hr. At much higher &lt;a class=&quot;pubchem-internal-link
+                    metabolism follows zero-order kinetics at a rateConstant of 8.5 mg/dL/hr. At much higher &lt;a
+                    class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     concentrations first-order kinetics occur, possibly because of increased pulmonary elimination. In
                     the presence of therapeutic levels of &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;,
@@ -2691,7 +2704,7 @@
                 <StringValue>The disposition of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     and its putative toxic metabolite &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     has been studied in humans, non-human primates, and rodents after exposure to high, neurotoxic
-                    doses. The rate at which rodents detoxify &lt;a class=&quot;pubchem-internal-link CID-283&quot;
+                    doses. The rateConstant at which rodents detoxify &lt;a class=&quot;pubchem-internal-link CID-283&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt; is more
                     rapid than that of primates. &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Formate&quot;&gt;Formate&lt;/a&gt;,
                     an endogenous biological substrate, is detoxified by metabolism to /&lt;a class=&quot;pubchem-internal-link
@@ -2755,13 +2768,14 @@
                     CID-1140&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/toluene&quot;&gt;toluene&lt;/a&gt;
                     exposure one. The biological half time of &lt;a class=&quot;pubchem-internal-link CID-1140&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/toluene&quot;&gt;toluene&lt;/a&gt; in blood in
-                    the simultaneous exposure group was shorter than that in the single exposure one. The excretion rate
+                    the simultaneous exposure group was shorter than that in the single exposure one. The excretion
+                    rateConstant
                     of &lt;a class=&quot;pubchem-internal-link CID-464&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hippuric%20acid&quot;&gt;hippuric
                     acid&lt;/a&gt; in urine in the simultaneous exposure group was significantly lower than that in the
                     &lt;a class=&quot;pubchem-internal-link CID-1140&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/toluene&quot;&gt;toluene&lt;/a&gt;
                     exposure one when both the &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     and &lt;a class=&quot;pubchem-internal-link CID-1140&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/toluene&quot;&gt;toluene&lt;/a&gt;
-                    concentrations were 300 ppm. These results suggest that the metabolic rate of &lt;a class=&quot;pubchem-internal-link
+                    concentrations were 300 ppm. These results suggest that the metabolic rateConstant of &lt;a class=&quot;pubchem-internal-link
                     CID-1140&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/toluene&quot;&gt;toluene&lt;/a&gt;
                     was enhanced by &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;.
                     On the other hand, the biological half time of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
@@ -2787,7 +2801,8 @@
                     poisoning is related to the ability of an animal to metabolize &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
-                    dioxide&lt;/a&gt;. Since the rate of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
+                    dioxide&lt;/a&gt;. Since the rateConstant of &lt;a class=&quot;pubchem-internal-link CID-283&quot;
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     oxidation is related to hepatic &lt;a class=&quot;pubchem-internal-link CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
                     content and the activites of &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                     dependent enzymes, studies were designed to determine hepatic concentrations of hepatic &lt;a class=&quot;pubchem-internal-link
@@ -2950,7 +2965,7 @@
                     mechanisms are exhausted, blood pH begins to drop. &lt;a class=&quot;pubchem-internal-link CID-283&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Formate&quot;&gt;Formate&lt;/a&gt; accumulates
                     and produces acidosis in the &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    poisoned monkey, but not in the rat, apparently due to a slower rate of &lt;a class=&quot;pubchem-internal-link
+                    poisoned monkey, but not in the rat, apparently due to a slower rateConstant of &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     metabolism to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
                     dioxide&lt;/a&gt; in the monkey. ... Studies demonstrating the role of alcohol dehydrogenase in &lt;a
@@ -2960,7 +2975,7 @@
                     metabolism in rats apparently does not function in the monkey. &lt;a class=&quot;pubchem-internal-link
                     CID-712&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Formaldehyde&quot;&gt;Formaldehyde&lt;/a&gt;
                     and &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                    metabolism are also examined. The regulation of the rate of &lt;a class=&quot;pubchem-internal-link
+                    metabolism are also examined. The regulation of the rateConstant of &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     metabolism is governed by regulation of the hepatic &lt;a class=&quot;pubchem-internal-link
                     CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
@@ -2982,7 +2997,8 @@
                     poisoning is related to the ability of an animal to metabolize &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
-                    dioxide&lt;/a&gt;. Since the rate of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
+                    dioxide&lt;/a&gt;. Since the rateConstant of &lt;a class=&quot;pubchem-internal-link CID-283&quot;
+                    href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     oxidation is related to hepatic &lt;a class=&quot;pubchem-internal-link CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
                     content and the activites of &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                     dependent enzymes, studies were designed to determine hepatic concentrations of hepatic &lt;a class=&quot;pubchem-internal-link
@@ -6269,7 +6285,7 @@
                         normally reacts slowly with &lt;a class=&quot;pubchem-internal-link CID-14798&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/sodium%20hydroxide&quot;&gt;sodium
                         hydroxide&lt;/a&gt; owing to the insolublility of the latter. The presence of &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        increases the rate of reaction by increasing the degree of ocntact between &lt;a class=&quot;pubchem-internal-link
+                        increases the rateConstant of reaction by increasing the degree of ocntact between &lt;a class=&quot;pubchem-internal-link
                         CID-6212&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/chloroform&quot;&gt;chloroform&lt;/a&gt;
                         and alkali. Addition of &lt;a class=&quot;pubchem-internal-link CID-6212&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/chloroform&quot;&gt;chloroform&lt;/a&gt;
                         to a 4:1 mixture of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
@@ -7503,7 +7519,7 @@
                         are potent inhibitors of alcohol dehydrogenase and catalase... both are active in vivo.
                         ...Administered separately or together... /to rats/. Findings confirmed... that &lt;a class=&quot;pubchem-internal-link
                         CID-1639&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/3-amino-1%2C2%2C4-triazole&quot;&gt;3-amino-1,2,4-triazole&lt;/a&gt;...
-                        decreased rate of &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
+                        decreased rateConstant of &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
                         dioxide&lt;/a&gt; production. ...&lt;a class=&quot;pubchem-internal-link CID-1048&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Pyrazole&quot;&gt;Pyrazole&lt;/a&gt;...
                         substantially reduced oxidation of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
@@ -7557,7 +7573,8 @@
                         oxide&lt;/a&gt; on &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         oxidation resulting in a marked decrease in blood &lt;a class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                        levels and an increase in the rate of (14)&lt;a class=&quot;pubchem-internal-link CID-280&quot;
+                        levels and an increase in the rateConstant of (14)&lt;a class=&quot;pubchem-internal-link
+                        CID-280&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon dioxide&lt;/a&gt;
                         formation from &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;.
                         &lt;a class=&quot;pubchem-internal-link multiple-CIDs&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Methionine&quot;&gt;Methionine&lt;/a&gt;
@@ -7668,7 +7685,8 @@
                         higher dose of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         also reduced fetal weights. Administration of 2ME or &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        on day 13 increased the rate of malformations, and there was evidence of a positive interaction
+                        on day 13 increased the rateConstant of malformations, and there was evidence of a positive
+                        interaction
                         between 2ME and &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;.
                         Fetal weights were reduced by 2ME and &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt; alone,
@@ -7774,7 +7792,7 @@
                         reactions. Elimination of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         from the blood via the urine and exhaled air and by metabolism appears to be slow in all
                         species, especially when compared to &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;.
-                        ... It is the rate of metabolic detoxification, or removal of &lt;a class=&quot;pubchem-internal-link
+                        ... It is the rateConstant of metabolic detoxification, or removal of &lt;a class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         that is vastly different between rodents and primates and is the basis for the dramatic
                         differences in &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
@@ -7823,7 +7841,8 @@
                         lower levels of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         is a broad range of ocular effects. ... The toxicity is manifest if &lt;a class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                        generation continues at a rate that exceeds its rate of metabolism. ... The minimum lethal dose
+                        generation continues at a rateConstant that exceeds its rateConstant of metabolism. ... The
+                        minimum lethal dose
                         of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         in the absence of medical treatment is between 0.3 and 1 g/kg. The minimum dose causing
                         permanent visual defects is unknown. ... Wide interindividual variability of the toxic dose is a
@@ -7835,7 +7854,7 @@
                         which slows the entrance of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         into the metabolic pathway, and (2) hepatic &lt;a class=&quot;pubchem-internal-link CID-6037&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt; status,
-                        which governs the rate of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
+                        which governs the rateConstant of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         detoxification. The symptoms and signs of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning, which may not appear until after an asymptomatic period ... include visual
@@ -8225,7 +8244,7 @@
                     <StringValue>Advanced treatment: Consider orotracheal or nasotracheal intubation for airway control
                         in the patient who is unconscious, has severe pulmonary edema, or is in severe respiratory
                         distress. Start IV administration of 0.9% saline (NS) or lactated Ringer&apos;s (LR) /SRP:
-                        &quot;To keep open&quot;, minimal flow rate/. For hypotension with signs of hypovolemia,
+                        &quot;To keep open&quot;, minimal flow rateConstant/. For hypotension with signs of hypovolemia,
                         administer fluid cautiously. Watch for signs of fluid overload ... . Treat seizures with &lt;a
                         class=&quot;pubchem-internal-link CID-3016&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/diazepam&quot;&gt;diazepam&lt;/a&gt;
                         or &lt;a class=&quot;pubchem-internal-link CID-3958&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/lorazepam&quot;&gt;lorazepam&lt;/a&gt;
@@ -8664,7 +8683,8 @@
                         half-life elimination during hemodialysis was 1.80+/-0.78 hr, which was statistically different
                         from the values observed before or in the absence of dialysis (6.04+/-3.26 hr, P=0.004). The
                         mean hemodialysis &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                        clearance rate calculated in eight cases was 176+/-43 mL/min. A rebound in plasma &lt;a class=&quot;pubchem-internal-link
+                        clearance rateConstant calculated in eight cases was 176+/-43 mL/min. A rebound in plasma &lt;a
+                        class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         concentration was observed in three patients after the discontinuation of hemodialysis.
                     </StringValue>
@@ -8737,7 +8757,7 @@
                         (&amp;gt; or = 26.2 mM/L- &amp;gt; or = 20 mg/dL) died or had &lt;a class=&quot;pubchem-internal-link
                         CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;-induced
                         morbidity despite wide variation in &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;
-                        levels. The rate of clinically important adverse effects related to &lt;a class=&quot;pubchem-internal-link
+                        levels. The rateConstant of clinically important adverse effects related to &lt;a class=&quot;pubchem-internal-link
                         CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;
                         used as an antidote to treat &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning in children was either absent or low in a tertiary care pediatric hospital setting.
@@ -8858,7 +8878,7 @@
                     <Name>Human Toxicity Excerpts</Name>
                     <Description>**PEER REVIEWED**</Description>
                     <Reference>Bogomolova IN et al; Sud Med Ekspert 47 (5): 22-5 (2004)</Reference>
-                    <StringValue>/SIGNS AND SYMPTOMS/ ...A high frequency rate of /disseminated intravascular
+                    <StringValue>/SIGNS AND SYMPTOMS/ ...A high frequency rateConstant of /disseminated intravascular
                         coagulation/ -syndrome is shown for the condition /of intoxication of alcohol surrogates/. A
                         majority of thrombi accumulates at places with the highest concentrations of toxic substances as
                         well as at those places, through which poisoning substances are brought out of the body, i.e. in
@@ -9522,9 +9542,11 @@
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;-poisoned
                         patients in Loghman-Hakim hospital poison center during 9 months from October 1999-June 2000.
                         During this time 25 &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;-poisoned
-                        patients were admitted. The mortality rate was 12 (48%). Amongst survivors, three (23%) of the
+                        patients were admitted. The mortality rateConstant was 12 (48%). Amongst survivors, three (23%)
+                        of the
                         patients developed blindness due to their poisoning and the other 10 (77%) fully recovered
-                        without any complication. The mortality rate in comatose patients was nine (90%) while in
+                        without any complication. The mortality rateConstant in comatose patients was nine (90%) while
+                        in
                         non-comatose patients it was three (20%) (P&amp;lt;0.001). There was a significant difference in
                         mean pH in the first arterial blood gas of patients who subsequently died (6.82+/-0.03) and
                         survivors (7.15+/-0.06) (P&amp;lt;0.001, M-W). The mean time interval between poisoning and
@@ -9918,7 +9940,7 @@
                     <StringValue>/LABORATORY ANIMALS: Acute Exposure/ In a sensory irritation test, &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         produced sensory irritation in mice at very high vapor concentrations with a RD50 (concentration
-                        that decreases respiration rate by 50%) of 25,300 ppm and 41,514.
+                        that decreases respiration rateConstant by 50%) of 25,300 ppm and 41,514.
                     </StringValue>
                 </Information>
                 <Information>
@@ -9945,7 +9967,8 @@
                     </Reference>
                     <StringValue>/LABORATORY ANIMALS: Acute Exposure/ Exposure of animals /to &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        in air/ ... may induce ... increased rate of respiration ... nervous depression followed by
+                        in air/ ... may induce ... increased rateConstant of respiration ... nervous depression followed
+                        by
                         excitation, irritation of mucous membranes, ataxia, partial paralysis, agony, prostration, CNS
                         depression, convulsions, decrease in rectal temperature, loss in weight and death.
                     </StringValue>
@@ -10122,7 +10145,8 @@
                     </Reference>
                     <StringValue>/LABORATORY ANIMALS: Subchronic or Prechronic Exposure/ Rats received 3.25 mL &lt;a
                         class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;/kg
-                        bw for 6 months. The treatment caused a decline in the heart contraction rate and in skin
+                        bw for 6 months. The treatment caused a decline in the heart contraction rateConstant and in
+                        skin
                         temperature by the end of the experiment. Myocardial hypoxia developed.
                     </StringValue>
                 </Information>
@@ -10325,7 +10349,8 @@
                         higher dose of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         also reduced fetal weights. Administration of 2ME or &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        on day 13 increased the rate of malformations, and there was evidence of a positive interaction
+                        on day 13 increased the rateConstant of malformations, and there was evidence of a positive
+                        interaction
                         between 2ME and &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;.
                         Fetal weights were reduced by 2ME and &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt; alone,
@@ -10558,7 +10583,8 @@
                         a newborn health assessment was conducted. &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Methanol&quot;&gt;Methanol&lt;/a&gt;
                         exposure did not alter menstrual cycles, the number of breedings to conception or conception
-                        rate. A total of 34 live-born infants were delivered (control=8, 200 ppm=9, 600 ppm=8, 1800
+                        rateConstant. A total of 34 live-born infants were delivered (control=8, 200 ppm=9, 600 ppm=8,
+                        1800
                         ppm=9). One female each in the control and 600-ppm group delivered a stillborn infant and a
                         cesarean section (C-section) was required to deliver a hydrocephalic infant who died in utero in
                         the maternal 1800-ppm group. Although not statistically significant, five MeOH-exposed females
@@ -10691,7 +10717,8 @@
                         concentration being 32% of the controls. A significant change in luteinizing hormone
                         concentration after exposure to 10,000 ppm of &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt; for
-                        six wk was also demonstrated while follicle stimulating and the elimination rate of &lt;a class=&quot;pubchem-internal-link
+                        six wk was also demonstrated while follicle stimulating and the elimination rateConstant of &lt;a
+                        class=&quot;pubchem-internal-link
                         CID-6013&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/testosterone&quot;&gt;testosterone&lt;/a&gt;
                         from the blood (which indicates effects on the testicular synthesis of &lt;a class=&quot;pubchem-internal-link
                         CID-6013&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/testosterone&quot;&gt;testosterone&lt;/a&gt;)
@@ -10978,7 +11005,8 @@
                         by gavage exhibited an altered response in an operant conditioning paradigm designed to assess
                         motor deficits produced by neurotoxicants. &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Methanol&quot;&gt;Methanol&lt;/a&gt;
-                        decreased the rate of response in a dose-related fashion that suggested impaired coordination
+                        decreased the rateConstant of response in a dose-related fashion that suggested impaired
+                        coordination
                         and/or reduced endurance.
                     </StringValue>
                 </Information>
@@ -11078,7 +11106,8 @@
                         exposure did not affect performance in the suckling or odor aversion test. The exposed rats
                         showed lower levels of motor activity on PND18, but higher levels of activity on PND25. When
                         tested as adults, &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        exposed male rats showed decreases in the rate of running in the running wheel test compared to
+                        exposed male rats showed decreases in the rateConstant of running in the running wheel test
+                        compared to
                         their baseline performance. Exposed females showed increased rates of running. &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Methanol&quot;&gt;Methanol&lt;/a&gt;
                         exposed rats of both sexes showed impaired performance on the SSDL test at asymptotic levels of
@@ -11208,7 +11237,8 @@
                         ether&lt;/a&gt;). When HCT-15 cells, derived from human colon cancer or AGS cells, derived from
                         human gastric cancer, were cultured with these fractions, the anthocyanin fraction from the red
                         wine and the non-anthocyanic substances extracted from red and white wines suppressed the growth
-                        of the cells, and the suppression rate by the anthocyanin fraction was significantly higher than
+                        of the cells, and the suppression rateConstant by the anthocyanin fraction was significantly
+                        higher than
                         that of the other fractions. Thin-layer chromatographic analysis revealed mostly &lt;a class=&quot;pubchem-internal-link
                         CID-128853&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/delphinidin&quot;&gt;delphinidin&lt;/a&gt;
                         in the anthocyanin fraction. The other fractions contained mostly flavonoids and their
@@ -11249,7 +11279,7 @@
                         engine exhausts on immune function in RAW264.7 cell and rabbit alveolar macrophages. Results
                         showed that both gasoline and &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         engine exhaust could evidently inhibit RAW264.7 cell proliferation, promote RAW264.7 cell
-                        apoptosis, decrease E-rosette formation rate and inhibit anti-tumor effects of alveolar
+                        apoptosis, decrease E-rosette formation rateConstant and inhibit anti-tumor effects of alveolar
                         macrophages, at the same time, these effects of gasoline engine exhaust were far stronger than
                         those of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         engine exhaust. In addition, gasoline engine exhaust could significantly inhibit activities of
@@ -11587,7 +11617,7 @@
                     </Reference>
                     <StringValue>EC50; Species: Chlorella fusca ssp. vacuolata (Green Algae) strain 21115; Conditions:
                         freshwater, static, 28 deg C, pH 6.9; Concentration: 0.77 umol/L for 24 hr; Effect: decreased
-                        population growth rate /100% purity/
+                        population growth rateConstant /100% purity/
                     </StringValue>
                 </Information>
                 <Information>
@@ -11611,7 +11641,7 @@
                     </Reference>
                     <StringValue>EC50; Species: Pseudokirchneriella subcapitata (Green Algae) 15000 cells/mL;
                         Conditions: freshwater, static, 24 deg C; Concentration: &amp;gt;60400 ug/L for 48 hr; Effect:
-                        population growth rate /99% purity formulation/
+                        population growth rateConstant /99% purity formulation/
                     </StringValue>
                 </Information>
                 <Information>
@@ -12383,7 +12413,7 @@
                     <Description>**PEER REVIEWED**</Description>
                     <Reference>(1) Bidleman TF; Environ Sci Technol 22: 361-367 (1988) (2) Boublik T et al, eds; The
                         Vapour Pressures of Pure Substances. 2nd rev ed. Amsterdam: Elsevier (1984) (3) Kwok ESC,
-                        Atkinson R; Estimation of hydroxyl radical reaction rate constants for gas-phase organic
+                        Atkinson R; Estimation of hydroxyl radical reaction rateConstant constants for gas-phase organic
                         compounds using a structure-reactivity relationship: an update. Riverside, CA: Univ CA,
                         Statewide Air Pollut Res CTR., CMA Contract No. AFC-8.0-OR-8.0-OR (1994) (4) Grosjean D; J Braz
                         Chem Soc 8: 433-442 (1997)
@@ -12396,7 +12426,8 @@
                         is degraded in the atmosphere by reaction with photochemically-produced &lt;a class=&quot;pubchem-internal-link
                         CID-961&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hydroxyl&quot;&gt;hydroxyl&lt;/a&gt;
                         radicals(SRC); the half-life for this reaction in air is estimated to be 17 days(SRC),
-                        calculated from its rate constant of 9.4X10-13 cu cm/molecule-sec at 25 deg C(3). The major
+                        calculated from its rateConstant constant of 9.4X10-13 cu cm/molecule-sec at 25 deg C(3). The
+                        major
                         degradation product from reaction with &lt;a class=&quot;pubchem-internal-link CID-961&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hydroxyl&quot;&gt;hydroxyl&lt;/a&gt;
                         radicals is &lt;a class=&quot;pubchem-internal-link CID-712&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formaldehyde&quot;&gt;formaldehyde&lt;/a&gt;(4).
@@ -12506,7 +12537,8 @@
                     <ReferenceNumber>1</ReferenceNumber>
                     <Name>Abiotic Degredation</Name>
                     <Description>**PEER REVIEWED**</Description>
-                    <Reference>(1) Kwok ESC, Atkinson R; Estimation of hydroxyl radical reaction rate constants for
+                    <Reference>(1) Kwok ESC, Atkinson R; Estimation of hydroxyl radical reaction rateConstant constants
+                        for
                         gas-phase organic compounds using a structure-reactivity relationship: an update. Riverside, CA:
                         Univ CA, Statewide Air Pollut Res CTR., CMA Contract NO. AFC-8.0-OR-8.0-OR (1994) (2) Lyman WJ
                         et al; Handbook of Chemical Property Estimation Methods. Washington, DC: Amer Chem Soc pp. 7-4,
@@ -12515,7 +12547,7 @@
                         Mill T et al; Science 207: 886-887 (1980) (7) Gramatica P et al; Atmos Environ 37: 3115-3124
                         (2003) (8) Atkinson R et al; Environ Sci Technol 19: 87-90 (1985)
                     </Reference>
-                    <StringValue>The rate constant for the vapor-phase reaction of &lt;a class=&quot;pubchem-internal-link
+                    <StringValue>The rateConstant constant for the vapor-phase reaction of &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         with photochemically-produced &lt;a class=&quot;pubchem-internal-link CID-961&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hydroxyl&quot;&gt;hydroxyl&lt;/a&gt;
                         radicals is 9.44X10-13 cu cm/molecule-sec at 25 deg C(1). This corresponds to an atmospheric
@@ -12531,14 +12563,15 @@
                         in aqueous solution exhibited no degradation when exposed to sunlight using an EPA test
                         protocol(3). Sediment and clay suspension solution did not photocatalyze the degradation of &lt;a
                         class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        in aqueous solution during irradiation with UV light(4). The rate constant for the reaction of
+                        in aqueous solution during irradiation with UV light(4). The rateConstant constant for the
+                        reaction of
                         &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         with &lt;a class=&quot;pubchem-internal-link CID-961&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hydroxyl&quot;&gt;hydroxyl&lt;/a&gt;
                         radicals in aqueous solutions of natural &lt;a class=&quot;pubchem-internal-link CID-962&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/water&quot;&gt;water&lt;/a&gt; is 9.7X10+8
                         L/mol-sec(5); this corresponds to an aquatic half-life of about 2.5 years at an aquatic
                         concentration of 1X10-17 &lt;a class=&quot;pubchem-internal-link CID-961&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/hydroxyl&quot;&gt;hydroxyl&lt;/a&gt;
-                        radicals per liter(6). The rate constant for the vapor-phase reaction of &lt;a class=&quot;pubchem-internal-link
+                        radicals per liter(6). The rateConstant constant for the vapor-phase reaction of &lt;a class=&quot;pubchem-internal-link
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         with &lt;a class=&quot;pubchem-internal-link CID-943&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/nitrate&quot;&gt;nitrate&lt;/a&gt;
                         radicals is 2.1X10-16 cu cm/molecule-sec at 25 deg C(7). This corresponds to an atmospheric

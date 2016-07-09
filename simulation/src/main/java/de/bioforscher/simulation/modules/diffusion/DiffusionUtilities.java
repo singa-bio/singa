@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.model.awesome.modules.diffusion;
+package de.bioforscher.simulation.modules.diffusion;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
