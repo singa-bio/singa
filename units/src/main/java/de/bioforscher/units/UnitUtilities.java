@@ -98,7 +98,7 @@ public class UnitUtilities {
     public static String formatMultidimensionalUnit(Unit<?> multiDimensionalUnit) {
         StringBuilder sb = new StringBuilder();
         sb.append(getUnitPrefixFromDivisor(multiDimensionalUnit).getSymbol());
-        Map<? extends Unit<?>, Integer> unitsMap = multiDimensionalUnit.getProductUnits();
+        Map<? extends Unit<?>, Integer> unitsMap = multiDimensionalUnit.getBaseUnits();
         for (Unit<?> compoundUnit : unitsMap.keySet()) {
             UnitName unitName = UnitUtilities.getUnitNameFromUnit(compoundUnit);
             sb.append(unitName.getSymbol());

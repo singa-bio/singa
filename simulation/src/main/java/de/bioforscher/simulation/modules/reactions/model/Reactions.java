@@ -6,6 +6,7 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.model.ImmediateUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
+import de.bioforscher.simulation.modules.reactions.implementations.enzyme.kineticLaws.KineticLaw;
 import de.bioforscher.units.UnitDictionary;
 import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
@@ -17,7 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Christoph on 06.07.2016.
+ * The Reactions module defines the entirety of chemical conversions that take place in the
+ * {@link de.bioforscher.simulation.modules.model.Simulation Simulation}. All Reactions are calculated according to
+ * their specified {@link KineticLaw KineticLaws}s
+ * and new concentrations are set using the {@link Reactions#applyTo(AutomatonGraph)} method.
  */
 public class Reactions implements Module, ImmediateUpdateBehavior {
 
@@ -64,6 +68,7 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
         // update every concentration using the calculateUpdateMethod
         this.velocities.forEach(((entity, velocity) ->
                 updateSpecies(node, entity)));
+        this.velocities.clear();
     }
 
     private void updateVelocity(StoichiometricReactant reactant, Quantity<ReactionRate> acceleration) {

@@ -1,5 +1,6 @@
 package de.bioforscher.simulation.modules.reactions.model;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Created by Christoph on 09.07.2016.
@@ -61,15 +63,28 @@ public class ReactionsTest {
         NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitDictionary.PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(dpo, ReactantRole.DECREASING),
-                new StoichiometricReactant(ndo, ReactantRole.INCREASING),
+                new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),
+                new StoichiometricReactant(ndo, ReactantRole.INCREASING, 4),
                 new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
         ));
 
         Reactions reactions = new Reactions();
         reactions.getReactions().add(reaction);
 
-        reactions.applyTo(graph);
+        String header = graph.getNode(0).getConcentrations().keySet().stream()
+                .map(ChemicalEntity::getName)
+                .collect(Collectors.joining(","));
+        System.out.println("time," + header);
+
+        for (int time = 0; time < 10000; time++) {
+            reactions.applyTo(graph);
+            String csvLine = graph.getNode(0).getConcentrations().entrySet().stream()
+                    .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
+                    .collect(Collectors.joining(","));
+            System.out.println(time + "," + csvLine);
+        }
+
+
 
     }
 

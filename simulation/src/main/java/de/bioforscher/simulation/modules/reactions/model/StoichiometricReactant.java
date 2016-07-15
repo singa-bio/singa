@@ -14,6 +14,11 @@ public class StoichiometricReactant extends Reactant {
     private double reactionOrder;
     private boolean rateDetermining;
 
+    public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber) {
+        this(entity, role);
+        this.stoichiometricNumber = stoichiometricNumber;
+    }
+
     public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, boolean rateDetermining) {
         this(entity, role);
         this.rateDetermining = rateDetermining;

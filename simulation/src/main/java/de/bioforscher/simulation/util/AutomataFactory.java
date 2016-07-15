@@ -12,7 +12,6 @@ import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.GraphAutomaton;
 import de.bioforscher.simulation.reactions.EnzymeReaction;
-import de.bioforscher.simulation.reactions.EquilibriumReaction;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

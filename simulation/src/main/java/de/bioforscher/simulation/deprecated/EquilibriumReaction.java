@@ -1,7 +1,6 @@
-package de.bioforscher.simulation.reactions;
+package de.bioforscher.simulation.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.deprecated.Reaction;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;

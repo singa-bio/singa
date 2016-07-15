@@ -12,7 +12,6 @@ import java.lang.reflect.InvocationTargetException;
  * as final.
  *
  * @author Christoph Leberecht
- * @version 1.1.2
  * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia: Matrix</a>
  */
 public class RegularMatrix implements Matrix {

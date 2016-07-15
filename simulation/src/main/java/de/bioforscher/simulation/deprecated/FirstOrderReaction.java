@@ -58,6 +58,7 @@ public class FirstOrderReaction extends Reaction {
                 EnvironmentalVariables.getInstance().getTimeStep());
         // v = k * c(A)
         setCurrentVelocity(currentReactionRate.getValue().doubleValue() * rateDeterminingConcentration);
+        System.out.println(getCurrentVelocity());
     }
 
     public static class Builder extends Reaction.Builder<FirstOrderReaction, Builder> {

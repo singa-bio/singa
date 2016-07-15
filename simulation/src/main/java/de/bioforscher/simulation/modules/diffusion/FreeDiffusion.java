@@ -20,9 +20,11 @@ import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
- * concentration.
+ * concentration. This module defines the diffusion between {@link BioNode}s in a {@link AutomatonGraph}, as descibed
+ * by Fick's laws of diffusion.
  *
  * @author Christoph Leberecht
+ * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
  */
 public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 

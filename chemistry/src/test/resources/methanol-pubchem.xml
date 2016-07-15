@@ -1154,7 +1154,7 @@
             </Section>
             <Section>
                 <TOCHeading>Density</TOCHeading>
-                <Description>The density of a substance is its mass per unit volume.</Description>
+                <Description>The density of a substance is its mass per quantity volume.</Description>
                 <Information>
                     <ReferenceNumber>1</ReferenceNumber>
                     <Name>Density</Name>
@@ -1349,7 +1349,7 @@
                 <TOCHeading>Surface Tension</TOCHeading>
                 <Description>Surface tension is a contractive tendency of the surface of a liquid that allows it to
                     resist an external force. It is measured as the energy required to increase the surface area of a
-                    liquid by a unit of area.
+                    liquid by a quantity of area.
                 </Description>
                 <Information>
                     <ReferenceNumber>1</ReferenceNumber>
@@ -8659,7 +8659,7 @@
                     <Reference>Hantson P et al; Hum Exp Toxicol 24 (2): 55-9 (2005)</Reference>
                     <URL>http://www.ncbi.nlm.nih.gov/pubmed/15850279?dopt=Abstract</URL>
                     <StringValue>/HUMAN EXPOSURE STUDIES/ ...The charts of the patients/treated in the same intensive
-                        care unit for severe &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                        care quantity for severe &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning/ admitted between 1987 and 2001 were reviewed. Inclusion criteria were: a history of
                         deliberate &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         ingestion, with a blood &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
@@ -8696,7 +8696,7 @@
                     <Reference>Verhelst D et al; Int J Toxicol 23 (4): 267-73 (2004)</Reference>
                     <URL>http://www.ncbi.nlm.nih.gov/pubmed/15371171?dopt=Abstract</URL>
                     <StringValue>/HUMAN EXPOSURE STUDIES/ ...This is a retrospective analysis of the medical records of
-                        25 consecutive patients admitted to the intensive care unit after severe intentional &lt;a
+                        25 consecutive patients admitted to the intensive care quantity after severe intentional &lt;a
                         class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning. Acute renal impairment was defined as a serum &lt;a class=&quot;pubchem-internal-link
                         CID-588&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/creatinine&quot;&gt;creatinine&lt;/a&gt;

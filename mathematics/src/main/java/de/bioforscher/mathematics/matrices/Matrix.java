@@ -13,7 +13,6 @@ import de.bioforscher.mathematics.vectors.Vector;
  * Each implementation is: addable, subtractable, additively invertible and multipliable.
  *
  * @author Christoph Leberecht
- * @version 1.0.0
  */
 public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
 
@@ -22,7 +21,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * be converted. The new matrix is a copy of the old one.
      *
      * @param matrixClass The new class of the matrix.
-     * @param <M>         Any implementation of this matrix.
+     * @param <M> Any implementation of this matrix.
      * @return The new converted matrix.
      */
     <M extends Matrix> M as(Class<M> matrixClass);
@@ -78,7 +77,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     /**
      * Returns an element of this matrix.
      *
-     * @param rowIndex    The row index.
+     * @param rowIndex The row index.
      * @param columnIndex The column index.
      * @return A single element of this matrix at the given position.
      */
@@ -155,7 +154,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * Asserts that the inner dimensions of the matrix and the dimension of the vector match and throws an
      * {@link IncompatibleDimensionsException} otherwise.
      *
-     * @param vector
+     * @param vector The vector.
      * @throws IncompatibleDimensionsException if the inner (column) dimensions of the matrix and the dimension of
      *                                         the vector do not agree.
      */
@@ -169,8 +168,9 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * Returns {@code true} if this matrix and the given matrix have identical dimensionality and {@code false}
      * otherwise.
      *
-     * @param matrix
-     * @return
+     * @param matrix The matrix.
+     * @return {@code true} if this matrix and the given matrix have identical dimensionality and {@code false}
+     * otherwise.
      */
     @Override
     default boolean hasSameDimensions(Matrix matrix) {

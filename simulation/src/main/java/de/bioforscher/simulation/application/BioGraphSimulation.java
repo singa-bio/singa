@@ -33,16 +33,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
@@ -70,7 +66,7 @@ public class BioGraphSimulation extends Application {
 
         log.log(Level.INFO, "setup automaton");
         // Automata
-        this.automata = AutomataFactory.buildSmallMoleculeDiffusionTestAutomata(10, Quantities.getQuantity(0.1, MICRO(SECOND)));
+        this.automata = AutomataFactory.buildFirstOrderReactionExampleAutomata();
         // this.automata =
         // AutomataFactory.buildDiffusionOptimizationTestAutomata(20,
         // Quantities.getQuantity(0.1, MICRO(SECOND)));
