@@ -1,14 +1,14 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.deprecated;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.deprecated.Diffusion;
-import de.bioforscher.simulation.deprecated.Reaction;
-import de.bioforscher.simulation.deprecated.RecurrenceDiffusion;
+import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.BioEdge;
+import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.NextEpochEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
-import de.bioforscher.simulation.reactions.EnzymeReaction;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 
 import java.io.IOException;
@@ -21,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * This class is used to simulate diffusion and reactions.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
 
@@ -162,6 +163,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     public List<Reaction> getReactions() {
         return this.reactions;
     }
+
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> getListeners() {
         return this.listeners;

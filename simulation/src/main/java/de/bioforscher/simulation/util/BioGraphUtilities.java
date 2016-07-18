@@ -9,6 +9,9 @@ import de.bioforscher.simulation.model.BioNode;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BioGraphUtilities {
 
@@ -27,6 +30,10 @@ public class BioGraphUtilities {
             }
         }
         return results;
+    }
+
+    public static Map<String, ChemicalEntity> gerneratEntityMapFromSet(Set<ChemicalEntity> entities) {
+        return entities.stream().collect(Collectors.toMap(ChemicalEntity::getName, Function.identity()));
     }
 
     /**

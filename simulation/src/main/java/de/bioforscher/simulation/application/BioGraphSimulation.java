@@ -1,6 +1,11 @@
 package de.bioforscher.simulation.application;
 
+import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.core.utility.LogManager;
+import de.bioforscher.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
 import de.bioforscher.simulation.application.components.SpeciesObserverChart;
 import de.bioforscher.simulation.application.windows.EnvironmentalOptionsControlPanel;
@@ -9,15 +14,21 @@ import de.bioforscher.simulation.application.windows.SpeciesOverviewPane;
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
-import de.bioforscher.simulation.deprecated.Diffusion;
-import de.bioforscher.simulation.deprecated.RecurrenceDiffusion;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.GraphAutomaton;
+import de.bioforscher.simulation.model.BioEdge;
+import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.simulation.modules.model.Simulation;
+import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReaction;
+import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
+import de.bioforscher.simulation.modules.reactions.model.Reactions;
+import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.simulation.parser.GraphMLExportService;
 import de.bioforscher.simulation.parser.GraphMLParserService;
-import de.bioforscher.simulation.util.AutomataFactory;
 import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.EnvironmentFactory;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.units.UnitDictionary;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -33,9 +44,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +65,7 @@ public class BioGraphSimulation extends Application {
     private Slider concentrationSlider;
 
     private AutomatonGraph graph;
-    private GraphAutomaton automata;
+    private Simulation simulation;
     private List<SpeciesObserverChart> charts;
 
     public static void main(String[] args) {
@@ -66,11 +79,59 @@ public class BioGraphSimulation extends Application {
 
         log.log(Level.INFO, "setup automaton");
         // Automata
-        this.automata = AutomataFactory.buildFirstOrderReactionExampleAutomata();
-        // this.automata =
-        // AutomataFactory.buildDiffusionOptimizationTestAutomata(20,
-        // Quantities.getQuantity(0.1, MICRO(SECOND)));
-        this.graph = this.automata.getGraph();
+        this.simulation = new Simulation();
+        this.simulation.setGraph(BioGraphUtilities.castUndirectedGraphToBioGraph(
+                GraphFactory.buildCircularGraph(10, new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0)))));
+        this.graph = this.simulation.getGraph();
+
+        this.simulation.getModules().add(new FreeDiffusion());
+
+        ChEBIParserService chebiService = new ChEBIParserService();
+
+        // dinitrogen pentaoxide
+        chebiService.setResource("CHEBI:29802");
+        Species dpo = chebiService.fetchSpecies();
+
+        // nitrogen dioxide
+        chebiService.setResource("CHEBI:33101");
+        Species ndo = chebiService.fetchSpecies();
+
+        // dioxigen
+        chebiService.setResource("CHEBI:15379");
+        Species oxygen = chebiService.fetchSpecies();
+
+        for (BioNode node : this.graph.getNodes()) {
+            node.addEntity(dpo, 0.020);
+            node.addEntity(ndo, 0);
+            node.addEntity(oxygen, 0);
+        }
+
+        for (BioEdge edge : graph.getEdges()) {
+            edge.addPermeability(dpo, 1);
+            edge.addPermeability(ndo, 1);
+            edge.addPermeability(oxygen, 1);
+        }
+
+        // Environment
+        EnvironmentFactory.createFirstOrderReactionTestEnvironment();
+
+        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitDictionary.PER_SECOND));
+        reaction.setElementary(true);
+        reaction.getStoichiometricReactants().addAll(Arrays.asList(
+                new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),
+                new StoichiometricReactant(ndo, ReactantRole.INCREASING, 4),
+                new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
+        ));
+
+        Reactions reactions = new Reactions();
+        reactions.getReactions().add(reaction);
+
+        this.simulation.getModules().add(reactions);
+        this.simulation.getSpecies().addAll(this.simulation.collectAllReferencedEntities());
+        // EnvironmentFactory.createSmallDiffusionTestEnvironment();
+
+
+
 
         // Charts
         this.charts = new ArrayList<>();
@@ -233,8 +294,8 @@ public class BioGraphSimulation extends Application {
         speciesStage.sizeToScene();
         speciesStage.showAndWait();
         if (speciesWizard.getSpeciesToAdd() != null) {
-            speciesWizard.getSpeciesToAdd().stream().forEach(species -> {
-                this.automata.getSpecies().put(species.getName(), species);
+            speciesWizard.getSpeciesToAdd().forEach(species -> {
+                this.simulation.getSpecies().add(species);
                 this.simulationCanvas.resetGraphContextMenu();
             });
         }
@@ -270,8 +331,9 @@ public class BioGraphSimulation extends Application {
         reactionStage.setScene(new Scene(reactionWizard, width, height));
         reactionStage.showAndWait();
         if (reactionWizard.getReaction() != null) {
-            this.automata.addReaction(reactionWizard.getReaction(), true);
-            redrawGraph();
+            // TODO migrate to new interface and reaction interface
+            // this.simulation.addReaction(reactionWizard.getReaction(), true);
+            // redrawGraph();
         }
     }
 
@@ -322,7 +384,7 @@ public class BioGraphSimulation extends Application {
 
     public void prepareObserverCharts() {
         for (SpeciesObserverChart chart : this.charts) {
-            this.automata.addEventListener(chart);
+            this.simulation.addEventListener(chart);
         }
     }
 
@@ -339,8 +401,7 @@ public class BioGraphSimulation extends Application {
 
     public void resetGraph(AutomatonGraph graph) {
         this.graph = graph;
-        Diffusion reccurenceDiffusion = new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph));
-        this.automata = new GraphAutomaton(graph, reccurenceDiffusion);
+        this.simulation.setGraph(this.graph);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
         this.simulationCanvas.resetGraphContextMenu();
@@ -352,7 +413,7 @@ public class BioGraphSimulation extends Application {
     }
 
     public void redrawGraph() {
-        this.graph = this.automata.getGraph();
+        this.graph = this.simulation.getGraph();
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
         this.simulationCanvas.draw();
@@ -390,12 +451,8 @@ public class BioGraphSimulation extends Application {
         this.graph = graph;
     }
 
-    public GraphAutomaton getAutomata() {
-        return this.automata;
-    }
-
-    public void setAutomata(GraphAutomaton automata) {
-        this.automata = automata;
+    public Simulation getSimulation() {
+        return this.simulation;
     }
 
     public List<SpeciesObserverChart> getCharts() {

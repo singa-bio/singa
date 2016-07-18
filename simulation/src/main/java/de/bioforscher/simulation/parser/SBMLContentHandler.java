@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.core.identifier.UniProtIdentifier;
-import de.bioforscher.simulation.reactions.EnzymeReaction;
+import de.bioforscher.simulation.deprecated.EnzymeReaction;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;

@@ -47,6 +47,11 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     }
 
     @Override
+    public Set<ChemicalEntity> collectAllReferencesEntities() {
+        return this.diffusionCoefficients.keySet();
+    }
+
+    @Override
     public PotentialUpdate calculateUpdate(BioNode node, ChemicalEntity entity) {
         // get coefficient
         Quantity<Diffusivity> coefficient = getDiffusionCoefficient(entity);

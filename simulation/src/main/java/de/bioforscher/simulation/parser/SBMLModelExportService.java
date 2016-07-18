@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.parser;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.GraphAutomaton;
+import de.bioforscher.simulation.deprecated.GraphAutomaton;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;

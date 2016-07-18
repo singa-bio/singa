@@ -1,7 +1,8 @@
 package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.GraphAutomaton;
+import de.bioforscher.simulation.modules.model.Simulation;
+import de.bioforscher.simulation.util.BioGraphUtilities;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
@@ -19,12 +20,12 @@ import java.util.Map.Entry;
 class BioGraphContextMenu extends ContextMenu {
 
     private final SimulationCanvas owner;
-    private GraphAutomaton graphAutomaton;
+    private Simulation simulation;
     private Menu speciesMenu;
     private ToggleGroup speciesGroup;
 
-    BioGraphContextMenu(GraphAutomaton graphAutomaton, SimulationCanvas canvas) {
-        this.graphAutomaton = graphAutomaton;
+    BioGraphContextMenu(Simulation simulation, SimulationCanvas canvas) {
+        this.simulation = simulation;
         this.owner = canvas;
         initialize();
     }
@@ -32,7 +33,7 @@ class BioGraphContextMenu extends ContextMenu {
     private void initialize() {
         this.speciesMenu = new Menu("Highlight Species");
         this.speciesGroup = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = graphAutomaton.getSpecies();
+        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.gerneratEntityMapFromSet(simulation.getSpecies());
         // Add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {
             fillSpeciesMenu(chemicalEntities);
@@ -66,12 +67,11 @@ class BioGraphContextMenu extends ContextMenu {
         return itemCompound;
     }
 
-    public GraphAutomaton getGraphAutomaton() {
-        return this.graphAutomaton;
+    public Simulation getSimulation() {
+        return this.simulation;
     }
 
-    public void setGraphAutomaton(GraphAutomaton graphAutomaton) {
-        this.graphAutomaton = graphAutomaton;
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
-
 }

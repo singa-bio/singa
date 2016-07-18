@@ -1,13 +1,17 @@
 package de.bioforscher.simulation.modules.reactions.model;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
 
@@ -43,6 +47,20 @@ public abstract class Reaction {
         this.stoichiometricReactants = stoichiometricReactants;
     }
 
+    public List<ChemicalEntity> getSubstrates() {
+        return this.stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isSubstrate)
+                .map(StoichiometricReactant::getEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<ChemicalEntity> getProducts() {
+        return this.stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isProduct)
+                .map(StoichiometricReactant::getEntity)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Determines the concentration of reactants that influence the velocity of the reaction.
      *
@@ -75,6 +93,7 @@ public abstract class Reaction {
      */
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
 
+    public abstract Set<ChemicalEntity> collectAllReferencesEntities();
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      *
@@ -92,5 +111,25 @@ public abstract class Reaction {
     public void setElementary(boolean elementary) {
         this.elementary = elementary;
     }
+
+    public String getDisplayString() {
+
+        String substrates = this.stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isSubstrate)
+                .map(substrate -> new DecimalFormat("#.##").format(substrate.getStoichiometricNumber()) + " "
+                        + substrate.getEntity().getName())
+                .collect(Collectors.joining(" + "));
+
+        String products = this.stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isProduct)
+                .map(substrate -> new DecimalFormat("#.##").format(substrate.getStoichiometricNumber()) + " "
+                        + substrate.getEntity().getName())
+                .collect(Collectors.joining(" + "));
+
+        return substrates + " \u27f6 " + products;
+
+
+    }
+
 
 }

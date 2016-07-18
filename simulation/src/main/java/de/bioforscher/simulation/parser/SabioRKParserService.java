@@ -2,7 +2,7 @@ package de.bioforscher.simulation.parser;
 
 import de.bioforscher.core.parser.rest.AbstractRESTParser;
 import de.bioforscher.core.parser.xml.XMLErrorHandler;
-import de.bioforscher.simulation.reactions.EnzymeReaction;
+import de.bioforscher.simulation.deprecated.EnzymeReaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

@@ -1,8 +1,10 @@
 package de.bioforscher.simulation.modules.reactions.implementations;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
+import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.MolarConcentration;
@@ -10,6 +12,8 @@ import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Christoph on 11.07.2016.
@@ -40,6 +44,13 @@ public class EquilibriumReaction extends Reaction {
                         productConcentration.getValue().doubleValue() * this.appliedBackwardsRateConstant.getValue()
                                 .doubleValue(),
                 this.appliedForwardsRateConstant.getUnit());
+    }
+
+    @Override
+    public Set<ChemicalEntity> collectAllReferencesEntities() {
+        return this.getStoichiometricReactants().stream()
+                .map(StoichiometricReactant::getEntity)
+                .collect(Collectors.toSet());
     }
 
     public void prepareAppliedRateConstants() {

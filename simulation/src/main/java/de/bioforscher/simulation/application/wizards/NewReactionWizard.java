@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.application.wizards;
 
+import de.bioforscher.simulation.deprecated.EnzymeReaction;
 import de.bioforscher.simulation.parser.SabioRKParserService;
-import de.bioforscher.simulation.reactions.EnzymeReaction;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -10,8 +10,6 @@ import de.bioforscher.simulation.deprecated.*;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.GraphAutomaton;
-import de.bioforscher.simulation.reactions.EnzymeReaction;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

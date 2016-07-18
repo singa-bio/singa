@@ -12,10 +12,8 @@ import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The Reactions module defines the entirety of chemical conversions that take place in the
@@ -45,6 +43,14 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
     public void applyTo(AutomatonGraph graph) {
         // update graph calls updateNodes(BioNode)
         updateGraph(graph);
+    }
+
+    @Override
+    public Set<ChemicalEntity> collectAllReferencesEntities() {
+        return this.reactions.stream()
+                .map(Reaction::collectAllReferencesEntities)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -88,5 +94,6 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
                 .add(Quantities.getQuantity(this.velocities.get(entity).getValue(),
                         UnitDictionary.MOLE_PER_LITRE)));
     }
+
 
 }

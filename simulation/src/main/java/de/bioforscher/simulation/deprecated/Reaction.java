@@ -13,6 +13,7 @@ import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
  * is updated needs to be implemented.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public abstract class Reaction {
 

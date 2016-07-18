@@ -4,7 +4,9 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.components.SpeciesCard;
-import de.bioforscher.simulation.deprecated.Reaction;
+import de.bioforscher.simulation.modules.reactions.model.Reaction;
+import de.bioforscher.simulation.modules.reactions.model.Reactions;
+import de.bioforscher.simulation.util.BioGraphUtilities;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -26,7 +28,6 @@ import java.util.Map;
 public class SpeciesOverviewPane extends BorderPane {
 
     private BioGraphSimulation owner;
-    private SplitPane split;
 
     private ComboBox<String> cbGrouping;
     private TreeView<String> treeView;
@@ -38,7 +39,7 @@ public class SpeciesOverviewPane extends BorderPane {
 
     public SpeciesOverviewPane(BioGraphSimulation owner) {
         this.owner = owner;
-        this.entityMapping = owner.getAutomata().getSpecies();
+        this.entityMapping = BioGraphUtilities.gerneratEntityMapFromSet(owner.getSimulation().getSpecies());
         initializeCards();
         initializeInterface();
         initializeListener();
@@ -88,10 +89,10 @@ public class SpeciesOverviewPane extends BorderPane {
         this.currentDetailView.setPadding(new Insets(5, 5, 5, 5));
 
         // create SplitPane
-        this.split = new SplitPane(leftBox, this.currentDetailView);
-        SplitPane.setResizableWithParent(this.split, Boolean.FALSE);
+        SplitPane split = new SplitPane(leftBox, this.currentDetailView);
+        SplitPane.setResizableWithParent(split, Boolean.FALSE);
         // add SplitPane to this
-        this.setCenter(this.split);
+        this.setCenter(split);
     }
 
     private void initializeListener() {
@@ -115,18 +116,24 @@ public class SpeciesOverviewPane extends BorderPane {
 
     private void fillTreeGroupedByReaction() {
         this.rootItem.getChildren().clear();
-        for (Reaction reaction : this.owner.getAutomata().getReactions()) {
-            TreeItem<String> reactionItem = createReactionTreeItem(reaction.getReactionString());
-            this.rootItem.getChildren().add(reactionItem);
-            for (ChemicalEntity entity : reaction.getSubstrates()) {
-                TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
-                reactionItem.getChildren().add(speciesItem);
-            }
-            for (ChemicalEntity entity : reaction.getProducts()) {
-                TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
-                reactionItem.getChildren().add(speciesItem);
-            }
-        }
+        this.owner.getSimulation().getModules().stream()
+                .filter(module -> module instanceof Reactions)
+                .map(Reactions.class::cast)
+                .forEach(reactions -> {
+                    for (Reaction reaction : reactions.getReactions()) {
+                        TreeItem<String> reactionItem = createReactionTreeItem(reaction.getDisplayString());
+                        this.rootItem.getChildren().add(reactionItem);
+                        for (ChemicalEntity entity : reaction.getSubstrates()) {
+                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
+                            reactionItem.getChildren().add(speciesItem);
+                        }
+                        for (ChemicalEntity entity : reaction.getProducts()) {
+                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
+                            reactionItem.getChildren().add(speciesItem);
+                        }
+                    }
+                });
+
     }
 
     private TreeItem<String> createSpeciesTreeItem(String identifyingString) {

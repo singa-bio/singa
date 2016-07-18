@@ -16,6 +16,7 @@ import static de.bioforscher.units.UnitDictionary.PER_SECOND;
  * reactions.
  *
  * @author Christoph Leberecht
+ * @deprecated
  */
 public class EquilibriumReaction extends Reaction {
 

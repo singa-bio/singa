@@ -30,7 +30,7 @@ public class SimulationCanvas extends Canvas {
         super(SimulationSpace.getInstance().getWidth(), SimulationSpace.getInstance().getHeight());
         this.owner = owner;
         this.renderer = new GraphRenderer(this);
-        this.graphContextMenu = new BioGraphContextMenu(this.owner.getAutomata(), this);
+        this.graphContextMenu = new BioGraphContextMenu(this.owner.getSimulation(), this);
         this.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
     }
 
@@ -43,7 +43,7 @@ public class SimulationCanvas extends Canvas {
     }
 
     public void startSimulation() {
-        Thread p = new Thread(new BioGraphProducer(this.graphQueue, this.owner.getGraph(), this.owner.getAutomata(),
+        Thread p = new Thread(new BioGraphProducer(this.graphQueue, this.owner.getGraph(), this.owner.getSimulation(),
                 this.getWidth(), this.getHeight(), Jobs.SIMULATE));
         p.setDaemon(true);
         p.start();
@@ -115,7 +115,7 @@ public class SimulationCanvas extends Canvas {
     }
 
     public void resetGraphContextMenu() {
-        this.graphContextMenu = new BioGraphContextMenu(this.owner.getAutomata(), this);
+        this.graphContextMenu = new BioGraphContextMenu(this.owner.getSimulation(), this);
     }
 
 }
