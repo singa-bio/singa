@@ -6,7 +6,7 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.model.ImmediateUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
-import de.bioforscher.simulation.modules.reactions.implementations.enzyme.kineticLaws.KineticLaw;
+import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.units.UnitDictionary;
 import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;

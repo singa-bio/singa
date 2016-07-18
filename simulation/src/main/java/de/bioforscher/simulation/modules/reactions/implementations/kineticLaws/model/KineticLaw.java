@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.modules.reactions.implementations.enzyme.kineticLaws;
+package de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model;
 
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -12,6 +12,8 @@ import java.util.List;
 public interface KineticLaw {
 
     Quantity<ReactionRate> calculateAcceleration(BioNode node);
+
+    void prepareAppliedRateConstants();
 
     List<KineticParameterType> getRequiredParameters();
 

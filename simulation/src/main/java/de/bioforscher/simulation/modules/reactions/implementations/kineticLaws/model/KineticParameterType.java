@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.modules.reactions.implementations.enzyme.kineticLaws;
+package de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model;
 
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;

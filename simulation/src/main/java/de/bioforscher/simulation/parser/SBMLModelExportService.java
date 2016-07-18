@@ -108,7 +108,7 @@ public class SBMLModelExportService {
         UnitPrefix globalPrefix = UnitUtilities.getUnitPrefixFromDivisor(quantity.getUnit());
         boolean usedGlaobalPrefix = false;
 
-        Map<? extends Unit<?>, Integer> unitsMap = quantity.getUnit().getProductUnits();
+        Map<? extends Unit<?>, Integer> unitsMap = quantity.getUnit().getBaseUnits();
         for (Unit<?> unit : unitsMap.keySet()) {
             UnitName unitName = UnitUtilities.getUnitNameFromUnit(unit);
             UnitPrefix prefix = UnitUtilities.getUnitPrefixFromUnit(unit);
