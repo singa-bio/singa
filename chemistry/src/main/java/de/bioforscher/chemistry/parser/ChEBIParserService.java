@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class ChEBIParserService extends AbstractParser<Entity> {
 
     private static final Logger log = Logger.getLogger(ChEBIParserService.class.getName());
+    private static final ChEBIParserService INSTANCE = new ChEBIParserService();
 
     public ChEBIParserService(String chebiId) {
         setResource(chebiId);
@@ -21,6 +22,11 @@ public class ChEBIParserService extends AbstractParser<Entity> {
 
     public ChEBIParserService() {
 
+    }
+
+    public static Species parse(String chebiId) {
+        INSTANCE.setResource(chebiId);
+        return INSTANCE.fetchSpecies();
     }
 
     @Override

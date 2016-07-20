@@ -1,11 +1,6 @@
 package de.bioforscher.simulation.application;
 
-import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
 import de.bioforscher.core.utility.LogManager;
-import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
 import de.bioforscher.simulation.application.components.SpeciesObserverChart;
 import de.bioforscher.simulation.application.windows.EnvironmentalOptionsControlPanel;
@@ -15,20 +10,11 @@ import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
-import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.simulation.modules.reactions.model.Reactions;
-import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.simulation.parser.GraphMLExportService;
 import de.bioforscher.simulation.parser.GraphMLParserService;
-import de.bioforscher.simulation.util.BioGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentFactory;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
-import de.bioforscher.units.UnitDictionary;
+import de.bioforscher.simulation.util.SimulationExampleProvider;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -45,10 +31,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.MetricPrefix;
+import tec.units.ri.unit.Units;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,61 +65,10 @@ public class BioGraphSimulation extends Application {
         LogManager.setDebugLevel(Level.FINE);
 
         log.log(Level.INFO, "setup automaton");
-        // Automata
-        this.simulation = new Simulation();
-        this.simulation.setGraph(BioGraphUtilities.castUndirectedGraphToBioGraph(
-                GraphFactory.buildCircularGraph(10, new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0)))));
+        // setup the simulation
+        this.simulation = SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(250,
+                MetricPrefix.NANO(Units.SECOND)));
         this.graph = this.simulation.getGraph();
-
-        this.simulation.getModules().add(new FreeDiffusion());
-
-        ChEBIParserService chebiService = new ChEBIParserService();
-
-        // dinitrogen pentaoxide
-        chebiService.setResource("CHEBI:29802");
-        Species dpo = chebiService.fetchSpecies();
-
-        // nitrogen dioxide
-        chebiService.setResource("CHEBI:33101");
-        Species ndo = chebiService.fetchSpecies();
-
-        // dioxigen
-        chebiService.setResource("CHEBI:15379");
-        Species oxygen = chebiService.fetchSpecies();
-
-        for (BioNode node : this.graph.getNodes()) {
-            node.addEntity(dpo, 0.020);
-            node.addEntity(ndo, 0);
-            node.addEntity(oxygen, 0);
-        }
-
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(dpo, 1);
-            edge.addPermeability(ndo, 1);
-            edge.addPermeability(oxygen, 1);
-        }
-
-        // Environment
-        EnvironmentFactory.createFirstOrderReactionTestEnvironment();
-
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitDictionary.PER_SECOND));
-        reaction.setElementary(true);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),
-                new StoichiometricReactant(ndo, ReactantRole.INCREASING, 4),
-                new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
-        ));
-
-        Reactions reactions = new Reactions();
-        reactions.getReactions().add(reaction);
-
-        this.simulation.getModules().add(reactions);
-        this.simulation.getSpecies().addAll(this.simulation.collectAllReferencedEntities());
-        // EnvironmentFactory.createSmallDiffusionTestEnvironment();
-
-
-
-
         // Charts
         this.charts = new ArrayList<>();
 

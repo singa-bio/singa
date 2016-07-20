@@ -30,7 +30,6 @@ class SBMLContentHandler implements ContentHandler {
     // reaction
     private EnzymeReaction reaction;
 
-
     // temporary data
     private String currentSpeciesId;
     private String currentSpeciesName;

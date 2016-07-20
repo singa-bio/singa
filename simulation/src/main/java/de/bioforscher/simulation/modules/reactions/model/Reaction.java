@@ -93,7 +93,7 @@ public abstract class Reaction {
      */
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
 
-    public abstract Set<ChemicalEntity> collectAllReferencesEntities();
+    public abstract Set<ChemicalEntity> collectAllReferencedEntities();
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      *
@@ -113,16 +113,16 @@ public abstract class Reaction {
     }
 
     public String getDisplayString() {
-
+        final DecimalFormat format = new DecimalFormat("#.##");
         String substrates = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
-                .map(substrate -> new DecimalFormat("#.##").format(substrate.getStoichiometricNumber()) + " "
+                .map(substrate -> format.format(substrate.getStoichiometricNumber()) + " "
                         + substrate.getEntity().getName())
                 .collect(Collectors.joining(" + "));
 
         String products = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
-                .map(substrate -> new DecimalFormat("#.##").format(substrate.getStoichiometricNumber()) + " "
+                .map(substrate -> format.format(substrate.getStoichiometricNumber()) + " "
                         + substrate.getEntity().getName())
                 .collect(Collectors.joining(" + "));
 

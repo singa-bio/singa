@@ -48,7 +48,7 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
     @Override
     public Set<ChemicalEntity> collectAllReferencesEntities() {
         return this.reactions.stream()
-                .map(Reaction::collectAllReferencesEntities)
+                .map(Reaction::collectAllReferencedEntities)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }

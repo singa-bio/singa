@@ -38,10 +38,6 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     public int epoch;
 
     public GraphAutomaton(AutomatonGraph graph) {
-        this(graph, new RecurrenceDiffusion(BioGraphUtilities.generateMapOfEntities(graph)));
-    }
-
-    public GraphAutomaton(AutomatonGraph graph, Diffusion diffusion) {
         this.graph = graph;
         this.diffusion = new FreeDiffusion();
         this.reactions = new ArrayList<>();

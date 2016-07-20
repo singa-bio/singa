@@ -10,6 +10,7 @@ import java.util.List;
 
 public class PubChemParserService extends AbstractXMLParser {
 
+
     public PubChemParserService(String filePath) {
         getXmlReader().setContentHandler(new PubChemContentHandler());
         setResource(filePath);

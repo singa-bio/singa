@@ -17,7 +17,6 @@ public class IconProvider {
     public static final String GENERIC_REACTION_ICON_PATH = getResourceAsString(GENERIC_REACTION_ICON_NAME);
     public static final Image GENERIC_REACTION_ICON_IMAGE = new Image(getResourceAsStream(GENERIC_REACTION_ICON_NAME));
 
-
     private static InputStream getResourceAsStream(String resource) {
         return IconProvider.class.getResourceAsStream(resource);
     }

@@ -45,9 +45,7 @@ public class Simulation implements UpdateEventEmitter<NextEpochEvent> {
 
     public void nextEpoch() {
         this.modules.forEach(
-                module -> {
-                    module.applyTo(this.graph);
-                }
+                module -> module.applyTo(this.graph)
         );
         this.graph.getNodes().stream().filter(BioNode::isObserved).forEach(this::emitNextEpochEvent);
         this.epoch++;

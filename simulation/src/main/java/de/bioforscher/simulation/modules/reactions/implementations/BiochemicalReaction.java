@@ -43,7 +43,7 @@ public class BiochemicalReaction extends Reaction {
     }
 
     @Override
-    public Set<ChemicalEntity> collectAllReferencesEntities() {
+    public Set<ChemicalEntity> collectAllReferencedEntities() {
         Set<ChemicalEntity> referencedEntities = this.getStoichiometricReactants().stream()
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toSet());
