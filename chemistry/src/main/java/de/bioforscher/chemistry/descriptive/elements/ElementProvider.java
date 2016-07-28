@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.descriptive.elements;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -135,6 +136,18 @@ public final class ElementProvider {
     }
 
     /**
+     * Retrieves an {@link Optional} of an {@link Element} by ity symbol.
+     *
+     * @param symbol The element symbol for which an {@link Element} should be retrieved.
+     * @return {@link Optional} of the {@link Element}.
+     */
+    public static Optional<Element> getElementBySymbol(String symbol) {
+
+        // by contract one symbol cannot decode for multiple elements
+        return INSTANCE.elements.stream().filter(element -> element.getSymbol().equals(symbol)).findFirst();
+    }
+
+    /**
      * Contains all the elements of this library.
      *
      * @return All elements in this library.
@@ -142,5 +155,4 @@ public final class ElementProvider {
     public static Set<Element> getElements() {
         return Collections.unmodifiableSet(INSTANCE.elements);
     }
-
 }
