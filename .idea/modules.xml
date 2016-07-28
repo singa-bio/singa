@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/chemistry/chemistry.iml" filepath="$PROJECT_DIR$/chemistry/chemistry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mathematics/mathematics.iml" filepath="$PROJECT_DIR$/mathematics/mathematics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simulation/simulation.iml" filepath="$PROJECT_DIR$/simulation/simulation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa/singa.iml" filepath="$PROJECT_DIR$/singa/singa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/units/units.iml" filepath="$PROJECT_DIR$/units/units.iml" />
+    </modules>
+  </component>
+</project>
