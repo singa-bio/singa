@@ -53,14 +53,16 @@ public class SubStructure extends AbstractGraph<Atom, Bond, Vector3D> implements
 
     public void connectByDistance() {
         // calculate pairwise distances
-        LabeledSymmetricMatrix<Atom> distances = StructureUtilities.calculateDistanceMatrix(getNodes().stream().collect(Collectors.toList()));
+        LabeledSymmetricMatrix<Atom> distances = StructureUtilities.calculateDistanceMatrix(getNodes().stream()
+                .collect(Collectors.toList()));
         // connect nodes that are below a certain distance
         for (int rowIndex = 0; rowIndex < distances.getElements().length; rowIndex++) {
             for (int columnIndex = 0; columnIndex < distances.getElements()[rowIndex].length; columnIndex++) {
                 if (rowIndex != columnIndex && distances.getElement(rowIndex, columnIndex) < 1.8) {
-                    connectWithEdge(getNextEdgeIdentifier(), getNode(distances.getRowLabelFromPosition(rowIndex).getIdentifier())
-                            , getNode
-                                    (distances.getColumnLabelFromPosition(columnIndex).getIdentifier()), new Bond(BondType.COVALENT_BOND));
+                    connectWithEdge(getNextEdgeIdentifier(),
+                            getNode(distances.getRowLabelFromPosition(rowIndex).getIdentifier()),
+                            getNode(distances.getColumnLabelFromPosition(columnIndex).getIdentifier()),
+                            new Bond(BondType.COVALENT_BOND));
                 }
             }
         }
