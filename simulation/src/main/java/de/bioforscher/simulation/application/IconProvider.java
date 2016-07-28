@@ -13,7 +13,7 @@ import java.io.InputStream;
 public class IconProvider {
 
     public static final String FONT_AWESOME_NAME = "fontawesome-webfont.ttf";
-    public static final String FONT_AWESOME_PATH = getResourceAsExternalForm(FONT_AWESOME_NAME);
+    public static final InputStream FONT_AWESOME_PATH = getResourceAsStream(FONT_AWESOME_NAME);
     public static final Font FONT_AWESOME = Font.loadFont(FONT_AWESOME_PATH, 16);
 
     public static final String MOLECULE_ICON_NAME = "icon_small_molecule_32x.png";
