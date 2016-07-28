@@ -7,7 +7,7 @@ public interface UpdateEventEmitter<EventType> {
 
     default void emitEvent(EventType event) {
         for (UpdateEventListener<EventType> listener : getListeners()) {
-            listener.onEventRecieved(event);
+            listener.onEventReceived(event);
         }
     }
 

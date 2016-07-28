@@ -1,11 +1,12 @@
 package de.bioforscher.simulation.application;
 
 import de.bioforscher.core.utility.LogManager;
+import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
-import de.bioforscher.simulation.application.components.SpeciesObserverChart;
-import de.bioforscher.simulation.application.windows.EnvironmentalOptionsControlPanel;
-import de.bioforscher.simulation.application.windows.PlotPreferencesControlPanel;
-import de.bioforscher.simulation.application.windows.SpeciesOverviewPane;
+import de.bioforscher.simulation.application.components.plots.PlotCard;
+import de.bioforscher.simulation.application.components.plots.PlotPane;
+import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
+import de.bioforscher.simulation.application.components.species.SpeciesOverviewPane;
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
@@ -35,8 +36,6 @@ import tec.units.ri.unit.MetricPrefix;
 import tec.units.ri.unit.Units;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,13 +46,12 @@ public class BioGraphSimulation extends Application {
     private Stage stage;
 
     private SimulationCanvas simulationCanvas;
-    private VBox chartContainer;
+    private PlotPane chartContainer;
     private AnchorPane contextAnchor;
     private Slider concentrationSlider;
 
     private AutomatonGraph graph;
     private Simulation simulation;
-    private List<SpeciesObserverChart> charts;
 
     public static void main(String[] args) {
         launch();
@@ -68,15 +66,16 @@ public class BioGraphSimulation extends Application {
         // setup the simulation
         this.simulation = SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(250,
                 MetricPrefix.NANO(Units.SECOND)));
+        // this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
         this.graph = this.simulation.getGraph();
         // Charts
-        this.charts = new ArrayList<>();
 
         // Stage
         this.stage = stage;
+        this.stage.setMaximized(true);
         this.stage.setTitle("GraphAutomaton Simulation");
-        this.stage.setMinWidth(1200);
-        this.stage.setMinHeight(800);
+        // this.stage.setMinWidth(1200);
+        // this.stage.setMinHeight(800);
 
         // Setup the Root and Top Container
         BorderPane root = new BorderPane();
@@ -127,12 +126,17 @@ public class BioGraphSimulation extends Application {
         // View Menu
         Menu menuView = new Menu("View");
 
+        // Full screen toggle
+        MenuItem mIFullScreen = new MenuItem("Toggle full screen");
+        mIFullScreen.setAccelerator(new KeyCodeCombination(KeyCode.F11));
+        mIFullScreen.setOnAction(this::toggleFullScreen);
+
         // Species Overview
         MenuItem mISpeciesOverview = new MenuItem("Species", new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
         mISpeciesOverview.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN));
         mISpeciesOverview.setOnAction(this::showSpeciesOverview);
 
-        menuView.getItems().addAll(mISpeciesOverview);
+        menuView.getItems().addAll(mIFullScreen, mISpeciesOverview);
 
         Menu menuPreferences = new Menu("Preferences");
 
@@ -149,7 +153,7 @@ public class BioGraphSimulation extends Application {
 
         // Chart Half
         final TabPane rightPane = new TabPane();
-        this.chartContainer = new VBox();
+        this.chartContainer = new PlotPane(this);
 
         Tab chartTab = new Tab();
         chartTab.setText("Plots");
@@ -176,19 +180,19 @@ public class BioGraphSimulation extends Application {
         btnSimulate.setPrefSize(40, 40);
         btnSimulate.setOnAction(this::startSimulation);
 
-        // Rearrange Button
+        // Rearrange sutton
         Button btnRearrange = new Button();
         btnRearrange.setId("btnRearrange");
         btnRearrange.setPrefSize(40, 40);
         btnRearrange.setOnAction(this.simulationCanvas::arrangeGraph);
 
-        // Concentration Slider
+        // Concentration slider
         setupConcentrationSlider();
 
         // Add toolbar components
         toolBar.getItems().addAll(btnSimulate, btnRearrange, this.concentrationSlider);
 
-        // Add Toolbar and Menu
+        // Add toolbar and menu
         topContainer.getChildren().addAll(menuBar, toolBar);
         root.setTop(topContainer);
 
@@ -319,8 +323,8 @@ public class BioGraphSimulation extends Application {
     }
 
     public void prepareObserverCharts() {
-        for (SpeciesObserverChart chart : this.charts) {
-            this.simulation.addEventListener(chart);
+        for (PlotCard chart : this.chartContainer.getPlotCards().getItems()) {
+            this.simulation.addEventListener(chart.getPlot());
         }
     }
 
@@ -350,16 +354,24 @@ public class BioGraphSimulation extends Application {
 
     public void redrawGraph() {
         this.graph = this.simulation.getGraph();
-        this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
-        this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
+        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
+        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
         this.simulationCanvas.draw();
     }
 
-    public VBox getChartContainer() {
+    private void toggleFullScreen(ActionEvent event) {
+        if (this.stage.isFullScreen()) {
+            this.stage.setFullScreen(false);
+        } else {
+            this.stage.setFullScreen(true);
+        }
+    }
+
+    public PlotPane getChartContainer() {
         return this.chartContainer;
     }
 
-    public void setChartContainer(VBox chartContainer) {
+    public void setChartContainer(PlotPane chartContainer) {
         this.chartContainer = chartContainer;
     }
 
@@ -389,14 +401,6 @@ public class BioGraphSimulation extends Application {
 
     public Simulation getSimulation() {
         return this.simulation;
-    }
-
-    public List<SpeciesObserverChart> getCharts() {
-        return this.charts;
-    }
-
-    public void setCharts(List<SpeciesObserverChart> charts) {
-        this.charts = charts;
     }
 
 }

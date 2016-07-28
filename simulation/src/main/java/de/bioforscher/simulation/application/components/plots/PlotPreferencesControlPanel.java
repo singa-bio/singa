@@ -1,6 +1,6 @@
-package de.bioforscher.simulation.application.windows;
+package de.bioforscher.simulation.application.components.plots;
 
-import de.bioforscher.simulation.util.SingaPerferences;
+import de.bioforscher.simulation.util.SingaPreferences;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -22,10 +22,10 @@ public class PlotPreferencesControlPanel extends GridPane {
     private Spinner<Integer> spTickSpacing;
 
     private Stage owner;
-    private SingaPerferences preferences;
+    private SingaPreferences preferences;
 
     public PlotPreferencesControlPanel(Stage owner) {
-        this.preferences = new SingaPerferences();
+        this.preferences = new SingaPreferences();
         this.owner = owner;
         this.initialize();
     }
@@ -45,8 +45,8 @@ public class PlotPreferencesControlPanel extends GridPane {
         column2.setHalignment(HPos.RIGHT);
         this.getColumnConstraints().add(column2);
 
-        int maximalPoints = this.preferences.preferences.getInt(SingaPerferences.Plot.MAXIMAL_DATA_POINTS, SingaPerferences.Plot.MAXIMAL_DATA_POINTS_VALUE);
-        int tickSpacing = this.preferences.preferences.getInt(SingaPerferences.Plot.TICK_SPACING, SingaPerferences.Plot.TICK_SPACING_VALUE);
+        int maximalPoints = this.preferences.preferences.getInt(SingaPreferences.Plot.MAXIMAL_DATA_POINTS, SingaPreferences.Plot.MAXIMAL_DATA_POINTS_VALUE);
+        int tickSpacing = this.preferences.preferences.getInt(SingaPreferences.Plot.TICK_SPACING, SingaPreferences.Plot.TICK_SPACING_VALUE);
 
         TextFlow description = new TextFlow();
         description.getChildren().add(new Text("The provided options can be used to customize plots."));
@@ -90,15 +90,15 @@ public class PlotPreferencesControlPanel extends GridPane {
     }
 
     public void applyChanges(ActionEvent event) {
-        this.preferences.preferences.putInt(SingaPerferences.Plot.MAXIMAL_DATA_POINTS, this.spDataPoints.getValue());
-        this.preferences.preferences.putInt(SingaPerferences.Plot.TICK_SPACING, this.spTickSpacing.getValue());
+        this.preferences.preferences.putInt(SingaPreferences.Plot.MAXIMAL_DATA_POINTS, this.spDataPoints.getValue());
+        this.preferences.preferences.putInt(SingaPreferences.Plot.TICK_SPACING, this.spTickSpacing.getValue());
         this.owner.close();
     }
 
     public void restoreDefault(ActionEvent event) {
         this.preferences.restorePlotDefaults();
-        this.spDataPoints.getValueFactory().setValue(SingaPerferences.Plot.MAXIMAL_DATA_POINTS_VALUE);
-        this.spTickSpacing.getValueFactory().setValue(SingaPerferences.Plot.TICK_SPACING_VALUE);
+        this.spDataPoints.getValueFactory().setValue(SingaPreferences.Plot.MAXIMAL_DATA_POINTS_VALUE);
+        this.spTickSpacing.getValueFactory().setValue(SingaPreferences.Plot.TICK_SPACING_VALUE);
     }
 
     public void discardChanges(ActionEvent event) {

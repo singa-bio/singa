@@ -1,8 +1,9 @@
 package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.simulation.application.BioGraphSimulation;
+import de.bioforscher.simulation.application.components.plots.ConcentrationPlot;
+import de.bioforscher.simulation.application.components.plots.PlotCard;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.util.BioGraphUtilities;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
@@ -42,11 +43,10 @@ public class BioNodeContextMenu extends ContextMenu {
 
     public void observeNode(ActionEvent event) {
         this.node.setObserved(true);
-        SpeciesObserverChart newChart = SpeciesObserverChartFactory.setupSpeciesObserverChart(this.node,
-                BioGraphUtilities.generateMapOfEntities(this.owner.getGraph()));
-        this.owner.getCharts().add(newChart);
-        this.owner.getChartContainer().getChildren().add(newChart);
-        this.owner.getChartContainer().setPrefWidth(newChart.getWidth());
+        ConcentrationPlot plot = new ConcentrationPlot(this.owner.getSimulation().getSpecies(), this.node, this
+                .owner.getSimulation());
+        this.owner.getChartContainer().getPlotCards().getItems().add(new PlotCard(plot));
+        // this.owner.getChartContainer().getChildren().add(card);
         this.owner.redrawGraph();
     }
 

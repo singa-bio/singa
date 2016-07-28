@@ -2,11 +2,11 @@ package de.bioforscher.simulation.util;
 
 import java.util.prefs.Preferences;
 
-public class SingaPerferences {
+public class SingaPreferences {
 
     public Preferences preferences;
 
-    public SingaPerferences() {
+    public SingaPreferences() {
         this.preferences = Preferences.userRoot().node(this.getClass().getName());
     }
 
@@ -38,7 +38,7 @@ public class SingaPerferences {
         /**
          * 50
          */
-        public static final int TICK_SPACING_VALUE = MAXIMAL_DATA_POINTS_VALUE / 10;
+        public static final int TICK_SPACING_VALUE = MAXIMAL_DATA_POINTS_VALUE / 20;
 
         /**
          * If {@code true} the plot scrolls eternally, else the the plot will be

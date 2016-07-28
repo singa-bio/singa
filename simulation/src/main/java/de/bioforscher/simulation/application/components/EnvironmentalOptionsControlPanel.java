@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.application.windows;
+package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;

@@ -1,36 +1,39 @@
-package de.bioforscher.simulation.application.components;
+package de.bioforscher.simulation.application.components.plots;
 
-import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.simulation.application.IconProvider;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Created by Christoph on 06.07.2016. http://www.billmann.de/2013/07/03/javafx-custom-listcell/
+ * Created by Christoph on 27.07.2016.
  */
-public class SpeciesCell extends ListCell<Species> {
+public class PlotCell extends ListCell<PlotCard> {
+
+    private PlotPane plotPane;
 
     private GridPane grid = new GridPane();
     private Label name = new Label();
-    private Label identifier = new Label();
-    private ImageView speciesImage = new ImageView();
+    private Label legendIndicator = new Label();
 
     private ContextMenu contextMenu = new ContextMenu();
+    private MenuItem hideItem = new MenuItem();
 
-    public SpeciesCell() {
+    public PlotCell(PlotPane plotPane) {
+        this.plotPane = plotPane;
         configureGrid();
+        configureLegendIndicator();
         configureName();
-        configureIdentifier();
         configureContextMenu();
         addControlsToGrid();
+        this.setOnMouseClicked(event -> {
+            this.plotPane.setSelectedPlot(this.getItem());
+        });
     }
 
     private void configureGrid() {
@@ -43,30 +46,29 @@ public class SpeciesCell extends ListCell<Species> {
         this.name.setFont(Font.font(null, FontWeight.BOLD, 12));
     }
 
-    private void configureIdentifier() {
-        this.identifier.setTextFill(Color.DARKGRAY);
+    private void configureLegendIndicator() {
+        this.legendIndicator.setFont(IconProvider.FONT_AWESOME);
+        this.legendIndicator.setText(IconProvider.FontAwesome.ICON_LINE_CHART);
     }
 
     private void configureContextMenu() {
-        MenuItem deleteItem = new MenuItem();
-        deleteItem.setText("Remove");
-        deleteItem.setOnAction(event -> getListView().getItems().remove(this.getItem()));
-        this.contextMenu.getItems().addAll(deleteItem);
+        this.hideItem.setText("Hide");
+        // this.hideItem.setOnAction(this::toggleVisibility);
+        this.contextMenu.getItems().addAll(this.hideItem);
     }
 
     private void addControlsToGrid() {
-        this.grid.add(this.speciesImage, 0, 0, 1, 2);
+        this.grid.add(this.legendIndicator, 0, 0);
         this.grid.add(this.name, 1, 0);
-        this.grid.add(this.identifier, 1, 1);
     }
 
     @Override
-    public void updateItem(Species species, boolean empty) {
-        super.updateItem(species, empty);
+    public void updateItem(PlotCard entity, boolean empty) {
+        super.updateItem(entity, empty);
         if (empty) {
             clearContent();
         } else {
-            addContent(species);
+            addContent(entity);
         }
     }
 
@@ -76,11 +78,9 @@ public class SpeciesCell extends ListCell<Species> {
         setContextMenu(null);
     }
 
-    private void addContent(Species species) {
+    private void addContent(PlotCard entity) {
         setText(null);
-        this.speciesImage.setImage(IconProvider.MOLECULE_ICON_IMAGE);
-        this.name.setText(species.getName());
-        this.identifier.setText(species.getIdentifier().toString());
+        this.name.setText("C" + entity.getPlot().getReferencedNode().getIdentifier());
         setContextMenu(this.contextMenu);
         setGraphic(this.grid);
     }

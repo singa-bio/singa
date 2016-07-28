@@ -1,9 +1,9 @@
 package de.bioforscher.simulation.application.wizards;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
-import de.bioforscher.simulation.application.components.SpeciesCell;
-import de.bioforscher.simulation.application.windows.SearchSpeciesPane;
+import de.bioforscher.simulation.application.components.species.EntityCell;
+import de.bioforscher.simulation.application.components.species.SpeciesSearchPane;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
@@ -23,7 +23,7 @@ public class AddSpeciesWizard extends Wizard {
 
     private Stage owner;
     private BioGraphSimulation simulation;
-    private Set<Species> speciesToAdd;
+    private Set<ChemicalEntity> speciesToAdd;
 
     public AddSpeciesWizard(Stage owner, BioGraphSimulation simulation) {
         super(new ChooseSpeciesMethodPage(), new SearchSpeciesPage());
@@ -52,11 +52,11 @@ public class AddSpeciesWizard extends Wizard {
         this.simulation = simulation;
     }
 
-    public Set<Species> getSpeciesToAdd() {
+    public Set<ChemicalEntity> getSpeciesToAdd() {
         return this.speciesToAdd;
     }
 
-    public void setSpeciesToAdd(Set<Species> speciesToAdd) {
+    public void setSpeciesToAdd(Set<ChemicalEntity> speciesToAdd) {
         this.speciesToAdd = speciesToAdd;
     }
 
@@ -110,7 +110,7 @@ class ChooseSpeciesMethodPage extends WizardPage {
 class SearchSpeciesPage extends WizardPage {
 
     private SplitPane split;
-    private SearchSpeciesPane searchPane;
+    private SpeciesSearchPane searchPane;
 
     public SearchSpeciesPage() {
         super("Search Species...");
@@ -120,10 +120,10 @@ class SearchSpeciesPage extends WizardPage {
     @Override
     public Parent getContent() {
         // left half
-        this.searchPane = new SearchSpeciesPane(3);
+        this.searchPane = new SpeciesSearchPane(3);
         // right half
-        ListView<Species> speciesList = new ListView<>();
-        speciesList.setCellFactory(param -> new SpeciesCell());
+        ListView<ChemicalEntity> speciesList = new ListView<>();
+        speciesList.setCellFactory(param -> new EntityCell());
         speciesList.setItems(this.searchPane.getSelectedSpecies());
         // create SplitPane
         this.split = new SplitPane(this.searchPane, speciesList);
@@ -132,7 +132,7 @@ class SearchSpeciesPage extends WizardPage {
         return this.split;
     }
 
-    public Set<Species> prepareSelectedSpecies() {
+    public Set<ChemicalEntity> prepareSelectedSpecies() {
         return this.searchPane.getSelectedSpecies().stream().collect(Collectors.toSet());
     }
 

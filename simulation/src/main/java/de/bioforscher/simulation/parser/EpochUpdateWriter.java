@@ -117,7 +117,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NextEpochEvent> {
     }
 
     @Override
-    public void onEventRecieved(NextEpochEvent event) {
+    public void onEventReceived(NextEpochEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append(Integer.toString(event.getEpoch())).append(SEPERATOR_CHARACTER);
         int count = 0;

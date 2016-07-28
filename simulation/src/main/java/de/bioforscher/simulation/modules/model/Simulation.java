@@ -81,7 +81,7 @@ public class Simulation implements UpdateEventEmitter<NextEpochEvent> {
 
     public Quantity<Time> getElapsedTime() {
         return Quantities.getQuantity(EnvironmentalVariables.getInstance().getTimeStep().getValue().doubleValue() *
-                epoch, EnvironmentalVariables.getInstance().getTimeStep().getUnit());
+                this.epoch, EnvironmentalVariables.getInstance().getTimeStep().getUnit());
     }
 
     private void emitNextEpochEvent(BioNode node) {

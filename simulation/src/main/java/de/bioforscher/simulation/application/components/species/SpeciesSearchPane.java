@@ -1,8 +1,8 @@
-package de.bioforscher.simulation.application.windows;
+package de.bioforscher.simulation.application.components.species;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBISearchService;
-import de.bioforscher.simulation.application.components.SpeciesCard;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -23,22 +23,22 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchSpeciesPane extends GridPane {
+public class SpeciesSearchPane extends GridPane {
 
     private static final int default_results_per_page = 4;
 
     private List<Species> speciesList;
-    private ObservableList<Species> selectedSpecies;
+    private ObservableList<ChemicalEntity> selectedSpecies;
     private TextField searchField;
     private ProgressIndicator progressIndicator;
     private Pagination searchResults;
     private int resultsPerPage;
 
-    public SearchSpeciesPane() {
+    public SpeciesSearchPane() {
         this(default_results_per_page);
     }
 
-    public SearchSpeciesPane(int resultsPerPage) {
+    public SpeciesSearchPane(int resultsPerPage) {
         this.resultsPerPage = resultsPerPage;
         this.speciesList = new ArrayList<>();
         this.selectedSpecies = FXCollections.observableArrayList();
@@ -93,23 +93,23 @@ public class SearchSpeciesPane extends GridPane {
         Task listLoader = new Task<List<Species>>() {
             {
                 setOnSucceeded(workerStateEvent -> {
-                    SearchSpeciesPane.this.speciesList.addAll(getValue());
-                    SearchSpeciesPane.this.progressIndicator.setVisible(false);
-                    SearchSpeciesPane.this.searchResults = new Pagination((int) Math.ceil(
-                            (double) (SearchSpeciesPane.this.speciesList.size()) /
-                                    (double) (SearchSpeciesPane.this.resultsPerPage)));
-                    add(SearchSpeciesPane.this.searchResults, 0, 2, 3, 1);
-                    if (SearchSpeciesPane.this.speciesList.size() > 0) {
-                        SearchSpeciesPane.this.searchResults.setPageFactory(SearchSpeciesPane.this::createPage);
+                    SpeciesSearchPane.this.speciesList.addAll(getValue());
+                    SpeciesSearchPane.this.progressIndicator.setVisible(false);
+                    SpeciesSearchPane.this.searchResults = new Pagination((int) Math.ceil(
+                            (double) (SpeciesSearchPane.this.speciesList.size()) /
+                                    (double) (SpeciesSearchPane.this.resultsPerPage)));
+                    add(SpeciesSearchPane.this.searchResults, 0, 2, 3, 1);
+                    if (SpeciesSearchPane.this.speciesList.size() > 0) {
+                        SpeciesSearchPane.this.searchResults.setPageFactory(SpeciesSearchPane.this::createPage);
                     } else {
-                        SearchSpeciesPane.this.searchResults.setPageFactory(SearchSpeciesPane.this::createNoResultsPage);
+                        SpeciesSearchPane.this.searchResults.setPageFactory(SpeciesSearchPane.this::createNoResultsPage);
                     }
                 });
             }
 
             @Override
             protected List<Species> call() throws Exception {
-                String searchTerm = SearchSpeciesPane.this.searchField.getText();
+                String searchTerm = SpeciesSearchPane.this.searchField.getText();
                 ChEBISearchService searchService = new ChEBISearchService(searchTerm);
                 return searchService.search();
             }
@@ -147,7 +147,7 @@ public class SearchSpeciesPane extends GridPane {
         }
     }
 
-    public ObservableList<Species> getSelectedSpecies() {
+    public ObservableList<ChemicalEntity> getSelectedSpecies() {
         return this.selectedSpecies;
     }
 

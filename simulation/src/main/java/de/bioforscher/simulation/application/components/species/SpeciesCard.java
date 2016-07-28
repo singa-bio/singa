@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.application.components;
+package de.bioforscher.simulation.application.components.species;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Species;

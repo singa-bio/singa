@@ -1,9 +1,8 @@
-package de.bioforscher.simulation.application.windows;
+package de.bioforscher.simulation.application.components.species;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
-import de.bioforscher.simulation.application.components.SpeciesCard;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.simulation.util.BioGraphUtilities;

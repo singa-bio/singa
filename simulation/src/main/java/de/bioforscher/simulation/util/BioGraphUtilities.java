@@ -6,7 +6,10 @@ import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.modules.model.PotentialUpdate;
+import de.bioforscher.units.quantities.MolarConcentration;
 
+import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +76,13 @@ public class BioGraphUtilities {
                     bioGraph.getNode(undirectedEdge.getTarget().getIdentifier()));
         }
         return bioGraph;
+    }
+
+    public static Set<PotentialUpdate> collectAsPotentialUpdates(Map<ChemicalEntity, Quantity<MolarConcentration>>
+                                                                         concentrations) {
+        return concentrations.entrySet().stream()
+                .map(mapEntity -> new PotentialUpdate(mapEntity.getKey(), mapEntity.getValue()))
+                .collect(Collectors.toSet());
     }
 
 
