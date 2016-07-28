@@ -20,12 +20,24 @@ public enum AtomToken {
     OCCUPANCY(Range.of(55, 60)),
     TEMPERATURE_FACTOR(Range.of(61, 66)),
     SEGMENT_IDENTIFIER(Range.of(77, 78)),
-    ELEMENT_SYMBOL(Range.of(79, 80));
+    ELEMENT_SYMBOL(Range.of(77, 78));
 
     private final Range<Integer> columns;
 
     AtomToken(Range<Integer> columns) {
         this.columns = columns;
+    }
+
+    public static String extractValueFromPDBLine(String line, AtomToken atomToken) {
+        // pdb numbering starts at column 1 - string starts at 0 - therefore -1
+        // pdb numbering is including the last letter  - substring is excluding the last letter - therefore +1
+        if (line.length() >= atomToken.getColumns().getLowerBound() + 1 && line.length() >= atomToken.getColumns()
+                                                                                                     .getUpperBound()) {
+            return line.substring(
+                    atomToken.getColumns().getLowerBound(), atomToken.getColumns().getUpperBound()).trim();
+        } else {
+            return "";
+        }
     }
 
     public Range<Integer> getColumns() {
@@ -34,17 +46,5 @@ public enum AtomToken {
 
     public String extract(String line) {
         return extractValueFromPDBLine(line, this);
-    }
-
-    public static String extractValueFromPDBLine(String line, AtomToken atomToken) {
-        // pdb numbering starts at column 1 - string starts at 0 - therefore -1
-        // pdb numbering is including the last letter  - substring is excluding the last letter - therefore +1
-        if (line.length() >= atomToken.getColumns().getLowerBound() + 1 && line.length() >= atomToken.getColumns()
-                .getUpperBound() + 1) {
-            return line.substring(
-                    atomToken.getColumns().getLowerBound() - 1, atomToken.getColumns().getUpperBound() + 1).trim();
-        } else {
-            return "";
-        }
     }
 }
