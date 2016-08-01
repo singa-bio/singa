@@ -17,6 +17,12 @@ public class EnvironmentalVariables extends Observable {
 
     private static EnvironmentalVariables instance;
 
+    private Quantity<Length> nodeDistance;
+    private Quantity<Time> timeStep;
+    private Quantity<Temperature> systemTemperature;
+    private Quantity<DynamicViscosity> systemViscosity;
+    private boolean isCellularEnvironment;
+
     public static EnvironmentalVariables getInstance() {
         if (instance == null) {
             synchronized (EnvironmentalVariables.class) {
@@ -25,12 +31,6 @@ public class EnvironmentalVariables extends Observable {
         }
         return instance;
     }
-
-    private Quantity<Length> nodeDistance;
-    private Quantity<Time> timeStep;
-    private Quantity<Temperature> systemTemperature;
-    private Quantity<DynamicViscosity> systemViscosity;
-    private boolean isCellularEnvironment;
 
     private EnvironmentalVariables() {
         resetToDefaultValues();
@@ -78,15 +78,10 @@ public class EnvironmentalVariables extends Observable {
         notifyObservers();
     }
 
-    /**
-     * @param diameter
-     * @param spanningNodes
-     */
     public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         this.setNodeDistance(
                 Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
     }
-
 
     public void setSystemTemperature(Quantity<Temperature> systemTemperature) {
         // always in kelvin

@@ -1,26 +1,28 @@
 package de.bioforscher.simulation.application.renderer;
 
+import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.graphs.model.RegularNode;
-import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
-import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFaceEdge;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFactory;
-import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.GraphUpdatedEvent;
+import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class GraphRenderer {
+public class GraphRenderer extends AnimationTimer implements UpdateEventListener<GraphUpdatedEvent> {
 
     private GraphRenderOptions renderingOptions;
     private BioGraphRenderOptions bioRenderingOptions;
     private VoronoiFactory vonoroiFactory;
+
+    private ConcurrentLinkedQueue<AutomatonGraph> graphQueue = new ConcurrentLinkedQueue<>();
 
     private Canvas canvas;
     private GraphicsContext graphicsContext;
@@ -47,57 +49,6 @@ public class GraphRenderer {
 
     public void setBioRenderingOptions(BioGraphRenderOptions bioRenderingOptions) {
         this.bioRenderingOptions = bioRenderingOptions;
-    }
-
-    public void draw(UndirectedGraph graph) {
-
-        // node diameter is needed everywhere
-        final double nodeDiameter = this.renderingOptions.getStandardNodeDiameter();
-
-        // Background
-        this.graphicsContext.setFill(this.renderingOptions.getBackgroundColor());
-        this.graphicsContext.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
-
-        // Render Vonoroi Edges
-        if (this.renderingOptions.isRenderVoronoi()) {
-            // Generate Voronoi edges
-            List<VoronoiFaceEdge> edges = this.vonoroiFactory.generateVonoroi(graph,
-                    new Rectangle(new Vector2D(0, 800), new Vector2D(800, 0)));
-            // Set options
-            this.graphicsContext.setStroke(Color.LIGHTGREEN);
-            this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
-            // Draw the edges
-            for (VoronoiFaceEdge ge : edges) {
-                this.graphicsContext.strokeLine(ge.x1 + nodeDiameter / 2, ge.y1 + nodeDiameter / 2,
-                        ge.x2 + nodeDiameter / 2, ge.y2 + nodeDiameter / 2);
-            }
-        }
-
-        // Render graph edges
-        if (this.renderingOptions.isRenderEdges()) {
-            // Set options
-            this.graphicsContext.setStroke(this.renderingOptions.getStandardEdgeColor());
-            this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
-            // Draw the edges
-            for (UndirectedEdge e : graph.getEdges()) {
-                this.graphicsContext.strokeLine(e.getSource().getPosition().getX() + nodeDiameter / 2,
-                        e.getSource().getPosition().getY() + nodeDiameter / 2,
-                        e.getTarget().getPosition().getX() + nodeDiameter / 2,
-                        e.getTarget().getPosition().getY() + nodeDiameter / 2);
-            }
-        }
-
-        // Nodes
-        if (this.renderingOptions.isRenderNodes()) {
-            // Set options
-            this.graphicsContext.setFill(this.renderingOptions.getStandardNodeColor());
-            // Draw the nodes
-            for (RegularNode n : graph.getNodes()) {
-                this.graphicsContext.fillOval(n.getPosition().getX(), n.getPosition().getY(), nodeDiameter,
-                        nodeDiameter);
-            }
-        }
-
     }
 
     public void drawBio(AutomatonGraph g) {
@@ -158,4 +109,20 @@ public class GraphRenderer {
 
     }
 
+    public ConcurrentLinkedQueue<AutomatonGraph> getGraphQueue() {
+        return this.graphQueue;
+    }
+
+    @Override
+    public void onEventReceived(GraphUpdatedEvent event) {
+        this.graphQueue.add(event.getGraph());
+    }
+
+    @Override
+    public void handle(long now) {
+        AutomatonGraph g;
+        while ((g = this.graphQueue.poll()) != null) {
+            drawBio(g);
+        }
+    }
 }

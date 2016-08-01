@@ -6,7 +6,7 @@ import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NextEpochEvent;
+import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import de.bioforscher.simulation.util.BioGraphUtilities;
@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christoph Leberecht
  * @deprecated
  */
-public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
+public class GraphAutomaton implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     private AutomatonGraph graph;
     private FreeDiffusion diffusion;
@@ -31,7 +31,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     private List<Reaction> reactions;
     private Map<String, ChemicalEntity> species;
 
-    private CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> listeners;
+    private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
 
     private EpochUpdateWriter updateWriter;
 
@@ -151,7 +151,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     }
 
     private void emitNextEpochEvent(BioNode node) {
-        NextEpochEvent event = new NextEpochEvent(this.epoch, node);
+        NodeUpdatedEvent event = new NodeUpdatedEvent(this.epoch, node);
         emitEvent(event);
     }
 
@@ -161,7 +161,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NextEpochEvent> {
     }
 
     @Override
-    public CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> getListeners() {
+    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
         return this.listeners;
     }
 

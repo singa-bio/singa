@@ -1,13 +1,12 @@
 package de.bioforscher.simulation.application.components.species;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.components.plots.ConcentrationPlot;
+import de.bioforscher.simulation.application.renderer.SpeciesColorManager;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -15,7 +14,7 @@ import javafx.scene.text.FontWeight;
 /**
  * Created by Christoph on 26.07.2016.
  */
-public class ColoredEntityCell extends ListCell<ColorableChemicalEntity> {
+public class ColoredEntityCell extends ListCell<ChemicalEntity> {
 
     private ConcentrationPlot plot;
 
@@ -25,12 +24,15 @@ public class ColoredEntityCell extends ListCell<ColorableChemicalEntity> {
 
     private ContextMenu contextMenu = new ContextMenu();
     private MenuItem hideItem = new MenuItem();
+    private CustomMenuItem colorItem = new CustomMenuItem();
+    private ColorPicker colorPicker = new ColorPicker();
 
     public ColoredEntityCell(ConcentrationPlot plot) {
         this.plot = plot;
         configureGrid();
         configureLegendIndicator();
         configureName();
+        configureColorPicker();
         configureContextMenu();
         addControlsToGrid();
     }
@@ -50,10 +52,17 @@ public class ColoredEntityCell extends ListCell<ColorableChemicalEntity> {
         this.legendIndicator.setText(IconProvider.FontAwesome.ICON_DOT_CIRCLE);
     }
 
+    private void configureColorPicker() {
+        this.colorPicker.setStyle("-fx-background-color: white;");
+    }
+
     private void configureContextMenu() {
         this.hideItem.setText("Hide");
         this.hideItem.setOnAction(this::toggleVisibility);
-        this.contextMenu.getItems().addAll(this.hideItem);
+        this.colorItem.setContent(this.colorPicker);
+        this.colorItem.setHideOnClick(false);
+        this.colorItem.setOnAction(this::setColor);
+        this.contextMenu.getItems().addAll(this.hideItem, this.colorItem);
     }
 
     private void addControlsToGrid() {
@@ -62,7 +71,7 @@ public class ColoredEntityCell extends ListCell<ColorableChemicalEntity> {
     }
 
     @Override
-    public void updateItem(ColorableChemicalEntity entity, boolean empty) {
+    public void updateItem(ChemicalEntity entity, boolean empty) {
         super.updateItem(entity, empty);
         if (empty) {
             clearContent();
@@ -78,24 +87,31 @@ public class ColoredEntityCell extends ListCell<ColorableChemicalEntity> {
     }
 
     private void toggleVisibility(ActionEvent event) {
-        ColorableChemicalEntity entity = this.getItem();
-        if (entity.isVisible()) {
-            entity.setVisible(false);
+        ChemicalEntity entity = this.getItem();
+        if (SpeciesColorManager.getInstance().getVisibility(entity)) {
+            SpeciesColorManager.getInstance().setVisibility(entity, false);
             this.hideItem.setText("Show");
             this.plot.hideSeries(entity);
             this.setStyle("-fx-control-inner-background: #d0d0d0;");
         } else {
-            entity.setVisible(true);
+            SpeciesColorManager.getInstance().setVisibility(entity, true);
             this.hideItem.setText("Hide");
             this.plot.showSeries(entity);
             this.setStyle("-fx-control-inner-background: #f4f4f4;");
         }
     }
 
-    private void addContent(ColorableChemicalEntity entity) {
+    private void setColor(ActionEvent event) {
+        SpeciesColorManager.getInstance().setColor(this.getItem(), this.colorPicker.getValue());
+        this.legendIndicator.setTextFill(this.colorPicker.getValue());
+        this.plot.updateColor(this.getItem());
+    }
+
+    private void addContent(ChemicalEntity entity) {
         setText(null);
-        this.legendIndicator.setTextFill(entity.getColor());
-        this.name.setText(entity.getEntity().getName());
+        this.legendIndicator.setTextFill(SpeciesColorManager.getInstance().getColor(entity));
+        this.name.setText(entity.getName());
+        this.colorPicker.setValue(SpeciesColorManager.getInstance().getColor(this.getItem()));
         setContextMenu(this.contextMenu);
         setGraphic(this.grid);
     }

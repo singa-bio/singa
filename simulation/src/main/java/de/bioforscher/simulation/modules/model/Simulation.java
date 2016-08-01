@@ -5,7 +5,7 @@ import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NextEpochEvent;
+import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import tec.units.ri.quantity.Quantities;
 
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 /**
  * Created by Christoph on 06.07.2016.
  */
-public class Simulation implements UpdateEventEmitter<NextEpochEvent> {
+public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     private AutomatonGraph graph;
     private Set<Module> modules;
     private Set<ChemicalEntity> species;
     private int epoch;
 
-    private CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> listeners;
+    private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
 
     public Simulation() {
         this.modules = new HashSet<>();
@@ -85,12 +85,12 @@ public class Simulation implements UpdateEventEmitter<NextEpochEvent> {
     }
 
     private void emitNextEpochEvent(BioNode node) {
-        NextEpochEvent event = new NextEpochEvent(this.epoch, node);
+        NodeUpdatedEvent event = new NodeUpdatedEvent(this.epoch, node);
         emitEvent(event);
     }
 
     @Override
-    public CopyOnWriteArrayList<UpdateEventListener<NextEpochEvent>> getListeners() {
+    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
         return this.listeners;
     }
 

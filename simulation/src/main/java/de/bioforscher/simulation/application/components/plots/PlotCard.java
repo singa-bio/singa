@@ -1,17 +1,28 @@
 package de.bioforscher.simulation.application.components.plots;
 
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.IconProvider;
-import de.bioforscher.simulation.application.components.species.ColorableChemicalEntity;
 import de.bioforscher.simulation.application.components.species.ColoredEntityCell;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Transform;
+import javafx.stage.FileChooser;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Christoph on 20.07.2016.
@@ -21,7 +32,7 @@ public class PlotCard extends GridPane {
     private ConcentrationPlot plot;
 
     private HBox toolBar = new HBox();
-    private ListView<ColorableChemicalEntity> speciesList = new ListView<>();
+    private ListView<ChemicalEntity> speciesList = new ListView<>();
 
     public PlotCard(ConcentrationPlot plot) {
         this.plot = plot;
@@ -51,12 +62,14 @@ public class PlotCard extends GridPane {
 
     private void configureToolBar() {
         Button options = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_COGS);
+        options.setTooltip(new Tooltip("Options (currently not defined - but feel free to submit a request)"));
         Button export = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_DOWNLOAD);
-        Button remove = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_REMOVE);
+        export.setTooltip(new Tooltip("Export"));
+        export.setOnAction(this::exportPlot);
         this.toolBar.setAlignment(Pos.TOP_RIGHT);
         this.toolBar.setPadding(new Insets(10, 0, 10, 0));
         this.toolBar.setSpacing(5);
-        this.toolBar.getChildren().addAll(options, export, remove);
+        this.toolBar.getChildren().addAll(options, export);
     }
 
     private HBox generateTitle() {
@@ -75,9 +88,34 @@ public class PlotCard extends GridPane {
         this.add(this.speciesList, 1, 1);
     }
 
+    private void exportPlot(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Plot to png");
+        fileChooser.setInitialFileName("concentrations_node_"+this.getPlot().getReferencedNode().getIdentifier()+"" +
+                ".png");
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            this.plot.setLegendVisible(true);
+            SnapshotParameters parameters = new SnapshotParameters();
+            parameters.setTransform(Transform.scale(4, 4));
+            WritableImage snapShot = this.plot.snapshot(parameters, null);
+            this.plot.setLegendVisible(false);
+            try {
+                if (!file.getName().endsWith(".png")) {
+                    file = new File(file+".png");
+                }
+                ImageIO.write(SwingFXUtils.fromFXImage(snapShot, null), "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public ConcentrationPlot getPlot() {
         return this.plot;
     }
 
-
+    public ListView<ChemicalEntity> getSpeciesList() {
+        return this.speciesList;
+    }
 }

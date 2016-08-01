@@ -3,7 +3,6 @@ package de.bioforscher.simulation.application;
 import de.bioforscher.core.utility.LogManager;
 import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
-import de.bioforscher.simulation.application.components.plots.PlotCard;
 import de.bioforscher.simulation.application.components.plots.PlotPane;
 import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
 import de.bioforscher.simulation.application.components.species.SpeciesOverviewPane;
@@ -46,12 +45,13 @@ public class BioGraphSimulation extends Application {
     private Stage stage;
 
     private SimulationCanvas simulationCanvas;
-    private PlotPane chartContainer;
+    private PlotPane plotPane;
     private AnchorPane contextAnchor;
     private Slider concentrationSlider;
 
     private AutomatonGraph graph;
     private Simulation simulation;
+    private SimulationManager simulationManager = new SimulationManager(this.simulation);
 
     public static void main(String[] args) {
         launch();
@@ -151,12 +151,12 @@ public class BioGraphSimulation extends Application {
 
         // Chart Half
         final TabPane rightPane = new TabPane();
-        this.chartContainer = new PlotPane(this);
+        this.plotPane = new PlotPane(this);
 
         Tab chartTab = new Tab();
         chartTab.setText("Plots");
         chartTab.setClosable(false);
-        chartTab.setContent(this.chartContainer);
+        chartTab.setContent(this.plotPane);
         rightPane.getTabs().add(chartTab);
 
         Tab environmentTab = new Tab();
@@ -172,19 +172,23 @@ public class BioGraphSimulation extends Application {
 
         // ToolBar
         ToolBar toolBar = new ToolBar();
-        // Simulate Button
+        // simulate button
         Button btnSimulate = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_PLAY);
         btnSimulate.setTooltip(new Tooltip("Starts the simulation with the current configuration."));
         btnSimulate.setOnAction(this::startSimulation);
-        // Rearrange sutton
+        // stop button
+        Button btnStop = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_PAUSE);
+        btnStop.setTooltip(new Tooltip("Pauses the current simulation."));
+        btnStop.setOnAction(this::pauseSimulation);
+        // rearrange button
         Button btnRearrange = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_EXCHANGE);
         btnRearrange.setTooltip(new Tooltip("Starts a rearrangement cycle trying to optimize the graph layout."));
-        btnRearrange.setOnAction(this.simulationCanvas::arrangeGraph);
+        btnRearrange.setOnAction(this::arrangeGraph);
         // Concentration slider
         setupConcentrationSlider();
 
         // Add toolbar components
-        toolBar.getItems().addAll(btnSimulate, btnRearrange, this.concentrationSlider);
+        toolBar.getItems().addAll(btnSimulate, btnStop, btnRearrange, this.concentrationSlider);
 
         // Add toolbar and menu
         topContainer.getChildren().addAll(menuBar, toolBar);
@@ -198,10 +202,6 @@ public class BioGraphSimulation extends Application {
 
         // Scene
         Scene scene = new Scene(root);
-        // TODO Fix this
-        File f = new File("D:/projects/simulation/target/classes/application.css");
-        scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
-        // scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
         stage.setScene(scene);
 
         // Show
@@ -209,7 +209,40 @@ public class BioGraphSimulation extends Application {
         this.simulationCanvas.draw();
     }
 
-    public Stage prepareUtilityWindow(int width, int height, String title) {
+    private void startSimulation(ActionEvent event) {
+        if (!this.simulationManager.isRunning()) {
+            resetSimulation();
+            Thread thread = new Thread(this.simulationManager);
+            thread.setDaemon(true);
+            thread.start();
+            this.simulationCanvas.getRenderer().start();
+        }
+    }
+
+    private void resetSimulation() {
+        this.simulationManager = new SimulationManager(this.simulation);
+        this.simulationManager.getListeners().add(this.simulationCanvas.getRenderer());
+    }
+
+    private void pauseSimulation(ActionEvent event) {
+        if (this.simulationManager.isRunning()) {
+            this.simulationManager.cancel();
+            this.simulationCanvas.getRenderer().stop();
+            resetSimulation();
+        }
+    }
+
+    private void arrangeGraph(ActionEvent event) {
+        Thread graphProducer = new Thread(new BioGraphProducer(
+                this.simulationCanvas.getRenderer().getGraphQueue(),
+                this.graph,
+                100));
+        graphProducer.start();
+        this.simulationCanvas.getRenderer().start();
+    }
+
+
+    private Stage prepareUtilityWindow(int width, int height, String title) {
         Stage utilityStage = new Stage();
         utilityStage.initModality(Modality.APPLICATION_MODAL);
         utilityStage.initStyle(StageStyle.UTILITY);
@@ -219,7 +252,7 @@ public class BioGraphSimulation extends Application {
         return utilityStage;
     }
 
-    public void showSearchSpeciesPanel(ActionEvent event) {
+    private void showSearchSpeciesPanel(ActionEvent event) {
         int width = 600;
         int height = 530;
         Stage speciesStage = prepareUtilityWindow(width, height, "Search Species...");
@@ -235,7 +268,7 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public void showSpeciesOverview(ActionEvent event) {
+    private void showSpeciesOverview(ActionEvent event) {
         int width = 800;
         int height = 600;
         Stage speciesStage = prepareUtilityWindow(width, height, "Species Overview");
@@ -245,7 +278,7 @@ public class BioGraphSimulation extends Application {
         speciesStage.showAndWait();
     }
 
-    public void startGraphWizard(ActionEvent event) {
+    private void startGraphWizard(ActionEvent event) {
         int width = 600;
         int height = 300;
         Stage graphStage = prepareUtilityWindow(width, height, "New Graph Wizard");
@@ -257,7 +290,7 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public void startReactionWizard(ActionEvent event) {
+    private void startReactionWizard(ActionEvent event) {
         int width = 800;
         int height = 600;
         Stage reactionStage = prepareUtilityWindow(width, height, "New Reaction Wizard");
@@ -271,7 +304,7 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public void showPlotPreferencesControlPanel(ActionEvent event) {
+    private void showPlotPreferencesControlPanel(ActionEvent event) {
         int width = 400;
         int height = 300;
         Stage plotPreferencesStage = prepareUtilityWindow(width, height, "Plot preferences");
@@ -280,7 +313,7 @@ public class BioGraphSimulation extends Application {
         plotPreferencesStage.showAndWait();
     }
 
-    public FileChooser prepareFileChooser(String title, String... extensions) {
+    private FileChooser prepareFileChooser(String title, String... extensions) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         for (String extension : extensions) {
@@ -291,7 +324,7 @@ public class BioGraphSimulation extends Application {
         return fileChooser;
     }
 
-    public void loadBioGraph(ActionEvent event) {
+    private void loadBioGraph(ActionEvent event) {
         FileChooser fileChooser = prepareFileChooser("Load GraphML-File", "xml");
         File file = fileChooser.showOpenDialog(this.stage);
         if (file != null) {
@@ -301,7 +334,7 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public void saveBioGraph(ActionEvent event) {
+    private void saveBioGraph(ActionEvent event) {
         FileChooser fileChooser = prepareFileChooser("Save graph to file", "xml");
         File file = fileChooser.showSaveDialog(this.stage);
         if (file != null) {
@@ -309,20 +342,7 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public void startSimulation(ActionEvent event) {
-        prepareObserverCharts();
-        // TODO revert this
-        // this.automata.activateWriteObservedNodesToFiles();
-        this.simulationCanvas.startSimulation();
-    }
-
-    public void prepareObserverCharts() {
-        for (PlotCard chart : this.chartContainer.getPlotCards().getItems()) {
-            this.simulation.addEventListener(chart.getPlot());
-        }
-    }
-
-    public void setupConcentrationSlider() {
+    private void setupConcentrationSlider() {
         this.concentrationSlider = new Slider();
         this.concentrationSlider.setMin(0);
         this.concentrationSlider.setMax(1);
@@ -333,7 +353,7 @@ public class BioGraphSimulation extends Application {
         this.concentrationSlider.setMinorTickCount(4);
     }
 
-    public void resetGraph(AutomatonGraph graph) {
+    private void resetGraph(AutomatonGraph graph) {
         this.graph = graph;
         this.simulation.setGraph(this.graph);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
@@ -342,7 +362,7 @@ public class BioGraphSimulation extends Application {
         this.simulationCanvas.draw();
     }
 
-    public void resetGraphContextMenu() {
+    private void resetGraphContextMenu() {
         this.simulationCanvas.resetGraphContextMenu();
     }
 
@@ -361,12 +381,12 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public PlotPane getChartContainer() {
-        return this.chartContainer;
+    public PlotPane getPlotPane() {
+        return this.plotPane;
     }
 
-    public void setChartContainer(PlotPane chartContainer) {
-        this.chartContainer = chartContainer;
+    public void setPlotPane(PlotPane plotPane) {
+        this.plotPane = plotPane;
     }
 
     public AnchorPane getContextAnchor() {

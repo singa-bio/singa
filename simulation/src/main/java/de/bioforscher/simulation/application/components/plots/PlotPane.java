@@ -2,6 +2,7 @@ package de.bioforscher.simulation.application.components.plots;
 
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ListView;
@@ -59,6 +60,8 @@ public class PlotPane extends GridPane {
             if (this.currentPlotCard != null) {
                 this.getChildren().remove(1);
                 this.add(plotCard, 0, 1);
+                plotCard.getPlot().getObservedEntities().forEach(entity -> plotCard.getPlot().updateColor(entity));
+                plotCard.getSpeciesList().refresh();
             }
             this.currentPlotCard = plotCard;
         }
@@ -71,7 +74,7 @@ public class PlotPane extends GridPane {
         }
     }
 
-    public ListView<PlotCard> getPlotCards() {
-        return this.plotCards;
+    public ObservableList<PlotCard> getPlotCards() {
+        return this.plotCards.getItems();
     }
 }

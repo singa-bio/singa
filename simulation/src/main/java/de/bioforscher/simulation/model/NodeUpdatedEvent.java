@@ -1,11 +1,11 @@
 package de.bioforscher.simulation.model;
 
-public class NextEpochEvent {
+public class NodeUpdatedEvent {
 
     private final int epoch;
     private final BioNode node;
 
-    public NextEpochEvent(int epoch, BioNode node) {
+    public NodeUpdatedEvent(int epoch, BioNode node) {
         this.epoch = epoch;
         this.node = node;
     }

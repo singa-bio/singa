@@ -3,7 +3,7 @@ package de.bioforscher.simulation.parser;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NextEpochEvent;
+import de.bioforscher.simulation.model.NodeUpdatedEvent;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author Christoph Leberecht
  */
-public class EpochUpdateWriter implements UpdateEventListener<NextEpochEvent> {
+public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 
     public static char COMMENT_CHARCTER = '#';
     public static char SEPERATOR_CHARACTER = ',';
@@ -117,7 +117,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NextEpochEvent> {
     }
 
     @Override
-    public void onEventReceived(NextEpochEvent event) {
+    public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
         sb.append(Integer.toString(event.getEpoch())).append(SEPERATOR_CHARACTER);
         int count = 0;

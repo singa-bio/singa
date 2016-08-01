@@ -3,8 +3,9 @@ package de.bioforscher.simulation.application.components.plots;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.application.components.species.ColorableChemicalEntity;
+import de.bioforscher.simulation.application.renderer.SpeciesColorManager;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NextEpochEvent;
+import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.util.BioGraphUtilities;
@@ -33,9 +34,9 @@ import java.util.Set;
  *
  * @author Christoph Leberecht
  */
-public class ConcentrationPlot extends LineChart<Number, Number> implements UpdateEventListener<NextEpochEvent> {
+public class ConcentrationPlot extends LineChart<Number, Number> implements UpdateEventListener<NodeUpdatedEvent> {
 
-    private ObservableList<ColorableChemicalEntity> observedEntities = FXCollections.observableArrayList();
+    private ObservableList<ChemicalEntity> observedEntities = FXCollections.observableArrayList();
     private Simulation simulation;
     // mirrors the data received from events
     private Map<Integer, Set<PotentialUpdate>> mirroredData;
@@ -67,12 +68,22 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     private void initializeData() {
-        for (ColorableChemicalEntity entity : this.observedEntities) {
+        for (ChemicalEntity entity : this.observedEntities) {
             XYChart.Series<Number, Number> series = new Series<>();
-            series.setName(entity.getEntity().getName());
+            series.setName(entity.getName());
             this.getData().add(series);
-            series.getNode().setStyle("-fx-stroke: " + entity.getHexColor() + " ");
+            SpeciesColorManager.getInstance().initializeEntity(entity, ColorableChemicalEntity.generateRandomColor());
+            series.getNode().setStyle("-fx-stroke: " +
+                    ColorableChemicalEntity.getHexColor(SpeciesColorManager.getInstance().getColor(entity)) + " ");
         }
+    }
+
+    public void updateColor(ChemicalEntity entity) {
+        Series<Number, Number> series = this.getData().stream()
+                .filter(s -> s.getName().equals(entity.getName()))
+                .findFirst().get();
+        series.getNode().setStyle("-fx-stroke: " +
+                ColorableChemicalEntity.getHexColor(SpeciesColorManager.getInstance().getColor(entity)) + " ");
     }
 
     private void configureChart() {
@@ -111,32 +122,32 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     public void setObservedSpecies(Set<ChemicalEntity> observedSpecies) {
-        observedSpecies.forEach(entity -> this.observedEntities.add(new ColorableChemicalEntity(entity)));
+        observedSpecies.forEach(this.observedEntities::add);
     }
 
     public void addSpecies(ChemicalEntity entity) {
-        this.observedEntities.add(new ColorableChemicalEntity(entity));
+        this.observedEntities.add(entity);
         Series<Number, Number> series = new Series<>();
         series.setName(entity.getName());
         this.getData().add(series);
     }
 
-    public void removeSpecies(ColorableChemicalEntity entity) {
+    public void removeSpecies(ChemicalEntity entity) {
         this.observedEntities.remove(entity);
         this.getData().stream()
-                .filter(series -> series.getName().equals(entity.getEntity().getName()))
+                .filter(series -> series.getName().equals(entity.getName()))
                 .forEach(this.getData()::remove);
     }
 
-    public void hideSeries(ColorableChemicalEntity entity) {
+    public void hideSeries(ChemicalEntity entity) {
         this.getData().stream()
-                .filter(series -> series.getName().equals(entity.getEntity().getName()))
+                .filter(series -> series.getName().equals(entity.getName()))
                 .forEach(series -> series.getNode().setVisible(false));
     }
 
-    public void showSeries(ColorableChemicalEntity entity) {
+    public void showSeries(ChemicalEntity entity) {
         this.getData().stream()
-                .filter(series -> series.getName().equals(entity.getEntity().getName()))
+                .filter(series -> series.getName().equals(entity.getName()))
                 .forEach(series -> series.getNode().setVisible(true));
     }
 
@@ -146,20 +157,20 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     @Override
-    public void onEventReceived(NextEpochEvent event) {
+    public void onEventReceived(NodeUpdatedEvent event) {
 
         if (event.getNode().equals(this.referencedNode)) {
             Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = event.getNode().getConcentrations();
             // TODO iterate over species instead of series
-            for (ColorableChemicalEntity entity : this.observedEntities) {
+            for (ChemicalEntity entity : this.observedEntities) {
                 // get associated value
                 Series<Number, Number> series = this.getData().stream()
-                        .filter(s -> s.getName().equals(entity.getEntity().getName()))
+                        .filter(s -> s.getName().equals(entity.getName()))
                         .findFirst().get();
                 // add to mirrored values
                 this.mirroredData.put(event.getEpoch(), BioGraphUtilities.collectAsPotentialUpdates(concentrations));
                 // get concentration of entity
-                double concentration = concentrations.get(entity.getEntity()).getValue().doubleValue();
+                double concentration = concentrations.get(entity).getValue().doubleValue();
                 // add to plot
                 Platform.runLater(() -> {
                     series.getData().add(new XYChart.Data<>(event.getEpoch(), concentration));
@@ -184,7 +195,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     }
 
-    public ObservableList<ColorableChemicalEntity> getObservedEntities() {
+    public ObservableList<ChemicalEntity> getObservedEntities() {
         return this.observedEntities;
     }
 
