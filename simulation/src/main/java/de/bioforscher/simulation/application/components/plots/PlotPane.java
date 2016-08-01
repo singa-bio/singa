@@ -55,13 +55,13 @@ public class PlotPane extends GridPane {
     }
 
     public void setSelectedPlot(PlotCard plotCard) {
-        if (this.currentPlotCard != null) {
-            this.getChildren().remove(1);
-            this.add(plotCard, 0, 1);
+        if (plotCard != null) {
+            if (this.currentPlotCard != null) {
+                this.getChildren().remove(1);
+                this.add(plotCard, 0, 1);
+            }
+            this.currentPlotCard = plotCard;
         }
-        this.currentPlotCard = plotCard;
-
-        //System.out.println("Showing "+plotCard.getPlot().getReferencedNode().getIdentifier());
     }
 
     private void addControlsToGrid() {

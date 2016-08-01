@@ -74,8 +74,6 @@ public class BioGraphSimulation extends Application {
         this.stage = stage;
         this.stage.setMaximized(true);
         this.stage.setTitle("GraphAutomaton Simulation");
-        // this.stage.setMinWidth(1200);
-        // this.stage.setMinHeight(800);
 
         // Setup the Root and Top Container
         BorderPane root = new BorderPane();
@@ -175,17 +173,13 @@ public class BioGraphSimulation extends Application {
         // ToolBar
         ToolBar toolBar = new ToolBar();
         // Simulate Button
-        Button btnSimulate = new Button();
-        btnSimulate.setId("btnSimulate");
-        btnSimulate.setPrefSize(40, 40);
+        Button btnSimulate = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_PLAY);
+        btnSimulate.setTooltip(new Tooltip("Starts the simulation with the current configuration."));
         btnSimulate.setOnAction(this::startSimulation);
-
         // Rearrange sutton
-        Button btnRearrange = new Button();
-        btnRearrange.setId("btnRearrange");
-        btnRearrange.setPrefSize(40, 40);
+        Button btnRearrange = IconProvider.FontAwesome.createIconButton(IconProvider.FontAwesome.ICON_EXCHANGE);
+        btnRearrange.setTooltip(new Tooltip("Starts a rearrangement cycle trying to optimize the graph layout."));
         btnRearrange.setOnAction(this.simulationCanvas::arrangeGraph);
-
         // Concentration slider
         setupConcentrationSlider();
 

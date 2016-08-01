@@ -2,10 +2,7 @@ package de.bioforscher.simulation.application.components.plots;
 
 import de.bioforscher.simulation.application.IconProvider;
 import javafx.geometry.Insets;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -22,7 +19,7 @@ public class PlotCell extends ListCell<PlotCard> {
     private Label legendIndicator = new Label();
 
     private ContextMenu contextMenu = new ContextMenu();
-    private MenuItem hideItem = new MenuItem();
+    private MenuItem deleteItem = new MenuItem();
 
     public PlotCell(PlotPane plotPane) {
         this.plotPane = plotPane;
@@ -52,9 +49,9 @@ public class PlotCell extends ListCell<PlotCard> {
     }
 
     private void configureContextMenu() {
-        this.hideItem.setText("Hide");
-        // this.hideItem.setOnAction(this::toggleVisibility);
-        this.contextMenu.getItems().addAll(this.hideItem);
+        this.deleteItem.setText("Remove");
+        this.deleteItem.setOnAction(event -> getListView().getItems().remove(this.getItem()));
+        this.contextMenu.getItems().addAll(this.deleteItem);
     }
 
     private void addControlsToGrid() {
@@ -80,7 +77,9 @@ public class PlotCell extends ListCell<PlotCard> {
 
     private void addContent(PlotCard entity) {
         setText(null);
-        this.name.setText("C" + entity.getPlot().getReferencedNode().getIdentifier());
+        final int nodeIdentifier = entity.getPlot().getReferencedNode().getIdentifier();
+        this.name.setText("C" + nodeIdentifier);
+        this.setTooltip(new Tooltip("Concentration Plot for Node " + nodeIdentifier));
         setContextMenu(this.contextMenu);
         setGraphic(this.grid);
     }

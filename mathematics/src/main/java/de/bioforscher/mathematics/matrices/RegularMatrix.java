@@ -62,7 +62,7 @@ public class RegularMatrix implements Matrix {
             }
             // square
             this.rowDimension = values.length;
-            this.columnDimension = rowDimension;
+            this.columnDimension = this.rowDimension;
         }
 
 

@@ -38,14 +38,14 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     }
 
     @Override
-    public LabelType getRowLabelFromPosition(int rowIndex) {
+    public LabelType getRowLabel(int rowIndex) {
         return labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
                 .findFirst().get();
     }
 
     @Override
-    public LabelType getColumnLabelFromPosition(int columnIndex) {
-        return getRowLabelFromPosition(columnIndex);
+    public LabelType getColumnLabel(int columnIndex) {
+        return getRowLabel(columnIndex);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     }
 
     @Override
-    public Pair<Integer> getPositionFromLabel(LabelType rowLabel, LabelType columnLabel) {
+    public Pair<Integer> getPositionFromLabels(LabelType rowLabel, LabelType columnLabel) {
         return new Pair<>(this.labelMap.get(rowLabel), this.labelMap.get(columnLabel));
     }
 

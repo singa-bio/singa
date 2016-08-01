@@ -1,10 +1,18 @@
 package de.bioforscher.core.utility;
 
 /**
- * Created by Christoph on 21.06.2016.
+ * This subclass of {@link Pair} only implements different equals and hashcode methods.<br>
+ * The values are exchangeable. The Pair (1,2) is equal to (2,1).
+ *
+ * @param <ValueType> The type values to be stored in the pair.
  */
 public class CommutablePair<ValueType> extends Pair<ValueType> {
 
+    /**
+     * Creates a new {@link Pair}.
+     * @param first The first value.
+     * @param second The second value.
+     */
     public CommutablePair(ValueType first, ValueType second) {
         super(first, second);
     }
@@ -34,6 +42,7 @@ public class CommutablePair<ValueType> extends Pair<ValueType> {
 
     @Override
     public int hashCode() {
+        // TODO does this work?
         int result = getFirst() != null ? getFirst().hashCode() : 0;
         result = 31 * result + (getSecond() != null ? getSecond().hashCode() : 0);
         return result;

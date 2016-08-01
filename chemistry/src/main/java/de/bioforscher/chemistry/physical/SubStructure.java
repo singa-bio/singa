@@ -60,8 +60,8 @@ public class SubStructure extends AbstractGraph<Atom, Bond, Vector3D> implements
             for (int columnIndex = 0; columnIndex < distances.getElements()[rowIndex].length; columnIndex++) {
                 if (rowIndex != columnIndex && distances.getElement(rowIndex, columnIndex) < 1.8) {
                     connectWithEdge(getNextEdgeIdentifier(),
-                            getNode(distances.getRowLabelFromPosition(rowIndex).getIdentifier()),
-                            getNode(distances.getColumnLabelFromPosition(columnIndex).getIdentifier()),
+                            getNode(distances.getRowLabel(rowIndex).getIdentifier()),
+                            getNode(distances.getColumnLabel(columnIndex).getIdentifier()),
                             new Bond(BondType.COVALENT_BOND));
                 }
             }
