@@ -20,56 +20,57 @@ public class SpeciesCard extends GridPane {
 
     private Species species;
     private ImageView speciesImage;
+    private VBox informationBox = new VBox();
 
     public SpeciesCard(Species species) {
         this.species = species;
-        initialize();
+        configureGrid();
+        configureImageView();
+        configureInformationBox();
+        addComponentsToGrid();
     }
 
     public SpeciesCard(ChemicalEntity species) {
-        this.species = (Species) species;
-        initialize();
+        this((Species) species);
     }
 
-    public Species getSpecies() {
-        return this.species;
-    }
-
-    public void initialize() {
-
+    private void configureGrid() {
         this.setHgap(10);
         this.setVgap(10);
         this.setPadding(new Insets(10, 10, 10, 10));
-
         this.setStyle("-fx-border-color: #dcdcdc;" +
                 "-fx-border-radius: 5;" +
                 "-fx-background-color: white;" +
                 "-fx-background-radius: 5;");
         this.setMinSize(200, 100);
         this.setPrefSize(200, 100);
-
-        setUpSpeciesImageView();
-        this.add(this.speciesImage, 0, 0, 1, 1);
-
-        VBox informationBox = new VBox(10);
-        Text nameText = new Text(this.species.getName());
-        nameText.setFont(Font.font(null, FontWeight.BOLD, 16));
-
-        TextFlow speciesName = new TextFlow(nameText);
-        informationBox.getChildren().add(speciesName);
-
-        Label speciesWeight = new Label("Weight: " + this.species.getMolarMass().toString());
-        informationBox.getChildren().add(speciesWeight);
-
-        this.add(informationBox, 1, 0, 1, 1);
     }
 
-    private void setUpSpeciesImageView() {
+    private void configureImageView() {
         ChEBIImageService imageService = new ChEBIImageService(this.species.getIdentifier());
         imageService.fetchResource();
         InputStream inputStream = imageService.getImageStream();
         Image speciesImage = new Image(inputStream);
         this.speciesImage = new ImageView(speciesImage);
+    }
+
+    private void configureInformationBox() {
+        Text nameText = new Text(this.species.getName());
+        nameText.setFont(Font.font(null, FontWeight.BOLD, 16));
+        TextFlow nameFlow = new TextFlow(nameText);
+        Text identifierText = new Text("Identifier: " + this.species.getIdentifier().toString());
+        Label speciesWeight = new Label("Weight: " + this.species.getMolarMass().toString());
+        this.informationBox.setSpacing(10);
+        this.informationBox.getChildren().addAll(nameFlow, identifierText, speciesWeight);
+    }
+
+    private void addComponentsToGrid() {
+        this.add(this.speciesImage, 0, 0, 1, 1);
+        this.add(this.informationBox, 1, 0, 1, 1);
+    }
+
+    public Species getSpecies() {
+        return this.species;
     }
 
 }

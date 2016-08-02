@@ -86,7 +86,7 @@ public class SimulationCanvas extends Canvas {
         double height = getHeight();
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, width, height);
-        this.renderer.drawBio(this.owner.getGraph());
+        this.renderer.render(this.owner.getGraph());
     }
 
     public void resetGraphContextMenu() {

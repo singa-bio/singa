@@ -64,8 +64,10 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         // current concentration of this node
         double currentConcentration = node.getConcentration(entity).getValue().doubleValue();
         // calculate next concentration
-        double nextConcentration = coefficient.getValue().doubleValue() * neighbourConcentration + (1 -
-                neighbours * coefficient.getValue().doubleValue()) * currentConcentration;
+        // double nextConcentration = coefficient.getValue().doubleValue() * neighbourConcentration + (1 -
+        //         neighbours * coefficient.getValue().doubleValue()) * currentConcentration;
+        double nextConcentration = coefficient.getValue().doubleValue() * neighbourConcentration -
+                coefficient.getValue().doubleValue() * neighbours * currentConcentration + currentConcentration;
         return new PotentialUpdate(entity, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
     }
 

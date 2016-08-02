@@ -100,9 +100,9 @@ class ChooseSpeciesMethodPage extends WizardPage {
     }
 
     @Override
-    public void nextPage() {
+    public void navigateToNextPage() {
         if (this.tgMethods.getSelectedToggle().equals(this.rbChEBI)) {
-            super.nextPage();
+            super.navigateToNextPage();
         }
     }
 }

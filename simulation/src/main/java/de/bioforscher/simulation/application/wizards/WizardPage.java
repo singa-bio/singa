@@ -1,6 +1,7 @@
 package de.bioforscher.simulation.application.wizards;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
@@ -8,10 +9,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-
-import java.io.File;
 
 /**
  * A page in a wizard. Modified from
@@ -26,37 +27,39 @@ public abstract class WizardPage extends VBox {
     protected Button cancelButton = new Button("Cancel");
     protected Button finishButton = new Button("Finish");
 
-    private TextFlow description;
+    private Text pageTitle = new Text();
+    private TextFlow description = new TextFlow();
 
-    public WizardPage(String title) {
+    public WizardPage(String pageTitle) {
 
-        this.setId(title);
+        this.setId(pageTitle);
         this.setSpacing(5);
 
-        final Text titleText = new Text(title);
-        titleText.setId("PAGE_TITLE");
-        this.getChildren().add(titleText);
+        configureTitle(pageTitle);
 
-        this.description = new TextFlow();
-        this.description.setId("PAGE_DESCRIPTION");
-        this.getChildren().add(this.description);
+        addComponents();
+
+        this.priorButton.setOnAction(this::navigateToPriorPage);
+        this.nextButton.setOnAction(this::navigateToNextPage);
+        this.cancelButton.setOnAction(actionEvent -> getWizard().cancel());
+        this.finishButton.setOnAction(actionEvent -> getWizard().finish());
+    }
+
+    private void configureTitle(String pageTitle) {
+        this.pageTitle.setText(pageTitle);
+        this.pageTitle.setFont(Font.font(null, FontWeight.BOLD, 14));
+    }
+
+    private void addComponents() {
+        getChildren().addAll(this.pageTitle, this.description);
 
         final Separator separatorTop = new Separator();
-        separatorTop.setId("SEPARATOR_TOP");
-        this.getChildren().add(separatorTop);
+        separatorTop.setHalignment(HPos.CENTER);
+        getChildren().add(separatorTop);
 
         Region spring = new Region();
         VBox.setVgrow(spring, Priority.ALWAYS);
         getChildren().addAll(getContent(), spring, getFooter());
-
-        this.priorButton.setOnAction(this::priorPage);
-        this.nextButton.setOnAction(this::nextPage);
-        this.cancelButton.setOnAction(actionEvent -> getWizard().cancel());
-        this.finishButton.setOnAction(actionEvent -> getWizard().finish());
-
-        // TODO Static reference is not okay
-        File f = new File("D:/projects/simulation/target/classes/wizard.css");
-        this.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
     }
 
     private HBox getFooter() {
@@ -82,16 +85,20 @@ public abstract class WizardPage extends VBox {
         return getWizard().hasPriorPage();
     }
 
-    public void nextPage(ActionEvent event) {
-        nextPage();
+    public void navigateToNextPage(ActionEvent event) {
+        navigateToNextPage();
     }
 
-    public void nextPage() {
-        getWizard().nextPage();
+    public void navigateToNextPage() {
+        getWizard().navigateToNextPage();
     }
 
-    public void priorPage(ActionEvent event) {
-        getWizard().priorPage();
+    public void navigateToPriorPage(ActionEvent event) {
+        navigateToPriorPage();
+    }
+
+    public void navigateToPriorPage() {
+        getWizard().navigateToPriorPage();
     }
 
     public void navigateToPage(String pageIdentifier) {

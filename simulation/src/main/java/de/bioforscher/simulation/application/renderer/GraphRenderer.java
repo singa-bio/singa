@@ -51,7 +51,7 @@ public class GraphRenderer extends AnimationTimer implements UpdateEventListener
         this.bioRenderingOptions = bioRenderingOptions;
     }
 
-    public void drawBio(AutomatonGraph g) {
+    public void render(AutomatonGraph g) {
 
         // node diameter is needed everywhere
         double nodeDiameter = this.renderingOptions.getStandardNodeDiameter();
@@ -122,7 +122,7 @@ public class GraphRenderer extends AnimationTimer implements UpdateEventListener
     public void handle(long now) {
         AutomatonGraph g;
         while ((g = this.graphQueue.poll()) != null) {
-            drawBio(g);
+            render(g);
         }
     }
 }

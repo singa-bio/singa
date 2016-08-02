@@ -98,9 +98,9 @@ class ChooseMethodPage extends WizardPage {
     }
 
     @Override
-    public void nextPage() {
+    public void navigateToNextPage() {
         if (this.tgMethods.getSelectedToggle().equals(this.rbSABIO)) {
-            super.nextPage();
+            super.navigateToNextPage();
         }
     }
 }
@@ -213,13 +213,13 @@ class GetSuggestionsPage extends WizardPage {
     }
 
     @Override
-    public void nextPage() {
-        YourReactionPage page = (YourReactionPage) getWizard().getNextPage();
+    public void navigateToNextPage() {
+        YourReactionPage page = (YourReactionPage) getWizard().getNextPage().get();
         EnzymeReaction reaction = this.tbResults.getSelectionModel()
                 .getSelectedItem();
         page.setReaction(reaction);
         ((NewReactionWizard) getWizard()).setReaction(reaction);
-        super.nextPage();
+        super.navigateToNextPage();
     }
 
 }

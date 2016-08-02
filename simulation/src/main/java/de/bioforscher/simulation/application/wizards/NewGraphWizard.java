@@ -180,9 +180,9 @@ class GraphConfigurationPage extends WizardPage {
     }
 
     @Override
-    public void nextPage() {
+    public void navigateToNextPage() {
         ((NewGraphWizard) getWizard()).setGraph(createGraph());
-        super.nextPage();
+        super.navigateToNextPage();
     }
 }
 
@@ -281,7 +281,7 @@ class EnvironmentalConfigurationPage extends WizardPage {
     }
 
     @Override
-    public void nextPage() {
-        super.nextPage();
+    public void navigateToNextPage() {
+        super.navigateToNextPage();
     }
 }

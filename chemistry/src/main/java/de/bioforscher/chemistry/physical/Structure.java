@@ -36,7 +36,9 @@ public class Structure implements Graph<Atom, Bond> {
      */
     @Override
     public Set<Atom> getNodes() {
-        return this.nodes.values().stream().flatMap(s -> s.getNodes().stream()).collect(Collectors.toSet());
+        return this.nodes.values().stream()
+                         .flatMap(s -> s.getNodes().stream())
+                         .collect(Collectors.toSet());
     }
 
     /**
@@ -44,8 +46,17 @@ public class Structure implements Graph<Atom, Bond> {
      */
     @Override
     public Atom getNode(int identifier) {
-        return this.nodes.values().stream().flatMap(s -> s.getNodes().stream()).filter(atom -> atom.getIdentifier()
-                == identifier).findAny().get();
+
+        if (identifier <= 10) {
+
+        }
+        return this.nodes.values().stream()
+                         .flatMap(s -> s.getNodes().stream())
+                         .filter(atom -> atom.getIdentifier() == identifier)
+                         .findAny()
+                         .get();
+
+
     }
 
     /**

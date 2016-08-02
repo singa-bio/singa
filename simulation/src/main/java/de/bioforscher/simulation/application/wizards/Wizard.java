@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
+import java.util.Optional;
 import java.util.Stack;
 
 /**
@@ -14,13 +15,12 @@ import java.util.Stack;
  *
  * @author Christoph Leberecht
  */
-public class Wizard extends StackPane {
+public abstract class Wizard extends StackPane {
 
     private static final int UNDEFINED = -1;
-    private int curPageIdx = UNDEFINED;
+    private int currentPageIndex = UNDEFINED;
 
-    private ObservableList<WizardPage> pages = FXCollections
-            .observableArrayList();
+    private ObservableList<WizardPage> pages = FXCollections.observableArrayList();
     private Stack<Integer> history = new Stack<>();
 
     public Wizard(WizardPage... pages) {
@@ -29,73 +29,70 @@ public class Wizard extends StackPane {
         navigateTo(0);
     }
 
-    public void nextPage() {
-        if (hasNextPage()) {
-            navigateTo(this.curPageIdx + 1);
-        }
-    }
-
     public WizardPage getCurrentPage() {
-        return this.pages.get(this.curPageIdx);
+        return this.pages.get(this.currentPageIndex);
     }
 
-    public WizardPage getNextPage() {
+    public Optional<WizardPage> getNextPage() {
         if (hasNextPage()) {
-            return this.pages.get(this.curPageIdx + 1);
+            return Optional.of(this.pages.get(this.currentPageIndex + 1));
         } else {
-            return null;
-        }
-    }
-
-    public void priorPage() {
-        if (hasPriorPage()) {
-            navigateTo(this.history.pop(), false);
+            return Optional.empty();
         }
     }
 
     public boolean hasNextPage() {
-        return (this.curPageIdx < this.pages.size() - 1);
+        return (this.currentPageIndex < this.pages.size() - 1);
     }
 
     public boolean hasPriorPage() {
         return !this.history.isEmpty();
     }
 
-    public void navigateTo(int nextPageIdx, boolean pushHistory) {
-        if (nextPageIdx < 0 || nextPageIdx >= this.pages.size())
+    public void navigateTo(int pageIdentifier, boolean pushHistory) {
+        if (pageIdentifier < 0 || pageIdentifier >= this.pages.size())
             return;
-        if (this.curPageIdx != UNDEFINED) {
+        if (this.currentPageIndex != UNDEFINED) {
             if (pushHistory) {
-                this.history.push(this.curPageIdx);
+                this.history.push(this.currentPageIndex);
             }
         }
 
-        WizardPage nextPage = this.pages.get(nextPageIdx);
-        this.curPageIdx = nextPageIdx;
+        WizardPage nextPage = this.pages.get(pageIdentifier);
+        this.currentPageIndex = pageIdentifier;
         getChildren().clear();
         getChildren().add(nextPage);
         nextPage.manageButtons();
     }
 
-    public void navigateTo(int nextPageIdx) {
-        navigateTo(nextPageIdx, true);
+    public void navigateTo(int pageIdentifier) {
+        navigateTo(pageIdentifier, true);
     }
 
-    public void navigateTo(String id) {
-        Node page = lookup("#" + id);
+    public void navigateTo(String pageIdentifier) {
+        Node page = lookup("#" + pageIdentifier);
         if (page != null) {
-            int nextPageIdx = this.pages.indexOf(page);
-            if (nextPageIdx != UNDEFINED) {
-                navigateTo(nextPageIdx);
+            int nextPageIdentifier = this.pages.indexOf(page);
+            if (nextPageIdentifier != UNDEFINED) {
+                navigateTo(nextPageIdentifier);
             }
         }
     }
 
-    public void finish() {
-
+    public void navigateToPriorPage() {
+        if (hasPriorPage()) {
+            navigateTo(this.history.pop(), false);
+        }
     }
 
-    public void cancel() {
-
+    public void navigateToNextPage() {
+        if (hasNextPage()) {
+            navigateTo(this.currentPageIndex + 1);
+        }
     }
+
+    public abstract void finish();
+
+    public abstract void cancel();
+
 }

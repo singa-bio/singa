@@ -22,7 +22,6 @@ public class PlotPane extends GridPane {
     public PlotPane(BioGraphSimulation owner) {
         this.owner = owner;
         this.plotCards = new ListView<>();
-        // this.currentPlotCard = new PlotCard();
         configureGrid();
         configurePlots();
         configurePlotCards();
