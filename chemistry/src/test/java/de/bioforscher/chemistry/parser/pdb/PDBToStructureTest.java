@@ -17,5 +17,6 @@ public class PDBToStructureTest {
                 new File(Thread.currentThread().getContextClassLoader().getResource("pdb_atoms.txt").getFile())
                         .toPath());
         PDBToStructure.parseAminoAcidAtoms(atomLines);
+        System.out.println("parsed amino acids");
     }
 }
