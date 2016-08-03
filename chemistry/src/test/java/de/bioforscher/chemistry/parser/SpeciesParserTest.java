@@ -48,5 +48,4 @@ public class SpeciesParserTest {
         service.fetchResource();
         assertTrue(service.getImageStream() != null);
     }
-
 }
