@@ -2,7 +2,9 @@ package de.bioforscher.simulation.application;
 
 import de.bioforscher.core.utility.LogManager;
 import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
+import de.bioforscher.simulation.application.components.ResizablePane;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
+import de.bioforscher.simulation.application.components.modules.ModuleOverviewPane;
 import de.bioforscher.simulation.application.components.plots.PlotPane;
 import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
 import de.bioforscher.simulation.application.components.species.SpeciesOverviewPane;
@@ -26,6 +28,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -46,7 +49,6 @@ public class BioGraphSimulation extends Application {
 
     private SimulationCanvas simulationCanvas;
     private PlotPane plotPane;
-    private AnchorPane contextAnchor;
     private Slider concentrationSlider;
 
     private AutomatonGraph graph;
@@ -78,9 +80,6 @@ public class BioGraphSimulation extends Application {
         // Setup the Root and Top Container
         BorderPane root = new BorderPane();
         VBox topContainer = new VBox();
-
-        // ContextAnchor
-        this.contextAnchor = new AnchorPane();
 
         // Menu Bar
         MenuBar menuBar = new MenuBar();
@@ -134,7 +133,12 @@ public class BioGraphSimulation extends Application {
         mISpeciesOverview.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN));
         mISpeciesOverview.setOnAction(this::showSpeciesOverview);
 
-        menuView.getItems().addAll(mIFullScreen, mISpeciesOverview);
+        // Species Overview
+        MenuItem mIModuleOverview = new MenuItem("Modules", new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
+        mIModuleOverview.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.ALT_DOWN));
+        mIModuleOverview.setOnAction(this::showModuleOverview);
+
+        menuView.getItems().addAll(mIFullScreen, mISpeciesOverview, mIModuleOverview);
 
         Menu menuPreferences = new Menu("Preferences");
 
@@ -146,11 +150,9 @@ public class BioGraphSimulation extends Application {
 
         menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuPreferences);
 
-        // Simulation Half
-        this.simulationCanvas = new SimulationCanvas(this);
-
         // Chart Half
         final TabPane rightPane = new TabPane();
+        rightPane.setMinWidth(200);
         this.plotPane = new PlotPane(this);
 
         Tab chartTab = new Tab();
@@ -167,9 +169,17 @@ public class BioGraphSimulation extends Application {
         environmentTab.setContent(environmentControlPanel);
         rightPane.getTabs().add(environmentTab);
 
-        // Main Content Pane
-        SplitPane splitPane = new SplitPane(this.simulationCanvas, rightPane);
+        this.simulationCanvas = new SimulationCanvas(this);
+        ResizablePane anchorPane = new ResizablePane(this.simulationCanvas);
+        // Simulation Half
+        AnchorPane.setTopAnchor(this.simulationCanvas, 0.0);
+        AnchorPane.setLeftAnchor(this.simulationCanvas, 0.0);
+        AnchorPane.setBottomAnchor(this.simulationCanvas, 0.0);
+        AnchorPane.setRightAnchor(this.simulationCanvas, 0.0);
 
+        // Main Content Pane
+        SplitPane splitPane = new SplitPane(anchorPane, rightPane);
+        splitPane.setDividerPosition(0,0.4);
         // ToolBar
         ToolBar toolBar = new ToolBar();
         // simulate button
@@ -194,19 +204,20 @@ public class BioGraphSimulation extends Application {
         topContainer.getChildren().addAll(menuBar, toolBar);
         root.setTop(topContainer);
 
+
+
         // Simulation Frame
         root.setCenter(splitPane);
 
         // Anchor to the Bottom
-        root.setBottom(this.contextAnchor);
-
+        root.setBottom(new VBox(new Text(" ")));
+        root.bottomProperty().get().minHeight(10);
         // Scene
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
         // Show
         stage.show();
-        this.simulationCanvas.draw();
     }
 
     private void startSimulation(ActionEvent event) {
@@ -276,6 +287,16 @@ public class BioGraphSimulation extends Application {
         speciesStage.setScene(new Scene(speciesOverviewPane, width, height));
         speciesStage.sizeToScene();
         speciesStage.showAndWait();
+    }
+
+    private void showModuleOverview(ActionEvent event) {
+        int width = 800;
+        int height = 600;
+        Stage moduleStage = prepareUtilityWindow(width, height, "Module Overview");
+        ModuleOverviewPane moduleOverviewPane = new ModuleOverviewPane(this);
+        moduleStage.setScene(new Scene(moduleOverviewPane, width, height));
+        moduleStage.sizeToScene();
+        moduleStage.showAndWait();
     }
 
     private void startGraphWizard(ActionEvent event) {
@@ -387,14 +408,6 @@ public class BioGraphSimulation extends Application {
 
     public void setPlotPane(PlotPane plotPane) {
         this.plotPane = plotPane;
-    }
-
-    public AnchorPane getContextAnchor() {
-        return this.contextAnchor;
-    }
-
-    public void setContextAnchor(AnchorPane contextAnchor) {
-        this.contextAnchor = contextAnchor;
     }
 
     public Slider getConcentrationSlider() {

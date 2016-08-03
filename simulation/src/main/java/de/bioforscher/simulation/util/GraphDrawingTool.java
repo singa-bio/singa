@@ -4,8 +4,8 @@ import de.bioforscher.mathematics.forces.AttractiveForce;
 import de.bioforscher.mathematics.forces.Force;
 import de.bioforscher.mathematics.forces.RepulsiveForce;
 import de.bioforscher.mathematics.functions.DecayFunctions;
-import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.simulation.application.components.SimulationSpace;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
@@ -25,7 +25,6 @@ import java.util.HashMap;
 public class GraphDrawingTool {
 
     private final int totalIterations;
-    private final Rectangle rectangle;
 
     private Force repulsiveForce;
     private Force attractiveForce;
@@ -38,18 +37,16 @@ public class GraphDrawingTool {
      * Creates a new GraphDrawingTool.
      *
      * @param totalIterations Number of total iterations
-     * @param rectangle       The desired area
-     * @param startGraph      The graph to arrange
+     * @param startGraph The graph to arrange
      */
-    public GraphDrawingTool(int totalIterations, Rectangle rectangle, AutomatonGraph startGraph) {
+    public GraphDrawingTool(int totalIterations, AutomatonGraph startGraph) {
         // total iterations
         this.totalIterations = totalIterations;
-        // the dimension of the canvas
-        this.rectangle = rectangle;
         // the unordered graph
         this.sourceGraph = startGraph;
         // Forceconstant = sqrt(drawing area / desired area per node)
-        double forceConstant = Math.sqrt(rectangle.getArea() / (startGraph.getNodes().size() * 20));
+        double forceConstant = Math.sqrt((SimulationSpace.getInstance().getHeight().doubleValue() * SimulationSpace
+                .getInstance().getWidth().doubleValue()) / (startGraph.getNodes().size() * 20));
         // repulsive force between nodes
         this.repulsiveForce = new RepulsiveForce(forceConstant);
         // repulsive force from boundaries
@@ -73,7 +70,7 @@ public class GraphDrawingTool {
     public AutomatonGraph arrangeGraph(int i) {
 
         // calculate the temperature
-        double t = DecayFunctions.linear(i, this.totalIterations, this.rectangle.getWidth() / 40);
+        double t = DecayFunctions.linear(i, this.totalIterations, SimulationSpace.getInstance().getWidth().doubleValue() / 40);
 
         // calculate repulsive forces
         for (BioNode sourceNode : this.sourceGraph.getNodes()) {
@@ -119,17 +116,17 @@ public class GraphDrawingTool {
 
             // size of the barrier
             Vector2D position = node.getPosition();
-            double barrierRadius = this.rectangle.getWidth() / 4.0;
+            double barrierRadius = SimulationSpace.getInstance().getWidth().doubleValue() / 4.0;
 
             // calculate west and east barrier forces
             Vector2D accelerationX;
             if (position.getX() < barrierRadius) {
                 // calculate west barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
-            } else if (position.getX() > this.rectangle.getWidth() - barrierRadius) {
+            } else if (position.getX() > SimulationSpace.getInstance().getWidth().doubleValue() - barrierRadius) {
                 // calculate east barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(this.rectangle.getWidth(), position.getY()));
+                        new Vector2D(SimulationSpace.getInstance().getWidth().doubleValue(), position.getY()));
             } else {
                 // if not within barrier range
                 accelerationX = new Vector2D(0, 0);
@@ -140,10 +137,10 @@ public class GraphDrawingTool {
             if (position.getY() < barrierRadius) {
                 // calculate north barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
-            } else if (position.getY() > this.rectangle.getHeight() - barrierRadius) {
+            } else if (position.getY() > SimulationSpace.getInstance().getHeight().doubleValue() - barrierRadius) {
                 // calculate south barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(position.getX(), this.rectangle.getHeight()));
+                        new Vector2D(position.getX(), SimulationSpace.getInstance().getHeight().doubleValue()));
             } else {
                 // if not within barrier range
                 accelerationY = new Vector2D(0, 0);
@@ -170,17 +167,17 @@ public class GraphDrawingTool {
             // dimension
             // TODO: could be better
             double nextX;
-            if (nextLocation.getX() < this.rectangle.getWidth() && nextLocation.getX() > 0.0) {
+            if (nextLocation.getX() < SimulationSpace.getInstance().getWidth().doubleValue() && nextLocation.getX() > 0.0) {
                 nextX = nextLocation.getX();
             } else {
-                nextX = this.rectangle.getWidth() / 2;
+                nextX = SimulationSpace.getInstance().getWidth().doubleValue()/ 2;
             }
 
             double nextY;
-            if (nextLocation.getY() < this.rectangle.getHeight() && nextLocation.getY() > 0.0) {
+            if (nextLocation.getY() < SimulationSpace.getInstance().getHeight().doubleValue() && nextLocation.getY() > 0.0) {
                 nextY = nextLocation.getY();
             } else {
-                nextY = this.rectangle.getHeight() / 2;
+                nextY = SimulationSpace.getInstance().getHeight().doubleValue() / 2;
             }
 
             // place node

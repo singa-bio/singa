@@ -16,9 +16,9 @@ public class RectangularGridCoordinateConverter {
     }
 
     public Vector2D convert(int nodeIdentifier) {
-        if (nodeIdentifier > columns * rows) {
+        if (nodeIdentifier > this.columns * this.rows) {
             throw new IndexOutOfBoundsException(
-                    "The node identifier " + nodeIdentifier + " is out of the possible range (" + (columns * rows) +
+                    "The node identifier " + nodeIdentifier + " is out of the possible range (" + (this.columns * this.rows) +
                             ") of a rectangular grid graph with " + this.rows + " rows and " + this.columns +
                             " columns.");
         }
@@ -29,13 +29,13 @@ public class RectangularGridCoordinateConverter {
     }
 
     public int convert(Vector2D coordinate) {
-        if (coordinate.getX() > columns) {
+        if (coordinate.getX() > this.columns) {
             throw new IndexOutOfBoundsException(
-                    "The x coordinate " + coordinate.getX() + " is out of the possible range " + columns + ".");
-        } else if (coordinate.getY() > rows) {
+                    "The x coordinate " + coordinate.getX() + " is out of the possible range " + this.columns + ".");
+        } else if (coordinate.getY() > this.rows) {
             throw new IndexOutOfBoundsException(
-                    "The x coordinate " + coordinate.getY() + " is out of the possible range " + rows + ".");
+                    "The x coordinate " + coordinate.getY() + " is out of the possible range " + this.rows + ".");
         }
-        return (int) (coordinate.getX() * columns + coordinate.getY());
+        return (int) (coordinate.getY() * this.columns + coordinate.getX());
     }
 }

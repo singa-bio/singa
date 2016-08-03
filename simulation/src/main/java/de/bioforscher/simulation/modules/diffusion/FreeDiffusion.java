@@ -115,4 +115,8 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         return correlatedDiffusivity;
     }
 
+    public void fixDiffusionCoefficientForEntity(ChemicalEntity entity, Quantity<Diffusivity> diffusivity) {
+        this.diffusionCoefficients.put(entity, scaleDiffusivity(diffusivity));
+    }
+
 }
