@@ -18,5 +18,6 @@ public class PDBToStructureTest {
                         .toPath());
         PDBToStructure.parseAminoAcidAtoms(atomLines);
         System.out.println("parsed amino acids");
+        System.out.println();
     }
 }
