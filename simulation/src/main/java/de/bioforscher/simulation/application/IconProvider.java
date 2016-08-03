@@ -12,17 +12,25 @@ import java.io.InputStream;
  */
 public class IconProvider {
 
-    public static final String FONT_AWESOME_NAME = "fontawesome-webfont.ttf";
-    public static final InputStream FONT_AWESOME_PATH = getResourceAsStream(FONT_AWESOME_NAME);
+    private static final String FONT_AWESOME_NAME = "fontawesome-webfont.ttf";
+    private static final InputStream FONT_AWESOME_PATH = getResourceAsStream(FONT_AWESOME_NAME);
     public static final Font FONT_AWESOME = Font.loadFont(FONT_AWESOME_PATH, 16);
 
-    public static final String MOLECULE_ICON_NAME = "icon_small_molecule_32x.png";
-    public static final String MOLECULE_ICON_PATH = getResourceAsString(MOLECULE_ICON_NAME);
+    private static final String MOLECULE_ICON_NAME = "icon_small_molecule_32x.png";
+    private static final String MOLECULE_ICON_PATH = getResourceAsString(MOLECULE_ICON_NAME);
     public static final Image MOLECULE_ICON_IMAGE = new Image(getResourceAsStream(MOLECULE_ICON_NAME));
 
-    public static final String GENERIC_REACTION_ICON_NAME = "icon_reaction_generic_32x.png";
-    public static final String GENERIC_REACTION_ICON_PATH = getResourceAsString(GENERIC_REACTION_ICON_NAME);
+    private static final String GENERIC_REACTION_ICON_NAME = "icon_reaction_generic_32x.png";
+    private static final String GENERIC_REACTION_ICON_PATH = getResourceAsString(GENERIC_REACTION_ICON_NAME);
     public static final Image GENERIC_REACTION_ICON_IMAGE = new Image(getResourceAsStream(GENERIC_REACTION_ICON_NAME));
+
+    private static final String REACTIONS_ICON_NAME = "icon_reactions_128x.png";
+    private static final String REACTIONS_ICON_PATH = getResourceAsString(REACTIONS_ICON_NAME);
+    public static final Image REACTIONS_ICON_IMAGE = new Image(getResourceAsStream(REACTIONS_ICON_NAME));
+
+    private static final String DIFFUSION_ICON_NAME = "icon_diffusion_128x.png";
+    private static final String DIFFUSION_ICON_PATH = getResourceAsString(DIFFUSION_ICON_NAME);
+    public static final Image DIFFUSION_ICON_IMAGE = new Image(getResourceAsStream(DIFFUSION_ICON_NAME));
 
     private static InputStream getResourceAsStream(String resource) {
         return IconProvider.class.getResourceAsStream(resource);
@@ -35,7 +43,6 @@ public class IconProvider {
     private static String getResourceAsExternalForm(String resource) {
         return IconProvider.class.getResource(resource).toExternalForm();
     }
-
 
     public static class FontAwesome {
 
@@ -290,7 +297,6 @@ public class IconProvider {
         public static final String ICON_FOLDER_OPEN_ALT = "\uf115";
         public static final String ICON_DOT_CIRCLE = "\uf192";
         public static final String ICON_LINE_CHART = "\uf201";
-
 
         // adapted from: http://www.jensd.de/wordpress/?p=132
 

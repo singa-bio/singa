@@ -1,19 +1,22 @@
 package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.vectors.Vector2D;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 public class SimulationSpace {
 
     public static final double DEFAULT_WIDTH = 400.0;
     public static final double DEFAULT_HEIGHT = 400.0;
 
-    private Rectangle rectangle;
+    private DoubleProperty width;
+    private DoubleProperty height;
 
     private static SimulationSpace instance;
 
     private SimulationSpace() {
-        this.rectangle = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
+        this.width = new SimpleDoubleProperty(DEFAULT_WIDTH);
+        this.height = new SimpleDoubleProperty(DEFAULT_WIDTH);
     }
 
     public static synchronized SimulationSpace getInstance() {
@@ -23,21 +26,16 @@ public class SimulationSpace {
         return instance;
     }
 
-    public void reinitialize(double width, double height) {
-        this.rectangle = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
-        System.out.println(this.rectangle);
-    }
-
     public Rectangle getRectangle() {
-        return this.rectangle;
+        return new Rectangle(width.getValue(), height.getValue());
     }
 
-    public double getWidth() {
-        return this.rectangle.getWidth();
+    public DoubleProperty getWidth() {
+        return this.width;
     }
 
-    public double getHeight() {
-        return this.rectangle.getHeight();
+    public DoubleProperty getHeight() {
+        return this.height;
     }
 
 }
