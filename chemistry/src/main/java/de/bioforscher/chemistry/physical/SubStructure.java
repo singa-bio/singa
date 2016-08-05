@@ -51,6 +51,11 @@ public class SubStructure extends AbstractGraph<Atom, Bond, Vector3D> implements
         return this.neighbours;
     }
 
+    @Override
+    public int getDegree() {
+        return 0;
+    }
+
     public void connectByDistance() {
         // calculate pairwise distances
         LabeledSymmetricMatrix<Atom> distances = StructureUtilities.calculateDistanceMatrix(getNodes().stream()
