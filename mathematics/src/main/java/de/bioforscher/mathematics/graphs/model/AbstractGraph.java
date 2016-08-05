@@ -159,6 +159,13 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         return this.edges.containsValue(edge);
     }
 
+    public int getMaximumDegree() {
+        return this.nodes.values().stream()
+                         .mapToInt(Node::getDegree)
+                         .max()
+                         .orElse(0);
+    }
+
     @Override
     public String toString() {
         return "Graph [contains " + this.nodes.size() + " nodes and " + this.edges.size() + " edges]";

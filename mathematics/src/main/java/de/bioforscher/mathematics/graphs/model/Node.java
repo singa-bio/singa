@@ -14,4 +14,6 @@ public interface Node<NodeType extends Node<NodeType, VectorType>, VectorType ex
 
     List<NodeType> getNeighbours();
 
+    int getDegree();
+
 }

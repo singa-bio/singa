@@ -119,4 +119,12 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         this.diffusionCoefficients.put(entity, scaleDiffusivity(diffusivity));
     }
 
+    public Quantity<Diffusivity> getmaximalDiffusivity() {
+        // FIXME this is not good
+        return Quantities.getQuantity(this.diffusionCoefficients.values().stream()
+                .mapToDouble(diffusivity -> diffusivity.getValue().doubleValue())
+                .max().orElse(0.0),this.diffusionCoefficients.get(this.diffusionCoefficients.keySet().iterator().next
+                ()).getUnit());
+    }
+
 }

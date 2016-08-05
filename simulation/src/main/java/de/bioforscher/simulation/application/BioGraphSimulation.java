@@ -164,7 +164,8 @@ public class BioGraphSimulation extends Application {
         Tab environmentTab = new Tab();
         environmentTab.setText("Environment");
         environmentTab.setClosable(false);
-        EnvironmentalOptionsControlPanel environmentControlPanel = new EnvironmentalOptionsControlPanel(environmentTab);
+        EnvironmentalOptionsControlPanel environmentControlPanel = new EnvironmentalOptionsControlPanel();
+        environmentControlPanel.setDirtyableText(environmentTab.textProperty());
         environmentControlPanel.update(EnvironmentalVariables.getInstance(), null);
         environmentTab.setContent(environmentControlPanel);
         rightPane.getTabs().add(environmentTab);
@@ -296,7 +297,9 @@ public class BioGraphSimulation extends Application {
         ModuleOverviewPane moduleOverviewPane = new ModuleOverviewPane(this);
         moduleStage.setScene(new Scene(moduleOverviewPane, width, height));
         moduleStage.sizeToScene();
-        moduleStage.showAndWait();
+        moduleStage.show();
+        // TODO maybe a better solution
+        moduleOverviewPane.colorAfterShow();
     }
 
     private void startGraphWizard(ActionEvent event) {

@@ -40,14 +40,14 @@ public class DiffusionResearch {
 
         // get required species
         //Species hydrogen = ChEBIParserService.parse("CHEBI:18276");
-        //Species ammonia = ChEBIParserService.parse("CHEBI:16134");
-        //Species benzene = ChEBIParserService.parse("CHEBI:16716");
-        Species methanol = ChEBIParserService.parse("CHEBI:17790");
+         Species ammonia = ChEBIParserService.parse("CHEBI:16134");
+        // Species benzene = ChEBIParserService.parse("CHEBI:16716");
+        // Species methanol = ChEBIParserService.parse("CHEBI:17790");
         // Species succinicAcid = ChEBIParserService.parse("CHEBI:15741");
-        //Species ethaneDiol = ChEBIParserService.parse("CHEBI:30742");
+        // Species ethaneDiol = ChEBIParserService.parse("CHEBI:30742");
 
         // bundle species
-        List<Species> speciesList = Arrays.asList(methanol); //, ammonia, benzene, methanol, succinicAcid, ethaneDiol);
+        List<Species> speciesList = Arrays.asList(ammonia); //, ammonia, benzene, methanol, succinicAcid, ethaneDiol);
 
         System.out.println("Initializing Graph ...");
 
@@ -86,15 +86,15 @@ public class DiffusionResearch {
         // fix diffusion values from literature
         // freeDiffusion.fixDiffusionCoefficientForEntity(hydrogen, Quantities.getQuantity(4.40E-05,
         //        SQUARECENTIMETER_PER_SECOND));
-        //freeDiffusion.fixDiffusionCoefficientForEntity(ammonia, Quantities.getQuantity(2.28E-05,
-        //        SQUARECENTIMETER_PER_SECOND));
-        //freeDiffusion.fixDiffusionCoefficientForEntity(benzene, Quantities.getQuantity(1.09E-05,
-        //       SQUARECENTIMETER_PER_SECOND));
-        freeDiffusion.fixDiffusionCoefficientForEntity(methanol, Quantities.getQuantity(1.66E-05,
+        freeDiffusion.fixDiffusionCoefficientForEntity(ammonia, Quantities.getQuantity(2.28E-05,
                 SQUARECENTIMETER_PER_SECOND));
+        // freeDiffusion.fixDiffusionCoefficientForEntity(benzene, Quantities.getQuantity(1.09E-05,
+        //       SQUARECENTIMETER_PER_SECOND));
+        //freeDiffusion.fixDiffusionCoefficientForEntity(methanol, Quantities.getQuantity(1.66E-05,
+        //       SQUARECENTIMETER_PER_SECOND));
         //freeDiffusion.fixDiffusionCoefficientForEntity(succinicAcid, Quantities.getQuantity(8.60E-06,
         //        SQUARECENTIMETER_PER_SECOND));
-        // freeDiffusion.fixDiffusionCoefficientForEntity(ethaneDiol, Quantities.getQuantity(6.40E-06,
+        //freeDiffusion.fixDiffusionCoefficientForEntity(ethaneDiol, Quantities.getQuantity(6.40E-06,
         //        SQUARECENTIMETER_PER_SECOND));
         // add diffusion module
         simulation.getModules().add(freeDiffusion);
@@ -110,7 +110,7 @@ public class DiffusionResearch {
 
         System.out.println("Starting simulation ...");
 
-        while (graph.getNode(observedNodeIdentifier).getConcentration(methanol).getValue().doubleValue() < 0.25) {
+        while (graph.getNode(observedNodeIdentifier).getConcentration(ammonia).getValue().doubleValue() < 0.25) {
             simulation.nextEpoch();
             if (simulation.getEpoch() % 1000 == 0 && simulation.getEpoch() > 1) {
                 System.out.println("Currently at: "+simulation.getElapsedTime());
@@ -118,7 +118,7 @@ public class DiffusionResearch {
         }
 
         // check correct diffusion
-        System.out.println("Half life time of "+methanol.getName()+" reached at "+simulation.getElapsedTime());
+        System.out.println("Half life time of "+ammonia.getName()+" reached at "+simulation.getElapsedTime());
 
     }
 

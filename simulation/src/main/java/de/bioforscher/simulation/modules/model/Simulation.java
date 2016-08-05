@@ -6,6 +6,7 @@ import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
+import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import tec.units.ri.quantity.Quantities;
 
@@ -13,6 +14,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -38,9 +40,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public Set<ChemicalEntity> collectAllReferencedEntities() {
         return this.modules.stream()
-                .map(Module::collectAllReferencesEntities)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+                           .map(Module::collectAllReferencesEntities)
+                           .flatMap(Collection::stream)
+                           .collect(Collectors.toSet());
     }
 
     public void nextEpoch() {
@@ -92,6 +94,16 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
         return this.listeners;
+    }
+
+    public FreeDiffusion getFreeDiffusionModule() {
+        // FIXME: probably temporary
+        Optional<FreeDiffusion> diffusion = this.modules.stream()
+                           .filter(module -> module.getClass().equals(FreeDiffusion.class))
+                           .findFirst().map(module -> (FreeDiffusion) module);
+        this.collectAllReferencedEntities();
+        diffusion.get().prepareDiffusionCoefficients(this.getSpecies());
+        return diffusion.get();
     }
 
 }

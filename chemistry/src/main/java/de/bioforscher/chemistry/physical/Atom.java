@@ -67,6 +67,11 @@ public class Atom implements StructuralEntity<Atom> {
         return neighbours;
     }
 
+    @Override
+    public int getDegree() {
+        return 0;
+    }
+
     public void setNeighbours(List<Atom> neighbours) {
         this.neighbours = neighbours;
     }

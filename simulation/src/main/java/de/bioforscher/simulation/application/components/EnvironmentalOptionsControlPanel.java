@@ -5,9 +5,14 @@ import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
 import de.bioforscher.units.UnitUtilities;
 import de.bioforscher.units.quantities.DynamicViscosity;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
 import tec.units.ri.quantity.Quantities;
 
@@ -25,112 +30,145 @@ import static tec.units.ri.unit.Units.*;
 
 public class EnvironmentalOptionsControlPanel extends GridPane implements Observer {
 
-    private Spinner<Double> spNodeDistance;
-    private Spinner<Double> spTimeStep;
-    private Spinner<Double> spTemperature;
-    private Spinner<Double> spViscosity;
+    private Spinner<Number> nodeDistanceValue;
+    private Spinner<Number> timeStepValue;
+    private Spinner<Number> temperatureValue;
+    private Spinner<Number> viscosityValue;
 
-    private ComboBox<Unit<Length>> cbNodeDistance;
-    private ComboBox<Unit<Time>> cbTimeStep;
+    private ComboBox<Unit<Length>> nodeDistanceUnit = new ComboBox<>();
+    private ComboBox<Unit<Time>> timeStepUnit = new ComboBox<>();
+    private Label maximalDegree = new Label();
+    private Label maximalDiffusivity = new Label();
 
-    private Tab owner;
+    private StringProperty dirtyableText;
 
-    public EnvironmentalOptionsControlPanel(Tab owner) {
-        this.owner = owner;
-        initialize();
+    public EnvironmentalOptionsControlPanel() {
+        configureGrid();
+        configureAndAddLabels();
+        configureAndAddButtons();
+        configureNodeDistanceValue();
+        configureNodeDistanceUnit();
+        configureTimeStepValue();
+        configureTimeStepUnit();
+        configureTemperatureValue();
+        configureViscosityValue();
+        addRemainingComponentsToGrid();
         EnvironmentalVariables.getInstance().addObserver(this);
     }
 
-    private void initialize() {
-
+    private void configureGrid() {
         this.setHgap(10);
         this.setVgap(10);
         this.setPadding(new Insets(10, 10, 10, 10));
+    }
 
+    private void configureAndAddLabels() {
         // node distance
         Label labNodeDistance = new Label("Distance between two nodes:");
-        this.add(labNodeDistance, 0, 0, 1, 1);
-
-        this.spNodeDistance = new Spinner<>(1.0, 1000.0, 250.0);
-        this.spNodeDistance.setEditable(true);
-        this.spNodeDistance.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.spNodeDistance, 1, 0, 1, 1);
-
-        this.cbNodeDistance = new ComboBox<>();
-        this.cbNodeDistance.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix
-                .getDefaultSpacePrefixes(), METRE));
-        this.cbNodeDistance.setValue(NANO(METRE));
-        this.cbNodeDistance.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.cbNodeDistance, 2, 0, 1, 1);
-
+        this.add(labNodeDistance, 0, 0);
         // time step
         Label labTimeStep = new Label("Duration of a time step:");
-        this.add(labTimeStep, 0, 1, 1, 1);
-
-        this.spTimeStep = new Spinner<>(1.0, 1000.0, 1.0);
-        this.spTimeStep.setEditable(true);
-        this.spTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.spTimeStep, 1, 1, 1, 1);
-
-        this.cbTimeStep = new ComboBox<>();
-        this.cbTimeStep.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(),
-                SECOND));
-        this.cbTimeStep.setValue(MICRO(SECOND));
-        this.cbTimeStep.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.cbTimeStep, 2, 1, 1, 1);
-
+        this.add(labTimeStep, 0, 1);
         // temperature
         Label labTemperature = new Label("System temperature:");
-        this.add(labTemperature, 0, 2, 1, 1);
-
-        this.spTemperature = new Spinner<>(0, 100, 23.0, 0.1);
-        this.spTemperature.setEditable(true);
-        this.spTemperature.valueProperty()
-                .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.spTemperature, 1, 2, 1, 1);
-
+        this.add(labTemperature, 0, 2);
         Label labTemperatureUnit = new Label(UnitName.CELSIUS.getSymbol());
-        this.add(labTemperatureUnit, 2, 2, 1, 1);
-
+        this.add(labTemperatureUnit, 2, 2);
         // viscosity
         Label labViscosity = new Label("System viscosity:");
-        this.add(labViscosity, 0, 3, 1, 1);
-
-        this.spViscosity = new Spinner<>(0, 100, 1.0, 0.1);
-        this.spViscosity.setEditable(true);
-        this.spViscosity.valueProperty().addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
-        this.add(this.spViscosity, 1, 3, 1, 1);
-
+        this.add(labViscosity, 0, 3);
         Label labViscosityUnit = new Label(UnitName.PASCAL.getSymbol() + UnitName.SECOND.getSymbol());
-        this.add(labViscosityUnit, 2, 3, 1, 1);
+        this.add(labViscosityUnit, 2, 3);
+        // maximal degree
+        Label labMaximalDegree = new Label("Maximal Degree");
+        this.add(labMaximalDegree, 0, 4);
+        // maximal diffusivity
+        Label labMaximalDiffusivity = new Label("Maximal Diffusivity");
+        this.add(labMaximalDiffusivity, 0, 5);
+    }
 
-        Button btnDefaults = new Button("Resore Defaults");
+    private void configureAndAddButtons() {
+        // restore defaults
+        Button btnDefaults = new Button("Restore Defaults");
         btnDefaults.setMaxWidth(Double.MAX_VALUE);
         btnDefaults.setOnAction(this::restoreDefault);
-        this.add(btnDefaults, 0, 4, 1, 1);
-
+        this.add(btnDefaults, 0, 6, 1, 1);
         Button btnApply = new Button("Apply");
+        // apply changes
         btnApply.setMaxWidth(Double.MAX_VALUE);
         btnApply.setOnAction(this::applyChanges);
-        this.add(btnApply, 1, 4, 1, 1);
+        this.add(btnApply, 1, 6, 1, 1);
+    }
+
+    private void configureNodeDistanceValue() {
+        this.nodeDistanceValue = new Spinner<>(1.0, 1000.0, 250.0);
+        this.nodeDistanceValue.setEditable(true);
+        this.nodeDistanceValue.valueProperty()
+                              .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void configureNodeDistanceUnit() {
+        this.nodeDistanceUnit.getItems().addAll(
+                UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultSpacePrefixes(), METRE));
+        this.nodeDistanceUnit.setValue(NANO(METRE));
+        this.nodeDistanceUnit.valueProperty()
+                             .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void configureTimeStepValue() {
+        this.timeStepValue = new Spinner<>(1.0, 1000.0, 1.0);
+        this.timeStepValue.setEditable(true);
+        this.timeStepValue.valueProperty()
+                          .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void configureTimeStepUnit() {
+        this.timeStepUnit.getItems().addAll(
+                UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(), SECOND));
+        this.timeStepUnit.setValue(MICRO(SECOND));
+        this.timeStepUnit.valueProperty()
+                         .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void configureTemperatureValue() {
+        this.temperatureValue = new Spinner<>(0, 100, 23.0, 0.1);
+        this.temperatureValue.setEditable(true);
+        this.temperatureValue.valueProperty()
+                             .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void configureViscosityValue() {
+        this.viscosityValue = new Spinner<>(0, 100, 1.0, 0.1);
+        this.viscosityValue.setEditable(true);
+        this.viscosityValue.valueProperty()
+                           .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
+    }
+
+    private void addRemainingComponentsToGrid() {
+        this.add(this.nodeDistanceValue, 1, 0);
+        this.add(this.nodeDistanceUnit, 2, 0);
+        this.add(this.timeStepValue, 1, 1);
+        this.add(this.timeStepUnit, 2, 1);
+        this.add(this.temperatureValue, 1, 2);
+        this.add(this.viscosityValue, 1, 3);
+        this.add(this.maximalDegree, 1, 4);
+        this.add(this.maximalDiffusivity, 1, 5);
     }
 
     private void applyChanges(ActionEvent event) {
-        Quantity<Length> nodeDistance = Quantities.getQuantity(this.spNodeDistance.getValue(), this.cbNodeDistance
-                .getValue());
-        Quantity<Time> timeStep = Quantities.getQuantity(this.spTimeStep.getValue(), this.cbTimeStep.getValue());
-        Quantity<Temperature> systemTemperature = Quantities.getQuantity(this.spTemperature.getValue(),
-                CELSIUS);
-        Quantity<DynamicViscosity> systemViscosity = Quantities.getQuantity(this.spViscosity.getValue(),
-                MILLI(PASCAL_SECOND));
+        Quantity<Length> nodeDistance = Quantities.getQuantity(
+                this.nodeDistanceValue.getValue(), this.nodeDistanceUnit.getValue());
+        Quantity<Time> timeStep = Quantities.getQuantity(
+                this.timeStepValue.getValue(), this.timeStepUnit.getValue());
+        Quantity<Temperature> systemTemperature = Quantities.getQuantity(
+                this.temperatureValue.getValue(), CELSIUS);
+        Quantity<DynamicViscosity> systemViscosity = Quantities.getQuantity(
+                this.viscosityValue.getValue(), MILLI(PASCAL_SECOND));
 
         EnvironmentalVariables.getInstance().setNodeDistance(nodeDistance);
         EnvironmentalVariables.getInstance().setTimeStep(timeStep);
         EnvironmentalVariables.getInstance().setSystemTemperature(systemTemperature);
         EnvironmentalVariables.getInstance().setSystemViscosity(systemViscosity);
-        EnvironmentalVariables.getInstance().setCellularEnvironment(false);
 
         markChangesAsApplied();
     }
@@ -145,31 +183,56 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         EnvironmentalVariables changedVariables = (EnvironmentalVariables) o;
 
         Quantity<Length> nodeDistance = changedVariables.getNodeDistance();
-        this.cbNodeDistance.setValue(nodeDistance.getUnit());
-        this.spNodeDistance.getValueFactory().setValue(nodeDistance.getValue().doubleValue());
+        this.nodeDistanceUnit.setValue(nodeDistance.getUnit());
+        this.nodeDistanceValue.getValueFactory().setValue(nodeDistance.getValue().doubleValue());
 
         Quantity<Time> timeStep = changedVariables.getTimeStep();
-        this.cbTimeStep.setValue(timeStep.getUnit());
-        this.spTimeStep.getValueFactory().setValue(timeStep.getValue().doubleValue());
+        this.timeStepUnit.setValue(timeStep.getUnit());
+        this.timeStepValue.getValueFactory().setValue(timeStep.getValue().doubleValue());
 
         Quantity<Temperature> temperature = changedVariables.getSystemTemperature().to(CELSIUS);
-        this.spTemperature.getValueFactory().setValue(temperature.getValue().doubleValue());
+        this.temperatureValue.getValueFactory().setValue(temperature.getValue().doubleValue());
 
         Quantity<DynamicViscosity> viscosity = changedVariables.getSystemViscosity();
-        this.spViscosity.getValueFactory().setValue(viscosity.getValue().doubleValue());
+        this.viscosityValue.getValueFactory().setValue(viscosity.getValue().doubleValue());
 
         markChangesAsApplied();
     }
 
     private void markChangesAsUnApplied() {
-        String title = this.owner.getText();
-        if (!title.contains("*")) {
-            this.owner.setText(title + " *");
+        if (this.dirtyableText != null) {
+            if (!this.dirtyableText.getValue().endsWith("*")) {
+                this.dirtyableText.setValue(this.dirtyableText.getValue()+" *");
+            }
         }
     }
 
     private void markChangesAsApplied() {
-        this.owner.setText(this.owner.getText().replace(" *", ""));
+        if (this.dirtyableText != null) {
+            this.dirtyableText.setValue(this.dirtyableText.getValue().replace(" *", ""));
+        }
+    }
+
+    public void setDirtyableText(StringProperty dirtyableText) {
+        if (this.dirtyableText != null) {
+            this.dirtyableText.bind(dirtyableText);
+        }
+    }
+
+    public ObjectProperty<Number> getNodeDistanceProperty() {
+        return this.nodeDistanceValue.getValueFactory().valueProperty();
+    }
+
+    public ObjectProperty<Number> getTimeStepSizeProperty() {
+        return this.timeStepValue.getValueFactory().valueProperty();
+    }
+
+    public StringProperty getMaximalDegreeProperty() {
+        return this.maximalDegree.textProperty();
+    }
+
+    public StringProperty getMaximalDiffusivityProperty() {
+        return this.maximalDiffusivity.textProperty();
     }
 
 }
