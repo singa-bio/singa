@@ -111,6 +111,11 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
         return 0;
     }
 
+    @Override
+    public int getDegree() {
+        return 0;
+    }
+
     public void setNeighbours(List<Atom> neighbours) {
         this.neighbours = neighbours;
     }
