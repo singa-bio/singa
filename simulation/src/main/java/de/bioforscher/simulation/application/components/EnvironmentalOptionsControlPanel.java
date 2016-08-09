@@ -39,6 +39,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private ComboBox<Unit<Time>> timeStepUnit = new ComboBox<>();
     private Label maximalDegree = new Label();
     private Label maximalDiffusivity = new Label();
+    private Label maximalDifference = new Label();
 
     private StringProperty dirtyableText;
 
@@ -85,6 +86,9 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         // maximal diffusivity
         Label labMaximalDiffusivity = new Label("Maximal Diffusivity");
         this.add(labMaximalDiffusivity, 0, 5);
+        // maximal diffusivity
+        Label labMaximalConcentration = new Label("Steepest concentration drop");
+        this.add(labMaximalConcentration, 0, 6);
     }
 
     private void configureAndAddButtons() {
@@ -92,12 +96,12 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         Button btnDefaults = new Button("Restore Defaults");
         btnDefaults.setMaxWidth(Double.MAX_VALUE);
         btnDefaults.setOnAction(this::restoreDefault);
-        this.add(btnDefaults, 0, 6, 1, 1);
+        this.add(btnDefaults, 0, 7, 1, 1);
         Button btnApply = new Button("Apply");
         // apply changes
         btnApply.setMaxWidth(Double.MAX_VALUE);
         btnApply.setOnAction(this::applyChanges);
-        this.add(btnApply, 1, 6, 1, 1);
+        this.add(btnApply, 1, 7, 1, 1);
     }
 
     private void configureNodeDistanceValue() {
@@ -153,6 +157,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         this.add(this.viscosityValue, 1, 3);
         this.add(this.maximalDegree, 1, 4);
         this.add(this.maximalDiffusivity, 1, 5);
+        this.add(this.maximalDifference, 1, 6);
     }
 
     private void applyChanges(ActionEvent event) {
@@ -233,6 +238,10 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
 
     public StringProperty getMaximalDiffusivityProperty() {
         return this.maximalDiffusivity.textProperty();
+    }
+
+    public StringProperty getMaximalConcentrationDiffenceProperty() {
+        return this.maximalDifference.textProperty();
     }
 
 }

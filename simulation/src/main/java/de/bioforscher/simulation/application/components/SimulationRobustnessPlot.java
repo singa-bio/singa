@@ -1,9 +1,13 @@
 package de.bioforscher.simulation.application.components;
 
+import com.sun.javafx.geom.Point2D;
 import de.bioforscher.units.quantities.Diffusivity;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseEvent;
 
 import javax.measure.Quantity;
 
@@ -26,7 +30,6 @@ public class SimulationRobustnessPlot extends LineChart<Number, Number> {
         configureChart();
     }
 
-
     private void configureChart() {
         this.setAnimated(false);
     }
@@ -36,6 +39,10 @@ public class SimulationRobustnessPlot extends LineChart<Number, Number> {
         this.indicator = new XYChart.Data<>();
         indicatorSeries.getData().add(this.indicator);
         this.getData().add(indicatorSeries);
+        // configure dragging
+        Node node = this.indicator.getNode() ;
+        node.setCursor(Cursor.HAND);
+        node.setOnMouseDragged(this::handleMouseDragged);
     }
 
     private void configureThreshold() {
@@ -51,6 +58,18 @@ public class SimulationRobustnessPlot extends LineChart<Number, Number> {
 
     public Data<Number, Number> getIndicator() {
         return this.indicator;
+    }
+
+    private void handleMouseDragged(MouseEvent event) {
+        Point2D pointInScene = new Point2D((float)event.getSceneX(), (float)event.getSceneY());
+        double xAxisLoc = this.getXAxis().sceneToLocal(pointInScene.x, pointInScene.y).getX();
+        double yAxisLoc = this.getYAxis().sceneToLocal(pointInScene.x, pointInScene.y).getY();
+        Number x = this.getXAxis().getValueForDisplay(xAxisLoc);
+        Number y = this.getYAxis().getValueForDisplay(yAxisLoc);
+        if (x.doubleValue() > 0.1 && y.doubleValue() > 0.1) {
+            this.indicator.setXValue(x);
+            this.indicator.setYValue(y);
+        }
     }
 
 }

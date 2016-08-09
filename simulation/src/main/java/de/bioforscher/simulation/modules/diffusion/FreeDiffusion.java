@@ -14,6 +14,7 @@ import tec.units.ri.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
@@ -119,12 +120,22 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         this.diffusionCoefficients.put(entity, scaleDiffusivity(diffusivity));
     }
 
-    public Quantity<Diffusivity> getmaximalDiffusivity() {
+    public Quantity<Diffusivity> getMaximalDiffusivity() {
         // FIXME this is not good
         return Quantities.getQuantity(this.diffusionCoefficients.values().stream()
                 .mapToDouble(diffusivity -> diffusivity.getValue().doubleValue())
                 .max().orElse(0.0),this.diffusionCoefficients.get(this.diffusionCoefficients.keySet().iterator().next
                 ()).getUnit());
+    }
+
+    public ChemicalEntity getEntityWithMaximalDiffusivity() {
+        Quantity<Diffusivity> maximalDiffusivity = getMaximalDiffusivity();
+        return this.diffusionCoefficients.entrySet()
+           .stream()
+           .filter(entry -> Objects.equals(entry.getValue(), maximalDiffusivity))
+           .map(Map.Entry::getKey)
+           .findFirst().get();
+
     }
 
 }

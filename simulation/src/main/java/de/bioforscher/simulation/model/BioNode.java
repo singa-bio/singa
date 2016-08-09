@@ -54,6 +54,10 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.concentrations;
     }
 
+    public void setConcentrations(Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations) {
+        this.concentrations = concentrations;
+    }
+
     public HashMap<String, ChemicalEntity> getMapOfEntities() {
         HashMap<String, ChemicalEntity> results = new HashMap<>();
         for (ChemicalEntity entity : this.concentrations.keySet()) {
@@ -66,8 +70,16 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.isObserved;
     }
 
+    public void setObserved(boolean isObserved) {
+        this.isObserved = isObserved;
+    }
+
     public boolean isSource() {
         return this.isSource;
+    }
+
+    public void setSource(boolean isSource) {
+        this.isSource = isSource;
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
@@ -78,16 +90,12 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
     }
 
-    public void setConcentrations(Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations) {
-        this.concentrations = concentrations;
-    }
-
-    public void setObserved(boolean isObserved) {
-        this.isObserved = isObserved;
-    }
-
-    public void setSource(boolean isSource) {
-        this.isSource = isSource;
+    public double getSteepestConcentrationDifference(ChemicalEntity entity) {
+        return this.getNeighbours().stream()
+                   .mapToDouble(neighbour ->
+                           Math.abs(this.getConcentration(entity).getValue().doubleValue() -
+                                   neighbour.getConcentration(entity).getValue().doubleValue()))
+                   .max().orElse(0.0);
     }
 
     @Override
