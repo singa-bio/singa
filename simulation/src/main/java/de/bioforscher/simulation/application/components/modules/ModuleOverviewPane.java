@@ -5,6 +5,7 @@ import de.bioforscher.simulation.application.components.EnvironmentalOptionsCont
 import de.bioforscher.simulation.application.components.SimulationRobustnessPlot;
 import de.bioforscher.simulation.modules.AvailableModule;
 import de.bioforscher.units.quantities.Diffusivity;
+import de.bioforscher.units.quantities.MolarConcentration;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,6 +49,7 @@ public class ModuleOverviewPane extends SplitPane {
     private Slider runtimeSlider = new Slider(-1.0, 1.0, 0.0);
 
     private Quantity<Diffusivity> maximalDiffusivity;
+    private Quantity<MolarConcentration> maximalDifference;
     private int maximalDegree;
 
     private ObservableList<AvailableModule> modules = FXCollections.observableArrayList();
@@ -94,11 +96,15 @@ public class ModuleOverviewPane extends SplitPane {
     private void configureEnvironmentalControl() {
         NumberFormat formatter = new DecimalFormat("0.000E0");
         this.maximalDegree = this.owner.getGraph().getMaximumDegree();
-        this.maximalDiffusivity = this.owner.getSimulation().getFreeDiffusionModule().getmaximalDiffusivity();
+        this.maximalDiffusivity = this.owner.getSimulation().getFreeDiffusionModule().getMaximalDiffusivity();
+        this.maximalDifference = this.owner.getGraph().getSteepestDifference(
+                this.owner.getSimulation().getFreeDiffusionModule().getEntityWithMaximalDiffusivity());
         this.environmentalControl.getMaximalDegreeProperty()
                                  .setValue(String.valueOf(this.maximalDegree));
-        this.environmentalControl.getMaximalDiffusivityProperty().setValue(formatter.format(this.maximalDiffusivity.getValue()) +
-                                            " " + this.maximalDiffusivity.getUnit());
+        this.environmentalControl.getMaximalDiffusivityProperty().setValue(formatter.format(this.maximalDiffusivity
+                .getValue()));
+        this.environmentalControl.getMaximalConcentrationDiffenceProperty().setValue(this.maximalDifference.getValue()
+                                                                                                           .toString());
     }
 
     private void configureDetailGrid() {
@@ -133,7 +139,25 @@ public class ModuleOverviewPane extends SplitPane {
         this.robustnessSlider.setMajorTickUnit(1);
         this.robustnessSlider.setShowTickMarks(false);
         this.robustnessSlider.setShowTickLabels(true);
-        this.robustnessSlider.setLabelFormatter(new StringConverter<Double>() {
+
+        ObjectProperty<Number> distanceProperty = this.environmentalControl.getNodeDistanceProperty();
+        ObjectProperty<Number> timeStepProperty = this.environmentalControl.getTimeStepSizeProperty();
+
+        distanceProperty.addListener(change -> {
+
+            double distance = distanceProperty.getValue().doubleValue();
+            double timestep = timeStepProperty.getValue().doubleValue();
+            double maxDeg = this.maximalDegree;
+            double maxCon = this.maximalDifference.getValue().doubleValue();
+            double maxDif = this.maximalDiffusivity.getValue().doubleValue()*10000;
+
+            this.robustnessSlider.valueProperty().setValue(Math.sqrt(maxDeg*maxDif-maxCon)*timestep);
+            System.out.println(Math.sqrt(maxDeg*maxDif-maxCon)*timestep-distance*distance);
+        });
+
+
+
+        /*this.robustnessSlider.setLabelFormatter(new StringConverter<Double>() {
 
             @Override
             public String toString(Double n) {
@@ -155,7 +179,7 @@ public class ModuleOverviewPane extends SplitPane {
                 }
             }
 
-        });
+        });*/
 
         this.accuracySlider.setMinorTickCount(0);
         this.accuracySlider.setMajorTickUnit(1);

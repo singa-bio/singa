@@ -38,4 +38,10 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
         });
     }
 
+    public Quantity<MolarConcentration> getSteepestDifference(ChemicalEntity entity) {
+        return Quantities.getQuantity(this.getNodes().stream()
+                   .mapToDouble(node -> node.getSteepestConcentrationDifference(entity))
+                   .max().orElse(0.0), MOLE_PER_LITRE);
+    }
+
 }
