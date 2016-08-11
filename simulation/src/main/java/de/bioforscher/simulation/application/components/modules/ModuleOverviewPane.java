@@ -1,9 +1,12 @@
 package de.bioforscher.simulation.application.components.modules;
 
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
+import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
-import de.bioforscher.simulation.application.components.SimulationRobustnessPlot;
+import de.bioforscher.simulation.application.components.plots.SimulationRobustnessPlot;
 import de.bioforscher.simulation.modules.AvailableModule;
+import de.bioforscher.simulation.modules.diffusion.DiffusionUtilities;
 import de.bioforscher.units.quantities.Diffusivity;
 import de.bioforscher.units.quantities.MolarConcentration;
 import javafx.beans.property.ObjectProperty;
@@ -19,11 +22,12 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
-import javafx.util.converter.NumberStringConverter;
 
 import javax.measure.Quantity;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Christoph on 03.08.2016.
@@ -36,7 +40,7 @@ public class ModuleOverviewPane extends SplitPane {
     private GridPane descriptionGrid = new GridPane();
     private EnvironmentalOptionsControlPanel environmentalControl = new EnvironmentalOptionsControlPanel();
     private GridPane indicatorsGrid = new GridPane();
-    private SimulationRobustnessPlot chartPlaceHolder;
+    private SimulationRobustnessPlot simulationRobustnessPlot;
 
     private Label robustnessLabel = new Label("Robustness:");
     private Label accuracyLabel = new Label("Accuracy:");
@@ -44,12 +48,13 @@ public class ModuleOverviewPane extends SplitPane {
     private Label robustnessValueLabel = new Label("0.0");
     private Label accuracyValueLabel = new Label("0.0");
     private Label runtimeValueLabel = new Label("0.0");
-    private Slider robustnessSlider = new Slider(-1.0, 1.0, 0.0);
-    private Slider accuracySlider = new Slider(-1.0, 1.0, 0.0);
-    private Slider runtimeSlider = new Slider(-1.0, 1.0, 0.0);
+    private Slider robustnessSlider = new Slider(-10.0, 10.0, 0.0);
+    private Slider accuracySlider = new Slider(7.0, 17.0, 0.0);
+    private Slider runtimeSlider = new Slider(0.0, 100000.0, 0.0);
 
     private Quantity<Diffusivity> maximalDiffusivity;
     private Quantity<MolarConcentration> maximalDifference;
+    private int numberOfNodes;
     private int maximalDegree;
 
     private ObservableList<AvailableModule> modules = FXCollections.observableArrayList();
@@ -71,15 +76,19 @@ public class ModuleOverviewPane extends SplitPane {
         addComponentsToSplit();
     }
 
-
-    public void colorAfterShow() {
-        String gradientTrackStyle = "-fx-background-color:\n" +
+    public void doAfterShow() {
+        String redGreenGradientTrack = "-fx-background-color:\n" +
                 "derive(-fx-color,-36%),\n" +
                 "derive(-fx-color,73%),\n" +
                 "linear-gradient(to right, #d7191c, #fdae61, #ffffbf, #a6d96a, #1a9641);";
-        this.accuracySlider.getChildrenUnmodifiable().get(1).setStyle(gradientTrackStyle);
-        this.robustnessSlider.getChildrenUnmodifiable().get(1).setStyle(gradientTrackStyle);
-        this.runtimeSlider.getChildrenUnmodifiable().get(1).setStyle(gradientTrackStyle);
+        String greenRedGradientTrack = "-fx-background-color:\n" +
+                "derive(-fx-color,-36%),\n" +
+                "derive(-fx-color,73%),\n" +
+                "linear-gradient(to right, #1a9641, #a6d96a, #ffffbf, #fdae61, #d7191c);";
+
+        this.robustnessSlider.getChildrenUnmodifiable().get(1).setStyle(redGreenGradientTrack);
+        this.accuracySlider.getChildrenUnmodifiable().get(1).setStyle(greenRedGradientTrack);
+        this.runtimeSlider.getChildrenUnmodifiable().get(1).setStyle(greenRedGradientTrack);
     }
 
     private void configureSplit() {
@@ -105,6 +114,7 @@ public class ModuleOverviewPane extends SplitPane {
                 .getValue()));
         this.environmentalControl.getMaximalConcentrationDiffenceProperty().setValue(this.maximalDifference.getValue()
                                                                                                            .toString());
+        this.numberOfNodes = this.owner.getGraph().getNodes().size();
     }
 
     private void configureDetailGrid() {
@@ -112,8 +122,10 @@ public class ModuleOverviewPane extends SplitPane {
         this.detailGrid.setVgap(10);
         this.detailGrid.setPadding(new Insets(10, 10, 10, 10));
 
-        ColumnConstraints column0 = new ColumnConstraints(100, 100, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true);
-        ColumnConstraints column1 = new ColumnConstraints(100, 100, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true);
+        ColumnConstraints column0 = new ColumnConstraints(100, 100, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT,
+                true);
+        ColumnConstraints column1 = new ColumnConstraints(100, 100, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT,
+                true);
         this.detailGrid.getColumnConstraints().add(0, column0);
         this.detailGrid.getColumnConstraints().add(1, column1);
 
@@ -136,103 +148,51 @@ public class ModuleOverviewPane extends SplitPane {
 
     private void configureSliders() {
         this.robustnessSlider.setMinorTickCount(0);
-        this.robustnessSlider.setMajorTickUnit(1);
+        this.robustnessSlider.setMajorTickUnit(10);
+        this.robustnessSlider.setPrefWidth(200);
+        this.robustnessSlider.setDisable(true);
+        this.robustnessSlider.setStyle("-fx-opacity: 1");
         this.robustnessSlider.setShowTickMarks(false);
         this.robustnessSlider.setShowTickLabels(true);
+
+        this.accuracySlider.setMinorTickCount(0);
+        this.accuracySlider.setMajorTickUnit(2);
+        this.accuracySlider.setDisable(true);
+        this.accuracySlider.setStyle("-fx-opacity: 1");
+        this.accuracySlider.setShowTickMarks(false);
+        this.accuracySlider.setShowTickLabels(true);
+
+        this.runtimeSlider.setMinorTickCount(0);
+        this.runtimeSlider.setMajorTickUnit(50000);
+        this.runtimeSlider.setDisable(true);
+        this.runtimeSlider.setStyle("-fx-opacity: 1");
+        this.runtimeSlider.setShowTickMarks(false);
+        this.runtimeSlider.setShowTickLabels(true);
 
         ObjectProperty<Number> distanceProperty = this.environmentalControl.getNodeDistanceProperty();
         ObjectProperty<Number> timeStepProperty = this.environmentalControl.getTimeStepSizeProperty();
 
+        timeStepProperty.addListener(change -> {
+            double runtimeEstimate = DiffusionUtilities.estimateSimulationSpeed(timeStepProperty.getValue().doubleValue(),
+                    this.numberOfNodes);
+            this.runtimeSlider.valueProperty().setValue(runtimeEstimate);
+            double accuracyEstimate = DiffusionUtilities.estimateSimulationAccuracy(timeStepProperty.getValue().doubleValue(),
+                    distanceProperty.getValue().doubleValue());
+            this.accuracySlider.valueProperty().setValue(accuracyEstimate);
+        });
+
         distanceProperty.addListener(change -> {
+            Vector2D indicator = new Vector2D(distanceProperty.getValue().doubleValue(), timeStepProperty.getValue().doubleValue());
+            List<Vector2D> list = this.simulationRobustnessPlot.getThreshold();
 
-            double distance = distanceProperty.getValue().doubleValue();
-            double timestep = timeStepProperty.getValue().doubleValue();
-            double maxDeg = this.maximalDegree;
-            double maxCon = this.maximalDifference.getValue().doubleValue();
-            double maxDif = this.maximalDiffusivity.getValue().doubleValue()*10000;
+            Map.Entry<Vector2D, Double> closest = VectorMetricProvider.MANHATTAN_METRIC.calculateClosestDistance(list, indicator);
 
-            this.robustnessSlider.valueProperty().setValue(Math.sqrt(maxDeg*maxDif-maxCon)*timestep);
-            System.out.println(Math.sqrt(maxDeg*maxDif-maxCon)*timestep-distance*distance);
-        });
-
-
-
-        /*this.robustnessSlider.setLabelFormatter(new StringConverter<Double>() {
-
-            @Override
-            public String toString(Double n) {
-                if (n == -1.0) return "unstable";
-                if (n == 1.0) return "robust";
-                return "";
-            }
-
-            @Override
-            public Double fromString(String s) {
-                switch (s) {
-                    case "unstable":
-                        return -1d;
-                    case "robust":
-                        return 1d;
-
-                    default:
-                        return 0d;
-                }
-            }
-
-        });*/
-
-        this.accuracySlider.setMinorTickCount(0);
-        this.accuracySlider.setMajorTickUnit(1);
-        this.accuracySlider.setShowTickMarks(false);
-        this.accuracySlider.setShowTickLabels(true);
-        this.accuracySlider.setLabelFormatter(new StringConverter<Double>() {
-
-            @Override
-            public String toString(Double n) {
-                if (n == -1.0) return "diverging";
-                if (n == 1.0) return "precise";
-                return "";
-            }
-
-            @Override
-            public Double fromString(String s) {
-                switch (s) {
-                    case "diverging":
-                        return -1d;
-                    case "precise":
-                        return 1d;
-
-                    default:
-                        return 0d;
-                }
-            }
-
-        });
-
-        this.runtimeSlider.setMinorTickCount(0);
-        this.runtimeSlider.setMajorTickUnit(1);
-        this.runtimeSlider.setShowTickMarks(false);
-        this.runtimeSlider.setShowTickLabels(true);
-        this.runtimeSlider.setLabelFormatter(new StringConverter<Double>() {
-
-            @Override
-            public String toString(Double n) {
-                if (n == -1.0) return "slow";
-                if (n == 1.0) return "fast";
-                return "";
-            }
-
-            @Override
-            public Double fromString(String s) {
-                switch (s) {
-                    case "slow":
-                        return -1d;
-                    case "fast":
-                        return 1d;
-
-                    default:
-                        return 0d;
-                }
+            if (DiffusionUtilities.areViableParametersForDiffusion(timeStepProperty.getValue().doubleValue(),
+                    distanceProperty.getValue().doubleValue(), this.maximalDegree, this.maximalDifference, this
+                            .maximalDiffusivity.multiply(10000))) {
+                this.robustnessSlider.valueProperty().setValue(closest.getValue());
+            } else {
+                this.robustnessSlider.valueProperty().setValue(-closest.getValue());
             }
 
         });
@@ -240,10 +200,84 @@ public class ModuleOverviewPane extends SplitPane {
     }
 
     private void configureSliderLabels() {
-        StringConverter<Number> converter = new NumberStringConverter();
-        this.robustnessValueLabel.textProperty().bindBidirectional(this.robustnessSlider.valueProperty(), converter);
-        this.accuracyValueLabel.textProperty().bindBidirectional(this.accuracySlider.valueProperty(), converter);
-        this.runtimeValueLabel.textProperty().bindBidirectional(this.runtimeSlider.valueProperty(), converter);
+        StringConverter<Number> robustnessConverter = new StringConverter<Number>() {
+
+            @Override
+            public String toString(Number n) {
+                if (n.doubleValue() < -3.0) return "unstable";
+                if (n.doubleValue() < 1.0) return "probably unstable";
+                if (n.doubleValue() < 4.0) return "probably robust";
+                return "robust";
+            }
+
+            @Override
+            public Number fromString(String s) {
+                switch (s) {
+                    case "unstable":
+                        return -2;
+                    case "probably unstable":
+                        return 0;
+                    case "probably robust":
+                        return 3;
+                    default:
+                        return 4;
+                }
+            }
+
+        };
+        StringConverter<Number> runtimeConverter = new StringConverter<Number>() {
+
+            @Override
+            public String toString(Number n) {
+                if (n.intValue() < 10000) return "very fast";
+                if (n.intValue() < 40000) return "fast";
+                if (n.intValue() < 80000) return "slow";
+                return "very slow";
+            }
+
+            @Override
+            public Number fromString(String s) {
+                switch (s) {
+                    case "very fast":
+                        return 9999;
+                    case "fast":
+                        return 39999;
+                    case "slow":
+                        return 79999;
+                    default:
+                        return 80000;
+                }
+            }
+
+        };
+        StringConverter<Number> accuracyConverter =new StringConverter<Number>() {
+
+            @Override
+            public String toString(Number n) {
+                if (n.doubleValue() <= 9 ) return "very precise";
+                if (n.doubleValue() <= 12.0) return "precise";
+                if (n.doubleValue() <= 14.0) return "diverging";
+                return "very diverging";
+            }
+
+            @Override
+            public Number fromString(String s) {
+                switch (s) {
+                    case "very precise":
+                        return 8;
+                    case "precise":
+                        return 11;
+                    case "diverging":
+                        return 13;
+                    default:
+                        return 14;
+                }
+            }
+
+        };
+        this.robustnessValueLabel.textProperty().bindBidirectional(this.robustnessSlider.valueProperty(), robustnessConverter);
+        this.accuracyValueLabel.textProperty().bindBidirectional(this.accuracySlider.valueProperty(), accuracyConverter);
+        this.runtimeValueLabel.textProperty().bindBidirectional(this.runtimeSlider.valueProperty(), runtimeConverter);
     }
 
     private void addComponentsToIndicatorGrid() {
@@ -259,20 +293,21 @@ public class ModuleOverviewPane extends SplitPane {
     }
 
     private void configureChart() {
-        this.chartPlaceHolder = new SimulationRobustnessPlot(this.maximalDiffusivity, this.maximalDegree);
-        ObjectProperty<Number> indicatorXPositionProperty = this.chartPlaceHolder.getIndicator().XValueProperty();
+        this.simulationRobustnessPlot = new SimulationRobustnessPlot(this);
+        ObjectProperty<Number> indicatorXPositionProperty = this.simulationRobustnessPlot.getIndicator().XValueProperty();
         ObjectProperty<Number> nodeDistanceProperty = this.environmentalControl.getNodeDistanceProperty();
         indicatorXPositionProperty.bindBidirectional(nodeDistanceProperty);
-        ObjectProperty<Number> indicatorYPositionProperty = this.chartPlaceHolder.getIndicator().YValueProperty();
+        ObjectProperty<Number> indicatorYPositionProperty = this.simulationRobustnessPlot.getIndicator().YValueProperty();
         ObjectProperty<Number> timeStepProperty = this.environmentalControl.getTimeStepSizeProperty();
         indicatorYPositionProperty.bindBidirectional(timeStepProperty);
     }
 
     private void addComponentsToDetailGrid() {
-        this.detailGrid.add(this.descriptionGrid, 0, 0, 2, 1);
-        this.detailGrid.add(this.environmentalControl, 0, 1, 1, 2);
-        this.detailGrid.add(this.indicatorsGrid, 1, 1);
-        this.detailGrid.add(this.chartPlaceHolder, 1, 2);
+        // this.detailGrid.add(this.descriptionGrid, 0, 0, 2, 1);
+        this.detailGrid.add(this.simulationRobustnessPlot, 0, 0, 2, 1);
+        this.detailGrid.add(this.environmentalControl, 0, 2);
+        this.detailGrid.add(this.indicatorsGrid, 1, 2);
+
     }
 
     private void addComponentsToSplit() {
@@ -280,5 +315,20 @@ public class ModuleOverviewPane extends SplitPane {
         this.getItems().add(this.detailGrid);
     }
 
+    public EnvironmentalOptionsControlPanel getEnvironmentalControl() {
+        return this.environmentalControl;
+    }
+
+    public Quantity<Diffusivity> getMaximalDiffusivity() {
+        return this.maximalDiffusivity;
+    }
+
+    public Quantity<MolarConcentration> getMaximalDifference() {
+        return this.maximalDifference;
+    }
+
+    public int getMaximalDegree() {
+        return this.maximalDegree;
+    }
 
 }

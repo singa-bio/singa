@@ -2,7 +2,9 @@ package de.bioforscher.mathematics.metrics.model;
 
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A metric or distance function is a function that defines a distance between each pair of elements of a set. A metric
@@ -47,6 +49,25 @@ public interface Metric<Type> {
             }
         }
         return new SymmetricMatrix(compactValues);
+    }
+
+    default <SubType extends Type> Map<SubType, Double> calculateDistancesToReference(List<SubType> list,
+                                                                                        SubType reference) {
+        Map<SubType, Double> result = new HashMap<>();
+        list.forEach(point -> result.put(point, calculateDistance(point, reference)));
+        return result;
+    }
+
+    default <SubType extends Type> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list, SubType
+            reference) {
+        Map<SubType, Double> distances = calculateDistancesToReference(list, reference);
+        Map.Entry<SubType, Double> min = null;
+        for (Map.Entry<SubType, Double> entry : distances.entrySet()) {
+            if (min == null || min.getValue() > entry.getValue()) {
+                min = entry;
+            }
+        }
+        return min;
     }
 
 }

@@ -23,7 +23,7 @@ public class MathematicalFunction {
         this.variables.put(name, variable);
         return variable;
     }
-    
+
 
 
 }

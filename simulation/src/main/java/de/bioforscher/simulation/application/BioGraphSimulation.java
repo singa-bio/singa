@@ -299,7 +299,7 @@ public class BioGraphSimulation extends Application {
         moduleStage.sizeToScene();
         moduleStage.show();
         // TODO maybe a better solution
-        moduleOverviewPane.colorAfterShow();
+        moduleOverviewPane.doAfterShow();
     }
 
     private void startGraphWizard(ActionEvent event) {

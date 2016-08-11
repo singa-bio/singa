@@ -6,6 +6,7 @@ import de.bioforscher.units.UnitPrefix;
 import de.bioforscher.units.UnitUtilities;
 import de.bioforscher.units.quantities.DynamicViscosity;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -105,8 +106,9 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     }
 
     private void configureNodeDistanceValue() {
-        this.nodeDistanceValue = new Spinner<>(1.0, 1000.0, 250.0);
+        this.nodeDistanceValue = new Spinner<>(1.0, 1000.0, 100.0);
         this.nodeDistanceValue.setEditable(true);
+        this.nodeDistanceValue.setPrefWidth(150);
         this.nodeDistanceValue.valueProperty()
                               .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -115,6 +117,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         this.nodeDistanceUnit.getItems().addAll(
                 UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultSpacePrefixes(), METRE));
         this.nodeDistanceUnit.setValue(NANO(METRE));
+        this.nodeDistanceUnit.setPrefWidth(100);
         this.nodeDistanceUnit.valueProperty()
                              .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -122,6 +125,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureTimeStepValue() {
         this.timeStepValue = new Spinner<>(1.0, 1000.0, 1.0);
         this.timeStepValue.setEditable(true);
+        this.timeStepValue.setPrefWidth(150);
         this.timeStepValue.valueProperty()
                           .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -129,7 +133,8 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureTimeStepUnit() {
         this.timeStepUnit.getItems().addAll(
                 UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(), SECOND));
-        this.timeStepUnit.setValue(MICRO(SECOND));
+        this.timeStepUnit.setValue(NANO(SECOND));
+        this.timeStepUnit.setPrefWidth(100);
         this.timeStepUnit.valueProperty()
                          .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -137,6 +142,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureTemperatureValue() {
         this.temperatureValue = new Spinner<>(0, 100, 23.0, 0.1);
         this.temperatureValue.setEditable(true);
+        this.temperatureValue.setPrefWidth(150);
         this.temperatureValue.valueProperty()
                              .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -144,6 +150,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureViscosityValue() {
         this.viscosityValue = new Spinner<>(0, 100, 1.0, 0.1);
         this.viscosityValue.setEditable(true);
+        this.viscosityValue.setPrefWidth(150);
         this.viscosityValue.valueProperty()
                            .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
@@ -228,6 +235,14 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
         return this.nodeDistanceValue.getValueFactory().valueProperty();
     }
 
+    public ReadOnlyObjectProperty<Unit<Length>> getNodeDistanceUnitProperty() {
+        return this.nodeDistanceUnit.getSelectionModel().selectedItemProperty();
+    }
+
+    public ReadOnlyObjectProperty<Unit<Time>> getTimeStepSizeUnitProperty() {
+        return this.timeStepUnit.getSelectionModel().selectedItemProperty();
+    }
+
     public ObjectProperty<Number> getTimeStepSizeProperty() {
         return this.timeStepValue.getValueFactory().valueProperty();
     }
@@ -243,5 +258,7 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     public StringProperty getMaximalConcentrationDiffenceProperty() {
         return this.maximalDifference.textProperty();
     }
+
+
 
 }
