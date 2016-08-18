@@ -9,18 +9,28 @@ import tec.units.ri.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
+    private NodeState state;
     private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
     private boolean isObserved;
     private boolean isSource;
 
     public BioNode(int identifier) {
         super(identifier);
+        this.state = NodeState.AQUEOUS;
         this.concentrations = new HashMap<>();
+    }
+
+    public Set<BioNode> getNeighboursInState(NodeState state) {
+        return this.getNeighbours().stream()
+                .filter(node -> node.getState() == state)
+                .collect(Collectors.toSet());
     }
 
     public void addEntity(ChemicalEntity entity, double concentration) {
@@ -88,6 +98,14 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     public void setConcentration(ChemicalEntity entity, double value) {
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+    }
+
+    public NodeState getState() {
+        return this.state;
+    }
+
+    public void setState(NodeState state) {
+        this.state = state;
     }
 
     public double getSteepestConcentrationDifference(ChemicalEntity entity) {

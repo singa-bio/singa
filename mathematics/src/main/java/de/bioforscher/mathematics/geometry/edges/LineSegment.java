@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.geometry.edges;
 
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.mathematics.vectors.Vector2D;
 
 /**
@@ -15,7 +16,7 @@ public class LineSegment extends Line {
     private final Vector2D endingPoint;
 
     public LineSegment(double x1, double y1, double x2, double y2) {
-        this(new Vector2D(x1, y2), new Vector2D(x2, y2));
+        this(new Vector2D(x1, y1), new Vector2D(x2, y2));
     }
 
     public LineSegment(Vector2D start, Vector2D end) {
@@ -98,11 +99,38 @@ public class LineSegment extends Line {
         }
     }
 
+    public LineSegment getParallelSegment(double distance) {
+        if (getSlope() == 0.0) {
+            // trivial case (horizontal line)
+            return new LineSegment(this.startingPoint.getX(), this.startingPoint.getY()+distance,
+                    this.endingPoint.getX(), this.endingPoint.getY()+distance);
+        } else if (Double.isInfinite(getSlope())) {
+            // trivial case (vertical line)
+            return new LineSegment(this.startingPoint.getX() + distance, this.startingPoint.getY(),
+                    this.endingPoint.getX()+distance, this.endingPoint.getY());
+        } else {
+            // actually calculate
+            Line parallel = getParallel(distance);
+            Line perpendicularStart = new Line(this.startingPoint, parallel.getPerpendicularSlope());
+            Line perpendicularEnd = new Line(this.endingPoint, parallel.getPerpendicularSlope());
+            return new LineSegment(parallel.getInterceptWithLine(perpendicularStart),
+                    parallel.getInterceptWithLine(perpendicularEnd));
+        }
+    }
+
+    public Line getLineRepresentation() {
+        return new Line(super.getYIntercept(), getSlope());
+    }
+
     public Line calculatePerpendicularBisector() {
         Vector2D midAB = getStartingPoint().getMidpointTo(getEndingPoint());
-        double slope = -1 / this.getSlope();
+        double slope = getPerpendicularSlope();
         double yIntercept = midAB.getY() - slope * midAB.getX();
         return new Line(midAB, new Vector2D(0, yIntercept));
+    }
+
+    public double getLength() {
+        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(this.startingPoint, this.endingPoint);
     }
 
 }

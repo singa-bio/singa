@@ -66,18 +66,18 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
 
     private void configureAndAddLabels() {
         // node distance
-        Label labNodeDistance = new Label("Distance between two nodes:");
+        Label labNodeDistance = new Label("Node distance:");
         this.add(labNodeDistance, 0, 0);
         // time step
-        Label labTimeStep = new Label("Duration of a time step:");
+        Label labTimeStep = new Label("Time step size:");
         this.add(labTimeStep, 0, 1);
         // temperature
-        Label labTemperature = new Label("System temperature:");
+        Label labTemperature = new Label("Temperature:");
         this.add(labTemperature, 0, 2);
         Label labTemperatureUnit = new Label(UnitName.CELSIUS.getSymbol());
         this.add(labTemperatureUnit, 2, 2);
         // viscosity
-        Label labViscosity = new Label("System viscosity:");
+        Label labViscosity = new Label("Viscosity:");
         this.add(labViscosity, 0, 3);
         Label labViscosityUnit = new Label(UnitName.PASCAL.getSymbol() + UnitName.SECOND.getSymbol());
         this.add(labViscosityUnit, 2, 3);
@@ -106,7 +106,8 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     }
 
     private void configureNodeDistanceValue() {
-        this.nodeDistanceValue = new Spinner<>(1.0, 1000.0, 100.0);
+        this.nodeDistanceValue = new Spinner<>(1.0, 1000.0, EnvironmentalVariables.getInstance().getNodeDistance()
+                                                                                  .getValue().doubleValue());
         this.nodeDistanceValue.setEditable(true);
         this.nodeDistanceValue.setPrefWidth(150);
         this.nodeDistanceValue.valueProperty()
@@ -116,14 +117,15 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureNodeDistanceUnit() {
         this.nodeDistanceUnit.getItems().addAll(
                 UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultSpacePrefixes(), METRE));
-        this.nodeDistanceUnit.setValue(NANO(METRE));
+        this.nodeDistanceUnit.setValue(EnvironmentalVariables.getInstance().getNodeDistance().getUnit());
         this.nodeDistanceUnit.setPrefWidth(100);
         this.nodeDistanceUnit.valueProperty()
                              .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
 
     private void configureTimeStepValue() {
-        this.timeStepValue = new Spinner<>(1.0, 1000.0, 1.0);
+        this.timeStepValue = new Spinner<>(1.0, 1000.0, EnvironmentalVariables.getInstance().getTimeStep().getValue()
+                                                                              .doubleValue());
         this.timeStepValue.setEditable(true);
         this.timeStepValue.setPrefWidth(150);
         this.timeStepValue.valueProperty()
@@ -133,14 +135,15 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     private void configureTimeStepUnit() {
         this.timeStepUnit.getItems().addAll(
                 UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(), SECOND));
-        this.timeStepUnit.setValue(NANO(SECOND));
+        this.timeStepUnit.setValue(EnvironmentalVariables.getInstance().getTimeStep().getUnit());
         this.timeStepUnit.setPrefWidth(100);
         this.timeStepUnit.valueProperty()
                          .addListener((observable, oldValue, newValue) -> this.markChangesAsUnApplied());
     }
 
     private void configureTemperatureValue() {
-        this.temperatureValue = new Spinner<>(0, 100, 23.0, 0.1);
+        this.temperatureValue = new Spinner<>(0, 100, EnvironmentalVariables.getInstance().getSystemTemperature()
+                                                                            .getValue().doubleValue(), 0.1);
         this.temperatureValue.setEditable(true);
         this.temperatureValue.setPrefWidth(150);
         this.temperatureValue.valueProperty()
@@ -148,7 +151,8 @@ public class EnvironmentalOptionsControlPanel extends GridPane implements Observ
     }
 
     private void configureViscosityValue() {
-        this.viscosityValue = new Spinner<>(0, 100, 1.0, 0.1);
+        this.viscosityValue = new Spinner<>(0, 100, EnvironmentalVariables.getInstance().getSystemViscosity()
+                                                                          .getValue().doubleValue(), 0.1);
         this.viscosityValue.setEditable(true);
         this.viscosityValue.setPrefWidth(150);
         this.viscosityValue.valueProperty()

@@ -33,7 +33,7 @@ class BioGraphContextMenu extends ContextMenu {
     private void initialize() {
         this.speciesMenu = new Menu("Highlight Species");
         this.speciesGroup = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.gerneratEntityMapFromSet(simulation.getSpecies());
+        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.gerneratEntityMapFromSet(this.simulation.getSpecies());
         // Add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {
             fillSpeciesMenu(chemicalEntities);

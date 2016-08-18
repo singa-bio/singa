@@ -4,11 +4,10 @@ import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.components.plots.ConcentrationPlot;
 import de.bioforscher.simulation.application.components.plots.PlotCard;
 import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.NodeState;
 import de.bioforscher.simulation.modules.model.Simulation;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 public class BioNodeContextMenu extends ContextMenu {
@@ -19,11 +18,14 @@ public class BioNodeContextMenu extends ContextMenu {
     private CustomMenuItem header = new CustomMenuItem();
     private MenuItem delete = new MenuItem();
     private MenuItem observe = new MenuItem();
+    private Menu stateMenu;
+    private ToggleGroup stateGroup;
 
     public BioNodeContextMenu(BioNode node, BioGraphSimulation owner) {
         this.node = node;
         this.owner = owner;
         configureHeader();
+        configureStatesMenu();
         configureDeleteItem();
         configureObserve();
         addItemsToMenu();
@@ -45,8 +47,27 @@ public class BioNodeContextMenu extends ContextMenu {
         this.observe.setOnAction(this::observeNode);
     }
 
+    private void configureStatesMenu() {
+        this.stateMenu = new Menu("Set State...");
+        this.stateGroup = new ToggleGroup();
+        // add menuItem for every state
+        for (NodeState state: NodeState.values()) {
+            RadioMenuItem stateItem = setupStateMenuItem(state);
+            this.stateMenu.getItems().add(stateItem);
+        }
+    }
+
+    private RadioMenuItem setupStateMenuItem(final NodeState state) {
+        RadioMenuItem itemCompound = new RadioMenuItem();
+        itemCompound.setText(state.name());
+        itemCompound.setUserData(state);
+        itemCompound.setToggleGroup(this.stateGroup);
+        itemCompound.setOnAction(this::setState);
+        return itemCompound;
+    }
+
     private void addItemsToMenu() {
-        this.getItems().addAll(this.header, this.delete, this.observe);
+        this.getItems().addAll(this.header, this.delete, this.observe, this.stateMenu);
     }
 
    private void deleteNode(ActionEvent event) {
@@ -60,6 +81,11 @@ public class BioNodeContextMenu extends ContextMenu {
         ConcentrationPlot plot = new ConcentrationPlot(simulation.getSpecies(), this.node, simulation);
         simulation.getListeners().add(plot);
         this.owner.getPlotPane().getPlotCards().add(new PlotCard(plot));
+        this.owner.redrawGraph();
+    }
+
+    private void setState(ActionEvent event) {
+        this.node.setState(((NodeState)((RadioMenuItem)event.getSource()).getUserData()));
         this.owner.redrawGraph();
     }
 

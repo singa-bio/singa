@@ -123,7 +123,7 @@ public class SimulationRobustnessPlot extends LineChart<Number, Number> {
         this.getData().add(thresholdSeries);
 
         boolean isInRange = true;
-        int timeStepCounter = 1;
+        int timeStepCounter = 0;
 
         while (isInRange) {
             // calculate value
