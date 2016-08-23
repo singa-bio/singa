@@ -63,7 +63,8 @@ public class SimulationCanvas extends Canvas {
     }
 
     private boolean isClickedOnNode(MouseEvent event, BioNode node) {
-        return node.getPosition().isNearVector(new Vector2D(event.getX(), event.getY()),
+        return node.getPosition().isNearVector(new Vector2D(event.getX()+this.renderer.getOptions().getStandardNodeDiameter() / 2,
+                        event.getY()+this.renderer.getOptions().getStandardNodeDiameter() / 2),
                 this.renderer.getOptions().getStandardNodeDiameter() / 2);
     }
 

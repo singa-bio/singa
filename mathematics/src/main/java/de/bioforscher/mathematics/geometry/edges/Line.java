@@ -11,14 +11,17 @@ import de.bioforscher.mathematics.vectors.Vector2D;
  * @version 2.0.0
  * @see <a href="https://en.wikipedia.org/wiki/Line_(geometry)">Wikipedia: Line (geometry)</a>
  */
+@SuppressWarnings("SuspiciousNameCombination")
 public class Line {
 
     private final double yIntercept;
     private final double slope;
 
     public Line(double yIntercept, double slope) {
-        if (Double.isNaN(yIntercept) || Double.isNaN(slope)) {
-            throw new IllegalArgumentException("Unable to create a new line with Double.NaN as slope or intercept.");
+        if (Double.isNaN(yIntercept)) {
+            throw new IllegalArgumentException("Unable to create a new line with Double.NaN as intercept.");
+        } else if (Double.isNaN(slope)) {
+            throw new IllegalArgumentException("Unable to create a new line with Double.NaN as slope.");
         }
         this.yIntercept = yIntercept;
         this.slope = slope;
@@ -31,7 +34,15 @@ public class Line {
      * @param slope
      */
     public Line(Vector2D strutPoint, double slope) {
-        this(calculateYIntercept(strutPoint, slope), slope);
+        if (!Double.isInfinite(slope)) {
+            // classical line
+            this.yIntercept = calculateYIntercept(strutPoint, slope);
+            this.slope = slope;
+        } else {
+            // this is a vertical line
+            this.yIntercept = strutPoint.getX();
+            this.slope = slope;
+        }
     }
 
     /**
@@ -49,11 +60,18 @@ public class Line {
     /**
      * Creates a new Line from two points.
      *
-     * @param first  The first point.
+     * @param first The first point.
      * @param second The second point.
      */
     public Line(Vector2D first, Vector2D second) {
-        this(first, calculateSlope(first, second));
+        if (!first.equals(second)) {
+            this.slope = calculateSlope(first, second);
+            this.yIntercept = calculateYIntercept(first, this.slope);
+        } else {
+            throw new IllegalArgumentException("Unable to create line from two identical points: " + first + " and "
+                    + second + ".");
+        }
+
     }
 
     /**
@@ -62,9 +80,9 @@ public class Line {
      *
      * @return The slope.
      */
-    static double calculateSlope(Vector2D first, Vector2D second) {
-        if (first.equals(second)) {
-            throw new IllegalArgumentException("Can not calculate a slope for two two vectors that are equal.");
+    public static double calculateSlope(Vector2D first, Vector2D second) {
+        if (first.getX() == second.getX()) {
+            return Double.POSITIVE_INFINITY;
         }
         return (second.getY() - first.getY()) / (second.getX() - first.getX());
     }
@@ -75,7 +93,7 @@ public class Line {
      *
      * @return The y-intercept of the equation of the line segment.
      */
-    static double calculateYIntercept(Vector2D first, double slope) {
+    public static double calculateYIntercept(Vector2D first, double slope) {
         return first.getY() - first.getX() * slope;
     }
 
@@ -89,7 +107,13 @@ public class Line {
      * @return The x-intercept of the equation of the line segment.
      */
     public double getXIntercept() {
-        return -this.getYIntercept() / this.getSlope();
+        if (!Double.isInfinite(this.slope)) {
+            // this is a classical line
+            return -this.getYIntercept() / this.getSlope();
+        } else {
+            // this is a vertical line
+            return this.yIntercept;
+        }
     }
 
     /**
@@ -109,7 +133,13 @@ public class Line {
      * @return The y-intercept of the equation of the line segment.
      */
     public double getYIntercept() {
-        return this.yIntercept;
+        if (!Double.isInfinite(this.slope)) {
+            // this is a classical line
+            return this.yIntercept;
+        } else {
+            // this is a vertical line
+            return Double.NaN;
+        }
     }
 
     /**
@@ -120,6 +150,34 @@ public class Line {
      */
     public double getYValue(double x) {
         return this.slope * x + this.yIntercept;
+    }
+
+    /**
+     * Returns the angle to the x-axis in radians.
+     *
+     * @return he angle to the x-axis in radians.
+     */
+    public double getAngleToXAxis() {
+        return Math.atan(this.slope / 1);
+    }
+
+    public double getPerpendicularSlope() {
+        return -1 / this.slope;
+    }
+
+    public Line getParallel(double distance) {
+        // perpendicular angle (in rad)
+        if (this.slope == 0.0) {
+            // trivial case (horizontal line)
+            return new Line(this.yIntercept + distance, this.slope);
+        } else if (Double.isInfinite(this.slope)) {
+            // trivial case (vertical line)
+            return new Line(new Vector2D(this.yIntercept + distance, 0), Double.POSITIVE_INFINITY);
+        } else {
+            // calculate new parallel line
+            return new Line(this.yIntercept + distance * Math.sqrt(1 + this.slope * this.slope), this.slope);
+        }
+
     }
 
     /**
@@ -134,6 +192,12 @@ public class Line {
         final double c = this.yIntercept;
         final double d = line.getYIntercept();
         return new Vector2D((d - c) / (a - b), (a * d - b * c) / (a - b));
+    }
+
+    public Vector2D mirrorVector(Vector2D originalVector) {
+        double d = (originalVector.getX() + (originalVector.getY() - this.getYIntercept())*this.getSlope())
+                 / (1 + this.getSlope()*this.getSlope());
+        return new Vector2D(2*d-originalVector.getX(), 2*d*this.getSlope() - originalVector.getY()+2*this.yIntercept);
     }
 
     @Override
