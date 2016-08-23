@@ -13,13 +13,15 @@ public interface LabeledMatrix<LabelType> {
 
     /**
      * Assigns a label to a row.
-     * @param label The label.
+     *
+     * @param label    The label.
      * @param rowIndex The row index.
      */
     void setRowLabel(LabelType label, int rowIndex);
 
     /**
      * Returns the row label currently assigned to the given row index.
+     *
      * @param rowIndex The row index.
      * @return The label of the row.
      */
@@ -27,6 +29,7 @@ public interface LabeledMatrix<LabelType> {
 
     /**
      * Sets all row labels at once, using the index of the label in the list.
+     *
      * @param labels The labels.
      */
     default void setRowLabels(List<LabelType> labels) {
@@ -37,20 +40,23 @@ public interface LabeledMatrix<LabelType> {
 
     /**
      * Assigns a label to a column.
-     * @param label The label.
+     *
+     * @param label       The label.
      * @param columnIndex the column index.
      */
     void setColumnLabel(LabelType label, int columnIndex);
 
     /**
      * Returns the column label currently assigned to the given row index.
-     * @param columnLabel  The column index.
+     *
+     * @param columnLabel The column index.
      * @return The label of the column.
      */
     LabelType getColumnLabel(int columnLabel);
 
     /**
      * Sets all column labels at once, using the index of the label in the list.
+     *
      * @param labels The labels.
      */
     default void setColumnLabels(List<LabelType> labels) {
@@ -61,7 +67,8 @@ public interface LabeledMatrix<LabelType> {
 
     /**
      * Returns a value using a row and column label.
-     * @param rowLabel The row label.
+     *
+     * @param rowLabel    The row label.
      * @param columnLabel The column label.
      * @return The actual value from the matrix
      */
@@ -73,7 +80,8 @@ public interface LabeledMatrix<LabelType> {
      * Returns a {@link Pair} of {@link Integer}s that represent the position of a value that is assigned to the
      * given labels. As a contract the {@link Pair#getFirst()} method will retrieve the row index and the
      * {@link Pair#getSecond()} method the column index.
-     * @param rowLabel The row label.
+     *
+     * @param rowLabel    The row label.
      * @param columnLabel The column label.
      * @return The position of the value as defined by the labels.
      */
@@ -83,9 +91,25 @@ public interface LabeledMatrix<LabelType> {
      * Returns a value using the position given by a {@link Pair} of {@link Integer}s. As a contract the
      * {@link Pair#getFirst()} method will be interpreted as the row index and the {@link Pair#getSecond()} method
      * as the column index.
+     *
      * @param position The position of a value.
      * @return The actual value from the matrix.
      */
     double getValueFromPosition(Pair<Integer> position);
 
+    /**
+     * Returns a string representation of the labelled matrix such that a CSV compatible format is achieved. Numbers
+     * are rounded to 6 decimal places to keep visual layout.
+     * <p>
+     * The following symmetric matrix with the labels L1, L2, L3 result in the following string representation:
+     * <pre>
+     * ,L1,L2,L3
+     * L1,1.000000,2.000000,3.000000
+     * L2,2.000000,4.000000,5.000000
+     * L3,3.000000,5.000000,8.000000
+     * </pre>
+     *
+     * @return a CSV-like string representation
+     */
+    String getStringRepresentation();
 }

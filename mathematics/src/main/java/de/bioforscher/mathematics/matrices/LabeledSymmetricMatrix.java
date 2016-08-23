@@ -2,14 +2,20 @@ package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Created by Christoph on 21.06.2016.
  */
 public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implements LabeledMatrix<LabelType> {
 
+    private static final String STRING_REPRESENTATION_DECIMAL_FORMAT = "0.000000";
     private Map<LabelType, Integer> labelMap;
 
     /**
@@ -40,7 +46,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     @Override
     public LabelType getRowLabel(int rowIndex) {
         return labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
-                .findFirst().get();
+                       .findFirst().get();
     }
 
     @Override
@@ -63,4 +69,27 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
         return getElement(position.getFirst(), position.getSecond());
     }
 
+    @Override
+    public String getStringRepresentation() {
+        StringJoiner rowJoiner = new StringJoiner("\n");
+        if (!this.labelMap.isEmpty())
+            // assemble first line of string representation
+            rowJoiner.add("," + this.labelMap.entrySet().stream()
+                                             .sorted(Map.Entry.comparingByValue())
+                                             .map(Map.Entry::getKey)
+                                             .map(String::valueOf).collect(Collectors.joining(",")));
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.applyPattern(STRING_REPRESENTATION_DECIMAL_FORMAT);
+        for (int i = 0; i < getCompleteElements().length; i++) {
+            StringJoiner columnJoiner = new StringJoiner(",");
+            if (!this.labelMap.isEmpty())
+                columnJoiner.add(String.valueOf(getColumnLabel(i)));
+            for (int j = 0; j < getCompleteElements()[i].length; j++) {
+                columnJoiner.add(df.format(getCompleteElements()[i][j]));
+            }
+            rowJoiner.add(columnJoiner.toString());
+        }
+        return rowJoiner.toString();
+    }
 }

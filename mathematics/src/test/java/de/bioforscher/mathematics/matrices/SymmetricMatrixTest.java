@@ -85,4 +85,25 @@ public class SymmetricMatrixTest {
         assertEquals(3.0, lsm.getValueForLabel("L1", "L3"), 0.0);
     }
 
+    @Test
+    public void shouldGetStringRepresentation() {
+
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        lsm.setRowLabel("L1", 0);
+        lsm.setRowLabel("L2", 1);
+        lsm.setRowLabel("L3", 2);
+        assertEquals(",L1,L2,L3\n" +
+                     "L1,1.000000,2.000000,3.000000\n" +
+                     "L2,2.000000,4.000000,5.000000\n" +
+                     "L3,3.000000,5.000000,8.000000", lsm.getStringRepresentation());
+    }
+
+    @Test
+    public void shouldGetStringRepresentationWithoutLabels() {
+
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        assertEquals("1.000000,2.000000,3.000000\n" +
+                     "2.000000,4.000000,5.000000\n" +
+                     "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
+    }
 }
