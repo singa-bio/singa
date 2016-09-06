@@ -1,6 +1,6 @@
 package de.bioforscher.mathematics.vectors;
 
-import de.bioforscher.mathematics.geometry.edges.HorizontalLine;
+import de.bioforscher.mathematics.geometry.edges.Line;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 
 /**
@@ -11,7 +11,6 @@ import de.bioforscher.mathematics.geometry.faces.Rectangle;
  * it is able to perform operations that are solely defined for 2D vectors.
  *
  * @author Christoph Leberecht
- * @version 2.0.1
  */
 public class Vector2D extends RegularVector {
 
@@ -208,8 +207,9 @@ public class Vector2D extends RegularVector {
      * @param line A HorizontalLine.
      * @return The distance
      */
-    public double distanceTo(HorizontalLine line) {
-        return Math.abs(this.getY() - line.getPosition());
+    public double distanceTo(Line line) {
+        // TODO implement me
+        return 0.0;
     }
 
     /**

@@ -206,8 +206,6 @@ public class BioGraphSimulation extends Application {
         topContainer.getChildren().addAll(menuBar, toolBar);
         root.setTop(topContainer);
 
-
-
         // Simulation Frame
         root.setCenter(splitPane);
 

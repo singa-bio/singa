@@ -1,13 +1,15 @@
 package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.mathematics.geometry.edges.Line;
+import de.bioforscher.javafx.renderer.Renderer;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFaceEdge;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFactory;
-import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.model.*;
+import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.BioEdge;
+import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.GraphUpdatedEvent;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -16,9 +18,10 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static de.bioforscher.simulation.model.NodeState.*;
+import static de.bioforscher.simulation.model.NodeState.AQUEOUS;
+import static de.bioforscher.simulation.model.NodeState.CELL_MEMBRANE;
 
-public class GraphRenderer extends AnimationTimer implements UpdateEventListener<GraphUpdatedEvent> {
+public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEventListener<GraphUpdatedEvent> {
 
     private GraphRenderOptions renderingOptions;
     private BioGraphRenderOptions bioRenderingOptions;
@@ -135,30 +138,14 @@ public class GraphRenderer extends AnimationTimer implements UpdateEventListener
         }
     }
 
-    private void drawLineSegment(LineSegment lineSegment) {
-        this.graphicsContext.strokeLine(
-                lineSegment.getStartingPoint().getX(),
-                lineSegment.getStartingPoint().getY(),
-                lineSegment.getEndingPoint().getX(),
-                lineSegment.getEndingPoint().getY());
+    @Override
+    public GraphicsContext getGraphicsContext() {
+        return this.graphicsContext;
     }
 
-    private void drawLine(Line line) {
-        double maxX = this.canvas.getWidth();
-        double minX = 0;
-        double maxY = this.canvas.getHeight();
-
-        if (line.getSlope() == 0) {
-            // horizontal line
-            Vector2D start = new Vector2D(minX, line.getYIntercept());
-            Vector2D end = new Vector2D(maxX, line.getYIntercept());
-            this.graphicsContext.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
-        } else {
-            // other lines
-            Vector2D top = line.getInterceptWithLine(new Line(0,0));
-            Vector2D bottom = line.getInterceptWithLine(new Line(maxY, 0));
-            this.graphicsContext.strokeLine(top.getX(), top.getY(), bottom.getX(), bottom.getY());
-        }
+    @Override
+    public Canvas getCanvas() {
+        return this.canvas;
     }
 
 

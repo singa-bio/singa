@@ -6,8 +6,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class LineTest {
+
+    Line horizontalLine = new Line(new Vector2D(13.0 , 4.0), 0.0);
+    Line verticalLine = new Line(new Vector2D(13.0 , 4.0), Double.POSITIVE_INFINITY);
 
     /**
      * tests for illegal argument exception if both given points are identical
@@ -51,17 +55,15 @@ public class LineTest {
      */
     @Test
     public void shouldCalculateSlope() {
+        // normal
         double slope = Line.calculateSlope(new Vector2D(7, 22), new Vector2D(12, 14));
         assertEquals(-8.0/5.0, slope, 0.0);
-    }
-
-    /**
-     * should calculate x-intercept
-     */
-    @Test
-    public void shouldCalculateXIntercept() {
-        Line line = new Line(new Vector2D(1.0 ,13.0), new Vector2D(-3.0, -4.0));
-        assertEquals(-35.0/17.0, line.getXIntercept(), 0.0);
+        // vertical
+        double vertical = Line.calculateSlope(new Vector2D(7, 22), new Vector2D(7, 14));
+        assertTrue(Double.isInfinite(vertical));
+        // horizontal
+        double horizontal = Line.calculateSlope(new Vector2D(5, 22), new Vector2D(12, 22));
+        assertEquals(0.0, horizontal, 0.0);
     }
 
     /**
@@ -69,8 +71,31 @@ public class LineTest {
      */
     @Test
     public void shouldCalculateYIntercept() {
+        // normal
         double yIntercept = Line.calculateYIntercept(new Vector2D(7, 22), 4.0/7.0);
         assertEquals(18.0, yIntercept, 0.0);
+        // vertical
+        double vertical = Line.calculateYIntercept(new Vector2D(7, 22), Double.POSITIVE_INFINITY);
+        assertTrue(Double.isInfinite(vertical));
+        // horizontal
+        double horizontal = Line.calculateYIntercept(new Vector2D(7, 22), 0.0);
+        assertEquals(22.0, horizontal, 0.0);
+    }
+
+    /**
+     * should calculate x-intercept
+     */
+    @Test
+    public void shouldCalculateXIntercept() {
+        // normal
+        Line line = new Line(new Vector2D(1.0 ,13.0), new Vector2D(-3.0, -4.0));
+        assertEquals(-35.0/17.0, line.getXIntercept(), 0.0);
+        // vertical
+        Line vertical = new Line(new Vector2D(7, 22), new Vector2D(7, 14));
+        assertEquals(7, vertical.getXIntercept(), 0.0);
+        // horizontal
+        Line horizontal = new Line(new Vector2D(5, 22), new Vector2D(12, 22));
+        assertTrue(Double.isInfinite(horizontal.getXIntercept()));
     }
 
     /**
@@ -78,8 +103,15 @@ public class LineTest {
      */
     @Test
     public void shouldCalculateXValue() {
+        // normal
         Line line = new Line(new Vector2D(43.0 ,7.0), new Vector2D(21.0, -4.0));
         assertEquals(33.0, line.getXValue(2.0), 0.0);
+        // vertical
+        Line vertical = new Line(new Vector2D(7, 22), new Vector2D(7, 14));
+        assertEquals(7.0, vertical.getXValue(2.0), 0.0);
+        // horizontal
+        Line horizontal = new Line(new Vector2D(5, 22), new Vector2D(12, 22));
+        assertTrue(Double.isInfinite(horizontal.getXValue(21)));
     }
 
     /**

@@ -9,8 +9,9 @@
         <option value="$PROJECT_DIR$/chemistry/pom.xml" />
         <option value="$PROJECT_DIR$/singa/pom.xml" />
         <option value="$PROJECT_DIR$/units/pom.xml" />
+        <option value="$PROJECT_DIR$/javafx/pom.xml" />
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" assert-keyword="false" jdk-15="false" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
 </project>

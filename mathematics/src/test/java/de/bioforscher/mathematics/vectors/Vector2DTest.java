@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.vectors;
 
-import de.bioforscher.mathematics.geometry.edges.HorizontalLine;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,12 +89,6 @@ public class Vector2DTest {
     public void testMidpointCalculation() {
         Vector2D actual = this.first.getMidpointTo(this.second);
         assertArrayEquals(new double[]{12.5, 22.5}, actual.getElements(), 0.0);
-    }
-
-    @Test
-    public void testDistanceToHorizontalLineCalculation() {
-        double actual = this.first.distanceTo(new HorizontalLine(40.0));
-        assertEquals(20.0, actual, 0);
     }
 
     @Test

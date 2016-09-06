@@ -8,15 +8,19 @@ import de.bioforscher.mathematics.vectors.Vector2D;
  * or a single point and its slope.
  *
  * @author Christoph Leberecht
- * @version 2.0.0
  * @see <a href="https://en.wikipedia.org/wiki/Line_(geometry)">Wikipedia: Line (geometry)</a>
  */
-@SuppressWarnings("SuspiciousNameCombination")
 public class Line {
 
     private final double yIntercept;
     private final double slope;
 
+    /**
+     * Creates a new line from it's y-intercept and slope.
+     *
+     * @param yIntercept The y-intercept.
+     * @param slope The slope.
+     */
     public Line(double yIntercept, double slope) {
         if (Double.isNaN(yIntercept)) {
             throw new IllegalArgumentException("Unable to create a new line with Double.NaN as intercept.");
@@ -30,8 +34,8 @@ public class Line {
     /**
      * Creates a new Point from a strut point and the slope;
      *
-     * @param strutPoint
-     * @param slope
+     * @param strutPoint The strut point.
+     * @param slope The slope.
      */
     public Line(Vector2D strutPoint, double slope) {
         if (!Double.isInfinite(slope)) {
@@ -39,7 +43,8 @@ public class Line {
             this.yIntercept = calculateYIntercept(strutPoint, slope);
             this.slope = slope;
         } else {
-            // this is a vertical line
+            // vertical line
+            // here y-intercept is used to store x-intercept since there is no y intercept
             this.yIntercept = strutPoint.getX();
             this.slope = slope;
         }
@@ -64,19 +69,26 @@ public class Line {
      * @param second The second point.
      */
     public Line(Vector2D first, Vector2D second) {
-        if (!first.equals(second)) {
-            this.slope = calculateSlope(first, second);
-            this.yIntercept = calculateYIntercept(first, this.slope);
-        } else {
+        if (first.equals(second)) {
+            // impossible to create line from two identical points
             throw new IllegalArgumentException("Unable to create line from two identical points: " + first + " and "
                     + second + ".");
+        } else if (first.getX() == second.getX()) {
+            // vertical line
+            // here y-intercept is used to store x-intercept since there is no y intercept
+            this.slope = Double.POSITIVE_INFINITY;
+            this.yIntercept = first.getX();
+        } else {
+            // classical line
+            this.slope = calculateSlope(first, second);
+            this.yIntercept = calculateYIntercept(first, this.slope);
         }
-
     }
 
     /**
-     * Gets the slope or gradient of the line, calculated by m = (y2 - y1)/(x2 -
-     * x1).
+     * Gets the slope or gradient of the line, calculated by
+     * <pre>
+     * m = (y2 - y1)/(x2 - x1).</pre>
      *
      * @return The slope.
      */
@@ -88,8 +100,9 @@ public class Line {
     }
 
     /**
-     * Gets the y-intercept of the equation that is defined by the two points of
-     * the line segment.
+     * Gets the y-intercept of the line, calculated by
+     * <pre>
+     * b = (y1 - x1) * slope</pre>
      *
      * @return The y-intercept of the equation of the line segment.
      */
@@ -102,17 +115,16 @@ public class Line {
     }
 
     /**
-     * Gets the x-intercept of the line.
+     * Gets the x-intercept of the line.<br>
+     * If the line is horizontal the result will be {@link Double#NEGATIVE_INFINITY}.
      *
      * @return The x-intercept of the equation of the line segment.
      */
     public double getXIntercept() {
-        if (!Double.isInfinite(this.slope)) {
-            // this is a classical line
-            return -this.getYIntercept() / this.getSlope();
-        } else {
-            // this is a vertical line
+        if (isVertical()) {
             return this.yIntercept;
+        } else {
+            return -this.getYIntercept() / this.getSlope();
         }
     }
 
@@ -123,7 +135,12 @@ public class Line {
      * @return The x-value.
      */
     public double getXValue(double y) {
-        return (y - this.getYIntercept()) / this.getSlope();
+        if (isVertical()) {
+            return this.yIntercept;
+        } else {
+            return (y - this.getYIntercept()) / this.getSlope();
+        }
+
     }
 
     /**
@@ -133,12 +150,10 @@ public class Line {
      * @return The y-intercept of the equation of the line segment.
      */
     public double getYIntercept() {
-        if (!Double.isInfinite(this.slope)) {
-            // this is a classical line
-            return this.yIntercept;
-        } else {
-            // this is a vertical line
+        if (isVertical()) {
             return Double.NaN;
+        } else {
+            return this.yIntercept;
         }
     }
 
@@ -161,43 +176,72 @@ public class Line {
         return Math.atan(this.slope / 1);
     }
 
+    /**
+     * Returns the perpendicular slope.
+     * <pre>
+     * s* = -1 / slope</pre>
+     * @return the perpendiculat slope
+     */
     public double getPerpendicularSlope() {
         return -1 / this.slope;
     }
 
+    /**
+     * Returns a new line parallel to this line, separated by the given
+     * ({@link de.bioforscher.mathematics.metrics.model.VectorMetricProvider#EUCLIDEAN_METRIC Euclidean}-)distance.
+     * Negative distances return lines below, respectively left of this line and positive distances vice versa.
+     * @param distance The offset distance of the new parallel line.
+     * @return A new line parallel to this one.
+     */
     public Line getParallel(double distance) {
-        // perpendicular angle (in rad)
-        if (this.slope == 0.0) {
-            // trivial case (horizontal line)
+        if (isHorizontal()) {
             return new Line(this.yIntercept + distance, this.slope);
-        } else if (Double.isInfinite(this.slope)) {
-            // trivial case (vertical line)
+        } else if (isVertical()) {
             return new Line(new Vector2D(this.yIntercept + distance, 0), Double.POSITIVE_INFINITY);
         } else {
-            // calculate new parallel line
             return new Line(this.yIntercept + distance * Math.sqrt(1 + this.slope * this.slope), this.slope);
         }
-
     }
 
     /**
-     * Gets the intercept with another line.
-     *
-     * @param line
-     * @return
+     * Returns a point where the two lines intersect, if they are not parallel.
+     * @param line Another line.
+     * @return The intersection.
      */
     public Vector2D getInterceptWithLine(Line line) {
         final double a = this.slope;
         final double b = line.getSlope();
-        final double c = this.yIntercept;
+        final double c = this.getYIntercept();
         final double d = line.getYIntercept();
         return new Vector2D((d - c) / (a - b), (a * d - b * c) / (a - b));
     }
 
+    /**
+     * Returns the mirror image of the given point, using this line as the mirror axis.
+     * @param originalVector The original point.
+     * @return The mirrored point.
+     */
     public Vector2D mirrorVector(Vector2D originalVector) {
-        double d = (originalVector.getX() + (originalVector.getY() - this.getYIntercept())*this.getSlope())
-                 / (1 + this.getSlope()*this.getSlope());
-        return new Vector2D(2*d-originalVector.getX(), 2*d*this.getSlope() - originalVector.getY()+2*this.yIntercept);
+        double d = (originalVector.getX() + (originalVector.getY() - this.getYIntercept()) * this.getSlope())
+                / (1 + this.getSlope() * this.getSlope());
+        return new Vector2D(
+                2 * d - originalVector.getX(), 2 * d * this.getSlope() - originalVector.getY() + 2 * this.yIntercept);
+    }
+
+    /**
+     * Returns {@code true}, if this line is horizontal (i.e. it's slope is zero).
+     * @return {@code true}, if this line is horizontal
+     */
+    public boolean isHorizontal() {
+        return this.slope == 0.0;
+    }
+
+    /**
+     * Returns {@code true}, if this line is vertical (i.e. it's slope is infinite).
+     * @return {@code true}, if this line is vertical
+     */
+    public boolean isVertical() {
+        return Double.isInfinite(this.slope);
     }
 
     @Override
@@ -232,7 +276,7 @@ public class Line {
 
     @Override
     public String toString() {
-        return "Line [yIntercept=" + this.yIntercept + ", slope=" + this.slope + "]";
+        return "Line [yIntercept=" + this.getYIntercept() + ", slope=" + this.slope + "]";
     }
 
 }

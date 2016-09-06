@@ -4,7 +4,6 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
@@ -86,42 +85,6 @@ public class GraphAutomaton implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
-    }
-
-    /**
-     * Adds a reaction.
-     *
-     * @param reaction            The reaction.
-     * @param resetConcentrations If true, the species defined by the reaction are added to the
-     *                            graph. Substrates with a concentration of 1 mol/l and products
-     *                            with a concentration of 0 mol/l.
-     */
-    public void addReaction(Reaction reaction, boolean resetConcentrations) {
-        this.reactions.add(reaction);
-        if (resetConcentrations) {
-            for (BioNode node : this.graph.getNodes()) {
-                if (reaction.getClass().equals(EnzymeReaction.class)) {
-                    node.addEntity(((EnzymeReaction) reaction).getEnzyme(), 1.0);
-                }
-                for (ChemicalEntity species : reaction.getSubstrates()) {
-                    node.addEntity(species, 1.0);
-                }
-                for (ChemicalEntity species : reaction.getProducts()) {
-                    node.addEntity(species, 0.0);
-                }
-            }
-            for (BioEdge edge : this.graph.getEdges()) {
-                if (reaction.getClass().equals(EnzymeReaction.class)) {
-                    edge.addPermeability(((EnzymeReaction) reaction).getEnzyme(), 1.0);
-                }
-                for (ChemicalEntity species : reaction.getSubstrates()) {
-                    edge.addPermeability(species, 1.0);
-                }
-                for (ChemicalEntity species : reaction.getProducts()) {
-                    edge.addPermeability(species, 1.0);
-                }
-            }
-        }
     }
 
     /**

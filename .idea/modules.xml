@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/chemistry/chemistry.iml" filepath="$PROJECT_DIR$/chemistry/chemistry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javafx/javafx.iml" filepath="$PROJECT_DIR$/javafx/javafx.iml" />
       <module fileurl="file://$PROJECT_DIR$/mathematics/mathematics.iml" filepath="$PROJECT_DIR$/mathematics/mathematics.iml" />
       <module fileurl="file://$PROJECT_DIR$/simulation/simulation.iml" filepath="$PROJECT_DIR$/simulation/simulation.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa/singa.iml" filepath="$PROJECT_DIR$/singa/singa.iml" />

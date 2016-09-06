@@ -2,47 +2,38 @@ package de.bioforscher.mathematics.geometry.edges;
 
 import de.bioforscher.mathematics.vectors.Vector2D;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * A parabola is a two-dimensional, mirror-symmetrical curve, which is
  * approximately U-shaped. <br>
- * <br>
- * <p>
- * TODO is everything turned upside down?!
- * <p>
  * One description of a parabola involves a point (the focus) and a line (the
  * directrix). The focus does not lie on the directrix. The parabola is the set
  * of points in that plane that are equidistant from both the directrix and the
  * focus.
  *
  * @author Christoph Leberecht
- * @version 1.0.0
  * @see <a href="https://en.wikipedia.org/wiki/Parabola">Wikipedia: Parabola</a>
  */
 public class Parabola {
 
-    /**
-     * The focus-point of the Parabola.
-     */
-    private Vector2D focus;
+    private final Vector2D focus;
+    private final Line directrix;
 
-    /**
-     * The directrix of the Parabola.
-     */
-    private HorizontalLine directrix;
+    private double a = Double.NaN;
+    private double b = Double.NaN;
+    private double c = Double.NaN;
 
     /**
      * Creates a new Parabola given a focus and the directrix.
      *
-     * @param focus     The focus.
+     * @param focus The focus.
      * @param directrix The directrix.
      */
-    public Parabola(Vector2D focus, HorizontalLine directrix) {
-        super();
+    public Parabola(Vector2D focus, Line directrix) {
         this.focus = focus;
         this.directrix = directrix;
+        prepareFormulaForm();
     }
 
     /**
@@ -50,7 +41,7 @@ public class Parabola {
      *
      * @return The directrix
      */
-    public HorizontalLine getDirectrix() {
+    public Line getDirectrix() {
         return this.directrix;
     }
 
@@ -61,6 +52,20 @@ public class Parabola {
      */
     public Vector2D getFocus() {
         return this.focus;
+    }
+
+
+    private void prepareFormulaForm() {
+        if (Double.isNaN(this.a)) {
+            final Vector2D vertex = getVertex();
+            double p = -vertex.distanceTo(this.focus);
+            if (!isOpenTowardsXAxis()) {
+                p *= -1;
+            }
+            this.a = 1 / (4 * p);
+            this.b = -vertex.getX() / (2 * p);
+            this.c = vertex.getX() * vertex.getX() / (4 * p) + vertex.getY();
+        }
     }
 
     /**
@@ -77,16 +82,16 @@ public class Parabola {
         List<Double> results = new ArrayList<>();
 
         // if both foci are on the directrix
-        if (this.focus.getY() == this.directrix.getPosition()
-                && parabola.getFocus().getY() == parabola.getDirectrix().getPosition()) {
+        if (this.focus.getY() == this.directrix.getYIntercept()
+                && parabola.getFocus().getY() == parabola.getDirectrix().getYIntercept()) {
             // no solutions
             return results;
-        } else if (this.focus.getY() == this.directrix.getPosition()) {
+        } else if (this.focus.getY() == this.directrix.getYIntercept()) {
             // if focus of this parabola in on directrix
             // one trivial intercept
             results.add(this.focus.getX());
             return results;
-        } else if (parabola.getFocus().getY() == parabola.getDirectrix().getPosition()) {
+        } else if (parabola.getFocus().getY() == parabola.getDirectrix().getYIntercept()) {
             // if focus of the other parabola is on its directrix
             // one trivial intercept
             results.add(parabola.focus.getX());
@@ -100,14 +105,6 @@ public class Parabola {
             return results;
         }
 
-        double h1 = this.getVertex().getX();
-        double k1 = this.getVertex().getY();
-        double p1 = -this.getVertex().distanceTo(this.focus);
-
-        double a1 = 1 / (4 * p1);
-        double b1 = -h1 / (2 * p1);
-        double c1 = h1 * h1 / (4 * p1) + k1;
-
         double h2 = parabola.getVertex().getX();
         double k2 = parabola.getVertex().getY();
         double p2 = -parabola.getVertex().distanceTo(parabola.getFocus());
@@ -116,51 +113,36 @@ public class Parabola {
         double b2 = -h2 / (2 * p2);
         double c2 = h2 * h2 / (4 * p2) + k2;
 
-        results.add((-(b1 - b2) + Math.sqrt((b1 - b2) * (b1 - b2) - 4 * (a1 - a2) * (c1 - c2))) / (2 * (a1 - a2)));
-        results.add((-(b1 - b2) - Math.sqrt((b1 - b2) * (b1 - b2) - 4 * (a1 - a2) * (c1 - c2))) / (2 * (a1 - a2)));
+        results.add((-(this.b - b2) + Math.sqrt((this.b - b2) * (this.b - b2) - 4 * (this.a - a2) * (this.c - c2))) /
+                (2 * (this.a - a2)));
+        results.add((-(this.b - b2) - Math.sqrt((this.b - b2) * (this.b - b2) - 4 * (this.a - a2) * (this.c - c2))) /
+                (2 * (this.a - a2)));
 
         return results;
     }
 
-    /**
-     * Gets the left (smaller) intercept of the parabola with the x-axis.
-     * <p>
-     * TODO: simplify TODO: generalise (currently we assume parabolas are only
-     * open towards the top) FIXME: duplicated code
-     *
-     * @return The left x-axis intercept.
-     */
-    public double getLeftXIntercept() {
-
-        double h = this.getVertex().getX();
-        double k = this.getVertex().getY();
-        double p = -this.getVertex().distanceTo(this.focus);
-
-        double a = 1 / (4 * p);
-        double b = -h / (2 * p);
-        double c = h * h / (4 * p) + k;
-
-        return (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    public SortedSet<Vector2D> getIntercepts(Line line) {
+        SortedSet<Vector2D> intercepts = new TreeSet<>(Comparator.comparing(Vector2D::getX));
+        double x1 = (-this.b + line.getSlope() + Math.sqrt(
+                4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
+                        2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
+        double x2 = (-this.b + line.getSlope() - Math.sqrt(
+                4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
+                        2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
+        intercepts.add(new Vector2D(x1, line.getYValue(x1)));
+        intercepts.add(new Vector2D(x2, line.getYValue(x2)));
+        return intercepts;
     }
 
-    /**
-     * Gets the right (larger) intercept of the parabola with the x-axis.
-     * <p>
-     * TODO: simplify TODO: generalise (currently we assume parabolas are only
-     * open towards the top) FIXME: duplicated code
-     *
-     * @return The right x-axis intercept.
-     */
-    public double getRightXIntercept() {
-        double h = this.getVertex().getX();
-        double k = this.getVertex().getY();
-        double p = -this.getVertex().distanceTo(this.focus);
+    public SortedSet<Double> getXIntercepts() {
+        SortedSet<Double> intercepts = new TreeSet<>();
+        intercepts.add((-this.b - Math.sqrt(this.b * this.b - 4 * this.a * this.c)) / (2 * this.a));
+        intercepts.add((-this.b + Math.sqrt(this.b * this.b - 4 * this.a * this.c)) / (2 * this.a));
+        return intercepts;
+    }
 
-        double a = 1 / (4 * p);
-        double b = -h / (2 * p);
-        double c = h * h / (4 * p) + k;
-
-        return (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    public boolean isOpenTowardsXAxis() {
+        return this.focus.getY() < this.directrix.getYIntercept();
     }
 
     /**
@@ -175,7 +157,7 @@ public class Parabola {
      * @return The vertex of this parabola.
      */
     public Vector2D getVertex() {
-        return new Vector2D(this.focus.getX(), (this.focus.getY() + this.directrix.getPosition()) * 0.5);
+        return new Vector2D(this.focus.getX(), (this.focus.getY() + this.directrix.getYIntercept()) * 0.5);
     }
 
     /**
@@ -187,33 +169,8 @@ public class Parabola {
      * @return The y-value.
      */
     public double getYValue(double x) {
-        double h = this.getVertex().getX();
-        double k = this.getVertex().getY();
-        double p = -this.getVertex().distanceTo(this.focus);
 
-        double a = 1 / (4 * p);
-        double b = -h / (2 * p);
-        double c = h * h / (4 * p) + k;
-
-        return a * x * x + b * x + c;
-    }
-
-    /**
-     * Sets the directrix.
-     *
-     * @param directrix The directrix.
-     */
-    public void setDirectrix(HorizontalLine directrix) {
-        this.directrix = directrix;
-    }
-
-    /**
-     * Sets the focus.
-     *
-     * @param focus The focus.
-     */
-    public void setFocus(Vector2D focus) {
-        this.focus = focus;
+        return this.a * x * x + this.b * x + this.c;
     }
 
     @Override
