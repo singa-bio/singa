@@ -8,7 +8,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.unit.Units.ONE;
+import static tec.units.ri.AbstractUnit.ONE;
 
 public class UnitScaler {
 

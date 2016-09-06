@@ -18,7 +18,7 @@ import static de.bioforscher.units.UnitDictionary.GRAM_PER_MOLE;
 import static de.bioforscher.units.UnitDictionary.SQUARECENTIMETER_PER_SECOND;
 import static java.lang.Math.log;
 import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.ONE;
+import static tec.units.ri.AbstractUnit.ONE;
 
 public final class DiffusionUtilities {
 

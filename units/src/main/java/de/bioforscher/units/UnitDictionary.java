@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static tec.units.ri.unit.Units.*;
 
+import static tec.units.ri.AbstractUnit.ONE;
 
 /**
  * This class defines some units commonly used in systems biology. I'll add

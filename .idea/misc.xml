@@ -10,6 +10,8 @@
         <option value="$PROJECT_DIR$/singa/pom.xml" />
         <option value="$PROJECT_DIR$/units/pom.xml" />
         <option value="$PROJECT_DIR$/javafx/pom.xml" />
+        <option value="$PROJECT_DIR$/singa-all/pom.xml" />
+        <option value="$PROJECT_DIR$/core/pom.xml" />
       </list>
     </option>
   </component>

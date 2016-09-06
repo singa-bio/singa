@@ -23,6 +23,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="chemistry" />
+        <module name="core" />
         <module name="javafx" />
         <module name="mathematics" />
         <module name="simulation" />
@@ -31,10 +32,12 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="chemistry" target="1.8" />
+      <module name="core" target="1.8" />
       <module name="javafx" target="1.8" />
       <module name="mathematics" target="1.8" />
       <module name="simulation" target="1.8" />
       <module name="singa" target="1.8" />
+      <module name="singa-all" target="1.8" />
       <module name="singa-intellij" target="1.5" />
       <module name="units" target="1.8" />
     </bytecodeTargetLevel>

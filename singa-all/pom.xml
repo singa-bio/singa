@@ -3,10 +3,41 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <packaging>pom</packaging>
     <groupId>de.bioforscher</groupId>
-    <artifactId>singa</artifactId>
+    <artifactId>singa-all</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <description>
+        SiNGA desires to be a open-source project to model and simulate natural systems. We try to create a
+        lightweight, explicit, and clear framework to tackle problems occurring in life sciences.
+    </description>
+
+    <licenses>
+        <license>
+            <name>GNU GPL v3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>cl</id>
+            <name>Christoph Leberecht</name>
+            <email>christoph.leberecht@hs-mittweida.de</email>
+            <organization>bigM</organization>
+            <organizationUrl>http://www.bioforscher.de/bigM</organizationUrl>
+        </developer>
+        <developer>
+            <id>fk</id>
+            <name>Florian Kaiser</name>
+        </developer>
+        <developer>
+            <id>sb</id>
+            <name>Sebastian Bittrich</name>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -14,12 +45,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
-
         </dependency>
     </dependencies>
 
@@ -37,10 +62,12 @@
     </build>
 
     <modules>
+        <module>../core</module>
         <module>../mathematics</module>
+        <module>../units</module>
         <module>../chemistry</module>
         <module>../simulation</module>
+        <module>../javafx</module>
     </modules>
-
 
 </project>
