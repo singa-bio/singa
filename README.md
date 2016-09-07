@@ -66,7 +66,7 @@ This module is currently combining an api to simulate different cellular process
 In a modular approach, a simulation is created (examples can be found in the SimulationExampleProvider class) with a spatial and temporal component. A underlying graph automaton is specified, where each node is capable of holding a certain concentration of species. Furthermore different phenomena (currently diffusion and chemical reactions) can be applied to change those concentrations.
 
 ### Module:Units
-The units package is based on the phenomenal ![Units of Measurement](https://github.com/unitsofmeasurement) package. Some systems biology specific units are defined and some Utilities are implemented.
+The units package is based on the phenomenal [Units of Measurement](https://github.com/unitsofmeasurement) package. Some systems biology specific units are defined and some Utilities are implemented.
 
 ### Module:Javafx
 The javafx package contains a renderer based interface, that provides default implementations to draw the geometric shapes from the mathematics package.
