@@ -38,7 +38,7 @@ public class SpeciesOverviewPane extends BorderPane {
 
     public SpeciesOverviewPane(BioGraphSimulation owner) {
         this.owner = owner;
-        this.entityMapping = BioGraphUtilities.gerneratEntityMapFromSet(owner.getSimulation().getSpecies());
+        this.entityMapping = BioGraphUtilities.gerneratEntityMapFromSet(owner.getSimulation().getChemicalEntities());
         initializeCards();
         initializeInterface();
         initializeListener();

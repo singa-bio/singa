@@ -1,6 +1,5 @@
 package de.bioforscher.mathematics.metrics.implementations;
 
-import de.bioforscher.mathematics.exceptions.DegenerateCaseException;
 import de.bioforscher.mathematics.metrics.model.Metric;
 import de.bioforscher.mathematics.vectors.Vector;
 
@@ -15,23 +14,23 @@ import de.bioforscher.mathematics.vectors.Vector;
  * If p < 1, this is not a proper distance metric, since it does not satisfy the
  * triangle inequality.
  *
- * @param <VectorDimension> The type of vector that the distance is applied to.
+ * @param <VectorType> The type of vector that the distance is applied to.
  * @author Christoph Leberecht
  * @version 1.0.0
  * @see <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Wikipedia: Minkowski distance</a>
  * @see <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia: Euclidean distance</a>
  * @see <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Wikipedia: Taxicab geometry</a>
  */
-public class MinkowskiMetric<VectorDimension extends Vector> implements Metric<VectorDimension> {
+public class MinkowskiMetric<VectorType extends Vector> implements Metric<VectorType> {
 
     private final double p;
 
-    public MinkowskiMetric(double p) throws DegenerateCaseException {
+    public MinkowskiMetric(double p) {
         this.p = p;
     }
 
     @Override
-    public double calculateDistance(VectorDimension first, VectorDimension second) {
+    public double calculateDistance(VectorType first, VectorType second) {
         first.assertThatDimensionsMatch(second);
         if (this.p == Double.POSITIVE_INFINITY) {
             return getMaximalDifference(first, second);
@@ -40,7 +39,7 @@ public class MinkowskiMetric<VectorDimension extends Vector> implements Metric<V
 
     }
 
-    private double getRegularMinkowskiDifference(VectorDimension first, VectorDimension second) {
+    private double getRegularMinkowskiDifference(VectorType first, VectorType second) {
         double sum = 0;
         for (int i = 0; i < first.getDimension(); i++) {
             sum += Math.pow(Math.abs(first.getElement(i) - second.getElement(i)), this.p);
@@ -48,7 +47,7 @@ public class MinkowskiMetric<VectorDimension extends Vector> implements Metric<V
         return Math.pow(sum, 1.0 / this.p);
     }
 
-    private double getMaximalDifference(VectorDimension first, VectorDimension second) {
+    private double getMaximalDifference(VectorType first, VectorType second) {
         double maximalDistance = 0.0;
         for (int i = 0; i < first.getDimension(); i++) {
             double currentDistance = Math.abs(first.getElement(i) - second.getElement(i));

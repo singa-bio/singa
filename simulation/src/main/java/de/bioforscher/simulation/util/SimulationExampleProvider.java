@@ -89,7 +89,7 @@ public class SimulationExampleProvider {
         // add the reactions module
         simulation.getModules().add(reactions);
         // add all referenced species to the simulation for easy access
-        simulation.getSpecies().addAll(simulation.collectAllReferencedEntities());
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -137,7 +137,7 @@ public class SimulationExampleProvider {
         // add the reactions module
         simulation.getModules().add(reactions);
         // add all referenced species to the simulation for easy access
-        simulation.getSpecies().addAll(simulation.collectAllReferencedEntities());
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -193,7 +193,7 @@ public class SimulationExampleProvider {
         // add the reactions module
         simulation.getModules().add(reactions);
         // add all referenced species to the simulation for easy access
-        simulation.getSpecies().addAll(simulation.collectAllReferencedEntities());
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -257,7 +257,7 @@ public class SimulationExampleProvider {
         // add the reactions module
         simulation.getModules().add(reactions);
         // add all referenced species to the simulation for easy access
-        simulation.getSpecies().addAll(simulation.collectAllReferencedEntities());
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -316,7 +316,7 @@ public class SimulationExampleProvider {
         // add diffusion module
         simulation.getModules().add(new FreeDiffusion());
         // add desired species to the simulation for easy access
-        simulation.getSpecies().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
+        simulation.getChemicalEntities().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
 
         return simulation;
     }
@@ -399,7 +399,7 @@ public class SimulationExampleProvider {
         // add the reactions module
         simulation.getModules().add(reactions);
         // add all referenced species to the simulation for easy access
-        simulation.getSpecies().addAll(simulation.collectAllReferencedEntities());
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }

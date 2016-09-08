@@ -1,7 +1,5 @@
 package de.bioforscher.core.utility;
 
-import de.bioforscher.core.parameters.Bounded;
-
 /**
  * Created by Christoph on 23.06.2016.
  */

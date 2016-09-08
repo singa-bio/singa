@@ -70,7 +70,7 @@ public class BioNodeContextMenu extends ContextMenu {
         this.getItems().addAll(this.header, this.delete, this.observe, this.stateMenu);
     }
 
-   private void deleteNode(ActionEvent event) {
+    private void deleteNode(ActionEvent event) {
         this.owner.getGraph().removeNode(this.node.getIdentifier());
         this.owner.redrawGraph();
     }
@@ -78,7 +78,7 @@ public class BioNodeContextMenu extends ContextMenu {
     private void observeNode(ActionEvent event) {
         this.node.setObserved(true);
         Simulation simulation = this.owner.getSimulation();
-        ConcentrationPlot plot = new ConcentrationPlot(simulation.getSpecies(), this.node, simulation);
+        ConcentrationPlot plot = new ConcentrationPlot(simulation.getChemicalEntities(), this.node, simulation);
         simulation.getListeners().add(plot);
         this.owner.getPlotPane().getPlotCards().add(new PlotCard(plot));
         this.owner.redrawGraph();

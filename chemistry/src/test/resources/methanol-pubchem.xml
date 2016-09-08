@@ -728,7 +728,7 @@
             </Section>
             <Section>
                 <TOCHeading>Exact Mass</TOCHeading>
-                <Description>The exact mass of an isotopic species is obtained by summing the masses of the individual
+                <Description>The exact mass of an isotopic chemicalEntities is obtained by summing the masses of the individual
                     isotopes of the molecule.
                 </Description>
                 <Information>
@@ -2515,7 +2515,7 @@
                     acid&lt;/a&gt; is detoxified by a &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;-dependent
                     pathway to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
                     dioxide&lt;/a&gt;. Elimination of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    from the blood appears to be slow in all species, especially when compared to &lt;a class=&quot;pubchem-internal-link
+                    from the blood appears to be slow in all chemicalEntities, especially when compared to &lt;a class=&quot;pubchem-internal-link
                     CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;.
                     In humans, urinary &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     concentrations have been found to be proportional to the concentration of &lt;a class=&quot;pubchem-internal-link
@@ -2715,7 +2715,7 @@
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/THF&quot;&gt;THF&lt;/a&gt; levels, such as
                     rodents, are less sensitive to the neurotoxic effects of large &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                    doses compared with species with low &lt;a class=&quot;pubchem-internal-link CID-8028&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/THF&quot;&gt;THF&lt;/a&gt;
+                    doses compared with chemicalEntities with low &lt;a class=&quot;pubchem-internal-link CID-8028&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/THF&quot;&gt;THF&lt;/a&gt;
                     levels, such as primates. Data on the capacity of primates to detoxify &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     derived from inhalation of low levels of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
@@ -2808,7 +2808,7 @@
                     dependent enzymes, studies were designed to determine hepatic concentrations of hepatic &lt;a class=&quot;pubchem-internal-link
                     CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
                     and activites of &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
-                    dependent enzymes of human liver and livers of species considered insensitive to &lt;a class=&quot;pubchem-internal-link
+                    dependent enzymes of human liver and livers of chemicalEntities considered insensitive to &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     poisoning. An excellent correlation between hepatic &lt;a class=&quot;pubchem-internal-link
                     CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
@@ -2821,14 +2821,14 @@
                     and total &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                     than rat or monkey liver. This is consistent with higher &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                    oxidation rates in this species. A second important observation has been made. &lt;a class=&quot;pubchem-internal-link
+                    oxidation rates in this chemicalEntities. A second important observation has been made. &lt;a class=&quot;pubchem-internal-link
                     multiple-CIDs&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/10-Formyltetrahydrofolate&quot;&gt;10-Formyltetrahydrofolate&lt;/a&gt;
                     dehydrogenase activity, the enzyme catalyzing the final step of &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     oxidation to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
                     dioxide&lt;/a&gt;, was markedly reduced in both monkey and human liver. Thus, two mechanisms may be
                     operative in explaining low &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                    oxidation in species susceptible to &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                    oxidation in chemicalEntities susceptible to &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     toxicity, low hepatic tetahydrofolate levels and reduced hepatic &lt;a class=&quot;pubchem-internal-link
                     multiple-CIDs&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/10-formyltetrahydrofolate&quot;&gt;10-formyltetrahydrofolate&lt;/a&gt;
                     dehydrogenase activity.
@@ -2960,7 +2960,7 @@
                     poisoning in non-primates and monkeys are examined. Despite the ingestion of lethal doses of &lt;a
                     class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;,
                     non-primates generally do not develop significant metabolic acidosis nor impairment of vision, and
-                    no consistent histopathology has been demonstrated in these species. In monkeys, results suggest
+                    no consistent histopathology has been demonstrated in these chemicalEntities. In monkeys, results suggest
                     that the latent period represents a period of compensated metabolic acidosis; when compensatory
                     mechanisms are exhausted, blood pH begins to drop. &lt;a class=&quot;pubchem-internal-link CID-283&quot;
                     href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Formate&quot;&gt;Formate&lt;/a&gt; accumulates
@@ -3004,7 +3004,7 @@
                     dependent enzymes, studies were designed to determine hepatic concentrations of hepatic &lt;a class=&quot;pubchem-internal-link
                     CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
                     and activites of &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
-                    dependent enzymes of human liver and livers of species considered insensitive to &lt;a class=&quot;pubchem-internal-link
+                    dependent enzymes of human liver and livers of chemicalEntities considered insensitive to &lt;a class=&quot;pubchem-internal-link
                     CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     poisoning. An excellent correlation between hepatic &lt;a class=&quot;pubchem-internal-link
                     CID-91443&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
@@ -3017,14 +3017,14 @@
                     and total &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                     than rat or monkey liver. This is consistent with higher &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                    oxidation rates in this species. A second important observation has been made. &lt;a class=&quot;pubchem-internal-link
+                    oxidation rates in this chemicalEntities. A second important observation has been made. &lt;a class=&quot;pubchem-internal-link
                     multiple-CIDs&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/10-Formyltetrahydrofolate&quot;&gt;10-Formyltetrahydrofolate&lt;/a&gt;
                     dehydrogenase activity, the enzyme catalyzing the final step of &lt;a class=&quot;pubchem-internal-link
                     CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                     oxidation to &lt;a class=&quot;pubchem-internal-link CID-280&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/carbon%20dioxide&quot;&gt;carbon
                     dioxide&lt;/a&gt;, was markedly reduced in both monkey and human liver. Thus, two mechanisms may be
                     operative in explaining low &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                    oxidation in species susceptible to &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
+                    oxidation in chemicalEntities susceptible to &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                     toxicity, low hepatic tetahydrofolate levels and reduced hepatic &lt;a class=&quot;pubchem-internal-link
                     multiple-CIDs&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/10-formyltetrahydrofolate&quot;&gt;10-formyltetrahydrofolate&lt;/a&gt;
                     dehydrogenase activity.
@@ -7497,7 +7497,7 @@
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         intoxication causes hepatic toxicity in rats and that this is likely a result of reactive &lt;a
                         class=&quot;pubchem-internal-link CID-977&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/oxygen&quot;&gt;oxygen&lt;/a&gt;
-                        species and apoptosis induction. &lt;a class=&quot;pubchem-internal-link CID-446925&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Lycopene&quot;&gt;Lycopene&lt;/a&gt;
+                        chemicalEntities and apoptosis induction. &lt;a class=&quot;pubchem-internal-link CID-446925&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Lycopene&quot;&gt;Lycopene&lt;/a&gt;
                         has protective effects against &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;-induced
                         hepatic injury similar to &lt;a class=&quot;pubchem-internal-link CID-3406&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/fomepizole&quot;&gt;fomepizole&lt;/a&gt;.
                         It was demonstrated for the first time that both &lt;a class=&quot;pubchem-internal-link
@@ -7586,7 +7586,7 @@
                         synthetase is important in the regulation of &lt;a class=&quot;pubchem-internal-link CID-91443&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/tetrahydrofolate&quot;&gt;tetrahydrofolate&lt;/a&gt;
                         dependent metabolism in the monkey and the generation of this enzyme is a major factor in
-                        determining the sensitivity of a species to &lt;a class=&quot;pubchem-internal-link CID-887&quot;
+                        determining the sensitivity of a chemicalEntities to &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning.
                     </StringValue>
@@ -7791,21 +7791,21 @@
                         dioxide&lt;/a&gt; by &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;-dependent
                         reactions. Elimination of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         from the blood via the urine and exhaled air and by metabolism appears to be slow in all
-                        species, especially when compared to &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;.
+                        chemicalEntities, especially when compared to &lt;a class=&quot;pubchem-internal-link CID-702&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/ethanol&quot;&gt;ethanol&lt;/a&gt;.
                         ... It is the rateConstant of metabolic detoxification, or removal of &lt;a class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         that is vastly different between rodents and primates and is the basis for the dramatic
                         differences in &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         toxicity observed between rodents and primates. The acute and short term toxicity of &lt;a
                         class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        varies greatly between different species, toxicity being highest in species with a relatively
+                        varies greatly between different chemicalEntities, toxicity being highest in chemicalEntities with a relatively
                         poor ability to metabolize &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;.
                         In such cases of poor metabolism of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;,
                         fatal &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         poisoning occurs as a result of metabolic acidosis and neuronal toxicity, whereas, in animals
                         that readily metabolize &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;,
                         consequences of CNS depression (coma, respiratory failure, etc.) are usually the cause of death.
-                        Sensitive primate species (humans and monkeys) develop increased blood &lt;a class=&quot;pubchem-internal-link
+                        Sensitive primate chemicalEntities (humans and monkeys) develop increased blood &lt;a class=&quot;pubchem-internal-link
                         CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         concentrations following &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         exposure, while resistant rodents, rabbits and dogs do not. Humans and non-human primates are
@@ -7827,7 +7827,7 @@
                         included neural and ocular defects, cleft palate, hydronephrosis and limb anomalies. Humans (and
                         non-human primates) are uniquely sensitive to &lt;a class=&quot;pubchem-internal-link CID-887&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
-                        poisoning and the toxic effects in these species are characterized by formic acidemia, metabolic
+                        poisoning and the toxic effects in these chemicalEntities are characterized by formic acidemia, metabolic
                         acidosis, ocular toxicity, nervous system depression, blindness, coma and death. Nearly all of
                         the available information on &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         toxicity in humans relates to the consequences of acute rather than chronic exposures. A vast
@@ -8021,7 +8021,7 @@
                         CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;
                         intoxication causes hepatic toxicity in rats and that this is likely a result of reactive &lt;a
                         class=&quot;pubchem-internal-link CID-977&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/oxygen&quot;&gt;oxygen&lt;/a&gt;
-                        species and apoptosis induction. &lt;a class=&quot;pubchem-internal-link CID-446925&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Lycopene&quot;&gt;Lycopene&lt;/a&gt;
+                        chemicalEntities and apoptosis induction. &lt;a class=&quot;pubchem-internal-link CID-446925&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Lycopene&quot;&gt;Lycopene&lt;/a&gt;
                         has protective effects against &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methanol&quot;&gt;methanol&lt;/a&gt;-induced
                         hepatic injury similar to &lt;a class=&quot;pubchem-internal-link CID-3406&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/fomepizole&quot;&gt;fomepizole&lt;/a&gt;.
                         It was demonstrated for the first time that both &lt;a class=&quot;pubchem-internal-link
@@ -9762,7 +9762,7 @@
                         An excellent correlation between hepatic H4 &lt;a class=&quot;pubchem-internal-link CID-6037&quot;
                         href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt; and &lt;a
                         class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
-                        oxidation rates has been shown within and across species. Thus, humans ... possess low hepatic
+                        oxidation rates has been shown within and across chemicalEntities. Thus, humans ... possess low hepatic
                         H4 &lt;a class=&quot;pubchem-internal-link CID-6037&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/folate&quot;&gt;folate&lt;/a&gt;
                         levels, low rates of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
                         oxidation and accumulation of &lt;a class=&quot;pubchem-internal-link CID-283&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formate&quot;&gt;formate&lt;/a&gt;
@@ -9987,7 +9987,7 @@
                         with early signs of degeneration of the ganglionic cells of the retina and nerve fibers /were
                         found/ ... Vessels of the choroid of poisoned animals were markedly congested, the entire retina
                         was edematous, and the ganglion cells were degenerated. ... Hemorrhage, edema, congestion, and
-                        pneumonia were observed in the lung of the various species that were exposed to vapors
+                        pneumonia were observed in the lung of the various chemicalEntities that were exposed to vapors
                         containing &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl
                         alcohol&lt;/a&gt;. The livers and kidneys showed congestion, albuminous and fatty degeneration
                         and fatty infiltration. Cardiac dilation and myocardial degeneration were observed in the hearts
@@ -10395,12 +10395,12 @@
                         rotation and delayed neural tube closure in mice, but only CH3OH elicited similar effects in the
                         rat. Increased growth retardation, blood pooling in the head and VYS, enlarged pericardium,
                         accumulation of necrotic matter in the amnion, and hypoplastic prosencephalon were observed in
-                        both species with all compounds. Microinjection of compounds into the amnion produced higher
+                        both chemicalEntities with all compounds. Microinjection of compounds into the amnion produced higher
                         mortality in mouse and rat, compared to equimolar amounts added to the culture medium. CH3OH did
                         not prevent neural tube closure in the rat when microinjected. HCHO is the most embryotoxic
                         CH3OH metabolite and elicits the entire spectrum of lesions produced by CH3OH. The VYS serves a
                         general protective role against toxicity and inherent differences in the embryonic metabolism of
-                        CH3OH may determine species sensitivity.
+                        CH3OH may determine chemicalEntities sensitivity.
                     </StringValue>
                 </Information>
                 <Information>
@@ -10594,7 +10594,7 @@
                         to controls. There were no MeOH-related effects on offspring birthweight or newborn health
                         status. The consistent reduction in length of pregnancy observed in the MeOH females may reflect
                         a treatment effect on the fetal neuroendocrine system. Given that the fetal
-                        hypothalamic--pituitary-adrenal axis controls pregnancy length in most species, these results
+                        hypothalamic--pituitary-adrenal axis controls pregnancy length in most chemicalEntities, these results
                         suggest a modest but significant effect of MeOH on the biochemical events that control the
                         timing of birth.
                     </StringValue>
@@ -10645,26 +10645,26 @@
                         (HCHO) and &lt;a class=&quot;pubchem-internal-link CID-284&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formic%20acid&quot;&gt;formic
                         acid&lt;/a&gt; (HCOOH) by the enzymes alcohol dehydrogenase (ADH1), &lt;a class=&quot;pubchem-internal-link
                         CID-712&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/formaldehyde&quot;&gt;formaldehyde&lt;/a&gt;
-                        dehydrogenase (ADH3), and catalase may contribute to the observed species sensitivity. Specific
+                        dehydrogenase (ADH3), and catalase may contribute to the observed chemicalEntities sensitivity. Specific
                         activities for enzymes involved in CH(3)OH metabolism were determined in rat and mouse
                         conceptuses during the organogenesis period of 8-25 somites. Spatial activity relationships were
                         also compared separately in heads, hearts, trunks, and the visceral yolk sac (VYS) from early
                         (7-12 somites) and late (20-22 somites) organogenesis-stage rat and mouse embryos. Catalase
                         activities were similar between rat and mouse conceptuses. In the mouse heart, catalase
                         activities were consistently lower when compared to other tissues. Specific activities for
-                        catalase were consistently highest in the VYS of both species when compared to other tissues of
+                        catalase were consistently highest in the VYS of both chemicalEntities when compared to other tissues of
                         the embryo. These activities were highly significant in the 6-12 somite VYS. ADH1 activities
-                        were significantly higher in embryos when compared to VYS in both species, except for a 27%
+                        were significantly higher in embryos when compared to VYS in both chemicalEntities, except for a 27%
                         lower activity in the early 8-10 somite mouse embryo. Mouse ADH1 activities in the VYS were
                         significantly lower throughout the organogenesis period when compared to the rat VYS or embryos
-                        of either species. Mouse activities were lower overall in specific tissues of the embryo but
+                        of either chemicalEntities. Mouse activities were lower overall in specific tissues of the embryo but
                         maintained the same relative proportions as in the rat. ADH3 activities in the rat VYS were
                         significantly higher by 20% than those in the mouse. Mouse embryo ADH3 activities were slow to
                         mature, starting at a level 42% below rat, and failed to reach optimal levels until the
                         14-16-somite stage. Heart ADH3 activities were also significantly lower in the mouse embryo at
-                        the 7-12-somite stage. Both species have lower ADH3 activities in the early heart, relative to
+                        the 7-12-somite stage. Both chemicalEntities have lower ADH3 activities in the early heart, relative to
                         other embryonic tissues. These results show a more slowly maturing capacity of the mouse embryo
-                        to remove HCHO, which provides a rationale for increased sensitivity of this species to
+                        to remove HCHO, which provides a rationale for increased sensitivity of this chemicalEntities to
                         CH(3)OH-induced embryotoxicity and teratogenicity.
                     </StringValue>
                 </Information>

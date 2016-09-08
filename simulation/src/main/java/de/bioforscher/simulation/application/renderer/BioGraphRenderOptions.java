@@ -7,37 +7,43 @@ import javafx.scene.paint.Color;
 
 public class BioGraphRenderOptions {
 
-    private ChemicalEntity nodeHighlightSpecies;
-    private ChemicalEntity edgeHighlightSpecies;
+    private ChemicalEntity nodeHighlightEntity;
+    private ChemicalEntity edgeHighlightEntity;
 
+    private boolean coloringByEntity = true;
     private ColorScale nodeColorScale;
 
     public BioGraphRenderOptions() {
-        // this.nodeColorScale = new MultiColorScale(0, 1, Color.RED,
-        // Color.YELLOW, Color.GREEN);
         this.nodeColorScale = new ColorScale.Builder(0, 1).build();
-
     }
 
-    public ChemicalEntity getNodeHighlightSpecies() {
-        return this.nodeHighlightSpecies;
+    public ChemicalEntity getNodeHighlightEntity() {
+        return this.nodeHighlightEntity;
     }
 
-    public void setNodeHighlightSpecies(ChemicalEntity species) {
-        this.nodeHighlightSpecies = species;
+    public void setNodeHighlightEntity(ChemicalEntity species) {
+        this.nodeHighlightEntity = species;
     }
 
-    public ChemicalEntity getEdgeHighlightSpecies() {
-        return this.edgeHighlightSpecies;
+    public ChemicalEntity getEdgeHighlightEntity() {
+        return this.edgeHighlightEntity;
     }
 
-    public void setEdgeHighlightSpecies(ChemicalEntity edgeHighlightSpecies) {
-        this.edgeHighlightSpecies = edgeHighlightSpecies;
+    public void setEdgeHighlightEntity(ChemicalEntity edgeHighlightEntity) {
+        this.edgeHighlightEntity = edgeHighlightEntity;
+    }
+
+    public boolean isColoringByEntity() {
+        return this.coloringByEntity;
+    }
+
+    public void setColoringByEntity(boolean coloringByEntity) {
+        this.coloringByEntity = coloringByEntity;
     }
 
     public Color getNodeColor(BioNode node) {
-        if (this.nodeHighlightSpecies != null) {
-            double concentration = node.getConcentration(this.nodeHighlightSpecies).getValue().doubleValue();
+        if (this.nodeHighlightEntity != null) {
+            double concentration = node.getConcentration(this.nodeHighlightEntity).getValue().doubleValue();
             return this.nodeColorScale.getColor(concentration);
         } else {
             return Color.GRAY;
@@ -47,13 +53,14 @@ public class BioGraphRenderOptions {
 
     public Color getEdgeColor(BioEdge edge) {
         // TODO currently not implemented
-        // if (this.edgeHighlightSpecies != null) {
-        //     double opacity = edge.getPermeability(this.edgeHighlightSpecies);
+        // if (this.edgeHighlightEntity != null) {
+        //     double opacity = edge.getPermeability(this.edgeHighlightEntity);
         //     return new Color(0, 0, 0, opacity);
         // } else {
             return Color.LIGHTGREY;
         // }
 
     }
+
 
 }

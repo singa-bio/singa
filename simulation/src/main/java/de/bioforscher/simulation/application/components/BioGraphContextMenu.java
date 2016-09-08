@@ -3,10 +3,8 @@ package de.bioforscher.simulation.application.components;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.util.BioGraphUtilities;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,54 +15,74 @@ import java.util.Map.Entry;
  *
  * @author Christoph Leberecht
  */
-class BioGraphContextMenu extends ContextMenu {
+public class BioGraphContextMenu extends ContextMenu {
 
     private final SimulationCanvas owner;
     private Simulation simulation;
-    private Menu speciesMenu;
-    private ToggleGroup speciesGroup;
+
+    private MenuItem colorByStateItem = new MenuItem();
+    private Menu colorByChemicalEntityMenu;
+    private ToggleGroup chemicalEntitiesGrouping;
 
     BioGraphContextMenu(Simulation simulation, SimulationCanvas canvas) {
         this.simulation = simulation;
         this.owner = canvas;
-        initialize();
+        configureColorByStateItem();
+        configureColorByChemicalEntityMenu();
+        addItemsToMenu();
     }
 
-    private void initialize() {
-        this.speciesMenu = new Menu("Highlight Species");
-        this.speciesGroup = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities.gerneratEntityMapFromSet(this.simulation.getSpecies());
-        // Add MenuItem for every Species
+    private void configureColorByStateItem() {
+        this.colorByStateItem.setText("Color by state");
+        this.colorByStateItem.setOnAction(this::colorByState);
+    }
+
+    private void configureColorByChemicalEntityMenu() {
+        this.colorByChemicalEntityMenu = new Menu("Color by entity ...");
+        this.chemicalEntitiesGrouping = new ToggleGroup();
+        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities
+                .gerneratEntityMapFromSet(this.simulation.getChemicalEntities());
+        // add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {
             fillSpeciesMenu(chemicalEntities);
         } else {
-            RadioMenuItem itemCompound = new RadioMenuItem("No species to highlight.");
+            RadioMenuItem itemCompound = new RadioMenuItem("No entity to highlight.");
             itemCompound.setUserData(null);
-            itemCompound.setToggleGroup(this.speciesGroup);
-            this.speciesMenu.getItems().add(itemCompound);
+            itemCompound.setToggleGroup(this.chemicalEntitiesGrouping);
+            this.colorByChemicalEntityMenu.getItems().add(itemCompound);
         }
-
-        // Add Items
-        this.getItems().add(this.speciesMenu);
     }
 
     private void fillSpeciesMenu(Map<String, ChemicalEntity> speciesMap) {
         for (Entry<String, ChemicalEntity> species : speciesMap.entrySet()) {
             RadioMenuItem speciesMenuItem = setupSpeciesMenuItem(species.getValue());
-            this.speciesMenu.getItems().add(speciesMenuItem);
+            this.colorByChemicalEntityMenu.getItems().add(speciesMenuItem);
         }
     }
 
     private RadioMenuItem setupSpeciesMenuItem(final ChemicalEntity species) {
         RadioMenuItem itemCompound = new RadioMenuItem(species.getName());
         itemCompound.setUserData(species);
-        itemCompound.setToggleGroup(this.speciesGroup);
-        itemCompound.setOnAction(t -> {
-            BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(species);
-            BioGraphContextMenu.this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(species);
-            BioGraphContextMenu.this.owner.draw();
-        });
+        itemCompound.setToggleGroup(this.chemicalEntitiesGrouping);
+        itemCompound.setOnAction(this::colorBySpecies);
         return itemCompound;
+    }
+
+    private void addItemsToMenu() {
+        this.getItems().addAll(this.colorByStateItem, this.colorByChemicalEntityMenu);
+    }
+
+    private void colorBySpecies(ActionEvent event) {
+        ChemicalEntity chemicalEntity = (ChemicalEntity)((RadioMenuItem)event.getSource()).getUserData();
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(true);
+        this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(chemicalEntity);
+        this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(chemicalEntity);
+        this.owner.draw();
+    }
+
+    private void colorByState(ActionEvent event) {
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(false);
+        this.owner.draw();
     }
 
     public Simulation getSimulation() {
@@ -74,4 +92,5 @@ class BioGraphContextMenu extends ContextMenu {
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
     }
+
 }

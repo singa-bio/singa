@@ -1,4 +1,4 @@
-package de.bioforscher.core.parameters;
+package de.bioforscher.core.utility;
 
 /**
  * Defines a Object to be bounded by a lower and upper bound. The upper and the

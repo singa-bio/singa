@@ -37,7 +37,24 @@ public interface Renderer {
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
      * <ul>
-     * <li> The radius of the point is determined by the LineWidth (set by
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * </ul>
+     *
+     * @param point The position of the point.
+     * @param diameter The diameter of the point.
+     */
+    default void drawPoint(Vector2D point, double diameter) {
+        getGraphicsContext().fillOval(
+                point.getX() - diameter / 2.0,
+                point.getY() - diameter / 2.0,
+                diameter,
+                diameter);
+    }
+
+    /**
+     * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
+     * <ul>
+     * <li> The diameter of the point is determined by the LineWidth (set by
      * {@link GraphicsContext#setLineWidth(double)}).</li>
      * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
@@ -45,11 +62,26 @@ public interface Renderer {
      * @param point The position of the point.
      */
     default void drawPoint(Vector2D point) {
-        getGraphicsContext().fillOval(
-                point.getX() - getGraphicsContext().getLineWidth() / 2.0,
-                point.getY() - getGraphicsContext().getLineWidth() / 2.0,
-                getGraphicsContext().getLineWidth(),
-                getGraphicsContext().getLineWidth());
+        drawPoint(point, getGraphicsContext().getLineWidth());
+    }
+
+    /**
+     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered
+     * on the vector
+     * .<br>
+     * <ul>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * </ul>
+     *
+     * @param point The position of the point.
+     * @param diameter The diameter of the circle.
+     */
+    default void circlePoint(Vector2D point, double diameter) {
+        getGraphicsContext().strokeOval(
+                point.getX() - diameter / 2.0,
+                point.getY() - diameter / 2.0,
+                diameter,
+                diameter);
     }
 
     /**

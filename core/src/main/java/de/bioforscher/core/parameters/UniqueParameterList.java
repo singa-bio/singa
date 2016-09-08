@@ -20,7 +20,7 @@ public class UniqueParameterList<Type extends Comparable<Type>> {
     }
 
     public List<ParameterValue<Type>> getValues() {
-        return parameterValues;
+        return this.parameterValues;
     }
 
     public ParameterValue<Type> getValue(int index) {
@@ -33,13 +33,13 @@ public class UniqueParameterList<Type extends Comparable<Type>> {
 
     @Override
     public String toString() {
-        return parameterValues.toString();
+        return this.parameterValues.toString();
     }
 
     @Override
     public MixedParameterList clone() {
         MixedParameterList newSet = new MixedParameterList();
-        parameterValues.forEach(newSet::add);
+        this.parameterValues.forEach(newSet::add);
         return newSet;
     }
 

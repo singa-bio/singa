@@ -54,7 +54,7 @@ public class SimulationCanvas extends Canvas {
     private void handleLeftClick(MouseEvent event) {
         for (BioNode node : this.owner.getGraph().getNodes()) {
             if (isClickedOnNode(event, node)) {
-                ChemicalEntity species = this.renderer.getBioRenderingOptions().getNodeHighlightSpecies();
+                ChemicalEntity species = this.renderer.getBioRenderingOptions().getNodeHighlightEntity();
                 node.setConcentration(species, this.owner.getConcentrationSlider().getValue());
                 draw();
                 break;

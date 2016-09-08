@@ -122,7 +122,7 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         freeDiffusion.fixDiffusionCoefficientForEntity(entity, this.lookupSpecies.get(entity));
         simulation.getModules().add(freeDiffusion);
         // add desired species to the simulation for easy access
-        simulation.getSpecies().add(entity);
+        simulation.getChemicalEntities().add(entity);
 
         RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes,
                 numberOfNodes);

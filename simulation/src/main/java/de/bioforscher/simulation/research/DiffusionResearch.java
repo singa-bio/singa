@@ -99,7 +99,7 @@ public class DiffusionResearch {
         // add diffusion module
         simulation.getModules().add(freeDiffusion);
         // add desired species to the simulation for easy access
-        simulation.getSpecies().addAll(speciesList);
+        simulation.getChemicalEntities().addAll(speciesList);
 
         RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes,
                 numberOfNodes);

@@ -273,7 +273,7 @@ public class BioGraphSimulation extends Application {
         speciesStage.showAndWait();
         if (speciesWizard.getSpeciesToAdd() != null) {
             speciesWizard.getSpeciesToAdd().forEach(species -> {
-                this.simulation.getSpecies().add(species);
+                this.simulation.getChemicalEntities().add(species);
                 this.simulationCanvas.resetGraphContextMenu();
             });
         }
@@ -379,8 +379,8 @@ public class BioGraphSimulation extends Application {
     private void resetGraph(AutomatonGraph graph) {
         this.graph = graph;
         this.simulation.setGraph(this.graph);
-        this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
-        this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
+        this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(null);
+        this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(null);
         this.simulationCanvas.resetGraphContextMenu();
         this.simulationCanvas.draw();
     }
@@ -391,8 +391,8 @@ public class BioGraphSimulation extends Application {
 
     public void redrawGraph() {
         this.graph = this.simulation.getGraph();
-        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightSpecies(null);
-        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightSpecies(null);
+        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(null);
+        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(null);
         this.simulationCanvas.draw();
     }
 

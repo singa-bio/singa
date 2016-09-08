@@ -18,7 +18,6 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static de.bioforscher.simulation.model.NodeState.AQUEOUS;
 import static de.bioforscher.simulation.model.NodeState.CELL_MEMBRANE;
 
 public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEventListener<GraphUpdatedEvent> {
@@ -44,16 +43,8 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
         return this.renderingOptions;
     }
 
-    public void setOptions(GraphRenderOptions options) {
-        this.renderingOptions = options;
-    }
-
     public BioGraphRenderOptions getBioRenderingOptions() {
         return this.bioRenderingOptions;
-    }
-
-    public void setBioRenderingOptions(BioGraphRenderOptions bioRenderingOptions) {
-        this.bioRenderingOptions = bioRenderingOptions;
     }
 
     public void render(AutomatonGraph g) {
@@ -65,59 +56,62 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
         this.graphicsContext.setFill(this.renderingOptions.getBackgroundColor());
         this.graphicsContext.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 
-        // Render Vonoroi edges
+        // render Vonoroi edges
         if (this.renderingOptions.isRenderVoronoi()) {
-            // Generate Voronoi edges
+            // generate Voronoi edges
             List<VoronoiFaceEdge> edges = this.vonoroiFactory.generateVonoroi(g,
                     new Rectangle(this.canvas.getWidth(), this.canvas.getHeight()));
-            // Set options
+            // set options
             this.graphicsContext.setStroke(Color.LIGHTGREEN);
             this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
-            // Draw the edges
+            // draw the edges
             for (VoronoiFaceEdge ge : edges) {
                 this.graphicsContext.strokeLine(ge.x1 - nodeDiameter / 2, ge.y1 - nodeDiameter / 2,
                         ge.x2 - nodeDiameter / 2, ge.y2 - nodeDiameter / 2);
             }
         }
-
-        // edges
+        // render edges
         if (this.renderingOptions.isRenderEdges()) {
             g.getEdges().forEach(this::drawEdge);
         }
-
-        // nodes
+        // render nodes
         if (this.renderingOptions.isRenderNodes()) {
             g.getNodes().forEach(this::drawNode);
         }
-
     }
 
     private void drawNode(BioNode node) {
-
-        double x = node.getPosition().getX();
-        double y = node.getPosition().getY();
         double diameter = this.renderingOptions.getStandardNodeDiameter();
-
         // decide on style
-        if (node.getState() == AQUEOUS) {
-            this.graphicsContext.setFill(Color.AQUAMARINE);
-            this.graphicsContext.fillOval(x- diameter / 2, y- diameter / 2, diameter, diameter);
-        } else if (node.getState() == CELL_MEMBRANE) {
-            this.graphicsContext.setFill(Color.BURLYWOOD);
-            this.graphicsContext.fillOval(x- diameter / 2, y- diameter / 2, diameter, diameter);
+        if (!this.bioRenderingOptions.isColoringByEntity()) {
+            switch (node.getState()) {
+                case AQUEOUS: {
+                    this.graphicsContext.setFill(Color.CADETBLUE);
+                    break;
+                }
+                case CYTOSOL: {
+                    this.graphicsContext.setFill(Color.LIGHTGREEN);
+                    break;
+                }
+                case CELL_MEMBRANE: {
+                    this.graphicsContext.setFill(Color.BURLYWOOD);
+                    break;
+                }
+            }
         } else {
             this.graphicsContext.setFill(this.bioRenderingOptions.getNodeColor(node));
-            this.graphicsContext.fillOval(x- diameter / 2, y- diameter / 2, diameter, diameter);
         }
+        drawPoint(node.getPosition(), diameter);
 
+        // circle point if node is observed
         if (node.isObserved()) {
-            this.graphicsContext.setStroke(Color.CADETBLUE);
-            this.graphicsContext.strokeOval(x- diameter / 2, y- diameter / 2, diameter, diameter);
+            this.graphicsContext.setStroke(Color.BLUEVIOLET);
+            circlePoint(node.getPosition(), diameter);
         }
     }
 
     private void drawEdge(BioEdge edge) {
-        // Set width
+        // set width
         this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
         double diameter = this.renderingOptions.getStandardNodeDiameter();
         LineSegment connectingSegment = new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
@@ -147,7 +141,6 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
     public Canvas getCanvas() {
         return this.canvas;
     }
-
 
     public ConcurrentLinkedQueue<AutomatonGraph> getGraphQueue() {
         return this.graphQueue;

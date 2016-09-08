@@ -26,14 +26,14 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     private AutomatonGraph graph;
     private Set<Module> modules;
-    private Set<ChemicalEntity> species;
+    private Set<ChemicalEntity> chemicalEntities;
     private int epoch;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
 
     public Simulation() {
         this.modules = new HashSet<>();
-        this.species = new HashSet<>();
+        this.chemicalEntities = new HashSet<>();
         this.listeners = new CopyOnWriteArrayList<>();
         this.epoch = 0;
     }
@@ -69,12 +69,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.modules = modules;
     }
 
-    public Set<ChemicalEntity> getSpecies() {
-        return this.species;
+    public Set<ChemicalEntity> getChemicalEntities() {
+        return this.chemicalEntities;
     }
 
-    public void setSpecies(Set<ChemicalEntity> species) {
-        this.species = species;
+    public void setChemicalEntities(Set<ChemicalEntity> chemicalEntities) {
+        this.chemicalEntities = chemicalEntities;
     }
 
     public int getEpoch() {
@@ -102,7 +102,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
                            .filter(module -> module.getClass().equals(FreeDiffusion.class))
                            .findFirst().map(module -> (FreeDiffusion) module);
         this.collectAllReferencedEntities();
-        diffusion.get().prepareDiffusionCoefficients(this.getSpecies());
+        diffusion.get().prepareDiffusionCoefficients(this.getChemicalEntities());
         return diffusion.get();
     }
 
