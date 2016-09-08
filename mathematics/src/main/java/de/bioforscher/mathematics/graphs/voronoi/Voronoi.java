@@ -1,3 +1,44 @@
+/*
+* The author of this software is Steven Fortune.  Copyright (c) 1994 by AT&T
+* Bell Laboratories.
+* Permission to use, copy, modify, and distribute this software for any
+* purpose without fee is hereby granted, provided that this entire notice
+* is included in all copies of any software which is or includes a copy
+* or modification of this software and in all copies of the supporting
+* documentation for such software.
+* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+*/
+
+/*
+* This code was originally written by Stephan Fortune in C code.  I, Shane O'Sullivan,
+* have since modified it, encapsulating it in a C++ class and, fixing memory leaks and
+* adding accessors to the Voronoi Edges.
+* Permission to use, copy, modify, and distribute this software for any
+* purpose without fee is hereby granted, provided that this entire notice
+* is included in all copies of any software which is or includes a copy
+* or modification of this software and in all copies of the supporting
+* documentation for such software.
+* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+*/
+
+/*
+* Java Version by Zhenyu Pan
+* Permission to use, copy, modify, and distribute this software for any
+* purpose without fee is hereby granted, provided that this entire notice
+* is included in all copies of any software which is or includes a copy
+* or modification of this software and in all copies of the supporting
+* documentation for such software.
+* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+*/
 package de.bioforscher.mathematics.graphs.voronoi;
 
 import java.util.*;
