@@ -1,14 +1,9 @@
 package de.bioforscher.chemistry.descriptive;
 
-import de.bioforscher.core.annotations.Annotatable;
-import de.bioforscher.core.annotations.Annotation;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 
-import java.util.Map;
+public class Species extends ChemicalEntity<ChEBIIdentifier> {
 
-public class Species extends ChemicalEntity<ChEBIIdentifier> implements Annotatable {
-
-    private Map<Integer, Annotation> annotations;
     private String smilesRepresentation = "No SMILES representation defined.";
 
     protected Species(ChEBIIdentifier identifier) {
@@ -20,7 +15,7 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> implements Annotata
     }
 
     public String getSmilesRepresentation() {
-        return smilesRepresentation;
+        return this.smilesRepresentation;
     }
 
     public void setSmilesRepresentation(String smilesRepresentation) {
@@ -29,12 +24,8 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> implements Annotata
 
     @Override
     public String toString() {
-        return getIdentifier() + " " + Character.toUpperCase(getName().charAt(0)) + getName().substring(1) + " weight: " + getMolarMass() + " smiles: " + getSmilesRepresentation();
-    }
-
-    @Override
-    public Map<Integer, Annotation> getAnnotations() {
-        return this.annotations;
+        return "Species: " + getIdentifier() + " " + Character.toUpperCase(getName().charAt(0)) + getName().substring(1)
+                + " weight: " + getMolarMass() + " smiles: " + getSmilesRepresentation();
     }
 
     public static class Builder extends ChemicalEntity.Builder<Species, Builder, ChEBIIdentifier> {
@@ -61,11 +52,6 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> implements Annotata
             if (smilesRepresentation != null) {
                 this.topLevelObject.setSmilesRepresentation(smilesRepresentation);
             }
-            return this;
-        }
-
-        public Builder addAnnotation(int identifier, Annotation annotation) {
-            this.topLevelObject.addAnnotation(identifier, annotation);
             return this;
         }
 

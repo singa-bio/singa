@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.descriptive;
 
-import de.bioforscher.core.annotations.Annotation;
-import de.bioforscher.core.annotations.AnnotationType;
+import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.identifier.PubChemIdentifier;
 import org.junit.Test;
 
@@ -23,8 +23,6 @@ public class EnzymeAnnotationTest {
                 "the subpathway that synthesizes D-glyceraldehyde 3-phosphate and glycerone phosphate from D-glucose.");
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
                 .ADDITIONAL_IDENTIFIER, new PubChemIdentifier("CID 1234"));
-        enzyme.addAnnotation(1, noteAnnotation);
-        enzyme.addAnnotation(2, pubChemIdentifierAnnotation);
 
         List<Annotation> annotationsOfType = enzyme.getAnnotationsOfType(AnnotationType.ADDITIONAL_IDENTIFIER);
         annotationsOfType.forEach(System.out::println);

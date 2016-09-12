@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.descriptive;
 
 
-import de.bioforscher.core.annotations.Annotatable;
-import de.bioforscher.core.annotations.Annotation;
+import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.core.biology.Organism;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -10,16 +10,13 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.SOURCE_ORGANISM;
 import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
 import static de.bioforscher.units.UnitDictionary.PER_SECOND;
 
-public class Enzyme extends ChemicalEntity<UniProtIdentifier> implements Annotatable {
-
-    private Map<Integer, Annotation> annotations;
+public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
 
     private Quantity<MolarConcentration> michaelisConstant;
     private Quantity<ReactionRate> turnoverNumber;
@@ -77,16 +74,24 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> implements Annotat
         this.substrates.add(substrate);
     }
 
+    public void setSourceOrganism(Organism organism) {
+        addAnnotation(new Annotation<>(SOURCE_ORGANISM, organism));
+    }
+
+    public Organism getSourceOrganism() {
+        return getAnnotation(Organism.class, SOURCE_ORGANISM);
+    }
+
     @Override
-    public Map<Integer, Annotation> getAnnotations() {
-        return this.annotations;
+    public String toString() {
+        return "Enzyme: " + getIdentifier() + " " + Character.toUpperCase(getName().charAt(0)) + getName().substring(1)
+                + " weight: " + getMolarMass() ;
     }
 
     public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder, UniProtIdentifier> {
 
         public Builder(UniProtIdentifier identifier) {
             super(identifier);
-            this.topLevelObject.annotations = new HashMap<>();
             this.topLevelObject.setSubstrates(new ArrayList<>());
         }
 
@@ -136,11 +141,6 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> implements Annotat
 
         public Builder michaelisConstant(Quantity<MolarConcentration> michaelisConstant) {
             this.topLevelObject.setMichaelisConstant(michaelisConstant);
-            return this;
-        }
-
-        public Builder addAnnotation(int identifier, Annotation annotation) {
-            this.topLevelObject.addAnnotation(identifier, annotation);
             return this;
         }
 

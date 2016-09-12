@@ -1,4 +1,4 @@
-package de.bioforscher.core.annotations;
+package de.bioforscher.chemistry.descriptive.annotations;
 
 /**
  * Created by Christoph on 02.05.2016.

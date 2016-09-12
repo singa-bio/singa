@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.core.annotations.Annotation;
-import de.bioforscher.core.annotations.AnnotationType;
+import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.PubChemIdentifier;
 import org.xml.sax.Attributes;
@@ -43,23 +43,25 @@ class PubChemContentHandler implements ContentHandler {
     }
 
     public Species getSpecies() {
-        Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
-                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier(this.pubChemIdentifier));
 
-        return new Species.Builder(chebiIdentifier)
+        Species result = new Species.Builder(this.chebiIdentifier)
                 .name(this.name)
                 .molarMass(this.molarMass)
                 .smilesRepresentation(this.smilesRepresentation)
-                .addAnnotation(1, pubChemIdentifierAnnotation)
                 .build();
 
+        Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
+                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier(this.pubChemIdentifier));
+        result.addAnnotation(pubChemIdentifierAnnotation);
+
+        return result;
     }
 
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
 
-        switch (currentTag) {
+        switch (this.currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
                 this.pubChemIdentifier = new String(ch, start, length);
@@ -130,7 +132,7 @@ class PubChemContentHandler implements ContentHandler {
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
 
-        switch (currentTag) {
+        switch (this.currentTag) {
             case "RecordNumber":
             case "TOCHeading":
             case "StringValue":

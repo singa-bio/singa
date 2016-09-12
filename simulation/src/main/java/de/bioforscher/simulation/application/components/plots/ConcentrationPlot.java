@@ -88,8 +88,6 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     private void configureChart() {
         this.setAnimated(false);
-        // this.setMinHeight(250);
-        // this.setMinWidth(300);
     }
 
     private void configureXAxis() {
