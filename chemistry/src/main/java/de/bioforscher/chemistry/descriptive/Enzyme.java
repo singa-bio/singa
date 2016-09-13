@@ -12,7 +12,8 @@ import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.SOURCE_ORGANISM;
+import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.AMINO_ACID_SEQUENCE;
+import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.ORGANISM;
 import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
 import static de.bioforscher.units.UnitDictionary.PER_SECOND;
 
@@ -45,7 +46,7 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
 
     public void setCriticalSubstrate(Species criticalSubstrate) {
         this.criticalSubstrate = criticalSubstrate;
-        if (!substrates.contains(criticalSubstrate)) {
+        if (!this.substrates.contains(criticalSubstrate)) {
             addSubstrate(criticalSubstrate);
         }
     }
@@ -74,12 +75,32 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
         this.substrates.add(substrate);
     }
 
-    public void setSourceOrganism(Organism organism) {
-        addAnnotation(new Annotation<>(SOURCE_ORGANISM, organism));
+    public void addOrganism(Organism organism) {
+        addAnnotation(new Annotation<>(ORGANISM, organism));
     }
 
-    public Organism getSourceOrganism() {
-        return getAnnotation(Organism.class, SOURCE_ORGANISM);
+    public void addOrganism(Organism organism, String description) {
+        addAnnotation(new Annotation<>(ORGANISM, description, organism));
+    }
+
+    public List<Organism> getAllOrganisms() {
+        return getContentOfAnnotations(Organism.class, ORGANISM);
+    }
+
+    public List<Organism> getOrganismsWith(String description) {
+        return getContentOfAnnotations(Organism.class, description, ORGANISM);
+    }
+
+    public void addAminoAcidSequence(String sequence) {
+        addAnnotation(new Annotation<>(AMINO_ACID_SEQUENCE, sequence));
+    }
+
+    public List<String> getAllAminoAcidSequences() {
+        return getContentOfAnnotations(String.class, AMINO_ACID_SEQUENCE);
+    }
+
+    public List<String> getAllAminoAcidSequenceWith(String description) {
+        return getContentOfAnnotations(String.class, description, AMINO_ACID_SEQUENCE);
     }
 
     @Override

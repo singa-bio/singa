@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
+import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.biology.Organism;
 import de.bioforscher.core.biology.Taxon;
 import de.bioforscher.core.identifier.NCBITaxonomyIdentifier;
@@ -11,6 +13,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,33 +21,54 @@ import java.util.List;
  */
 public class UniProtContentHandler implements ContentHandler {
 
-    // chemical entity attributes
+    private static List<String> TEXT_COMMENTS_TO_PARSE = new ArrayList<>();
+
+    static {
+        Collections.addAll(TEXT_COMMENTS_TO_PARSE,
+                "function",
+                "catalytic activity");
+    }
+
+    // enzyme attributes
     private UniProtIdentifier identifier;
     private String recommendedName;
     private double molarMass;
     private List<String> additionalNames;
+    private String aminoAcidSequence;
     private Organism sourceOrganism;
+    private List<Annotation<String>> textComments;
 
     // parser attributes
     private String currentTag = "";
+    private Annotation<String> temoraryCommentAnnotation;
 
     // reading name
     private boolean inRecommendedName = false;
     private boolean inAlternativeName = false;
     private boolean inOrganism = false;
+    private boolean inRelevantComment = false;
     private boolean isScientificName = false;
+    private boolean isCommonName = false;
 
     public UniProtContentHandler() {
         this.additionalNames = new ArrayList<>();
+        this.textComments = new ArrayList<>();
     }
 
     Enzyme getChemicalSpecies() {
+        // create base enzyme
         Enzyme enzyme = new Enzyme.Builder(this.identifier)
                 .name(this.recommendedName)
                 .molarMass(this.molarMass)
                 .build();
-        enzyme.setSourceOrganism(this.sourceOrganism);
+        // add organism
+        enzyme.addOrganism(this.sourceOrganism);
+        // add sequence without white spaces
+        enzyme.addAminoAcidSequence(this.aminoAcidSequence.replaceAll("\\s", ""));
+        // add additional names
         this.additionalNames.forEach(enzyme::addAdditionalName);
+        // add textComments
+        this.textComments.forEach(enzyme::addAnnotation);
 
         return enzyme;
     }
@@ -80,7 +104,8 @@ public class UniProtContentHandler implements ContentHandler {
         switch (qName) {
             case "accession":
             case "fullName":
-            case "taxon":{
+            case "text":
+            case "taxon": {
                 this.currentTag = qName;
                 break;
             }
@@ -99,10 +124,23 @@ public class UniProtContentHandler implements ContentHandler {
                 this.inOrganism = true;
                 break;
             }
+            case "comment": {
+                if (TEXT_COMMENTS_TO_PARSE.contains(atts.getValue("type"))) {
+                    this.currentTag = qName;
+                    this.inRelevantComment = true;
+                    this.temoraryCommentAnnotation = new Annotation<>(AnnotationType.NOTE);
+                    this.temoraryCommentAnnotation.setDescription(atts.getValue("type"));
+                }
+                break;
+            }
             case "name": {
                 this.currentTag = qName;
-                if (this.inOrganism && atts.getValue("type").equals("scientific")) {
-                    this.isScientificName = true;
+                if (this.inOrganism) {
+                    if (atts.getValue("type").equals("scientific")) {
+                        this.isScientificName = true;
+                    } else if (atts.getValue("type").equals("common")) {
+                        this.isCommonName = true;
+                    }
                 }
                 break;
             }
@@ -114,6 +152,7 @@ public class UniProtContentHandler implements ContentHandler {
                 break;
             }
             case "sequence": {
+                this.currentTag = qName;
                 // set weight
                 this.molarMass = Double.valueOf(atts.getValue("mass"));
                 break;
@@ -144,7 +183,17 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "name": {
                 this.isScientificName = false;
+                this.isCommonName = false;
                 break;
+            }
+            case "comment": {
+                if (this.inRelevantComment) {
+                    if (this.temoraryCommentAnnotation.getContent() != null &&
+                            !this.temoraryCommentAnnotation.getContent().trim().isEmpty()) {
+                        this.textComments.add(this.temoraryCommentAnnotation);
+                    }
+                    this.inRelevantComment = false;
+                }
             }
         }
 
@@ -172,9 +221,14 @@ public class UniProtContentHandler implements ContentHandler {
                 break;
             }
             case "name": {
-                if (this.inOrganism && this.isScientificName) {
-                    // create Organism with name
-                    this.sourceOrganism = new Organism(new String(ch, start, length));
+                if (this.inOrganism) {
+                    if (this.isScientificName) {
+                        // create Organism with name
+                        this.sourceOrganism = new Organism(new String(ch, start, length));
+                    } else if (this.isCommonName) {
+                        // set common name
+                        this.sourceOrganism.setCommonName(new String(ch, start, length));
+                    }
                 }
                 break;
             }
@@ -184,6 +238,25 @@ public class UniProtContentHandler implements ContentHandler {
                     this.sourceOrganism.getLineage().add(new Taxon(new String(ch, start, length)));
                 }
                 break;
+            }
+            case "sequence": {
+                // set sequence
+                if (this.aminoAcidSequence == null) {
+                    this.aminoAcidSequence = new String(ch, start, length);
+                } else {
+                    this.aminoAcidSequence += new String(ch, start, length);
+                }
+                break;
+            }
+            case "text": {
+                if (this.inRelevantComment) {
+                    if (this.temoraryCommentAnnotation.getContent() == null) {
+                        this.temoraryCommentAnnotation.setContent(new String(ch, start, length));
+                    } else {
+                        this.temoraryCommentAnnotation.setContent(this.temoraryCommentAnnotation.getContent()
+                                + new String(ch, start, length));
+                    }
+                }
             }
 
         }

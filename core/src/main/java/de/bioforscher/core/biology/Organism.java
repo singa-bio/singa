@@ -12,24 +12,35 @@ import java.util.List;
  */
 public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> {
 
-    private String name;
+    private String scientificName;
+    private String commonName;
     private NCBITaxonomyIdentifier identifier;
-    private List<String> synonyms;
     private List<Taxon> lineage;
 
-    public Organism(String name) {
-        this.name = name;
-        this.synonyms = new ArrayList<>();
+    public Organism(String scientificName) {
+        this.scientificName = scientificName;
         this.lineage = new ArrayList<>();
+    }
+
+    public String getScientificName() {
+        return this.scientificName;
+    }
+
+    public void setScientificName(String scientificName) {
+        this.scientificName = scientificName;
+    }
+
+    public String getCommonName() {
+        return this.commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
     }
 
     @Override
     public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getScientificName();
     }
 
     @Override
@@ -39,14 +50,6 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     public void setIdentifier(NCBITaxonomyIdentifier identifier) {
         this.identifier = identifier;
-    }
-
-    public List<String> getSynonyms() {
-        return this.synonyms;
-    }
-
-    public void setSynonyms(List<String> synonyms) {
-        this.synonyms = synonyms;
     }
 
     public List<Taxon> getLineage() {

@@ -6,8 +6,9 @@ package de.bioforscher.chemistry.descriptive.annotations;
 public enum AnnotationType {
 
     NOTE,
+    AMINO_ACID_SEQUENCE,
     ADDITIONAL_NAME,
-    SOURCE_ORGANISM,
+    ORGANISM,
     ADDITIONAL_IDENTIFIER
 
 
