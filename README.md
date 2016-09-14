@@ -27,7 +27,7 @@ The *identifier* model can be used to make objects identifiable using a uniforml
 *Range* is a pair of bounded objects that can be used to check whether something lies inside or outside of this range.  
 A *label* is an object that identifies the location or position of something in the object that implements this interface.
 
-### Module:Mathematics
+### Module: Mathematics
 The mathematics package is designed for the convenient and uniform handling of everything mathematical.
 
 ##### Concepts
@@ -48,7 +48,7 @@ The implemented section of geometrical objects is not only intended for renderin
 ##### Graphs
 Graphs are collections of objects that are connected by edges (as we a sure you all know). Nodes are modeled to "know" their neighbors and have a position, that can or cannot be assigned. Some simple graph oriented calculations can be done.
 
-### Module:Chemistry
+### Module: Chemistry
 The chemistry package is roughly divided into an descriptive and physical approach to represent chemical entities.
 
 ##### Elements
@@ -60,13 +60,13 @@ Chemical entities can be parsed from the ChEBI Database and imported frmo PubChe
 ##### Physical
 The physical representations of chemical entities approaches the problem from a graph theoretic side. This is currently under development.
 
-### Module:Simulation
+### Module: Simulation
 This module is currently combining an api to simulate different cellular processes using an approach similar to cellular automata; the eponymic graph automata, and an javafx implementations (application class BioGraphSimulation) as a gui.
 
 In a modular approach, a simulation is created (examples can be found in the SimulationExampleProvider class) with a spatial and temporal component. A underlying graph automaton is specified, where each node is capable of holding a certain concentration of species. Furthermore different phenomena (currently diffusion and chemical reactions) can be applied to change those concentrations.
 
-### Module:Units
+### Module: Units
 The units package is based on the phenomenal [Units of Measurement](https://github.com/unitsofmeasurement) package. Some systems biology specific units are defined and some Utilities are implemented.
 
-### Module:Javafx
+### Module: Javafx
 The javafx package contains a renderer based interface, that provides default implementations to draw the geometric shapes from the mathematics package.
