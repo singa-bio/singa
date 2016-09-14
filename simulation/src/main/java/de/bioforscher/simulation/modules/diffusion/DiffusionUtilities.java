@@ -14,8 +14,8 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static de.bioforscher.simulation.util.SystemDefaultConstants.WATER;
-import static de.bioforscher.units.UnitDictionary.GRAM_PER_MOLE;
-import static de.bioforscher.units.UnitDictionary.SQUARECENTIMETER_PER_SECOND;
+import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
+import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
 import static java.lang.Math.log;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.AbstractUnit.ONE;

@@ -1,16 +1,14 @@
 package de.bioforscher.core.utility;
 
 /**
- * The Nameable interface defines an Object that has a useful name attached to
- * it.
+ * The Nameable interface defines an Object that has a useful name attached to it.
  *
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  */
 public interface Nameable {
 
     /**
-     * Returns the name, the object can be called on.
+     * Returns the name, by which the object can be referenced.
      *
      * @return The name of the object.
      */

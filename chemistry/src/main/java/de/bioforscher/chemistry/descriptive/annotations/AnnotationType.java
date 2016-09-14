@@ -1,7 +1,9 @@
 package de.bioforscher.chemistry.descriptive.annotations;
 
 /**
- * Created by Christoph on 02.05.2016.
+ * The {@link AnnotationType} provides a primary identification criteria for {@link Annotation}s.
+ *
+ * @author cl
  */
 public enum AnnotationType {
 
@@ -10,6 +12,5 @@ public enum AnnotationType {
     ADDITIONAL_NAME,
     ORGANISM,
     ADDITIONAL_IDENTIFIER
-
 
 }

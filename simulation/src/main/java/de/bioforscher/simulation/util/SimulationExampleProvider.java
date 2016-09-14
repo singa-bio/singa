@@ -17,7 +17,7 @@ import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReact
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
-import de.bioforscher.units.UnitDictionary;
+import de.bioforscher.units.UnitProvider;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -25,7 +25,7 @@ import javax.measure.quantity.Time;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import static de.bioforscher.units.UnitDictionary.*;
+import static de.bioforscher.units.UnitProvider.*;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -71,7 +71,7 @@ public class SimulationExampleProvider {
         Reactions reactions = new Reactions();
 
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitDictionary.PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(dinitrogenPentaoxide, ReactantRole.DECREASING, 2),

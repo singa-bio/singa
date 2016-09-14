@@ -5,7 +5,7 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 
-import static de.bioforscher.units.UnitDictionary.GRAM_PER_MOLE;
+import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 
 /**
  * A chemical element or element is a species of atoms having the same number of protons.

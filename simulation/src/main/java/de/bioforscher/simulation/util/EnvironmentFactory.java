@@ -2,7 +2,7 @@ package de.bioforscher.simulation.util;
 
 import tec.units.ri.quantity.Quantities;
 
-import static de.bioforscher.units.UnitDictionary.PASCAL_SECOND;
+import static de.bioforscher.units.UnitProvider.PASCAL_SECOND;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;

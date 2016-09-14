@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
  * interface, albeit not directly required for any application or method of this object. The Object implementing this
  * interface should provide a {@link List} to store individual {@link Annotation}s. Methods to retrieve specific
  * {@link Annotation}s, filtered by {@link AnnotationType} or description are supplied as default implementations.
+ *
+ * @author cl
  */
 public interface Annotatable {
 

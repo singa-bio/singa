@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.bioforscher.units.UnitDictionary.SQUARECENTIMETER_PER_SECOND;
+import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;

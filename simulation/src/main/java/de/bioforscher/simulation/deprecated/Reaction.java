@@ -6,7 +6,7 @@ import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * A reaction type that calculates the next concentration. How the concentration

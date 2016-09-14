@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 

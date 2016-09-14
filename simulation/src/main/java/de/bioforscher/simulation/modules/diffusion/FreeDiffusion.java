@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low

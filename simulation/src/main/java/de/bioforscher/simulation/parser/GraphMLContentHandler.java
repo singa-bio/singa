@@ -16,7 +16,7 @@ import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Currently supports parsing nodes and connecting them with the given edges.

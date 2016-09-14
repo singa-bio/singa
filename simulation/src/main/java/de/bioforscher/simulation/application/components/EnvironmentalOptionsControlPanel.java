@@ -25,7 +25,7 @@ import javax.measure.quantity.Time;
 import java.util.Observable;
 import java.util.Observer;
 
-import static de.bioforscher.units.UnitDictionary.PASCAL_SECOND;
+import static de.bioforscher.units.UnitProvider.PASCAL_SECOND;
 import static tec.units.ri.unit.MetricPrefix.*;
 import static tec.units.ri.unit.Units.*;
 

@@ -11,7 +11,7 @@ import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.simulation.util.SingaPreferences;
-import de.bioforscher.units.UnitDictionary;
+import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.MolarConcentration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -116,7 +116,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     private void configureYAxis() {
-        this.getYAxis().setLabel("Molar concentration in " + UnitDictionary.GRAM_PER_MOLE.toString());
+        this.getYAxis().setLabel("Molar concentration in " + UnitProvider.GRAM_PER_MOLE.toString());
     }
 
     public void setObservedSpecies(Set<ChemicalEntity> observedSpecies) {

@@ -14,8 +14,8 @@ import java.util.List;
 
 import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.AMINO_ACID_SEQUENCE;
 import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.ORGANISM;
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
-import static de.bioforscher.units.UnitDictionary.PER_SECOND;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.PER_SECOND;
 
 public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
 

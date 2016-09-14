@@ -4,7 +4,7 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
-import static de.bioforscher.units.UnitDictionary.GRAM_PER_MOLE;
+import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 import static org.junit.Assert.assertEquals;
 
 /**

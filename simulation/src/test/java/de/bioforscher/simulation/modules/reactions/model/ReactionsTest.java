@@ -15,14 +15,14 @@ import de.bioforscher.simulation.modules.reactions.implementations.EquilibriumRe
 import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.simulation.util.BioGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentFactory;
-import de.bioforscher.units.UnitDictionary;
+import de.bioforscher.units.UnitProvider;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.units.UnitDictionary.*;
+import static de.bioforscher.units.UnitProvider.*;
 
 /**
  * Created by Christoph on 09.07.2016.
@@ -200,7 +200,7 @@ public class ReactionsTest {
         // Environment
         EnvironmentFactory.createFirstOrderReactionTestEnvironment();
 
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitDictionary.PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),

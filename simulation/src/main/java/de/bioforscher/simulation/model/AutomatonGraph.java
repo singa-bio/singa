@@ -8,7 +8,7 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 
-import static de.bioforscher.units.UnitDictionary.MOLE_PER_LITRE;
+import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
 

@@ -20,12 +20,12 @@ import static tec.units.ri.AbstractUnit.ONE;
  *
  * @author Christoph Leberecht
  */
-public final class UnitDictionary extends AbstractSystemOfUnits {
+public final class UnitProvider extends AbstractSystemOfUnits {
 
     /**
      * The singleton instance.
      */
-    private static final UnitDictionary INSTANCE = new UnitDictionary();
+    private static final UnitProvider INSTANCE = new UnitProvider();
 
     /**
      * Holds the mapping quantity to unit.
@@ -94,7 +94,7 @@ public final class UnitDictionary extends AbstractSystemOfUnits {
      *
      * @return the metric system instance.
      */
-    public static UnitDictionary getInstance() {
+    public static UnitProvider getInstance() {
         return INSTANCE;
     }
 
@@ -102,12 +102,12 @@ public final class UnitDictionary extends AbstractSystemOfUnits {
     /**
      * Default constructor (prevents this class from being instantiated).
      */
-    private UnitDictionary() {
+    private UnitProvider() {
     }
 
     @Override
     public String getName() {
-        return "UnitDictionary";
+        return "UnitProvider";
     }
 
     @Override

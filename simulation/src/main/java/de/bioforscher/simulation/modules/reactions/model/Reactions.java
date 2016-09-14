@@ -7,7 +7,7 @@ import de.bioforscher.simulation.modules.model.ImmediateUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
-import de.bioforscher.units.UnitDictionary;
+import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
@@ -92,7 +92,7 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
     public PotentialUpdate calculateUpdate(BioNode node, ChemicalEntity entity) {
         return new PotentialUpdate(entity, node.getConcentration(entity)
                 .add(Quantities.getQuantity(this.velocities.get(entity).getValue(),
-                        UnitDictionary.MOLE_PER_LITRE)));
+                        UnitProvider.MOLE_PER_LITRE)));
     }
 
 }

@@ -17,7 +17,7 @@ import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.units.UnitDictionary.PER_SECOND;
+import static de.bioforscher.units.UnitProvider.PER_SECOND;
 
 /**
  * Created by Christoph on 18.07.2016.
