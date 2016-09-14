@@ -27,7 +27,7 @@ The *identifier* model can be used to make objects identifiable using a uniforml
 *Range* is a pair of bounded objects that can be used to check whether something lies inside or outside of this range.  
 A *label* is an object that identifies the location or position of something in the object that implements this interface.
 
-### Module:Mathematics
+### Module: Mathematics
 The mathematics package is designed for the convenient and uniform handling of everything mathematical.
 
 ##### Concepts
