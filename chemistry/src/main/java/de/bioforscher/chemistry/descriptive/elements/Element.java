@@ -8,18 +8,52 @@ import javax.measure.Quantity;
 import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 
 /**
- * A chemical element or element is a species of atoms having the same number of protons.
+ * A chemical element or element is a species of atoms having the same number of protons. Generally no elements need
+ * to be created since all common elements are deposited statically in the {@link ElementProvider}. Each element is
+ * basically final. The isotopes and ions can easily be created with the provided methods.
+ *
+ * @author cl
  */
 public class Element {
 
+    /**
+     * The element's name.
+     */
     private final String name;
+
+    /**
+     * The element's symbol.
+     */
     private final String symbol;
+
+    /**
+     * The element's number of protons.
+     */
     private final int protonNumber;
+
+    /**
+     * The element's number of electrons.
+     */
     private final int electronNumber;
+
+    /**
+     * The element's number of neutrons.
+     */
     private final int neutronNumber;
 
+    /**
+     * The atomic mass of the element.
+     */
     private Quantity<MolarMass> atomicMass;
 
+    /**
+     * Creates a new Element with name, symbol, proton number and atomic weight.
+     *
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
+     */
     public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight) {
         this.name = name;
         this.symbol = symbol;
@@ -29,10 +63,26 @@ public class Element {
         this.atomicMass = atomicWeight;
     }
 
+    /**
+     * Creates a new Element with name, symbol, proton number and atomic weight in
+     * {@link de.bioforscher.units.UnitProvider#GRAM_PER_MOLE g/mol}.
+     *
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
+     */
     public Element(String name, String symbol, int protonNumber, double atomicWeight) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE));
     }
 
+    /**
+     * Creates a new Element with the possibility to specify electron and neutron number.
+     *
+     * @param element A previously defined element.
+     * @param electronNumber The electron number.
+     * @param neutronNumber The neutron number.
+     */
     private Element(Element element, int electronNumber, int neutronNumber) {
         this.name = element.getName();
         this.symbol = element.getSymbol();
@@ -48,32 +98,60 @@ public class Element {
 
     }
 
+    /**
+     * Returns the name.
+     * @return The name.
+     */
     public String getName() {
-        return name;
+        return this.name;
     }
 
+    /**
+     * Returns the symbol.
+     * @return The symbol.
+     */
     public String getSymbol() {
-        return symbol;
+        return this.symbol;
     }
 
+    /**
+     * Returns the proton number.
+     * @return The proton number.
+     */
     public int getProtonNumber() {
-        return protonNumber;
+        return this.protonNumber;
     }
 
+    /**
+     * Returns the atomic mass.
+     * @return The atomic mass.
+     */
     public Quantity<MolarMass> getAtomicMass() {
-        return atomicMass;
+        return this.atomicMass;
     }
 
+    /**
+     * Sets the atomic mass.
+     * @param atomicMass The atomic mass.
+     */
     public void setAtomicMass(Quantity<MolarMass> atomicMass) {
         this.atomicMass = atomicMass;
     }
 
+    /**
+     * Returns the electron number.
+     * @return The electron number.
+     */
     public int getElectronNumber() {
-        return electronNumber;
+        return this.electronNumber;
     }
 
+    /**
+     * Returns the neutron number.
+     * @return The neutron number.
+     */
     public int getNeutronNumber() {
-        return neutronNumber;
+        return this.neutronNumber;
     }
 
     /**
@@ -148,11 +226,11 @@ public class Element {
      * @return {@code true} if this Element is an isotope and {@code false} otherwise.
      */
     public boolean isIsotope() {
-        return this.protonNumber != neutronNumber;
+        return this.protonNumber != this.neutronNumber;
     }
 
     @Override
     public String toString() {
-        return symbol + (getCharge() != 0 ? getCharge() : "");
+        return this.symbol + (getCharge() != 0 ? getCharge() : "");
     }
 }

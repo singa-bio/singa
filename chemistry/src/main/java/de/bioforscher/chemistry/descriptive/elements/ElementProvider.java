@@ -6,11 +6,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * This library provides Elements 1 (Hydrogen) to 111 Roentgenium with their names, symbols, atomic numbers, and atomic
- * mass.
+ * This library provides Elements 1 (Hydrogen) to 111 (Roentgenium) with their names, symbols, atomic numbers, and
+ * atomic mass.
  *
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  */
 public final class ElementProvider {
 

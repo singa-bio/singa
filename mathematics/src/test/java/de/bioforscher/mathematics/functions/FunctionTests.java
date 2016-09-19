@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Christoph on 09.08.2016.
  */
-public class FunctionTest {
+public class FunctionTests {
 
     @Test
     public void shouldSquareElementaryComponent() {

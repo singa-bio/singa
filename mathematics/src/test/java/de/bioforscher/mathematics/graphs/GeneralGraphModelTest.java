@@ -65,7 +65,7 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldConvertCoordinateToIdentifier() {
         RectangularGridCoordinateConverter rgc = new RectangularGridCoordinateConverter(7, 7);
-        assertEquals(26, rgc.convert(new Vector2D(3, 5)));
+        assertEquals(38, rgc.convert(new Vector2D(3, 5)));
         assertArrayEquals(new Vector2D(3, 5).getElements(), rgc.convert(26).getElements(), 0.0);
     }
 

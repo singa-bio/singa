@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics;
 
+import de.bioforscher.mathematics.functions.FunctionTests;
 import de.bioforscher.mathematics.geometry.GeometryTests;
 import de.bioforscher.mathematics.graphs.GraphTests;
 import de.bioforscher.mathematics.matrices.MatrixTests;
@@ -10,7 +11,13 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({GraphTests.class, GeometryTests.class, MatrixTests.class, MetricTests.class, VectorTests.class})
+@SuiteClasses({
+        GraphTests.class,
+        GeometryTests.class,
+        MatrixTests.class,
+        MetricTests.class,
+        VectorTests.class,
+        FunctionTests.class})
 public class AllTests {
 
 }

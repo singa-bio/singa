@@ -127,8 +127,6 @@ public abstract class Reaction {
                 .collect(Collectors.joining(" + "));
 
         return substrates + " \u27f6 " + products;
-
-
     }
 
 

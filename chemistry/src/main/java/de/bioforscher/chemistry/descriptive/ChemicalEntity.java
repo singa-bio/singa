@@ -24,6 +24,8 @@ import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
  *
  * @param <IdentifierType> The Type of the {@link Identifier}, that identifies this entity.
  * @author cl
+ * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
+ * SMILES</a>
  */
 public abstract class ChemicalEntity<IdentifierType extends Identifier> implements Identifiable<IdentifierType>,
         Nameable, Annotatable {
@@ -50,6 +52,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     /**
      * Creates a new Chemical Entity with the given identifier.
+     *
      * @param identifier The identifier.
      */
     protected ChemicalEntity(IdentifierType identifier) {
@@ -69,6 +72,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     /**
      * Sets the name.
+     *
      * @param name The name.
      */
     public void setName(String name) {
@@ -77,6 +81,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     /**
      * Returns the {@link MolarMass}.
+     *
      * @return The {@link MolarMass}.
      */
     public Quantity<MolarMass> getMolarMass() {
@@ -84,19 +89,21 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     /**
-     * Sets the {@link MolarMass}.
-     * @param molarMass The {@link MolarMass}.
-     */
-    public void setMolarMass(Quantity<MolarMass> molarMass) {
-        this.molarMass = molarMass;
-    }
-
-    /**
      * Sets The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     *
      * @param molarMass The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
      */
     public void setMolarMass(double molarMass) {
         this.molarMass = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
+    }
+
+    /**
+     * Sets the {@link MolarMass}.
+     *
+     * @param molarMass The {@link MolarMass}.
+     */
+    public void setMolarMass(Quantity<MolarMass> molarMass) {
+        this.molarMass = molarMass;
     }
 
     @Override
@@ -104,27 +111,37 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return this.annotations;
     }
 
+    /**
+     * Adds an additional name as an annotation to this chemical entity.
+     *
+     * @param additionalName An alternative name.
+     */
     public void addAdditionalName(String additionalName) {
         addAnnotation(new Annotation<>(ADDITIONAL_NAME, additionalName));
     }
 
+    /**
+     * Gets all additional names for the Annotations as a List of Strings.
+     *
+     * @return All alternative names.
+     */
     public List<String> getAdditionalNames() {
         return getContentOfAnnotations(String.class, ADDITIONAL_NAME);
     }
 
     public static abstract class Builder<TopLevelType extends ChemicalEntity, BuilderType extends Builder, IdentifierType extends Identifier> {
 
-        protected TopLevelType topLevelObject;
-        protected BuilderType builderObject;
-
-        protected abstract TopLevelType createObject(IdentifierType identifier);
-
-        protected abstract BuilderType getBuilder();
+        TopLevelType topLevelObject;
+        BuilderType builderObject;
 
         public Builder(IdentifierType identifier) {
             this.topLevelObject = createObject(identifier);
             this.builderObject = getBuilder();
         }
+
+        protected abstract TopLevelType createObject(IdentifierType identifier);
+
+        protected abstract BuilderType getBuilder();
 
         public BuilderType name(String name) {
             this.topLevelObject.setName(name);

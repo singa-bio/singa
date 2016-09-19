@@ -47,7 +47,7 @@ public class BiochemicalReaction extends Reaction {
         Set<ChemicalEntity> referencedEntities = this.getStoichiometricReactants().stream()
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toSet());
-        referencedEntities.add(enzyme);
+        referencedEntities.add(this.enzyme);
         return referencedEntities;
     }
 
