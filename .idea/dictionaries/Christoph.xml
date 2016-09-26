@@ -5,11 +5,13 @@
       <w>directrix</w>
       <w>jaccard</w>
       <w>michaelis</w>
+      <w>proline</w>
       <w>stoichiometric</w>
       <w>stoichiometry</w>
       <w>taxon</w>
       <w>tchebychev</w>
       <w>ungrouped</w>
+      <w>valine</w>
     </words>
   </dictionary>
 </component>

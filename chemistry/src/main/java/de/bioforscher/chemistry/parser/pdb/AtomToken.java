@@ -30,11 +30,11 @@ public enum AtomToken {
 
     public static String extractValueFromPDBLine(String line, AtomToken atomToken) {
         // pdb numbering starts at column 1 - string starts at 0 - therefore -1
-        // pdb numbering is including the last letter  - substring is excluding the last letter - therefore +1
-        if (line.length() >= atomToken.getColumns().getLowerBound() + 1 && line.length() >= atomToken.getColumns()
-                                                                                                     .getUpperBound()) {
+        // pdb numbering is including the last letter  - substring is excluding the last letter this account for the
+        // offset
+        if (line.length() >= atomToken.getColumns().getUpperBound()) {
             return line.substring(
-                    atomToken.getColumns().getLowerBound(), atomToken.getColumns().getUpperBound()).trim();
+                    atomToken.getColumns().getLowerBound()-1, atomToken.getColumns().getUpperBound()).trim();
         } else {
             return "";
         }

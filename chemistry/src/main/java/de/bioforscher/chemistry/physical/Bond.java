@@ -10,6 +10,9 @@ public class Bond extends AbstractEdge<Atom> {
         this.bondType = bondType;
     }
 
+    public Bond() {
+        this.bondType = BondType.COVALENT_BOND;
+    }
 
 
 }

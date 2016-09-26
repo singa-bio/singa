@@ -10,20 +10,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 09.06.2016.
+ * A Substructure is formally a collection of atoms that are represented together as a single entity.
  */
 public class SubStructure extends AbstractGraph<Atom, Bond, Vector3D> implements StructuralEntity<SubStructure> {
 
+    /**
+     * The identifier of this entity.
+     */
     public int identifier;
 
+    /**
+     * The neighboring substructures.
+     */
     private List<SubStructure> neighbours;
 
-    public SubStructure() {
-        neighbours = new ArrayList<>();
+    public SubStructure(int identifier) {
+        this.identifier = identifier;
+        this.neighbours = new ArrayList<>();
     }
 
     public SubStructure(Atom atom) {
-        this();
+        this.identifier = getNextNodeIdentifier();
         this.identifier = atom.getIdentifier();
         this.addNode(atom);
     }

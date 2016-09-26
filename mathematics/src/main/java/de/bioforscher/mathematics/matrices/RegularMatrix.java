@@ -4,6 +4,7 @@ import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -14,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Christoph Leberecht
  * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia: Matrix</a>
  */
-public class RegularMatrix implements Matrix {
+public class RegularMatrix implements Matrix, Serializable {
 
     private final double[][] elements;
 

@@ -2,10 +2,7 @@ package de.bioforscher.chemistry.physical;
 
 import de.bioforscher.mathematics.graphs.model.Graph;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +20,7 @@ public class Structure implements Graph<Atom, Bond> {
      * The edges of the graph.
      */
     private Map<Integer, Bond> edges;
+    private int nextBondIdentifier = 0;
 
     public Structure() {
         this.nodes = new HashMap<>();
@@ -46,17 +44,11 @@ public class Structure implements Graph<Atom, Bond> {
      */
     @Override
     public Atom getNode(int identifier) {
-
-        if (identifier <= 10) {
-
-        }
         return this.nodes.values().stream()
                          .flatMap(s -> s.getNodes().stream())
                          .filter(atom -> atom.getIdentifier() == identifier)
                          .findAny()
                          .get();
-
-
     }
 
     /**
@@ -143,6 +135,39 @@ public class Structure implements Graph<Atom, Bond> {
         this.edges.put(identifier, edge);
         source.addNeighbour(target);
         target.addNeighbour(source);
+    }
+
+    public SortedMap<Integer, Residue> getResidues() {
+        SortedMap<Integer, Residue> residues = new TreeMap<>();
+        for (SubStructure subStructure: this.nodes.values()) {
+            if (subStructure instanceof Residue) {
+                Residue residue = (Residue)subStructure;
+                residues.put(residue.getIdentifier(), residue);
+            }
+        }
+        return residues;
+    }
+
+    public void connectPeptideBonds(Residue source, Residue target) {
+        // creates the peptide backbone
+        Bond bond = new Bond();
+        bond.setIdentifier(this.nextBondIdentifier);
+        bond.setSource(source.getBackboneCarbon().orElseThrow(IllegalStateException::new));
+        bond.setTarget(target.getBackboneNitrogen().orElseThrow(IllegalArgumentException::new));
+        this.edges.put(this.nextBondIdentifier, bond);
+        source.addNeighbour(target);
+        target.addNeighbour(source);
+        this.nextBondIdentifier++;
+    }
+
+    public void connectBackbone() {
+        Residue lastResidue = null;
+        for (Map.Entry<Integer, Residue> currentResidue: getResidues().entrySet()) {
+            if (lastResidue != null) {
+                connectPeptideBonds(lastResidue, currentResidue.getValue());
+            }
+            lastResidue = currentResidue.getValue();
+        }
     }
 
     @Override

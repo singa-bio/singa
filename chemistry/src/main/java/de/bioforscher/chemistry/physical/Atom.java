@@ -1,21 +1,52 @@
 package de.bioforscher.chemistry.physical;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
+import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Atom implements StructuralEntity<Atom> {
+/**
+ * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
+ * in a {@link Structure}.
+ */
+public class Atom implements StructuralEntity<Atom>, Nameable {
 
+    /**
+     * The identifier.
+     */
     private int identifier;
+
+    /**
+     * The element.
+     */
     private Element element;
-    private String atomName;
+
+    /**
+     * An additional name such as CA or CB.
+     */
+    private AtomName atomName;
+
+    /**
+     * The position.
+     */
     private Vector3D position;
 
+    /**
+     * References of the neighboring atoms.
+     */
     private List<Atom> neighbours;
 
-    public Atom(int identifier, Element element, String atomName, Vector3D position) {
+    /**
+     * Creates a new atom with the given identifier, element, name and position.
+     *
+     * @param identifier The identifier.
+     * @param element The element.
+     * @param atomName The name.
+     * @param position The position.
+     */
+    public Atom(int identifier, Element element, AtomName atomName, Vector3D position) {
         this.identifier = identifier;
         this.element = element;
         this.atomName = atomName;
@@ -23,36 +54,44 @@ public class Atom implements StructuralEntity<Atom> {
         this.neighbours = new ArrayList<>();
     }
 
+    /**
+     * Returns the Element.
+     * @return The Element.
+     */
     public Element getElement() {
-        return element;
+        return this.element;
     }
 
+    /**
+     * Sets the Element.
+     * @param element The element.
+     */
     public void setElement(Element element) {
         this.element = element;
     }
 
-    public String getAtomName() {
-        return atomName;
-    }
-
-    public void setAtomName(String atomName) {
-        this.atomName = atomName;
-    }
-
     @Override
     public int getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
+    /**
+     * Sets the identifier.
+     * @param identifier The identifier.
+     */
     public void setIdentifier(int identifier) {
         this.identifier = identifier;
     }
 
     @Override
     public Vector3D getPosition() {
-        return position;
+        return this.position;
     }
 
+    /**
+     * Sets the position.
+     * @param position The position.
+     */
     public void setPosition(Vector3D position) {
         this.position = position;
     }
@@ -64,7 +103,7 @@ public class Atom implements StructuralEntity<Atom> {
 
     @Override
     public List<Atom> getNeighbours() {
-        return neighbours;
+        return this.neighbours;
     }
 
     @Override
@@ -79,10 +118,23 @@ public class Atom implements StructuralEntity<Atom> {
     @Override
     public String toString() {
         return "Atom{" +
-                "identifier=" + identifier +
-                ", element=" + element +
-                ", atomName='" + atomName + '\'' +
-                ", position=" + position +
+                "identifier=" + this.identifier +
+                ", element=" + this.element +
+                ", name='" + getName() + '\'' +
+                ", position=" + this.position +
                 '}';
+    }
+
+    @Override
+    public String getName() {
+        return this.atomName.getName();
+    }
+
+    public AtomName getAtomName() {
+        return this.atomName;
+    }
+
+    public void setAtomName(AtomName atomName) {
+        this.atomName = atomName;
     }
 }

@@ -75,6 +75,10 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         this.nodes.put(node.getIdentifier(), node);
     }
 
+    public void addAllNodes(Collection<NodeType> nodes) {
+        nodes.forEach(this::addNode);
+    }
+
     /**
      * Removes the node with the given identifier from the Graph. Also removes
      * all edges, that refer to this node.
@@ -96,6 +100,10 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
             return 0;
         }
         return Collections.max(this.edges.keySet()) + 1;
+    }
+
+    public void addEdge(int identifier, EdgeType edge) {
+        this.edges.put(identifier, edge);
     }
 
     /**
