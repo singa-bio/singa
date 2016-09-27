@@ -18,7 +18,10 @@ public class Residue extends SubStructure implements Nameable {
         this.nextBondIdentifier = 0;
     }
 
-    public void connect(Atom first, Atom second) {
+    public boolean connect(Atom first, Atom second) {
+        if (first == null || second == null) {
+            return false;
+        }
         // create bond
         Bond bond = new Bond();
         bond.setIdentifier(this.nextBondIdentifier);
@@ -30,6 +33,8 @@ public class Residue extends SubStructure implements Nameable {
         second.addNeighbour(first);
         // increase identifier
         this.nextBondIdentifier++;
+        return true;
+
     }
 
 

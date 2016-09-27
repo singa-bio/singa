@@ -12,6 +12,9 @@ public enum ResidueType {
 
     ALANINE("Alanine", "A", "ALA", ALANINE_ATOM_NAMES),
     CYSTEINE("Cysteine", "C", "CYS", CYSTEINE_ATOM_NAMES),
+    ASPARTIC_ACID("Aspartic acid", "D", "Asp", ASPARTIC_ACID_ATOM_NAMES),
+    GLUTAMIC_ACID("Glutamic acid", "E", "Glu", GLUTAMIC_ACID_ATOM_NAMES),
+    GLUTAMINE("Glutamine", "Q", "Gln", GLUTAMINE_ATOM_NAMES),
     GLYCINE("Glycine", "G", "GLY", GLYCINE_ATOM_NAMES),
     VALINE("Valine", "V", "VAL", VALINE_ATOM_NAMES),
     PROLINE("Proline", "P", "PRO", PROLINE_ATOM_NAMES);

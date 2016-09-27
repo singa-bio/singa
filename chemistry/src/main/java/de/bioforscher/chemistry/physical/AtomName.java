@@ -29,6 +29,9 @@ public enum AtomName {
     HD1("HD1", HYDROGEN),
     HD2("HD2", HYDROGEN),
     HD3("HD3", HYDROGEN),
+    HE2("HE2", HYDROGEN),
+    HE21("HE21", HYDROGEN),
+    HE22("HE22", HYDROGEN),
     HG("HG", HYDROGEN),
     HG1("HG1", HYDROGEN),
     HG2("HG2", HYDROGEN),
@@ -63,13 +66,18 @@ public enum AtomName {
     DB3("DB3", DEUTERIUM),
     DD2("DD2", DEUTERIUM),
     DD3("DD3", DEUTERIUM),
+    DE2("DE2", DEUTERIUM),
+    DE21("DE21", DEUTERIUM),
+    DE22("DE22", DEUTERIUM),
     DG("DG", DEUTERIUM),
     DG11("DG11", HYDROGEN),
     DG12("DG12", HYDROGEN),
     DG13("DG13", HYDROGEN),
+    DG2("DG2", HYDROGEN),
     DG21("DG21", HYDROGEN),
     DG22("DG22", HYDROGEN),
     DG23("DG23", HYDROGEN),
+    DG3("DG3", HYDROGEN),
 
     // Carbons
     C("C", CARBON),
@@ -91,11 +99,16 @@ public enum AtomName {
     N("N", NITROGEN),
     N3("N", NITROGEN),
     N6("N6", NITROGEN),
+    NE2("NE2", NITROGEN),
 
     // Oxygen
     O("O", OXYGEN),
     O2("O2", OXYGEN),
     O9("O9", OXYGEN),
+    OD1("OD1", OXYGEN),
+    OD2("OD2", OXYGEN),
+    OE1("OE1", OXYGEN),
+    OE2("OE2", OXYGEN),
     OXT("OXT", OXYGEN),
 
     // Sulfur
@@ -106,6 +119,17 @@ public enum AtomName {
 
     public static EnumSet<AtomName> CYSTEINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HG, HB1, HB2, HB3, HN, HXT,
             TWOHB, D, DA, DG, DB2, DB3, C, CA, CB, N, O, OXT, SG);
+
+    public static EnumSet<AtomName> ASPARTIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA2, HA3, HB1, HB2, HB3, HD2, HN,
+            HXT, TWOHB, D, D3, DA, DB2, DB3, DD2, C, CA, CB, CG, N, O, OD1, OD2, OXT);
+
+    public static EnumSet<AtomName> GLUTAMIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3,
+            HE2, HG1, HG2, HG3, HN, HXT, TWOHB, TWOHG, D, DA, DB2, DB3, DE2, DG2, DG3, C, CA, CB, CD, CG, N, O, OE1,
+            OE2, OXT);
+
+    public static EnumSet<AtomName> GLUTAMINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE21, HE22, HG1,
+            HG2, HG3, HN, HT1, HT2, HT3, TWOHB, TWOHG, D, DA, DB2, DB3, DE21, DE22, DG2, DG3, C, CA, CB, CD, CG, N,
+            NE2, O, OE1, OXT);
 
     public static EnumSet<AtomName> GLYCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA1, HA2, HA3, HB1, HB2, HB3,
             HN, HT1, HT2, HT3, HXT, D, D1, D2, D3, DA2, DA3, C, C10, C11, CA, CB, N, N3, O, O9, OXT);
@@ -136,6 +160,7 @@ public enum AtomName {
     }
 
     public static Optional<AtomName> getAtomNameFromString(String atomName) {
+        // FIXME this can be sped up with a static hash map using the string atom name as key
         return Arrays.stream(values()).filter(name -> atomName.trim().equals(name.getName())).findFirst();
     }
 
