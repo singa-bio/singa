@@ -33,10 +33,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static tec.units.ri.unit.MetricPrefix.NANO;
+import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
@@ -63,9 +67,9 @@ public class BioGraphSimulation extends Application {
 
         log.log(Level.INFO, "setup automaton");
         // setup the simulation
-        // this.simulation = SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(100,
-        //        NANO(SECOND)));
-        this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
+        this.simulation = SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(100,
+                NANO(SECOND)));
+        //this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
         this.graph = this.simulation.getGraph();
         // Charts
 
