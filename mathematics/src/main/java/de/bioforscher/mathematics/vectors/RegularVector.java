@@ -34,6 +34,11 @@ public class RegularVector implements Vector {
         this.dimension = elements.length;
     }
 
+    public RegularVector(int dimension){
+        this.elements =  new double[dimension];
+        this.dimension = dimension;
+    }
+
     /**
      * A factory method for the creation of a new specific vector. This method can be used when the dimensionality of
      * the resulting vector is known in advance.

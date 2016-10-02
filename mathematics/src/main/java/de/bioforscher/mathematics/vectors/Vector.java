@@ -7,6 +7,8 @@ import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 
+import java.util.Collection;
+
 /**
  * The {@code Vector} interface represents a collection of values where multiple
  * operations are defined.
@@ -15,7 +17,6 @@ import de.bioforscher.mathematics.metrics.model.Metrizable;
  * divisible, and metrizable.
  *
  * @author Christoph Leberecht
- * @version 1.0.0
  */
 public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector> {
 
@@ -105,5 +106,24 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return The matrix of the dyadic product
      */
     RegularMatrix dyadicProduct(Vector vector);
+
+    default boolean isZero() {
+        for (double element: this.getElements()) {
+            if (element != 0.0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean haveSameDimensions(Collection<Vector> vectors) {
+        int dim = vectors.iterator().next().getDimension();
+        for (Vector vector: vectors) {
+            if (vector.getDimension() != dim) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
