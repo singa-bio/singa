@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  */
 public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implements LabeledMatrix<LabelType> {
 
-    private static final String STRING_REPRESENTATION_DECIMAL_FORMAT = "0.000000";
     private Map<LabelType, Integer> labelMap;
 
     /**
@@ -40,12 +39,14 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
 
     @Override
     public void setRowLabel(LabelType label, int rowIndex) {
+        if (rowIndex > getRowDimension())
+            throw new IllegalArgumentException("specified index " + rowIndex + " exceeds dimension " + getRowDimension());
         this.labelMap.put(label, rowIndex);
     }
 
     @Override
     public LabelType getRowLabel(int rowIndex) {
-        return labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
+        return this.labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
                        .findFirst().get();
     }
 

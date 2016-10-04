@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface LabeledMatrix<LabelType> {
 
+    String STRING_REPRESENTATION_DECIMAL_FORMAT = "0.000000";
+
     /**
      * Assigns a label to a row.
      *
@@ -49,10 +51,10 @@ public interface LabeledMatrix<LabelType> {
     /**
      * Returns the column label currently assigned to the given row index.
      *
-     * @param columnLabel The column index.
+     * @param columnIndex The column index.
      * @return The label of the column.
      */
-    LabelType getColumnLabel(int columnLabel);
+    LabelType getColumnLabel(int columnIndex);
 
     /**
      * Sets all column labels at once, using the index of the label in the list.

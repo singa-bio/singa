@@ -180,4 +180,27 @@ public class RegularMatrixTest {
         assertEquals(expected, this.twoTimesThree.toString());
     }
 
+    @Test
+    public void shouldGetStringRepresentation() {
+
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        lrm.setRowLabel("R3", 2);
+        lrm.setRowLabel("R2", 1);
+        lrm.setRowLabel("R1", 0);
+        lrm.setColumnLabel("C1", 0);
+        lrm.setColumnLabel("C2", 1);
+
+        assertEquals(lrm.getValueForLabel("R3", "C2"), 6, 0);
+        assertEquals(",C1,C2\n" +
+                "R1,1.000000,2.000000\n" +
+                "R2,3.000000,4.000000\n" +
+                "R3,5.000000,6.000000", lrm.getStringRepresentation());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldEnsureLabelCapacity(){
+
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        lrm.setRowLabel("R7", 7);
+    }
 }
