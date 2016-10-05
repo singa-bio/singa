@@ -39,8 +39,8 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public void setColumnLabel(LabelType label, int columnIndex) {
-        if (columnIndex > getRowDimension())
-            throw new IllegalArgumentException("specified index " + columnIndex + " exceeds row dimension " + getColumnDimension());
+        if (columnIndex > getColumnDimension())
+            throw new IllegalArgumentException("specified index " + columnIndex + " exceeds column dimension " + getColumnDimension());
         this.columnLabelMap.put(label, columnIndex);
     }
 
