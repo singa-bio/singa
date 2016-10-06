@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.matrices;
 
+import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.concepts.Addable;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
@@ -9,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -20,6 +23,10 @@ public class RegularMatrixTest {
 
     private Matrix fourTimesTwo;
     private Matrix twoTimesThree;
+
+    private Matrix matrixWithUniqueExtrema;
+    private Matrix matrixWithAmbiguousExtrema;
+    private Matrix matrixWithNoExtrema;
 
     @Before
     public void initialize() {
@@ -34,6 +41,14 @@ public class RegularMatrixTest {
         this.fourTimesTwo = new RegularMatrix(fourTimesTwoValues);
         double[][] twoTimesThreeValues = {{9.0, 10.0, 11.0}, {12.0, 13.0, 14.0}};
         this.twoTimesThree = new RegularMatrix(twoTimesThreeValues);
+
+        double[][] uniqueValues = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}};
+        this.matrixWithUniqueExtrema = new RegularMatrix(uniqueValues);
+        double[][] ambiguousValues = {{1.0, 1.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 9.0, 9.0}};
+        this.matrixWithAmbiguousExtrema = new RegularMatrix(ambiguousValues);
+        double[][] unspecifiedValues = {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
+        this.matrixWithNoExtrema = new RegularMatrix(unspecifiedValues);
+
     }
 
     @Test
@@ -198,9 +213,39 @@ public class RegularMatrixTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldEnsureLabelCapacity(){
+    public void shouldEnsureLabelCapacity() {
 
         LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
         lrm.setRowLabel("R7", 7);
+    }
+
+    @Test
+    public void shouldFindMatrixExtrema() {
+
+        Optional<Pair<Integer>> minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithUniqueExtrema);
+        assertTrue(minimalPosition.isPresent());
+        assertEquals(0L, (long) minimalPosition.get().getFirst());
+        assertEquals(0L, (long) minimalPosition.get().getSecond());
+        minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        assertEquals(Optional.empty(), minimalPosition);
+        minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithNoExtrema);
+        assertEquals(Optional.empty(), minimalPosition);
+
+        Optional<Pair<Integer>> maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithUniqueExtrema);
+        assertTrue(maximalPosition.isPresent());
+        assertEquals(2L, (long) maximalPosition.get().getFirst());
+        assertEquals(2L, (long) maximalPosition.get().getSecond());
+        maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        assertEquals(Optional.empty(), maximalPosition);
+        maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithNoExtrema);
+        assertEquals(Optional.empty(), maximalPosition);
+
+        List<Pair<Integer>> minimalPositions = MatrixUtilities.getPositionsOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        assertTrue(minimalPositions.get(0).getFirst() == 0 && minimalPositions.get(0).getSecond() == 0);
+        assertTrue(minimalPositions.get(1).getFirst() == 0 && minimalPositions.get(1).getSecond() == 1);
+
+        List<Pair<Integer>> maximalPositions = MatrixUtilities.getPositionsOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        assertTrue(maximalPositions.get(0).getFirst() == 2 && maximalPositions.get(0).getSecond() == 1);
+        assertTrue(maximalPositions.get(1).getFirst() == 2 && maximalPositions.get(1).getSecond() == 2);
     }
 }
