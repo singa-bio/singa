@@ -69,8 +69,8 @@ public final class MatrixUtilities {
     public static List<Pair<Integer>> getPositionsOfMinimalElement(Matrix matrix) {
         double minimalElement = Double.MAX_VALUE;
         List<Pair<Integer>> minimalElementPositions = new ArrayList<>();
-        for (int i = 0; i < matrix.getColumnDimension(); i++) {
-            for (int j = 0; j < matrix.getRowDimension(); j++) {
+        for (int i = 0; i < matrix.getRowDimension(); i++) {
+            for (int j = 0; j < matrix.getColumnDimension(); j++) {
                 double currentMatrixElement = matrix.getElement(i, j);
                 if (Double.compare(currentMatrixElement, minimalElement) == 0)
                     minimalElementPositions.add(new Pair<>(i, j));
