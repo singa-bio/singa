@@ -46,7 +46,7 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public LabelType getColumnLabel(int columnIndex) {
-        return this.rowLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(columnIndex)).map(Map.Entry::getKey)
+        return this.columnLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(columnIndex)).map(Map.Entry::getKey)
                 .findFirst().get();
     }
 
@@ -75,7 +75,7 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         for (int i = 0; i < getElements().length; i++) {
             StringJoiner columnJoiner = new StringJoiner(",");
             if (!this.rowLabelMap.isEmpty())
-                columnJoiner.add(String.valueOf(getColumnLabel(i)));
+                columnJoiner.add(String.valueOf(getRowLabel(i)));
             for (int j = 0; j < getElements()[i].length; j++) {
                 columnJoiner.add(df.format(getElements()[i][j]));
             }
