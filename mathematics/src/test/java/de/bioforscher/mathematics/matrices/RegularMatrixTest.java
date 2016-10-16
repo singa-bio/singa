@@ -1,6 +1,7 @@
 package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.algorithms.matrix.QRDecomposition;
 import de.bioforscher.mathematics.concepts.Addable;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
@@ -248,4 +249,22 @@ public class RegularMatrixTest {
         assertTrue(maximalPositions.get(0).getFirst() == 2 && maximalPositions.get(0).getSecond() == 1);
         assertTrue(maximalPositions.get(1).getFirst() == 2 && maximalPositions.get(1).getSecond() == 2);
     }
+
+    @Test
+    public void shouldPerformQRDecomposition() {
+        Matrix expectedQ = new RegularMatrix(new double[][]{{6.0 / 7.0, 3.0 / 7.0, -2.0 / 7.0},
+                {-69.0 / 175.0, 158.0 / 175.0, 6.0 / 35.0}, {-58.0 / 175.0, 6.0 / 175.0, -33.0 / 35.0}});
+        Matrix expectedR = new RegularMatrix(new double[][]{{14, 21, -14}, {0, 175, -70}, {0, 0, 35}});
+
+        Matrix originalMatrix = new RegularMatrix(new double[][]{{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}});
+        QRDecomposition decomposition = MatrixUtilities.performQRDecomposition(originalMatrix);
+
+        for (int row = 0; row < expectedQ.getRowDimension(); row++) {
+            assertArrayEquals(expectedQ.getElements()[row], decomposition.getMatrixQ().getElements()[row], 1E-16);
+        }
+        for (int row = 0; row < expectedQ.getRowDimension(); row++) {
+            assertArrayEquals(expectedR.getElements()[row], decomposition.getMatrixR().getElements()[row], 1E-14);
+        }
+    }
+
 }

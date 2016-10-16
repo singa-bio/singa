@@ -3,9 +3,11 @@ package de.bioforscher.mathematics.matrices;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
+import de.bioforscher.mathematics.vectors.VectorUtilities;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
@@ -43,7 +45,7 @@ public class RegularMatrix implements Matrix, Serializable {
 
     protected RegularMatrix(double[][] values, boolean isSymmetric) {
         if (!isSymmetric) {
-            if (!RegularMatrix.isWellFormed(values)) {
+            if (!isWellFormed(values)) {
                 throw new MalformedMatrixException(values);
             }
             // non symmetric, well formed, possibly rectangular
@@ -55,7 +57,7 @@ public class RegularMatrix implements Matrix, Serializable {
                 // symmetric, non well formed, compact
                 this.elements = values;
             } else {
-                if (!RegularMatrix.isWellFormed(values)) {
+                if (!isWellFormed(values)) {
                     throw new MalformedMatrixException(values);
                 }
                 // symmetric, well formed, not compact

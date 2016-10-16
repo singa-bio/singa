@@ -5,6 +5,7 @@ import de.bioforscher.mathematics.geometry.faces.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -19,6 +20,23 @@ public class VectorUtilities {
      * prevent instantiation
      */
     private VectorUtilities() {
+    }
+
+    /**
+     * Checks whether each Vector in the Collection has the same Dimension.
+     *
+     * @param vectors The vectors to check.
+     * @return True, if all Vectors have the same dimension.
+     */
+    public static boolean haveSameDimension(Collection<Vector> vectors) {
+        Iterator<Vector> iterator = vectors.iterator();
+        int requiredDimension = iterator.next().getDimension();
+        while (iterator.hasNext()) {
+            if (requiredDimension != iterator.next().getDimension()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -39,7 +57,7 @@ public class VectorUtilities {
     /**
      * Compares all values of the given index for all given vectors and returns the largest value found.
      *
-     * @param index The index of the value, that is to be compared.
+     * @param index   The index of the value, that is to be compared.
      * @param vectors A collection of Vectors.
      * @return The maximal value of the given index.
      */
@@ -56,7 +74,7 @@ public class VectorUtilities {
     /**
      * Compares all values of the given index for all given vectors and returns the smallest value found.
      *
-     * @param index The index of the value, that is to be compared.
+     * @param index   The index of the value, that is to be compared.
      * @param vectors A collection of Vectors.
      * @return The minimal value of the given index.
      */
@@ -68,6 +86,44 @@ public class VectorUtilities {
             }
         }
         return minimalValue;
+    }
+
+    /**
+     * Gets the first index with the maximal element in this vector.
+     *
+     * @param vector The vector.
+     * @return The index of the maximal element
+     */
+    public static int getIndexWithMaximalElement(Vector vector) {
+        int maximalIndex = -1;
+        double maximalValue = -Double.MAX_VALUE;
+        for (int index = 0; index < vector.getDimension(); index++) {
+            double currentValue = vector.getElement(index);
+            if (currentValue > maximalValue) {
+                maximalValue = currentValue;
+                maximalIndex = index;
+            }
+        }
+        return maximalIndex;
+    }
+
+    /**
+     * Gets the first index with the absolute maximal element in this vector.
+     *
+     * @param vector The vector.
+     * @return The index of the absolute maximal element.
+     */
+    public static int getIndexWithAbsolutMaximalElement(Vector vector) {
+        int maximalIndex = -1;
+        double maximalValue = -Double.MAX_VALUE;
+        for (int index = 0; index < vector.getDimension(); index++) {
+            double currentValue = Math.abs(vector.getElement(index));
+            if (currentValue > maximalValue) {
+                maximalValue = currentValue;
+                maximalIndex = index;
+            }
+        }
+        return maximalIndex;
     }
 
     /**
@@ -95,7 +151,7 @@ public class VectorUtilities {
         // using modified Gram-Schmidt process
 
         // all vectors need to have the same dimensionality
-        if (!Vector.haveSameDimensions(vectors)) {
+        if (!VectorUtilities.haveSameDimension(vectors)) {
             throw new IllegalArgumentException("All vectors need to have the same dimensionality.");
         }
         int dimension = vectors.iterator().next().getDimension();
@@ -115,8 +171,8 @@ public class VectorUtilities {
             } else {
                 // successively modify the original vector with the existing orthonormalized vectors
                 Vector projectionSum = accumulateGramSchmidtProjection(vector, orthonormalizedVectors);
-                // lastly, normalize
                 orthonormalizedVectors.add(projectionSum);
+                // lastly, normalize
                 normalizedVectors.add(projectionSum.normalize());
             }
         }
@@ -132,7 +188,7 @@ public class VectorUtilities {
      * <p>
      * with ( . ) denoting the inner product (generally the dot product)
      *
-     * @param first The vector (v) to be projected.
+     * @param first  The vector (v) to be projected.
      * @param second The vector (u) to project with.
      * @return The projected vector.
      */
@@ -144,13 +200,22 @@ public class VectorUtilities {
         }
     }
 
+    /**
+     * Accumulates the {@link VectorUtilities#gramSchmidtProjection(Vector, Vector) Graham-Schmidt projection} for each
+     * vector in the given list of Vectors. This orthonormalizes the vector to every vector and increases the numerical
+     * stability of the orthonormalization.
+     *
+     * @param vector The vector to be projected.
+     * @param orthogonalizedVectors The vectors to project with.
+     * @return The projected vector.
+     */
     public static Vector accumulateGramSchmidtProjection(Vector vector, List<Vector> orthogonalizedVectors) {
         // successively modify the original vector with the existing orthonormalized vectors
         Vector projectionSum = new RegularVector(vector.getDimension());
         boolean firstRun = true;
         for (Vector orthonormalizedVector : orthogonalizedVectors) {
             if (firstRun) {
-                // in the first run use th original vector
+                // in the first run use the original vector
                 projectionSum = vector.subtract(gramSchmidtProjection(vector, orthonormalizedVector));
                 firstRun = false;
             } else {

@@ -1,7 +1,9 @@
 package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.algorithms.matrix.QRDecomposition;
 import de.bioforscher.mathematics.vectors.Vector;
+import de.bioforscher.mathematics.vectors.VectorUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,9 @@ import java.util.Optional;
 
 public final class MatrixUtilities {
 
+    /**
+     * prevent instantiation
+     */
     private MatrixUtilities() {
     }
 
@@ -36,6 +41,13 @@ public final class MatrixUtilities {
         return new SquareMatrix(values);
     }
 
+    /**
+     * Divides the matrix into columns. The resulting list contains all columns of the original matrix in vectors. The
+     * order is maintained (the column with index 0 is in the list at index 0).
+     *
+     * @param matrix The matrix to be divided.
+     * @return The columns as vectors.
+     */
     public static List<Vector> divideIntoColumns(Matrix matrix) {
         List<Vector> columns = new ArrayList<>();
         for (int column = 0; column < matrix.getColumnDimension(); column++) {
@@ -44,7 +56,18 @@ public final class MatrixUtilities {
         return columns;
     }
 
-    public static Matrix matrixFromColumns(List<Vector> columnVectors) {
+    /**
+     * Creates a new matrix from vectors in a list. Each vector is a new column in the new matrix. The order of the list
+     * is maintained.
+     *
+     * @param columnVectors The columns as vectors.
+     * @return The columns combined to a matrix.
+     */
+    public static Matrix assembleMatrixFromColumns(List<Vector> columnVectors) {
+        if (!VectorUtilities.haveSameDimension(columnVectors)) {
+            throw new IllegalArgumentException("All vectors need to have the same dimension in order to create a" +
+                    " matrix out of them.");
+        }
         double[][] elements = new double[columnVectors.size()][columnVectors.get(0).getDimension()];
         for (int row = 0; row < columnVectors.size(); row++) {
             elements[row] = columnVectors.get(row).getElements();
@@ -52,17 +75,43 @@ public final class MatrixUtilities {
         return new RegularMatrix(elements);
     }
 
+    /**
+     * Divides the matrix into rows. The resulting list contains all rows of the original matrix in vectors. The
+     * order is maintained (the column with index 0 is in the list at index 0).
+     *
+     * @param matrix The matrix to be divided.
+     * @return The rows as vectors.
+     */
     public static List<Vector> divideIntoRows(Matrix matrix) {
         List<Vector> rows = new ArrayList<>();
         for (int row = 0; row < matrix.getRowDimension(); row++) {
-            rows.add(matrix.getColumn(row));
+            rows.add(matrix.getRow(row));
         }
         return rows;
     }
 
+    /**
+     * Creates a new matrix from vectors in a list. Each vector is a new row in the new matrix. The order of the list
+     * is maintained.
+     *
+     * @param rowVectors The rows as vectors.
+     * @return The rows combined to a matrix.
+     */
+    public static Matrix assembleMatrixFromRows(List<Vector> rowVectors) {
+        if (!VectorUtilities.haveSameDimension(rowVectors)) {
+            throw new IllegalArgumentException("All vectors need to have the same dimension in order to create a" +
+                    " matrix out of them.");
+        }
+        double[][] elements = new double[rowVectors.size()][rowVectors.get(0).getDimension()];
+        for (int column = 0; column < rowVectors.size(); column++) {
+            elements[column] = rowVectors.get(column).getElements();
+        }
+        return new RegularMatrix(elements);
+    }
+
 
     /**
-     * returns a list of positions of the minimal elements of a {@link Matrix}
+     * Returns a list of positions of the minimal elements of a {@link Matrix}
      *
      * @return positions of the minimal elements represented as a {@link Pair} (i,j) of {@link Integer} values
      */
@@ -128,4 +177,10 @@ public final class MatrixUtilities {
         List<Pair<Integer>> maximalElementPositions = getPositionsOfMaximalElement(matrix);
         return maximalElementPositions.size() == 1 ? Optional.of(maximalElementPositions.get(0)) : Optional.empty();
     }
+
+    public static QRDecomposition performQRDecomposition(Matrix matrix) {
+        return QRDecomposition.calculateQRDecomposition(matrix);
+
+    }
+
 }

@@ -8,6 +8,11 @@ import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * The {@code Vector} interface represents a collection of values where multiple
@@ -35,6 +40,25 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return All elements of this vector as an array.
      */
     double[] getElements();
+
+    /**
+     * Returns a stream of all elements in the vector.
+     *
+     * @return
+     */
+    default DoubleStream streamElements(){
+        return DoubleStream.of(this.getElements());
+    }
+
+    /**
+     * Returns a stream of all positions and the respective elements.
+     * @param action
+     */
+    default void forEach(BiConsumer<Integer, Double> action) {
+        for (int i = 0; i < this.getDimension(); i++) {
+            action.accept(i, this.getElement(i));
+        }
+    }
 
     /**
      * Returns the dimension of this vector.
@@ -107,19 +131,14 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      */
     RegularMatrix dyadicProduct(Vector vector);
 
+    /**
+     * Checks if this vector contains only Zeros.
+     *
+     * @return Thrue, if this vector contains only Zeros.
+     */
     default boolean isZero() {
         for (double element: this.getElements()) {
             if (element != 0.0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    static boolean haveSameDimensions(Collection<Vector> vectors) {
-        int dim = vectors.iterator().next().getDimension();
-        for (Vector vector: vectors) {
-            if (vector.getDimension() != dim) {
                 return false;
             }
         }

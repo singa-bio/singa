@@ -8,6 +8,7 @@ import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 import static de.bioforscher.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
