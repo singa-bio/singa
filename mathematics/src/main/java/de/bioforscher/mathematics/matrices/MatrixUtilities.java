@@ -183,4 +183,16 @@ public final class MatrixUtilities {
 
     }
 
+    /**
+     * calculates the covariance matrix between to matrices in respect to matrix A
+     * cov(A) = B'*A
+     *
+     * @param a matrix A to which covariance should be calculated
+     * @param b matrix
+     * @return the covariance matrix (A and B are not modified)
+     */
+    public static Matrix calculateCovarianceMatrix(Matrix a, Matrix b) {
+
+        return b.transpose().multiply(a);
+    }
 }
