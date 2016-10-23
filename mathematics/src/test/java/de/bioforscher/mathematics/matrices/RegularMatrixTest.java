@@ -2,6 +2,7 @@ package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.algorithms.matrix.QRDecomposition;
+import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.concepts.Addable;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
@@ -267,4 +268,28 @@ public class RegularMatrixTest {
         }
     }
 
+    @Test
+    public void shouldPerformSVDecomposition() {
+        Matrix expectedU = new RegularMatrix(new double[][]{
+                {-0.8571428571428572, -0.42857142857142855, 0.2857142857142857},
+                {0.3942857142857143, -0.9028571428571428, -0.1714285714285714},
+                {0.3314285714285714, -0.03428571428571428, 0.9428571428571428}});
+        Matrix expectedV = new RegularMatrix(new double[][]{
+                {-1.0, -0.0, -0.0},
+                {-0.0, -1.0, -0.0},
+                {-0.0, -0.0, -1.0}});
+        Matrix inputMatrix = new RegularMatrix(new double[][]{
+                {6.0 / 7.0, 3.0 / 7.0, -2.0 / 7.0},
+                {-69.0 / 175.0, 158.0 / 175.0, 6.0 / 35.0},
+                {-58.0 / 175.0, 6.0 / 175.0, -33.0 / 35.0}});
+
+        SVDecomposition svd = MatrixUtilities.performSVDecomposition(inputMatrix);
+
+        for (int row = 0; row < expectedU.getRowDimension(); row++) {
+            assertArrayEquals(expectedU.getElements()[row], svd.getMatrixU().getElements()[row], 1E-16);
+        }
+        for (int row = 0; row < expectedV.getRowDimension(); row++) {
+            assertArrayEquals(expectedV.getElements()[row], svd.getMatrixV().getElements()[row], 1E-14);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.algorithms.superimposition;
 
+import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.matrices.SquareMatrix;
@@ -46,9 +47,9 @@ public class SVDSuperimposer {
 
         // solve using SVD
         SVDecomposition svd = new SVDecomposition(covarianceMatrix);
-        Matrix u = svd.getU();
-        Matrix v = svd.getV();
-        Matrix ut = svd.getUT();
+        Matrix u = svd.getMatrixU();
+        Matrix v = svd.getMatrixV();
+        Matrix ut = u.transpose();
 
         // calculate actual rotation matrix
         Matrix rotation = v.multiply(ut).transpose();

@@ -2,6 +2,7 @@ package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.algorithms.matrix.QRDecomposition;
+import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.vectors.Vector;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
@@ -192,7 +193,10 @@ public final class MatrixUtilities {
      * @return the covariance matrix (A and B are not modified)
      */
     public static Matrix calculateCovarianceMatrix(Matrix a, Matrix b) {
-
         return b.transpose().multiply(a);
+    }
+
+    public static SVDecomposition performSVDecomposition(Matrix matrix) {
+        return new SVDecomposition(matrix);
     }
 }

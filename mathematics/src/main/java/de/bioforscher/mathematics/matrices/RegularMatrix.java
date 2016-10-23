@@ -3,11 +3,9 @@ package de.bioforscher.mathematics.matrices;
 import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
@@ -91,19 +89,6 @@ public class RegularMatrix implements Matrix, Serializable {
         }
     }
 
-    @Override
-    public <MatrixClass extends Matrix> MatrixClass as(Class<MatrixClass> matrixClass) {
-        if (this.getClass().equals(matrixClass)) {
-            return matrixClass.cast(this);
-        } else if (SquareMatrix.isSquare(this) && matrixClass.getSimpleName().equals("SquareMatrix")) {
-            return createNewMatrix(this.getElements(), matrixClass);
-        } else if (SymmetricMatrix.isSymmetric(this) && matrixClass.getSimpleName().equals("SymmetricMatrix")) {
-            return createNewMatrix(this.getElements(), matrixClass);
-        } else {
-            throw new IllegalArgumentException("Could not create desired matrix, from this instance.");
-        }
-    }
-
     /**
      * Returns {@code true} if all rows are equal in length and {@code false} otherwise.
      *
@@ -121,6 +106,19 @@ public class RegularMatrix implements Matrix, Serializable {
     }
 
     @Override
+    public <MatrixClass extends Matrix> MatrixClass as(Class<MatrixClass> matrixClass) {
+        if (this.getClass().equals(matrixClass)) {
+            return matrixClass.cast(this);
+        } else if (SquareMatrix.isSquare(this) && matrixClass.getSimpleName().equals("SquareMatrix")) {
+            return createNewMatrix(this.getElements(), matrixClass);
+        } else if (SymmetricMatrix.isSymmetric(this) && matrixClass.getSimpleName().equals("SymmetricMatrix")) {
+            return createNewMatrix(this.getElements(), matrixClass);
+        } else {
+            throw new IllegalArgumentException("Could not create desired matrix, from this instance.");
+        }
+    }
+
+    @Override
     public String getDimensionAsString() {
         return String.valueOf(this.getRowDimension()) + "x"
                 + String.valueOf(this.getRowDimension());
@@ -134,6 +132,17 @@ public class RegularMatrix implements Matrix, Serializable {
     @Override
     public double[][] getElements() {
         return this.elements;
+    }
+
+    @Override
+    public double[][] getCopyOfElements() {
+        final double[][] copy = new double[this.elements.length][];
+        for (int i = 0; i < this.elements.length; i++) {
+            final double[] row = this.elements[i];
+            copy[i] = new double[row.length];
+            System.arraycopy(row, 0, copy[i], 0, row.length);
+        }
+        return copy;
     }
 
     @Override
