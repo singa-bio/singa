@@ -3,6 +3,7 @@ package de.bioforscher.mathematics.metrics.model;
 import de.bioforscher.mathematics.metrics.implementations.AngularDistance;
 import de.bioforscher.mathematics.metrics.implementations.CosineSimilarity;
 import de.bioforscher.mathematics.metrics.implementations.MinkowskiMetric;
+import de.bioforscher.mathematics.metrics.implementations.SquaredEuclideanDistance;
 import de.bioforscher.mathematics.vectors.Vector;
 
 import java.util.Collections;
@@ -54,6 +55,8 @@ public final class VectorMetricProvider {
      * @see <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia: Euclidean distance</a>
      */
     public static final MinkowskiMetric<Vector> EUCLIDEAN_METRIC = addElement(new MinkowskiMetric<>(2));
+
+    public static final SquaredEuclideanDistance<Vector> SQUARED_EUCLIDEAN_METRIC = addElement(new SquaredEuclideanDistance<>());
 
     /**
      * The Chebyshev metric (also known as Tchebychev metric or maximum metric) is a metric defined on a vector space

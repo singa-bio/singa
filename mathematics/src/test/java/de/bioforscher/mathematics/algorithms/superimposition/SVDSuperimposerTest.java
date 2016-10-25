@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Created by fkaiser on 19.10.16.
  */
@@ -34,7 +36,8 @@ public class SVDSuperimposerTest {
     public void calculateSuperimposition() throws Exception {
 
         SVDSuperimposer superimposer = new SVDSuperimposer(this.reference, this.candidate);
-        superimposer.calculateSuperimposition();
+        Superimposition superimposition = superimposer.calculateSuperimposition();
+        assertEquals(0.19986139479017428, superimposition.getRmsd(), 0.1E-6);
     }
 
     @Test
