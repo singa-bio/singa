@@ -63,14 +63,18 @@ public enum AtomName {
     HT2("HT2", HYDROGEN),
     HT3("HT3", HYDROGEN),
     HXT("HXT", HYDROGEN),
+    HZ("HZ", HYDROGEN),
     HZ1("HZ1", HYDROGEN),
     HZ2("HZ2", HYDROGEN),
     HZ3("HZ3", HYDROGEN),
+    ONEHT("1HT", HYDROGEN),
     TWOHB("2HB", HYDROGEN),
     TWOHD("2HD", HYDROGEN),
     TWOHE("2HE", HYDROGEN),
     TWOHG("2HG", HYDROGEN),
+    TWOHT("2HT", HYDROGEN),
     THREEHB("3HB", HYDROGEN),
+    THREEHT("3HT", HYDROGEN),
 
     // Deuterium
     D("D", DEUTERIUM),
@@ -116,6 +120,7 @@ public enum AtomName {
     DH21("DH21", DEUTERIUM),
     DH22("DH22", DEUTERIUM),
     DXT("DXT", DEUTERIUM),
+    DZ("DZ", DEUTERIUM),
     DZ1("DZ1", DEUTERIUM),
     DZ2("DZ2", DEUTERIUM),
     DZ3("DZ3", DEUTERIUM),
@@ -148,6 +153,7 @@ public enum AtomName {
     CD2("CD2", CARBON),
     CE("CE", CARBON),
     CE1("CE1", CARBON),
+    CE2("CE2", CARBON),
     CG("CG", CARBON),
     CG1("CG1", CARBON),
     CG2("CG2", CARBON),
@@ -234,14 +240,21 @@ public enum AtomName {
             TWOHG, D, D1, DB2, DB3, DA, DB2, DB3, DD2, DD3, DE2, DE3, DG2, DG3, DXT, DZ1, DZ2, DZ3,
             C, CA, CB, CD, CE, CG, N, NZ, O, OXT);
 
-    public static EnumSet<AtomName> VALINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HB1, HB2, HB3, HG11, HG12,
-            HG13, HG21, HG22, HG23, DG11, DG12, DG13, DG21, DG22, DG23, HN, HXT, D, D1, D2, D3, DA, DB, D, C, CA, CB,
-            N, O, OXT);
+    public static EnumSet<AtomName> METHIONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE1, HE2, HE3,
+            HG1, HG2, HG3, HN, HXT, ONEHT, TWOHB, TWOHG, TWOHG, THREEHT, D, D1, D2, D3, DA, DB2, DB3, DE1, DE2, DE3,
+            DG2, DG3, C, CA, CB, CE, CG, N, O, OXT, SD);
+
+    public static EnumSet<AtomName> PHENYLALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2,
+            HD3, HE1, HE2, HN, HXT, HZ, TWOHB, D, D1, D2, D3, DA, DB2, DB3, DD1, DD2, DE1, DE2, DZ, C, CA, CB, CD1, CD2,
+            CE1, CE2, CG, CZ, N, O, OXT);
 
     public static EnumSet<AtomName> PROLINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
             HG1, HG2, HG3, TWOHB, TWOHD, TWOHG, D, D2, DA, DB2, DB3, DD2, DD3, C, C5, C26, C27, C28, C29, CA, CB, CD,
             CG, N, N6, O, O2, OXT);
 
+    public static EnumSet<AtomName> VALINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HB1, HB2, HB3, HG11, HG12,
+            HG13, HG21, HG22, HG23, DG11, DG12, DG13, DG21, DG22, DG23, HN, HXT, D, D1, D2, D3, DA, DB, D, C, CA, CB,
+            N, O, OXT);
 
     private String name;
     private Element element;
