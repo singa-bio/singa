@@ -10,14 +10,26 @@ import static de.bioforscher.chemistry.physical.AtomName.*;
  */
 public enum ResidueType {
 
-    ALANINE("Alanine", "A", "ALA", ALANINE_ATOM_NAMES),
-    CYSTEINE("Cysteine", "C", "CYS", CYSTEINE_ATOM_NAMES),
+    ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
+    ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
+    ASPARAGINE("Asparagine", "N", "Asn", ASPARAGINE_ATOM_NAMES),
     ASPARTIC_ACID("Aspartic acid", "D", "Asp", ASPARTIC_ACID_ATOM_NAMES),
-    GLUTAMIC_ACID("Glutamic acid", "E", "Glu", GLUTAMIC_ACID_ATOM_NAMES),
+    CYSTEINE("Cysteine", "C", "Cys", CYSTEINE_ATOM_NAMES),
     GLUTAMINE("Glutamine", "Q", "Gln", GLUTAMINE_ATOM_NAMES),
-    GLYCINE("Glycine", "G", "GLY", GLYCINE_ATOM_NAMES),
-    VALINE("Valine", "V", "VAL", VALINE_ATOM_NAMES),
-    PROLINE("Proline", "P", "PRO", PROLINE_ATOM_NAMES);
+    GLUTAMIC_ACID("Glutamic acid", "E", "Glu", GLUTAMIC_ACID_ATOM_NAMES),
+    GLYCINE("Glycine", "G", "Gly", GLYCINE_ATOM_NAMES),
+    HISTIDINE("Histidine", "H", "His", HISTIDINE_ATOM_NAMES),
+    ISOLEUCINE("Isoleucine", "I", "Ile", ISOLEUCINE_ATOM_NAMES),
+    LEUCINE("Leucine", "L", "Leu", LEUCINE_ATOM_NAMES),
+    LYSINE("Lysine", "K", "Lys", LYSINE_ATOM_NAMES),
+    METHIONINE("Methionine", "M", "Met", METHIONINE_ATOM_NAMES),
+    PHENYLALANINE("Phenylalanine", "F", "Phe", PHENYLALANINE_ATOM_NAMES),
+    PROLINE("Proline", "P", "PRO", PROLINE_ATOM_NAMES),
+    SERINE("Serine", "S", "Ser", SERINE_ATOM_NAMES),
+    THREONINE("Threonine", "T", "Thr", THREONINE_ATOM_NAMES),
+    TRYPTOPHAN("Tryptophan", "W", "Trp", TRYPTOPHAN_ATOM_NAMES),
+    TYROSINE("Tyrosine", "Y", "Tyr", TYROSINE_ATOM_NAMES),
+    VALINE("Valine", "V", "VAL", VALINE_ATOM_NAMES);
 
     private String name;
     private String oneLetterCode;
@@ -54,10 +66,10 @@ public enum ResidueType {
      * @return true if the set of Atoms contains only Atom names, that can occur in the  given residue type.
      */
     public boolean containsExpectedAtoms(List<Atom> atoms, ResidueType residueType) {
-        Set<String> actualNames = atoms.stream()
+        final Set<String> actualNames = atoms.stream()
                                        .map(Atom::getName)
                                        .collect(Collectors.toSet());
-        Set<String> expectedNames = residueType.getAllowedAtoms().stream()
+        final Set<String> expectedNames = residueType.getAllowedAtoms().stream()
                                                .map(AtomName::getName)
                                                .collect(Collectors.toSet());
         return expectedNames.containsAll(actualNames);

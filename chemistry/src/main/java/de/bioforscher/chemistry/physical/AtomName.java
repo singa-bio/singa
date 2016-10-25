@@ -30,6 +30,7 @@ public enum AtomName {
     HD11("HD11", HYDROGEN),
     HD12("HD12", HYDROGEN),
     HD13("HD13", HYDROGEN),
+    HD("HD", HYDROGEN),
     HD2("HD2", HYDROGEN),
     HD21("HD21", HYDROGEN),
     HD22("HD22", HYDROGEN),
@@ -54,8 +55,10 @@ public enum AtomName {
     HG21("HG21", HYDROGEN),
     HG22("HG22", HYDROGEN),
     HG23("HG23", HYDROGEN),
+    HH("HH", HYDROGEN),
     HH11("HH11", HYDROGEN),
     HH12("HH12", HYDROGEN),
+    HH2("HH2", HYDROGEN),
     HH21("HH21", HYDROGEN),
     HH22("HH22", HYDROGEN),
     HN("HN", HYDROGEN),
@@ -107,6 +110,7 @@ public enum AtomName {
     DE21("DE21", DEUTERIUM),
     DE22("DE22", DEUTERIUM),
     DG("DG", DEUTERIUM),
+    DG1("DG1", DEUTERIUM),
     DG11("DG11", DEUTERIUM),
     DG12("DG12", DEUTERIUM),
     DG13("DG13", DEUTERIUM),
@@ -115,8 +119,10 @@ public enum AtomName {
     DG22("DG22", DEUTERIUM),
     DG23("DG23", DEUTERIUM),
     DG3("DG3", DEUTERIUM),
+    DH("DH", DEUTERIUM),
     DH11("DH11", DEUTERIUM),
     DH12("DH12", DEUTERIUM),
+    DH2("DH2", DEUTERIUM),
     DH21("DH21", DEUTERIUM),
     DH22("DH22", DEUTERIUM),
     DXT("DXT", DEUTERIUM),
@@ -154,10 +160,14 @@ public enum AtomName {
     CE("CE", CARBON),
     CE1("CE1", CARBON),
     CE2("CE2", CARBON),
+    CE3("CE3", CARBON),
     CG("CG", CARBON),
     CG1("CG1", CARBON),
     CG2("CG2", CARBON),
+    CH2("CH2", CARBON),
     CZ("CZ", CARBON),
+    CZ2("CZ2", CARBON),
+    CZ3("CZ3", CARBON),
 
     // Nitrogen
     N("N", NITROGEN),
@@ -168,6 +178,7 @@ public enum AtomName {
     ND1("ND1", NITROGEN),
     ND2("ND2",NITROGEN),
     NE("NE", NITROGEN),
+    NE1("NE1", NITROGEN),
     NE2("NE2", NITROGEN),
     NH1("NH1", NITROGEN),
     NH2("NH2", NITROGEN),
@@ -183,6 +194,10 @@ public enum AtomName {
     OD2("OD2", OXYGEN),
     OE1("OE1", OXYGEN),
     OE2("OE2", OXYGEN),
+    OG("OG", OXYGEN),
+    OG1("OG1", OXYGEN),
+    OG2("OG2", OXYGEN),
+    OH("OH", OXYGEN),
     OXT("OXT", OXYGEN),
 
     // Sulfur
@@ -251,6 +266,20 @@ public enum AtomName {
     public static EnumSet<AtomName> PROLINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
             HG1, HG2, HG3, TWOHB, TWOHD, TWOHG, D, D2, DA, DB2, DB3, DD2, DD3, C, C5, C26, C27, C28, C29, CA, CB, CD,
             CG, N, N6, O, O2, OXT);
+
+    public static EnumSet<AtomName> SERINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HG, HN,
+            HXT, TWOHB, D, D2, D3, DA, DB2, DB3, DG, C, CA, CB, N, O, OG, OXT);
+
+    public static EnumSet<AtomName> THREONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HG1, HG21,
+            HG22, HG23, HG3, HN, HXT, D, DA, DB, DG1, DG21, DG22, DG23, C, CA, CB, CG1, CG2, N, O, OG1, OG2, OXT);
+
+    public static EnumSet<AtomName> TRYPTOPHAN_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD, HD1, HE1,
+            HE3, HH, HH2, HN, HXT, HZ2, HZ3, TWOHB, D, DA, DB2, DB3, DD1, DE1, DE3, DH2, DZ2, DZ3, C, CA, CB, CD1,
+            CD2, CE2, CE3, CG, CH2, CZ2, CZ3, N, NE1, O, OXT);
+
+    public static EnumSet<AtomName> TYROSINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
+            HE1, HE2, HH, HN, HXT, TWOHB, D, DA, DB2, DB3, DD1, DD2, DE1, DE2, DH, C, CA, CB, CD1, CD2, CE1, CE2, CG,
+            CZ, N, O, OH, OXT);
 
     public static EnumSet<AtomName> VALINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HB1, HB2, HB3, HG11, HG12,
             HG13, HG21, HG22, HG23, DG11, DG12, DG13, DG21, DG22, DG23, HN, HXT, D, D1, D2, D3, DA, DB, D, C, CA, CB,

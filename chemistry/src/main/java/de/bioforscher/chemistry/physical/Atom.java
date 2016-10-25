@@ -108,12 +108,7 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
 
     @Override
     public int getDegree() {
-        return 0;
-    }
-
-    @Override
-    public int getDegree() {
-        return 0;
+        return this.neighbours.size();
     }
 
     public void setNeighbours(List<Atom> neighbours) {
