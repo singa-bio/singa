@@ -13,6 +13,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -154,8 +155,10 @@ public class UniProtContentHandler implements ContentHandler {
             case "sequence": {
                 this.currentTag = qName;
                 // set weight
-                this.molarMass = Double.valueOf(atts.getValue("mass"));
-                break;
+                if (atts.getValue("mass") != null) {
+                    this.molarMass = Double.valueOf(atts.getValue("mass"));
+                    break;
+                }
             }
         }
 
@@ -204,11 +207,9 @@ public class UniProtContentHandler implements ContentHandler {
 
         switch (this.currentTag) {
             case "accession": {
-                if (this.identifier == null) {
-                    // set identifier
-                    this.identifier = new UniProtIdentifier(new String(ch, start, length));
-                }
-                break;
+                // set identifier
+                this.identifier = new UniProtIdentifier(new String(ch, start, length));
+
             }
             case "fullName": {
                 if (this.inRecommendedName) {

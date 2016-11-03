@@ -41,42 +41,6 @@ public class UniProtParserService extends AbstractXMLParser {
         return INSTANCE.fetchChemicalEntity();
     }
 
-    public static void main(String[] args) {
-        Enzyme entity = UniProtParserService.parse("P12345");
-        System.out.println("Primary name:");
-        System.out.println(entity.getName());
-        System.out.println();
-
-        System.out.println("Additional Names:");
-        List<String> names = entity.getAdditionalNames();
-        names.forEach(System.out::println);
-        System.out.println();
-
-        System.out.println("Sequence");
-        for (String sequence : entity.getAllAminoAcidSequences()) {
-            System.out.println(sequence);
-            System.out.println();
-        }
-
-        System.out.println("Organism");
-        for (Organism organism : entity.getAllOrganisms()) {
-            System.out.println(organism.getName());
-            System.out.println(organism.getCommonName());
-            System.out.println("TaxID: " + organism.getIdentifier());
-            System.out.println(organism.getLineage()
-                                       .stream()
-                                       .map(Taxon::getName)
-                                       .collect(Collectors.joining(" - " + "")));
-            System.out.println();
-        }
-
-        System.out.println("Notes");
-        for (Annotation note: entity.getAnnotationsOfType(AnnotationType.NOTE)) {
-            System.out.println(note.getDescription()+": "+note.getContent());
-        }
-
-    }
-
     public void setIdentifier(UniProtIdentifier identifier) {
         this.identifier = identifier;
     }
