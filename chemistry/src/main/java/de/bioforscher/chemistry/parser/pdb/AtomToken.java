@@ -1,6 +1,14 @@
 package de.bioforscher.chemistry.parser.pdb;
 
+import de.bioforscher.chemistry.descriptive.elements.Element;
+import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.physical.Atom;
+import de.bioforscher.chemistry.physical.AtomName;
+import de.bioforscher.chemistry.physical.Residue;
 import de.bioforscher.core.utility.Range;
+import de.bioforscher.mathematics.vectors.Vector3D;
+
+import java.util.regex.Pattern;
 
 /**
  * Created by Christoph on 23.06.2016.
@@ -22,6 +30,12 @@ public enum AtomToken {
     SEGMENT_IDENTIFIER(Range.of(77, 78)),
     ELEMENT_SYMBOL(Range.of(77, 78));
 
+    /**
+     * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
+     * parsable with this token.
+     */
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^ATOM .*"); // TODO add HETATOM
+
     private final Range<Integer> columns;
 
     AtomToken(Range<Integer> columns) {
@@ -41,10 +55,28 @@ public enum AtomToken {
     }
 
     public Range<Integer> getColumns() {
-        return columns;
+        return this.columns;
     }
 
     public String extract(String line) {
         return extractValueFromPDBLine(line, this);
     }
+
+    public static Atom assembleAtom(String atomLine) {
+        // coordinates
+        Double x = Double.valueOf(X_COORDINATE.extract(atomLine));
+        Double y = Double.valueOf(Y_COORDINATE.extract(atomLine));
+        Double z = Double.valueOf(Z_COORDINATE.extract(atomLine));
+        Vector3D coordinates = new Vector3D(x, y, z);
+        // serial
+        Integer atomSerial = Integer.valueOf(ATOM_SERIAL.extract(atomLine));
+        // atom name
+        AtomName atomName = AtomName.getAtomNameFromString(ATOM_NAME.extract(atomLine))
+                .orElseThrow(IllegalArgumentException::new);
+        // element
+        Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
+                .orElseThrow(IllegalArgumentException::new);
+        return new Atom(atomSerial, element, atomName, coordinates);
+    }
+
 }

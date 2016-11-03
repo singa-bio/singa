@@ -36,13 +36,6 @@ public class StructureTest {
         Atom a1 = new Atom(0, ElementProvider.HYDROGEN, AtomName.H, new Vector3D(0,0,1));
         Atom a2 = new Atom(1, ElementProvider.HYDROGEN, AtomName.H, new Vector3D(0,0,2));
         Atom a3 = new Atom(2, ElementProvider.HYDROGEN, AtomName.H, new Vector3D(0,0,3));
-        s.addNode(a1);
-        s.addNode(a2);
-        s.addNode(a3);
-        // and connect them with bonds
-        s.connect(0, a1, a2, Bond.class);
-        s.connect(1, a2, a3, Bond.class);
-        s.connect(2, a1, a3, Bond.class);
 
         // substructure
         SubStructure ss1 = new SubStructure(3);
@@ -60,8 +53,6 @@ public class StructureTest {
 
         // add substructure
         s.addSubstructure(ss1);
-        // and connect atom to stom within substructure
-        s.connect(3, a1, a4, Bond.class);
 
         System.out.println(s.toString());
 

@@ -18,52 +18,44 @@ public class ResidueFactory {
         // connect backbone atoms first
         connectBackboneAtoms(residue, atoms);
 
+        // TODO maybe order by relative occurrence to speedup
         switch (residueType) {
             case ALANINE: {
                 residue.connect(atoms.get(CA), atoms.get(CB));
                 break;
             }
             case ARGININE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD));
-                residue.connect(atoms.get(NE), atoms.get(CZ));
-                residue.connect(atoms.get(CZ), atoms.get(NH1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, NE, CZ, NH1);
                 residue.connect(atoms.get(CZ), atoms.get(NH2));
                 break;
             }
             case ASPARAGINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(OD1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, OD1);
                 residue.connect(atoms.get(CG), atoms.get(ND2));
                 break;
             }
             case ASPARTIC_ACID: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(OD1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, OD1);
                 residue.connect(atoms.get(CG), atoms.get(OD2));
                 break;
             }
             case CYSTEINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(SG));
+                connectInOrder(residue, atoms,
+                        CA, CB, SG);
                 break;
             }
             case GLUTAMINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD));
-                residue.connect(atoms.get(CD), atoms.get(OE1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, OE1);
                 residue.connect(atoms.get(CD), atoms.get(NE2));
                 break;
             }
             case GLUTAMIC_ACID: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD));
-                residue.connect(atoms.get(CD), atoms.get(OE1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, OE1);
                 residue.connect(atoms.get(CD), atoms.get(OE2));
                 break;
             }
@@ -71,46 +63,86 @@ public class ResidueFactory {
                 // nothing ...
             }
             case HISTIDINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD2));
-                residue.connect(atoms.get(CD2), atoms.get(NE2));
-                residue.connect(atoms.get(NE2), atoms.get(CE1));
-                residue.connect(atoms.get(CE1), atoms.get(ND1));
-                residue.connect(atoms.get(ND1), atoms.get(CG));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD2, NE2, CE1, ND1, CG);
                 break;
             }
             case ISOLEUCINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG1, CD1);
                 residue.connect(atoms.get(CB), atoms.get(CG2));
-                residue.connect(atoms.get(CG1), atoms.get(CD1));
                 break;
             }
             case LEUCINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD1));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD1);
                 residue.connect(atoms.get(CG), atoms.get(CD2));
                 break;
             }
             case LYSINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
-                residue.connect(atoms.get(CB), atoms.get(CG));
-                residue.connect(atoms.get(CG), atoms.get(CD));
-                residue.connect(atoms.get(CD), atoms.get(CE));
-                residue.connect(atoms.get(CE), atoms.get(NZ));
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, CE, NZ);
                 break;
             }
-
+            case METHIONINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, SD, CE);
+                break;
+            }
+            case PHENYLALANINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD2, CE2, CZ, CE1, CD1, CG);
+                break;
+            }
+            case PROLINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, N, CA);
+                break;
+            }
+            case SERINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, OG);
+                break;
+            }
+            case THREONINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, OG1);
+                residue.connect(atoms.get(CB), atoms.get(CG2));
+                break;
+            }
+            case TRYPTOPHAN: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD, CD1, CE2, CE2, CZ2, CH2, CZ2, CE3, CD2, CG);
+                residue.connect(atoms.get(CD2), atoms.get(CE2));
+                break;
+            }
+            case TYROSINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG, CD1, CE1, CZ, CE2, CD2, CG);
+                residue.connect(atoms.get(CZ), atoms.get(OH));
+                break;
+            }
+            case VALINE: {
+                connectInOrder(residue, atoms,
+                        CA, CB, CG1);
+                residue.connect(atoms.get(CB), atoms.get(CG2));
+                break;
+            }
 
             default: {
                 break;
             }
         }
-
-
         return residue;
+    }
+
+    private static void connectInOrder(Residue residue, EnumMap<AtomName, Atom> atoms, AtomName... names) {
+        if (names.length < 2) {
+            throw new IllegalArgumentException("Two or more atom names are required in order to connect them.");
+        }
+        for (int i = 1; i < names.length; i++) {
+            residue.connect(atoms.get(names[i-1]), atoms.get(names[i]));
+        }
     }
 
     private static void connectBackboneAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {

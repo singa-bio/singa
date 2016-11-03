@@ -4,9 +4,6 @@ import de.bioforscher.core.utility.Nameable;
 
 import java.util.Optional;
 
-/**
- * Created by Christoph on 22.09.2016.
- */
 public class Residue extends SubStructure implements Nameable {
 
     private final ResidueType type;
@@ -34,9 +31,7 @@ public class Residue extends SubStructure implements Nameable {
         // increase identifier
         this.nextBondIdentifier++;
         return true;
-
     }
-
 
     @Override
     public String getName() {
@@ -74,6 +69,8 @@ public class Residue extends SubStructure implements Nameable {
     public Optional<Atom> getBackboneOxygen() {
         return getAtomByName(AtomName.O);
     }
+
+
 
     @Override
     public String toString() {

@@ -1,8 +1,10 @@
 package de.bioforscher.chemistry.physical.experimental;
 
-import de.bioforscher.chemistry.parser.pdb.PDBToStructure;
-import de.bioforscher.chemistry.physical.Structure;
+import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.physical.Atom;
+import de.bioforscher.chemistry.physical.SubStructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
+import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
@@ -13,11 +15,10 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
@@ -51,7 +52,7 @@ public class StructureViewer extends Application {
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    private Structure structure;
+    private SubStructure structure;
 
 
     public static void main(String[] args) {
@@ -65,13 +66,14 @@ public class StructureViewer extends Application {
         this.root.setDepthTest(DepthTest.ENABLE);
 
         loadTestStructure();
+        translateToCentre();
         buildCamera();
         buildAxes();
         buildMolecule();
 
         Scene scene = new Scene(this.root, 800, 600, true);
-        handleKeyboard(scene, this.world);
-        handleMouse(scene, this.world);
+        handleKeyboard(scene);
+        handleMouse(scene);
         scene.setFill(Color.WHITE);
 
         primaryStage.setTitle("Molecule Sample Application");
@@ -148,7 +150,7 @@ public class StructureViewer extends Application {
         Xform atoms = new Xform();
 
         // draw atoms
-        this.structure.getResidues().forEach((integer, residue) -> {
+        this.structure.getResidues().forEach( residue -> {
                     residue.getNodes().forEach(atom -> {
                         Sphere atomSphere = new Sphere(1.0);
                         if (atom.getElement().equals(CARBON)) {
@@ -161,9 +163,9 @@ public class StructureViewer extends Application {
                             atomSphere.setMaterial(hydrogenMaterial);
                         }
 
-                        atomSphere.setTranslateX(atom.getPosition().getX() * 3.0);
-                        atomSphere.setTranslateY(atom.getPosition().getY() * 3.0);
-                        atomSphere.setTranslateZ(atom.getPosition().getZ() * 3.0);
+                        atomSphere.setTranslateX(atom.getPosition().getX());
+                        atomSphere.setTranslateY(atom.getPosition().getY());
+                        atomSphere.setTranslateZ(atom.getPosition().getZ());
 
                         Xform atomForm = new Xform();
                         atomForm.getChildren().add(atomSphere);
@@ -171,8 +173,8 @@ public class StructureViewer extends Application {
 
                         residue.getEdges().forEach(edge -> {
 
-                            Vector3D source = edge.getSource().getPosition().multiply(3.0);
-                            Vector3D target = edge.getTarget().getPosition().multiply(3.0);
+                            Vector3D source = edge.getSource().getPosition();
+                            Vector3D target = edge.getTarget().getPosition();
 
                             Cylinder bond = createCylinderConnecting(source, target);
                             bond.setMaterial(carbonMaterial);
@@ -187,10 +189,11 @@ public class StructureViewer extends Application {
         );
 
         // backbone edges between residues
-        this.structure.getEdges().forEach(edge -> {
+        this.structure.getSubstructures().forEach(ss ->
+                ss.getEdges().forEach(edge -> {
 
-            Vector3D source = edge.getSource().getPosition().multiply(3.0);
-            Vector3D target = edge.getTarget().getPosition().multiply(3.0);
+            Vector3D source = edge.getSource().getPosition();
+            Vector3D target = edge.getTarget().getPosition();
 
             Cylinder bond = createCylinderConnecting(source, target);
             bond.setMaterial(carbonMaterial);
@@ -198,7 +201,7 @@ public class StructureViewer extends Application {
             Xform bondFrom = new Xform();
             bondFrom.getChildren().add(bond);
             forms.add(bondFrom);
-        });
+        }));
 
         atoms.getChildren().addAll(forms);
         this.moleculeGroup.getChildren().add(atoms);
@@ -217,15 +220,25 @@ public class StructureViewer extends Application {
         bond.setTranslateZ(newLocation.getZ());
 
         // phi
-        bond.getTransforms().add(new Rotate(90+Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate
+        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate
                 .Z_AXIS));
         // theta
-        bond.getTransforms().add(new Rotate(90+Math.toDegrees(Math.acos(delta.getZ() / distance)), Rotate.X_AXIS));
+        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.acos(delta.getZ() / distance)), Rotate.X_AXIS));
 
         return bond;
     }
 
-    private void handleMouse(Scene scene, final Node root) {
+    private void translateToCentre() {
+        List<Atom> allAtoms = this.structure.getAllAtoms();
+        Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
+                .map(Atom::getPosition)
+                .collect(Collectors.toList()))
+                .as(Vector3D.class).multiply(3.0);
+        allAtoms.forEach(atom -> atom.setPosition(
+                atom.getPosition().multiply(3.0).subtract(centroid)));
+    }
+
+    private void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             this.mousePosX = me.getSceneX();
             this.mousePosY = me.getSceneY();
@@ -267,7 +280,7 @@ public class StructureViewer extends Application {
         });
     }
 
-    private void handleKeyboard(Scene scene, final Node root) {
+    private void handleKeyboard(Scene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case Z:
@@ -288,17 +301,15 @@ public class StructureViewer extends Application {
     }
 
     private void loadTestStructure() {
-        List<String> atomLines = null;
         try {
-            atomLines = Files.readAllLines(
-                    new File("D:\\projects\\singa\\chemistry\\src\\test\\resources\\pdb_atoms.txt")
-                            .toPath());
+            // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
+            this.structure = PDBParserService.parseProteinById("1pqs");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // PDBToStructure.parseAminoAcidAtoms(atomLines);
-        this.structure = PDBToStructure.parseResidues(atomLines);
-        this.structure.connectBackbone();
+        // StructureAssembler.parseAminoAcidAtoms(atomLines);
+        // this.structure = StructureAssembler.parseResidues(atomLines);
+
 
     }
 }

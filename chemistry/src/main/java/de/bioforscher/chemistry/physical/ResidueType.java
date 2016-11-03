@@ -24,12 +24,12 @@ public enum ResidueType {
     LYSINE("Lysine", "K", "Lys", LYSINE_ATOM_NAMES),
     METHIONINE("Methionine", "M", "Met", METHIONINE_ATOM_NAMES),
     PHENYLALANINE("Phenylalanine", "F", "Phe", PHENYLALANINE_ATOM_NAMES),
-    PROLINE("Proline", "P", "PRO", PROLINE_ATOM_NAMES),
+    PROLINE("Proline", "P", "Pro", PROLINE_ATOM_NAMES),
     SERINE("Serine", "S", "Ser", SERINE_ATOM_NAMES),
     THREONINE("Threonine", "T", "Thr", THREONINE_ATOM_NAMES),
     TRYPTOPHAN("Tryptophan", "W", "Trp", TRYPTOPHAN_ATOM_NAMES),
     TYROSINE("Tyrosine", "Y", "Tyr", TYROSINE_ATOM_NAMES),
-    VALINE("Valine", "V", "VAL", VALINE_ATOM_NAMES);
+    VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES);
 
     private String name;
     private String oneLetterCode;
@@ -76,8 +76,9 @@ public enum ResidueType {
     }
 
     public static Optional<ResidueType> getResidueTypeByThreeLetterCode(String threeLetterCode) {
-        return Arrays.stream(values()).filter(type -> threeLetterCode.trim().toUpperCase().equals(type
-                .getThreeLetterCode())).findFirst();
+        return Arrays.stream(values())
+                .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
+                .findFirst();
 
     }
 }
