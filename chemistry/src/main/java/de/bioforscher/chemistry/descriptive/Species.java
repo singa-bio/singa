@@ -15,6 +15,11 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
  */
 public class Species extends ChemicalEntity<ChEBIIdentifier> {
 
+    public final static Species UNKNOWN_SPECIES = new Species.Builder("CHEBI:00000")
+            .name("Unknown chemical species")
+            .molarMass(10.0)
+            .build();
+
     /**
      * The SIMLES representation of this species.
      */

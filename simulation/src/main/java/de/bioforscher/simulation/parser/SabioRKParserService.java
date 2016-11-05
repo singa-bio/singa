@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @deprecated
+ */
 public class SabioRKParserService extends AbstractRESTParser {
 
     private XMLReader xmlReader;
@@ -27,7 +30,7 @@ public class SabioRKParserService extends AbstractRESTParser {
         }
 
         this.xmlReader.setErrorHandler(new XMLErrorHandler());
-        this.xmlReader.setContentHandler(new SBMLContentHandler());
+        // this.xmlReader.setContentHandler(new SBMLContentHandler());
 
         setResource("http://sabiork.h-its.org/sabioRestWebServices/searchKineticLaws/sbml");
         HashMap<String, String> queryMap = new HashMap<>();

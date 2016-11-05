@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class UniProtParserTest {
 
-    @Test
+    //@Test
     public void testWholeSwissProt() {
         String accession_number_list = Thread.currentThread().getContextClassLoader().getResource("uniprot_all_accession_numbers.list").toString();
         Path path = Paths.get(accession_number_list.substring(6));

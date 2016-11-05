@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @deprecated
+ */
 class SBMLContentHandler implements ContentHandler {
 
     // TODO this can be a singleton
