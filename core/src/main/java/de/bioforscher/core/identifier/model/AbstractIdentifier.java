@@ -25,4 +25,16 @@ public class AbstractIdentifier implements Identifier {
         return identifier;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractIdentifier that = (AbstractIdentifier) o;
+        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.identifier != null ? this.identifier.hashCode() : 0;
+    }
 }

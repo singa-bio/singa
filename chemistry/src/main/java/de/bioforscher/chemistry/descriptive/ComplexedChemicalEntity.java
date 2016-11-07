@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.descriptive;
 
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
      */
     protected ComplexedChemicalEntity(SimpleStringIdentifier identifier) {
         super(identifier);
+        this.associatedParts = new HashMap<>();
     }
 
     public void addAssociatedPart(ChemicalEntity chemicalEntity) {
@@ -43,7 +45,14 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
                 .sum());
     }
 
-    public static class Builder extends ChemicalEntity.Builder<ComplexedChemicalEntity, ComplexedChemicalEntity.Builder, SimpleStringIdentifier> {
+    @Override
+    public String toString() {
+        return "ComplexedChemicalEntity "+super.getIdentifier()+" {" +
+                "associatedParts=" + associatedParts +
+                '}';
+    }
+
+    public static class Builder extends ChemicalEntity.Builder<ComplexedChemicalEntity, Builder, SimpleStringIdentifier> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

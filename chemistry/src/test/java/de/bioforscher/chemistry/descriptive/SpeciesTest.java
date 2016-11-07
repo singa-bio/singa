@@ -6,6 +6,7 @@ import tec.units.ri.quantity.Quantities;
 
 import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Christoph on 18.04.2016.
@@ -48,4 +49,12 @@ public class SpeciesTest {
         assertEquals(gtpAse.getMolarMass().getValue().doubleValue(), 18714.0, 0.0);
     }
 
-}
+    @Test
+    public void shouldBeIdenticalEnzymes() {
+        Enzyme gtpAse1 = new Enzyme.Builder("A2BC19").build();
+        Enzyme gtpAse2 = new Enzyme.Builder("A2BC19").build();
+
+        assertTrue(gtpAse1.equals(gtpAse2));
+    }
+
+    }
