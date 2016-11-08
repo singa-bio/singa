@@ -9,7 +9,7 @@ import java.util.Optional;
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
 /**
- * Created by Christoph on 26.09.2016.
+ * Most of the AtomNames in the PDB.
  */
 public enum AtomName {
 
@@ -244,7 +244,6 @@ public enum AtomName {
             HD2, HD3, HDD1, HDD2, HDD3, HG11, HG12, HG13, HG21, HG22, HG23, HN, HXT, D1, D2, D3, DA, DB, DD11, DD12,
             DD13, DD21, DDD1, DDD2, DDD3, DG12, DG13, DG21, DG22, DG23, C, CA, CB, CD, CD1, CG1, CG2, N, O, OXT);
 
-    // queer names: C12, C14, C15, C16, C17, C32, C38, C39, C53, C54, C55, C56, N4, N7, O4, O6, SD
     public static EnumSet<AtomName> LEUCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD11,
             HD12, HD13, HD21, HD22, HD23, HG, HN, HXT, TWOHB, D, DA, DB2, DB3, DD11, DD12, DD13, DD21, DD22, DD23, DG,
             C, C12, C14, C15, C16, C17, C32, C38, C39, C53, C54, C55, C56, CA, CB, CD1, CD2, CE, CG, N, N4, N7, O, O4,

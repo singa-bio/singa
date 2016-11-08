@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
- * Created by Christoph on 22.09.2016.
+ * The residue type should contain the general data, that is the same across all amino acids of this type.
  */
 public enum ResidueType {
 
@@ -63,10 +63,10 @@ public enum ResidueType {
     }
 
     /**
-     * Returns true if the set of Atoms contains only Atom names, that can occur in the  given residue type.
+     * Returns true if the set of Atoms contains only Atom names, that can occur in the given residue type.
      * @param atoms The atoms to be checked.
      * @param residueType The expected type of residue.
-     * @return true if the set of Atoms contains only Atom names, that can occur in the  given residue type.
+     * @return True, if the set of Atoms contains only Atom names, that can occur in the given residue type.
      */
     public boolean containsExpectedAtoms(List<Atom> atoms, ResidueType residueType) {
         final Set<String> actualNames = atoms.stream()
@@ -81,7 +81,6 @@ public enum ResidueType {
     public static Optional<ResidueType> getResidueTypeByThreeLetterCode(String threeLetterCode) {
         return Arrays.stream(values())
                 .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
-                .findFirst();
-
+                .findAny();
     }
 }

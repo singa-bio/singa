@@ -26,12 +26,6 @@ public class StructureTest {
     }
 
     @Test
-    public void shouldConnectCloseAtoms() {
-        this.trp.connectByDistance();
-        System.out.println(this.trp);
-    }
-
-    @Test
     public void handleSubstructures() {
 
         // global structure

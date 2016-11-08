@@ -3,6 +3,8 @@ package de.bioforscher.chemistry.physical.viewer;
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.proteins.Residue;
+import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
@@ -303,6 +305,7 @@ public class StructureViewer extends Application {
     private void loadTestStructure() {
         try {
             // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
+            ResidueFactory.setToOmitHydrogens(true);
             this.structure = PDBParserService.parseProteinById("1pqs");
         } catch (IOException e) {
             e.printStackTrace();

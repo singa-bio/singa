@@ -3,15 +3,18 @@ package de.bioforscher.chemistry.physical.atoms;
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.physical.model.StructuralEntity;
 import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
+
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
- * in a {@link Structure}.
+ * in a {@link SubStructure}.
  */
 public class Atom implements StructuralEntity<Atom>, Nameable {
 
@@ -134,6 +137,10 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
 
     public AtomName getAtomName() {
         return this.atomName;
+    }
+
+    public boolean isHydrogen() {
+        return this.getAtomName().getElement().equals(HYDROGEN) || this.getAtomName().getElement().equals(HYDROGEN);
     }
 
     public void setAtomName(AtomName atomName) {

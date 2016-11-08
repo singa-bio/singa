@@ -2,22 +2,53 @@ package de.bioforscher.chemistry.physical.proteins;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import jersey.repackaged.com.google.common.base.Predicates;
 
 import java.util.EnumMap;
+import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
- * Created by Christoph on 22.09.2016.
+ * The residue factory is used to create residues from a set of Atoms with their AtomNames. This also connects the atoms
+ * in the residues, where possible. No distance criterion is used but the knowledge of the residues and the usually
+ * connected atoms. Different options can be set.
  */
 public class ResidueFactory {
+
+    /**
+     * the factory used to parse all residues.
+     */
+    private static final ResidueFactory factory = new ResidueFactory();
+
+    /**
+     * Tries to saturate the residue with hydrogen atoms if they are in the given map of atoms.
+     */
+    private boolean connectHydrogens = false;
+
+    /**
+     * Omits all hydrogen (and eventually deuterium) atoms. Those atoms are not added to the resulting residue.
+     */
+    private boolean omitHydrogens = false;
+
+    private ResidueFactory() {
+    }
 
     public static Residue createResidueFromAtoms(int identifier, ResidueType residueType, EnumMap<AtomName, Atom> atoms) {
 
         // create new residue
         Residue residue = new Residue(identifier, residueType);
-        // and add all atoms
-        residue.addAllNodes(atoms.values());
+        // and add atoms
+        if (factory.omitHydrogens) {
+            // without hydrogens
+            residue.addAllNodes(atoms.values().stream()
+                    .filter(atom -> !atom.isHydrogen())
+                    .collect(Collectors.toList()));
+        } else {
+            // all
+            residue.addAllNodes(atoms.values());
+        }
         // connect backbone atoms first
         connectBackboneAtoms(residue, atoms);
 
@@ -139,38 +170,63 @@ public class ResidueFactory {
         return residue;
     }
 
+    /**
+     * Connects the atoms in the given order.
+     *
+     * @param residue The residue to connect in.
+     * @param atoms The atoms to take from.
+     * @param names The names that should be connected.
+     */
     private static void connectInOrder(Residue residue, EnumMap<AtomName, Atom> atoms, AtomName... names) {
         if (names.length < 2) {
             throw new IllegalArgumentException("Two or more atom names are required in order to connect them.");
         }
         for (int i = 1; i < names.length; i++) {
-            residue.connect(atoms.get(names[i-1]), atoms.get(names[i]));
+            residue.connect(atoms.get(names[i - 1]), atoms.get(names[i]));
         }
     }
 
+    /**
+     * Connects the backbone atoms N-to-CA-to-C-to-O.
+     * @param residue The residue to connect in.
+     * @param atoms The atoms to take from.
+     */
     private static void connectBackboneAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
         residue.connect(atoms.get(N), atoms.get(CA));
         residue.connect(atoms.get(CA), atoms.get(C));
         residue.connect(atoms.get(C), atoms.get(O));
     }
 
+    /**
+     * Connects the N terminal Hydrogens N-to-H and N-to-H2.
+     * @param residue The residue to connect in.
+     * @param atoms The atoms to take from.
+     */
     private static void connectNTerminalAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
-        residue.connect(atoms.get(N), atoms.get(H));
-        residue.connect(atoms.get(N), atoms.get(H2));
+        if (factory.connectHydrogens) {
+            residue.connect(atoms.get(N), atoms.get(H));
+            residue.connect(atoms.get(N), atoms.get(H2));
+        }
     }
 
+    /**
+     * Connects the C terminal Atoms C-to-OXT-to-HXT.
+     * @param residue The residue to connect in.
+     * @param atoms The atoms to take from.
+     */
     private static void connectCTerminaAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
         residue.connect(atoms.get(C), atoms.get(OXT));
-        residue.connect(atoms.get(OXT), atoms.get(HXT));
+        if (factory.connectHydrogens) {
+            residue.connect(atoms.get(OXT), atoms.get(HXT));
+        }
     }
 
     private static void saturateCarbon(Residue residue, EnumMap<AtomName, Atom> atoms, AtomName anyCarbon) {
-        final int currentSaturation = residue.getAtomByName(anyCarbon).orElseThrow(IllegalArgumentException::new).getDegree();
-
+        final int currentSaturation = residue.getAtomByName(anyCarbon).getDegree();
 
         switch (anyCarbon) {
             case CA: {
-                // decide whether tho add hydrogen atoms or not
+
 
                 break;
             }
@@ -180,6 +236,13 @@ public class ResidueFactory {
 
     }
 
+    /**
+     * Sets to omit all hydrogen (and deuterium) atoms. Those atoms are not added to the resulting residue.
+     * @param omitHydrogens True, if no hydrogen should be parsed, false otherwise.
+     */
+    public static void setToOmitHydrogens(boolean omitHydrogens) {
+        factory.omitHydrogens = omitHydrogens;
+    }
 
 }
 

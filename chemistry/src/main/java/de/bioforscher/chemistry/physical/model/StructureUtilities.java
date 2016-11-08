@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 22.06.2016.
+ * Methods to use for structures...
  */
 public class StructureUtilities {
 
