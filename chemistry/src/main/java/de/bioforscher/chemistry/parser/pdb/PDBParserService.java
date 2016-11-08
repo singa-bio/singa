@@ -1,11 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb;
 
-import de.bioforscher.chemistry.physical.SubStructure;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**

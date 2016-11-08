@@ -2,9 +2,8 @@ package de.bioforscher.chemistry.parser.pdb;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.chemistry.physical.Atom;
-import de.bioforscher.chemistry.physical.AtomName;
-import de.bioforscher.chemistry.physical.Residue;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.core.utility.Range;
 import de.bioforscher.mathematics.vectors.Vector3D;
 

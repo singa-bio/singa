@@ -1,8 +1,8 @@
-package de.bioforscher.chemistry.physical.experimental;
+package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import de.bioforscher.chemistry.physical.Atom;
-import de.bioforscher.chemistry.physical.SubStructure;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;

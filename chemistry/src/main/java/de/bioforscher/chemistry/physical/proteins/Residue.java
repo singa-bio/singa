@@ -1,5 +1,9 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.proteins;
 
+import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.bonds.Bond;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.Optional;

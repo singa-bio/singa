@@ -1,13 +1,14 @@
 package de.bioforscher.chemistry.parser.pdb;
 
-import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.chemistry.physical.*;
-import de.bioforscher.mathematics.vectors.Vector3D;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.proteins.Chain;
+import de.bioforscher.chemistry.physical.proteins.Residue;
+import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
+import de.bioforscher.chemistry.physical.proteins.ResidueType;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 
 import static de.bioforscher.chemistry.parser.pdb.AtomToken.*;

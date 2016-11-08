@@ -1,6 +1,11 @@
 package de.bioforscher.chemistry.physical;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.bonds.Bond;
+import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import org.junit.Before;
 import org.junit.Test;

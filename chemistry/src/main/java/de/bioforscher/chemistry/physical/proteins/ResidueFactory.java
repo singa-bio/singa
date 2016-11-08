@@ -1,8 +1,11 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.proteins;
+
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 
 import java.util.EnumMap;
 
-import static de.bioforscher.chemistry.physical.AtomName.*;
+import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
  * Created by Christoph on 22.09.2016.

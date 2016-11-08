@@ -1,5 +1,6 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.model;
 
+import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 

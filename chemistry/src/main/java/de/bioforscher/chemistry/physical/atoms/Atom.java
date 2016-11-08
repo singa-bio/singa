@@ -1,6 +1,8 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
+import de.bioforscher.chemistry.physical.model.StructuralEntity;
+import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.vectors.Vector3D;
 

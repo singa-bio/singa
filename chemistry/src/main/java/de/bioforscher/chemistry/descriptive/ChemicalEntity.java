@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.descriptive;
 
 import de.bioforscher.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.core.identifier.model.Identifiable;
 import de.bioforscher.core.identifier.model.Identifier;
 import de.bioforscher.core.utility.Nameable;
@@ -19,7 +20,7 @@ import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 /**
  * Chemical Entity is an abstract class that provides the common features of all chemical substances on a descriptive
  * level. It does not contain the exact chemical structure, to handle chemical structures have a look at
- * {@link de.bioforscher.chemistry.physical.Structure Structure}. Each chemical entity should be identifiable by an
+ * {@link Structure Structure}. Each chemical entity should be identifiable by an
  * {@link Identifier}. Chemical entities can be annotated, posses a {@link MolarMass} and a name.
  *
  * @param <IdentifierType> The Type of the {@link Identifier}, that identifies this entity.

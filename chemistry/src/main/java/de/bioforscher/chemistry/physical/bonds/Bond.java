@@ -1,5 +1,6 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.bonds;
 
+import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.mathematics.graphs.model.AbstractEdge;
 
 public class Bond extends AbstractEdge<Atom> {
