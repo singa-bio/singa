@@ -172,24 +172,6 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
     }
 
     /**
-     * Returns all atoms from this SubStructure and all SubStructures that are contained in this SubStructure.
-     *
-     * @return All atoms.
-     */
-    public List<Atom> getAllAtoms() {
-        List<Atom> atoms = new ArrayList<>();
-        for (SubStructure subStructure : this.substructures.values()) {
-            if (subStructure.substructures.values().isEmpty()) {
-                atoms.addAll(subStructure.getNodes());
-            } else {
-                atoms.addAll(subStructure.getAllAtoms());
-            }
-        }
-        atoms.addAll(this.getNodes());
-        return atoms;
-    }
-
-    /**
      * Adds a Atom to this substructure.
      *
      * @param atom The Atom to add.
@@ -237,6 +219,10 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      */
     public void addAllSubstructures(List<SubStructure> subStructures) {
         subStructures.forEach(subStructure -> this.substructures.put(subStructure.getIdentifier(), subStructure));
+    }
+
+    public SubStructure getSubStructure(int identifier) {
+        return this.substructures.get(identifier);
     }
 
     /**
@@ -332,6 +318,24 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
     }
 
     /**
+     * Returns all atoms from this SubStructure and all SubStructures that are contained in this SubStructure.
+     *
+     * @return All atoms.
+     */
+    public List<Atom> getAllAtoms() {
+        List<Atom> atoms = new ArrayList<>();
+        for (SubStructure subStructure : this.substructures.values()) {
+            if (subStructure.substructures.values().isEmpty()) {
+                atoms.addAll(subStructure.getNodes());
+            } else {
+                atoms.addAll(subStructure.getAllAtoms());
+            }
+        }
+        atoms.addAll(this.getNodes());
+        return atoms;
+    }
+
+    /**
      * Returns all Residues that are present in this or subordinate SubStructures.
      *
      * @return All residues.
@@ -339,11 +343,10 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
     public List<Residue> getResidues() {
         List<Residue> residues = new ArrayList<>();
         for (SubStructure subStructure : this.substructures.values()) {
-            if (subStructure instanceof Chain) {
-                residues.addAll(subStructure.getResidues());
-            }
             if (subStructure instanceof Residue) {
                 residues.add((Residue) subStructure);
+            } else {
+                residues.addAll(subStructure.getResidues());
             }
         }
         return residues;

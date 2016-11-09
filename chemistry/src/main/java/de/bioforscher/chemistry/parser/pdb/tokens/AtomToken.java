@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser.pdb;
+package de.bioforscher.chemistry.parser.pdb.tokens;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Christoph on 23.06.2016.
  */
-public enum AtomToken {
+public enum AtomToken implements PDBToken {
 
     ATOM_SERIAL(Range.of(7, 11)),
     ATOM_NAME(Range.of(13, 16)),
@@ -41,24 +41,14 @@ public enum AtomToken {
         this.columns = columns;
     }
 
-    public static String extractValueFromPDBLine(String line, AtomToken atomToken) {
-        // pdb numbering starts at column 1 - string starts at 0 - therefore -1
-        // pdb numbering is including the last letter  - substring is excluding the last letter this account for the
-        // offset
-        if (line.length() >= atomToken.getColumns().getUpperBound()) {
-            return line.substring(
-                    atomToken.getColumns().getLowerBound()-1, atomToken.getColumns().getUpperBound()).trim();
-        } else {
-            return "";
-        }
-    }
-
+    @Override
     public Range<Integer> getColumns() {
         return this.columns;
     }
 
-    public String extract(String line) {
-        return extractValueFromPDBLine(line, this);
+    @Override
+    public Pattern getRecordNamePattern() {
+        return RECORD_PATTERN;
     }
 
     public static Atom assembleAtom(String atomLine) {

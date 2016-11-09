@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
@@ -9,6 +10,7 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
 import javafx.scene.*;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -19,6 +21,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +58,7 @@ public class StructureViewer extends Application {
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    private SubStructure structure;
+    private Structure structure;
 
 
     public static void main(String[] args) {
@@ -66,6 +70,7 @@ public class StructureViewer extends Application {
 
         this.root.getChildren().add(this.world);
         this.root.setDepthTest(DepthTest.ENABLE);
+        // this.root.getChildren().add(new Button("My test button"));
 
         loadTestStructure();
         translateToCentre();
@@ -152,7 +157,7 @@ public class StructureViewer extends Application {
         Xform atoms = new Xform();
 
         // draw atoms
-        this.structure.getResidues().forEach( residue -> {
+        this.structure.getAllResidues().forEach( residue -> {
                     residue.getNodes().forEach(atom -> {
                         Sphere atomSphere = new Sphere(1.0);
                         if (atom.getElement().equals(CARBON)) {
@@ -191,8 +196,8 @@ public class StructureViewer extends Application {
         );
 
         // backbone edges between residues
-        this.structure.getSubstructures().forEach(ss ->
-                ss.getEdges().forEach(edge -> {
+        this.structure.getAllResidues().forEach(residue ->
+                residue.getEdges().forEach(edge -> {
 
             Vector3D source = edge.getSource().getPosition();
             Vector3D target = edge.getTarget().getPosition();
@@ -231,7 +236,11 @@ public class StructureViewer extends Application {
     }
 
     private void translateToCentre() {
-        List<Atom> allAtoms = this.structure.getAllAtoms();
+        List<Atom> allAtoms = this.structure.getSubstructures().stream()
+                .map(SubStructure::getAllAtoms)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
         Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
