@@ -230,9 +230,9 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      *
      * @return All SubStructures.
      */
-    public Set<SubStructure> getSubstructures() {
+    public List<SubStructure> getSubstructures() {
         return this.substructures.values().stream()
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**

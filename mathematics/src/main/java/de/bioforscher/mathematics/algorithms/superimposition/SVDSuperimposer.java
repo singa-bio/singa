@@ -30,7 +30,7 @@ public class SVDSuperimposer {
     private List<Vector> mappedCandidate;
     private double rmsd;
 
-    public SVDSuperimposer(List<Vector> reference, List<Vector> candidate) {
+    private SVDSuperimposer(List<Vector> reference, List<Vector> candidate) {
         this.reference = reference;
         this.candidate = candidate;
     }
@@ -43,7 +43,11 @@ public class SVDSuperimposer {
         applyMapping();
         calculateRMSD();
 
-        return new Superimposition(this.rmsd,this.translation,this.rotation,this.mappedCandidate);
+        return new Superimposition(this.rmsd, this.translation, this.rotation, this.mappedCandidate);
+    }
+
+    public static Superimposition calculateSVDSuperimposition(List<Vector> reference, List<Vector> candidate){
+        return new SVDSuperimposer(reference,candidate).calculateSuperimposition();
     }
 
     private void calculateRMSD() {
@@ -52,13 +56,17 @@ public class SVDSuperimposer {
         for (int i = 0; i < referenceSize; i++) {
             Vector referenceEntity = this.reference.get(i);
             Vector candidateEntity = this.mappedCandidate.get(i);
-            this.rmsd += VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(referenceEntity, candidateEntity);
+            this.rmsd +=
+                    VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(referenceEntity, candidateEntity);
         }
         this.rmsd = Math.sqrt(this.rmsd / referenceSize);
     }
 
     private void applyMapping() {
-        this.mappedCandidate = this.candidate.stream().map(vector -> this.rotation.transpose().multiply(vector).add(this.translation)).collect(Collectors.toList());
+        this.mappedCandidate =
+                this.candidate.stream()
+                              .map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
+                              .collect(Collectors.toList());
     }
 
     private void calculateTranslation() {
@@ -96,23 +104,20 @@ public class SVDSuperimposer {
     }
 
     private void center() {
-
         this.referenceCentroid = VectorUtilities.getCentroid(this.reference);
         this.shiftedReference = this.reference.stream().map(vector -> vector.subtract(this.referenceCentroid))
-                .collect(Collectors.toList());
+                                              .collect(Collectors.toList());
         this.candidateCentroid = VectorUtilities.getCentroid(this.candidate);
         this.shiftedCandidate = this.candidate.stream().map(vector -> vector.subtract(this.candidateCentroid))
-                .collect(Collectors.toList());
-
-
+                                              .collect(Collectors.toList());
     }
 
     /**
      * TODO implement this with permutation approach
+     *
      * @return
      */
     public Superimposition calculateIdealSuperimposition() {
-
         return null;
     }
 }

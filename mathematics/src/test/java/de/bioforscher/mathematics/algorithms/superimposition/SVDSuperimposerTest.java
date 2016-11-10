@@ -20,7 +20,6 @@ public class SVDSuperimposerTest {
 
     @Before
     public void setUp() throws Exception {
-
         this.reference = new ArrayList<>();
         this.reference.add(new Vector3D(6.994, 8.354, 42.405));
         this.reference.add(new Vector3D(9.429, 7.479, 48.266));
@@ -34,9 +33,7 @@ public class SVDSuperimposerTest {
 
     @Test
     public void calculateSuperimposition() throws Exception {
-
-        SVDSuperimposer superimposer = new SVDSuperimposer(this.reference, this.candidate);
-        Superimposition superimposition = superimposer.calculateSuperimposition();
+        Superimposition superimposition = SVDSuperimposer.calculateSVDSuperimposition(this.reference, this.candidate);
         assertEquals(0.19986139479017428, superimposition.getRmsd(), 0.1E-6);
     }
 

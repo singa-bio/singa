@@ -7,9 +7,6 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUTERIUM;
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
-
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
  * in a {@link SubStructure}.
@@ -20,32 +17,26 @@ public class RegularAtom implements Atom {
      * The identifier.
      */
     private int identifier;
-
     /**
      * The element.
      */
     private Element element;
-
     /**
      * An additional name such as CA or CB.
      */
     private AtomName atomName;
-
     /**
      * The AtomName as String
      */
     private String atomNameString;
-
     /**
      * The position.
      */
     private Vector3D position;
-
     /**
      * References of the neighboring atoms.
      */
     private List<Atom> neighbours;
-
 
     /**
      * Creates a new atom with the given identifier, element, name and position.
@@ -62,6 +53,16 @@ public class RegularAtom implements Atom {
         this.element = element;
         this.position = position;
         this.neighbours = new ArrayList<>();
+    }
+
+    @Override public String toString() {
+        return "RegularAtom{" +
+               "identifier=" + identifier +
+               ", element=" + element +
+               ", atomName=" + atomName +
+               ", atomNameString='" + atomNameString + '\'' +
+               ", position=" + position +
+               '}';
     }
 
     /**
