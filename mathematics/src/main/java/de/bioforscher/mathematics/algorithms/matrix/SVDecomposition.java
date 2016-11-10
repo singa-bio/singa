@@ -5,6 +5,7 @@ import de.bioforscher.mathematics.matrices.RegularMatrix;
 
 /**
  * This is the Jama SVD implementation adapted to work with SINGA.
+ * TODO: provide static method calculateSVDecomposition()
  * <p>
  * Created by fkaiser on 23.10.16.
  */
