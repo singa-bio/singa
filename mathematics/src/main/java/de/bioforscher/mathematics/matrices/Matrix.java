@@ -75,6 +75,13 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     double[][] getElements();
 
     /**
+     * Returns an explicit copy of all elements of this matrix. A new array is created and filled with values.
+     *
+     * @return All elements of this matrix as an two-dimensional array and as a unrelated copy (safe to modify).
+     */
+    double[][] getCopyOfElements();
+
+    /**
      * Returns an element of this matrix.
      *
      * @param rowIndex The row index.

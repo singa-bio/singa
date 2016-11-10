@@ -17,7 +17,7 @@ public class SquaredEuclideanDistance<VectorType extends Vector> implements Metr
     public double calculateDistance(VectorType first, VectorType second) {
         double sum = 0;
         for (int i = 0; i < first.getDimension(); i++) {
-            sum += first.getElement(i)*first.getElement(i) - second.getElement(i)*second.getElement(i);
+            sum += (first.getElement(i) - second.getElement(i)) * (first.getElement(i) - second.getElement(i));
         }
         return sum;
     }
