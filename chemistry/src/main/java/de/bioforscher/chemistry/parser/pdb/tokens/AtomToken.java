@@ -4,6 +4,7 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.core.utility.Range;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
@@ -59,13 +60,12 @@ public enum AtomToken implements PDBToken {
         Vector3D coordinates = new Vector3D(x, y, z);
         // serial
         Integer atomSerial = Integer.valueOf(ATOM_SERIAL.extract(atomLine));
-        // atom name
-        AtomName atomName = AtomName.getAtomNameFromString(ATOM_NAME.extract(atomLine))
-                .orElseThrow(IllegalArgumentException::new);
+        // atom name string
+        String atomName = ATOM_NAME.extract(atomLine);
         // element
         Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
                 .orElseThrow(IllegalArgumentException::new);
-        return new Atom(atomSerial, element, atomName, coordinates);
+        return new RegularAtom(atomSerial, element, atomName, coordinates);
     }
 
 }

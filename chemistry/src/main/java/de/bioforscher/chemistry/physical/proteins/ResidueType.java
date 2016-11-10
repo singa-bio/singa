@@ -70,7 +70,7 @@ public enum ResidueType {
      */
     public boolean containsExpectedAtoms(List<Atom> atoms, ResidueType residueType) {
         final Set<String> actualNames = atoms.stream()
-                                       .map(Atom::getName)
+                                       .map(Atom::getAtomNameString)
                                        .collect(Collectors.toSet());
         final Set<String> expectedNames = residueType.getAllowedAtoms().stream()
                                                .map(AtomName::getName)

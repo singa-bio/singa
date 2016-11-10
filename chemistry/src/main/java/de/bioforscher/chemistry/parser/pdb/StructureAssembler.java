@@ -86,8 +86,11 @@ public class StructureAssembler {
             }
         }
 
+        if (!assembler.currentChain.getSubstructures().isEmpty()) {
+            assembler.assembleChain();
+        }
+
         // connecting peptide backbone per chain if possible
-        // TODO for structures with models...
         assembler.globalStructure.getSubstructures().forEach(firstLevel -> {
                     if (firstLevel instanceof Chain) {
                         ((Chain) firstLevel).connectChainBackbone();

@@ -202,7 +202,10 @@ public enum AtomName {
 
     // Sulfur
     SG("SG", SULFUR),
-    SD("SD", SULFUR);
+    SD("SD", SULFUR),
+
+    // non standard
+    UNK("UNK", UNKOWN);
 
 
     public static EnumSet<AtomName> ALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, HA, HB1, HB2, HB3, HN, HXT, THREEHB,
@@ -300,9 +303,11 @@ public enum AtomName {
         return this.element;
     }
 
-    public static Optional<AtomName> getAtomNameFromString(String atomName) {
+    public static AtomName getAtomNameFromString(String atomName) {
         // FIXME this can be sped up with a static hash map using the string atom name as key
-        return Arrays.stream(values()).filter(name -> atomName.trim().equals(name.getName())).findFirst();
+        return Arrays.stream(values()).filter(name -> atomName.trim().equals(name.getName()))
+                .findAny()
+                .orElse(UNK);
     }
 
 }

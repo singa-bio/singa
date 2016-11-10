@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
@@ -88,10 +89,17 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
+    public List<Atom> getAllAtoms() {
+        return this.substructures.values().stream()
+                .map(SubStructure::getAllAtoms)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     public static void main(String[] args) throws IOException {
 
         ResidueFactory.setToOmitHydrogens(true);
-        Structure structure = PDBParserService.parseProteinById("1brr");
+        Structure structure = PDBParserService.parseProteinById("4HHB");
 
         if (structure.isContainingModels()) {
             structure.getAllModels().forEach(model -> {
