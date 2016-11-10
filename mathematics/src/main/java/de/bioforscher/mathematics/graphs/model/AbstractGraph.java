@@ -37,13 +37,6 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         this.edges = new HashMap<>(edgeCapacity);
     }
 
-    public int getNextNodeIdentifier() {
-        if (this.nodes.keySet().isEmpty()) {
-            return 0;
-        }
-        return Collections.max(this.nodes.keySet()) + 1;
-    }
-
     /**
      * Gets all the nodes in the graph.
      *

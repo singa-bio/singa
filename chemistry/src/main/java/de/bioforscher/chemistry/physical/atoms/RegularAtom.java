@@ -1,17 +1,20 @@
-package de.bioforscher.chemistry.physical;
+package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.core.utility.Nameable;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUTERIUM;
+import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
+
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
- * in a {@link Structure}.
+ * in a {@link SubStructure}.
  */
-public class Atom implements StructuralEntity<Atom>, Nameable {
+public class RegularAtom implements Atom {
 
     /**
      * The identifier.
@@ -29,6 +32,11 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
     private AtomName atomName;
 
     /**
+     * The AtomName as String
+     */
+    private String atomNameString;
+
+    /**
      * The position.
      */
     private Vector3D position;
@@ -38,32 +46,37 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
      */
     private List<Atom> neighbours;
 
+
     /**
      * Creates a new atom with the given identifier, element, name and position.
      *
-     * @param identifier The identifier.
-     * @param element The element.
-     * @param atomName The name.
-     * @param position The position.
+     * @param identifier     The identifier.
+     * @param element        The element.
+     * @param atomNameString The name as String.
+     * @param position       The position.
      */
-    public Atom(int identifier, Element element, AtomName atomName, Vector3D position) {
+    public RegularAtom(int identifier, Element element, String atomNameString, Vector3D position) {
+        this.atomNameString = atomNameString;
+        this.atomName = AtomName.getAtomNameFromString(atomNameString);
         this.identifier = identifier;
         this.element = element;
-        this.atomName = atomName;
         this.position = position;
         this.neighbours = new ArrayList<>();
     }
 
     /**
      * Returns the Element.
+     *
      * @return The Element.
      */
+    @Override
     public Element getElement() {
         return this.element;
     }
 
     /**
      * Sets the Element.
+     *
      * @param element The element.
      */
     public void setElement(Element element) {
@@ -77,8 +90,10 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
 
     /**
      * Sets the identifier.
+     *
      * @param identifier The identifier.
      */
+    @Override
     public void setIdentifier(int identifier) {
         this.identifier = identifier;
     }
@@ -90,8 +105,10 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
 
     /**
      * Sets the position.
+     *
      * @param position The position.
      */
+    @Override
     public void setPosition(Vector3D position) {
         this.position = position;
     }
@@ -108,33 +125,27 @@ public class Atom implements StructuralEntity<Atom>, Nameable {
 
     @Override
     public int getDegree() {
-        return 0;
-    }
-
-    public void setNeighbours(List<Atom> neighbours) {
-        this.neighbours = neighbours;
+        return this.neighbours.size();
     }
 
     @Override
-    public String toString() {
-        return "Atom{" +
-                "identifier=" + this.identifier +
-                ", element=" + this.element +
-                ", name='" + getName() + '\'' +
-                ", position=" + this.position +
-                '}';
+    public String getAtomNameString() {
+        return this.atomNameString;
     }
 
     @Override
-    public String getName() {
-        return this.atomName.getName();
+    public void setAtomNameString(String atomNameString) {
+        this.atomNameString = atomNameString;
     }
 
+    @Override
     public AtomName getAtomName() {
         return this.atomName;
     }
 
+    @Override
     public void setAtomName(AtomName atomName) {
         this.atomName = atomName;
     }
+
 }

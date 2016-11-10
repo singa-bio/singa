@@ -75,7 +75,7 @@ public class GraphFactory {
      * @param boundingBox A bounding box where the nodes should be positioned.
      */
     private static void growTree(int depth, UndirectedGraph graph, RegularNode predecessor, Rectangle boundingBox) {
-        int next = graph.getNextNodeIdentifier();
+        int next = graph.nextNodeIdentifier();
         graph.addNode(
                 NodeFactory.createRandomlyPlacedNode(next, boundingBox));
         graph.connect(graph.getNextEdgeIdentifier(), predecessor, graph.getNode(next));

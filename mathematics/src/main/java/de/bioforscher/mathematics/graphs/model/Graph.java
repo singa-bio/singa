@@ -22,4 +22,19 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
 
     boolean containsEdge(Object edge);
 
+    default int nextNodeIdentifier() {
+        if (getNodes().isEmpty()) {
+            return 0;
+        }
+        return getEdges().size();
+    }
+
+    default int nextEdgeIdentifier() {
+        if (getEdges().isEmpty()) {
+            return 0;
+        }
+        return getEdges().size()+1;
+    }
+
+
 }
