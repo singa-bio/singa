@@ -4,15 +4,13 @@ import de.bioforscher.mathematics.concepts.Divisible;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
+import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
 import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 /**
  * The {@code Vector} interface represents a collection of values where multiple
@@ -46,12 +44,13 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      *
      * @return
      */
-    default DoubleStream streamElements(){
+    default DoubleStream streamElements() {
         return DoubleStream.of(this.getElements());
     }
 
     /**
      * Returns a stream of all positions and the respective elements.
+     *
      * @param action
      */
     default void forEach(BiConsumer<Integer, Double> action) {
@@ -59,6 +58,24 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
             action.accept(i, this.getElement(i));
         }
     }
+
+    /**
+     * Returns an explicit copy of this vector. A new array is created and filled with values.
+     *
+     * @return An exact copy of and as a unrelated copy (safe to modify).
+     */
+    default <V extends Vector> V getCopy() {
+        final double[] copyOfElements = new double[getElements().length];
+       System.arraycopy(getElements(), 0, copyOfElements, 0, getElements().length);
+        try {
+            return (V) getClass().getConstructor(double[].class).newInstance((Object) copyOfElements);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
+
 
     /**
      * Returns the dimension of this vector.
@@ -137,7 +154,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return Thrue, if this vector contains only Zeros.
      */
     default boolean isZero() {
-        for (double element: this.getElements()) {
+        for (double element : this.getElements()) {
             if (element != 0.0) {
                 return false;
             }

@@ -6,6 +6,8 @@ import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The {@code Matrix} interface represents a two-dimensional collection of values (like a table with rows and columns)
  * where multiple operations are defined.
@@ -21,7 +23,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * be converted. The new matrix is a copy of the old one.
      *
      * @param matrixClass The new class of the matrix.
-     * @param <M> Any implementation of this matrix.
+     * @param <M>         Any implementation of this matrix.
      * @return The new converted matrix.
      */
     <M extends Matrix> M as(Class<M> matrixClass);
@@ -75,16 +77,30 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     double[][] getElements();
 
     /**
-     * Returns an explicit copy of all elements of this matrix. A new array is created and filled with values.
+     * Returns an explicit copy of this matrix. A new array is created and filled with values.
      *
-     * @return All elements of this matrix as an two-dimensional array and as a unrelated copy (safe to modify).
+     * @return An exact copy of and as a unrelated copy (safe to modify).
      */
-    double[][] getCopyOfElements();
+    default <M extends Matrix> M getCopy() {
+        final double[][] copyOfElements = new double[getElements().length][];
+        for (int i = 0; i < getElements().length; i++) {
+            final double[] row = getElements()[i];
+            copyOfElements[i] = new double[row.length];
+            System.arraycopy(row, 0, copyOfElements[i], 0, row.length);
+        }
+        try {
+            return (M) getClass().getConstructor(double[][].class).newInstance((Object) copyOfElements);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException  e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 
     /**
      * Returns an element of this matrix.
      *
-     * @param rowIndex The row index.
+     * @param rowIndex    The row index.
      * @param columnIndex The column index.
      * @return A single element of this matrix at the given position.
      */
@@ -182,7 +198,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     @Override
     default boolean hasSameDimensions(Matrix matrix) {
         return this.getRowDimension() == matrix.getRowDimension()
-                && this.getColumnDimension() == matrix.getColumnDimension();
+               && this.getColumnDimension() == matrix.getColumnDimension();
     }
 
 }

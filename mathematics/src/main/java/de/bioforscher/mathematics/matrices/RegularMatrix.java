@@ -134,16 +134,16 @@ public class RegularMatrix implements Matrix, Serializable {
         return this.elements;
     }
 
-    @Override
-    public double[][] getCopyOfElements() {
-        final double[][] copy = new double[this.elements.length][];
-        for (int i = 0; i < this.elements.length; i++) {
-            final double[] row = this.elements[i];
-            copy[i] = new double[row.length];
-            System.arraycopy(row, 0, copy[i], 0, row.length);
-        }
-        return copy;
-    }
+//    @Override
+//    public double[][] getCopyOfElements() {
+//        final double[][] copyOfElements = new double[this.elements.length][];
+//        for (int i = 0; i < this.elements.length; i++) {
+//            final double[] row = this.elements[i];
+//            copyOfElements[i] = new double[row.length];
+//            System.arraycopy(row, 0, copyOfElements[i], 0, row.length);
+//        }
+//        return copyOfElements;
+//    }
 
     @Override
     public RegularVector getRow(int rowNumber) {

@@ -106,4 +106,13 @@ public class SymmetricMatrixTest {
                      "2.000000,4.000000,5.000000\n" +
                      "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
     }
+
+    @Test
+    public void shouldCopy(){
+        SymmetricMatrix copy1 = this.trueSymmetricMatrix.getCopy();
+        SquareMatrix copy2 = this.trueSymmetricMatrix.getCopy();
+        copy1.getElements()[0][0] = Double.NaN;
+        assertTrue(SymmetricMatrix.isCompact(copy2.getElements()));
+        assertTrue(copy2.getElements()[0][0] != Double.NaN);
+    }
 }

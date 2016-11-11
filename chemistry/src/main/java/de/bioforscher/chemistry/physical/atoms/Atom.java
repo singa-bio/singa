@@ -36,4 +36,11 @@ public interface Atom extends StructuralEntity<Atom> {
         return this.getElement().equals(HYDROGEN) || this.getElement().equals(DEUTERIUM);
     }
 
+    default RegularAtom getCopy(RegularAtom atom) {
+        return new RegularAtom(atom.getIdentifier(),
+                               atom.getElement(),
+                               atom.getAtomNameString(),
+                               atom.getPosition().getCopy());
+    }
+
 }

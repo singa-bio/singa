@@ -468,7 +468,7 @@ public class SVDecomposition {
     }
 
     private void initialize(Matrix matrix) {
-        this.arrayInput = matrix.getCopyOfElements();
+        this.arrayInput = matrix.getCopy().getElements();
         this.rowDimension = matrix.getRowDimension();
         this.columnDimension = matrix.getColumnDimension();
 

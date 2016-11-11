@@ -52,4 +52,11 @@ public class SquareMatrixTests {
         assertEquals(120.0, actual, 0.0);
     }
 
+    @Test
+    public void shouldCopy(){
+        SymmetricMatrix copy1 = this.regularSquareMatrix.getCopy();
+        SquareMatrix copy2 = this.regularSquareMatrix.getCopy();
+        copy1.getElements()[0][0] = Double.NaN;
+        assertTrue(copy2.getElements()[0][0] != Double.NaN);
+    }
 }

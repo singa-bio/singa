@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class RegularMatrixTest {
@@ -291,5 +292,13 @@ public class RegularMatrixTest {
         for (int row = 0; row < expectedV.getRowDimension(); row++) {
             assertArrayEquals(expectedV.getElements()[row], svd.getMatrixV().getElements()[row], 1E-14);
         }
+    }
+
+    @Test
+    public void shouldCopy(){
+        RegularMatrix copy1 = this.squareMatrix.getCopy();
+        RegularMatrix copy2 = this.squareMatrix.getCopy();
+        copy1.getElements()[0][0] = Double.NaN;
+        assertTrue(copy2.getElements()[0][0] != Double.NaN);
     }
 }
