@@ -20,6 +20,14 @@ public class IconProvider {
     private static final String MOLECULE_ICON_PATH = getResourceAsString(MOLECULE_ICON_NAME);
     public static final Image MOLECULE_ICON_IMAGE = new Image(getResourceAsStream(MOLECULE_ICON_NAME));
 
+    private static final String PROTEIN_ICON_NAME = "icon_protein_32x.png";
+    private static final String PROTEIN_ICON_PATH = getResourceAsString(PROTEIN_ICON_NAME);
+    public static final Image PROTEIN_ICON_IMAGE = new Image(getResourceAsStream(PROTEIN_ICON_NAME));
+
+    private static final String COMPLEX_ICON_NAME = "icon_complex_32x.png";
+    private static final String COMPLEX_ICON_PATH = getResourceAsString(COMPLEX_ICON_NAME);
+    public static final Image COMPLEX_ICON_IMAGE = new Image(getResourceAsStream(COMPLEX_ICON_NAME));
+
     private static final String GENERIC_REACTION_ICON_NAME = "icon_reaction_generic_32x.png";
     private static final String GENERIC_REACTION_ICON_PATH = getResourceAsString(GENERIC_REACTION_ICON_NAME);
     public static final Image GENERIC_REACTION_ICON_IMAGE = new Image(getResourceAsStream(GENERIC_REACTION_ICON_NAME));

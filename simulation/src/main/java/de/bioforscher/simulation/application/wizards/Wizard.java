@@ -49,6 +49,22 @@ public abstract class Wizard extends StackPane {
         return !this.history.isEmpty();
     }
 
+    public void navigateTo(String pageIdentifier) {
+        WizardPage target = this.pages.stream()
+                .filter(page -> page.getId().equals(pageIdentifier))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+        int nextPageIdentifier = this.pages.indexOf(target);
+        if (nextPageIdentifier != UNDEFINED) {
+            navigateTo(nextPageIdentifier);
+        }
+
+    }
+
+    public void navigateTo(int pageIdentifier) {
+        navigateTo(pageIdentifier, true);
+    }
+
     public void navigateTo(int pageIdentifier, boolean pushHistory) {
         if (pageIdentifier < 0 || pageIdentifier >= this.pages.size())
             return;
@@ -63,20 +79,6 @@ public abstract class Wizard extends StackPane {
         getChildren().clear();
         getChildren().add(nextPage);
         nextPage.manageButtons();
-    }
-
-    public void navigateTo(int pageIdentifier) {
-        navigateTo(pageIdentifier, true);
-    }
-
-    public void navigateTo(String pageIdentifier) {
-        Node page = lookup("#" + pageIdentifier);
-        if (page != null) {
-            int nextPageIdentifier = this.pages.indexOf(page);
-            if (nextPageIdentifier != UNDEFINED) {
-                navigateTo(nextPageIdentifier);
-            }
-        }
     }
 
     public void navigateToPriorPage() {

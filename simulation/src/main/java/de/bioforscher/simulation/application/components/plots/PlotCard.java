@@ -2,7 +2,7 @@ package de.bioforscher.simulation.application.components.plots;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.IconProvider;
-import de.bioforscher.simulation.application.components.species.ColoredEntityCell;
+import de.bioforscher.simulation.application.components.chemicalEntities.ColoredEntityCell;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

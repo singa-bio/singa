@@ -1,8 +1,8 @@
-package de.bioforscher.simulation.application.components.species;
+package de.bioforscher.simulation.application.components.chemicalEntities;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.ChEBIImageService;
+import de.bioforscher.core.identifier.ChEBIIdentifier;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -14,24 +14,18 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-import java.io.InputStream;
+public class ChemicalEntityCard extends GridPane {
 
-public class SpeciesCard extends GridPane {
-
-    private Species species;
+    private ChemicalEntity chemicalEntity;
     private ImageView speciesImage;
     private VBox informationBox = new VBox();
 
-    public SpeciesCard(Species species) {
-        this.species = species;
+    public ChemicalEntityCard(ChemicalEntity chemicalEntity) {
+        this.chemicalEntity = chemicalEntity;
         configureGrid();
         configureImageView();
         configureInformationBox();
         addComponentsToGrid();
-    }
-
-    public SpeciesCard(ChemicalEntity species) {
-        this((Species) species);
     }
 
     private void configureGrid() {
@@ -47,19 +41,22 @@ public class SpeciesCard extends GridPane {
     }
 
     private void configureImageView() {
-        ChEBIImageService imageService = new ChEBIImageService(this.species.getIdentifier());
-        imageService.fetchResource();
-        InputStream inputStream = imageService.getImageStream();
-        Image speciesImage = new Image(inputStream);
-        this.speciesImage = new ImageView(speciesImage);
+        if (this.chemicalEntity.getIdentifier() instanceof ChEBIIdentifier) {
+            ChEBIImageService imageService = new ChEBIImageService(this.chemicalEntity.getIdentifier().toString());
+            imageService.fetchResource();
+            Image imageRepresentation = new Image(imageService.getImageStream());
+            this.speciesImage = new ImageView(imageRepresentation);
+        } else {
+            this.speciesImage = new ImageView();
+        }
     }
 
     private void configureInformationBox() {
-        Text nameText = new Text(this.species.getName());
+        Text nameText = new Text(this.chemicalEntity.getName());
         nameText.setFont(Font.font(null, FontWeight.BOLD, 16));
         TextFlow nameFlow = new TextFlow(nameText);
-        Text identifierText = new Text("Identifier: " + this.species.getIdentifier().toString());
-        Label speciesWeight = new Label("Weight: " + this.species.getMolarMass().toString());
+        Text identifierText = new Text("Identifier: " + this.chemicalEntity.getIdentifier().toString());
+        Label speciesWeight = new Label("Weight: " + this.chemicalEntity.getMolarMass().toString());
         this.informationBox.setSpacing(10);
         this.informationBox.getChildren().addAll(nameFlow, identifierText, speciesWeight);
     }
@@ -69,8 +66,8 @@ public class SpeciesCard extends GridPane {
         this.add(this.informationBox, 1, 0, 1, 1);
     }
 
-    public Species getSpecies() {
-        return this.species;
+    public ChemicalEntity getChemicalEntity() {
+        return this.chemicalEntity;
     }
 
 }

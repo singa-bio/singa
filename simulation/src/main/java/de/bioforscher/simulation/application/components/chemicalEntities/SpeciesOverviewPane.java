@@ -1,6 +1,8 @@
-package de.bioforscher.simulation.application.components.species;
+package de.bioforscher.simulation.application.components.chemicalEntities;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.chemistry.descriptive.ComplexedChemicalEntity;
+import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
@@ -32,13 +34,13 @@ public class SpeciesOverviewPane extends BorderPane {
     private TreeView<String> treeView;
     private TreeItem<String> rootItem;
     private Map<String, ChemicalEntity> entityMapping;
-    private Map<String, SpeciesCard> cardMapping;
+    private Map<String, ChemicalEntityCard> cardMapping;
 
     private VBox currentDetailView;
 
     public SpeciesOverviewPane(BioGraphSimulation owner) {
         this.owner = owner;
-        this.entityMapping = BioGraphUtilities.gerneratEntityMapFromSet(owner.getSimulation().getChemicalEntities());
+        this.entityMapping = BioGraphUtilities.generateEntityMapFromSet(owner.getSimulation().getChemicalEntities());
         initializeCards();
         initializeInterface();
         initializeListener();
@@ -46,9 +48,9 @@ public class SpeciesOverviewPane extends BorderPane {
 
     private void initializeCards() {
         this.cardMapping = new HashMap<>();
-        for (String identifier : this.entityMapping.keySet()) {
-            this.cardMapping.put(identifier, new SpeciesCard(this.entityMapping.get(identifier)));
-        }
+        this.entityMapping.forEach( (key,value) -> {
+            this.cardMapping.put(key, new ChemicalEntityCard(value));
+        });
     }
 
     private void initializeInterface() {
@@ -69,14 +71,14 @@ public class SpeciesOverviewPane extends BorderPane {
         Text cbGroupingText = new Text("Group by:");
         leftBox.add(cbGroupingText, 0, 0);
         this.cbGrouping = new ComboBox<>();
-        this.cbGrouping.getItems().addAll("None", "Reaction", "Type");
+        this.cbGrouping.getItems().addAll("Type", "Reaction", "None");
         this.cbGrouping.getSelectionModel().selectFirst();
         this.cbGrouping.setPrefWidth(Double.MAX_VALUE);
         leftBox.add(this.cbGrouping, 1, 0);
 
         // initialize treeView ungrouped
         this.rootItem = new TreeItem<>("All");
-        fillTreeUnGrouped();
+        fillTreeGroupedByType();
         this.treeView = new TreeView<>(this.rootItem);
         this.treeView.showRootProperty().setValue(false);
         leftBox.add(this.treeView, 0, 1, 2, 1);
@@ -123,21 +125,55 @@ public class SpeciesOverviewPane extends BorderPane {
                         TreeItem<String> reactionItem = createReactionTreeItem(reaction.getDisplayString());
                         this.rootItem.getChildren().add(reactionItem);
                         for (ChemicalEntity entity : reaction.getSubstrates()) {
-                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
+                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getIdentifier().toString());
                             reactionItem.getChildren().add(speciesItem);
                         }
                         for (ChemicalEntity entity : reaction.getProducts()) {
-                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getName());
+                            TreeItem<String> speciesItem = createSpeciesTreeItem(entity.getIdentifier().toString());
                             reactionItem.getChildren().add(speciesItem);
                         }
                     }
                 });
+    }
 
+    private void fillTreeGroupedByType() {
+        this.rootItem.getChildren().clear();
+        TreeItem<String> speciesItem = new TreeItem<>("Species",new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
+        TreeItem<String> proteinItem = new TreeItem<>("Enzymes",new ImageView(IconProvider.PROTEIN_ICON_IMAGE));
+        TreeItem<String> complexItem = new TreeItem<>("Complexes",new ImageView(IconProvider.COMPLEX_ICON_IMAGE));
+        this.rootItem.getChildren().add(speciesItem);
+        this.rootItem.getChildren().add(proteinItem);
+        this.rootItem.getChildren().add(complexItem);
+        this.owner.getSimulation().getChemicalEntities()
+                .forEach(entity -> {
+                    TreeItem<String> item = createSpeciesTreeItem(entity.getIdentifier().toString());
+                    if (entity instanceof Species) {
+                        speciesItem.getChildren().add(item);
+                    } else if (entity instanceof ComplexedChemicalEntity) {
+                        complexItem.getChildren().add(item);
+                    } else {
+                        proteinItem.getChildren().add(item);
+                    }
+                });
     }
 
     private TreeItem<String> createSpeciesTreeItem(String identifyingString) {
-        return new TreeItem<>(this.entityMapping.get(identifyingString).getName(),
-                new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
+        ChemicalEntity chemicalEntity = this.entityMapping.get(identifyingString);
+        if (chemicalEntity instanceof Species) {
+            return new TreeItem<>(chemicalEntity.getIdentifier().toString(),
+                    new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
+        } else if (chemicalEntity instanceof ComplexedChemicalEntity) {
+             TreeItem<String> complex = new TreeItem<>(chemicalEntity.getIdentifier().toString(),
+                    new ImageView(IconProvider.COMPLEX_ICON_IMAGE));
+            ((ComplexedChemicalEntity) chemicalEntity).getAssociatedChemicalEntities().forEach( associated -> {
+                complex.getChildren().add(createSpeciesTreeItem(associated.getIdentifier().toString()));
+            });
+            return complex;
+        } else {
+            return new TreeItem<>(chemicalEntity.getIdentifier().toString(),
+                    new ImageView(IconProvider.PROTEIN_ICON_IMAGE));
+        }
+
     }
 
     private TreeItem<String> createReactionTreeItem(String identifyingString) {
@@ -170,6 +206,7 @@ public class SpeciesOverviewPane extends BorderPane {
                 break;
             }
             case "Type": {
+                fillTreeGroupedByType();
                 break;
             }
             default: {

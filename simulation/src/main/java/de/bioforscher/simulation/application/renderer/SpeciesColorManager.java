@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.application.components.species.ColorableChemicalEntity;
+import de.bioforscher.simulation.application.components.chemicalEntities.ColorableChemicalEntity;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;

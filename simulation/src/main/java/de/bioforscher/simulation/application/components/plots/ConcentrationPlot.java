@@ -2,7 +2,7 @@ package de.bioforscher.simulation.application.components.plots;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.application.components.species.ColorableChemicalEntity;
+import de.bioforscher.simulation.application.components.chemicalEntities.ColorableChemicalEntity;
 import de.bioforscher.simulation.application.renderer.SpeciesColorManager;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;

@@ -7,7 +7,7 @@ import de.bioforscher.simulation.application.components.SimulationCanvas;
 import de.bioforscher.simulation.application.components.modules.ModuleOverviewPane;
 import de.bioforscher.simulation.application.components.plots.PlotPane;
 import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
-import de.bioforscher.simulation.application.components.species.SpeciesOverviewPane;
+import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesOverviewPane;
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;

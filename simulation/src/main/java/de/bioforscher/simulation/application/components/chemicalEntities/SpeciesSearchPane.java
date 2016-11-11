@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.application.components.species;
+package de.bioforscher.simulation.application.components.chemicalEntities;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Species;
@@ -123,7 +123,8 @@ public class SpeciesSearchPane extends GridPane {
 
     private VBox createNoResultsPage(Integer pageIndex) {
         VBox box = new VBox(1);
-        Text nothingFoundText = new Text("Sorry, we were not able to find " + "\"" + this.searchField.getText() + "\" in the ChEBI Database.");
+        Text nothingFoundText = new Text("Sorry, we were not able to find " + "\"" + this.searchField.getText() +
+                "\" in the ChEBI Database.");
         box.getChildren().add(nothingFoundText);
         return box;
     }
@@ -133,7 +134,7 @@ public class SpeciesSearchPane extends GridPane {
         int page = pageIndex * this.resultsPerPage;
         int i = page;
         while (i < page + this.resultsPerPage && i < this.speciesList.size()) {
-            SpeciesCard card = new SpeciesCard(this.speciesList.get(i));
+            ChemicalEntityCard card = new ChemicalEntityCard(this.speciesList.get(i));
             card.addEventHandler(MouseEvent.MOUSE_CLICKED, this::selectCard);
             box.getChildren().add(card);
             i++;
@@ -142,8 +143,8 @@ public class SpeciesSearchPane extends GridPane {
     }
 
     private void selectCard(MouseEvent event) {
-        if (!this.selectedSpecies.contains(((SpeciesCard) event.getSource()).getSpecies())) {
-            this.selectedSpecies.add(((SpeciesCard) event.getSource()).getSpecies());
+        if (!this.selectedSpecies.contains(((ChemicalEntityCard) event.getSource()).getChemicalEntity())) {
+            this.selectedSpecies.add(((ChemicalEntityCard) event.getSource()).getChemicalEntity());
         }
     }
 

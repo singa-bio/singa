@@ -18,11 +18,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ChEBIImageService extends AbstractRESTParser {
 
     private static final int dafaultImageWidth = 75;
-
     private InputStream imageStream;
 
     public ChEBIImageService(String chEBIIdentifier) {

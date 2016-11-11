@@ -35,8 +35,9 @@ public class BioGraphUtilities {
         return results;
     }
 
-    public static Map<String, ChemicalEntity> gerneratEntityMapFromSet(Set<ChemicalEntity> entities) {
-        return entities.stream().collect(Collectors.toMap(ChemicalEntity::getName, Function.identity()));
+    public static Map<String, ChemicalEntity> generateEntityMapFromSet(Set<ChemicalEntity> entities) {
+        return entities.stream()
+                .collect(Collectors.toMap( entity -> entity.getIdentifier().toString(), Function.identity()));
     }
 
     /**

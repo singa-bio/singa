@@ -2,17 +2,22 @@ package de.bioforscher.simulation.application.wizards;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
-import de.bioforscher.simulation.application.components.species.EntityCell;
-import de.bioforscher.simulation.application.components.species.SpeciesSearchPane;
+import de.bioforscher.simulation.application.components.chemicalEntities.EntityCell;
+import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesSearchPane;
+import de.bioforscher.simulation.parser.BioModelsParserService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +31,7 @@ public class AddSpeciesWizard extends Wizard {
     private Set<ChemicalEntity> speciesToAdd;
 
     public AddSpeciesWizard(Stage owner, BioGraphSimulation simulation) {
-        super(new ChooseSpeciesMethodPage(), new SearchSpeciesPage());
+        super(new ChooseSpeciesMethodPage(), new SpeciesFromChEBI(), new SpeciesFromSBML());
         this.owner = owner;
         this.simulation = simulation;
     }
@@ -34,8 +39,10 @@ public class AddSpeciesWizard extends Wizard {
     @Override
     public void finish() {
         this.owner.close();
-        if (this.getCurrentPage().getClass().equals(SearchSpeciesPage.class)) {
-            this.speciesToAdd = (((SearchSpeciesPage) this.getCurrentPage()).prepareSelectedSpecies());
+        if (this.getCurrentPage().getClass().equals(SpeciesFromChEBI.class)) {
+            this.speciesToAdd = (((SpeciesFromChEBI) this.getCurrentPage()).prepareSelectedSpecies());
+        } else if (this.getCurrentPage().getClass().equals(SpeciesFromSBML.class)) {
+            this.speciesToAdd = (((SpeciesFromSBML) this.getCurrentPage()).prepareSelectedSpecies());
         }
     }
 
@@ -65,10 +72,11 @@ public class AddSpeciesWizard extends Wizard {
 class ChooseSpeciesMethodPage extends WizardPage {
 
     private RadioButton rbChEBI;
+    private RadioButton rbSBML;
     private RadioButton rbManual;
     private ToggleGroup tgMethods = new ToggleGroup();
 
-    public ChooseSpeciesMethodPage() {
+    ChooseSpeciesMethodPage() {
         super("Choose a method to add species.");
         setDescription("The Species can either be created using data from ChEBI Database or it can be described " +
                 "manually using the graphical user interface.");
@@ -77,12 +85,11 @@ class ChooseSpeciesMethodPage extends WizardPage {
         this.finishButton.setDisable(true);
 
         this.rbChEBI.setToggleGroup(this.tgMethods);
+        this.rbSBML.setToggleGroup(this.tgMethods);
         this.rbManual.setToggleGroup(this.tgMethods);
 
         this.tgMethods.selectedToggleProperty().addListener(
-                (observableValue, oldToggle, newToggle) -> {
-                    this.nextButton.setDisable(false);
-                });
+                (observableValue, oldToggle, newToggle) -> this.nextButton.setDisable(false));
 
     }
 
@@ -93,28 +100,33 @@ class ChooseSpeciesMethodPage extends WizardPage {
         content.setVgap(10);
         content.setPadding(new Insets(10, 10, 10, 10));
         this.rbChEBI = new RadioButton("Search species from ChEBI Database.");
+        this.rbSBML = new RadioButton("Using a local SBML file or from the BioModels database.");
         this.rbManual = new RadioButton("Create manually using the user interface.");
         content.add(this.rbChEBI, 0, 0);
-        content.add(this.rbManual, 0, 1);
+        content.add(this.rbSBML, 0, 1);
+        content.add(this.rbManual, 0, 2);
         return content;
     }
 
     @Override
     public void navigateToNextPage() {
         if (this.tgMethods.getSelectedToggle().equals(this.rbChEBI)) {
+            navigateToPage("Species from ChEBI");
+        } else if (this.tgMethods.getSelectedToggle().equals(this.rbSBML)) {
+            navigateToPage("Species from SBML");
+        } else {
             super.navigateToNextPage();
         }
     }
 }
 
-class SearchSpeciesPage extends WizardPage {
+class SpeciesFromChEBI extends WizardPage {
 
-    private SplitPane split;
     private SpeciesSearchPane searchPane;
 
-    public SearchSpeciesPage() {
-        super("Search Species...");
-        setDescription("Type in your search term into the text box below. ");
+    SpeciesFromChEBI() {
+        super("Species from ChEBI");
+        setDescription("Type in your search term into the text box below.");
     }
 
     @Override
@@ -126,15 +138,49 @@ class SearchSpeciesPage extends WizardPage {
         speciesList.setCellFactory(param -> new EntityCell());
         speciesList.setItems(this.searchPane.getSelectedSpecies());
         // create SplitPane
-        this.split = new SplitPane(this.searchPane, speciesList);
-        this.split.setPrefHeight(530);
-        SplitPane.setResizableWithParent(this.split, Boolean.FALSE);
-        return this.split;
+        SplitPane split = new SplitPane(this.searchPane, speciesList);
+        split.setPrefHeight(530);
+        SplitPane.setResizableWithParent(split, Boolean.FALSE);
+        return split;
     }
 
     public Set<ChemicalEntity> prepareSelectedSpecies() {
         return this.searchPane.getSelectedSpecies().stream().collect(Collectors.toSet());
     }
 
+}
+
+class SpeciesFromSBML extends WizardPage {
+
+    ObservableList<ChemicalEntity> entities;
+
+    public SpeciesFromSBML() {
+        super("Species from SBML");
+        setDescription("Choose whether to parse the species from an local SBML file or using a file from the Biomodels" +
+                "database");
+    }
+
+    @Override
+    public Parent getContent() {
+        //GridPane content = new GridPane();
+
+        BorderPane content = new BorderPane();
+        ListView<ChemicalEntity> speciesList = new ListView<>();
+        speciesList.setCellFactory(param -> new EntityCell());
+        entities = FXCollections.observableArrayList();
+        try {
+            entities.addAll(BioModelsParserService.parseModelById("BIOMD0000000038").values());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        speciesList.setItems(entities);
+        content.setCenter(speciesList);
+        return content;
+    }
+
+    public Set<ChemicalEntity> prepareSelectedSpecies() {
+        return this.entities.stream().collect(Collectors.toSet());
+    }
 
 }
+
