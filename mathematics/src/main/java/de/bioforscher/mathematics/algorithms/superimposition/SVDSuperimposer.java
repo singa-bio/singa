@@ -1,15 +1,16 @@
 package de.bioforscher.mathematics.algorithms.superimposition;
 
 import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
+import de.bioforscher.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.MatrixUtilities;
-import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.matrices.SquareMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.mathematics.vectors.Vector;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,21 +34,25 @@ public class SVDSuperimposer {
     private SVDSuperimposer(List<Vector> reference, List<Vector> candidate) {
         this.reference = reference;
         this.candidate = candidate;
+        if (this.reference.size() != this.candidate.size())
+            throw new IllegalArgumentException("Two lists of vectors cannot be superimposed if they differ in size.");
+    }
+
+    public static Superimposition calculateSVDSuperimposition(List<Vector> reference, List<Vector> candidate) {
+        return new SVDSuperimposer(reference, candidate).calculateSuperimposition();
+    }
+
+    public static Superimposition calculateIdealSVDSuperimposition(List<Vector> reference, List<Vector> candidate) {
+        return new SVDSuperimposer(reference, candidate).calculateIdealSuperimposition();
     }
 
     public Superimposition calculateSuperimposition() {
-
         center();
         calculateRotation();
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-
         return new Superimposition(this.rmsd, this.translation, this.rotation, this.mappedCandidate);
-    }
-
-    public static Superimposition calculateSVDSuperimposition(List<Vector> reference, List<Vector> candidate){
-        return new SVDSuperimposer(reference,candidate).calculateSuperimposition();
     }
 
     private void calculateRMSD() {
@@ -65,8 +70,8 @@ public class SVDSuperimposer {
     private void applyMapping() {
         this.mappedCandidate =
                 this.candidate.stream()
-                              .map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
-                              .collect(Collectors.toList());
+                        .map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
+                        .collect(Collectors.toList());
     }
 
     private void calculateTranslation() {
@@ -94,7 +99,7 @@ public class SVDSuperimposer {
         if (this.rotation.as(SquareMatrix.class).determinant() < 0) {
 
             // get copy of V matrix
-            Matrix matrixV = new RegularMatrix(svd.getMatrixV().getCopyOfElements()).transpose();
+            Matrix matrixV = svd.getMatrixV().getCopy().transpose();
             matrixV.getElements()[2][0] = 0 - matrixV.getElement(2, 0);
             matrixV.getElements()[2][1] = 0 - matrixV.getElement(2, 1);
             matrixV.getElements()[2][2] = 0 - matrixV.getElement(2, 2);
@@ -106,18 +111,24 @@ public class SVDSuperimposer {
     private void center() {
         this.referenceCentroid = VectorUtilities.getCentroid(this.reference);
         this.shiftedReference = this.reference.stream().map(vector -> vector.subtract(this.referenceCentroid))
-                                              .collect(Collectors.toList());
+                .collect(Collectors.toList());
         this.candidateCentroid = VectorUtilities.getCentroid(this.candidate);
         this.shiftedCandidate = this.candidate.stream().map(vector -> vector.subtract(this.candidateCentroid))
-                                              .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
-     * TODO implement this with permutation approach
+     * finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors
      *
-     * @return
+     * @return the ideal superimposition
      */
     public Superimposition calculateIdealSuperimposition() {
-        return null;
+        Optional<Superimposition> optionalSuperimposition = StreamPermutations.of(
+                this.candidate.toArray(new Vector[this.candidate.size()]))
+                .parallel()
+                .map(s -> s.collect(Collectors.toList()))
+                .map(permutedCandidates -> new SVDSuperimposer(this.reference, permutedCandidates).calculateSuperimposition())
+                .reduce((Superimposition s1, Superimposition s2) -> s1.getRmsd() < s2.getRmsd() ? s1 : s2);
+        return optionalSuperimposition.orElse(null);
     }
 }

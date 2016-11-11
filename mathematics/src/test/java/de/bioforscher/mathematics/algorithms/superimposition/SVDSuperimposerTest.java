@@ -39,7 +39,7 @@ public class SVDSuperimposerTest {
 
     @Test
     public void calculateIdealSuperimposition() throws Exception {
-
+        Superimposition superimposition = SVDSuperimposer.calculateIdealSVDSuperimposition(this.reference, this.candidate);
+        assertEquals(0.19986139479017428, superimposition.getRmsd(), 0.1E-6);
     }
-
 }
