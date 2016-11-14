@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * To handle structures with multiple models (from NMR).
- * TODO not yet implemented.
+ * TODO not yet implemented
  */
 public class StructuralModel extends SubStructure {
 
