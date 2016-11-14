@@ -1,10 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
-
-import java.util.stream.Collectors;
 
 /**
  * Created by fkaiser on 10.11.16.
@@ -15,6 +11,8 @@ public class SubStructureSuperimposer {
     private SubStructure candidate;
 
     public SubStructureSuperimposer(SubStructure reference, SubStructure candidate) {
+
+//        reference.getAtomContainingSubStructures();
         if(reference.getAllAtoms().isEmpty())  {
 
         }

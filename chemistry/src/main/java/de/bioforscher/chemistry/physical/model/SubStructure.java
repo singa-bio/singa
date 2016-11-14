@@ -2,11 +2,9 @@ package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.bonds.Bond;
-import de.bioforscher.chemistry.physical.bonds.BondType;
 import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.mathematics.graphs.model.Graph;
-import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
@@ -17,16 +15,15 @@ import java.util.stream.Collectors;
  * The SubStructure is the central component in the three dimensional structure representation of macro molecules.
  * A SubStructure can contain other substructures and/or atoms. Further implementations are used to infer more
  * information. <br/>
- *
+ * <p>
  * Each SubStructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a Substructure contains Elements that are themselves SubStructures or plain Atoms. Edges in a SubStructure
  * are only able to connect Atoms, but this can be done across different substructures. For example, this makes it
  * possible to connect Residues in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
- *
+ * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
  * @author cl
- *
  * @see Chain
  * @see Residue
  * @see Atom
@@ -360,6 +357,7 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      */
     @Override
     public boolean containsNode(Object node) {
+        // TODO we should be able to tweak this by using parallel streams (feedback demanded)
         return this.nodes.values().stream()
                 .anyMatch(atom -> atom.equals(node));
     }
@@ -375,4 +373,39 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
         return this.edges.containsValue(edge);
     }
 
+    /**
+     * Returns all atom-containing substructures for a substructure, i.e. all substructures with non-empty
+     * {@link Atom} lists, which can be for instance {@link Residue}s, {@link Nucleotide}s or {@link Ligand}.
+     * This method returns a list containing the element itself if this is already a {@link SubStructure} with atoms
+     *
+     * @param substructure                The substructure for which all atom-containing substructures are wanted.
+     * @param atomContainingSubStructures
+     * @return The list of atom containing substructures.
+     */
+    private List<SubStructure> findAtomContainingSubStructures(List<SubStructure> atomContainingSubstructures, SubStructure substructure) {
+        // substructure contains atoms
+        if (substructure != null && !substructure.getNodes().isEmpty()) {
+            atomContainingSubstructures.add(substructure);
+        } else {
+            Iterator<SubStructure> substructureIterator = getSubstructures().iterator();
+            while (substructureIterator.hasNext()) {
+                findAtomContainingSubStructures(atomContainingSubstructures, substructureIterator.next());
+            }
+        }
+        return atomContainingSubstructures;
+    }
+
+    public List<SubStructure> getAtomContainingSubstructures() {
+        List<SubStructure> atomContainingSubstructrues = new ArrayList<>();
+        for (SubStructure subStructure : this.substructures.values()) {
+            if (subStructure.substructures.values().isEmpty()) {
+                atomContainingSubstructrues.add(subStructure);
+            } else {
+                atomContainingSubstructrues.addAll(subStructure.getAtomContainingSubstructures());
+            }
+        }
+        if(!getNodes().isEmpty())
+            atomContainingSubstructrues.add(this);
+        return atomContainingSubstructrues;
+    }
 }
