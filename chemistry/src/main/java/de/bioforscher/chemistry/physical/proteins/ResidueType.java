@@ -2,6 +2,8 @@ package de.bioforscher.chemistry.physical.proteins;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.model.StructuralEntity;
+import de.bioforscher.chemistry.physical.model.StructuralEntityType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,7 +13,7 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 /**
  * The residue type should contain the general data, that is the same across all amino acids of this type.
  */
-public enum ResidueType {
+public enum ResidueType implements StructuralEntityType {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
@@ -50,10 +52,12 @@ public enum ResidueType {
         return this.name;
     }
 
+    @Override
     public String getOneLetterCode() {
         return this.oneLetterCode;
     }
 
+    @Override
     public String getThreeLetterCode() {
         return this.threeLetterCode;
     }
