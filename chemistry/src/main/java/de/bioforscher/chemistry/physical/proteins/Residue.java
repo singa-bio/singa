@@ -1,14 +1,16 @@
 package de.bioforscher.chemistry.physical.proteins;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.bonds.Bond;
+import de.bioforscher.chemistry.physical.model.Exchangeable;
+import de.bioforscher.chemistry.physical.model.StructuralEntityType;
+import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
@@ -19,7 +21,7 @@ import java.util.Optional;
  *
  * @author cl
  */
-public class Residue extends SubStructure implements Nameable {
+public class Residue extends SubStructure implements Nameable, Exchangeable<ResidueType> {
 
     /**
      * The type of this residue.
@@ -37,7 +39,7 @@ public class Residue extends SubStructure implements Nameable {
      * Residues.
      *
      * @param identifier The identifier.
-     * @param type The ResidueType.
+     * @param type       The ResidueType.
      */
     public Residue(int identifier, ResidueType type) {
         super(identifier);
@@ -47,7 +49,8 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Connects two atoms with a bond, returning whether the connection could be made.
-     * @param first The first atom.
+     *
+     * @param first  The first atom.
      * @param second The second atom.
      * @return True if the connection could be assigned.
      */
@@ -72,15 +75,17 @@ public class Residue extends SubStructure implements Nameable {
     /**
      * Return the name of this residue in the format [Three Letter Code of the Residue]:[Residue identifier] (e.g.
      * Arg:123 or Met:17).
+     *
      * @return The name.
      */
     @Override
     public String getName() {
-        return this.type.getName()+":"+getIdentifier();
+        return this.type.getName() + ":" + getIdentifier();
     }
 
     /**
      * Returns the one letter code of this residue.
+     *
      * @return The one letter code of this residue.
      */
     public String getOneLetterCode() {
@@ -89,6 +94,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the three letter code of this residue.
+     *
      * @return The three letter code of this residue.
      */
     public String getThreeLetterCode() {
@@ -111,6 +117,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the {@link AtomName#CA alpha carbon} (carbon with the side cain attached).
+     *
      * @return The C alpha carbon.
      */
     public Atom getCAlpha() {
@@ -119,6 +126,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the {@link AtomName#CB beta carbon} (first carbon of the side cain).
+     *
      * @return The C beta carbon.
      */
     public Atom getCBeta() {
@@ -127,6 +135,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the {@link AtomName#C backbone carbon} (carbon in the backbone).
+     *
      * @return The backbone carbon.
      */
     public Atom getBackboneCarbon() {
@@ -135,6 +144,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the {@link AtomName#N backbone nitrogen} (nitrogen in the backbone).
+     *
      * @return The backbone nitrogen.
      */
     public Atom getBackboneNitrogen() {
@@ -143,6 +153,7 @@ public class Residue extends SubStructure implements Nameable {
 
     /**
      * Returns the {@link AtomName#O backbone oxygen} (oxygen in the backbone).
+     *
      * @return The backbone oxygen.
      */
     public Atom getBackboneOxygen() {
@@ -152,10 +163,16 @@ public class Residue extends SubStructure implements Nameable {
     /**
      * Return the name of this residue in the format [Three Letter Code of the Residue]:[Residue identifier] (e.g.
      * Arg:123 or Met:17).
+     *
      * @return The String representation of this residue.
      */
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    @Override
+    public ResidueType getType() {
+        return type;
     }
 }
