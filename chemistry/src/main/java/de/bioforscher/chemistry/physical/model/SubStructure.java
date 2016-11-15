@@ -5,9 +5,11 @@ import de.bioforscher.chemistry.physical.bonds.Bond;
 import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.mathematics.graphs.model.Graph;
+import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
  * @see Residue
  * @see Atom
  */
-public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStructure> {
+public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStructure> {
 
     /*
      * ENTITY VARIABLES
@@ -404,8 +406,10 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
                 atomContainingSubstructrues.addAll(subStructure.getAtomContainingSubstructures());
             }
         }
-        if(!getNodes().isEmpty())
+        if (!getNodes().isEmpty())
             atomContainingSubstructrues.add(this);
         return atomContainingSubstructrues;
     }
+
+    public abstract SubStructure getCopy();
 }
