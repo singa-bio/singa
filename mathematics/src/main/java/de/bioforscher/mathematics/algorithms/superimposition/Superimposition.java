@@ -4,11 +4,13 @@ import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A container object representing a superimposition.
  * <p>
- * Created by fkaiser on 19.10.16.
+ *
+ * @author fk
  */
 public class Superimposition {
 
@@ -38,5 +40,15 @@ public class Superimposition {
 
     public List<Vector> getMappedCandidate() {
         return this.mappedCandidate;
+    }
+
+    /**
+     * Applies the superimposition to the given list of {@link Vector}s and returns new instances.
+     * @param vectors the {@link Vector}s to which this superimposition should be applied
+     * @return new instances of mapped {@link Vector}s
+     */
+    public List<Vector> applyTo(List<Vector> vectors) {
+        return vectors.stream().map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
+                .collect(Collectors.toList());
     }
 }

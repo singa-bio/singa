@@ -14,7 +14,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Created by fkaiser on 19.10.16.
+ * An implementation of the Kabsch algorithm that uses Singular Value Decomposition (SVD) to compute the ideal
+ * superimposition of two point sets.
+ *
+ * @see {https://en.wikipedia.org/wiki/Kabsch_algorithm}
+ * @author fk
  */
 public class SVDSuperimposer {
 

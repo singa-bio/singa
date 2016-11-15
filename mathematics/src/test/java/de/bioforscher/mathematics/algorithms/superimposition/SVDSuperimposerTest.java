@@ -6,9 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by fkaiser on 19.10.16.
@@ -41,5 +43,17 @@ public class SVDSuperimposerTest {
     public void calculateIdealSuperimposition() throws Exception {
         Superimposition superimposition = SVDSuperimposer.calculateIdealSVDSuperimposition(this.reference, this.candidate);
         assertEquals(0.19986139479017428, superimposition.getRmsd(), 0.1E-6);
+    }
+
+    @Test
+    public void applySuperimposition() {
+        Superimposition superimposition = SVDSuperimposer.calculateSVDSuperimposition(this.reference, this.candidate);
+        List<Vector> mappedCandidate = superimposition.applyTo(this.candidate);
+        assertTrue(Arrays.equals(mappedCandidate.get(0).getElements(),
+                superimposition.getMappedCandidate().get(0).getElements()));
+        assertTrue(Arrays.equals(mappedCandidate.get(1).getElements(),
+                superimposition.getMappedCandidate().get(1).getElements()));
+        assertTrue(Arrays.equals(mappedCandidate.get(2).getElements(),
+                superimposition.getMappedCandidate().get(2).getElements()));
     }
 }

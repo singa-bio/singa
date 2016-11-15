@@ -2,30 +2,23 @@ package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.physical.model.SubStructure;
 
+import java.util.List;
+
 /**
  * Created by fkaiser on 10.11.16.
  */
 public class SubStructureSuperimposer {
 
-    private SubStructure reference;
-    private SubStructure candidate;
+    private List<SubStructure> reference;
+    private List<SubStructure> candidate;
 
     public SubStructureSuperimposer(SubStructure reference, SubStructure candidate) {
+        this.reference = reference.getAtomContainingSubstructures();
+        this.candidate = candidate.getAtomContainingSubstructures();
 
-//        reference.getAtomContainingSubStructures();
-        if(reference.getAllAtoms().isEmpty())  {
-
-        }
-        reference.getSubstructures().size();
-        candidate.getSubstructures().size();
-        this.candidate = candidate;
-
-        initialize();
-        center();
-        calculateRotation();
-        calculateTranslation();
-        applyMapping();
-        calculateRMSD();
+        if(this.reference.size() != this.candidate.size())
+            throw new IllegalArgumentException("Two lists of substructures cannot be superimposed if they " +
+                    "differ in size.");
     }
 
     private void initialize() {
