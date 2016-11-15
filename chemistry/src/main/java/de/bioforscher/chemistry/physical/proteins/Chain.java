@@ -30,6 +30,11 @@ public class Chain extends SubStructure implements Nameable {
         super(graphIdentifier);
     }
 
+    @Override
+    public SubStructure getCopy() {
+        return null;
+    }
+
     /**
      * Creates a new Chain with the graph identifier 0. Use this method only if there is only one chain and nothing
      * more on this level in a structure.

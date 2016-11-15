@@ -4,13 +4,15 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.bonds.Bond;
 import de.bioforscher.chemistry.physical.model.Exchangeable;
-import de.bioforscher.chemistry.physical.model.StructuralEntityType;
 import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
@@ -174,5 +176,15 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
     @Override
     public ResidueType getType() {
         return type;
+    }
+
+    @Override
+    public SubStructure getCopy() {
+//        return ResidueFactory.createResidueFromAtoms(identifier,type,a)
+        Map<Integer, Atom> nodes = getNodes().stream().collect(Collectors.toMap(Atom::getIdentifier, Atom::getCopy));
+        getEdges().stream().map(new Bond(B))
+        Stream<Atom> atomStream = getAllAtoms().stream().map(Atom::getCopy);
+        Map<AtomName, Atom> atomMap = atomStream.collect(Collectors.toMap(Atom::getAtomName, Function.identity()));
+        return ResidueFactory.createResidueFromAtoms(identifier,type,atomMap);
     }
 }

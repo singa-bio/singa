@@ -148,5 +148,4 @@ public class RegularAtom implements Atom {
     public void setAtomName(AtomName atomName) {
         this.atomName = atomName;
     }
-
 }

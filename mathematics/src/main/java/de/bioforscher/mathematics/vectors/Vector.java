@@ -4,7 +4,6 @@ import de.bioforscher.mathematics.concepts.Divisible;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
-import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 
@@ -66,7 +65,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      */
     default <V extends Vector> V getCopy() {
         final double[] copyOfElements = new double[getElements().length];
-       System.arraycopy(getElements(), 0, copyOfElements, 0, getElements().length);
+        System.arraycopy(getElements(), 0, copyOfElements, 0, getElements().length);
         try {
             return (V) getClass().getConstructor(double[].class).newInstance((Object) copyOfElements);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

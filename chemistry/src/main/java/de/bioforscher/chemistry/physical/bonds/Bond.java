@@ -15,5 +15,9 @@ public class Bond extends AbstractEdge<Atom> {
         this.bondType = BondType.COVALENT_BOND;
     }
 
-
+    public Bond getCopy(){
+        Bond copy = new Bond(bondType);
+        copy.setSource(source.getCopy());
+        copy.setTarget(source.getCopy());
+    }
 }

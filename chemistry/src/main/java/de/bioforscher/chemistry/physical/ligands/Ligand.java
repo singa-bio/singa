@@ -23,6 +23,11 @@ public class Ligand extends SubStructure implements Nameable {
     }
 
     @Override
+    public SubStructure getCopy() {
+        return null;
+    }
+
+    @Override
     public String getName() {
         return null;
     }
