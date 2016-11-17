@@ -38,9 +38,9 @@ public interface Atom extends StructuralEntity<Atom> {
         return this.getElement().equals(HYDROGEN) || this.getElement().equals(DEUTERIUM);
     }
 
-    default <A extends Atom> A getCopy() {
+    default Atom getCopy() {
         try {
-            return (A) getClass().getConstructor(int.class, Element.class, String.class, Vector3D.class)
+            return getClass().getConstructor(int.class, Element.class, String.class, Vector3D.class)
                     .newInstance(getElement(), getAtomNameString(), getPosition().getCopy());
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {

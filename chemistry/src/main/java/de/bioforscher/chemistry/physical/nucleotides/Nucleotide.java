@@ -30,4 +30,10 @@ public class Nucleotide extends SubStructure implements Nameable {
     public String getName() {
         return null;
     }
+
+    @Override
+    public SubStructure getCopy() {
+        return null;
+    }
+
 }

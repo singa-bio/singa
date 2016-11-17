@@ -49,6 +49,23 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
         this.nextBondIdentifier = 0;
     }
 
+
+    /**
+     * This is a copy constructor. Creates a new residue with the same attributes as the given residue. This
+     * also recursively creates copies of all the underlying substructures and atoms. The neighbours of this
+     * substructure are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations
+     * to the lifecycle of the substructure to copy. If you want to keep the neighbouring substructures, copy the
+     * superordinate substructure that contains this substructure and it will also traverse and copy the neighbouring
+     * substructures.
+     *
+     * @param residue The residue to copy
+     */
+    public Residue(Residue residue) {
+        super(residue);
+        this.type = residue.type;
+        this.nextBondIdentifier = residue.nextBondIdentifier;
+    }
+
     /**
      * Connects two atoms with a bond, returning whether the connection could be made.
      *
@@ -175,16 +192,13 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
 
     @Override
     public ResidueType getType() {
-        return type;
+        return this.type;
     }
 
     @Override
     public SubStructure getCopy() {
-//        return ResidueFactory.createResidueFromAtoms(identifier,type,a)
-        Map<Integer, Atom> nodes = getNodes().stream().collect(Collectors.toMap(Atom::getIdentifier, Atom::getCopy));
-        getEdges().stream().map(new Bond(B))
-        Stream<Atom> atomStream = getAllAtoms().stream().map(Atom::getCopy);
-        Map<AtomName, Atom> atomMap = atomStream.collect(Collectors.toMap(Atom::getAtomName, Function.identity()));
-        return ResidueFactory.createResidueFromAtoms(identifier,type,atomMap);
+        return new Residue(this);
     }
+
+
 }

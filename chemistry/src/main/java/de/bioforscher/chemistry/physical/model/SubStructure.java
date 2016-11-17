@@ -78,6 +78,38 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
         this.edges = new HashMap<>();
     }
 
+    /**
+     * This is a copy constructor. Creates a new substructure with the same attributes as the given substructure. This
+     * also recursively creates copies of all the underlying substructures and atoms. The neighbours of this
+     * substructure are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations
+     * to the lifecycle of the substructure to copy. If you want to keep the neighbouring substructures, copy the
+     * superordinate substructure that contains this substructure and it will also traverse and copy the neighbouring
+     * substructures.
+     *
+     * @param subStructure The substructure to copy
+     */
+    public SubStructure(SubStructure subStructure) {
+        this.identifier = subStructure.getIdentifier();
+        this.substructures = new HashMap<>();
+        for (SubStructure structure: subStructure.substructures.values()) {
+            this.substructures.put(structure.getIdentifier(), structure.getCopy());
+        }
+        this.nodes = new HashMap<>();
+        for (Atom atom: subStructure.nodes.values()) {
+            this.nodes.put(atom.getIdentifier(), atom.getCopy());
+        }
+        this.edges = new HashMap<>();
+        for (Bond bond: subStructure.edges.values()) {
+            Bond edgeCopy = bond.getCopy();
+            Atom sourceCopy = this.nodes.get(bond.getSource().getIdentifier());
+            Atom targetCopy = this.nodes.get(bond.getTarget().getIdentifier());
+            edgeCopy.setSource(sourceCopy);
+            edgeCopy.setTarget(targetCopy);
+            connectWithEdge(edgeCopy.getIdentifier(), sourceCopy, targetCopy, edgeCopy);
+        }
+        this.neighbours = new ArrayList<>();
+    }
+
     /*
      * ENTITY METHODS
      */
@@ -380,8 +412,8 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
      * {@link Atom} lists, which can be for instance {@link Residue}s, {@link Nucleotide}s or {@link Ligand}.
      * This method returns a list containing the element itself if this is already a {@link SubStructure} with atoms
      *
-     * @param substructure                The substructure for which all atom-containing substructures are wanted.
-     * @param atomContainingSubStructures
+     * @param atomContainingSubstructures
+     * @param substructure The substructure for which all atom-containing substructures are wanted.
      * @return The list of atom containing substructures.
      */
     private List<SubStructure> findAtomContainingSubStructures(List<SubStructure> atomContainingSubstructures, SubStructure substructure) {
@@ -412,4 +444,5 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
     }
 
     public abstract SubStructure getCopy();
+
 }

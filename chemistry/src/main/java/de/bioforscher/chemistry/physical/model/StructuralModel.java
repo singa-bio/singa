@@ -26,5 +26,9 @@ public class StructuralModel extends SubStructure {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public SubStructure getCopy() {
+        return null;
+    }
 
 }
