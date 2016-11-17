@@ -30,10 +30,11 @@ public class Chain extends SubStructure implements Nameable {
         super(graphIdentifier);
     }
 
-    @Override
-    public SubStructure getCopy() {
-        return null;
+    public Chain(Chain chain) {
+        super(chain);
+        this.chainIdentifier = chain.chainIdentifier;
     }
+
 
     /**
      * Creates a new Chain with the graph identifier 0. Use this method only if there is only one chain and nothing
@@ -100,5 +101,22 @@ public class Chain extends SubStructure implements Nameable {
         return String.valueOf(this.chainIdentifier);
     }
 
+    @Override
+    public SubStructure getCopy() {
+        return new Chain(this);
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Chain chain = (Chain) o;
+        return this.chainIdentifier == chain.chainIdentifier;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) this.chainIdentifier;
+    }
 }

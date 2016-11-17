@@ -68,19 +68,19 @@ public class SubStructureSuperimposer {
     }
 
     private void center() {
-        List<Vector> referenceAtoms = this.reference.stream().map(SubStructure::getAllAtoms)
-                .flatMap(Collection::stream).map(Atom::getPosition)
-                .collect(Collectors.toList());
-        this.referenceCentroid = VectorUtilities.getCentroid(referenceAtoms).as(Vector3D.class);
-        this.shiftedReference = this.reference.stream().map(this::centerSubStructure).collect(Collectors.toList());
+        // List<Vector> referenceAtoms = this.reference.stream().map(SubStructure::getAllAtoms)
+        //        .flatMap(Collection::stream).map(Atom::getPosition)
+        //        .collect(Collectors.toList());
+        // this.referenceCentroid = VectorUtilities.getCentroid(referenceAtoms).as(Vector3D.class);
+        // this.shiftedReference = this.reference.stream().map(this::centerSubStructure).collect(Collectors.toList());
     }
 
     private SubStructure centerSubStructure(SubStructure subStructure, Vector3D centroid) {
-        List<Atom> centeredAtoms = new ArrayList<>();
-        for (Atom atom : subStructure.getAllAtoms()) {
-            centeredAtoms.add(new RegularAtom(atom.getIdentifier(), atom.getElement(), atom.getAtomNameString(),
-                    atom.getPosition().subtract(centroid)));
-        }
-        return new SubStructure()
+        // List<Atom> centeredAtoms = new ArrayList<>();
+        // for (Atom atom : subStructure.getAllAtoms()) {
+        //    centeredAtoms.add(new RegularAtom(atom.getIdentifier(), atom.getElement(), atom.getAtomNameString(),
+        //            atom.getPosition().subtract(centroid)));
+        // }
+        return null;
     }
 }

@@ -121,31 +121,22 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.identifier;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        UndirectedEdge other = (UndirectedEdge) obj;
-        return this.identifier == other.identifier;
-    }
-
-    @Override
     public String toString() {
         return "Edge connecting " + this.source + " and " + this.target;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractEdge<?> that = (AbstractEdge<?>) o;
+        return this.identifier == that.identifier;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return this.identifier;
     }
 
 }

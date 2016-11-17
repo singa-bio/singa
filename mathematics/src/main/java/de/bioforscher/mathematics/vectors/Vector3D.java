@@ -60,6 +60,14 @@ public class Vector3D extends RegularVector {
         this(0.0, 0.0, 0.0);
     }
 
+    /** This is a copy constructor. Creates a new Vector3D by copying the given vector.
+     *
+     * @param vector3D The vector to copy.
+     */
+    public Vector3D(Vector3D vector3D) {
+        this(vector3D.getX(), vector3D.getY(), vector3D.getZ());
+    }
+
     public static boolean isVector3D(Vector vector) {
         return vector.getDimension() == 3;
     }
