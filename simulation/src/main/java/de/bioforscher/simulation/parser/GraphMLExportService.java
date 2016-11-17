@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -47,7 +47,7 @@ public class GraphMLExportService {
             Element rootElement = doc.createElement("graphml");
             doc.appendChild(rootElement);
 
-            Map<String, ChemicalEntity> entityMap = BioGraphUtilities.generateMapOfEntities(graph);
+            Map<String, ChemicalEntity> entityMap = AutomatonGraphUtilities.generateMapOfEntities(graph);
             // x coordiante key
             Element keyXCoordinate = doc.createElement("key");
             keyXCoordinate.setAttribute("id", "x");

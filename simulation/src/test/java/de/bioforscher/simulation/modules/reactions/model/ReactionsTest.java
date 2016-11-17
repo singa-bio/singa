@@ -13,7 +13,7 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentFactory;
 import de.bioforscher.units.UnitProvider;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static de.bioforscher.units.UnitProvider.*;
 public class ReactionsTest {
 
     private AutomatonGraph prepareGraph() {
-        return BioGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildLinearGraph(1,
+        return AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildLinearGraph(1,
                 new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
     }
 

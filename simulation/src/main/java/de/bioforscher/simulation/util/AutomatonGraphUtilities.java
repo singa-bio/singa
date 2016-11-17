@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BioGraphUtilities {
+public class AutomatonGraphUtilities {
 
     /**
      * Creates and returns a map that contains all chemical entities that are present in the given graph as values and with the

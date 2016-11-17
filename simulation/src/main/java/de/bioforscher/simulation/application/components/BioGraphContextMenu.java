@@ -2,7 +2,7 @@ package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 
@@ -40,7 +40,7 @@ public class BioGraphContextMenu extends ContextMenu {
     private void configureColorByChemicalEntityMenu() {
         this.colorByChemicalEntityMenu = new Menu("Color by entity ...");
         this.chemicalEntitiesGrouping = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = BioGraphUtilities
+        Map<String, ChemicalEntity> chemicalEntities = AutomatonGraphUtilities
                 .generateEntityMapFromSet(this.simulation.getChemicalEntities());
         // add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {

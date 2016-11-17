@@ -8,7 +8,7 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     private void initializeChemicalEntitiesFromGraph(AutomatonGraph graph) {
-        this.species = BioGraphUtilities.generateMapOfEntities(graph);
+        this.species = AutomatonGraphUtilities.generateMapOfEntities(graph);
     }
 
     public void initialize() {
@@ -57,7 +57,7 @@ public class GraphAutomaton implements UpdateEventEmitter<NodeUpdatedEvent> {
         // try {
         // this.updateWriter = new EpochUpdateWriter(Paths.get("data/"),
         // Paths.get("Simulation " + dtf.format(now)),
-        // BioGraphUtilities.generateMapOfEntities(this.graph));
+        // AutomatonGraphUtilities.generateMapOfEntities(this.graph));
         // } catch (IOException e) {
         // e.printStackTrace();
         // }

@@ -7,7 +7,7 @@ import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -40,7 +40,7 @@ public class SpeciesOverviewPane extends BorderPane {
 
     public SpeciesOverviewPane(BioGraphSimulation owner) {
         this.owner = owner;
-        this.entityMapping = BioGraphUtilities.generateEntityMapFromSet(owner.getSimulation().getChemicalEntities());
+        this.entityMapping = AutomatonGraphUtilities.generateEntityMapFromSet(owner.getSimulation().getChemicalEntities());
         initializeCards();
         initializeInterface();
         initializeListener();

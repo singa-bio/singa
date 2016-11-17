@@ -22,8 +22,7 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
      */
     @Override
     default void updateGraph(AutomatonGraph graph) {
-        graph.getNodes().stream()
-                .forEach(this::updateNode);
+        graph.getNodes().forEach(this::updateNode);
     }
 
     /**
@@ -32,8 +31,7 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
      * @param node
      */
     default void updateNode(BioNode node) {
-        node.getConcentrations().keySet().stream()
-                .forEach(entity -> updateSpecies(node, entity));
+        node.getConcentrations().keySet().forEach(entity -> updateSpecies(node, entity));
     }
 
     /**

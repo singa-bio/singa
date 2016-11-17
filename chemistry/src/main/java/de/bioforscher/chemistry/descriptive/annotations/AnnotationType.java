@@ -7,10 +7,20 @@ package de.bioforscher.chemistry.descriptive.annotations;
  */
 public enum AnnotationType {
 
-    NOTE,
-    AMINO_ACID_SEQUENCE,
-    ADDITIONAL_NAME,
-    ORGANISM,
-    ADDITIONAL_IDENTIFIER
+    NOTE("Note"),
+    AMINO_ACID_SEQUENCE("Sequence"),
+    ADDITIONAL_NAME("Additional Name"),
+    ORGANISM("Organism"),
+    ADDITIONAL_IDENTIFIER("Additional Identifier");
 
+    private String outputString;
+
+    AnnotationType(String outputString) {
+        this.outputString = outputString;
+    }
+
+    @Override
+    public String toString() {
+        return this.outputString;
+    }
 }

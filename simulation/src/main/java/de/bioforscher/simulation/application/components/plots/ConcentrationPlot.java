@@ -8,7 +8,7 @@ import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.simulation.util.SingaPreferences;
 import de.bioforscher.units.UnitProvider;
@@ -166,7 +166,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
                         .filter(s -> s.getName().equals(entity.getName()))
                         .findFirst().get();
                 // add to mirrored values
-                this.mirroredData.put(event.getEpoch(), BioGraphUtilities.collectAsPotentialUpdates(concentrations));
+                this.mirroredData.put(event.getEpoch(), AutomatonGraphUtilities.collectAsPotentialUpdates(concentrations));
                 // get concentration of entity
                 double concentration = concentrations.get(entity).getValue().doubleValue();
                 // add to plot

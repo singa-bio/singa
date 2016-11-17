@@ -2,7 +2,7 @@ package de.bioforscher.simulation.parser;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.deprecated.GraphAutomaton;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
@@ -189,7 +189,7 @@ public class SBMLModelExportService {
     private Element createSpecies() {
         log.log(Level.FINER, "Creating species for SBML.");
         Element listOfSpecies = this.document.createElement("listOfSpecies");
-        Map<String, ChemicalEntity> speciesMap = BioGraphUtilities.generateMapOfEntities(this.automata.getGraph());
+        Map<String, ChemicalEntity> speciesMap = AutomatonGraphUtilities.generateMapOfEntities(this.automata.getGraph());
         for (String speciesName : speciesMap.keySet()) {
             Element species = this.document.createElement("species");
             species.setAttribute("id", speciesMap.get(speciesName).getIdentifier().toString());

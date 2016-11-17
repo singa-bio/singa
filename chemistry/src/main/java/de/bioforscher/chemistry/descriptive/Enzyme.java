@@ -84,7 +84,7 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
     /**
      * Returns the turnover number.
      *
-     * @return THe turnover number.
+     * @return The turnover number.
      */
     public Quantity<ReactionRate> getTurnoverNumber() {
         return this.turnoverNumber;

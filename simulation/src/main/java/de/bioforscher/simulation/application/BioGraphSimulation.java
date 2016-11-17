@@ -67,8 +67,9 @@ public class BioGraphSimulation extends Application {
 
         log.log(Level.INFO, "setup automaton");
         // setup the simulation
-        this.simulation = SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(100,
-                NANO(SECOND)));
+        this.simulation = SimulationExampleProvider.createPassiveMembraneTransportExample();
+        //SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(100,
+        // NANO(SECOND)));
         //this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
         this.graph = this.simulation.getGraph();
         // Charts
@@ -181,7 +182,7 @@ public class BioGraphSimulation extends Application {
 
         // Main Content Pane
         SplitPane splitPane = new SplitPane(anchorPane, rightPane);
-        splitPane.setDividerPosition(0,0.4);
+        splitPane.setDividerPosition(0, 0.4);
         // ToolBar
         ToolBar toolBar = new ToolBar();
         // simulate button

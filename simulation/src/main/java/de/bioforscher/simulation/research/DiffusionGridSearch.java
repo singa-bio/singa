@@ -15,7 +15,7 @@ import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.BioGraphUtilities;
+import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.quantities.Diffusivity;
 import tec.units.ri.quantity.Quantities;
@@ -90,7 +90,7 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         int numberOfNodes = numberOfNodesParameter.getValue();
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = BioGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
