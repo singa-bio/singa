@@ -1,16 +1,12 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.chemistry.physical.model.Exchangeable;
 import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.chemistry.physical.proteins.ResidueType;
 import de.bioforscher.core.utility.Pair;
-import de.bioforscher.mathematics.graphs.model.*;
-import de.bioforscher.mathematics.graphs.trees.BinaryTree;
-import de.bioforscher.mathematics.graphs.trees.BinaryTreeNode;
+import de.bioforscher.mathematics.graphs.model.GenericGraph;
+import de.bioforscher.mathematics.graphs.model.GenericNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,9 +73,13 @@ public class AlignmentGeneratorTest {
                         .mapToObj(i -> new Pair<>(this.motif1.get(0), this.motif2.get(i)))
                         .filter(this::isValidAlignment).collect(Collectors.toList());
 
-//        for (int i = 0; i < initialPairs.size(); i++) {
-//
-//        }
+        GenericGraph<Pair<SubStructure>> alignmentGraph = new GenericGraph<>();
+
+        for (int i = 0; i < initialPairs.size(); i++) {
+            alignmentGraph.addNode(new GenericNode<>(i, initialPairs.get(i)));
+        }
+
+        alignmentGraph.addEdgeBetween(alignmentGraph.getNode(0),alignmentGraph.getNode(1));
         System.out.println();
 
     }
