@@ -56,4 +56,12 @@ public class Pair<ValueType> {
         result = 31 * result + (this.second != null ? this.second.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                "first=" + this.first +
+                ", second=" + this.second +
+                '}';
+    }
 }

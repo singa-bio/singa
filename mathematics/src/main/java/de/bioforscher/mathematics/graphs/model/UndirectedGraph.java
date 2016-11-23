@@ -18,8 +18,15 @@ public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, 
         super(nodeCapacity, edgeCapacity);
     }
 
+    @Override
+    public void addEdgeBetween(RegularNode source, RegularNode target) {
+
+    }
+
     public void connect(int identifier, RegularNode source, RegularNode target) {
         super.connect(identifier, source, target, UndirectedEdge.class);
     }
+
+
 
 }

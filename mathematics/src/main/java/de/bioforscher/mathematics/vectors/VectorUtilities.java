@@ -54,6 +54,13 @@ public class VectorUtilities {
         return new Vector2D(x, y);
     }
 
+    public static Vector3D generateRandomVector3D() {
+        double x = ThreadLocalRandom.current().nextDouble();
+        double y = ThreadLocalRandom.current().nextDouble();
+        double z = ThreadLocalRandom.current().nextDouble();
+        return new Vector3D(x, y, z);
+    }
+
     /**
      * Compares all values of the given index for all given vectors and returns the largest value found.
      *
@@ -205,7 +212,7 @@ public class VectorUtilities {
      * vector in the given list of Vectors. This orthonormalizes the vector to every vector and increases the numerical
      * stability of the orthonormalization.
      *
-     * @param vector The vector to be projected.
+     * @param vector                The vector to be projected.
      * @param orthogonalizedVectors The vectors to project with.
      * @return The projected vector.
      */

@@ -20,6 +20,11 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
         super(nodeCapacity, edgeCapacity);
     }
 
+    @Override
+    public void addEdgeBetween(BioNode source, BioNode target) {
+
+    }
+
     public void connect(int identifier, BioNode source, BioNode target) {
         super.connect(identifier, source, target, BioEdge.class);
     }
@@ -43,5 +48,7 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
                    .mapToDouble(node -> node.getSteepestConcentrationDifference(entity))
                    .max().orElse(0.0), MOLE_PER_LITRE);
     }
+
+
 
 }

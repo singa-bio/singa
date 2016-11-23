@@ -143,9 +143,10 @@ public final class ElementProvider {
      * @return {@link Optional} of the {@link Element}.
      */
     public static Optional<Element> getElementBySymbol(String symbol) {
-
         // by contract one symbol cannot decode for multiple elements
-        return INSTANCE.elements.stream().filter(element -> element.getSymbol().equals(symbol)).findFirst();
+        return INSTANCE.elements.stream()
+                .filter(element -> element.getSymbol().equalsIgnoreCase(symbol))
+                .findAny();
     }
 
     /**

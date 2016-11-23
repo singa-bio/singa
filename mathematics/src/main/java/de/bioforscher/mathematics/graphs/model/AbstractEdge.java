@@ -22,6 +22,10 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
     protected AbstractEdge() {
     }
 
+    public AbstractEdge(int identifier) {
+        this.identifier = identifier;
+    }
+
     public AbstractEdge(NodeType source, NodeType target) {
         this.source = source;
         this.target = target;
