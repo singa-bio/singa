@@ -10,15 +10,35 @@ import java.util.stream.Stream;
  * <p>
  * <b>This constitutes a surjective mapping of {@link StructuralEntityType}s.</b>
  * <p>
- * By default a {@link StructuralEntity} type is always exchangeable with itself.
+ * <b>By default a {@link StructuralEntity} type is always exchangeable with itself.</b>
  *
  * @author fk
  */
 public interface Exchangeable<R extends StructuralEntityType> {
 
+    /**
+     * Returns the {@link StructuralEntityType} of the {@link StructuralEntity}.
+     *
+     * @return the {@link StructuralEntityType
+     */
     R getType();
 
+    /**
+     * Returns the {@link StructuralEntityType}s to which this {@link StructuralEntity} is exchangeable.
+     * By default a {@link StructuralEntity} is always exchangeable to the same {@link StructuralEntityType}.
+     *
+     * @return a set of exchangeable types
+     */
     default Set<R> getExchangeableTypes() {
         return Stream.of(getType()).collect(Collectors.toSet());
+    }
+
+    /**
+     * Adds an exchangeable {@link StructuralEntityType}.
+     *
+     * @param exchangeableType the {@link StructuralEntityType} to be added
+     */
+    default void addExchangeableType(R exchangeableType) {
+        getExchangeableTypes().add(exchangeableType);
     }
 }

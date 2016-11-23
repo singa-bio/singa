@@ -8,11 +8,9 @@ import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
@@ -36,6 +34,11 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
     private int nextBondIdentifier;
 
     /**
+     * A set of exchangeable types that are considered to be identical.
+     */
+    private Set<ResidueType> exchangeableTypes;
+
+    /**
      * Creates a new Residue with a identifier and ResidueType. Preferably the
      * {@link ResidueFactory#createResidueFromAtoms(int, ResidueType, EnumMap) ResidueFactory} should be used to create
      * Residues.
@@ -47,8 +50,8 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
         super(identifier);
         this.type = type;
         this.nextBondIdentifier = 0;
+        this.exchangeableTypes = new HashSet<>();
     }
-
 
     /**
      * This is a copy constructor. Creates a new residue with the same attributes as the given residue. This
@@ -64,6 +67,11 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
         super(residue);
         this.type = residue.type;
         this.nextBondIdentifier = residue.nextBondIdentifier;
+    }
+
+    @Override
+    public Set<ResidueType> getExchangeableTypes() {
+        return this.exchangeableTypes;
     }
 
     /**

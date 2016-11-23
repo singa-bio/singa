@@ -5,9 +5,21 @@ import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import java.util.function.Predicate;
 
 /**
- * Created by fkaiser on 10.11.16.
+ * This static class bundles filters for {@link Atom}s that can be concatenated by using the {@link Predicate}
+ * interface.
+ *
+ * @author fk
+ * @see Predicate
  */
-public class AtomFilter {
+public final class AtomFilter {
+
+    private AtomFilter() {
+
+    }
+
+    public static Predicate<Atom> isArbitrary() {
+        return atom -> true;
+    }
 
     public static Predicate<Atom> isCarbon() {
         return atom -> atom.getElement().equals(ElementProvider.CARBON);
@@ -39,9 +51,9 @@ public class AtomFilter {
 
     public static Predicate<Atom> isBackbone() {
         return atom -> atom.getAtomName() == AtomName.N ||
-                       atom.getAtomName() == AtomName.CA ||
-                       atom.getAtomName() == AtomName.C ||
-                       atom.getAtomName() == AtomName.O;
+                atom.getAtomName() == AtomName.CA ||
+                atom.getAtomName() == AtomName.C ||
+                atom.getAtomName() == AtomName.O;
     }
 
     public static Predicate<Atom> isSidechain() {

@@ -1,16 +1,19 @@
 package de.bioforscher.chemistry.physical.viewer;
 
+import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
-import javafx.scene.*;
-import javafx.scene.control.Button;
+import javafx.scene.DepthTest;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -22,7 +25,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -157,7 +159,7 @@ public class StructureViewer extends Application {
         Xform atoms = new Xform();
 
         // draw atoms
-        this.structure.getAllResidues().forEach( residue -> {
+        this.structure.getAllResidues().forEach(residue -> {
                     residue.getNodes().forEach(atom -> {
                         Sphere atomSphere = new Sphere(1.0);
                         if (atom.getElement().equals(CARBON)) {
@@ -199,16 +201,16 @@ public class StructureViewer extends Application {
         this.structure.getAllResidues().forEach(residue ->
                 residue.getEdges().forEach(edge -> {
 
-            Vector3D source = edge.getSource().getPosition();
-            Vector3D target = edge.getTarget().getPosition();
+                    Vector3D source = edge.getSource().getPosition();
+                    Vector3D target = edge.getTarget().getPosition();
 
-            Cylinder bond = createCylinderConnecting(source, target);
-            bond.setMaterial(carbonMaterial);
+                    Cylinder bond = createCylinderConnecting(source, target);
+                    bond.setMaterial(carbonMaterial);
 
-            Xform bondFrom = new Xform();
-            bondFrom.getChildren().add(bond);
-            forms.add(bondFrom);
-        }));
+                    Xform bondFrom = new Xform();
+                    bondFrom.getChildren().add(bond);
+                    forms.add(bondFrom);
+                }));
 
         atoms.getChildren().addAll(forms);
         this.moleculeGroup.getChildren().add(atoms);
@@ -314,14 +316,25 @@ public class StructureViewer extends Application {
     private void loadTestStructure() {
         try {
             // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
-            ResidueFactory.setToOmitHydrogens(true);
-            this.structure = PDBParserService.parseProteinById("1pqs");
+//            ResidueFactory.setToOmitHydrogens(true);
+//            this.structure = PDBParserService.parseProteinById("1pqs");
+            // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
+//            ResidueFactory.setToOmitHydrogens(true);
+            Structure motif1 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_01.pdb");
+            Structure motif2 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_02.pdb");
+            SubStructure reference = motif1.getSubstructures().stream().collect(Collectors.toList()).get(0);
+            SubStructure candidate = motif2.getSubstructures().stream().collect(Collectors.toList()).get(0);
+            SubStructureSuperimposition superimposition =
+                    SubStructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, AtomFilter.isBackbone());
+
+            Structure structure = new Structure();
+            superimposition.applyTo(candidate.getAtomContainingSubstructures()).forEach(structure::addSubstructure);
+            structure.addSubstructure(reference);
+            this.structure = structure;
         } catch (IOException e) {
             e.printStackTrace();
         }
         // StructureAssembler.parseAminoAcidAtoms(atomLines);
         // this.structure = StructureAssembler.parseResidues(atomLines);
-
-
     }
 }

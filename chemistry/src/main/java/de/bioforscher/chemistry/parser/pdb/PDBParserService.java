@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 30/10/2016.
+ * @author cl
  */
 public class PDBParserService {
 

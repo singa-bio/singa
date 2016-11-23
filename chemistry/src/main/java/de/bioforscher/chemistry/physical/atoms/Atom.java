@@ -10,7 +10,7 @@ import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUT
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
 
 /**
- * Created by Christoph on 09/11/2016.
+ * @author cl
  */
 public interface Atom extends StructuralEntity<Atom> {
 
@@ -40,7 +40,7 @@ public interface Atom extends StructuralEntity<Atom> {
 
     default Atom getCopy() {
         try {
-            return getClass().getConstructor(int.class, Element.class, String.class, Vector3D.class)
+            return getClass().getConstructor(getClass())
                     .newInstance(getElement(), getAtomNameString(), getPosition().getCopy());
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {

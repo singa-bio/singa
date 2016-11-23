@@ -5,11 +5,9 @@ import de.bioforscher.chemistry.physical.bonds.Bond;
 import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.mathematics.graphs.model.Graph;
-import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,8 +71,8 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
     public SubStructure(int identifier) {
         this.identifier = identifier;
         this.neighbours = new ArrayList<>();
-        this.substructures = new HashMap<>();
-        this.nodes = new HashMap<>();
+        this.substructures = new TreeMap<>();
+        this.nodes = new TreeMap<>();
         this.edges = new HashMap<>();
     }
 
@@ -91,15 +89,15 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
     public SubStructure(SubStructure subStructure) {
         this.identifier = subStructure.getIdentifier();
         this.substructures = new HashMap<>();
-        for (SubStructure structure: subStructure.substructures.values()) {
+        for (SubStructure structure : subStructure.substructures.values()) {
             this.substructures.put(structure.getIdentifier(), structure.getCopy());
         }
-        this.nodes = new HashMap<>();
-        for (Atom atom: subStructure.nodes.values()) {
+        this.nodes = new TreeMap<>();
+        for (Atom atom : subStructure.nodes.values()) {
             this.nodes.put(atom.getIdentifier(), atom.getCopy());
         }
         this.edges = new HashMap<>();
-        for (Bond bond: subStructure.edges.values()) {
+        for (Bond bond : subStructure.edges.values()) {
             Bond edgeCopy = bond.getCopy();
             Atom sourceCopy = this.nodes.get(bond.getSource().getIdentifier());
             Atom targetCopy = this.nodes.get(bond.getTarget().getIdentifier());
@@ -182,9 +180,8 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
      * @return
      */
     @Override
-    public Set<Atom> getNodes() {
-        return this.nodes.values().stream()
-                .collect(Collectors.toSet());
+    public List<Atom> getNodes() {
+        return new ArrayList<>(this.nodes.values());
     }
 
     /**
@@ -262,8 +259,7 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
      * @return All SubStructures.
      */
     public List<SubStructure> getSubstructures() {
-        return this.substructures.values().stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(this.substructures.values());
     }
 
     /**
@@ -373,6 +369,10 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
      */
     public List<Residue> getResidues() {
         List<Residue> residues = new ArrayList<>();
+        if (this instanceof Residue) {
+            residues.add((Residue) this);
+            return residues;
+        }
         for (SubStructure subStructure : this.substructures.values()) {
             if (subStructure instanceof Residue) {
                 residues.add((Residue) subStructure);
@@ -413,7 +413,7 @@ public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntit
      * This method returns a list containing the element itself if this is already a {@link SubStructure} with atoms
      *
      * @param atomContainingSubstructures
-     * @param substructure The substructure for which all atom-containing substructures are wanted.
+     * @param substructure                The substructure for which all atom-containing substructures are wanted.
      * @return The list of atom containing substructures.
      */
     private List<SubStructure> findAtomContainingSubStructures(List<SubStructure> atomContainingSubstructures, SubStructure substructure) {

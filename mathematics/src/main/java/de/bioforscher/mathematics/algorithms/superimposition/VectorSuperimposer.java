@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 
 /**
  * An implementation of the Kabsch algorithm that uses Singular Value Decomposition (SVD) to compute the ideal
- * superimposition of two point sets.
+ * superimposition of two point sets (a list of {@link Vector}s).
  *
- * @see {https://en.wikipedia.org/wiki/Kabsch_algorithm}
  * @author fk
+ * @see {https://en.wikipedia.org/wiki/Kabsch_algorithm}
  */
-public class SVDSuperimposer {
+public class VectorSuperimposer {
 
     private final List<Vector> reference;
     private final List<Vector> candidate;
@@ -35,28 +35,28 @@ public class SVDSuperimposer {
     private List<Vector> mappedCandidate;
     private double rmsd;
 
-    private SVDSuperimposer(List<Vector> reference, List<Vector> candidate) {
+    private VectorSuperimposer(List<Vector> reference, List<Vector> candidate) {
         this.reference = reference;
         this.candidate = candidate;
         if (this.reference.size() != this.candidate.size())
             throw new IllegalArgumentException("Two lists of vectors cannot be superimposed if they differ in size.");
     }
 
-    public static Superimposition calculateSVDSuperimposition(List<Vector> reference, List<Vector> candidate) {
-        return new SVDSuperimposer(reference, candidate).calculateSuperimposition();
+    public static VectorSuperimposition calculateVectorSuperimposition(List<Vector> reference, List<Vector> candidate) {
+        return new VectorSuperimposer(reference, candidate).calculateSuperimposition();
     }
 
-    public static Superimposition calculateIdealSVDSuperimposition(List<Vector> reference, List<Vector> candidate) {
-        return new SVDSuperimposer(reference, candidate).calculateIdealSuperimposition();
+    public static VectorSuperimposition calculateIdealVectorSuperimposition(List<Vector> reference, List<Vector> candidate) {
+        return new VectorSuperimposer(reference, candidate).calculateIdealSuperimposition();
     }
 
-    public Superimposition calculateSuperimposition() {
+    private VectorSuperimposition calculateSuperimposition() {
         center();
         calculateRotation();
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-        return new Superimposition(this.rmsd, this.translation, this.rotation, this.mappedCandidate);
+        return new VectorSuperimposition(this.rmsd, this.translation, this.rotation, this.mappedCandidate);
     }
 
     private void calculateRMSD() {
@@ -122,17 +122,19 @@ public class SVDSuperimposer {
     }
 
     /**
-     * finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors
+     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors.
      *
      * @return the ideal superimposition
      */
-    public Superimposition calculateIdealSuperimposition() {
-        Optional<Superimposition> optionalSuperimposition = StreamPermutations.of(
+    private VectorSuperimposition calculateIdealSuperimposition() {
+        Optional<VectorSuperimposition> optionalSuperimposition = StreamPermutations.of(
                 this.candidate.toArray(new Vector[this.candidate.size()]))
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
-                .map(permutedCandidates -> new SVDSuperimposer(this.reference, permutedCandidates).calculateSuperimposition())
-                .reduce((Superimposition s1, Superimposition s2) -> s1.getRmsd() < s2.getRmsd() ? s1 : s2);
+                .map(permutedCandidates -> new VectorSuperimposer(this.reference, permutedCandidates)
+                        .calculateSuperimposition())
+                .reduce((VectorSuperimposition s1, VectorSuperimposition s2) ->
+                        s1.getRmsd() < s2.getRmsd() ? s1 : s2);
         return optionalSuperimposition.orElse(null);
     }
 }
