@@ -36,7 +36,7 @@ public class Bond extends AbstractEdge<Atom> {
         this.bondType = bondType;
     }
 
-    public Bond getCopy(){
+    public Bond getCopy() {
         return new Bond(this);
     }
 

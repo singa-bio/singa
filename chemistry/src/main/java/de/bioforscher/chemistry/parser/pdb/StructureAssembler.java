@@ -19,7 +19,7 @@ import java.util.List;
 import static de.bioforscher.chemistry.parser.pdb.tokens.AtomToken.*;
 
 /**
- * Created by Christoph on 23.06.2016.
+ * @author cl
  */
 public class StructureAssembler {
 
@@ -49,6 +49,7 @@ public class StructureAssembler {
     }
 
     public static Structure assembleStructure(List<String> pdbLines) {
+        assembler = new StructureAssembler();
         for (String currentLine : pdbLines) {
             if (RECORD_PATTERN.matcher(currentLine).matches()) {
                 // order of operation is relevant
@@ -84,6 +85,10 @@ public class StructureAssembler {
                 assembler.assembleChain();
                 assembler.assembleModel();
             }
+        }
+
+        if(!assembler.currentResidueAtoms.isEmpty()){
+            assembler.assembleResidue();
         }
 
         if (!assembler.currentChain.getSubstructures().isEmpty()) {

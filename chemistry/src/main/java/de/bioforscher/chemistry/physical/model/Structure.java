@@ -24,7 +24,7 @@ public class Structure {
     private boolean containingModels;
 
     public Structure() {
-        this.substructures = new HashMap<>();
+        this.substructures = new TreeMap<>();
     }
 
     /**
@@ -45,8 +45,8 @@ public class Structure {
         this.containingModels = containingModels;
     }
 
-    public Collection<SubStructure> getSubstructures() {
-        return this.substructures.values();
+    public List<SubStructure> getSubstructures() {
+        return new ArrayList<>(this.substructures.values());
     }
 
     /**
