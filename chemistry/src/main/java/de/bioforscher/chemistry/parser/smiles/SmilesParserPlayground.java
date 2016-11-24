@@ -1,10 +1,13 @@
 package de.bioforscher.chemistry.parser.smiles;
 
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
-import de.bioforscher.chemistry.descriptive.molecules.MoleculeBond;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
+import de.bioforscher.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.mathematics.graphs.util.GraphFactory;
+import javafx.application.Application;
 
 import java.util.*;
 
@@ -18,10 +21,14 @@ public class SmilesParserPlayground {
     public static void main(String[] args) {
         SmilesParserPlayground playground = new SmilesParserPlayground();
         // String smilesString = "CCBBr[10*]CC[H]";
-        String smilesString = "C1=CC=C2C=CC=CC2=C1";
-        // String smilesString = "c1cnc[nH2]c(=O)1";
+        // String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
         System.out.println(smilesString);
         playground.parse(smilesString);
+
+        GraphDisplayApplication.graph = playground.graph;
+        Application.launch(GraphDisplayApplication.class);
+
     }
 
     private Queue<Character> queue;
@@ -35,13 +42,15 @@ public class SmilesParserPlayground {
     private int currentNeutronCount;
     private int currentCharge;
 
-    private MoleculeBond currentBond;
+    private Optional<MoleculeBondType> lastBondType;
     // maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
     private HashMap<Pair<Integer>, MoleculeBondType> connectors;
     // maps the ring closures  to the connecting atoms;
     private HashMap<Integer, Pair<Integer>> ringClosures;
 
     private int currentIdentifer = Integer.MIN_VALUE;
+    private int lastBranchConnection;
+    private boolean firstAtomInBranch;
 
     public SmilesParserPlayground() {
         this.queue = new LinkedList<>();
@@ -50,8 +59,8 @@ public class SmilesParserPlayground {
         this.connectors = new HashMap<>();
         this.ringClosures = new HashMap<>();
         this.currentToken = "";
+        this.lastBondType = Optional.empty();
     }
-
 
     private void parse(String smilesString) {
         // SMILES   ::= Atom ( Chain | Branch )*
@@ -77,7 +86,12 @@ public class SmilesParserPlayground {
         System.out.println();
         this.connectors.forEach((key, value) -> System.out.println(key + " - " + value));
         System.out.println();
-        this.ringClosures.forEach((key, value) -> System.out.println(key+ " - " + value));
+        this.ringClosures.forEach((key, value) -> System.out.println(key + " - " + value));
+
+        this.connectors.forEach( (connector,type) ->
+                this.graph.addEdgeBetween(this.graph.getNode(connector.getFirst()), this.graph.getNode(connector.getSecond()), type));
+        this.ringClosures.forEach( (identifier, connector) ->
+                this.graph.addEdgeBetween(this.graph.getNode(connector.getFirst()), this.graph.getNode(connector.getSecond())));
 
     }
 
@@ -112,6 +126,7 @@ public class SmilesParserPlayground {
             connectAromaticAtoms();
             return true;
         } else if (parseAtomSpecification()) {
+            connectConsecutiveAtoms();
             return true;
         } else if (this.currentSymbol == '*') {
             addToTokens();
@@ -129,7 +144,7 @@ public class SmilesParserPlayground {
         if (this.currentSymbol == '(') {
             addToTokens();
             poll();
-
+            createBranch();
             parseBond();
 
             int length = 0;
@@ -144,6 +159,7 @@ public class SmilesParserPlayground {
                 }
                 addToTokens();
                 poll();
+                closeBranch();
                 return true;
             }
         }
@@ -182,7 +198,7 @@ public class SmilesParserPlayground {
             case '/':
             case '\\': {
                 addToTokens();
-                connectConsecutiveAtomsWithBond();
+                setNextBond();
                 poll();
                 return true;
             }
@@ -615,20 +631,25 @@ public class SmilesParserPlayground {
         return false;
     }
 
-    private void connectConsecutiveAtomsWithBond() {
-        this.connectors.put(new Pair<>(this.currentIdentifer, this.currentIdentifer + 1),
-                getBondForSMILESSymbol(this.currentSymbol));
+    private void setNextBond() {
+        this.lastBondType = Optional.of(getBondForSMILESSymbol(this.currentSymbol));
     }
 
     private void connectConsecutiveAtoms() {
-        this.connectors.put(new Pair<>(this.currentIdentifer, this.currentIdentifer + 1), SINGLE_BOND);
+        if (this.graph.getNodes().size() > 1) {
+            if (this.firstAtomInBranch) {
+                this.connectors.put(new Pair<>(this.lastBranchConnection, this.currentIdentifer), this.lastBondType.orElse(SINGLE_BOND));
+                this.lastBondType = Optional.empty();
+                this.firstAtomInBranch = false;
+            } else {
+                this.connectors.put(new Pair<>(this.currentIdentifer - 1, this.currentIdentifer), this.lastBondType.orElse(SINGLE_BOND));
+                this.lastBondType = Optional.empty();
+            }
+        }
     }
 
     private void connectAromaticAtoms() {
-        Pair<Integer> pair = new Pair<>(this.currentIdentifer, this.currentIdentifer + 1);
-        if (!this.connectors.containsKey(pair)) {
-            this.connectors.put(new Pair<>(this.currentIdentifer, this.currentIdentifer + 1), AROMATIC_BOND);
-        }
+        this.connectors.put(new Pair<>(this.currentIdentifer - 1, this.currentIdentifer), AROMATIC_BOND);
     }
 
     private void connectHydrogens(int hydrogenCount) {
@@ -735,6 +756,16 @@ public class SmilesParserPlayground {
 
     private void addAtomToGraph(String atom) {
         this.currentIdentifer = this.graph.addNextAtom(atom);
+    }
+
+    private void createBranch() {
+        this.lastBranchConnection = this.currentIdentifer;
+        this.firstAtomInBranch = true;
+    }
+
+    private void closeBranch() {
+        this.currentIdentifer = this.lastBranchConnection;
+        this.firstAtomInBranch = true;
     }
 
 }

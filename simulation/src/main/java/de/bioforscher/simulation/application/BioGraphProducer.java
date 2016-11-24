@@ -1,6 +1,8 @@
 package de.bioforscher.simulation.application;
 
 import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.BioEdge;
+import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.util.GraphDrawingTool;
 
@@ -21,7 +23,7 @@ public class BioGraphProducer implements Runnable {
 
     @Override
     public void run() {
-        GraphDrawingTool gdt = new GraphDrawingTool(this.totalIterations, this.graph);
+        GraphDrawingTool<BioNode, BioEdge, AutomatonGraph> gdt = new GraphDrawingTool<>(this.totalIterations, this.graph);
         for (int i = 0; i < this.totalIterations; i++) {
             this.queue.add(gdt.arrangeGraph(i));
             try {

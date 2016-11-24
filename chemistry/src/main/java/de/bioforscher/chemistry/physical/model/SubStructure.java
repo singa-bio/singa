@@ -107,6 +107,11 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
                 .as(Vector3D.class);
     }
 
+    @Override
+    public void setPosition(Vector3D vector3D) {
+        throw new UnsupportedOperationException("currently not implemented");
+    }
+
     /**
      * Adds a SubStructure that is considered as a neighbour of this SubStructure. This method should only be used when
      * also adding a edge between this SubStructure and the SubStructure ths is to be added.

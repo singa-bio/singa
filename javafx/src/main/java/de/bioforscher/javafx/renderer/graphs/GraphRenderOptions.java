@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.application.renderer;
+package de.bioforscher.javafx.renderer.graphs;
 
 import javafx.scene.paint.Color;
 
@@ -22,7 +22,7 @@ public class GraphRenderOptions {
 
         this.renderNodes = true;
         this.standardNodeColor = Color.GREEN;
-        this.standardNodeDiameter = 10.0;
+        this.standardNodeDiameter = 15.0;
 
         this.renderEdges = true;
         this.standardEdgeColor = Color.BLACK;

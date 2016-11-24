@@ -2,6 +2,7 @@ package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.javafx.renderer.Renderer;
+import de.bioforscher.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFaceEdge;

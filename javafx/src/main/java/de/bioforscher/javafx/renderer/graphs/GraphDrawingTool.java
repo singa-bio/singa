@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.util;
+package de.bioforscher.javafx.renderer.graphs;
 
 import de.bioforscher.mathematics.forces.AttractiveForce;
 import de.bioforscher.mathematics.forces.Force;
@@ -8,8 +8,7 @@ import de.bioforscher.mathematics.graphs.model.Edge;
 import de.bioforscher.mathematics.graphs.model.Graph;
 import de.bioforscher.mathematics.graphs.model.Node;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.application.components.SimulationSpace;
-import de.bioforscher.simulation.model.AutomatonGraph;
+import javafx.scene.canvas.Canvas;
 
 import java.util.HashMap;
 
@@ -32,23 +31,22 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
     private Force attractiveForce;
     private Force boundaryForce;
 
-    private GraphType sourceGraph;
+    private GraphType graph;
     private HashMap<NodeType, Vector2D> velocities;
+    private Canvas canvas;
 
     /**
      * Creates a new GraphDrawingTool.
      *
      * @param totalIterations Number of total iterations
-     * @param startGraph The graph to arrange
+     * @param graph           The graph to arrange
      */
-    public GraphDrawingTool(int totalIterations, GraphType startGraph) {
-        // total iterations
+    public GraphDrawingTool(int totalIterations, GraphType graph, Canvas canvas) {
         this.totalIterations = totalIterations;
-        // the unordered graph
-        this.sourceGraph = startGraph;
+        this.graph = graph;
+        this.canvas = canvas;
         // force constant = sqrt(drawing area / desired area per node)
-        double forceConstant = Math.sqrt((SimulationSpace.getInstance().getHeight().doubleValue() * SimulationSpace
-                .getInstance().getWidth().doubleValue()) / (startGraph.getNodes().size() * 20));
+        double forceConstant = Math.sqrt((canvas.getHeight() * canvas.getWidth()) / (graph.getNodes().size() * 20));
         // repulsive force between nodes
         this.repulsiveForce = new RepulsiveForce(forceConstant);
         // repulsive force from boundaries
@@ -57,7 +55,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
         this.attractiveForce = new AttractiveForce(forceConstant);
         // temporary velocities
         this.velocities = new HashMap<>();
-        for (NodeType n : startGraph.getNodes()) {
+        for (NodeType n : graph.getNodes()) {
             this.velocities.put(n, new Vector2D(0.0, 0.0));
         }
     }
@@ -72,13 +70,13 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
     public GraphType arrangeGraph(int i) {
 
         // calculate the temperature
-        double t = DecayFunctions.linear(i, this.totalIterations, SimulationSpace.getInstance().getWidth().doubleValue() / 40);
+        double t = DecayFunctions.linear(i, this.totalIterations, this.canvas.getWidth() / 40);
 
         // calculate repulsive forces
-        for (NodeType sourceNode : this.sourceGraph.getNodes()) {
+        for (NodeType sourceNode : this.graph.getNodes()) {
             // reset velocities
             this.velocities.put(sourceNode, new Vector2D());
-            for (NodeType targetNode : this.sourceGraph.getNodes()) {
+            for (NodeType targetNode : this.graph.getNodes()) {
                 // if source and target are different
                 if (!sourceNode.equals(targetNode)) {
                     // calculate repulsive acceleration
@@ -92,7 +90,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
         }
 
         // calculate attractive forces
-        for (EdgeType edge : this.sourceGraph.getEdges()) {
+        for (EdgeType edge : this.graph.getEdges()) {
 
             // get source and target of an edge
             NodeType sourceNode = edge.getSource();
@@ -114,21 +112,21 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
         }
 
         // calculate repulsion from boundaries
-        for (NodeType node : this.sourceGraph.getNodes()) {
+        for (NodeType node : this.graph.getNodes()) {
 
             // size of the barrier
             Vector2D position = node.getPosition();
-            double barrierRadius = SimulationSpace.getInstance().getWidth().doubleValue() / 4.0;
+            double barrierRadius = this.canvas.getWidth() / 4.0;
 
             // calculate west and east barrier forces
             Vector2D accelerationX;
             if (position.getX() < barrierRadius) {
                 // calculate west barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
-            } else if (position.getX() > SimulationSpace.getInstance().getWidth().doubleValue() - barrierRadius) {
+            } else if (position.getX() > this.canvas.getWidth() - barrierRadius) {
                 // calculate east barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(SimulationSpace.getInstance().getWidth().doubleValue(), position.getY()));
+                        new Vector2D(this.canvas.getWidth(), position.getY()));
             } else {
                 // if not within barrier range
                 accelerationX = new Vector2D(0, 0);
@@ -139,10 +137,10 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
             if (position.getY() < barrierRadius) {
                 // calculate north barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
-            } else if (position.getY() > SimulationSpace.getInstance().getHeight().doubleValue() - barrierRadius) {
+            } else if (position.getY() > this.canvas.getHeight() - barrierRadius) {
                 // calculate south barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(position.getX(), SimulationSpace.getInstance().getHeight().doubleValue()));
+                        new Vector2D(position.getX(), this.canvas.getHeight()));
             } else {
                 // if not within barrier range
                 accelerationY = new Vector2D(0, 0);
@@ -156,7 +154,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
         }
 
         // placement depending on current velocity
-        for (NodeType node : this.sourceGraph.getNodes()) {
+        for (NodeType node : this.graph.getNodes()) {
 
             Vector2D currentLocation = node.getPosition();
             Vector2D currentVelocity = this.velocities.get(node);
@@ -169,17 +167,17 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
             // dimension
             // TODO: could be better
             double nextX;
-            if (nextLocation.getX() < SimulationSpace.getInstance().getWidth().doubleValue() && nextLocation.getX() > 0.0) {
+            if (nextLocation.getX() < this.canvas.getWidth() && nextLocation.getX() > 0.0) {
                 nextX = nextLocation.getX();
             } else {
-                nextX = SimulationSpace.getInstance().getWidth().doubleValue()/ 2;
+                nextX = this.canvas.getWidth() / 2;
             }
 
             double nextY;
-            if (nextLocation.getY() < SimulationSpace.getInstance().getHeight().doubleValue() && nextLocation.getY() > 0.0) {
+            if (nextLocation.getY() < this.canvas.getHeight() && nextLocation.getY() > 0.0) {
                 nextY = nextLocation.getY();
             } else {
-                nextY = SimulationSpace.getInstance().getHeight().doubleValue() / 2;
+                nextY = this.canvas.getHeight() / 2;
             }
 
             // place node
@@ -188,7 +186,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
         }
 
         // returns the optimized graph
-        return this.sourceGraph;
+        return this.graph;
 
     }
 
