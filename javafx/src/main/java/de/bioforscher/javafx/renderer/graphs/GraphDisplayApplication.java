@@ -2,11 +2,8 @@ package de.bioforscher.javafx.renderer.graphs;
 
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.model.Graph;
-import de.bioforscher.mathematics.graphs.model.Node;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.mathematics.vectors.Vector2D;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -19,26 +16,30 @@ import javafx.stage.Stage;
 public class GraphDisplayApplication extends Application {
 
     public static Graph graph = GraphFactory.buildTreeGraph(5 , new Rectangle(500,500));
+    public static GraphRenderer renderer = new GraphRenderer();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        GraphCanvas canvas = new GraphCanvas(graph);
+        Canvas  canvas = new Canvas();
         canvas.setWidth(500);
         canvas.setHeight(500);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
-        canvas.renderGraph();
 
         Button arrange = new Button("Arrange");
-        arrange.setOnAction(canvas::arrage);
+        arrange.setOnAction(action -> renderer.arrangeGraph(graph));
         root.setBottom(arrange);
 
         // show
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
-        canvas.arrage(new ActionEvent());
+
+        renderer.drawingWidthProperty().bind(canvas.widthProperty());
+        renderer.drawingHightProperty().bind(canvas.heightProperty());
+        renderer.setGraphicsContext(canvas.getGraphicsContext2D());
+        renderer.render(graph);
     }
 
     public static void main(String[] args) {

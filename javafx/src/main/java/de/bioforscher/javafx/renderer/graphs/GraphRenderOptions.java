@@ -1,111 +1,94 @@
 package de.bioforscher.javafx.renderer.graphs;
 
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
+/**
+ * The default rendering options for any graph. Supported options are:
+ * <ul>
+ * <li> the node diameter (default = 15.0)
+ * <li> the node color (default = {@link Color#SEAGREEN})
+ * <li> displaying nodes (default = true)
+ * <li> the edge thickness (default = 3.0)
+ * <li> the edge color (default = {@link Color#DIMGRAY})
+ * <li> displaying edges (default = true)
+ * <li> identifer text color (default = {@link Color#SLATEGRAY})
+ * <li> identifer text font (default = system default)
+ * <li> displaying identifer text (default = false)
+ * <li> background color (default = {@link Color#WHITE})
+ * </ul>
+ *
+ */
 public class GraphRenderOptions {
 
-    private double standardNodeDiameter;
-    private Color standardNodeColor;
-    private boolean renderNodes;
+    private double nodeDiameter = 15;
+    private Color nodeColor = Color.SEAGREEN;
+    private boolean displayingNodes = true;
 
-    private Color standardEdgeColor;
-    private double standerdEdgeWidth;
-    private boolean renderEdges;
+    private Color edgeColor = Color.DIMGRAY;
+    private double edgeThickness = 3;
+    private boolean displayingEdges = true;
 
-    private double voronoiEdgeWidth;
-    private Color voronoiEdgeColor;
-    private boolean renderVoronoi;
+    private Color identifierTextColor = Color.WHITESMOKE;
+    // private Font identifierFont;
+    private boolean displayingIdentifierText = false;
 
-    private Color backgroundColor;
+    private Color backgroundColor = Color.WHITE;
 
-    public GraphRenderOptions() {
-
-        this.renderNodes = true;
-        this.standardNodeColor = Color.GREEN;
-        this.standardNodeDiameter = 15.0;
-
-        this.renderEdges = true;
-        this.standardEdgeColor = Color.BLACK;
-        this.standerdEdgeWidth = 3.0;
-
-        this.renderVoronoi = true;
-        this.voronoiEdgeColor = Color.LIGHTGREEN;
-        this.voronoiEdgeWidth = 2.0;
-
-        this.backgroundColor = Color.WHITE;
-
+    public double getNodeDiameter() {
+        return this.nodeDiameter;
     }
 
-    public double getStandardNodeDiameter() {
-        return this.standardNodeDiameter;
+    public void setNodeDiameter(double nodeDiameter) {
+        this.nodeDiameter = nodeDiameter;
     }
 
-    public void setStandardNodeDiameter(double standardNodeDiameter) {
-        this.standardNodeDiameter = standardNodeDiameter;
+    public Color getNodeColor() {
+        return this.nodeColor;
     }
 
-    public Color getStandardNodeColor() {
-        return this.standardNodeColor;
+    public void setNodeColor(Color nodeColor) {
+        this.nodeColor = nodeColor;
     }
 
-    public void setStandardNodeColor(Color standardNodeColor) {
-        this.standardNodeColor = standardNodeColor;
+    public boolean isDisplayingNodes() {
+        return this.displayingNodes;
     }
 
-    public boolean isRenderNodes() {
-        return this.renderNodes;
+    public void setDisplayingNodes(boolean displayingNodes) {
+        this.displayingNodes = displayingNodes;
     }
 
-    public void setRenderNodes(boolean renderNodes) {
-        this.renderNodes = renderNodes;
+    public Color getEdgeColor() {
+        return this.edgeColor;
     }
 
-    public Color getStandardEdgeColor() {
-        return this.standardEdgeColor;
+    public void setEdgeColor(Color edgeColor) {
+        this.edgeColor = edgeColor;
     }
 
-    public void setStandardEdgeColor(Color standardEdgeColor) {
-        this.standardEdgeColor = standardEdgeColor;
+    public double getEdgeThickness() {
+        return this.edgeThickness;
     }
 
-    public double getStanderdEdgeWidth() {
-        return this.standerdEdgeWidth;
+    public void setEdgeThickness(double edgeThickness) {
+        this.edgeThickness = edgeThickness;
     }
 
-    public void setStanderdEdgeWidth(double standerdEdgeWidth) {
-        this.standerdEdgeWidth = standerdEdgeWidth;
+    public boolean isDisplayingEdges() {
+        return this.displayingEdges;
     }
 
-    public boolean isRenderEdges() {
-        return this.renderEdges;
+    public void setDisplayingEdges(boolean displayingEdges) {
+        this.displayingEdges = displayingEdges;
     }
 
-    public void setRenderEdges(boolean renderEdges) {
-        this.renderEdges = renderEdges;
+    public Color getIdentifierTextColor() {
+        return this.identifierTextColor;
     }
 
-    public double getVoronoiEdgeWidth() {
-        return this.voronoiEdgeWidth;
-    }
-
-    public void setVoronoiEdgeWidth(double voronoiEdgeWidth) {
-        this.voronoiEdgeWidth = voronoiEdgeWidth;
-    }
-
-    public Color getVoronoiEdgeColor() {
-        return this.voronoiEdgeColor;
-    }
-
-    public void setVoronoiEdgeColor(Color voronoiEdgeColor) {
-        this.voronoiEdgeColor = voronoiEdgeColor;
-    }
-
-    public boolean isRenderVoronoi() {
-        return this.renderVoronoi;
-    }
-
-    public void setRenderVoronoi(boolean renderVoronoi) {
-        this.renderVoronoi = renderVoronoi;
+    public void setIdentifierTextColor(Color identifierTextColor) {
+        this.identifierTextColor = identifierTextColor;
     }
 
     public Color getBackgroundColor() {
@@ -114,6 +97,14 @@ public class GraphRenderOptions {
 
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public boolean isDisplayingIdentifierText() {
+        return this.displayingIdentifierText;
+    }
+
+    public void setDisplayingIdentifierText(boolean displayingIdentifierText) {
+        this.displayingIdentifierText = displayingIdentifierText;
     }
 
 }

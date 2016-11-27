@@ -63,9 +63,9 @@ public class SimulationCanvas extends Canvas {
     }
 
     private boolean isClickedOnNode(MouseEvent event, BioNode node) {
-        return node.getPosition().isNearVector(new Vector2D(event.getX()+this.renderer.getOptions().getStandardNodeDiameter() / 2,
-                        event.getY()+this.renderer.getOptions().getStandardNodeDiameter() / 2),
-                this.renderer.getOptions().getStandardNodeDiameter() / 2);
+        return node.getPosition().isNearVector(new Vector2D(event.getX()+this.renderer.getOptions().getNodeDiameter() / 2,
+                        event.getY()+this.renderer.getOptions().getNodeDiameter() / 2),
+                this.renderer.getOptions().getNodeDiameter() / 2);
     }
 
     public GraphRenderer getRenderer() {

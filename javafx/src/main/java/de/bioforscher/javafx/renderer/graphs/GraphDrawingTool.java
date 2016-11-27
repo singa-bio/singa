@@ -8,9 +8,10 @@ import de.bioforscher.mathematics.graphs.model.Edge;
 import de.bioforscher.mathematics.graphs.model.Graph;
 import de.bioforscher.mathematics.graphs.model.Node;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import javafx.scene.canvas.Canvas;
+import javafx.beans.property.DoubleProperty;
 
 import java.util.HashMap;
+
 
 /**
  * This class tries to arrange a graph using force directed placement. <br>
@@ -25,6 +26,8 @@ import java.util.HashMap;
 public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
         GraphType extends Graph<NodeType, EdgeType>> {
 
+    private DoubleProperty drawingWidth;
+    private DoubleProperty drawingHeight;
     private final int totalIterations;
 
     private Force repulsiveForce;
@@ -33,7 +36,6 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
 
     private GraphType graph;
     private HashMap<NodeType, Vector2D> velocities;
-    private Canvas canvas;
 
     /**
      * Creates a new GraphDrawingTool.
@@ -41,12 +43,13 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
      * @param totalIterations Number of total iterations
      * @param graph           The graph to arrange
      */
-    public GraphDrawingTool(int totalIterations, GraphType graph, Canvas canvas) {
+    public GraphDrawingTool(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
+        this.drawingWidth = drawingWidth;
+        this.drawingHeight = drawingHeight;
         this.totalIterations = totalIterations;
         this.graph = graph;
-        this.canvas = canvas;
         // force constant = sqrt(drawing area / desired area per node)
-        double forceConstant = Math.sqrt((canvas.getHeight() * canvas.getWidth()) / (graph.getNodes().size() * 20));
+        double forceConstant = Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (graph.getNodes().size() * 20));
         // repulsive force between nodes
         this.repulsiveForce = new RepulsiveForce(forceConstant);
         // repulsive force from boundaries
@@ -70,7 +73,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
     public GraphType arrangeGraph(int i) {
 
         // calculate the temperature
-        double t = DecayFunctions.linear(i, this.totalIterations, this.canvas.getWidth() / 40);
+        double t = DecayFunctions.linear(i, this.totalIterations, this.drawingWidth.doubleValue() / 40);
 
         // calculate repulsive forces
         for (NodeType sourceNode : this.graph.getNodes()) {
@@ -116,17 +119,17 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
 
             // size of the barrier
             Vector2D position = node.getPosition();
-            double barrierRadius = this.canvas.getWidth() / 4.0;
+            double barrierRadius = this.drawingWidth.doubleValue() / 4.0;
 
             // calculate west and east barrier forces
             Vector2D accelerationX;
             if (position.getX() < barrierRadius) {
                 // calculate west barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
-            } else if (position.getX() > this.canvas.getWidth() - barrierRadius) {
+            } else if (position.getX() > this.drawingWidth.doubleValue() - barrierRadius) {
                 // calculate east barrier repulsive acceleration
                 accelerationX = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(this.canvas.getWidth(), position.getY()));
+                        new Vector2D(this.drawingWidth.doubleValue(), position.getY()));
             } else {
                 // if not within barrier range
                 accelerationX = new Vector2D(0, 0);
@@ -137,10 +140,10 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
             if (position.getY() < barrierRadius) {
                 // calculate north barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
-            } else if (position.getY() > this.canvas.getHeight() - barrierRadius) {
+            } else if (position.getY() > this.drawingHeight.doubleValue() - barrierRadius) {
                 // calculate south barrier repulsive acceleration
                 accelerationY = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(position.getX(), this.canvas.getHeight()));
+                        new Vector2D(position.getX(), this.drawingHeight.doubleValue()));
             } else {
                 // if not within barrier range
                 accelerationY = new Vector2D(0, 0);
@@ -167,17 +170,17 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
             // dimension
             // TODO: could be better
             double nextX;
-            if (nextLocation.getX() < this.canvas.getWidth() && nextLocation.getX() > 0.0) {
+            if (nextLocation.getX() < this.drawingWidth.doubleValue() && nextLocation.getX() > 0.0) {
                 nextX = nextLocation.getX();
             } else {
-                nextX = this.canvas.getWidth() / 2;
+                nextX = this.drawingWidth.doubleValue() / 2;
             }
 
             double nextY;
-            if (nextLocation.getY() < this.canvas.getHeight() && nextLocation.getY() > 0.0) {
+            if (nextLocation.getY() < this.drawingHeight.doubleValue() && nextLocation.getY() > 0.0) {
                 nextY = nextLocation.getY();
             } else {
-                nextY = this.canvas.getHeight() / 2;
+                nextY = this.drawingHeight.doubleValue() / 2;
             }
 
             // place node

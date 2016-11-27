@@ -1,10 +1,13 @@
 package de.bioforscher.chemistry.parser.smiles;
 
+import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraphRenderer;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
+import de.bioforscher.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import javafx.application.Application;
@@ -21,12 +24,13 @@ public class SmilesParserPlayground {
     public static void main(String[] args) {
         SmilesParserPlayground playground = new SmilesParserPlayground();
         // String smilesString = "CCBBr[10*]CC[H]";
-        // String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
-        String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
+         String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        // String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
         System.out.println(smilesString);
         playground.parse(smilesString);
 
         GraphDisplayApplication.graph = playground.graph;
+        GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
         Application.launch(GraphDisplayApplication.class);
 
     }
@@ -662,9 +666,13 @@ public class SmilesParserPlayground {
     private void addRingClosure() {
         int closureIdentifier = Integer.valueOf(String.valueOf(this.currentSymbol));
         Pair<Integer> closure = new Pair<>(this.currentIdentifer, Integer.MIN_VALUE);
-        this.ringClosures.computeIfPresent(closureIdentifier,
-                (key, value) -> value = new Pair<>(value.getFirst(), this.currentIdentifer));
-        this.ringClosures.putIfAbsent(closureIdentifier, closure);
+        if (this.ringClosures.containsKey(closureIdentifier)) {
+            this.connectors.put(new Pair<>(this.ringClosures.get(closureIdentifier).getFirst(),
+                    this.currentIdentifer), SINGLE_BOND);
+            this.ringClosures.remove(closureIdentifier);
+        } else {
+            this.ringClosures.putIfAbsent(closureIdentifier, closure);
+        }
     }
 
     private boolean isEmpty() {
@@ -750,10 +758,18 @@ public class SmilesParserPlayground {
         this.poll();
     }
 
+    /**
+     * Adds a atom to the graph. This method creates a new atom with the specified symbol({@link Element#getSymbol()})
+     * @param atom The symbol of the element of the new atom.
+     */
     private void addAtomToGraph(char atom) {
         addAtomToGraph(String.valueOf(atom));
     }
 
+    /**
+     * Adds a atom to the graph. This method creates a new atom with the specified symbol({@link Element#getSymbol()})
+     * @param atom The symbol of the element of the new atom.
+     */
     private void addAtomToGraph(String atom) {
         this.currentIdentifer = this.graph.addNextAtom(atom);
     }

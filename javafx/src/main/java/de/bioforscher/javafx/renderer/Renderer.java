@@ -1,5 +1,7 @@
 package de.bioforscher.javafx.renderer;
 
+import com.sun.javafx.tk.FontMetrics;
+import com.sun.javafx.tk.Toolkit;
 import de.bioforscher.mathematics.geometry.edges.Line;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.mathematics.geometry.edges.Parabola;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.SortedSet;
 
 /**
- * Created by Christoph on 28.08.2016.
+ * The renderer interface supplies default methods to draw in a {@link GraphicsContext} method.
  */
 public interface Renderer {
 
@@ -23,16 +25,11 @@ public interface Renderer {
      *
      * @return The assigned GraphicContext.
      */
-    default GraphicsContext getGraphicsContext() {
-        return getCanvas().getGraphicsContext2D();
-    }
+    GraphicsContext getGraphicsContext();
 
-    /**
-     * Returns the Canvas assigned to this Renderer.
-     *
-     * @return The Canvas assigned to this Renderer.
-     */
-    Canvas getCanvas();
+    double getDrawingWidth();
+
+    double getDrawingHeight();
 
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
@@ -141,9 +138,9 @@ public interface Renderer {
      */
     default void drawLine(Line line) {
         final double minX = 0;
-        final double maxX = getCanvas().getWidth();
+        final double maxX = getDrawingWidth();
         final double minY = 0;
-        final double maxY = getCanvas().getHeight();
+        final double maxY = getDrawingHeight();
 
         Vector2D start;
         Vector2D end;
@@ -186,8 +183,8 @@ public interface Renderer {
      */
     default void drawParabola(Parabola parabola, int samplingDepth) {
         final double minX = 0;
-        final double maxX = getCanvas().getWidth();
-        final double maxY = getCanvas().getHeight();
+        final double maxX = getDrawingWidth();
+        final double maxY = getDrawingHeight();
 
         List<Vector2D> list = new ArrayList<>();
 
@@ -234,6 +231,22 @@ public interface Renderer {
 
         list.sort(Comparator.comparing(Vector2D::getX));
         connectPoints(list);
+    }
+
+    /**
+     * Draws the given text centered on the given vector.
+     * <ul>
+     * <li> The font settings are determined by the graphics context.</li>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * </ul>
+     * @param text The text to draw.
+     * @param center The point to center onto.
+     */
+    default void drawTextCenteredOnPoint(String text, Vector2D center) {
+        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(getGraphicsContext().getFont());
+        final double x = center.getX() - (fm.computeStringWidth(text) / 2);
+        final double y = center.getY() - (fm.getLineHeight() / 2) + fm.getAscent();
+        getGraphicsContext().fillText(text, x, y);
     }
 
 }
