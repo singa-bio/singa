@@ -9,8 +9,7 @@ package de.bioforscher.mathematics.concepts;
  *
  * @param <NumberConcept> A reference to the Class or Interface which the inverse element
  *                        will be a type of.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Additive_inverse">Wikipedia: Additive inverse</a>
  */
 public interface AdditivelyInvertible<NumberConcept> extends Invertible<NumberConcept> {

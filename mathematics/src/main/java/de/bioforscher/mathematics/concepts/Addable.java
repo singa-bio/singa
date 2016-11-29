@@ -11,8 +11,7 @@ import java.util.Iterator;
  * Element" is the same as counting; addition of a "Additive Zero Element" does not change a number.
  *
  * @param <NumberConcept> A reference to the class or interface which the addition will result in.
- * @author Christoph Leberecht
- * @version 2.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Addition">Wikipedia: Addition</a>
  */
 public interface Addable<NumberConcept extends Addable<? extends NumberConcept>> {

@@ -15,8 +15,8 @@ package de.bioforscher.mathematics.concepts;
  *
  * @param <NumberConcept> A reference to the class or interface which the multiplication
  *                        will result in.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
+ * @see <a href="https://en.wikipedia.org/wiki/Multiplication">Wikipedia: Multiplication</a>
  */
 public interface Multipliable<NumberConcept extends Multipliable<NumberConcept>> {
 

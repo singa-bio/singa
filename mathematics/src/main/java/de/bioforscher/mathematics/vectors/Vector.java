@@ -4,15 +4,12 @@ import de.bioforscher.mathematics.concepts.Divisible;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
+import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 /**
  * The {@code Vector} interface represents a collection of values where multiple
@@ -21,11 +18,11 @@ import java.util.stream.Stream;
  * Each implementation is: addable, subtractable,  additively invertible, multipliable,
  * divisible, and metrizable.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector> {
 
-    <V extends Vector> V as(Class<V> matrixClass);
+    <VectorType extends Vector> VectorType as(Class<VectorType> matrixClass);
 
     /**
      * Returns an element of this vector.
@@ -129,7 +126,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      *
      * @return The matrix of the dyadic product
      */
-    RegularMatrix dyadicProduct(Vector vector);
+    Matrix dyadicProduct(Vector vector);
 
     /**
      * Checks if this vector contains only Zeros.

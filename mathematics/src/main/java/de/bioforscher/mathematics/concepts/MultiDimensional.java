@@ -6,11 +6,9 @@ import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
  * The {@link MultiDimensional} interface defines whether a Number concept has
  * one or more Dimensions. It provides methods to compare dimensions of
  * different Objects for calculations, that are dimensional sensitive.
- * <p>
  *
- * @param <NumberConcept> The number concept.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @param <NumberConcept> The type of the concept that has multiple dimensions.
+ * @author cl
  */
 public interface MultiDimensional<NumberConcept extends MultiDimensional<NumberConcept>> {
 
@@ -24,11 +22,10 @@ public interface MultiDimensional<NumberConcept extends MultiDimensional<NumberC
      */
     boolean hasSameDimensions(NumberConcept element);
 
-
     /**
-     * Returns the dimensional representation of this String.
+     * Returns the dimensional representation as a String.
      *
-     * @return The dimensional representation of this String.
+     * @return The dimensional representation as a String.
      */
     String getDimensionAsString();
 
@@ -45,6 +42,5 @@ public interface MultiDimensional<NumberConcept extends MultiDimensional<NumberC
             throw new IncompatibleDimensionsException(this, element);
         }
     }
-
 
 }

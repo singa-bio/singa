@@ -11,8 +11,7 @@ package de.bioforscher.mathematics.concepts;
  *
  * @param <NumberConcept> A reference to the class or interface which the subtraction will
  *                        result in.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Subtraction">Wikipedia: Subtraction</a>
  */
 public interface Subtractable<NumberConcept extends Subtractable<NumberConcept>> {

@@ -6,8 +6,8 @@ package de.bioforscher.mathematics.concepts;
  * combination with another given element.
  *
  * @param <NumberConcept> A reference to the Class or Interface which the inverse element will be a type of.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
+ *
  */
 public interface Invertible<NumberConcept> {
 

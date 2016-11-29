@@ -12,8 +12,7 @@ package de.bioforscher.mathematics.concepts;
  *
  * @param <NumberConcept> A reference to the class or interface which the division will
  *                        result in.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Division_(mathematics)">Wikipedia: Division</a>
  */
 public interface Divisible<NumberConcept extends Divisible<NumberConcept>> {

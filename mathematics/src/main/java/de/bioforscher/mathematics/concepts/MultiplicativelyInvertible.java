@@ -5,8 +5,8 @@ package de.bioforscher.mathematics.concepts;
  * multiplicative operation yield the neutral element (One Element).
  *
  * @param <NumberConcept> A reference to the Class or Interface which the inverse element will be a type of.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
+ * @see <a href="https://en.wikipedia.org/wiki/Multiplicative_inverse">Wikipedia: Multiplicative inverse</a>
  */
 public interface MultiplicativelyInvertible<NumberConcept> extends Invertible<NumberConcept> {
 
@@ -20,7 +20,7 @@ public interface MultiplicativelyInvertible<NumberConcept> extends Invertible<Nu
      *
      * @return {@code true} if and only if this object has an multiplicative inverse element.
      */
-    public default boolean isMultiplicativelyInvertible() {
+    default boolean isMultiplicativelyInvertible() {
         return true;
     }
 
