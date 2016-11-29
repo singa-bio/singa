@@ -14,7 +14,7 @@ public class MoleculeRendererOptions {
     private Color oxygenColor = Color.INDIANRED;
     private Color sulfurColor = Color.GOLDENROD;
     private Color phosphorusColor = Color.CORAL;
-    private Color defaultColor = Color.GREENYELLOW;
+    private Color defaultColor = Color.DARKOLIVEGREEN;
 
     public Color getHydrogenColor() {
         return this.hydrogenColor;

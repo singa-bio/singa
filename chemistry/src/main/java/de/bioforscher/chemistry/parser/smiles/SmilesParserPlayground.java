@@ -7,9 +7,6 @@ import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraphRenderer;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
-import de.bioforscher.javafx.renderer.graphs.GraphRenderer;
-import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import javafx.application.Application;
 
 import java.util.*;
@@ -21,11 +18,14 @@ import static de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType.*;
  */
 public class SmilesParserPlayground {
 
+
+
     public static void main(String[] args) {
         SmilesParserPlayground playground = new SmilesParserPlayground();
         // String smilesString = "CCBBr[10*]CC[H]";
-         String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
         // String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
+        // String smilesString = "Clc(c(Cl)c(Cl)c1C(=O)O)c(Cl)c1Cl";
         System.out.println(smilesString);
         playground.parse(smilesString);
 
@@ -49,12 +49,16 @@ public class SmilesParserPlayground {
     private Optional<MoleculeBondType> lastBondType;
     // maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
     private HashMap<Pair<Integer>, MoleculeBondType> connectors;
-    // maps the ring closures  to the connecting atoms;
-    private HashMap<Integer, Pair<Integer>> ringClosures;
+    // maps the ring closures to the identifer of the first occurrence
+    private HashMap<Integer, Integer> ringClosures;
 
     private int currentIdentifer = Integer.MIN_VALUE;
-    private int lastBranchConnection;
-    private boolean firstAtomInBranch;
+    // remembers at which index a branch was opened
+    private Deque<Integer> branches;
+    // set true when a branch is closed so the previous connection is made
+    private boolean firstAtomInBranch = false;
+    private boolean sameChainReference;
+    private List<Integer> hydrogens;
 
     public SmilesParserPlayground() {
         this.queue = new LinkedList<>();
@@ -62,6 +66,8 @@ public class SmilesParserPlayground {
         this.graph = new MoleculeGraph();
         this.connectors = new HashMap<>();
         this.ringClosures = new HashMap<>();
+        this.branches = new ArrayDeque<>();
+        this.hydrogens = new ArrayList<>();
         this.currentToken = "";
         this.lastBondType = Optional.empty();
     }
@@ -92,10 +98,16 @@ public class SmilesParserPlayground {
         System.out.println();
         this.ringClosures.forEach((key, value) -> System.out.println(key + " - " + value));
 
+        // add hydrogens to connectors
+        this.hydrogens.forEach( (identifier) -> {
+            int hydrogenIdentifier = this.graph.addNextAtom("H");
+            this.connectors.put(new Pair<>(identifier, hydrogenIdentifier), SINGLE_BOND);
+        });
+
+
         this.connectors.forEach( (connector,type) ->
                 this.graph.addEdgeBetween(this.graph.getNode(connector.getFirst()), this.graph.getNode(connector.getSecond()), type));
-        this.ringClosures.forEach( (identifier, connector) ->
-                this.graph.addEdgeBetween(this.graph.getNode(connector.getFirst()), this.graph.getNode(connector.getSecond())));
+
 
     }
 
@@ -127,7 +139,7 @@ public class SmilesParserPlayground {
             connectConsecutiveAtoms();
             return true;
         } else if (parseAromaticSymbol(false)) {
-            connectAromaticAtoms();
+            connectConsecutiveAtoms();
             return true;
         } else if (parseAtomSpecification()) {
             connectConsecutiveAtoms();
@@ -148,7 +160,7 @@ public class SmilesParserPlayground {
         if (this.currentSymbol == '(') {
             addToTokens();
             poll();
-            createBranch();
+            openBranch();
             parseBond();
 
             int length = 0;
@@ -161,9 +173,9 @@ public class SmilesParserPlayground {
                 if (length < 1) {
                     return false;
                 }
+                closeBranch();
                 addToTokens();
                 poll();
-                closeBranch();
                 return true;
             }
         }
@@ -563,7 +575,7 @@ public class SmilesParserPlayground {
                 poll();
                 return true;
             }
-            connectHydrogens(Integer.valueOf(String.valueOf(1)));
+            connectHydrogens(1);
         }
         return false;
     }
@@ -642,7 +654,12 @@ public class SmilesParserPlayground {
     private void connectConsecutiveAtoms() {
         if (this.graph.getNodes().size() > 1) {
             if (this.firstAtomInBranch) {
-                this.connectors.put(new Pair<>(this.lastBranchConnection, this.currentIdentifer), this.lastBondType.orElse(SINGLE_BOND));
+                if (this.sameChainReference) {
+                    this.connectors.put(new Pair<>(this.branches.peekLast(), this.currentIdentifer), this.lastBondType.orElse(SINGLE_BOND));
+                    this.sameChainReference = false;
+                } else {
+                    this.connectors.put(new Pair<>(this.branches.pollLast(), this.currentIdentifer), this.lastBondType.orElse(SINGLE_BOND));
+                }
                 this.lastBondType = Optional.empty();
                 this.firstAtomInBranch = false;
             } else {
@@ -658,20 +675,18 @@ public class SmilesParserPlayground {
 
     private void connectHydrogens(int hydrogenCount) {
         for (int count = 0; count < hydrogenCount; count++) {
-            int hydrogenIdentifier = this.graph.addNextAtom("H");
-            this.connectors.put(new Pair<>(this.currentIdentifer, hydrogenIdentifier), SINGLE_BOND);
+            this.hydrogens.add(this.currentIdentifer);
+
         }
     }
 
     private void addRingClosure() {
         int closureIdentifier = Integer.valueOf(String.valueOf(this.currentSymbol));
-        Pair<Integer> closure = new Pair<>(this.currentIdentifer, Integer.MIN_VALUE);
         if (this.ringClosures.containsKey(closureIdentifier)) {
-            this.connectors.put(new Pair<>(this.ringClosures.get(closureIdentifier).getFirst(),
-                    this.currentIdentifer), SINGLE_BOND);
+            this.connectors.put(new Pair<>(this.ringClosures.get(closureIdentifier), this.currentIdentifer), SINGLE_BOND);
             this.ringClosures.remove(closureIdentifier);
         } else {
-            this.ringClosures.putIfAbsent(closureIdentifier, closure);
+            this.ringClosures.put(closureIdentifier, this.currentIdentifer);
         }
     }
 
@@ -774,13 +789,17 @@ public class SmilesParserPlayground {
         this.currentIdentifer = this.graph.addNextAtom(atom);
     }
 
-    private void createBranch() {
-        this.lastBranchConnection = this.currentIdentifer;
-        this.firstAtomInBranch = true;
+    private void openBranch() {
+        if (!sameChainReference) {
+            this.branches.add(this.currentIdentifer);
+        }
+
     }
 
     private void closeBranch() {
-        this.currentIdentifer = this.lastBranchConnection;
+        if (queue.peek() == '(') {
+            sameChainReference = true;
+        }
         this.firstAtomInBranch = true;
     }
 

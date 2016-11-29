@@ -39,7 +39,7 @@ public class GraphDisplayApplication extends Application {
         renderer.drawingWidthProperty().bind(canvas.widthProperty());
         renderer.drawingHightProperty().bind(canvas.heightProperty());
         renderer.setGraphicsContext(canvas.getGraphicsContext2D());
-        renderer.render(graph);
+        renderer.arrangeGraph(graph);
     }
 
     public static void main(String[] args) {
