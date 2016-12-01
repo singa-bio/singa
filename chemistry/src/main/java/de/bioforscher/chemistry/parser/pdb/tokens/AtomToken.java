@@ -63,8 +63,7 @@ public enum AtomToken implements PDBToken {
         // atom name string
         String atomName = ATOM_NAME.extract(atomLine);
         // element
-        Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
-                .orElseThrow(IllegalArgumentException::new);
+        Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine));
         return new RegularAtom(atomSerial, element, atomName, coordinates);
     }
 

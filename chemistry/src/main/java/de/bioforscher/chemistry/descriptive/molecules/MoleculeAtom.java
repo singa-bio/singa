@@ -18,6 +18,10 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D> {
         this.element = ElementProvider.UNKOWN;
     }
 
+    public MoleculeAtom(int identifier, Vector2D position) {
+        this(identifier, position, ElementProvider.UNKOWN);
+    }
+
     public MoleculeAtom(int identifier, Vector2D position, Element element) {
         super(identifier, position);
         this.element = element;

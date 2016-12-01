@@ -24,7 +24,7 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
         circlePoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
-        drawTextCenteredOnPoint(atom.getElement().getSymbol()+"."+atom.getIdentifier(), atom.getPosition());
+        drawTextCenteredOnPoint(atom.getElement().toString()+"."+atom.getIdentifier(), atom.getPosition());
     }
 
     @Override

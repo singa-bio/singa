@@ -157,11 +157,24 @@ public class Element {
     /**
      * Converts this element into an ion (cation) by decreasing its electron count.
      *
+     * @param charge The total charge of this element
+     * @return An cation of this element.
+     */
+    public Element asIon(int charge) {
+        if (charge != 0) {
+            return new Element(this, this.electronNumber + charge, this.neutronNumber);
+        }
+        return this;
+    }
+
+    /**
+     * Converts this element into an ion (cation) by decreasing its electron count.
+     *
      * @param numberOfElectronsLost The number of electrons to decrease.
      * @return An cation of this element.
      */
     public Element asCation(int numberOfElectronsLost) {
-        return new Element(this, this.electronNumber - numberOfElectronsLost, this.neutronNumber);
+        return asIon(-numberOfElectronsLost);
     }
 
     /**
@@ -171,7 +184,7 @@ public class Element {
      * @return An anion of this element.
      */
     public Element asAnion(int numberOfElectronsGained) {
-        return new Element(this, this.electronNumber + numberOfElectronsGained, this.neutronNumber);
+        return asIon(numberOfElectronsGained);
     }
 
     /**
@@ -217,7 +230,7 @@ public class Element {
      * @return The charge of this Element.
      */
     public int getCharge() {
-        return this.protonNumber - this.electronNumber;
+        return this.electronNumber-this.protonNumber;
     }
 
     /**

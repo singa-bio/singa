@@ -32,7 +32,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addNextAtom(String elementSymbol) {
-        return addNextAtom(ElementProvider.getElementBySymbol(elementSymbol).orElse(ElementProvider.UNKOWN));
+        return addNextAtom(ElementProvider.getElementBySymbol(elementSymbol));
     }
 
     public int addNextAtom(Element element) {
@@ -40,6 +40,11 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
                 VectorUtilities.generateRandomVectorInRectangle(new Rectangle(100,100)), element);
         addNode(atom);
         return atom.getIdentifier();
+    }
+
+    public int addNextAtom(Element element, int charge) {
+        Element ion = element.asIon(charge);
+        return addNextAtom(ion);
     }
 
     @Override

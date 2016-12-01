@@ -142,11 +142,11 @@ public final class ElementProvider {
      * @param symbol The element symbol for which an {@link Element} should be retrieved.
      * @return {@link Optional} of the {@link Element}.
      */
-    public static Optional<Element> getElementBySymbol(String symbol) {
+    public static Element getElementBySymbol(String symbol) {
         // by contract one symbol cannot decode for multiple elements
         return INSTANCE.elements.stream()
                 .filter(element -> element.getSymbol().equalsIgnoreCase(symbol))
-                .findAny();
+                .findAny().orElse(UNKOWN);
     }
 
     /**
