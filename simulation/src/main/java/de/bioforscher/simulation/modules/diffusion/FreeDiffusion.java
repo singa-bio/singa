@@ -3,6 +3,7 @@ package de.bioforscher.simulation.modules.diffusion;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.NodeState;
 import de.bioforscher.simulation.modules.model.CumulativeUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
@@ -12,10 +13,7 @@ import de.bioforscher.units.quantities.Diffusivity;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -54,14 +52,20 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     @Override
     public PotentialUpdate calculateUpdate(BioNode node, ChemicalEntity entity) {
+        if (node.getState() == NodeState.CELL_MEMBRANE) {
+            return new PotentialUpdate(entity, node.getConcentration(entity));
+        }
         // get coefficient
         Quantity<Diffusivity> coefficient = getDiffusionCoefficient(entity);
-        // sum up concentrations
-        double neighbourConcentration = node.getNeighbours().stream()
+        // "statistics" for neighbours
+        DoubleSummaryStatistics statistics = node.getNeighbours().stream()
+                .filter(neighbour -> neighbour.getState() != NodeState.CELL_MEMBRANE)
                 .mapToDouble(neighbor -> neighbor.getConcentration(entity).getValue().doubleValue())
-                .sum();
+                .summaryStatistics();
+        // sum of concentrations
+        double neighbourConcentration = statistics.getSum();
         // get number of neighbors
-        int neighbours = node.getNeighbours().size();
+        long neighbours = statistics.getCount();
         // current concentration of this node
         double currentConcentration = node.getConcentration(entity).getValue().doubleValue();
         // calculate next concentration

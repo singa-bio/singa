@@ -11,9 +11,49 @@ public class Bond extends AbstractEdge<Atom> {
         this.bondType = bondType;
     }
 
+    /**
+     * This is a copy constructor. Creates a new bond with the same attributes as the given bond. The source and target
+     * atoms of this bond are NOT copied. Due to the nature of this operation it would be bad to keep a part of
+     * the relations to the lifecycle of the bond to copy. If you want to keep the neighbouring atoms, copy the
+     * superordinate substructure that contains this bond and it will also traverse and copy the connected atoms.
+     *
+     * @param bond The bond to copy.
+     */
+    public Bond(Bond bond) {
+        this.identifier = bond.getIdentifier();
+        this.bondType = bond.getBondType();
+    }
+
     public Bond() {
         this.bondType = BondType.COVALENT_BOND;
     }
 
+    public BondType getBondType() {
+        return this.bondType;
+    }
 
+    public void setBondType(BondType bondType) {
+        this.bondType = bondType;
+    }
+
+    public Bond getCopy() {
+        return new Bond(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bond bond = (Bond) o;
+        if (this.identifier != bond.getIdentifier()) return false;
+        return this.bondType == bond.bondType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (this.bondType != null ? this.bondType.hashCode() : 0);
+        return result;
+    }
 }

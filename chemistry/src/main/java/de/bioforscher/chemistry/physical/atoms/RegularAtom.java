@@ -7,9 +7,6 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUTERIUM;
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
-
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
  * in a {@link SubStructure}.
@@ -20,32 +17,26 @@ public class RegularAtom implements Atom {
      * The identifier.
      */
     private int identifier;
-
     /**
      * The element.
      */
     private Element element;
-
     /**
      * An additional name such as CA or CB.
      */
     private AtomName atomName;
-
     /**
      * The AtomName as String
      */
     private String atomNameString;
-
     /**
      * The position.
      */
     private Vector3D position;
-
     /**
      * References of the neighboring atoms.
      */
     private List<Atom> neighbours;
-
 
     /**
      * Creates a new atom with the given identifier, element, name and position.
@@ -61,6 +52,23 @@ public class RegularAtom implements Atom {
         this.identifier = identifier;
         this.element = element;
         this.position = position;
+        this.neighbours = new ArrayList<>();
+    }
+
+    /**
+     * This is a copy constructor. Creates a new atom with the same attributes as the given atom. The neighbours of this
+     * atom are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations to the
+     * lifecycle of the atom to copy. If you want to keep the neighbouring atoms, copy the superordinate
+     * substructure that contains this atom and it will also traverse and copy the neighbouring atoms.
+     *
+     *  @param atom The atom to copy.
+     */
+    public RegularAtom(Atom atom) {
+        this.atomNameString = atom.getAtomNameString();
+        this.atomName = atom.getAtomName();
+        this.identifier = atom.getIdentifier();
+        this.element =  atom.getElement();
+        this.position = new Vector3D(atom.getPosition());
         this.neighbours = new ArrayList<>();
     }
 
@@ -148,4 +156,40 @@ public class RegularAtom implements Atom {
         this.atomName = atomName;
     }
 
+    @Override
+    public Atom getCopy() {
+        return new RegularAtom(this);
+    }
+
+    @Override
+    public String toString() {
+        return "RegularAtom{" +
+                "identifier=" + this.identifier +
+                ", element=" + this.element +
+                ", atomName=" + this.atomName +
+                ", atomNameString='" + this.atomNameString + '\'' +
+                ", position=" + this.position +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RegularAtom that = (RegularAtom) o;
+        if (this.identifier != that.identifier) return false;
+        if (this.element != null ? !this.element.equals(that.element) : that.element != null) return false;
+        if (!this.atomNameString.equals(that.atomNameString)) return false;
+        return this.position.equals(that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.identifier;
+        result = 31 * result + (this.element != null ? this.element.hashCode() : 0);
+        result = 31 * result + this.atomNameString.hashCode();
+        result = 31 * result + this.position.hashCode();
+        return result;
+    }
 }

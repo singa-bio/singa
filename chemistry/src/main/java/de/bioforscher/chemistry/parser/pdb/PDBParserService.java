@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb;
 
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.SubStructure;
 
 import java.io.*;
 import java.net.URL;
@@ -9,7 +8,7 @@ import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 30/10/2016.
+ * @author cl
  */
 public class PDBParserService {
 
@@ -24,13 +23,17 @@ public class PDBParserService {
     }
 
     public static Structure parsePDBFile(File pdbFile) throws IOException {
-        return parsePDBFile(Files.newInputStream(pdbFile.toPath()));
+        try (InputStream inputStream = Files.newInputStream(pdbFile.toPath())) {
+            return parsePDBFile(inputStream);
+        }
     }
 
-    public  static Structure parsePDBFile(InputStream inputStream) throws IOException {
-        return StructureAssembler.assembleStructure(new BufferedReader(new InputStreamReader(inputStream))
-                .lines()
-                .collect(Collectors.toList()));
+    public static Structure parsePDBFile(InputStream inputStream) throws IOException {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+            try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                return StructureAssembler.assembleStructure(bufferedReader.lines().collect(Collectors.toList()));
+            }
+        }
     }
 
 }

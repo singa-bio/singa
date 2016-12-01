@@ -5,6 +5,7 @@ import de.bioforscher.mathematics.matrices.RegularMatrix;
 
 /**
  * This is the Jama SVD implementation adapted to work with SINGA.
+ * TODO: provide static method calculateSVDecomposition()
  * <p>
  * Created by fkaiser on 23.10.16.
  */
@@ -467,7 +468,7 @@ public class SVDecomposition {
     }
 
     private void initialize(Matrix matrix) {
-        this.arrayInput = matrix.getCopyOfElements();
+        this.arrayInput = matrix.getCopy().getElements();
         this.rowDimension = matrix.getRowDimension();
         this.columnDimension = matrix.getColumnDimension();
 

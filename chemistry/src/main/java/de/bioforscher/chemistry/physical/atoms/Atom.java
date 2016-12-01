@@ -4,11 +4,13 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.physical.model.StructuralEntity;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUTERIUM;
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
 
 /**
- * Created by Christoph on 09/11/2016.
+ * @author cl
  */
 public interface Atom extends StructuralEntity<Atom> {
 
@@ -36,4 +38,14 @@ public interface Atom extends StructuralEntity<Atom> {
         return this.getElement().equals(HYDROGEN) || this.getElement().equals(DEUTERIUM);
     }
 
+    default Atom getCopy() {
+        try {
+            return getClass().getConstructor(getClass())
+                    .newInstance(getElement(), getAtomNameString(), getPosition().getCopy());
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 }

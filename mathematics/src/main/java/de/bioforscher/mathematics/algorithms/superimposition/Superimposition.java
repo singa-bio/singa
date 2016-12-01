@@ -6,37 +6,46 @@ import de.bioforscher.mathematics.vectors.Vector;
 import java.util.List;
 
 /**
- * A container object representing a superimposition.
- * <p>
- * Created by fkaiser on 19.10.16.
+ * Representing a superimposition that is defined by a root-mean-squared deviation, a translation vector and a rotation
+ * matrix. A superimposition can be applied to arbitrary candidates
+ *
+ * @author fk
  */
-public class Superimposition {
+public interface Superimposition<T> {
 
-    private double rmsd;
-    private Vector translation;
-    private Matrix rotation;
-    private List<Vector> mappedCandidate;
+    /**
+     * returns the root-mean-squared deviation of this superimposition
+     *
+     * @return the root-mean-squared deviation
+     */
+    double getRmsd();
 
-    public Superimposition(double rmsd, Vector translation, Matrix rotation, List<Vector> mappedCandidate) {
-        this.rmsd = rmsd;
-        this.translation = translation;
-        this.rotation = rotation;
-        this.mappedCandidate = mappedCandidate;
-    }
+    /**
+     * returns the translation {@link Vector} of this superimposition
+     *
+     * @return the translation vector
+     */
+    Vector getTranslation();
 
-    public double getRmsd() {
-        return this.rmsd;
-    }
+    /**
+     * returns the rotation {@link Matrix} of this superimposition
+     *
+     * @return the rotation matrix
+     */
+    Matrix getRotation();
 
-    public Vector getTranslation() {
-        return this.translation;
-    }
+    /**
+     * returns copied mapped candidates that were used to compute this superimposition
+     *
+     * @return the candidates that were used for superimposition
+     */
+    List<T> getMappedCandidate();
 
-    public Matrix getRotation() {
-        return this.rotation;
-    }
-
-    public List<Vector> getMappedCandidate() {
-        return this.mappedCandidate;
-    }
+    /**
+     * applies this superimposition to a list of candidate
+     *
+     * @param candidate the candidate to which the superimposition should be applied
+     * @return a new copy of the superimposed candidates
+     */
+    List<T> applyTo(List<T> candidate);
 }

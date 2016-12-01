@@ -132,8 +132,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         connectWithEdge(identifier, source, target, edge);
     }
 
-    protected void connectWithEdge(int identifier, NodeType source, NodeType target, EdgeType
-            edge) {
+    public void connectWithEdge(int identifier, NodeType source, NodeType target, EdgeType edge) {
         edge.setIdentifier(identifier);
         edge.setSource(source);
         edge.setTarget(target);
@@ -141,6 +140,8 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         source.addNeighbour(target);
         target.addNeighbour(source);
     }
+
+    public abstract void addEdgeBetween(NodeType source, NodeType target);
 
     /**
      * @param node The node.

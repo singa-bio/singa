@@ -95,7 +95,6 @@ public class Element {
         } else {
             this.atomicMass = element.getAtomicMass();
         }
-
     }
 
     /**
@@ -232,5 +231,25 @@ public class Element {
     @Override
     public String toString() {
         return this.symbol + (getCharge() != 0 ? getCharge() : "");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Element element = (Element) o;
+
+        if (this.protonNumber != element.protonNumber) return false;
+        if (this.electronNumber != element.electronNumber) return false;
+        return this.neutronNumber == element.neutronNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.protonNumber;
+        result = 31 * result + this.electronNumber;
+        result = 31 * result + this.neutronNumber;
+        return result;
     }
 }

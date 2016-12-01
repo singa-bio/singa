@@ -1,10 +1,11 @@
 package de.bioforscher.mathematics.graphs.model;
 
+import java.util.Collection;
 import java.util.Set;
 
 public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge<NodeType>> {
 
-    Set<NodeType> getNodes();
+    Collection<NodeType> getNodes();
 
     NodeType getNode(int identifier);
 

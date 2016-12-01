@@ -2,11 +2,9 @@ package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.bonds.Bond;
-import de.bioforscher.chemistry.physical.bonds.BondType;
 import de.bioforscher.chemistry.physical.proteins.Chain;
 import de.bioforscher.chemistry.physical.proteins.Residue;
 import de.bioforscher.mathematics.graphs.model.Graph;
-import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
@@ -17,21 +15,20 @@ import java.util.stream.Collectors;
  * The SubStructure is the central component in the three dimensional structure representation of macro molecules.
  * A SubStructure can contain other substructures and/or atoms. Further implementations are used to infer more
  * information. <br/>
- *
+ * <p>
  * Each SubStructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a Substructure contains Elements that are themselves SubStructures or plain Atoms. Edges in a SubStructure
  * are only able to connect Atoms, but this can be done across different substructures. For example, this makes it
  * possible to connect Residues in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
- *
+ * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
  * @author cl
- *
  * @see Chain
  * @see Residue
  * @see Atom
  */
-public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStructure> {
+public abstract class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStructure> {
 
     /*
      * ENTITY VARIABLES
@@ -74,9 +71,41 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
     public SubStructure(int identifier) {
         this.identifier = identifier;
         this.neighbours = new ArrayList<>();
-        this.substructures = new HashMap<>();
-        this.nodes = new HashMap<>();
+        this.substructures = new TreeMap<>();
+        this.nodes = new TreeMap<>();
         this.edges = new HashMap<>();
+    }
+
+    /**
+     * This is a copy constructor. Creates a new substructure with the same attributes as the given substructure. This
+     * also recursively creates copies of all the underlying substructures and atoms. The neighbours of this
+     * substructure are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations
+     * to the lifecycle of the substructure to copy. If you want to keep the neighbouring substructures, copy the
+     * superordinate substructure that contains this substructure and it will also traverse and copy the neighbouring
+     * substructures.
+     *
+     * @param subStructure The substructure to copy
+     */
+    public SubStructure(SubStructure subStructure) {
+        this.identifier = subStructure.getIdentifier();
+        this.substructures = new HashMap<>();
+        for (SubStructure structure : subStructure.substructures.values()) {
+            this.substructures.put(structure.getIdentifier(), structure.getCopy());
+        }
+        this.nodes = new TreeMap<>();
+        for (Atom atom : subStructure.nodes.values()) {
+            this.nodes.put(atom.getIdentifier(), atom.getCopy());
+        }
+        this.edges = new HashMap<>();
+        for (Bond bond : subStructure.edges.values()) {
+            Bond edgeCopy = bond.getCopy();
+            Atom sourceCopy = this.nodes.get(bond.getSource().getIdentifier());
+            Atom targetCopy = this.nodes.get(bond.getTarget().getIdentifier());
+            edgeCopy.setSource(sourceCopy);
+            edgeCopy.setTarget(targetCopy);
+            connectWithEdge(edgeCopy.getIdentifier(), sourceCopy, targetCopy, edgeCopy);
+        }
+        this.neighbours = new ArrayList<>();
     }
 
     /*
@@ -151,9 +180,8 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      * @return
      */
     @Override
-    public Set<Atom> getNodes() {
-        return this.nodes.values().stream()
-                .collect(Collectors.toSet());
+    public List<Atom> getNodes() {
+        return new ArrayList<>(this.nodes.values());
     }
 
     /**
@@ -230,9 +258,8 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      *
      * @return All SubStructures.
      */
-    public Set<SubStructure> getSubstructures() {
-        return this.substructures.values().stream()
-                .collect(Collectors.toSet());
+    public List<SubStructure> getSubstructures() {
+        return new ArrayList<>(this.substructures.values());
     }
 
     /**
@@ -342,6 +369,10 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      */
     public List<Residue> getResidues() {
         List<Residue> residues = new ArrayList<>();
+        if (this instanceof Residue) {
+            residues.add((Residue) this);
+            return residues;
+        }
         for (SubStructure subStructure : this.substructures.values()) {
             if (subStructure instanceof Residue) {
                 residues.add((Residue) subStructure);
@@ -360,6 +391,7 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
      */
     @Override
     public boolean containsNode(Object node) {
+        // TODO we should be able to tweak this by using parallel streams (feedback demanded)
         return this.nodes.values().stream()
                 .anyMatch(atom -> atom.equals(node));
     }
@@ -374,5 +406,43 @@ public class SubStructure implements Graph<Atom, Bond>, StructuralEntity<SubStru
     public boolean containsEdge(Object edge) {
         return this.edges.containsValue(edge);
     }
+
+    /**
+     * Returns all atom-containing substructures for a substructure, i.e. all substructures with non-empty
+     * {@link Atom} lists, which can be for instance {@link Residue}s, {@link Nucleotide}s or {@link Ligand}.
+     * This method returns a list containing the element itself if this is already a {@link SubStructure} with atoms
+     *
+     * @param atomContainingSubstructures
+     * @param substructure                The substructure for which all atom-containing substructures are wanted.
+     * @return The list of atom containing substructures.
+     */
+    private List<SubStructure> findAtomContainingSubStructures(List<SubStructure> atomContainingSubstructures, SubStructure substructure) {
+        // substructure contains atoms
+        if (substructure != null && !substructure.getNodes().isEmpty()) {
+            atomContainingSubstructures.add(substructure);
+        } else {
+            Iterator<SubStructure> substructureIterator = getSubstructures().iterator();
+            while (substructureIterator.hasNext()) {
+                findAtomContainingSubStructures(atomContainingSubstructures, substructureIterator.next());
+            }
+        }
+        return atomContainingSubstructures;
+    }
+
+    public List<SubStructure> getAtomContainingSubstructures() {
+        List<SubStructure> atomContainingSubstructrues = new ArrayList<>();
+        for (SubStructure subStructure : this.substructures.values()) {
+            if (subStructure.substructures.values().isEmpty()) {
+                atomContainingSubstructrues.add(subStructure);
+            } else {
+                atomContainingSubstructrues.addAll(subStructure.getAtomContainingSubstructures());
+            }
+        }
+        if (!getNodes().isEmpty())
+            atomContainingSubstructrues.add(this);
+        return atomContainingSubstructrues;
+    }
+
+    public abstract SubStructure getCopy();
 
 }
