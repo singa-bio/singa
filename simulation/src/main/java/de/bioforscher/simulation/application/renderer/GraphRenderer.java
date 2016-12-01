@@ -2,6 +2,7 @@ package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.javafx.renderer.Renderer;
+import de.bioforscher.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.voronoi.VoronoiFaceEdge;
@@ -50,38 +51,38 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
     public void render(AutomatonGraph g) {
 
         // node diameter is needed everywhere
-        double nodeDiameter = this.renderingOptions.getStandardNodeDiameter();
+        double nodeDiameter = this.renderingOptions.getNodeDiameter();
 
         // Background
         this.graphicsContext.setFill(this.renderingOptions.getBackgroundColor());
         this.graphicsContext.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 
         // render Vonoroi edges
-        if (this.renderingOptions.isRenderVoronoi()) {
+
             // generate Voronoi edges
             List<VoronoiFaceEdge> edges = this.vonoroiFactory.generateVonoroi(g,
                     new Rectangle(this.canvas.getWidth(), this.canvas.getHeight()));
             // set options
             this.graphicsContext.setStroke(Color.LIGHTGREEN);
-            this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
+            this.graphicsContext.setLineWidth(this.renderingOptions.getEdgeThickness());
             // draw the edges
             for (VoronoiFaceEdge ge : edges) {
                 this.graphicsContext.strokeLine(ge.x1 - nodeDiameter / 2, ge.y1 - nodeDiameter / 2,
                         ge.x2 - nodeDiameter / 2, ge.y2 - nodeDiameter / 2);
             }
-        }
+
         // render edges
-        if (this.renderingOptions.isRenderEdges()) {
+        if (this.renderingOptions.isDisplayingEdges()) {
             g.getEdges().forEach(this::drawEdge);
         }
         // render nodes
-        if (this.renderingOptions.isRenderNodes()) {
+        if (this.renderingOptions.isDisplayingNodes()) {
             g.getNodes().forEach(this::drawNode);
         }
     }
 
     private void drawNode(BioNode node) {
-        double diameter = this.renderingOptions.getStandardNodeDiameter();
+        double diameter = this.renderingOptions.getNodeDiameter();
         // decide on style
         if (!this.bioRenderingOptions.isColoringByEntity()) {
             switch (node.getState()) {
@@ -112,8 +113,8 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
 
     private void drawEdge(BioEdge edge) {
         // set width
-        this.graphicsContext.setLineWidth(this.renderingOptions.getStanderdEdgeWidth());
-        double diameter = this.renderingOptions.getStandardNodeDiameter();
+        this.graphicsContext.setLineWidth(this.renderingOptions.getEdgeThickness());
+        double diameter = this.renderingOptions.getNodeDiameter();
         LineSegment connectingSegment = new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
         // decide on style
         if (edge.getSource().getState() != CELL_MEMBRANE || edge.getTarget().getState() != CELL_MEMBRANE) {
@@ -138,9 +139,15 @@ public class GraphRenderer extends AnimationTimer implements Renderer, UpdateEve
     }
 
     @Override
-    public Canvas getCanvas() {
-        return this.canvas;
+    public double getDrawingWidth() {
+        return this.canvas.getWidth();
     }
+
+    @Override
+    public double getDrawingHeight() {
+        return this.canvas.getHeight();
+    }
+
 
     public ConcurrentLinkedQueue<AutomatonGraph> getGraphQueue() {
         return this.graphQueue;

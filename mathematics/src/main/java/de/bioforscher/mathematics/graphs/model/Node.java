@@ -10,6 +10,8 @@ public interface Node<NodeType extends Node<NodeType, VectorType>, VectorType ex
 
     VectorType getPosition();
 
+    void setPosition(VectorType position);
+
     void addNeighbour(NodeType node);
 
     List<NodeType> getNeighbours();

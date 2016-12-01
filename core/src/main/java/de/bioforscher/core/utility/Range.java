@@ -5,7 +5,7 @@ package de.bioforscher.core.utility;
  */
 public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
 
-    Pair<Type> values;
+    private Pair<Type> values;
 
     public static <Type extends Comparable<Type>> Range<Type> of(Type lowerBound, Type upperBound) {
         return new Range<>(lowerBound, upperBound);
@@ -16,7 +16,7 @@ public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
     }
 
     public Range(Type lowerBound, Type upperBound) {
-        values = new Pair<Type>(lowerBound, upperBound);
+        this.values = new Pair<>(lowerBound, upperBound);
     }
 
     @Override

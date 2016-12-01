@@ -16,7 +16,6 @@ import javafx.stage.Stage;
  */
 public class RendererExamples extends Application implements Renderer {
 
-    private GraphicsContext gc;
     private Canvas canvas;
 
     public static void main(String[] args) {
@@ -27,14 +26,13 @@ public class RendererExamples extends Application implements Renderer {
     public void start(Stage primaryStage) throws Exception {
 
         this.canvas = new Canvas(500, 500);
-        this.gc = this.canvas.getGraphicsContext2D();
 
         BorderPane root = new BorderPane();
         root.setCenter(this.canvas);
 
         // add axis
-        this.gc.setLineWidth(5);
-        this.gc.setStroke(Color.BLACK);
+        getGraphicsContext().setLineWidth(5);
+        getGraphicsContext().setStroke(Color.BLACK);
 
         Line xAxis = new Line(0,0);
         Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
@@ -42,12 +40,12 @@ public class RendererExamples extends Application implements Renderer {
         drawLine(xAxis);
         drawLine(yAxis);
 
-        this.gc.setStroke(Color.INDIANRED);
+        getGraphicsContext().setStroke(Color.INDIANRED);
         Vector2D focus = new Vector2D(150,70);
         drawPoint(focus);
 
-        this.gc.setLineWidth(2);
-        this.gc.setFill(Color.CORAL);
+        getGraphicsContext().setLineWidth(2);
+        getGraphicsContext().setFill(Color.CORAL);
         Line directrix = new Line(50, 0);
         drawLine(directrix);
 
@@ -55,10 +53,10 @@ public class RendererExamples extends Application implements Renderer {
         drawParabola(parabola, 30);
 
         Line randomLine = new Line(70, 0.1);
-        this.gc.setStroke(Color.DARKGOLDENROD);
+        getGraphicsContext().setStroke(Color.DARKGOLDENROD);
         drawLine(randomLine);
-        this.gc.setLineWidth(5);
-        this.gc.setFill(Color.BROWN);
+        getGraphicsContext().setLineWidth(5);
+        getGraphicsContext().setFill(Color.BROWN);
         parabola.getIntercepts(randomLine).forEach(this::drawPoint);
 
         // show
@@ -68,9 +66,19 @@ public class RendererExamples extends Application implements Renderer {
 
     }
 
+
     @Override
-    public Canvas getCanvas() {
-        return this.canvas;
+    public GraphicsContext getGraphicsContext() {
+        return this.canvas.getGraphicsContext2D();
     }
 
+    @Override
+    public double getDrawingWidth() {
+        return this.canvas.getWidth();
+    }
+
+    @Override
+    public double getDrawingHeight() {
+        return this.canvas.getHeight();
+    }
 }
