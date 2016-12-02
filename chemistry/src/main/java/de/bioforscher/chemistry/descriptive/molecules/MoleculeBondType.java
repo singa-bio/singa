@@ -13,7 +13,8 @@ public enum MoleculeBondType {
     QUADRUPLE_BOND('$'),
     ISOMERIC_BOND_UP('/'),
     ISOMERIC_BOND_DOWN('\\'),
-    AROMATIC_BOND(':');
+    AROMATIC_BOND(':'),
+    UNCONNECTED('.');
     // '.' is a "non bond"
 
     private char smilesRepresentation;

@@ -194,7 +194,10 @@ public class Element {
      * @return An isotope of this element.
      */
     public Element asIsotope(int numberOfNeutrons) {
-        return new Element(this, this.electronNumber, numberOfNeutrons);
+        if (numberOfNeutrons != this.neutronNumber) {
+            return new Element(this, this.electronNumber, numberOfNeutrons);
+        }
+        return this;
     }
 
     /**
@@ -244,6 +247,6 @@ public class Element {
 
     @Override
     public String toString() {
-        return this.symbol + (getCharge() != 0 ? getCharge() : "");
+        return (this.neutronNumber != this.protonNumber ? this.neutronNumber : "") +this.symbol + (getCharge() != 0 ? getCharge() : "");
     }
 }
