@@ -15,15 +15,6 @@ import static org.junit.Assert.assertTrue;
 public class SpeciesParserTest {
 
     @Test
-    public void shouldParseMethanolFromPubChemXML() {
-        String resource = Thread.currentThread().getContextClassLoader().getResource("methanol-pubchem.xml").toString();
-        PubChemParserService parser = new PubChemParserService(resource);
-        Species methanol = parser.fetchSpecies();
-        assertEquals("methanol", methanol.getName().toLowerCase());
-        assertEquals(32.04186, methanol.getMolarMass().getValue().doubleValue(), 0.0);
-    }
-
-    @Test
     public void shouldParseMethanolFromChEBIOnline() {
         ChEBIParserService parser = new ChEBIParserService("CHEBI:17790");
         Species methanol = parser.fetchSpecies();

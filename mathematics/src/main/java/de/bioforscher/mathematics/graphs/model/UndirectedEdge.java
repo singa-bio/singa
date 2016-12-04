@@ -6,12 +6,8 @@ public class UndirectedEdge extends AbstractEdge<RegularNode> {
         super();
     }
 
-    public UndirectedEdge(int identifier, RegularNode source, RegularNode target) {
-        super(identifier, source, target);
-    }
-
-    public UndirectedEdge(RegularNode source, RegularNode target) {
-        super(source, target);
+    public UndirectedEdge(int identifier) {
+        super(identifier);
     }
 
 }

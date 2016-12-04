@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueType;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by S on 28.11.2016.
+ * @author sb
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<SubStructure> reference;
-    private List<SubStructure> candidate;
+    private List<LeafSubstructure<?,?>> reference;
+    private List<LeafSubstructure<?,?>> candidate;
 
-    private List<List<SubStructure>> pathsThroughSecondMotif;
+    private List<List<LeafSubstructure<?,?>>> pathsThroughSecondMotif;
 
-    public List<List<Pair<SubStructure>>> getValidAlignments(List<SubStructure> reference, List<SubStructure> candidate) {
+    public List<List<Pair<LeafSubstructure<?,?>>>> getValidAlignments(List<LeafSubstructure<?,?>> reference, List<LeafSubstructure<?,?>> candidate) {
         this.reference = reference;
         this.candidate = candidate;
 
@@ -54,15 +54,15 @@ public class ValidAlignmentGenerator {
                     // - they are invalid, when they contain the same residue multiple times
                     // - thus, when their distinct size is smaller than the currentPathLength
                     //TODO: subStructure.getIdentifier() could easily break - however, this.equals(this.getCopy()) will evaluate to false :x
-                    .filter(path -> path.stream().map(SubStructure::getIdentifier).distinct().count() == expectedLength)
+                    .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
                         Residue recentlyAddedResidue = (Residue) path.get(path.size() - 1);
-                        ResidueType recentlyAddedResidueType = recentlyAddedResidue.getType();
-                        if(recentlyAddedResidueType == currentReferenceResidue.getType()) {
+                        ResidueFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
+                        if(recentlyAddedResidueFamily == currentReferenceResidue.getFamily()) {
                             return true;
                         }
-                        return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueType);
+                        return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueFamily);
                     })
                     .collect(Collectors.toList());
         }
@@ -74,9 +74,9 @@ public class ValidAlignmentGenerator {
                 .collect(Collectors.toList());
     }
 
-    private List<SubStructure> cloneList(List<SubStructure> motif) {
+    private List<LeafSubstructure<?,?>> cloneList(List<LeafSubstructure<?,?>> motif) {
         return motif.stream()
-                .map(SubStructure::getCopy)
+                .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());
     }
 }

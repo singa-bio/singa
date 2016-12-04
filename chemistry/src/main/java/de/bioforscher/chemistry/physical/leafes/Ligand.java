@@ -1,6 +1,6 @@
-package de.bioforscher.chemistry.physical.ligands;
+package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.core.utility.Nameable;
 
 /**
@@ -12,18 +12,18 @@ import de.bioforscher.core.utility.Nameable;
  *
  * @author fk
  */
-public class Ligand extends SubStructure implements Nameable {
+public class Ligand extends BranchSubstructure implements Nameable {
     /**
-     * Creates a new SubStructure. The identifier is considered in the superordinate SubStructure.
+     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
      *
-     * @param identifier The identifier of this SubStructure.
+     * @param identifier The identifier of this BranchSubstructure.
      */
     public Ligand(int identifier) {
         super(identifier);
     }
 
     @Override
-    public SubStructure getCopy() {
+    public BranchSubstructure getCopy() {
         return null;
     }
 

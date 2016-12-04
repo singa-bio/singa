@@ -1,8 +1,13 @@
-package de.bioforscher.chemistry.physical.proteins;
+package de.bioforscher.chemistry.physical.branches;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.bonds.Bond;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.core.utility.Nameable;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
@@ -13,12 +18,12 @@ import de.bioforscher.core.utility.Nameable;
  *
  * @see Residue
  */
-public class Chain extends SubStructure implements Nameable {
+public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * The identifier of this chain.
      */
-    private char chainIdentifier;
+    private String chainIdentifier;
 
     /**
      * Creates a new Chain with the given graph identifier. This is not the single letter chain identifier, but the
@@ -31,10 +36,22 @@ public class Chain extends SubStructure implements Nameable {
     }
 
     public Chain(Chain chain) {
-        super(chain);
+        this(chain.getIdentifier());
         this.chainIdentifier = chain.chainIdentifier;
+        for (Substructure<?> structure : chain.getSubstructures()) {
+            this.addSubstructure(structure.getCopy());
+        }
+        Map<Integer, Atom> atoms = new TreeMap<>();
+        for (Atom atom : this.getAllAtoms()) {
+            atoms.put(atom.getIdentifier(), atom);
+        }
+        for (Bond bond : chain.getEdges()) {
+            Bond edgeCopy = bond.getCopy();
+            Atom sourceCopy = atoms.get(bond.getSource().getIdentifier());
+            Atom targetCopy = atoms.get(bond.getTarget().getIdentifier());
+            addEdgeBetween(edgeCopy, sourceCopy, targetCopy);
+        }
     }
-
 
     /**
      * Creates a new Chain with the graph identifier 0. Use this method only if there is only one chain and nothing
@@ -48,7 +65,7 @@ public class Chain extends SubStructure implements Nameable {
      * Returns the chain identifier (the single letter identifier).
      * @return The chain identifier.
      */
-    public char getChainIdentifier() {
+    public String getChainIdentifier() {
         return this.chainIdentifier;
     }
 
@@ -56,13 +73,13 @@ public class Chain extends SubStructure implements Nameable {
      * Sets the chain identifier (the single letter identifier).
      * @param chainIdentifier The chain identifier.
      */
-    public void setChainIdentifier(char chainIdentifier) {
+    public void setChainIdentifier(String chainIdentifier) {
         this.chainIdentifier = chainIdentifier;
     }
 
     /**
      * Connects the all residues, that are currently in the chain, in order of their appearance in the
-     * List of Residues ({@link SubStructure#getResidues()}).
+     * List of Residues ({@link BranchSubstructure#getResidues()}).
      */
     public void connectChainBackbone() {
         Residue lastResidue = null;
@@ -83,13 +100,8 @@ public class Chain extends SubStructure implements Nameable {
      */
     public void connectPeptideBonds(Residue source, Residue target) {
         // creates the peptide backbone
-        Bond bond = new Bond();
-        bond.setIdentifier(nextEdgeIdentifier());
-        bond.setSource(source.getBackboneCarbon());
-        bond.setTarget(target.getBackboneNitrogen());
-        addEdge(bond.getIdentifier(), bond);
-        source.addNeighbour(target);
-        target.addNeighbour(source);
+        Bond bond = new Bond(nextEdgeIdentifier());
+        addEdgeBetween(bond, source.getBackboneCarbon(), target.getBackboneNitrogen());
     }
 
     /**
@@ -102,7 +114,7 @@ public class Chain extends SubStructure implements Nameable {
     }
 
     @Override
-    public SubStructure getCopy() {
+    public Chain getCopy() {
         return new Chain(this);
     }
 
@@ -112,11 +124,13 @@ public class Chain extends SubStructure implements Nameable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Chain chain = (Chain) o;
-        return this.chainIdentifier == chain.chainIdentifier;
+
+        return this.chainIdentifier != null ? this.chainIdentifier.equals(chain.chainIdentifier) : chain.chainIdentifier == null;
     }
 
     @Override
     public int hashCode() {
-        return (int) this.chainIdentifier;
+        return this.chainIdentifier != null ? this.chainIdentifier.hashCode() : 0;
     }
+
 }

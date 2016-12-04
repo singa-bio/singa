@@ -73,7 +73,7 @@ public class AutomatonGraphUtilities {
 
         for (UndirectedEdge undirectedEdge : undirectedGraph.getEdges()) {
             int id = undirectedEdge.getIdentifier();
-            bioGraph.connect(id, bioGraph.getNode(undirectedEdge.getSource().getIdentifier()),
+            bioGraph.addEdgeBetween(id, bioGraph.getNode(undirectedEdge.getSource().getIdentifier()),
                     bioGraph.getNode(undirectedEdge.getTarget().getIdentifier()));
         }
         return bioGraph;

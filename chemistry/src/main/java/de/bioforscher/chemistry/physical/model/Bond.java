@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.physical.bonds;
+package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.mathematics.graphs.model.AbstractEdge;
@@ -6,6 +6,14 @@ import de.bioforscher.mathematics.graphs.model.AbstractEdge;
 public class Bond extends AbstractEdge<Atom> {
 
     private BondType bondType;
+
+    public Bond() {
+        this(BondType.COVALENT_BOND);
+    }
+
+    public Bond(int identifier) {
+        super(identifier);
+    }
 
     public Bond(BondType bondType) {
         this.bondType = bondType;
@@ -22,10 +30,6 @@ public class Bond extends AbstractEdge<Atom> {
     public Bond(Bond bond) {
         this.identifier = bond.getIdentifier();
         this.bondType = bond.getBondType();
-    }
-
-    public Bond() {
-        this.bondType = BondType.COVALENT_BOND;
     }
 
     public BondType getBondType() {

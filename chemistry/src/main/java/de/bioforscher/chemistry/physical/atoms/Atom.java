@@ -40,8 +40,7 @@ public interface Atom extends StructuralEntity<Atom> {
 
     default Atom getCopy() {
         try {
-            return getClass().getConstructor(getClass())
-                    .newInstance(getElement(), getAtomNameString(), getPosition().getCopy());
+            return getClass().getConstructor(getClass()).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();

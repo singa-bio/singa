@@ -1,13 +1,11 @@
-package de.bioforscher.chemistry.physical.proteins;
+package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import jersey.repackaged.com.google.common.base.Predicates;
+import de.bioforscher.chemistry.physical.leafes.Residue;
 
 import java.util.EnumMap;
-import java.util.stream.Collectors;
 
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
@@ -35,45 +33,45 @@ public class ResidueFactory {
     private ResidueFactory() {
     }
 
-    public static Residue createResidueFromAtoms(int identifier, ResidueType residueType, EnumMap<AtomName, Atom> atoms) {
+    public static Residue createResidueFromAtoms(int identifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
 
         // create new residue
-        Residue residue = new Residue(identifier, residueType);
+        Residue residue = new Residue(identifier, residueFamily);
         // and add atoms
         if (factory.omitHydrogens) {
             // without hydrogens
-            residue.addAllNodes(atoms.values().stream()
+            atoms.values().stream()
                     .filter(atom -> !atom.isHydrogen())
-                    .collect(Collectors.toList()));
+                    .forEach(residue::addNode);
         } else {
             // all
-            residue.addAllNodes(atoms.values());
+            atoms.values().forEach(residue::addNode);
         }
         // connect backbone atoms first
         connectBackboneAtoms(residue, atoms);
 
         // TODO maybe order by relative occurrence to speedup
-        switch (residueType) {
+        switch (residueFamily) {
             case ALANINE: {
-                residue.connect(atoms.get(CA), atoms.get(CB));
+                residue.addEdgeBetween(atoms.get(CA), atoms.get(CB));
                 break;
             }
             case ARGININE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD, NE, CZ, NH1);
-                residue.connect(atoms.get(CZ), atoms.get(NH2));
+                residue.addEdgeBetween(atoms.get(CZ), atoms.get(NH2));
                 break;
             }
             case ASPARAGINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, OD1);
-                residue.connect(atoms.get(CG), atoms.get(ND2));
+                residue.addEdgeBetween(atoms.get(CG), atoms.get(ND2));
                 break;
             }
             case ASPARTIC_ACID: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, OD1);
-                residue.connect(atoms.get(CG), atoms.get(OD2));
+                residue.addEdgeBetween(atoms.get(CG), atoms.get(OD2));
                 break;
             }
             case CYSTEINE: {
@@ -84,13 +82,13 @@ public class ResidueFactory {
             case GLUTAMINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD, OE1);
-                residue.connect(atoms.get(CD), atoms.get(NE2));
+                residue.addEdgeBetween(atoms.get(CD), atoms.get(NE2));
                 break;
             }
             case GLUTAMIC_ACID: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD, OE1);
-                residue.connect(atoms.get(CD), atoms.get(OE2));
+                residue.addEdgeBetween(atoms.get(CD), atoms.get(OE2));
                 break;
             }
             case GLYCINE: {
@@ -104,13 +102,13 @@ public class ResidueFactory {
             case ISOLEUCINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG1, CD1);
-                residue.connect(atoms.get(CB), atoms.get(CG2));
+                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
             case LEUCINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD1);
-                residue.connect(atoms.get(CG), atoms.get(CD2));
+                residue.addEdgeBetween(atoms.get(CG), atoms.get(CD2));
                 break;
             }
             case LYSINE: {
@@ -141,25 +139,25 @@ public class ResidueFactory {
             case THREONINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, OG1);
-                residue.connect(atoms.get(CB), atoms.get(CG2));
+                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
             case TRYPTOPHAN: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD, CD1, CE2, CE2, CZ2, CH2, CZ2, CE3, CD2, CG);
-                residue.connect(atoms.get(CD2), atoms.get(CE2));
+                residue.addEdgeBetween(atoms.get(CD2), atoms.get(CE2));
                 break;
             }
             case TYROSINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG, CD1, CE1, CZ, CE2, CD2, CG);
-                residue.connect(atoms.get(CZ), atoms.get(OH));
+                residue.addEdgeBetween(atoms.get(CZ), atoms.get(OH));
                 break;
             }
             case VALINE: {
                 connectInOrder(residue, atoms,
                         CA, CB, CG1);
-                residue.connect(atoms.get(CB), atoms.get(CG2));
+                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
 
@@ -182,7 +180,7 @@ public class ResidueFactory {
             throw new IllegalArgumentException("Two or more atom names are required in order to connect them.");
         }
         for (int i = 1; i < names.length; i++) {
-            residue.connect(atoms.get(names[i - 1]), atoms.get(names[i]));
+            residue.addEdgeBetween(atoms.get(names[i - 1]), atoms.get(names[i]));
         }
     }
 
@@ -192,9 +190,9 @@ public class ResidueFactory {
      * @param atoms The atoms to take from.
      */
     private static void connectBackboneAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
-        residue.connect(atoms.get(N), atoms.get(CA));
-        residue.connect(atoms.get(CA), atoms.get(C));
-        residue.connect(atoms.get(C), atoms.get(O));
+        residue.addEdgeBetween(atoms.get(N), atoms.get(CA));
+        residue.addEdgeBetween(atoms.get(CA), atoms.get(C));
+        residue.addEdgeBetween(atoms.get(C), atoms.get(O));
     }
 
     /**
@@ -204,8 +202,8 @@ public class ResidueFactory {
      */
     private static void connectNTerminalAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
         if (factory.connectHydrogens) {
-            residue.connect(atoms.get(N), atoms.get(H));
-            residue.connect(atoms.get(N), atoms.get(H2));
+            residue.addEdgeBetween(atoms.get(N), atoms.get(H));
+            residue.addEdgeBetween(atoms.get(N), atoms.get(H2));
         }
     }
 
@@ -215,9 +213,9 @@ public class ResidueFactory {
      * @param atoms The atoms to take from.
      */
     private static void connectCTerminaAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
-        residue.connect(atoms.get(C), atoms.get(OXT));
+        residue.addEdgeBetween(atoms.get(C), atoms.get(OXT));
         if (factory.connectHydrogens) {
-            residue.connect(atoms.get(OXT), atoms.get(HXT));
+            residue.addEdgeBetween(atoms.get(OXT), atoms.get(HXT));
         }
     }
 

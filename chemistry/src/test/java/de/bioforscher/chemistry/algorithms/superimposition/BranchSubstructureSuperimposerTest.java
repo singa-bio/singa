@@ -2,8 +2,9 @@ package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.SubStructure;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,9 +19,10 @@ import static org.junit.Assert.assertEquals;
  *
  * @author fk
  */
-public class SubStructureSuperimposerTest {
-    private SubStructure candidate;
-    private SubStructure reference;
+public class BranchSubstructureSuperimposerTest {
+
+    private BranchSubstructure<?> candidate;
+    private BranchSubstructure<?> reference;
 
     @Before
     public void setUp() throws IOException {
@@ -34,9 +36,9 @@ public class SubStructureSuperimposerTest {
 
     @Test
     public void shouldCalculateCaSubstructureSuperimposition() {
-        SubStructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isAlphaCarbon());
-        List<SubStructure> reconstructedAndMappedCandidate =
+        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .flatMap(subStructure -> subStructure.getAllAtoms().stream())
@@ -46,9 +48,9 @@ public class SubStructureSuperimposerTest {
 
     @Test
     public void shouldCalculateBackboneSubstructureSuperimposition() {
-        SubStructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isBackbone());
-        List<SubStructure> reconstructedAndMappedCandidate =
+        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .flatMap(subStructure -> subStructure.getAllAtoms().stream())
@@ -58,9 +60,9 @@ public class SubStructureSuperimposerTest {
 
     @Test
     public void shouldCalculateSidechainSubstructureSuperimposition() {
-        SubStructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isSidechain());
-        List<SubStructure> reconstructedAndMappedCandidate =
+        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .flatMap(subStructure -> subStructure.getAllAtoms().stream())
@@ -70,7 +72,7 @@ public class SubStructureSuperimposerTest {
 
     @Test
     public void shouldCalculateIdealSubStructureSuperimposition() {
-        SubStructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate);
         assertEquals(superimposition.getRmsd(), 0.6439715367058053, 0E-9);
     }
@@ -78,10 +80,10 @@ public class SubStructureSuperimposerTest {
     // TODO this does not work because getCopy() of Chain currently produces a NPE
 //    @Test
 //    public void shouldCalculateSubstructureSuperimpositionWithMissingAtoms() {
-//        SubStructure referenceWithMissingAtoms = this.reference.getCopy();
-//        SubStructureSuperimposition superimposition = SubStructureSuperimposer
+//        BranchSubstructure referenceWithMissingAtoms = this.reference.getCopy();
+//        SubstructureSuperimposition superimposition = SubStructureSuperimposer
 //                .calculateSubstructureSuperimposition(referenceWithMissingAtoms, this.candidate);
-//        List<SubStructure> reconstructedAndMappedCandidate =
+//        List<BranchSubstructure> reconstructedAndMappedCandidate =
 //                superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
 //        assertEquals(superimposition.getMappedCandidate().stream()
 //                .flatMap(subStructure -> subStructure.getAllAtoms().stream())

@@ -1,12 +1,14 @@
 package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
-import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposition;
+import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
@@ -239,7 +241,7 @@ public class StructureViewer extends Application {
 
     private void translateToCentre() {
         List<Atom> allAtoms = this.structure.getSubstructures().stream()
-                .map(SubStructure::getAllAtoms)
+                .map(BranchSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
@@ -322,13 +324,14 @@ public class StructureViewer extends Application {
 //            ResidueFactory.setToOmitHydrogens(true);
             Structure motif1 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_01.pdb");
             Structure motif2 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_02.pdb");
-            SubStructure reference = motif1.getSubstructures().stream().collect(Collectors.toList()).get(0);
-            SubStructure candidate = motif2.getSubstructures().stream().collect(Collectors.toList()).get(0);
-            SubStructureSuperimposition superimposition =
+            BranchSubstructure reference = motif1.getSubstructures().stream().collect(Collectors.toList()).get(0);
+            BranchSubstructure candidate = motif2.getSubstructures().stream().collect(Collectors.toList()).get(0);
+            SubstructureSuperimposition superimposition =
                     SubStructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, AtomFilter.isBackbone());
 
             Structure structure = new Structure();
-            superimposition.applyTo(candidate.getAtomContainingSubstructures()).forEach(structure::addSubstructure);
+            Chain chain = new Chain();
+            // superimposition.applyTo(candidate.getAtomContainingSubstructures()).forEach(chain::addSubstructure);
             structure.addSubstructure(reference);
             this.structure = structure;
         } catch (IOException e) {

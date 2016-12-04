@@ -2,9 +2,11 @@ package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.proteins.Chain;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.families.ResidueFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -19,7 +21,7 @@ public class Structure {
     /**
      * The substructures of the graph.
      */
-    private Map<Integer, SubStructure> substructures;
+    private Map<Integer, BranchSubstructure<?>> substructures;
 
     private boolean containingModels;
 
@@ -45,18 +47,18 @@ public class Structure {
         this.containingModels = containingModels;
     }
 
-    public List<SubStructure> getSubstructures() {
+    public List<BranchSubstructure<?>> getSubstructures() {
         return new ArrayList<>(this.substructures.values());
     }
 
     /**
-     * Adds a predefined {@link SubStructure} to this Structure. This {@link SubStructure} needs to have a unique
+     * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a unique
      * identifier, with which it can be addressed.
      *
-     * @param subStructure The {@link SubStructure} to add.
+     * @param branchSubstructure The {@link BranchSubstructure} to add.
      */
-    public void addSubstructure(SubStructure subStructure) {
-        this.substructures.put(subStructure.getIdentifier(), subStructure);
+    public void addSubstructure(BranchSubstructure<?> branchSubstructure) {
+        this.substructures.put(branchSubstructure.getIdentifier(), branchSubstructure);
     }
 
     public List<StructuralModel> getAllModels() {
@@ -84,14 +86,14 @@ public class Structure {
 
     public List<Residue> getAllResidues() {
         return this.substructures.values().stream()
-                .map(SubStructure::getResidues)
+                .map(BranchSubstructure::getResidues)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
     public List<Atom> getAllAtoms() {
         return this.substructures.values().stream()
-                .map(SubStructure::getAllAtoms)
+                .map(BranchSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
@@ -107,7 +109,7 @@ public class Structure {
                 model.getAllChains().forEach( chain -> {
                     System.out.println(" Chain "+chain.getName()+":");
                     chain.getResidues().forEach( residue -> {
-                        System.out.println("  Residue "+residue.getName()+"");
+                        System.out.println("  Residue "+residue.toString()+"");
                         residue.getAllAtoms().forEach(atom -> System.out.println("   Atom "+atom.getIdentifier()));
                     });
                 });
@@ -117,7 +119,7 @@ public class Structure {
             structure.getAllChains().forEach( chain -> {
                 System.out.println("Chain "+chain.getName()+":");
                 chain.getResidues().forEach( residue -> {
-                    System.out.println(" Residue "+residue.getName()+"");
+                    System.out.println(" Residue "+residue.toString()+"");
                     residue.getAllAtoms().forEach(atom -> System.out.println("  Atom "+atom.getIdentifier()));
                 });
             });

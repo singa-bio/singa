@@ -1,9 +1,8 @@
-package de.bioforscher.chemistry.physical.proteins;
+package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.model.StructuralEntity;
-import de.bioforscher.chemistry.physical.model.StructuralEntityType;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +12,7 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 /**
  * The residue type should contain the general data, that is the same across all amino acids of this type.
  */
-public enum ResidueType implements StructuralEntityType {
+public enum ResidueFamily implements StructuralFamily {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
@@ -41,7 +40,7 @@ public enum ResidueType implements StructuralEntityType {
     private String threeLetterCode;
     private EnumSet<AtomName> allowedAtoms;
 
-    ResidueType(String name, String oneLetterCode, String threeLetterCode, EnumSet<AtomName> allowedAtoms) {
+    ResidueFamily(String name, String oneLetterCode, String threeLetterCode, EnumSet<AtomName> allowedAtoms) {
         this.name = name;
         this.oneLetterCode = oneLetterCode;
         this.threeLetterCode = threeLetterCode;
@@ -69,20 +68,20 @@ public enum ResidueType implements StructuralEntityType {
     /**
      * Returns true if the set of Atoms contains only Atom names, that can occur in the given residue type.
      * @param atoms The atoms to be checked.
-     * @param residueType The expected type of residue.
+     * @param residueFamily The expected type of residue.
      * @return True, if the set of Atoms contains only Atom names, that can occur in the given residue type.
      */
-    public boolean containsExpectedAtoms(List<Atom> atoms, ResidueType residueType) {
+    public boolean containsExpectedAtoms(List<Atom> atoms, ResidueFamily residueFamily) {
         final Set<String> actualNames = atoms.stream()
                                        .map(Atom::getAtomNameString)
                                        .collect(Collectors.toSet());
-        final Set<String> expectedNames = residueType.getAllowedAtoms().stream()
+        final Set<String> expectedNames = residueFamily.getAllowedAtoms().stream()
                                                .map(AtomName::getName)
                                                .collect(Collectors.toSet());
         return expectedNames.containsAll(actualNames);
     }
 
-    public static Optional<ResidueType> getResidueTypeByThreeLetterCode(String threeLetterCode) {
+    public static Optional<ResidueFamily> getResidueTypeByThreeLetterCode(String threeLetterCode) {
         return Arrays.stream(values())
                 .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
                 .findAny();

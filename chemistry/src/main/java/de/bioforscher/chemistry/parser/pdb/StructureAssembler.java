@@ -1,17 +1,15 @@
 package de.bioforscher.chemistry.parser.pdb;
 
-import de.bioforscher.chemistry.parser.pdb.tokens.AtomToken;
 import de.bioforscher.chemistry.parser.pdb.tokens.ModelToken;
 import de.bioforscher.chemistry.parser.pdb.tokens.TerminatorTokens;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.model.StructuralModel;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Chain;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
-import de.bioforscher.chemistry.physical.proteins.ResidueType;
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.families.ResidueFactory;
+import de.bioforscher.chemistry.physical.families.ResidueFamily;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -31,14 +29,14 @@ public class StructureAssembler {
 
     private StructuralModel currentModel;
 
-    private char currentChainIdentifier;
-    private char lastChainIdentifier;
+    private String currentChainIdentifier;
+    private String lastChainIdentifier;
     private Chain currentChain;
 
     private int currentResidueSerial;
     private int lastResidueSerial = Integer.MIN_VALUE;
-    private ResidueType currentResidueType;
-    private ResidueType lastResidueType;
+    private ResidueFamily currentResidueFamily;
+    private ResidueFamily lastResidueFamily;
     private EnumMap<AtomName, Atom> currentResidueAtoms;
 
     private Atom currentAtom;
@@ -54,14 +52,13 @@ public class StructureAssembler {
             if (RECORD_PATTERN.matcher(currentLine).matches()) {
                 // order of operation is relevant
                 // first extract and assemble chain
-                String extractedChain = CHAIN_IDENTIFIER.extract(currentLine);
-                assembler.currentChainIdentifier = extractedChain.charAt(0);
-                if (assembler.currentChainIdentifier != assembler.lastChainIdentifier) {
+                assembler.currentChainIdentifier = CHAIN_IDENTIFIER.extract(currentLine);
+                if (!assembler.currentChainIdentifier.equals(assembler.lastChainIdentifier)) {
                     assembler.assembleChain();
                 }
                 // then extract and assemble residue
                 assembler.currentResidueSerial = Integer.valueOf(RESIDUE_SERIAL.extract(currentLine));
-                assembler.currentResidueType = ResidueType.getResidueTypeByThreeLetterCode(RESIDUE_NAME.extract(currentLine))
+                assembler.currentResidueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(RESIDUE_NAME.extract(currentLine))
                         .orElseThrow(IllegalArgumentException::new);
                 if ((assembler.currentResidueSerial != assembler.lastResidueSerial) &&
                         (assembler.lastResidueSerial != Integer.MIN_VALUE)) {
@@ -71,7 +68,7 @@ public class StructureAssembler {
                 assembler.currentAtom = assembleAtom(currentLine);
                 assembler.currentResidueAtoms.put(assembler.currentAtom.getAtomName(), assembler.currentAtom);
                 // finally change current and lasts
-                assembler.lastResidueType = assembler.currentResidueType;
+                assembler.lastResidueFamily = assembler.currentResidueFamily;
                 assembler.lastChainIdentifier = assembler.currentChainIdentifier;
                 assembler.lastResidueSerial = assembler.currentResidueSerial;
             } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
@@ -113,7 +110,7 @@ public class StructureAssembler {
 
     private void assembleModel() {
         this.globalStructure.addSubstructure(assembler.currentModel);
-        this.lastChainIdentifier = ' ';
+        this.lastChainIdentifier = " ";
     }
 
     private void assembleChain() {
@@ -124,18 +121,17 @@ public class StructureAssembler {
                 this.globalStructure.addSubstructure(this.currentChain);
             }
         }
-        this.currentChain = new Chain((int) this.currentChainIdentifier);
+        // TODO this is not nice
+        this.currentChain = new Chain((int) this.currentChainIdentifier.charAt(0));
         this.currentChain.setChainIdentifier(this.currentChainIdentifier);
 
     }
 
     private void assembleResidue() {
-        Residue currentResidue = ResidueFactory.createResidueFromAtoms(this.lastResidueSerial, this.lastResidueType, this.currentResidueAtoms);
+        Residue currentResidue = ResidueFactory.createResidueFromAtoms(this.lastResidueSerial, this.lastResidueFamily, this.currentResidueAtoms);
         // when no chain is present put the residue in the current global substructure
         if (this.currentChain != null) {
             this.currentChain.addSubstructure(currentResidue);
-        } else {
-            this.globalStructure.addSubstructure(currentResidue);
         }
         this.currentResidueAtoms.clear();
     }

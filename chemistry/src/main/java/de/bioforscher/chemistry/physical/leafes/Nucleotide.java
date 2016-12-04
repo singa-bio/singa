@@ -1,6 +1,6 @@
-package de.bioforscher.chemistry.physical.nucleotides;
+package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
@@ -16,11 +16,11 @@ import java.util.EnumMap;
  *
  * @author fkaiser
  */
-public class Nucleotide extends SubStructure implements Nameable {
+public class Nucleotide extends BranchSubstructure implements Nameable {
     /**
-     * Creates a new SubStructure. The identifier is considered in the superordinate SubStructure.
+     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
      *
-     * @param identifier The identifier of this SubStructure.
+     * @param identifier The identifier of this BranchSubstructure.
      */
     public Nucleotide(int identifier) {
         super(identifier);
@@ -32,7 +32,7 @@ public class Nucleotide extends SubStructure implements Nameable {
     }
 
     @Override
-    public SubStructure getCopy() {
+    public BranchSubstructure getCopy() {
         return null;
     }
 

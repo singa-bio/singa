@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
- * in a {@link SubStructure}.
+ * in a {@link BranchSubstructure}.
  */
 public class RegularAtom implements Atom {
 

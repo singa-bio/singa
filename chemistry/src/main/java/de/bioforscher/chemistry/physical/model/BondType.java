@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.physical.bonds;
+package de.bioforscher.chemistry.physical.model;
 
 public enum BondType {
 

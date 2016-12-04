@@ -1,11 +1,9 @@
-package de.bioforscher.chemistry.physical.proteins;
+package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.bonds.Bond;
-import de.bioforscher.chemistry.physical.model.Exchangeable;
-import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.core.utility.Nameable;
+import de.bioforscher.chemistry.physical.families.ResidueFactory;
+import de.bioforscher.chemistry.physical.families.ResidueFamily;
 
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -16,40 +14,34 @@ import java.util.Set;
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
  * that determines the amino acid (and the overarching features). Based on this ResidueType a Residue can be created
  * from a set of atoms that belong to this residue using the
- * {@link ResidueFactory#createResidueFromAtoms(int, ResidueType, EnumMap) ResidueFactory}. This establishes the bonds
+ * {@link ResidueFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) ResidueFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
  * @author cl
  */
-public class Residue extends SubStructure implements Nameable, Exchangeable<ResidueType> {
+public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
-     * The type of this residue.
+     * The family of this residue.
      */
-    private final ResidueType type;
-
-    /**
-     * A iterating variable to add a new bond.
-     */
-    private int nextBondIdentifier;
+    private final ResidueFamily family;
 
     /**
      * A set of exchangeable types that are considered to be identical.
      */
-    private Set<ResidueType> exchangeableTypes;
+    private Set<ResidueFamily> exchangeableTypes;
 
     /**
      * Creates a new Residue with a identifier and ResidueType. Preferably the
-     * {@link ResidueFactory#createResidueFromAtoms(int, ResidueType, EnumMap) ResidueFactory} should be used to create
+     * {@link ResidueFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) ResidueFactory} should be used to create
      * Residues.
      *
      * @param identifier The identifier.
-     * @param type       The ResidueType.
+     * @param family       The ResidueType.
      */
-    public Residue(int identifier, ResidueType type) {
+    public Residue(int identifier, ResidueFamily family) {
         super(identifier);
-        this.type = type;
-        this.nextBondIdentifier = 0;
+        this.family = family;
         this.exchangeableTypes = new HashSet<>();
     }
 
@@ -65,49 +57,12 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
      */
     public Residue(Residue residue) {
         super(residue);
-        this.type = residue.type;
-        this.nextBondIdentifier = residue.nextBondIdentifier;
+        this.family = residue.family;
     }
 
     @Override
-    public Set<ResidueType> getExchangeableTypes() {
+    public Set<ResidueFamily> getExchangeableTypes() {
         return this.exchangeableTypes;
-    }
-
-    /**
-     * Connects two atoms with a bond, returning whether the connection could be made.
-     *
-     * @param first  The first atom.
-     * @param second The second atom.
-     * @return True if the connection could be assigned.
-     */
-    public boolean connect(Atom first, Atom second) {
-        if (first == null || second == null) {
-            return false;
-        }
-        // create bond
-        Bond bond = new Bond();
-        bond.setIdentifier(this.nextBondIdentifier);
-        bond.setSource(first);
-        bond.setTarget(second);
-        // add edges
-        this.addEdge(this.nextBondIdentifier, bond);
-        first.addNeighbour(second);
-        second.addNeighbour(first);
-        // increase identifier
-        this.nextBondIdentifier++;
-        return true;
-    }
-
-    /**
-     * Return the name of this residue in the format [Three Letter Code of the Residue]:[Residue identifier] (e.g.
-     * Arg:123 or Met:17).
-     *
-     * @return The name.
-     */
-    @Override
-    public String getName() {
-        return this.type.getName() + ":" + getIdentifier();
     }
 
     /**
@@ -116,7 +71,7 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
      * @return The one letter code of this residue.
      */
     public String getOneLetterCode() {
-        return this.type.getOneLetterCode();
+        return this.family.getOneLetterCode();
     }
 
     /**
@@ -125,7 +80,7 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
      * @return The three letter code of this residue.
      */
     public String getThreeLetterCode() {
-        return this.type.getThreeLetterCode();
+        return this.family.getThreeLetterCode();
     }
 
     /**
@@ -195,16 +150,15 @@ public class Residue extends SubStructure implements Nameable, Exchangeable<Resi
      */
     @Override
     public String toString() {
-        return this.getName();
+        return this.family.getName() + ":" + getIdentifier();
+    }
+
+    public ResidueFamily getFamily() {
+        return this.family;
     }
 
     @Override
-    public ResidueType getType() {
-        return this.type;
-    }
-
-    @Override
-    public SubStructure getCopy() {
+    public Residue getCopy() {
         return new Residue(this);
     }
 

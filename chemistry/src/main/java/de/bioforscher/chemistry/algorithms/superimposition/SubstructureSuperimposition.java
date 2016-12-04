@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.algorithms.superimposition.Superimposition;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector;
@@ -9,18 +11,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * An implementation of a {@link Superimposition} for {@link SubStructure}s.
+ * An implementation of a {@link Superimposition} for {@link BranchSubstructure}s.
  *
  * @author fk
  */
-public class SubStructureSuperimposition implements Superimposition<SubStructure> {
+public class SubstructureSuperimposition implements Superimposition<LeafSubstructure<?,?>> {
 
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<SubStructure> mappedCandidate;
+    private final List<LeafSubstructure<?,?>> mappedCandidate;
 
-    public SubStructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<SubStructure> mappedCandidate) {
+    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?,?>> mappedCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
@@ -43,20 +45,18 @@ public class SubStructureSuperimposition implements Superimposition<SubStructure
     }
 
     @Override
-    public List<SubStructure> getMappedCandidate() {
+    public List<LeafSubstructure<?,?>> getMappedCandidate() {
         return this.mappedCandidate;
     }
 
     @Override
-    public List<SubStructure> applyTo(List<SubStructure> candidate) {
-        List<SubStructure> copyOfCandidate = candidate.stream()
-                .map(SubStructure::getCopy)
+    public List<LeafSubstructure<?,?>> applyTo(List<LeafSubstructure<?,?>> candidate) {
+        List<LeafSubstructure<?,?>> copyOfCandidate = candidate.stream()
+                .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());
         // apply superimposition to every atom of every substructure of the candidate
         copyOfCandidate.stream()
-                .map(SubStructure::getAtomContainingSubstructures)
-                .flatMap(List::stream)
-                .map(SubStructure::getAllAtoms)
+                .map(Substructure::getAllAtoms)
                 .flatMap(List::stream)
                 .forEach(atom -> this.rotation
                         .transpose()

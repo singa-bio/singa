@@ -2,6 +2,7 @@ package de.bioforscher.simulation.model;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
+import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
@@ -21,12 +22,13 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
     }
 
     @Override
-    public void addEdgeBetween(BioNode source, BioNode target) {
-
+    public int addEdgeBetween(int identifier, BioNode source, BioNode target) {
+        return addEdgeBetween(new BioEdge(identifier), source, target);
     }
 
-    public void connect(int identifier, BioNode source, BioNode target) {
-        super.connect(identifier, source, target, BioEdge.class);
+    @Override
+    public int addEdgeBetween(BioNode source, BioNode target) {
+        return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {

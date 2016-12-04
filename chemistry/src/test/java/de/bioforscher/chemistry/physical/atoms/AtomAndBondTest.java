@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.chemistry.physical.bonds.Bond;
+import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import org.junit.Test;
 

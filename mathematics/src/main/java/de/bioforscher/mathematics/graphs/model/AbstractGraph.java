@@ -9,6 +9,16 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         implements Graph<NodeType, EdgeType> {
 
     /**
+     * A iterating variable to add a new node.
+     */
+    private int nextNodeIdentifier;
+
+    /**
+     * A iterating variable to add a new edge.
+     */
+    private int nextEdgeIdentifier;
+
+    /**
      * The nodes of the graph.
      */
     private Map<Integer, NodeType> nodes;
@@ -35,6 +45,11 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
     public AbstractGraph(int nodeCapacity, int edgeCapacity) {
         this.nodes = new HashMap<>(nodeCapacity);
         this.edges = new HashMap<>(edgeCapacity);
+    }
+
+    @Override
+    public int nextNodeIdentifier() {
+        return this.nextNodeIdentifier++;
     }
 
     /**
@@ -64,12 +79,9 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
      * @param node The node.
      */
     @Override
-    public void addNode(NodeType node) {
+    public int addNode(NodeType node) {
         this.nodes.put(node.getIdentifier(), node);
-    }
-
-    public void addAllNodes(Collection<NodeType> nodes) {
-        nodes.forEach(this::addNode);
+        return node.getIdentifier();
     }
 
     /**
@@ -84,19 +96,9 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(identifier));
     }
 
-    public void removeNode(RegularNode node) {
-        removeNode(node.getIdentifier());
-    }
-
-    public int getNextEdgeIdentifier() {
-        if (this.edges.keySet().isEmpty()) {
-            return 0;
-        }
-        return Collections.max(this.edges.keySet()) + 1;
-    }
-
-    public void addEdge(int identifier, EdgeType edge) {
-        this.edges.put(identifier, edge);
+    @Override
+    public int nextEdgeIdentifier() {
+        return this.nextEdgeIdentifier++;
     }
 
     /**
@@ -120,28 +122,18 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         return this.edges.get(identifier);
     }
 
-    @Override
-    public void connect(int identifier, NodeType source, NodeType target, Class<EdgeType> edgeClass) {
-        EdgeType edge = null;
-        try {
-            edge = edgeClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        assert edge != null;
-        connectWithEdge(identifier, source, target, edge);
-    }
-
-    public void connectWithEdge(int identifier, NodeType source, NodeType target, EdgeType edge) {
-        edge.setIdentifier(identifier);
+    public int addEdgeBetween(EdgeType edge, NodeType source, NodeType target) {
         edge.setSource(source);
         edge.setTarget(target);
-        this.edges.put(identifier, edge);
+        this.edges.put(edge.getIdentifier(), edge);
         source.addNeighbour(target);
         target.addNeighbour(source);
+        return edge.getIdentifier();
     }
 
-    public abstract void addEdgeBetween(NodeType source, NodeType target);
+    public abstract int addEdgeBetween(int identifier, NodeType source, NodeType target);
+
+    public abstract int addEdgeBetween(NodeType source, NodeType target);
 
     /**
      * @param node The node.

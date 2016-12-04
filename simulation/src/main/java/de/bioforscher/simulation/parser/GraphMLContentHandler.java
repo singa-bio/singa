@@ -135,7 +135,7 @@ public class GraphMLContentHandler implements ContentHandler {
                 int edgeId = Integer.parseInt(atts.getValue("id"));
                 BioNode source = this.graph.getNode(Integer.parseInt(atts.getValue("source")));
                 BioNode target = this.graph.getNode(Integer.parseInt(atts.getValue("target")));
-                this.graph.connect(edgeId, source, target, BioEdge.class);
+                this.graph.addEdgeBetween(edgeId, source, target);
                 for (ChemicalEntity entity : this.speciesMap.values()) {
                     this.graph.getEdge(edgeId).addPermeability(entity, 1.0);
                 }

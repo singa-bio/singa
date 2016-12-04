@@ -39,7 +39,7 @@ public class GeneralGraphModelTest {
         RegularNode target = NodeFactory.createRandomlyPlacedNode(1, this.boundingBox);
         testGraph.addNode(source);
         testGraph.addNode(target);
-        testGraph.connect(0, source, target);
+        testGraph.addEdgeBetween(0, source, target);
         UndirectedEdge edge = testGraph.getEdge(0);
         assertTrue(edge.containsNode(source));
         assertTrue(edge.containsNode(target));

@@ -1,7 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Exchangeable;
-import de.bioforscher.chemistry.physical.model.SubStructure;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.graphs.model.GenericGraph;
 import de.bioforscher.mathematics.graphs.model.GenericNode;
@@ -16,14 +17,14 @@ import java.util.stream.Collectors;
 public class AlignmentGenerator {
 
     private final int iterationDepth;
-    GenericGraph<Pair<SubStructure>> alignmentGraph;
-    private List<SubStructure> reference;
-    private List<SubStructure> candidate;
-    //    private List<List<Pair<SubStructure>>> validPaths;
-    private List<List<SubStructure>> validPaths;
+    private GenericGraph<Pair<LeafSubstructure<?, ?>>> alignmentGraph;
+    private List<LeafSubstructure<?, ?>> reference;
+    private List<LeafSubstructure<?, ?>> candidate;
+    //    private List<List<Pair<BranchSubstructure>>> validPaths;
+    private List<List<BranchSubstructure>> validPaths;
 
 
-    public AlignmentGenerator(List<SubStructure> reference, List<SubStructure> candidate) {
+    public AlignmentGenerator(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate) {
         this.reference = reference;
         this.candidate = candidate;
 
@@ -36,25 +37,20 @@ public class AlignmentGenerator {
 //        System.out.println();
     }
 
-    private boolean isValidAlignment(Pair<SubStructure> subStructurePair, int iterationDepth) {
+    private boolean isValidAlignment(Pair<LeafSubstructure<?, ?>> subStructurePair, int iterationDepth) {
         System.out.println("eval:" + iterationDepth);
-        if (subStructurePair.getFirst() instanceof Exchangeable && subStructurePair.getSecond() instanceof Exchangeable) {
 
-            Exchangeable res1 = (Exchangeable) subStructurePair.getFirst();
-            Exchangeable res2 = (Exchangeable) subStructurePair.getSecond();
-            System.out.println("id:" + res1.getType().equals(res2.getType()));
-            if (res1.getType().equals(res2.getType()))
-                return true;
-        }
+        Exchangeable res1 = subStructurePair.getFirst();
+        Exchangeable res2 = subStructurePair.getSecond();
+        System.out.println("id:" + res1.getFamily().equals(res2.getFamily()));
+        if (res1.getFamily().equals(res2.getFamily()))
+            return true;
 
-        if (subStructurePair.getFirst() instanceof Exchangeable && subStructurePair.getSecond() instanceof Exchangeable) {
-            Exchangeable res1 = (Exchangeable) subStructurePair.getFirst();
-            Exchangeable res2 = (Exchangeable) subStructurePair.getSecond();
-            System.out.println("ex:" + res1.getExchangeableTypes().contains(res2.getType()));
-            return res1.getExchangeableTypes().contains(res2.getType());
-        }
+        System.out.println("ex:" + res1.getExchangeableTypes().contains(res2.getFamily()));
+        if (res1.getExchangeableTypes().contains(res2.getFamily()))
+            return res1.getExchangeableTypes().contains(res2.getFamily());
 //            return ((Residue) subStructurePair.getFirst())
-//                    .getExchangeableTypes().contains(((Residue) subStructurePair.getSecond()).getType());
+//                    .getExchangeableTypes().contains(((Residue) subStructurePair.getSecond()).getFamily());
 
         if (iterationDepth != -1) {
             if (subStructurePair.getSecond().equals(this.candidate.get(iterationDepth))) {
@@ -67,8 +63,8 @@ public class AlignmentGenerator {
     }
 
 //    private void compute(int iterationDepth) {
-//        for (SubStructure candidateElement : this.candidate) {
-//            List<SubStructure> currentPath = this.validPaths.get(iterationDepth);
+//        for (BranchSubstructure candidateElement : this.candidate) {
+//            List<BranchSubstructure> currentPath = this.validPaths.get(iterationDepth);
 //            currentPath.add(candidateElement);
 //            this.validPaths.add(currentPath);
 //        }
@@ -76,18 +72,18 @@ public class AlignmentGenerator {
 //            compute(iterationDepth + 1);
 //    }
 
-    public void computeNextIteration(int iterationDepth, List<Pair<SubStructure>> lastValids) {
+    public void computeNextIteration(int iterationDepth, List<Pair<LeafSubstructure<?, ?>>> lastValids) {
 
-        SubStructure referenceElement = this.reference.get(iterationDepth);
-        List<Pair<SubStructure>> currentValids = this.candidate.stream()
+        LeafSubstructure<?, ?> referenceElement = this.reference.get(iterationDepth);
+        List<Pair<LeafSubstructure<?, ?>>> currentValids = this.candidate.stream()
                 .map(candidateElement -> new Pair<>(referenceElement, candidateElement))
                 .peek(subStructurePair -> System.out.println("(" + subStructurePair.getFirst() + "," + subStructurePair.getSecond() + ")"))
                 .filter(subStructurePair -> isValidAlignment(subStructurePair, iterationDepth))
                 .collect(Collectors.toList());
 
         currentValids.forEach(pair -> System.out.println("filtered(" + pair.getFirst() + "," + pair.getSecond() + ")"));
-        for (Pair<SubStructure> pair : currentValids) {
-            alignmentGraph.addNode(new GenericNode<>(alignmentGraph.nextNodeIdentifier(), pair));
+        for (Pair<LeafSubstructure<?, ?>> pair : currentValids) {
+            this.alignmentGraph.addNode(new GenericNode<>(this.alignmentGraph.nextNodeIdentifier(), pair));
         }
         System.out.println();
         if (iterationDepth != this.reference.size())

@@ -9,7 +9,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
 
     NodeType getNode(int identifier);
 
-    void addNode(NodeType node);
+    int addNode(NodeType node);
 
     void removeNode(int identifier);
 
@@ -17,7 +17,11 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
 
     EdgeType getEdge(int identifier);
 
-    void connect(int identifier, NodeType source, NodeType target, Class<EdgeType> edgeClass);
+    int addEdgeBetween(int identifier, NodeType source, NodeType target);
+
+    int addEdgeBetween(EdgeType edge, NodeType source, NodeType target);
+
+    int addEdgeBetween(NodeType source, NodeType target);
 
     boolean containsNode(Object node);
 
