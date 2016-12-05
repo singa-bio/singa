@@ -19,20 +19,17 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         implements Substructure<LeafSubstructureType>, Exchangeable<FamilyType> {
 
     /**
+     * The identifier of this entity.
+     */
+    public int identifier;
+    /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
-
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
-
-    /**
-     * The identifier of this entity.
-     */
-    public int identifier;
-
     /**
      * The neighboring leaf substructures.
      */
@@ -48,14 +45,20 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     private Map<Integer, Bond> bonds;
 
+    /**
+     * The families to which the {@link LeafSubstructure} can be exchanged.
+     */
+    protected Set<FamilyType> exchangeableTypes;
+
     public LeafSubstructure(int identifier) {
         this.identifier = identifier;
         this.neighbours = new ArrayList<>();
         this.atoms = new TreeMap<>();
         this.bonds = new HashMap<>();
+        this.exchangeableTypes = new HashSet<>();
     }
 
-    public LeafSubstructure(LeafSubstructure<?,?> leafSubstructure) {
+    public LeafSubstructure(LeafSubstructure<?, ?> leafSubstructure) {
         this(leafSubstructure.identifier);
         for (Atom atom : leafSubstructure.atoms.values()) {
             this.atoms.put(atom.getIdentifier(), atom.getCopy());
@@ -117,7 +120,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     @Override
     public int addEdgeBetween(Bond edge, Atom source, Atom target) {
-        if(source == null || target == null) {
+        if (source == null || target == null) {
             return 0;
         }
         edge.setSource(source);
@@ -150,7 +153,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     @Override
     public Vector3D getPosition() {
-         return VectorUtilities.getCentroid(this.atoms.values().stream()
+        return VectorUtilities.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .as(Vector3D.class);
@@ -176,5 +179,13 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return new ArrayList<>(this.atoms.values());
     }
 
+    @Override
+    public Set<FamilyType> getExchangeableTypes() {
+        return exchangeableTypes;
+    }
 
+    @Override
+    public void addExchangeableType(FamilyType exchangeableType) {
+        this.exchangeableTypes.add(exchangeableType);
+    }
 }

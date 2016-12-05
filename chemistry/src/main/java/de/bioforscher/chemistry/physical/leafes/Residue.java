@@ -27,11 +27,6 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     private final ResidueFamily family;
 
     /**
-     * A set of exchangeable types that are considered to be identical.
-     */
-    private Set<ResidueFamily> exchangeableTypes;
-
-    /**
      * Creates a new Residue with a identifier and ResidueType. Preferably the
      * {@link ResidueFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) ResidueFactory} should be used to create
      * Residues.
@@ -42,7 +37,6 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     public Residue(int identifier, ResidueFamily family) {
         super(identifier);
         this.family = family;
-        this.exchangeableTypes = new HashSet<>();
     }
 
     /**
@@ -58,6 +52,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     public Residue(Residue residue) {
         super(residue);
         this.family = residue.family;
+        this.exchangeableTypes = new HashSet<>(residue.exchangeableTypes);
     }
 
     @Override

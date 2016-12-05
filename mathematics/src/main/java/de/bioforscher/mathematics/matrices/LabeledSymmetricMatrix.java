@@ -1,6 +1,7 @@
 package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.vectors.RegularVector;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,9 +46,20 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     }
 
     @Override
+    public RegularVector getRowByLabel(LabelType label) {
+        int index = this.labelMap.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(label))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("specified label " + label + " is not assigned"));
+        // we have to use reconstruct the vector because only jagged values are stored
+        return new RegularVector(getCompleteElements()[index]);
+    }
+
+    @Override
     public LabelType getRowLabel(int rowIndex) {
         return this.labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
-                       .findFirst().get();
+                .findFirst().get();
     }
 
     @Override
@@ -58,6 +70,11 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     @Override
     public void setColumnLabel(LabelType label, int columnIndex) {
         setRowLabel(label, columnIndex);
+    }
+
+    @Override
+    public RegularVector getColumnByLabel(LabelType label) {
+        return getRowByLabel(label);
     }
 
     @Override
@@ -76,9 +93,9 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
         if (!this.labelMap.isEmpty())
             // assemble first line of string representation
             rowJoiner.add("," + this.labelMap.entrySet().stream()
-                                             .sorted(Map.Entry.comparingByValue())
-                                             .map(Map.Entry::getKey)
-                                             .map(String::valueOf).collect(Collectors.joining(",")));
+                    .sorted(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .map(String::valueOf).collect(Collectors.joining(",")));
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern(STRING_REPRESENTATION_DECIMAL_FORMAT);

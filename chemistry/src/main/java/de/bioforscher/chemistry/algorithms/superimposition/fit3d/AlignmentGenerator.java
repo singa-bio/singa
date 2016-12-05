@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 /**
  * @author fk
  */
+@Deprecated
 public class AlignmentGenerator {
 
     private final int iterationDepth;

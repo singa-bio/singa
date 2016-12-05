@@ -2,11 +2,14 @@ package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.leafes.Ligand;
-import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.Substructure;
+import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
+import de.bioforscher.mathematics.matrices.SymmetricMatrix;
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
@@ -38,39 +41,33 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
+     * The identifier of this entity.
+     */
+    public int identifier;
+    /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
-
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
-
-    /**
-     * The identifier of this entity.
-     */
-    public int identifier;
-
     /**
      * The neighboring substructures.
      */
     private List<SubstructureType> neighbours;
+    /**
+     * The substructures of this substructure.
+     */
+    private Map<Integer, Substructure<?>> substructures;
 
     /*
      * GRAPH VARIABLES
      */
-
-    /**
-     * The substructures of this substructure.
-     */
-    private Map<Integer, Substructure> substructures;
-
     /**
      * The actual nodes
      */
     private Map<Integer, Atom> nodes;
-
     /**
      * The edges of the graph.
      */
@@ -117,6 +114,40 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
             addEdgeBetween(edgeCopy, sourceCopy, targetCopy);
         }
         this.neighbours = new ArrayList<>();
+    }
+
+    /**
+     * Returns the distance matrix of all {@link LeafSubstructure}s contained in this {@link BranchSubstructure}.
+     *
+     * @return distance matrix of all {@link LeafSubstructure}s
+     */
+    public LabeledSymmetricMatrix<LeafSubstructure<?, ?>> getDistanceMatrix() {
+        List<LeafSubstructure<?, ?>> leafSubstructures = getAtomContainingSubstructures();
+        SymmetricMatrix distanceMatrix = VectorMetricProvider.EUCLIDEAN_METRIC
+                .calculateDistancesPairwise(leafSubstructures.stream()
+                        .map(LeafSubstructure::getPosition)
+                        .collect(Collectors.toList()));
+        LabeledSymmetricMatrix<LeafSubstructure<?, ?>> labeledDistanceMatrix =
+                new LabeledSymmetricMatrix<>(distanceMatrix.getElements());
+        labeledDistanceMatrix.setRowLabels(leafSubstructures);
+        return labeledDistanceMatrix;
+    }
+
+    /**
+     * Returns the squared-distance matrix of all {@link LeafSubstructure}s contained in this {@link BranchSubstructure}.
+     *
+     * @return distance matrix of all {@link LeafSubstructure}s
+     */
+    public LabeledSymmetricMatrix<LeafSubstructure<?, ?>> getSquaredDistanceMatrix() {
+        List<LeafSubstructure<?, ?>> leafSubstructures = getAtomContainingSubstructures();
+        SymmetricMatrix distanceMatrix = VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
+                .calculateDistancesPairwise(leafSubstructures.stream()
+                        .map(LeafSubstructure::getPosition)
+                        .collect(Collectors.toList()));
+        LabeledSymmetricMatrix<LeafSubstructure<?, ?>> labeledDistanceMatrix =
+                new LabeledSymmetricMatrix<>(distanceMatrix.getElements());
+        labeledDistanceMatrix.setRowLabels(leafSubstructures);
+        return labeledDistanceMatrix;
     }
 
     /*
@@ -258,6 +289,20 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
+     * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
+     * and {@link Bond}s as well
+     *
+     * @param identifier The identifier of the atom to remove.
+     */
+    public void removeSubstructure(int identifier) {
+        List<Integer> atomsToBeRemoved = this.substructures.get(identifier).getAllAtoms().stream()
+                .map(Atom::getIdentifier)
+                .collect(Collectors.toList());
+        atomsToBeRemoved.forEach(this::removeNode);
+        this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == identifier);
+    }
+
+    /**
      * Adds all Substructures in order of their appearance in the list.
      *
      * @param substructures The SubStructures to add.
@@ -348,7 +393,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     public List<Atom> getAllAtoms() {
         List<Atom> atoms = new ArrayList<>();
         for (Substructure<?> substructure : this.substructures.values()) {
-           atoms.addAll(substructure.getAllAtoms());
+            atoms.addAll(substructure.getAllAtoms());
         }
         atoms.addAll(this.getNodes());
         return atoms;
@@ -365,7 +410,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
             if (branchSubstructure instanceof Residue) {
                 residues.add((Residue) branchSubstructure);
             } else if (branchSubstructure instanceof BranchSubstructure) {
-                residues.addAll(((BranchSubstructure<?>)branchSubstructure).getResidues());
+                residues.addAll(((BranchSubstructure<?>) branchSubstructure).getResidues());
             }
         }
         return residues;
@@ -402,6 +447,8 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @param branchSubstructure                The branchSubstructure for which all atom-containing substructures are wanted.
      * @return The list of atom containing substructures.
      */
+    // TODO do we need this anymore?
+    @Deprecated
     private List<Substructure> findAtomContainingSubStructures(List<Substructure> atomContainingBranchSubstructures, Substructure branchSubstructure) {
         // branchSubstructure contains atoms
         if (branchSubstructure != null && !branchSubstructure.getNodes().isEmpty()) {
@@ -414,18 +461,23 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
         return atomContainingBranchSubstructures;
     }
 
-    public List<LeafSubstructure<?,?>> getAtomContainingSubstructures() {
-        List<LeafSubstructure<?,?>> atomContainingSubstructures = new ArrayList<>();
+
+    /**
+     * Returns all atom-containing substructures (@{@link LeafSubstructure}s) of this {@link BranchSubstructure}.
+     *
+     * @return list of atom-containing substructures
+     */
+    public List<LeafSubstructure<?, ?>> getAtomContainingSubstructures() {
+        List<LeafSubstructure<?, ?>> atomContainingSubstructures = new ArrayList<>();
         for (Substructure substructure : this.substructures.values()) {
             if (substructure instanceof LeafSubstructure) {
-                atomContainingSubstructures.add((LeafSubstructure)substructure);
+                atomContainingSubstructures.add((LeafSubstructure) substructure);
             } else if (substructure instanceof BranchSubstructure) {
-                atomContainingSubstructures.addAll(((BranchSubstructure<?>)substructure).getAtomContainingSubstructures());
+                atomContainingSubstructures.addAll(((BranchSubstructure<?>) substructure).getAtomContainingSubstructures());
             }
         }
         return atomContainingSubstructures;
     }
 
     public abstract SubstructureType getCopy();
-
 }

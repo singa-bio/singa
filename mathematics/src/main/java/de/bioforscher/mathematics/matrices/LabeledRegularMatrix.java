@@ -1,6 +1,7 @@
 package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.vectors.RegularVector;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -32,6 +33,16 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
     }
 
     @Override
+    public RegularVector getRowByLabel(LabelType label) {
+        int rowIndex = this.rowLabelMap.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(label))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("specified label " + label + " is not assigned to any row"));
+        return getRow(rowIndex);
+    }
+
+    @Override
     public LabelType getRowLabel(int rowIndex) {
         return this.rowLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
                 .findFirst().get();
@@ -42,6 +53,16 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         if (columnIndex > getColumnDimension())
             throw new IllegalArgumentException("specified index " + columnIndex + " exceeds column dimension " + getColumnDimension());
         this.columnLabelMap.put(label, columnIndex);
+    }
+
+    @Override
+    public RegularVector getColumnByLabel(LabelType label) {
+        int columnIndex = this.columnLabelMap.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(label))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("specified label " + label + " is not assigned to any column"));
+        return getColumn(columnIndex);
     }
 
     @Override

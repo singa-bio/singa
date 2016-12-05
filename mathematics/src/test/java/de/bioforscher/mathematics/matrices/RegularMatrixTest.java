@@ -298,7 +298,21 @@ public class RegularMatrixTest {
     public void shouldCopy(){
         RegularMatrix copy1 = this.squareMatrix.getCopy();
         RegularMatrix copy2 = this.squareMatrix.getCopy();
-        copy1.getElements()[0][0] = Double.NaN;
-        assertTrue(copy2.getElements()[0][0] != Double.NaN);
+        copy1.getElements()[0][0] = Double.MIN_VALUE;
+        assertTrue(copy2.getElements()[0][0] != Double.MIN_VALUE);
+    }
+
+    @Test
+    public void shouldGetColumnAndRowByLabel() {
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        lrm.setRowLabel("R3", 2);
+        lrm.setRowLabel("R2", 1);
+        lrm.setRowLabel("R1", 0);
+        lrm.setColumnLabel("C1", 0);
+        lrm.setColumnLabel("C2", 1);
+        RegularVector column = lrm.getRowByLabel("R1");
+        assertTrue(column.equals(new RegularVector(1.0, 2.0)));
+        RegularVector row = lrm.getColumnByLabel("C1");
+        assertTrue(row.equals(new RegularVector(1.0, 3.0, 5.0)));
     }
 }

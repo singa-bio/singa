@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.matrices;
 
+import de.bioforscher.mathematics.vectors.RegularVector;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,31 +89,43 @@ public class SymmetricMatrixTest {
     @Test
     public void shouldGetStringRepresentation() {
 
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
         assertEquals(",L1,L2,L3\n" +
-                     "L1,1.000000,2.000000,3.000000\n" +
-                     "L2,2.000000,4.000000,5.000000\n" +
-                     "L3,3.000000,5.000000,8.000000", lsm.getStringRepresentation());
+                "L1,1.000000,2.000000,3.000000\n" +
+                "L2,2.000000,4.000000,5.000000\n" +
+                "L3,3.000000,5.000000,8.000000", lsm.getStringRepresentation());
     }
 
     @Test
     public void shouldGetStringRepresentationWithoutLabels() {
 
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         assertEquals("1.000000,2.000000,3.000000\n" +
-                     "2.000000,4.000000,5.000000\n" +
-                     "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
+                "2.000000,4.000000,5.000000\n" +
+                "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
     }
 
     @Test
-    public void shouldCopy(){
+    public void shouldCopy() {
         SymmetricMatrix copy1 = this.trueSymmetricMatrix.getCopy();
         SquareMatrix copy2 = this.trueSymmetricMatrix.getCopy();
         copy1.getElements()[0][0] = Double.NaN;
         assertTrue(SymmetricMatrix.isCompact(copy2.getElements()));
         assertTrue(copy2.getElements()[0][0] != Double.NaN);
+    }
+
+    @Test
+    public void shouldGetColumnAndRowByLabel() {
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        lsm.setRowLabel("L1", 0);
+        lsm.setRowLabel("L2", 1);
+        lsm.setRowLabel("L3", 2);
+        RegularVector column = lsm.getColumnByLabel("L1");
+        assertTrue(column.equals(new RegularVector(1.0, 2.0, 3.0)));
+        RegularVector row = lsm.getRowByLabel("L1");
+        assertTrue(row.equals(new RegularVector(1.0, 2.0, 3.0)));
     }
 }

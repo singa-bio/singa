@@ -8,7 +8,6 @@ import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
@@ -214,6 +213,20 @@ public class StructureViewer extends Application {
                     forms.add(bondFrom);
                 }));
 
+        this.structure.getAllChains().forEach(chain ->
+                chain.getEdges().forEach(edge -> {
+
+                    Vector3D source = edge.getSource().getPosition();
+                    Vector3D target = edge.getTarget().getPosition();
+
+                    Cylinder bond = createCylinderConnecting(source, target);
+                    bond.setMaterial(carbonMaterial);
+
+                    Xform bondFrom = new Xform();
+                    bondFrom.getChildren().add(bond);
+                    forms.add(bondFrom);
+                }));
+
         atoms.getChildren().addAll(forms);
         this.moleculeGroup.getChildren().add(atoms);
         this.world.getChildren().addAll(this.moleculeGroup);
@@ -240,10 +253,7 @@ public class StructureViewer extends Application {
     }
 
     private void translateToCentre() {
-        List<Atom> allAtoms = this.structure.getSubstructures().stream()
-                .map(BranchSubstructure::getAllAtoms)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        List<Atom> allAtoms = this.structure.getAllAtoms();
 
         Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)

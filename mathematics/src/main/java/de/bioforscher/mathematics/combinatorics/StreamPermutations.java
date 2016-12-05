@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  *
  * @see {https://minborgsjavapot.blogspot.de/2015/07/java-8-master-permutations.html}
  *
- * Created by fkaiser on 11.11.16.
+ * @author fk
  */
 public class StreamPermutations {
 
