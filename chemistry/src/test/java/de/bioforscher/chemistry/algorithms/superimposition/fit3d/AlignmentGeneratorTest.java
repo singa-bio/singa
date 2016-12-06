@@ -1,10 +1,9 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.model.Exchangeable;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.Exchangeable;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.graphs.model.GenericGraph;
 import de.bioforscher.mathematics.graphs.model.GenericNode;
@@ -19,6 +18,7 @@ import java.util.stream.IntStream;
 /**
  * @author fk
  */
+@Deprecated
 public class AlignmentGeneratorTest {
 
     private List<LeafSubstructure<?, ?>> motif1;

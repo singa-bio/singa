@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
+@Deprecated
 public class CandidateGenerator {
     private final List<LeafSubstructure<?, ?>> queryMotif;
     private final List<LeafSubstructure<?, ?>> environment;

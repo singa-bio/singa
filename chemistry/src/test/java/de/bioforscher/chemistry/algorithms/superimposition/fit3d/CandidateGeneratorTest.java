@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by fkaiser on 06.12.16.
  */
+@Deprecated
 public class CandidateGeneratorTest {
     private Structure target;
     private List<LeafSubstructure<?, ?>> queryMotif;
