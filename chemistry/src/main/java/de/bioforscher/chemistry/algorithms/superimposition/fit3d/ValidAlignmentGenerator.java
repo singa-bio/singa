@@ -1,8 +1,9 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,43 +26,46 @@ import java.util.stream.IntStream;
  * <p>
  * If we now consider T=(H,E,N,D,H) to be a target of unknown order to which Q should be matched,
  * there are exactly two valid alignments:
-
+ * <p>
  * <pre>
  *  Q =   K | D | E | E | H
  *  T =   H1| D | E | N | H2
  * </pre>
- *
+ * <p>
  * <pre>
  *  Q =   K | D | E | E | H
  *  T =   H2| D | E | N | H1
  * </pre>
- *
+ * <p>
  * Created by S on 28.11.2016.
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<LeafSubstructure<?,?>> reference;
-    private List<LeafSubstructure<?,?>> candidate;
+    private List<LeafSubstructure<?, ?>> reference;
+    private List<LeafSubstructure<?, ?>> candidate;
 
-    private List<List<LeafSubstructure<?,?>>> pathsThroughSecondMotif;
+    private List<List<LeafSubstructure<?, ?>>> pathsThroughSecondMotif;
 
-    public List<List<Pair<LeafSubstructure<?,?>>>> getValidAlignments(List<LeafSubstructure<?,?>> reference, List<LeafSubstructure<?,?>> candidate) {
+    public ValidAlignmentGenerator(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate) {
         this.reference = reference;
         this.candidate = candidate;
+    }
+
+    public List<List<Pair<LeafSubstructure<?, ?>>>> getValidAlignments() {
 
         // initialize paths
         this.pathsThroughSecondMotif = new ArrayList<>();
         this.pathsThroughSecondMotif.add(new ArrayList<>());
 
         // handle each
-        for(int currentPathLength = 0; currentPathLength < reference.size(); currentPathLength++) {
+        for (int currentPathLength = 0; currentPathLength < this.reference.size(); currentPathLength++) {
             final int expectedLength = currentPathLength + 1;
             //TODO: could break
-            Residue currentReferenceResidue = (Residue) reference.get(currentPathLength);
+            Residue currentReferenceResidue = (Residue) this.reference.get(currentPathLength);
             logger.info("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
 
             // for each candidate: append it to the currently known paths
-            this.pathsThroughSecondMotif = candidate.stream()
+            this.pathsThroughSecondMotif = this.candidate.stream()
                     // create each possible combination of the current paths and the available candidate residues
                     //TODO: this could improve, if not already consumed residues are appended
                     .flatMap(candidateResidue -> this.pathsThroughSecondMotif.stream()
@@ -80,9 +84,9 @@ public class ValidAlignmentGenerator {
                     .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
-                        Residue recentlyAddedResidue = (Residue) path.get(path.size() - 1);
-                        ResidueFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
-                        if(recentlyAddedResidueFamily == currentReferenceResidue.getFamily()) {
+                        LeafSubstructure<?,?> recentlyAddedResidue = path.get(path.size() - 1);
+                        StructuralFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
+                        if (recentlyAddedResidueFamily == currentReferenceResidue.getFamily()) {
                             return true;
                         }
                         return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueFamily);
@@ -92,12 +96,12 @@ public class ValidAlignmentGenerator {
 
         return this.pathsThroughSecondMotif.stream()
                 .map(path -> IntStream.range(0, path.size())
-                                      .mapToObj(index -> new Pair<>(reference.get(index), path.get(index)))
-                                      .collect(Collectors.toList()))
+                        .mapToObj(index -> new Pair<>(this.reference.get(index), path.get(index)))
+                        .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
-    private List<LeafSubstructure<?,?>> cloneList(List<LeafSubstructure<?,?>> motif) {
+    private List<LeafSubstructure<?, ?>> cloneList(List<LeafSubstructure<?, ?>> motif) {
         return motif.stream()
                 .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());

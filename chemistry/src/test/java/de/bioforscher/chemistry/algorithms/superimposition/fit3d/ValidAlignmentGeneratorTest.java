@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
@@ -61,7 +60,7 @@ public class ValidAlignmentGeneratorTest {
 
     @Test
     public void shouldGenerateValidAlignments() {
-        List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = new ValidAlignmentGenerator().getValidAlignments(motif1, motif2);
+        List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = new ValidAlignmentGenerator(this.motif1, this.motif2).getValidAlignments();
 
         for (int i = 0; i < validAlignments.size(); i++) {
             System.out.println("printing alignment " + (i + 1));

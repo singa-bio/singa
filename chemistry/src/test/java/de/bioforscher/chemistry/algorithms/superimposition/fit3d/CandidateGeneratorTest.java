@@ -6,27 +6,24 @@ import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.mathematics.combinatorics.StreamCombinations;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by fkaiser on 02.12.16.
+ * Created by fkaiser on 06.12.16.
  */
-public class Fit3DAlignmentTest {
-
-    private List<LeafSubstructure<?, ?>> queryMotif;
+public class CandidateGeneratorTest {
     private Structure target;
+    private List<LeafSubstructure<?, ?>> queryMotif;
 
     @Before
-    public void setUp() throws IOException {
-        this.target = PDBParserService.parseProteinById("3K9X");
+    public void setUp() throws Exception {
+        this.target = PDBParserService.parseProteinById("4CHA");
         this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("motif_HDS_01.pdb")).getSubstructures().stream()
+                .getResourceAsStream("motif_HDS_02.pdb")).getSubstructures().stream()
                 .map(BranchSubstructure::getAtomContainingSubstructures)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
@@ -34,13 +31,9 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldRunFit3DAlignment() {
+    public void shouldGenerateValidCandidates() {
         Fit3DAlignment fit3d = new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(1));
-        System.out.println(fit3d.getMatches().size());
-    }
-
-    @Test
-    public void shouldGenerateCombinations() {
-        StreamCombinations.combinations(3, this.queryMotif).forEach(System.out::println);
+        List<List<LeafSubstructure<?, ?>>> environments = fit3d.getEnvironments();
+        CandidateGenerator candidateGenerator = new CandidateGenerator(this.queryMotif, environments.get(4));
     }
 }

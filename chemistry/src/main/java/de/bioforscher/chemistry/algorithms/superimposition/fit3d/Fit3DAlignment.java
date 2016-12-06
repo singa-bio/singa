@@ -1,20 +1,20 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.StructureUtilities;
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.combinatorics.StreamCombinations;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,22 +25,40 @@ import java.util.stream.Collectors;
 public class Fit3DAlignment {
 
     public static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
+    public static final double DEFAULT_RMSD_CUTOFF = 2.5;
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
     private final List<LeafSubstructure<?, ?>> queryMotif;
     private final BranchSubstructure<?> target;
+    private final double distanceTolerance;
     private double queryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?, ?>> distanceMatrix;
+    private List<List<LeafSubstructure<?, ?>>> environments;
+    private HashMap<List<LeafSubstructure<?, ?>>, List<List<LeafSubstructure<?, ?>>>> candidates;
+    private double rmsdCutoff;
+    private Map<Double, SubstructureSuperimposition> matches;
 
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target) {
+        this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE);
+    }
+
+    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+                          double distanceTolerance) {
         this.queryMotif = queryMotif;
         this.target = target;
+        this.rmsdCutoff = rmsdCutoff;
+        this.distanceTolerance = distanceTolerance;
 
         if (queryMotif.size() > target.getAtomContainingSubstructures().size()) {
             throw new Fit3DException("search target must contain at least as many atom-containing substructures " +
                     "as the query");
         }
+
+        // initialize
+        this.environments = new ArrayList<>();
+        this.matches = new TreeMap<>();
+        this.candidates = new HashMap<>();
 
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
         reduceTargetStructure();
@@ -54,6 +72,63 @@ public class Fit3DAlignment {
         logger.debug("the target structure distance matrix is\n{}", this.distanceMatrix.getStringRepresentation());
 
         composeEnvironments();
+        generateCandidates();
+        computeMatches();
+    }
+
+    /**
+     * Returns the computed matches of this Fit3D search.
+     *
+     * @return the matches of this search
+     */
+    public Map<Double, SubstructureSuperimposition> getMatches() {
+        return this.matches;
+    }
+
+    /**
+     * Computes all matches of the generated candidates.
+     */
+    private void computeMatches() {
+        this.candidates.values().stream()
+                .flatMap(Collection::stream)
+                .forEach(this::computeAlignments);
+    }
+
+    /**
+     * Computes all valid alignments of a given {@link LeafSubstructure}.
+     *
+     * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
+     */
+    private void computeAlignments(List<LeafSubstructure<?, ?>> leafSubstructures) {
+        ValidAlignmentGenerator validAlignmentGenerator =
+                new ValidAlignmentGenerator(this.queryMotif, leafSubstructures);
+        List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
+        for (List<Pair<LeafSubstructure<?, ?>>> validAlignment : validAlignments) {
+            // create candidate for alignment
+            List<LeafSubstructure<?, ?>> alignmentCandidate = validAlignment.stream()
+                    .map(Pair::getSecond).collect(Collectors.toList());
+            SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                    .calculateSubstructureSuperimposition(this.queryMotif, alignmentCandidate);
+            if (superimposition.getRmsd() <= this.rmsdCutoff) {
+                this.matches.put(superimposition.getRmsd(), superimposition);
+            }
+        }
+    }
+
+    /**
+     * Generates all candidates based on the pre-computed environments.
+     */
+    private void generateCandidates() {
+        for (List<LeafSubstructure<?, ?>> environment : this.environments) {
+            List<List<LeafSubstructure<?, ?>>> candidates = StreamCombinations
+                    .combinations(this.queryMotif.size(), environment)
+                    .collect(Collectors.toList());
+            this.candidates.put(environment, candidates);
+        }
+    }
+
+    public List<List<LeafSubstructure<?, ?>>> getEnvironments() {
+        return this.environments;
     }
 
     /**
@@ -69,7 +144,6 @@ public class Fit3DAlignment {
                 .orElseThrow(() -> new Fit3DException("could not determine extent of the query motif"));
         this.queryExtent = queryDistanceMatrix.getElement(positionOfMaximalElement.getFirst(),
                 positionOfMaximalElement.getSecond());
-
         logger.debug("the query motif extent is {}", this.queryExtent);
     }
 
@@ -104,28 +178,27 @@ public class Fit3DAlignment {
         return types;
     }
 
+    /**
+     * Creates all micro-environments that can be built by iterating over the backbone.
+     */
     private void composeEnvironments() {
-        List<List<LeafSubstructure<?, ?>>> environments = new ArrayList<>();
         // iterate over reduced target structure
-        Iterator<LeafSubstructure<?, ?>> structureIterator = this.target.getAtomContainingSubstructures().iterator();
-        while (structureIterator.hasNext()) {
+        for (LeafSubstructure<?, ?> currentSubstructure : this.target.getAtomContainingSubstructures()) {
             // collect environments within the bounds if the motif extent
-            LeafSubstructure<?, ?> currentSubstructure = structureIterator.next();
             RegularVector distanceToOthers = this.distanceMatrix.getColumnByLabel(currentSubstructure);
             List<LeafSubstructure<?, ?>> environment = new ArrayList<>();
             for (int i = 0; i < distanceToOthers.getElements().length; i++) {
                 double currentDistance = distanceToOthers.getElement(i);
-                if (currentDistance <= this.queryExtent + DEFAULT_DISTANCE_TOLERANCE) {
+                if (currentDistance <= this.queryExtent + this.distanceTolerance) {
                     environment.add(this.distanceMatrix.getColumnLabel(i));
                 }
             }
-            System.out.println(currentSubstructure);
-            System.out.println(environment);
-            System.out.println();
-            // TODO continue here
-//            if (canContainSolution(environment)) {
-//                environments.add(environment);
-//            }
+            if (environment.size() >= this.queryMotif.size()) {
+                logger.debug("possible environment {} within {} around {} added", environment, this.queryExtent + DEFAULT_DISTANCE_TOLERANCE, currentSubstructure);
+                this.environments.add(environment);
+                // TODO apply fancy candidate generator here
+//                CandidateGenerator candidateGenerator = new CandidateGenerator(this.queryMotif,environment);
+            }
         }
     }
 }
