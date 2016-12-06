@@ -62,7 +62,7 @@ public class ValidAlignmentGenerator {
             final int expectedLength = currentPathLength + 1;
             //TODO: could break
             Residue currentReferenceResidue = (Residue) this.reference.get(currentPathLength);
-            logger.info("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
+            logger.trace("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
 
             // for each candidate: append it to the currently known paths
             this.pathsThroughSecondMotif = this.candidate.stream()

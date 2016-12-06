@@ -43,6 +43,10 @@ public class Fit3DAlignment {
         this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE);
     }
 
+    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff) {
+        this(queryMotif, target, rmsdCutoff, DEFAULT_DISTANCE_TOLERANCE);
+    }
+
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance) {
         this.queryMotif = queryMotif;
@@ -120,10 +124,12 @@ public class Fit3DAlignment {
      */
     private void generateCandidates() {
         for (List<LeafSubstructure<?, ?>> environment : this.environments) {
-            List<List<LeafSubstructure<?, ?>>> candidates = StreamCombinations
-                    .combinations(this.queryMotif.size(), environment)
-                    .collect(Collectors.toList());
-            this.candidates.put(environment, candidates);
+//            List<List<LeafSubstructure<?, ?>>> candidates = StreamCombinations
+//                    .combinations(this.queryMotif.size(), environment)
+//                    .collect(Collectors.toList());
+            // TODO continue here, evaluate, etc...
+            List<List<LeafSubstructure<?,?>>> currentCandidates = new ValidCandidateGenerator(this.queryMotif,environment).getValidCandidates();
+            this.candidates.put(environment, currentCandidates);
         }
     }
 

@@ -35,6 +35,9 @@ public class CandidateGeneratorTest {
     public void shouldGenerateValidCandidates() {
         Fit3DAlignment fit3d = new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(1));
         List<List<LeafSubstructure<?, ?>>> environments = fit3d.getEnvironments();
-        CandidateGenerator candidateGenerator = new CandidateGenerator(this.queryMotif, environments.get(4));
+//        CandidateGenerator candidateGenerator = new CandidateGenerator(this.queryMotif, environments.get(4));
+        ValidCandidateGenerator candidateGenerator = new ValidCandidateGenerator(this.queryMotif, environments.get(4));
+        System.out.println(environments.get(4).size());
+        System.out.println(candidateGenerator.getValidCandidates());
     }
 }

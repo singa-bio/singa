@@ -11,11 +11,15 @@ public class BinaryTreeNode<T> {
     }
 
     public BinaryTreeNode(T data) {
-        this(null, null);
-        this.data = data;
+        this(data, null, null);
     }
 
     public BinaryTreeNode(BinaryTreeNode<T> leftNode, BinaryTreeNode<T> rightNode) {
+        this(null, leftNode, rightNode);
+    }
+
+    public BinaryTreeNode(T data, BinaryTreeNode<T> leftNode, BinaryTreeNode<T> rightNode) {
+        this.data = data;
         this.left = leftNode;
         this.right = rightNode;
     }

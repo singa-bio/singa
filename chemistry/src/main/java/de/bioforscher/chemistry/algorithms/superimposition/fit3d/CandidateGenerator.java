@@ -44,7 +44,7 @@ public class CandidateGenerator {
             List<LeafSubstructure<?, ?>> referenceList = this.candidateLists.get(i);
             int pointer = (i + 1) % this.candidateLists.size();
             System.out.println("combining list " + i + " with " + pointer);
-            for (int j = pointer; j < this.candidateLists.size(); j++) {
+            for (int j = pointer + 1 ; j < this.candidateLists.size(); j++) {
                 System.out.println("\tcombining list " + pointer + " with " + j);
             }
         }

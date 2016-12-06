@@ -30,6 +30,13 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
+    public String toString() {
+        return "SubstructureSuperimposition{" +
+                "rmsd=" + this.rmsd +
+                '}';
+    }
+
+    @Override
     public double getRmsd() {
         return this.rmsd;
     }
