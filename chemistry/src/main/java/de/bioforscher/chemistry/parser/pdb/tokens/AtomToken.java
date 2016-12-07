@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  */
 public enum AtomToken implements PDBToken {
 
+    RECORD_TYPE(Range.of(0,6)),
     ATOM_SERIAL(Range.of(7, 11)),
     ATOM_NAME(Range.of(13, 16)),
     ALTERNATE_LOCATION_INDICATOR(Range.of(17)),
@@ -34,7 +35,7 @@ public enum AtomToken implements PDBToken {
      * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
      * parsable with this token.
      */
-    public static final Pattern RECORD_PATTERN = Pattern.compile("^ATOM .*"); // TODO add HETATOM
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
 
     private final Range<Integer> columns;
 

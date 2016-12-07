@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb;
 
+import de.bioforscher.chemistry.parser.pdb.tokens.StructureCollector;
 import de.bioforscher.chemistry.physical.model.Structure;
 
 import java.io.*;
@@ -31,7 +32,8 @@ public class PDBParserService {
     public static Structure parsePDBFile(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                return StructureAssembler.assembleStructure(bufferedReader.lines().collect(Collectors.toList()));
+                // return StructureAssembler.collectStructure(bufferedReader.lines().collect(Collectors.toList()));
+                return StructureCollector.collectStructure(bufferedReader.lines().collect(Collectors.toList()));
             }
         }
     }

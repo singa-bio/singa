@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
@@ -9,31 +10,32 @@ import java.util.EnumMap;
  * A nucleotide is a grouping element that should only contain atoms. Each and every residue has a associate NucleotideType,
  * that determines the nucleotide. Based on this NucleotideType a Nucleotide can be created
  * from a set of atoms that belong to this residue using the
- * {@link NucleotideFactory#createNucleotideFromAtoms(int, NucleotideType, EnumMap) NucleotideFactory}. This establishes the bonds
+ * {@link NucleotideFactory#createNucleotideFromAtoms(int, NucleotideFamily, EnumMap) NucleotideFactory}. This establishes the bonds
  * within the Nucleotides, where possible.
  *
- * TODO: this is a stub and not yet implemented
  *
  * @author fkaiser
  */
-public class Nucleotide extends BranchSubstructure implements Nameable {
-    /**
-     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
-     *
-     * @param identifier The identifier of this BranchSubstructure.
-     */
+public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
+
+    private NucleotideFamily family;
+
     public Nucleotide(int identifier) {
         super(identifier);
     }
 
-    @Override
-    public String getName() {
-        return null;
+    public Nucleotide(Nucleotide nucleotide) {
+        super(nucleotide);
+        this.family = nucleotide.family;
     }
 
     @Override
-    public BranchSubstructure getCopy() {
-        return null;
+    public Nucleotide getCopy() {
+        return new Nucleotide(this);
     }
 
+    @Override
+    public NucleotideFamily getFamily() {
+        return this.family;
+    }
 }

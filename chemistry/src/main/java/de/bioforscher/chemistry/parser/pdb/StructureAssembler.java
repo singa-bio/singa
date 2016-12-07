@@ -124,6 +124,9 @@ public class StructureAssembler {
         // TODO this is not nice
         this.currentChain = new Chain((int) this.currentChainIdentifier.charAt(0));
         this.currentChain.setChainIdentifier(this.currentChainIdentifier);
+    }
+
+    private void chooseLeafType() {
 
     }
 

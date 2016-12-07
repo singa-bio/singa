@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Nameable;
 
 /**
@@ -8,27 +9,26 @@ import de.bioforscher.core.utility.Nameable;
  * {@link de.bioforscher.chemistry.physical.atoms.UncertainAtom}s because there are endless possibilities for
  * ligand atom nomenclature.
  *
- * TODO: this is a stub and not yet implemented
- *
  * @author fk
  */
-public class Ligand extends BranchSubstructure implements Nameable {
-    /**
-     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
-     *
-     * @param identifier The identifier of this BranchSubstructure.
-     */
+public class Ligand extends LeafSubstructure<Ligand, StructuralFamily> {
+
+
     public Ligand(int identifier) {
         super(identifier);
     }
 
+    public Ligand(LeafSubstructure<?, ?> leafSubstructure) {
+        super(leafSubstructure);
+    }
+
     @Override
-    public BranchSubstructure getCopy() {
+    public Ligand getCopy() {
         return null;
     }
 
     @Override
-    public String getName() {
+    public StructuralFamily getFamily() {
         return null;
     }
 }
