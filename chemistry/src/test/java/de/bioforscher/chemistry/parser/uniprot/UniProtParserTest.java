@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
-import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.chemistry.parser.*;
@@ -16,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**

@@ -1,8 +1,6 @@
 package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.core.utility.Nameable;
 
 import java.util.EnumMap;
 

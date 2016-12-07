@@ -1,12 +1,8 @@
 package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-
-import java.io.IOException;
 
 /**
  * Created by Christoph on 05/12/2016.

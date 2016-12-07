@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.core.utility.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +10,17 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
- * Created by S on 28.11.2016.
+ * @author sb
  */
 public class ValidAlignmentGeneratorTest {
 
     private List<LeafSubstructure<?, ?>> motif1;
     private List<LeafSubstructure<?, ?>> motif2;
+    private List<List<Pair<Residue>>> correctAlignments;
 
     @Before
     public void setUp() {
@@ -56,18 +60,36 @@ public class ValidAlignmentGeneratorTest {
         this.motif2.add(motif2Asparagine1);
         this.motif2.add(motif2AsparticAcid1);
         this.motif2.add(motif2Histidine2);
+
+        // store correct alignments
+        List<Pair<Residue>> correctAlignment1 = new ArrayList<>();
+        correctAlignment1.add(new Pair<>(motif1Lysine1, motif2Histidine2));
+        correctAlignment1.add(new Pair<>(motif1AsparticAcid1, motif2AsparticAcid1));
+        correctAlignment1.add(new Pair<>(motif1GlutamicAcid1, motif2GlutamicAcid1));
+        correctAlignment1.add(new Pair<>(motif1Histidine1, motif2Histidine1));
+        
+        List<Pair<Residue>> correctAlignment2 = new ArrayList<>();
+        correctAlignment2.add(new Pair<>(motif1Lysine1, motif2Histidine1));
+        correctAlignment2.add(new Pair<>(motif1AsparticAcid1, motif2AsparticAcid1));
+        correctAlignment2.add(new Pair<>(motif1GlutamicAcid1, motif2GlutamicAcid1));
+        correctAlignment2.add(new Pair<>(motif1Histidine1, motif2Histidine2));
+        this.correctAlignments = new ArrayList<>();
+        this.correctAlignments.add(correctAlignment1);
+        this.correctAlignments.add(correctAlignment2);
     }
 
     @Test
     public void shouldGenerateValidAlignments() {
-        List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = new ValidAlignmentGenerator(this.motif1, this.motif2).getValidAlignments();
-
+        List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = new ValidAlignmentGenerator(this.motif1,
+                this.motif2).getValidAlignments();
+        assertEquals(validAlignments.size(),this.correctAlignments.size());
         for (int i = 0; i < validAlignments.size(); i++) {
-            System.out.println("printing alignment " + (i + 1));
-            for(Pair<LeafSubstructure<?, ?>> validAlignment : validAlignments.get(i)) {
-                System.out.println(validAlignment.getFirst() + " . " + validAlignment.getSecond());
+            List<Pair<LeafSubstructure<?,?>>> validAlignment = validAlignments.get(i);
+            for (int j = 0; j < validAlignment.size(); j++) {
+                Pair<LeafSubstructure<?, ?>> alignmentPair = validAlignment.get(j);
+                assertTrue(alignmentPair.getFirst().equals(validAlignments.get(i).get(j).getFirst()));
+                assertTrue(alignmentPair.getSecond().equals(validAlignments.get(i).get(j).getSecond()));
             }
-            System.out.println();
         }
     }
 }

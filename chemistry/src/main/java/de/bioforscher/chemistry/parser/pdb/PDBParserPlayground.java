@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb;
 
 import de.bioforscher.chemistry.physical.viewer.StructureViewer;
-import javafx.application.Application;
 
 import java.io.IOException;
 

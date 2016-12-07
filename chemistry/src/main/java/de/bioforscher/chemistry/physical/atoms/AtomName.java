@@ -4,7 +4,6 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Optional;
 
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
