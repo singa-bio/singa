@@ -44,10 +44,7 @@ public class StructureCollector {
         // collector.leafStructure.forEach( (key,value) -> System.out.println(key+" "+value));
 
         PDBParsingTreeNode root = new PDBParsingTreeNode(collector.currentPDB, PDBParsingTreeNode.StructureLevel.STRUCTURE);
-        collector.atoms.forEach((key, value) -> {
-            root.appendAtom(key, value);
-            System.out.println("Next Atom");
-        });
+        collector.atoms.forEach(root::appendAtom);
 
         return null;
     }
