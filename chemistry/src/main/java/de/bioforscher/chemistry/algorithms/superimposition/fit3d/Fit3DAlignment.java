@@ -159,29 +159,16 @@ public class Fit3DAlignment {
      * its defined exchanges.
      */
     private void reduceTargetStructure() {
-        Set<StructuralFamily> containingTypes = getContainingTypes();
+        // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
+        Set<StructuralFamily> containingTypes = this.queryMotif.stream()
+                .map(LeafSubstructure::getContainingTypes)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
         List<Integer> toBeRemoved = this.target.getAtomContainingSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
                 .map(LeafSubstructure::getIdentifier)
                 .collect(Collectors.toList());
         toBeRemoved.forEach(this.target::removeSubstructure);
-    }
-
-    /**
-     * Returns all containing types of the query motif.
-     *
-     * @return a set that contains all {@link StructuralFamily} elements of the query motif
-     */
-    private Set<StructuralFamily> getContainingTypes() {
-        // add types
-        Set<StructuralFamily> types = this.queryMotif.stream()
-                .map(LeafSubstructure::getFamily)
-                .collect(Collectors.toSet());
-        // add exchangeable types
-        for (LeafSubstructure<?, ?> substructure : this.queryMotif) {
-            types.addAll(substructure.getExchangeableTypes());
-        }
-        return types;
     }
 
     /**

@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
  *  T =   H2| D | E | N | H1
  * </pre>
  * <p>
- * Created by S on 28.11.2016.
+ * @author sb
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);

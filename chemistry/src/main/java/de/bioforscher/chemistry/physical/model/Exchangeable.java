@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.physical.model;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +32,19 @@ public interface Exchangeable<R extends StructuralFamily> {
      */
     default Set<R> getExchangeableTypes() {
         return Stream.of(getFamily()).collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns all {@link StructuralFamily} types that are defined, this is the concrete type of the
+     * {@link Exchangeable} itself <b>plus</b> all echangable types.
+     *
+     * @return a set of containing types (own type + exchangeable types)
+     */
+    default Set<R> getContainingTypes(){
+        Set<R> types = new HashSet<>();
+        types.add(getFamily());
+        types.addAll(getExchangeableTypes());
+        return types;
     }
 
     /**

@@ -30,17 +30,22 @@ public class ConsensusAlignment {
     private static final Logger logger = LoggerFactory.getLogger(ConsensusAlignment.class);
     private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
 
-    private final List<List<LeafSubstructure<?, ?>>> inputStructures;
-    private final List<BinaryTree<List<LeafSubstructure<?, ?>>>> consensusTrees;
+    private final List<ConsensusContainer> inputStructures;
+    private final List<BinaryTree<ConsensusContainer>> consensusTrees;
     private final List<Double> alignmentTrace;
     private final List<Integer> alignmentCounts;
     private final Predicate<Atom> atomFilter;
+    // TODO this has to be a parameter
+    private final boolean alignWithinClusters = true;
     private double consensusScore;
     private int iterationCounter;
-    private TreeMap<SubstructureSuperimposition, Pair<List<LeafSubstructure<?, ?>>>> alignments;
-    private LabeledSymmetricMatrix<List<LeafSubstructure<?, ?>>> distanceMatrix;
-    private List<BinaryTreeNode<List<LeafSubstructure<?, ?>>>> leaves;
-    private List<LeafSubstructure<?, ?>> currentConsensus;
+    private TreeMap<SubstructureSuperimposition, Pair<ConsensusContainer>> alignments;
+    private LabeledSymmetricMatrix<ConsensusContainer> distanceMatrix;
+    private List<BinaryTreeNode<ConsensusContainer>> leaves;
+    private ConsensusContainer currentConsensus;
+    // TODO this has to be a parameter
+    private double clusterCutoffValue = 0.8;
+    private List<BinaryTree<ConsensusContainer>> clusters;
 
     public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures) {
         this(inputStructures, DEFAULT_ATOM_FILTER);
@@ -48,7 +53,9 @@ public class ConsensusAlignment {
 
     public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures, Predicate<Atom> atomFilter) {
 //        this.inputStructures = inputStructures.stream().map(this::toContainer);
-        this.inputStructures = inputStructures;
+        this.inputStructures = inputStructures.stream()
+                .map(this::toContainer)
+                .collect(Collectors.toList());
         this.atomFilter = atomFilter;
         // check if all substructures are of the same size
         if (inputStructures.stream()
@@ -73,9 +80,81 @@ public class ConsensusAlignment {
 
         // create initial tree leaves
         createTreeLeaves();
-
         // start calculating the consensus alignment
         calculateConsensusAlignment();
+        // split top level tree
+        splitTopLevelTree();
+        // align within clusters if specified
+        if (this.alignWithinClusters) {
+            alignWithinClusters();
+        }
+    }
+
+    public List<BinaryTree<ConsensusContainer>> getClusters() {
+        return this.clusters;
+    }
+
+    /**
+     * aligns all leaf nodes to the root of the tree (observations against consensus)
+     */
+    private void alignWithinClusters() {
+        for (BinaryTree<ConsensusContainer> cluster : this.clusters) {
+            // skip one-trees
+            if (cluster.size() > 1) {
+                // reference is always the root consensus
+                ConsensusContainer reference = cluster.getRoot().getData();
+                cluster.getLeafNodes().stream().map(BinaryTreeNode::getData).forEach(consensusContainer -> {
+                    SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                            .calculateSubstructureSuperimposition(reference.getLeafSubstructures(),
+                                    consensusContainer.getLeafSubstructures());
+                    consensusContainer.setLeafSubstructures(superimposition.getMappedCandidate());
+                });
+            }
+        }
+    }
+
+    /**
+     * Splits the top-level tree according to the cutoff value.
+     */
+    private void splitTopLevelTree() {
+        // create list where all trees are stored
+        this.clusters = new ArrayList<>();
+        this.clusters.add(getTopConsensusTree());
+        // start iterating over the list
+        ListIterator<BinaryTree<ConsensusContainer>> clustersIterator = this.clusters.listIterator();
+        while (clustersIterator.hasNext()) {
+            // get current node and child nodes
+            BinaryTreeNode<ConsensusContainer> currentNode = clustersIterator.next().getRoot();
+            BinaryTreeNode<ConsensusContainer> leftNode = currentNode.getLeft();
+            BinaryTreeNode<ConsensusContainer> rightNode = currentNode.getRight();
+
+            // try to determine distances
+            double leftDistance;
+            if (leftNode != null) {
+                leftDistance = leftNode.getData().getConsensusDistance();
+            } else {
+                leftDistance = 0.0;
+            }
+            double rightDistance;
+            if (rightNode != null) {
+                rightDistance = rightNode.getData().getConsensusDistance();
+            } else {
+                rightDistance = 0.0;
+            }
+
+            // split tree if distance exceeds cutoff value
+            if (leftDistance > this.clusterCutoffValue || rightDistance > this.clusterCutoffValue) {
+
+                // remove parent tree
+                clustersIterator.remove();
+
+                // after removing parent tree add new trees and shift pointer
+                clustersIterator.add(new BinaryTree<>(currentNode.getLeft()));
+                clustersIterator.previous();
+                clustersIterator.add(new BinaryTree<>(currentNode.getRight()));
+                clustersIterator.previous();
+            }
+        }
     }
 
     /**
@@ -93,7 +172,7 @@ public class ConsensusAlignment {
      *
      * @return the top-level tree
      */
-    public BinaryTree<List<LeafSubstructure<?, ?>>> getTopConsensusTree() {
+    public BinaryTree<ConsensusContainer> getTopConsensusTree() {
         return this.consensusTrees.get(this.consensusTrees.size() - 1);
     }
 
@@ -102,7 +181,7 @@ public class ConsensusAlignment {
      *
      * @return all trees that were constructed
      */
-    public List<BinaryTree<List<LeafSubstructure<?, ?>>>> getConsensusTrees() {
+    public List<BinaryTree<ConsensusContainer>> getConsensusTrees() {
         return this.consensusTrees;
     }
 
@@ -123,7 +202,7 @@ public class ConsensusAlignment {
 
         this.iterationCounter++;
 
-        Pair<List<LeafSubstructure<?, ?>>> closestPair = this.alignments.firstEntry().getValue();
+        Pair<ConsensusContainer> closestPair = this.alignments.firstEntry().getValue();
         SubstructureSuperimposition closestPairSuperimposition = this.alignments.firstKey();
         this.alignmentTrace.add(closestPairSuperimposition.getRmsd());
         this.alignmentCounts.add(this.inputStructures.size());
@@ -143,14 +222,14 @@ public class ConsensusAlignment {
      * @param substructurePair the pairto be removed
      */
     private void updateAlignments(Map.Entry<SubstructureSuperimposition,
-            Pair<List<LeafSubstructure<?, ?>>>> substructurePair) {
+            Pair<ConsensusContainer>> substructurePair) {
 
-        Iterator<Map.Entry<SubstructureSuperimposition, Pair<List<LeafSubstructure<?, ?>>>>> alignmentsIterator =
+        Iterator<Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>>> alignmentsIterator =
                 this.alignments.entrySet().iterator();
 
         while (alignmentsIterator.hasNext()) {
 
-            Map.Entry<SubstructureSuperimposition, Pair<List<LeafSubstructure<?, ?>>>> currentAlignment =
+            Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> currentAlignment =
                     alignmentsIterator.next();
 
             boolean referenceObservationMatches = currentAlignment.getValue().getFirst()
@@ -171,14 +250,15 @@ public class ConsensusAlignment {
         this.inputStructures.removeIf(inputStructure -> inputStructure.equals(substructurePair.getValue().getSecond()));
 
         // add new alignments
-        for (List<LeafSubstructure<?, ?>> inputStructure : this.inputStructures) {
+        for (ConsensusContainer inputStructure : this.inputStructures) {
 
             // calculate superimposition
             SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                    .calculateSubstructureSuperimposition(this.currentConsensus, inputStructure);
+                    .calculateSubstructureSuperimposition(this.currentConsensus.getLeafSubstructures(),
+                            inputStructure.getLeafSubstructures());
 
             // store alignment
-            Pair<List<LeafSubstructure<?, ?>>> alignmentPair = new Pair<>(this.currentConsensus, inputStructure);
+            Pair<ConsensusContainer> alignmentPair = new Pair<>(this.currentConsensus, inputStructure);
             this.alignments.put(superimposition, alignmentPair);
             this.alignments.put(superimposition, alignmentPair);
         }
@@ -194,10 +274,10 @@ public class ConsensusAlignment {
      * @param substructurePair the pair to be merged
      */
     private void createConsensus(Map.Entry<SubstructureSuperimposition,
-            Pair<List<LeafSubstructure<?, ?>>>> substructurePair) {
+            Pair<ConsensusContainer>> substructurePair) {
 
-        List<LeafSubstructure<?, ?>> reference = substructurePair.getValue().getFirst();
-        List<LeafSubstructure<?, ?>> candidate = substructurePair.getValue().getSecond();
+        List<LeafSubstructure<?, ?>> reference = substructurePair.getValue().getFirst().getLeafSubstructures();
+        List<LeafSubstructure<?, ?>> candidate = substructurePair.getValue().getSecond().getLeafSubstructures();
 
 //        Chain chainReference = new Chain(0);
 //        reference.forEach(chainReference::addSubstructure);
@@ -237,7 +317,7 @@ public class ConsensusAlignment {
                 .collect(Collectors.toList());
 
         // create consensus substructures
-        this.currentConsensus = new ArrayList<>();
+        this.currentConsensus = new ConsensusContainer();
         for (int i = 0; i < referenceAtoms.size(); i++) {
             List<Atom> currentReferenceAtoms = referenceAtoms.get(i);
             List<Atom> currentCandidateAtoms = candidateAtoms.get(i);
@@ -256,14 +336,14 @@ public class ConsensusAlignment {
             // TODO what is the identifier and the type of the new atom container?
             AtomContainer<ResidueFamily> atomContainer = new AtomContainer<>(i, ResidueFamily.ALANINE);
             averagedAtoms.forEach(atomContainer::addNode);
-            this.currentConsensus.add(atomContainer);
+            this.currentConsensus.addLeaveStructure(atomContainer);
         }
 
 
         // create tree node
-        BinaryTreeNode<List<LeafSubstructure<?, ?>>> leftNode;
-        BinaryTreeNode<List<LeafSubstructure<?, ?>>> rightNode;
-        BinaryTreeNode<List<LeafSubstructure<?, ?>>> consensusNode;
+        BinaryTreeNode<ConsensusContainer> leftNode;
+        BinaryTreeNode<ConsensusContainer> rightNode;
+        BinaryTreeNode<ConsensusContainer> consensusNode;
 
         // both nodes have to be leaves
         if (this.iterationCounter == 1) {
@@ -287,39 +367,40 @@ public class ConsensusAlignment {
         }
 
         // create and set consensus tree
-        BinaryTree<List<LeafSubstructure<?, ?>>> consensusTree = new BinaryTree<>(consensusNode);
-        // TODO do we need to store the consensus tree?
-        //        consensusObservation.setConsensusTree(consensusTree);
+        BinaryTree<ConsensusContainer> consensusTree = new BinaryTree<>(consensusNode);
+        this.currentConsensus.setConsensusTree(consensusTree);
         this.consensusTrees.add(consensusTree);
 
-        // FIXME here we definitely need to store something
         // calculate consensus distances (half the RMSD of the consensus alignment)
-//        itemAlignmentPair.getReferenceObservation().setConsensusDistance(itemAlignmentPair.getRMSD() / 2);
-//        itemAlignmentPair.getCandidateObservation().setConsensusDistance(itemAlignmentPair.getRMSD() / 2);
+        // FIXME something really strange happens here when modifying the values of the map they are not reflected to the tree
+        consensusTree.getRoot().getLeft().getData().addToConsensusDistance(substructurePair.getKey().getRmsd() / 2);
+        consensusTree.getRoot().getRight().getData().addToConsensusDistance(substructurePair.getKey().getRmsd() / 2);
+        //        substructurePair.getValue().getFirst().addToConsensusDistance(substructurePair.getKey().getRmsd() / 2);
+        //        substructurePair.getValue().getSecond().addToConsensusDistance(substructurePair.getKey().getRmsd() / 2);
     }
 
     /**
-     * Returns the leave in the alignment tree that is equal to the given list of {@link LeafSubstructure}s.
+     * Returns the leave in the alignment tree that is equal to a given {@link ConsensusContainer}.
      *
-     * @param leafSubstructures the list of {@link LeafSubstructure} for which a leave in the alignment tree should be found
+     * @param consensusContainer the {@link ConsensusContainer} for which a leave in the alignment tree should be found
      * @return the corresponding leave
      */
-    private BinaryTreeNode<List<LeafSubstructure<?, ?>>> findLeave(List<LeafSubstructure<?, ?>> leafSubstructures) {
+    private BinaryTreeNode<ConsensusContainer> findLeave(ConsensusContainer consensusContainer) {
         return this.leaves.stream()
-                .filter(leave -> leave.getData().equals(leafSubstructures))
+                .filter(leave -> leave.getData().equals(consensusContainer))
                 .findFirst().orElseThrow(() -> new ConsensusException("failed during tree construction"));
     }
 
     /**
      * Searches in all existing alignment trees to find the node containing the given list of {@link LeafSubstructure}s.
      *
-     * @param leafSubstructures the list of {@link LeafSubstructure}s for which a node should be found
+     * @param consensusContainer the list of {@link LeafSubstructure}s for which a node should be found
      * @return the node containing the given list of {@link LeafSubstructure}s or null if it was not found
      */
-    private BinaryTreeNode<List<LeafSubstructure<?, ?>>> findNode(List<LeafSubstructure<?, ?>> leafSubstructures) {
-        BinaryTreeNode<List<LeafSubstructure<?, ?>>> nodeForObservation = null;
-        for (BinaryTree<List<LeafSubstructure<?, ?>>> tree : this.consensusTrees) {
-            nodeForObservation = tree.findNode(leafSubstructures);
+    private BinaryTreeNode<ConsensusContainer> findNode(ConsensusContainer consensusContainer) {
+        BinaryTreeNode<ConsensusContainer> nodeForObservation = null;
+        for (BinaryTree<ConsensusContainer> tree : this.consensusTrees) {
+            nodeForObservation = tree.findNode(consensusContainer);
             if (nodeForObservation != null) {
                 break;
             }
@@ -361,7 +442,7 @@ public class ConsensusAlignment {
     private void calculateInitialAlignments() {
         this.alignments = new TreeMap<>(Comparator.comparing(SubstructureSuperimposition::getRmsd));
         double[][] temporaryDistanceMatrix = new double[this.inputStructures.size()][this.inputStructures.size()];
-        List<List<LeafSubstructure<?, ?>>> distanceMatrixLabels = new ArrayList<>();
+        List<ConsensusContainer> distanceMatrixLabels = new ArrayList<>();
 //        // initially append first label (remove consensus score annotation by splitting at colon)
         distanceMatrixLabels.add(this.inputStructures.get(0));
 
@@ -369,15 +450,16 @@ public class ConsensusAlignment {
 
             for (int j = i + 1; j < this.inputStructures.size(); j++) {
 
-                List<LeafSubstructure<?, ?>> reference = this.inputStructures.get(i);
-                List<LeafSubstructure<?, ?>> candidate = this.inputStructures.get(j);
+                List<LeafSubstructure<?, ?>> reference = this.inputStructures.get(i).getLeafSubstructures();
+                List<LeafSubstructure<?, ?>> candidate = this.inputStructures.get(j).getLeafSubstructures();
 
                 // calculate superimposition
                 SubstructureSuperimposition superimposition = SubStructureSuperimposer
                         .calculateSubstructureSuperimposition(reference, candidate);
 
                 // store alignment
-                Pair<List<LeafSubstructure<?, ?>>> alignmentPair = new Pair<>(reference, candidate);
+                Pair<ConsensusContainer> alignmentPair = new Pair<>(new ConsensusContainer(reference),
+                        new ConsensusContainer(candidate));
                 this.alignments.put(superimposition, alignmentPair);
 
                 // store distance matrix

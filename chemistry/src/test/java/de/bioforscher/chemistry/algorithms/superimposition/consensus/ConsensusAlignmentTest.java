@@ -26,7 +26,7 @@ public class ConsensusAlignmentTest {
 
     @Before
     public void setUp() throws Exception {
-        this.input = Files.list(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/consensus_alignment"))
+        this.input = Files.list(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/consensus_alignment_new"))
                 .map(path -> {
                     try {
                         return PDBParserService.parsePDBFile(path.toFile());

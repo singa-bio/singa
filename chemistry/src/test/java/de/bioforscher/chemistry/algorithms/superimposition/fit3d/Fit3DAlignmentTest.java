@@ -36,7 +36,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldRunFit3DAlignment() {
         Fit3DAlignment fit3d = new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(1));
-        System.out.println(fit3d.getMatches().size());
+        System.out.println(fit3d.getMatches());
     }
 
     @Test
