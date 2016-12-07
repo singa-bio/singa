@@ -28,6 +28,8 @@ import java.util.stream.IntStream;
 public class ConsensusAlignment {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsensusAlignment.class);
+    private static final double DEFAULT_CLUSTER_CUTOFF_VALUE = 0.5;
+    private static final boolean DEFAULT_ALIGN_WITHIN_CLUSTERS = true;
     private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
 
     private final List<ConsensusContainer> inputStructures;
@@ -35,27 +37,32 @@ public class ConsensusAlignment {
     private final List<Double> alignmentTrace;
     private final List<Integer> alignmentCounts;
     private final Predicate<Atom> atomFilter;
-    // TODO this has to be a parameter
-    private final boolean alignWithinClusters = true;
+    private boolean alignWithinClusters;
     private double consensusScore;
     private int iterationCounter;
     private TreeMap<SubstructureSuperimposition, Pair<ConsensusContainer>> alignments;
     private LabeledSymmetricMatrix<ConsensusContainer> distanceMatrix;
     private List<BinaryTreeNode<ConsensusContainer>> leaves;
     private ConsensusContainer currentConsensus;
-    // TODO this has to be a parameter
-    private double clusterCutoffValue = 0.8;
+    private double clusterCutoffValue;
     private List<BinaryTree<ConsensusContainer>> clusters;
 
     public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures) {
-        this(inputStructures, DEFAULT_ATOM_FILTER);
+        this(inputStructures, DEFAULT_CLUSTER_CUTOFF_VALUE, DEFAULT_ALIGN_WITHIN_CLUSTERS, DEFAULT_ATOM_FILTER);
     }
 
-    public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures, Predicate<Atom> atomFilter) {
-//        this.inputStructures = inputStructures.stream().map(this::toContainer);
+    public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures, double clusterCutoffValue) {
+        this(inputStructures, clusterCutoffValue, DEFAULT_ALIGN_WITHIN_CLUSTERS, DEFAULT_ATOM_FILTER);
+    }
+
+    public ConsensusAlignment(List<List<LeafSubstructure<?, ?>>> inputStructures, double clusterCutoffValue,
+                              boolean alignWithinClusters,
+                              Predicate<Atom> atomFilter) {
         this.inputStructures = inputStructures.stream()
                 .map(this::toContainer)
                 .collect(Collectors.toList());
+        this.clusterCutoffValue = clusterCutoffValue;
+        this.alignWithinClusters = alignWithinClusters;
         this.atomFilter = atomFilter;
         // check if all substructures are of the same size
         if (inputStructures.stream()
@@ -98,19 +105,17 @@ public class ConsensusAlignment {
      * aligns all leaf nodes to the root of the tree (observations against consensus)
      */
     private void alignWithinClusters() {
-        for (BinaryTree<ConsensusContainer> cluster : this.clusters) {
-            // skip one-trees
-            if (cluster.size() > 1) {
-                // reference is always the root consensus
-                ConsensusContainer reference = cluster.getRoot().getData();
-                cluster.getLeafNodes().stream().map(BinaryTreeNode::getData).forEach(consensusContainer -> {
-                    SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                            .calculateSubstructureSuperimposition(reference.getLeafSubstructures(),
-                                    consensusContainer.getLeafSubstructures());
-                    consensusContainer.setLeafSubstructures(superimposition.getMappedCandidate());
-                });
-            }
-        }
+        // skip one-trees
+        this.clusters.stream().filter(cluster -> cluster.size() > 1).forEach(cluster -> {
+            // reference is always the root consensus
+            ConsensusContainer reference = cluster.getRoot().getData();
+            cluster.getLeafNodes().stream().map(BinaryTreeNode::getData).forEach(consensusContainer -> {
+                SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                        .calculateSubstructureSuperimposition(reference.getLeafSubstructures(),
+                                consensusContainer.getLeafSubstructures());
+                consensusContainer.setLeafSubstructures(superimposition.getMappedCandidate());
+            });
+        });
     }
 
     /**

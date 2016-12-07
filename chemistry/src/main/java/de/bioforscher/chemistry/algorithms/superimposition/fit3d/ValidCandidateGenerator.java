@@ -1,12 +1,10 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,14 +95,6 @@ public class ValidCandidateGenerator {
                     .collect(Collectors.joining("\n")));
         }
         return this.candidates;
-    }
-
-    private Set<StructuralFamily> getContainingTypes(LeafSubstructure<?, ?> leafSubstructure) {
-        // add types
-        Set<StructuralFamily> types = new HashSet<>();
-        types.add(leafSubstructure.getFamily());
-        types.addAll(leafSubstructure.getExchangeableTypes());
-        return types;
     }
 
     private List<LeafSubstructure<?, ?>> cloneList(List<LeafSubstructure<?, ?>> motif) {

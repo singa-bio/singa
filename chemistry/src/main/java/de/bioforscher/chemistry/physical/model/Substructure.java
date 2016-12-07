@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.mathematics.graphs.model.Graph;
-import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 
 import java.util.List;
 

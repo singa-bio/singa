@@ -7,7 +7,6 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.StructureUtilities;
 import de.bioforscher.core.utility.Pair;
-import de.bioforscher.mathematics.combinatorics.StreamCombinations;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.vectors.RegularVector;
@@ -37,7 +36,7 @@ public class Fit3DAlignment {
     private List<List<LeafSubstructure<?, ?>>> environments;
     private HashMap<List<LeafSubstructure<?, ?>>, List<List<LeafSubstructure<?, ?>>>> candidates;
     private double rmsdCutoff;
-    private Map<Double, SubstructureSuperimposition> matches;
+    private TreeMap<Double, SubstructureSuperimposition> matches;
 
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target) {
         this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE);
@@ -85,7 +84,7 @@ public class Fit3DAlignment {
      *
      * @return the matches of this search
      */
-    public Map<Double, SubstructureSuperimposition> getMatches() {
+    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
         return this.matches;
     }
 

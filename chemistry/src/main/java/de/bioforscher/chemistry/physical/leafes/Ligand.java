@@ -1,8 +1,6 @@
 package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
-import de.bioforscher.core.utility.Nameable;
 
 /**
  * A ligand is a grouping element that should only contain

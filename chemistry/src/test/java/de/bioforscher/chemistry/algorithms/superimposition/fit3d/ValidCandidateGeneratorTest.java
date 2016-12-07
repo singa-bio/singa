@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by S on 06.12.2016.
+ * @author sb
  */
 public class ValidCandidateGeneratorTest {
     private List<LeafSubstructure<?, ?>> motif1;

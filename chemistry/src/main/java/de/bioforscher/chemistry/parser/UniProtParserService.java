@@ -1,10 +1,6 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
-import de.bioforscher.chemistry.descriptive.annotations.Annotation;
-import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
-import de.bioforscher.core.biology.Organism;
-import de.bioforscher.core.biology.Taxon;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.parser.FetchResultContainer;
 import de.bioforscher.core.parser.xml.AbstractXMLParser;
@@ -20,7 +16,6 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Christoph on 10.09.2016.
