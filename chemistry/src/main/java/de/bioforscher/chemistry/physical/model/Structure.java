@@ -1,13 +1,12 @@
 package de.bioforscher.chemistry.physical.model;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -103,7 +102,7 @@ public class Structure {
 
     public static void main(String[] args) throws IOException {
 
-        ResidueFactory.setToOmitHydrogens(true);
+        LeafFactory.setToOmitHydrogens(true);
         Structure structure = PDBParserService.parseProteinById("4HHB");
 
         if (structure.isContainingModels()) {

@@ -3,9 +3,8 @@ package de.bioforscher.chemistry.parser.pdb.tokens;
 import de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.LigandFamily;
-import de.bioforscher.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.chemistry.physical.families.ResidueFactory;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.model.Structure;
@@ -61,7 +60,7 @@ public class StructureCollector {
                 if (residueFamily.isPresent()) {
                     // parse as residue
                     System.out.println(" as Residue");
-                    chain.addSubstructure(ResidueFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), leafNode.getAtomMap()));
+                    chain.addSubstructure(LeafFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), leafNode.getAtomMap()));
                 } else {
                     // parse as container
                     System.out.println(" as AtomContainer");

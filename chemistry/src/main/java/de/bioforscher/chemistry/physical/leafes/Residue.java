@@ -2,7 +2,7 @@ package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.families.ResidueFactory;
+import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 
 import java.util.EnumMap;
@@ -14,7 +14,7 @@ import java.util.Set;
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
  * that determines the amino acid (and the overarching features). Based on this ResidueType a Residue can be created
  * from a set of atoms that belong to this residue using the
- * {@link ResidueFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) ResidueFactory}. This establishes the bonds
+ * {@link LeafFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) LeafFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
  * @author cl
@@ -28,7 +28,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
      * Creates a new Residue with a identifier and ResidueType. Preferably the
-     * {@link ResidueFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) ResidueFactory} should be used to create
+     * {@link LeafFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) LeafFactory} should be used to create
      * Residues.
      *
      * @param identifier The identifier.
