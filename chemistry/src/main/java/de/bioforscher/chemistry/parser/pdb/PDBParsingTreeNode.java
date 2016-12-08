@@ -1,11 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 import static de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode.StructureLevel.*;
 
@@ -67,6 +66,41 @@ public class PDBParsingTreeNode {
 
     public void setChildren(List<PDBParsingTreeNode> children) {
         this.children = children;
+    }
+
+    public List<PDBParsingTreeNode> getNodesFromLevel(StructureLevel level) {
+        List<PDBParsingTreeNode> nodes = new ArrayList<>();
+        if (this.level == level) {
+            nodes.add(this);
+        } else {
+            this.children.forEach(child -> nodes.addAll(child.getNodesFromLevel(level)));
+        }
+        return nodes;
+    }
+
+    public Map<String, String> getLeafNames(Map<String, String> leafStructure) {
+        Map<String, String> names = new HashMap<>();
+        if (this.level != LEAF) {
+            this.children.forEach(child -> names.putAll(child.getLeafNames(leafStructure)));
+        } else {
+            Set<String> uniqueNames = new HashSet<>();
+            for (PDBParsingTreeNode child: this.children) {
+                uniqueNames.add(leafStructure.get(child.getIdentifier()));
+            }
+            names.put(this.identifier, uniqueNames.iterator().next());
+        }
+        return names;
+    }
+
+    public EnumMap<AtomName, Atom> getAtomMap() {
+        if (this.getLevel() == LEAF) {
+            EnumMap<AtomName, Atom> atoms = new EnumMap<>(AtomName.class);
+            for (PDBParsingTreeNode node: this.children) {
+                atoms.put(node.getAtom().getAtomName(), node.getAtom());
+            }
+            return atoms;
+        }
+        return null;
     }
 
     public void appendAtom(UniqueAtomIdentifer identifer, Atom atom) {
