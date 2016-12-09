@@ -63,6 +63,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         this.atoms = new TreeMap<>();
         this.bonds = new HashMap<>();
         this.exchangeableTypes = new HashSet<>();
+        this.identiferMap = new HashMap<>();
     }
 
     public LeafSubstructure(LeafSubstructure<?, ?> leafSubstructure) {

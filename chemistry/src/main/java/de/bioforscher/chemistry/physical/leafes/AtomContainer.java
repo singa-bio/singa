@@ -25,6 +25,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     public AtomContainer(AtomContainer atomContainer) {
         super(atomContainer);
+        this.name = atomContainer.name;
     }
 
     @Override

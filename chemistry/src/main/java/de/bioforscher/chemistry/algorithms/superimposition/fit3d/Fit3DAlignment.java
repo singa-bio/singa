@@ -59,7 +59,8 @@ public class Fit3DAlignment {
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance, Predicate<Atom> atomFilter) {
         this.queryMotif = queryMotif;
-        this.target = target;
+        // TODO this cast is not nice, can we do something better?
+        this.target = (BranchSubstructure<?>) target.getCopy();
         this.rmsdCutoff = rmsdCutoff;
         this.distanceTolerance = distanceTolerance;
         this.atomFilter = atomFilter;

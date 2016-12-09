@@ -6,6 +6,7 @@ import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.algorithms.superimposition.Superimposition;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector;
+import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,14 +16,14 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
-public class SubstructureSuperimposition implements Superimposition<LeafSubstructure<?,?>> {
+public class SubstructureSuperimposition implements Superimposition<LeafSubstructure<?, ?>> {
 
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<LeafSubstructure<?,?>> mappedCandidate;
+    private final List<LeafSubstructure<?, ?>> mappedCandidate;
 
-    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?,?>> mappedCandidate) {
+    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?, ?>> mappedCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
@@ -52,23 +53,23 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
-    public List<LeafSubstructure<?,?>> getMappedCandidate() {
+    public List<LeafSubstructure<?, ?>> getMappedCandidate() {
         return this.mappedCandidate;
     }
 
     @Override
-    public List<LeafSubstructure<?,?>> applyTo(List<LeafSubstructure<?,?>> candidate) {
-        List<LeafSubstructure<?,?>> copyOfCandidate = candidate.stream()
+    public List<LeafSubstructure<?, ?>> applyTo(List<LeafSubstructure<?, ?>> candidate) {
+        List<LeafSubstructure<?, ?>> copyOfCandidate = candidate.stream()
                 .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());
         // apply superimposition to every atom of every substructure of the candidate
         copyOfCandidate.stream()
                 .map(Substructure::getAllAtoms)
                 .flatMap(List::stream)
-                .forEach(atom -> this.rotation
+                .forEach(atom -> atom.setPosition(this.rotation
                         .transpose()
                         .multiply(atom.getPosition())
-                        .add(this.translation));
+                        .add(this.translation).as(Vector3D.class)));
         return copyOfCandidate;
     }
 }

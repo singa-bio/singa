@@ -10,11 +10,14 @@ import de.bioforscher.core.utility.Range;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
-import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.*;
+import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.LEFT;
+import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.RIGHT;
 
 /**
  * Created by Christoph on 23.06.2016.
@@ -42,8 +45,10 @@ public enum AtomToken implements PDBToken {
      * parsable with this token.
      */
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
-    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000");
-    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00");
+    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000",
+            new DecimalFormatSymbols(Locale.US));
+    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00",
+            new DecimalFormatSymbols(Locale.US));
 
     private final Range<Integer> columns;
     private final Justification justification;
@@ -52,17 +57,6 @@ public enum AtomToken implements PDBToken {
         this.columns = columns;
         this.justification = justification;
     }
-
-    @Override
-    public Range<Integer> getColumns() {
-        return this.columns;
-    }
-
-    @Override
-    public Pattern getRecordNamePattern() {
-        return RECORD_PATTERN;
-    }
-
 
     public static Atom assembleAtom(String atomLine) {
         // coordinates
@@ -111,18 +105,6 @@ public enum AtomToken implements PDBToken {
         return lines;
     }
 
-    private String createTokenString(String content) {
-        int totalLength = this.columns.getUpperBound() - this.columns.getLowerBound() - content.length();
-        String filler = "";
-        for (int i = 0; i < totalLength+1; i++) {
-            filler += " ";
-        }
-        if (this.justification == LEFT) {
-            return content + filler;
-        }
-        return filler + content;
-    }
-
     static String formatAtomName(Atom atom) {
         String fullName = null;
         String name = atom.getAtomNameString();
@@ -157,6 +139,28 @@ public enum AtomToken implements PDBToken {
             return String.valueOf(Math.abs(charge)) + "-";
         }
         return "  ";
+    }
+
+    @Override
+    public Range<Integer> getColumns() {
+        return this.columns;
+    }
+
+    @Override
+    public Pattern getRecordNamePattern() {
+        return RECORD_PATTERN;
+    }
+
+    private String createTokenString(String content) {
+        int totalLength = this.columns.getUpperBound() - this.columns.getLowerBound() - content.length();
+        String filler = "";
+        for (int i = 0; i < totalLength + 1; i++) {
+            filler += " ";
+        }
+        if (this.justification == LEFT) {
+            return content + filler;
+        }
+        return filler + content;
     }
 
 }
