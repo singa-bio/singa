@@ -34,7 +34,8 @@ public enum AtomToken implements PDBToken {
      * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
      * parsable with this token.
      */
-    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
+//    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM).*");
 
     private final Range<Integer> columns;
 

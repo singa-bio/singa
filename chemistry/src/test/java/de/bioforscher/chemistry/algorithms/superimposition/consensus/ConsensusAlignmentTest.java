@@ -26,7 +26,7 @@ public class ConsensusAlignmentTest {
 
     @Before
     public void setUp() throws Exception {
-        this.input = Files.list(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/consensus_alignment_new"))
+        this.input = Files.list(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/GG4"))
                 .map(path -> {
                     try {
                         return PDBParserService.parsePDBFile(path.toFile());
@@ -50,7 +50,7 @@ public class ConsensusAlignmentTest {
 
     @Test
     public void shouldCreateConsensusAlignment() {
-        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input);
+        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input,0.6);
         System.out.println(consensusAlignment.getTopConsensusTree().toNewickString());
     }
 }

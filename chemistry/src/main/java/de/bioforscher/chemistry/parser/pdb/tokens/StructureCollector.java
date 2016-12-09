@@ -32,7 +32,7 @@ public class StructureCollector {
 
     // TODO here, the atom serial is parsed twice, once creating the identifer and once creating the atom
 
-    public static Structure collectStructure(List<String> pdbLines) {
+    public static Structure collectStructure(List<String> pdbLines, String chainId) {
         StructureCollector collector = new StructureCollector();
         for (String currentLine : pdbLines) {
             if (RECORD_PATTERN.matcher(currentLine).matches()) {
@@ -49,27 +49,29 @@ public class StructureCollector {
 
         Structure structure = new Structure();
 
-        int chainId= 0;
-        for (PDBParsingTreeNode chainNode: root.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.CHAIN)) {
-            Chain chain = new Chain(chainId++);
-            chain.setChainIdentifier(chainNode.getIdentifier());
-            for (PDBParsingTreeNode leafNode : chainNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.LEAF)) {
-                String leafName = leafNames.get(leafNode.getIdentifier());
-                System.out.println("creating " + leafNode.getIdentifier() + ":" + leafName);
-                Optional<ResidueFamily> residueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(leafName);
-                if (residueFamily.isPresent()) {
-                    // parse as residue
-                    System.out.println(" as Residue");
-                    chain.addSubstructure(LeafFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), leafNode.getAtomMap()));
-                } else {
-                    // parse as container
-                    System.out.println(" as AtomContainer");
-                    AtomContainer<LigandFamily> container =  new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
-                    leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
-                    chain.addSubstructure(container);
+        int graphId = 0;
+        for (PDBParsingTreeNode chainNode : root.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.CHAIN)) {
+            if (chainNode.getIdentifier().matches(chainId)) {
+                Chain chain = new Chain(graphId++);
+                chain.setChainIdentifier(chainNode.getIdentifier());
+                for (PDBParsingTreeNode leafNode : chainNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.LEAF)) {
+                    String leafName = leafNames.get(leafNode.getIdentifier());
+//                    System.out.println("creating " + leafNode.getIdentifier() + ":" + leafName);
+                    Optional<ResidueFamily> residueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(leafName);
+                    if (residueFamily.isPresent()) {
+                        // parse as residue
+//                        System.out.println(" as Residue");
+                        chain.addSubstructure(LeafFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), leafNode.getAtomMap()));
+                    } else {
+                        // parse as container
+//                        System.out.println(" as AtomContainer");
+                        AtomContainer<LigandFamily> container = new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
+                        leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
+                        chain.addSubstructure(container);
+                    }
                 }
+                structure.addSubstructure(chain);
             }
-            structure.addSubstructure(chain);
         }
 
         Map<Atom, UniqueAtomIdentifer> identifierMap = new HashMap<>();

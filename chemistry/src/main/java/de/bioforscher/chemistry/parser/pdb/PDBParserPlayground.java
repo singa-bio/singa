@@ -17,7 +17,7 @@ public class PDBParserPlayground {
         // RNA: 5E54
         // aaRS with RNA: 1F7V
 
-        Structure structure = PDBParserService.parseProteinById("1F7V");
+        Structure structure = PDBParserService.parseProteinById("1F7V", "B");
         StructureViewer.structure = structure;
         Application.launch(StructureViewer.class);
 

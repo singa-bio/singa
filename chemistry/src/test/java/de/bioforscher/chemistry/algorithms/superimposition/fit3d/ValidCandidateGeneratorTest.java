@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author sb
@@ -58,7 +59,7 @@ public class ValidCandidateGeneratorTest {
 
     @Test
     public void shouldGenerateValidCandidates() {
-        List<List<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2).getValidCandidates();
+        Set<List<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2).getValidCandidates();
 
         candidates.stream()
                 .forEach(System.out::println);
