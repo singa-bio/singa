@@ -103,7 +103,7 @@ public class PDBParsingTreeNode {
         return null;
     }
 
-    public void appendAtom(UniqueAtomIdentifer identifer, Atom atom) {
+    public void appendAtom(Atom atom, UniqueAtomIdentifer identifer) {
         ListIterator<PDBParsingTreeNode> iterator = this.children.listIterator();
         if (this.children.isEmpty()) {
             switch (this.level) {
@@ -131,7 +131,7 @@ public class PDBParsingTreeNode {
                     return;
                 }
             }
-            iterator.previous().appendAtom(identifer, atom);
+            iterator.previous().appendAtom(atom, identifer);
         } else {
             switch (this.level) {
                 case STRUCTURE: {
@@ -139,7 +139,7 @@ public class PDBParsingTreeNode {
                         PDBParsingTreeNode model = iterator.next();
                         if (model.identifier.equals(String.valueOf(identifer.getModelIdentifer()))) {
                             // System.out.println(" correct model going further");
-                            model.appendAtom(identifer, atom);
+                            model.appendAtom(atom, identifer);
                             return;
                         }
                     }
@@ -152,7 +152,7 @@ public class PDBParsingTreeNode {
                         PDBParsingTreeNode chain = iterator.next();
                         if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifer()))) {
                             // System.out.println("  correct chain going further");
-                            chain.appendAtom(identifer, atom);
+                            chain.appendAtom(atom, identifer);
                             return;
                         }
                     }
@@ -181,7 +181,7 @@ public class PDBParsingTreeNode {
                     return;
                 }
             }
-            iterator.previous().appendAtom(identifer, atom);
+            iterator.previous().appendAtom(atom, identifer);
         }
     }
 

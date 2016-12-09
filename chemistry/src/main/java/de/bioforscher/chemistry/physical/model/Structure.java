@@ -6,6 +6,7 @@ import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 
 import java.io.IOException;
@@ -17,8 +18,6 @@ import java.util.stream.Collectors;
  * into smaller substructures that can be connected with edges.
  */
 public class Structure {
-
-    private Map<Atom, UniqueAtomIdentifer> identiferMap;
 
     /**
      * The substructures of the graph.
@@ -93,6 +92,13 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
+    public List<LeafSubstructure<?,?>> getAllLeafs() {
+        return this.substructures.values().stream()
+                .map(BranchSubstructure::getAtomContainingSubstructures)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     public List<Atom> getAllAtoms() {
         return this.substructures.values().stream()
                 .map(BranchSubstructure::getAllAtoms)
@@ -128,12 +134,4 @@ public class Structure {
         }
     }
 
-
-    public Map<Atom, UniqueAtomIdentifer> getIdentiferMap() {
-        return identiferMap;
-    }
-
-    public void setIdentiferMap(Map<Atom, UniqueAtomIdentifer> identiferMap) {
-        this.identiferMap = identiferMap;
-    }
 }

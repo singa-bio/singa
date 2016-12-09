@@ -158,4 +158,8 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     }
 
 
+    @Override
+    public String getName() {
+        return this.getThreeLetterCode();
+    }
 }

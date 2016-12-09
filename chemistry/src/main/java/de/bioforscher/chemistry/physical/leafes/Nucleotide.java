@@ -42,4 +42,9 @@ public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
     public NucleotideFamily getFamily() {
         return this.family;
     }
+
+    @Override
+    public String getName() {
+        return this.family.getThreeLetterCode();
+    }
 }

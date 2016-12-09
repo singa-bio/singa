@@ -44,14 +44,17 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * The identifier of this entity.
      */
     public int identifier;
+
     /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
+
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
+
     /**
      * The neighboring substructures.
      */

@@ -1,10 +1,9 @@
 package de.bioforscher.chemistry.physical.leafes;
 
+import de.bioforscher.chemistry.parser.pdb.tokens.AtomToken;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.model.Bond;
-import de.bioforscher.chemistry.physical.model.Exchangeable;
-import de.bioforscher.chemistry.physical.model.StructuralFamily;
-import de.bioforscher.chemistry.physical.model.Substructure;
+import de.bioforscher.chemistry.physical.model.*;
+import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.VectorUtilities;
 
@@ -16,20 +15,28 @@ import java.util.stream.Collectors;
  */
 public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstructure<LeafSubstructureType, FamilyType>,
         FamilyType extends StructuralFamily>
-        implements Substructure<LeafSubstructureType>, Exchangeable<FamilyType> {
+        implements Substructure<LeafSubstructureType>, Exchangeable<FamilyType>, Nameable {
 
     /**
      * The identifier of this entity.
      */
     public int identifier;
+
+    /**
+     * Maps each of the atoms contained in this LeafSubstructure to it's unique identifier.
+     */
+    private Map<Atom, UniqueAtomIdentifer> identiferMap;
+
     /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
+
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
+
     /**
      * The neighboring leaf substructures.
      */
@@ -69,6 +76,10 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
             Atom targetCopy = this.atoms.get(bond.getTarget().getIdentifier());
             addEdgeBetween(edgeCopy, sourceCopy, targetCopy);
         }
+    }
+
+    public List<String> getPDBLines() {
+        return AtomToken.assemblePDBLine(this);
     }
 
     @Override
@@ -188,4 +199,17 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     public void addExchangeableType(FamilyType exchangeableType) {
         this.exchangeableTypes.add(exchangeableType);
     }
+
+    public Map<Atom, UniqueAtomIdentifer> getIdentiferMap() {
+        return this.identiferMap;
+    }
+
+    public void setIdentiferMap(Map<Atom, UniqueAtomIdentifer> identiferMap) {
+        this.identiferMap = identiferMap;
+    }
+
+    public String getChain() {
+        return this.identiferMap.values().stream().map(UniqueAtomIdentifer::getChainIdentifer).findFirst().orElse("X");
+    }
+
 }

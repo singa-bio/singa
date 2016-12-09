@@ -4,43 +4,53 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.core.utility.Range;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.*;
 
 /**
  * Created by Christoph on 23.06.2016.
  */
 public enum AtomToken implements PDBToken {
 
-    RECORD_TYPE(Range.of(0,6)),
-    ATOM_SERIAL(Range.of(7, 11)),
-    ATOM_NAME(Range.of(13, 16)),
-    ALTERNATE_LOCATION_INDICATOR(Range.of(17)),
-    RESIDUE_NAME(Range.of(18, 20)),
-    CHAIN_IDENTIFIER(Range.of(22)),
-    RESIDUE_SERIAL(Range.of(23, 26)),
-    RESIDUE_INSERTION(Range.of(27)),
-    X_COORDINATE(Range.of(31, 38)),
-    Y_COORDINATE(Range.of(39, 46)),
-    Z_COORDINATE(Range.of(47, 54)),
-    OCCUPANCY(Range.of(55, 60)),
-    TEMPERATURE_FACTOR(Range.of(61, 66)),
-    SEGMENT_IDENTIFIER(Range.of(77, 78)),
-    ELEMENT_SYMBOL(Range.of(77, 78));
+    RECORD_TYPE(Range.of(1, 6), LEFT),
+    ATOM_SERIAL(Range.of(7, 11), RIGHT),
+    ATOM_NAME(Range.of(13, 16), LEFT),
+    ALTERNATE_LOCATION_INDICATOR(Range.of(17), LEFT),
+    RESIDUE_NAME(Range.of(18, 20), RIGHT),
+    CHAIN_IDENTIFIER(Range.of(22), LEFT),
+    RESIDUE_SERIAL(Range.of(23, 26), RIGHT),
+    RESIDUE_INSERTION(Range.of(27), LEFT),
+    X_COORDINATE(Range.of(31, 38), RIGHT),
+    Y_COORDINATE(Range.of(39, 46), RIGHT),
+    Z_COORDINATE(Range.of(47, 54), RIGHT),
+    OCCUPANCY(Range.of(55, 60), RIGHT),
+    TEMPERATURE_FACTOR(Range.of(61, 66), RIGHT),
+    ELEMENT_SYMBOL(Range.of(77, 78), RIGHT),
+    ELEMENT_CHARGE(Range.of(79, 80), LEFT);
 
     /**
      * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
      * parsable with this token.
      */
-//    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
-    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM).*");
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
+    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000");
+    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00");
 
     private final Range<Integer> columns;
+    private final Justification justification;
 
-    AtomToken(Range<Integer> columns) {
+    AtomToken(Range<Integer> columns, Justification justification) {
         this.columns = columns;
+        this.justification = justification;
     }
 
     @Override
@@ -52,6 +62,7 @@ public enum AtomToken implements PDBToken {
     public Pattern getRecordNamePattern() {
         return RECORD_PATTERN;
     }
+
 
     public static Atom assembleAtom(String atomLine) {
         // coordinates
@@ -67,6 +78,85 @@ public enum AtomToken implements PDBToken {
         Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
                 .orElseThrow(IllegalArgumentException::new);
         return new RegularAtom(atomSerial, element, atomName, coordinates);
+    }
+
+    public static List<String> assemblePDBLine(LeafSubstructure<?, ?> leaf) {
+        List<String> lines = new ArrayList<>();
+        for (Atom atom : leaf.getNodes()) {
+            StringBuilder currentLine = new StringBuilder();
+            if (leaf instanceof Residue) {
+                currentLine.append(RECORD_TYPE.createTokenString("ATOM"));
+            } else {
+                currentLine.append("HETATM");
+            }
+            currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getIdentifier())))
+                    .append(" ")
+                    .append(formatAtomName(atom))
+                    .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented
+                    .append(RESIDUE_NAME.createTokenString(leaf.getName().toUpperCase()))
+                    .append(" ")
+                    .append(leaf.getChain())
+                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier())))
+                    .append("    ") // RESIDUE_INSERTION not yet implemented + 3 spaces for coordinates
+                    .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
+                    .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
+                    .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))
+                    .append("  1.00") // OCCUPANCY not yet implemented
+                    .append("  0.00") // TEMPERATURE_FACTOR not yet implemented
+                    .append("          ") // 10 spaces
+                    .append(ELEMENT_SYMBOL.createTokenString(atom.getElement().getSymbol()))
+                    .append(formatCharge(atom.getElement()));
+            lines.add(currentLine.toString());
+        }
+        return lines;
+    }
+
+    private String createTokenString(String content) {
+        int totalLength = this.columns.getUpperBound() - this.columns.getLowerBound() - content.length();
+        String filler = "";
+        for (int i = 0; i < totalLength+1; i++) {
+            filler += " ";
+        }
+        if (this.justification == LEFT) {
+            return content + filler;
+        }
+        return filler + content;
+    }
+
+    static String formatAtomName(Atom atom) {
+        String fullName = null;
+        String name = atom.getAtomNameString();
+        String element = atom.getElement().getSymbol();
+
+        // RULES FOR ATOM NAME PADDING: 4 columns in total: 13, 14, 15, 16
+
+        // if length 4: nothing to do
+        if (name.length() == 4) {
+            fullName = name;
+        } else if (name.length() == 3) {
+            fullName = " " + name;
+        } else if (name.length() == 2) {
+            if (element.equals("C") || element.equals("N") || element.equals("O") || element.equals("P") || element.equals("S")) {
+                fullName = " " + name + " ";
+            } else {
+                fullName = name + "  ";
+            }
+        } else if (name.length() == 1) {
+            fullName = " " + name + "  ";
+        }
+
+        return fullName;
+    }
+
+    private static String formatCharge(Element element) {
+        int charge = element.getCharge();
+        if (charge > 0) {
+            return String.valueOf(charge) + "+";
+        }
+        if (charge < 0) {
+            return String.valueOf(Math.abs(charge)) + "-";
+        }
+        return "  ";
     }
 
 }
