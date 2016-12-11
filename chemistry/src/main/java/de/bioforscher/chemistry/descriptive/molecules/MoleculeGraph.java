@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 /**
  * @author cl
@@ -16,7 +16,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addNextAtom(Element element) {
-        return addNode(new MoleculeAtom(nextNodeIdentifier(), VectorUtilities.generateRandomVector3D(), element));
+        return addNode(new MoleculeAtom(nextNodeIdentifier(), Vectors.generateRandomVector3D(), element));
     }
 
     @Override

@@ -8,8 +8,7 @@ package de.bioforscher.mathematics.vectors;
  * Additionally it is able to perform operations that are solely defined for 3D
  * vectors.
  *
- * @author Christoph Leberecht
- * @version 2.0.1
+ * @author cl
  */
 public class Vector3D extends RegularVector {
 
@@ -60,7 +59,8 @@ public class Vector3D extends RegularVector {
         this(0.0, 0.0, 0.0);
     }
 
-    /** This is a copy constructor. Creates a new Vector3D by copying the given vector.
+    /**
+     * This is a copy constructor. Creates a new Vector3D by copying the given vector.
      *
      * @param vector3D The vector to copy.
      */
@@ -78,7 +78,7 @@ public class Vector3D extends RegularVector {
      * @return The x coordinate of this vector.
      */
     public double getX() {
-        return this.getElement(X_INDEX);
+        return getElement(X_INDEX);
     }
 
     /**
@@ -87,7 +87,7 @@ public class Vector3D extends RegularVector {
      * @return The y coordinate of this vector.
      */
     public double getY() {
-        return this.getElement(Y_INDEX);
+        return getElement(Y_INDEX);
     }
 
     /**
@@ -96,7 +96,7 @@ public class Vector3D extends RegularVector {
      * @return The z coordinate of this vector.
      */
     public double getZ() {
-        return this.getElement(Z_INDEX);
+        return getElement(Z_INDEX);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Vector3D extends RegularVector {
      */
     @Override
     public Vector3D additivelyInvert() {
-        return createNewVector(super.additivelyInvert().getElements(), this.getClass());
+        return new Vector3D(-getX(), -getY(), -getZ());
     }
 
     /**
@@ -116,7 +116,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted x coordinate.
      */
     public Vector3D invertX() {
-        return createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
+        return new Vector3D(-getX(), getY(), getZ());
     }
 
     /**
@@ -126,7 +126,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted y coordinate.
      */
     public Vector3D invertY() {
-        return createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
+        return new Vector3D(getX(), -getY(), getZ());
     }
 
     /**
@@ -136,7 +136,7 @@ public class Vector3D extends RegularVector {
      * @return A new vector with inverted z coordinate.
      */
     public Vector3D invertZ() {
-        return createNewVector(super.additiveleyInvertElement(Z_INDEX).getElements(), this.getClass());
+        return new Vector3D(getX(), getY(), -getZ());
     }
 
     /**
@@ -148,7 +148,7 @@ public class Vector3D extends RegularVector {
      * @return The addition.
      */
     public Vector3D add(Vector3D vector) {
-        return createNewVector(super.add(vector).getElements(), this.getClass());
+        return new Vector3D(getX() + vector.getX(), getY() + vector.getY(), getZ() + vector.getZ());
     }
 
     /**
@@ -160,12 +160,12 @@ public class Vector3D extends RegularVector {
      * @return The subtraction.
      */
     public Vector3D subtract(Vector3D vector) {
-        return createNewVector(super.subtract(vector).getElements(), this.getClass());
+        return new Vector3D(getX() - vector.getX(), getY() - vector.getY(), getZ() - vector.getZ());
     }
 
     @Override
     public Vector3D multiply(double scalar) {
-        return createNewVector(super.multiply(scalar).getElements(), this.getClass());
+        return new Vector3D(getX() * scalar, getY() * scalar, getZ() * scalar);
     }
 
     /**
@@ -177,12 +177,12 @@ public class Vector3D extends RegularVector {
      * @return The element-wise multiplication.
      */
     public Vector3D multiply(Vector3D vector) {
-        return createNewVector(super.multiply(vector).getElements(), this.getClass());
+        return new Vector3D(getX() * vector.getX(), getY() * vector.getY(), getZ() * vector.getZ());
     }
 
     @Override
     public Vector3D divide(double scalar) {
-        return createNewVector(super.divide(scalar).getElements(), this.getClass());
+        return new Vector3D(getX() / scalar, getY() / scalar, getZ() / scalar);
     }
 
     /**
@@ -194,12 +194,12 @@ public class Vector3D extends RegularVector {
      * @return The element-wise division.
      */
     public Vector3D divide(Vector3D vector) {
-        return createNewVector(super.divide(vector).getElements(), this.getClass());
+        return new Vector3D(getX() / vector.getX(), getY() / vector.getY(), getZ() / vector.getZ());
     }
 
     @Override
     public Vector3D normalize() {
-        return createNewVector(super.normalize().getElements(), this.getClass());
+        return divide(getMagnitude());
     }
 
     /**
@@ -210,7 +210,7 @@ public class Vector3D extends RegularVector {
      * @return The dot product.
      */
     public double dotProduct(Vector3D vector) {
-        return super.dotProduct(vector);
+        return getX() * vector.getX() + getY() * vector.getY() + getZ() * vector.getZ();
     }
 
     /**
@@ -222,13 +222,11 @@ public class Vector3D extends RegularVector {
      * @return The cross product.
      */
     public Vector3D crossProduct(Vector3D vector) {
-        double crossX = this.getElement(Y_INDEX) * vector.getElement(Z_INDEX)
-                - this.getElement(Z_INDEX) * vector.getElement(Y_INDEX);
-        double crossY = this.getElement(Z_INDEX) * vector.getElement(X_INDEX)
-                - this.getElement(X_INDEX) * vector.getElement(Z_INDEX);
-        double crossZ = this.getElement(X_INDEX) * vector.getElement(Y_INDEX)
-                - this.getElement(Y_INDEX) * vector.getElement(X_INDEX);
-        return new Vector3D(new double[]{crossX, crossY, crossZ});
+        return new Vector3D(new double[]{
+                getY() * vector.getZ() - getZ() * vector.getY(),
+                getZ() * vector.getX() - getX() * vector.getZ(),
+                getX() * vector.getY() - getY() * vector.getX()
+        });
     }
 
 }

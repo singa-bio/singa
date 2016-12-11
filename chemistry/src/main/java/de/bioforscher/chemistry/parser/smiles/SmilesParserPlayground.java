@@ -187,7 +187,7 @@ public class SmilesParserPlayground {
                 return true;
             }
             case '.': {
-                // don't connect
+                // don'translate connect
                 addToTokens();
                 poll();
                 return true;

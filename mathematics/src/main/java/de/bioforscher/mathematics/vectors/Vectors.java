@@ -14,12 +14,12 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author cl
  */
-public class VectorUtilities {
+public class Vectors {
 
     /**
      * prevent instantiation
      */
-    private VectorUtilities() {
+    private Vectors() {
     }
 
     /**
@@ -158,7 +158,7 @@ public class VectorUtilities {
         // using modified Gram-Schmidt process
 
         // all vectors need to have the same dimensionality
-        if (!VectorUtilities.haveSameDimension(vectors)) {
+        if (!Vectors.haveSameDimension(vectors)) {
             throw new IllegalArgumentException("All vectors need to have the same dimensionality.");
         }
         int dimension = vectors.iterator().next().getDimension();
@@ -208,7 +208,7 @@ public class VectorUtilities {
     }
 
     /**
-     * Accumulates the {@link VectorUtilities#gramSchmidtProjection(Vector, Vector) Graham-Schmidt projection} for each
+     * Accumulates the {@link Vectors#gramSchmidtProjection(Vector, Vector) Graham-Schmidt projection} for each
      * vector in the given list of Vectors. This orthonormalizes the vector to every vector and increases the numerical
      * stability of the orthonormalization.
      *

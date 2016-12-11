@@ -225,29 +225,29 @@ public class RegularMatrixTest {
     @Test
     public void shouldFindMatrixExtrema() {
 
-        Optional<Pair<Integer>> minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithUniqueExtrema);
+        Optional<Pair<Integer>> minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithUniqueExtrema);
         assertTrue(minimalPosition.isPresent());
         assertEquals(0L, (long) minimalPosition.get().getFirst());
         assertEquals(0L, (long) minimalPosition.get().getSecond());
-        minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithAmbiguousExtrema);
         assertEquals(Optional.empty(), minimalPosition);
-        minimalPosition = MatrixUtilities.getPositionOfMinimalElement(this.matrixWithNoExtrema);
+        minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithNoExtrema);
         assertEquals(Optional.empty(), minimalPosition);
 
-        Optional<Pair<Integer>> maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithUniqueExtrema);
+        Optional<Pair<Integer>> maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithUniqueExtrema);
         assertTrue(maximalPosition.isPresent());
         assertEquals(2L, (long) maximalPosition.get().getFirst());
         assertEquals(2L, (long) maximalPosition.get().getSecond());
-        maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithAmbiguousExtrema);
         assertEquals(Optional.empty(), maximalPosition);
-        maximalPosition = MatrixUtilities.getPositionOfMaximalElement(this.matrixWithNoExtrema);
+        maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithNoExtrema);
         assertEquals(Optional.empty(), maximalPosition);
 
-        List<Pair<Integer>> minimalPositions = MatrixUtilities.getPositionsOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        List<Pair<Integer>> minimalPositions = Matrices.getPositionsOfMinimalElement(this.matrixWithAmbiguousExtrema);
         assertTrue(minimalPositions.get(0).getFirst() == 0 && minimalPositions.get(0).getSecond() == 0);
         assertTrue(minimalPositions.get(1).getFirst() == 0 && minimalPositions.get(1).getSecond() == 1);
 
-        List<Pair<Integer>> maximalPositions = MatrixUtilities.getPositionsOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        List<Pair<Integer>> maximalPositions = Matrices.getPositionsOfMaximalElement(this.matrixWithAmbiguousExtrema);
         assertTrue(maximalPositions.get(0).getFirst() == 2 && maximalPositions.get(0).getSecond() == 1);
         assertTrue(maximalPositions.get(1).getFirst() == 2 && maximalPositions.get(1).getSecond() == 2);
     }
@@ -259,7 +259,7 @@ public class RegularMatrixTest {
         Matrix expectedR = new RegularMatrix(new double[][]{{14, 21, -14}, {0, 175, -70}, {0, 0, 35}});
 
         Matrix originalMatrix = new RegularMatrix(new double[][]{{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}});
-        QRDecomposition decomposition = MatrixUtilities.performQRDecomposition(originalMatrix);
+        QRDecomposition decomposition = Matrices.performQRDecomposition(originalMatrix);
 
         for (int row = 0; row < expectedQ.getRowDimension(); row++) {
             assertArrayEquals(expectedQ.getElements()[row], decomposition.getMatrixQ().getElements()[row], 1E-16);
@@ -284,7 +284,7 @@ public class RegularMatrixTest {
                 {-69.0 / 175.0, 158.0 / 175.0, 6.0 / 35.0},
                 {-58.0 / 175.0, 6.0 / 175.0, -33.0 / 35.0}});
 
-        SVDecomposition svd = MatrixUtilities.performSVDecomposition(inputMatrix);
+        SVDecomposition svd = Matrices.performSVDecomposition(inputMatrix);
 
         for (int row = 0; row < expectedU.getRowDimension(); row++) {
             assertArrayEquals(expectedU.getElements()[row], svd.getMatrixU().getElements()[row], 1E-16);

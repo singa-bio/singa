@@ -6,7 +6,7 @@ import de.bioforscher.chemistry.physical.model.Exchangeable;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -153,7 +153,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     @Override
     public Vector3D getPosition() {
-        return VectorUtilities.getCentroid(this.atoms.values().stream()
+        return Vectors.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .as(Vector3D.class);

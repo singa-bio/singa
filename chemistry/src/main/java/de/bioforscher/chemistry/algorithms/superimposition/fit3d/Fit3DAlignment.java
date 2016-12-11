@@ -8,7 +8,7 @@ import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.StructureUtilities;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
-import de.bioforscher.mathematics.matrices.MatrixUtilities;
+import de.bioforscher.mathematics.matrices.Matrices;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +143,7 @@ public class Fit3DAlignment {
         LabeledSymmetricMatrix<LeafSubstructure<?, ?>> queryDistanceMatrix =
                 StructureUtilities.calculateDistanceMatrix(this.queryMotif);
         // position of maximal element is always symmetric, hence we consider the first
-        Pair<Integer> positionOfMaximalElement = MatrixUtilities.getPositionsOfMaximalElement(queryDistanceMatrix)
+        Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new Fit3DException("could not determine extent of the query motif"));

@@ -7,7 +7,7 @@ import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
@@ -161,7 +161,7 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = this.structure.getAllAtoms();
 
-        final Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
+        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .as(Vector3D.class).multiply(3.0);

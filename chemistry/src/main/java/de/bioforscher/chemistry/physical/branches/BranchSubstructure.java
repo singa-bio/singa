@@ -11,7 +11,7 @@ import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -168,11 +168,11 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * Returns the centroid of this substructure.
      *
      * @return The centroid.
-     * @see VectorUtilities#getCentroid(Collection)
+     * @see Vectors#getCentroid(Collection)
      */
     @Override
     public Vector3D getPosition() {
-        return VectorUtilities.getCentroid(this.getAllAtoms().stream()
+        return Vectors.getCentroid(this.getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .as(Vector3D.class);

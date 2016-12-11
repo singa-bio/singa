@@ -4,18 +4,18 @@ import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.algorithms.matrix.QRDecomposition;
 import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.vectors.Vector;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class MatrixUtilities {
+public final class Matrices {
 
     /**
      * prevent instantiation
      */
-    private MatrixUtilities() {
+    private Matrices() {
     }
 
     /**
@@ -23,7 +23,7 @@ public final class MatrixUtilities {
      * <p>
      * For example the call:
      * <pre>
-     * MatrixUtilities.generateIdentityMatrix(4) </pre>
+     * Matrices.generateIdentityMatrix(4) </pre>
      * result in the matrix:
      * <pre>
      * 1.0 0.0 0.0 0.0
@@ -65,7 +65,7 @@ public final class MatrixUtilities {
      * @return The columns combined to a matrix.
      */
     public static Matrix assembleMatrixFromColumns(List<Vector> columnVectors) {
-        if (!VectorUtilities.haveSameDimension(columnVectors)) {
+        if (!Vectors.haveSameDimension(columnVectors)) {
             throw new IllegalArgumentException("All vectors need to have the same dimension in order to create a" +
                     " matrix out of them.");
         }
@@ -99,7 +99,7 @@ public final class MatrixUtilities {
      * @return The rows combined to a matrix.
      */
     public static Matrix assembleMatrixFromRows(List<Vector> rowVectors) {
-        if (!VectorUtilities.haveSameDimension(rowVectors)) {
+        if (!Vectors.haveSameDimension(rowVectors)) {
             throw new IllegalArgumentException("All vectors need to have the same dimension in order to create a" +
                     " matrix out of them.");
         }

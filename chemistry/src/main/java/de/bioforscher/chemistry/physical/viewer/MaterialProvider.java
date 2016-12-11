@@ -31,5 +31,5 @@ public class MaterialProvider {
         material.setSpecularColor(color.brighter());
         return material;
     }
-    
+
 }
