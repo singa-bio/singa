@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class ValidCandidateGenerator {
     private List<LeafSubstructure<?, ?>> environment;
 
     private List<List<LeafSubstructure<?, ?>>> acceptedElementsAtEachPosition;
-    private List<List<LeafSubstructure<?, ?>>> candidates;
+    private Set<List<LeafSubstructure<?, ?>>> candidates;
 
     public ValidCandidateGenerator(List<LeafSubstructure<?, ?>> queryMotif, List<LeafSubstructure<?, ?>> environment) {
         this.queryMotif = queryMotif;
@@ -50,7 +51,7 @@ public class ValidCandidateGenerator {
         }
     }
 
-    public List<List<LeafSubstructure<?, ?>>> getValidCandidates() {
+    public Set<List<LeafSubstructure<?, ?>>> getValidCandidates() {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges
         for (LeafSubstructure<?, ?> currentLeafSubstructure : this.queryMotif) {
@@ -63,13 +64,13 @@ public class ValidCandidateGenerator {
             this.acceptedElementsAtEachPosition.add(validLeafSubstructures);
         }
 
-        logger.info("accepted elements at each position are\n{}", this.acceptedElementsAtEachPosition.stream()
+        logger.trace("accepted elements at each position are\n{}", this.acceptedElementsAtEachPosition.stream()
                 .map(position -> position.stream()
                         .map(LeafSubstructure::toString)
                         .collect(Collectors.joining("\t", "[", "]")))
                 .collect(Collectors.joining("\n")));
 
-        this.candidates = new ArrayList<>();
+        this.candidates = new HashSet<>();
         this.candidates.add(new ArrayList<>());
         for (int position = 0; position < this.queryMotif.size(); position++) {
             final int currentPosition = position; // :>
@@ -82,13 +83,14 @@ public class ValidCandidateGenerator {
                             })
                     )
                     .filter(candidate -> candidate.stream().map(LeafSubstructure::getIdentifier).distinct().count() == currentPosition +1)
-                    .collect(Collectors.toList());
+                    // FIXME we should implement equal method
+                    .collect(Collectors.toSet());
         }
 
         if (this.candidates.isEmpty()) {
-            logger.info("no valid candidates");
+            logger.trace("no valid candidates");
         } else {
-            logger.info("candidates are\n{}", this.candidates.stream()
+            logger.trace("candidates are\n{}", this.candidates.stream()
                     .map(candidate -> candidate.stream()
                             .map(LeafSubstructure::toString)
                             .collect(Collectors.joining("\t", "[", "]")))

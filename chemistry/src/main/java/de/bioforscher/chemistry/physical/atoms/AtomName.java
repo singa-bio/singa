@@ -132,7 +132,23 @@ public enum AtomName {
 
     // Carbons
     C("C", CARBON),
+    C1Pr("C1'", CARBON),
+    C1St("C1*", CARBON),
+    C2("C2", CARBON),
+    C2Pr("C2'", CARBON),
+    C2St("C2*", CARBON),
+    C3Pr("C3'", CARBON),
+    C3St("C2*", CARBON),
+    C4("C4", CARBON),
+    C4Pr("C4'", CARBON),
+    C4St("C4*", CARBON),
     C5("C5", CARBON),
+    C5Pr("C5'", CARBON),
+    C5St("C5*", CARBON),
+    C5M("C5M", CARBON),
+    C6("C6", CARBON),
+    C7("C7", CARBON),
+    C8("C8", CARBON),
     C10("C10", CARBON),
     C11("C11", CARBON),
     C26("C26", CARBON),
@@ -170,10 +186,14 @@ public enum AtomName {
 
     // Nitrogen
     N("N", NITROGEN),
-    N3("N", NITROGEN),
+    N1("N1", NITROGEN),
+    N2("N2", NITROGEN),
+    N3("N3", NITROGEN),
     N4("N4", NITROGEN),
+    N5("N5", NITROGEN),
     N6("N6", NITROGEN),
     N7("N7", NITROGEN),
+    N9("N9", NITROGEN),
     ND1("ND1", NITROGEN),
     ND2("ND2",NITROGEN),
     NE("NE", NITROGEN),
@@ -185,8 +205,18 @@ public enum AtomName {
 
     // Oxygen
     O("O", OXYGEN),
+    O1P("O1P", OXYGEN),
     O2("O2", OXYGEN),
+    O2Pr("O2'", OXYGEN),
+    O2P("O2P", OXYGEN),
+    O3Pr("O3'", OXYGEN),
+    O3St("O3St", OXYGEN),
+    O3P("O3P", OXYGEN),
     O4("O4", OXYGEN),
+    O4Pr("O4'", OXYGEN),
+    O4St("O4*", OXYGEN),
+    O5Pr("O5'", OXYGEN),
+    O5St("O5*", OXYGEN),
     O6("O6", OXYGEN),
     O9("O9", OXYGEN),
     OD1("OD1", OXYGEN),
@@ -197,7 +227,13 @@ public enum AtomName {
     OG1("OG1", OXYGEN),
     OG2("OG2", OXYGEN),
     OH("OH", OXYGEN),
+    OP1("OP1", OXYGEN),
+    OP2("OP2", OXYGEN),
+    OP3("OP3", OXYGEN),
     OXT("OXT", OXYGEN),
+
+    // Phosphorus
+    P("P", PHOSPHORUS),
 
     // Sulfur
     SG("SG", SULFUR),

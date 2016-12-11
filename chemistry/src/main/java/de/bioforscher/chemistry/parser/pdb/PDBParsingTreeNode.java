@@ -1,11 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 import static de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode.StructureLevel.*;
 
@@ -69,7 +68,42 @@ public class PDBParsingTreeNode {
         this.children = children;
     }
 
-    public void appendAtom(UniqueAtomIdentifer identifer, Atom atom) {
+    public List<PDBParsingTreeNode> getNodesFromLevel(StructureLevel level) {
+        List<PDBParsingTreeNode> nodes = new ArrayList<>();
+        if (this.level == level) {
+            nodes.add(this);
+        } else {
+            this.children.forEach(child -> nodes.addAll(child.getNodesFromLevel(level)));
+        }
+        return nodes;
+    }
+
+    public Map<String, String> getLeafNames(Map<String, String> leafStructure) {
+        Map<String, String> names = new HashMap<>();
+        if (this.level != LEAF) {
+            this.children.forEach(child -> names.putAll(child.getLeafNames(leafStructure)));
+        } else {
+            Set<String> uniqueNames = new HashSet<>();
+            for (PDBParsingTreeNode child: this.children) {
+                uniqueNames.add(leafStructure.get(child.getIdentifier()));
+            }
+            names.put(this.identifier, uniqueNames.iterator().next());
+        }
+        return names;
+    }
+
+    public EnumMap<AtomName, Atom> getAtomMap() {
+        if (this.getLevel() == LEAF) {
+            EnumMap<AtomName, Atom> atoms = new EnumMap<>(AtomName.class);
+            for (PDBParsingTreeNode node: this.children) {
+                atoms.put(node.getAtom().getAtomName(), node.getAtom());
+            }
+            return atoms;
+        }
+        return null;
+    }
+
+    public void appendAtom(Atom atom, UniqueAtomIdentifer identifer) {
         ListIterator<PDBParsingTreeNode> iterator = this.children.listIterator();
         if (this.children.isEmpty()) {
             switch (this.level) {
@@ -97,7 +131,7 @@ public class PDBParsingTreeNode {
                     return;
                 }
             }
-            iterator.previous().appendAtom(identifer, atom);
+            iterator.previous().appendAtom(atom, identifer);
         } else {
             switch (this.level) {
                 case STRUCTURE: {
@@ -105,7 +139,7 @@ public class PDBParsingTreeNode {
                         PDBParsingTreeNode model = iterator.next();
                         if (model.identifier.equals(String.valueOf(identifer.getModelIdentifer()))) {
                             // System.out.println(" correct model going further");
-                            model.appendAtom(identifer, atom);
+                            model.appendAtom(atom, identifer);
                             return;
                         }
                     }
@@ -118,7 +152,7 @@ public class PDBParsingTreeNode {
                         PDBParsingTreeNode chain = iterator.next();
                         if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifer()))) {
                             // System.out.println("  correct chain going further");
-                            chain.appendAtom(identifer, atom);
+                            chain.appendAtom(atom, identifer);
                             return;
                         }
                     }
@@ -147,7 +181,7 @@ public class PDBParsingTreeNode {
                     return;
                 }
             }
-            iterator.previous().appendAtom(identifer, atom);
+            iterator.previous().appendAtom(atom, identifer);
         }
     }
 

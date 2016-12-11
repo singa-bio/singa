@@ -3,17 +3,18 @@ package de.bioforscher.chemistry.physical.viewer;
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.Chain;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.Vectors;
+import de.bioforscher.mathematics.vectors.VectorUtilities;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -21,7 +22,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +62,9 @@ public class StructureViewer extends Application {
     private double mouseDeltaY;
 
     public static Structure structure;
+    public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
+
+    private Map<String, PhongMaterial> chainMaterials;
 
     public static void main(String[] args) {
         launch(args);
@@ -66,6 +72,8 @@ public class StructureViewer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        this.chainMaterials = new HashMap<>();
 
         this.root.getChildren().add(this.world);
         this.root.setDepthTest(DepthTest.ENABLE);
@@ -103,38 +111,54 @@ public class StructureViewer extends Application {
         this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
+    private void translateToCentre() {
+        List<Atom> allAtoms = structure.getAllAtoms();
+
+        final Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
+                .map(Atom::getPosition)
+                .collect(Collectors.toList()))
+                .as(Vector3D.class).multiply(3.0);
+
+        allAtoms.forEach(atom -> atom.setPosition(
+                atom.getPosition().multiply(3.0).subtract(centroid)));
+    }
+
     private void buildMolecule() {
-        // add atoms
-        this.structure.getAllResidues().stream()
-                .map(Residue::getNodes)
-                .flatMap(Collection::stream)
-                .forEach(this::addAtom);
-        // edges in residues
-        this.structure.getAllResidues().stream()
-                .map(Residue::getEdges)
-                .flatMap(Collection::stream)
-                .forEach(this::addCovalentBond);
+        // add leafs
+        structure.getAllLeafs().forEach(this::addLeaf);
         // edges in chains (backbone connections)
-        this.structure.getAllChains().stream()
-                .map(Chain::getEdges)
-                .flatMap(Collection::stream)
-                .forEach(this::addCovalentBond);
+        structure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world
         this.world.getChildren().addAll(this.moleculeGroup);
     }
 
-    private void addAtom(Atom atom) {
+    private void addLeaf(LeafSubstructure<?,?> leafSubstructure) {
+        leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
+        leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
+    }
+
+    private void addChainConnections(Chain chain) {
+        chain.getEdges().forEach(bond -> addChainBond(chain, bond));
+    }
+
+    private void addAtom(LeafSubstructure<?,?> origin, Atom atom) {
         Sphere atomShape = new Sphere(1.0);
-        atomShape.setMaterial(MaterialProvider.getDefaultMaterialForElement(atom.getElement()));
+        atomShape.setMaterial(getMaterial(origin, atom));
         atomShape.setTranslateX(atom.getPosition().getX());
         atomShape.setTranslateY(atom.getPosition().getY());
         atomShape.setTranslateZ(atom.getPosition().getZ());
         this.moleculeGroup.getChildren().add(atomShape);
     }
 
-    private void addCovalentBond(Bond bond) {
+    private void addLeafBond(LeafSubstructure<?,?> origin, Bond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
-        bondShape.setMaterial(MaterialProvider.CARBON);
+        bondShape.setMaterial(getMaterial(origin, bond));
+        this.moleculeGroup.getChildren().add(bondShape);
+    }
+
+    private void addChainBond(Chain origin, Bond bond) {
+        Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
+        bondShape.setMaterial(getMaterial(origin));
         this.moleculeGroup.getChildren().add(bondShape);
     }
 
@@ -158,16 +182,43 @@ public class StructureViewer extends Application {
         return bond;
     }
 
-    private void translateToCentre() {
-        List<Atom> allAtoms = this.structure.getAllAtoms();
+    private PhongMaterial getMaterial(LeafSubstructure<?,?> origin, Atom atom) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
+        } else {
+            String chain = origin.getIdentiferMap().get(atom).getChainIdentifer();
+            if (this.chainMaterials.containsKey(chain)) {
+                return this.chainMaterials.get(chain);
+            } else {
+                return getMaterialForChain(origin.getIdentiferMap().get(atom).getChainIdentifer());
+            }
+        }
+    }
 
-        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
-                .map(Atom::getPosition)
-                .collect(Collectors.toList()))
-                .as(Vector3D.class).multiply(3.0);
+    private PhongMaterial getMaterial(LeafSubstructure<?,?> origin, Bond edge) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.CARBON;
+        } else {
+            return getMaterialForChain(origin.getIdentiferMap().get(edge.getSource()).getChainIdentifer());
+        }
+    }
 
-        allAtoms.forEach(atom -> atom.setPosition(
-                atom.getPosition().multiply(3.0).subtract(centroid)));
+    private PhongMaterial getMaterial(Chain origin) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.CARBON;
+        } else {
+            return getMaterialForChain(origin.getChainIdentifier());
+        }
+    }
+
+    private PhongMaterial getMaterialForChain(String chain) {
+        if (this.chainMaterials.containsKey(chain)) {
+            return this.chainMaterials.get(chain);
+        } else {
+            PhongMaterial material = MaterialProvider.crateMaterialFromColor(Color.color(Math.random(), Math.random(), Math.random()));
+            this.chainMaterials.put(chain, material);
+            return material;
+        }
     }
 
     private void handleMouse(Scene scene) {
@@ -230,7 +281,7 @@ public class StructureViewer extends Application {
 
     private void loadTestStructure() {
         try {
-            this.structure = PDBParserService.parseProteinById("5E9R");
+            structure = PDBParserService.parseProteinById("5E9R");
         } catch (IOException e) {
             e.printStackTrace();
         }

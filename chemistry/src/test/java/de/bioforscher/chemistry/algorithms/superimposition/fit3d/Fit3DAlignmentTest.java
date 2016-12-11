@@ -43,7 +43,7 @@ public class Fit3DAlignmentTest {
     public void shouldRunFit3DAlignment() {
         Fit3DAlignment fit3d = new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(0));
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0, matches.firstKey(), 1E-6);
+        assertEquals(0.0005, matches.firstKey(), 1E-4);
     }
 
     @Test

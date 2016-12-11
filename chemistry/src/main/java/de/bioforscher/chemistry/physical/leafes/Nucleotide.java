@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.physical.leafes;
 
+import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 
 import java.util.EnumMap;
@@ -8,7 +9,7 @@ import java.util.EnumMap;
  * A nucleotide is a grouping element that should only contain atoms. Each and every residue has a associate NucleotideType,
  * that determines the nucleotide. Based on this NucleotideType a Nucleotide can be created
  * from a set of atoms that belong to this residue using the
- * {@link NucleotideFactory#createNucleotideFromAtoms(int, NucleotideFamily, EnumMap) NucleotideFactory}. This establishes the bonds
+ * {@link LeafFactory#createNucleotideFromAtoms(int, NucleotideFamily, EnumMap) NucleotideFactory}. This establishes the bonds
  * within the Nucleotides, where possible.
  *
  *
@@ -20,6 +21,11 @@ public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
 
     public Nucleotide(int identifier) {
         super(identifier);
+    }
+
+    public Nucleotide(int identifier, NucleotideFamily family) {
+        super(identifier);
+        this.family = family;
     }
 
     public Nucleotide(Nucleotide nucleotide) {
@@ -35,5 +41,10 @@ public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
     @Override
     public NucleotideFamily getFamily() {
         return this.family;
+    }
+
+    @Override
+    public String getName() {
+        return this.family.getThreeLetterCode();
     }
 }

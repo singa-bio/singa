@@ -2,6 +2,8 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +28,7 @@ public class Fit3DAlignment {
 
     public static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
     public static final double DEFAULT_RMSD_CUTOFF = 2.5;
+    private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
@@ -34,24 +38,32 @@ public class Fit3DAlignment {
     private double queryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?, ?>> distanceMatrix;
     private List<List<LeafSubstructure<?, ?>>> environments;
-    private HashMap<List<LeafSubstructure<?, ?>>, List<List<LeafSubstructure<?, ?>>>> candidates;
+    private HashMap<List<LeafSubstructure<?, ?>>, Set<List<LeafSubstructure<?, ?>>>> candidates;
     private double rmsdCutoff;
     private TreeMap<Double, SubstructureSuperimposition> matches;
+    private Predicate<Atom> atomFilter;
 
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target) {
-        this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE);
+        this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER);
     }
 
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff) {
-        this(queryMotif, target, rmsdCutoff, DEFAULT_DISTANCE_TOLERANCE);
+        this(queryMotif, target, rmsdCutoff, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER);
     }
 
     public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance) {
+        this(queryMotif, target, rmsdCutoff, distanceTolerance, DEFAULT_ATOM_FILTER);
+    }
+
+    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+                          double distanceTolerance, Predicate<Atom> atomFilter) {
         this.queryMotif = queryMotif;
-        this.target = target;
+        // TODO this cast is not nice, can we do something better?
+        this.target = (BranchSubstructure<?>) target.getCopy();
         this.rmsdCutoff = rmsdCutoff;
         this.distanceTolerance = distanceTolerance;
+        this.atomFilter = atomFilter;
 
         if (queryMotif.size() > target.getAtomContainingSubstructures().size()) {
             throw new Fit3DException("search target must contain at least as many atom-containing substructures " +
@@ -111,7 +123,7 @@ public class Fit3DAlignment {
             List<LeafSubstructure<?, ?>> alignmentCandidate = validAlignment.stream()
                     .map(Pair::getSecond).collect(Collectors.toList());
             SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                    .calculateSubstructureSuperimposition(this.queryMotif, alignmentCandidate);
+                    .calculateSubstructureSuperimposition(this.queryMotif, alignmentCandidate, this.atomFilter);
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
                 this.matches.put(superimposition.getRmsd(), superimposition);
             }
@@ -127,7 +139,7 @@ public class Fit3DAlignment {
 //                    .combinations(this.queryMotif.size(), environment)
 //                    .collect(Collectors.toList());
             // TODO continue here, evaluate, etc...
-            List<List<LeafSubstructure<?,?>>> currentCandidates = new ValidCandidateGenerator(this.queryMotif,environment).getValidCandidates();
+            Set<List<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(this.queryMotif, environment).getValidCandidates();
             this.candidates.put(environment, currentCandidates);
         }
     }

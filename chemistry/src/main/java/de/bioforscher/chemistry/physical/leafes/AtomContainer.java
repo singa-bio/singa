@@ -10,13 +10,22 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     private StructuralFamilyType family;
 
+    private String name;
+
     public AtomContainer(int identifier, StructuralFamilyType family) {
         super(identifier);
         this.family = family;
     }
 
+    public AtomContainer(int identifier, StructuralFamilyType family, String name) {
+        super(identifier);
+        this.family = family;
+        this.name = name;
+    }
+
     public AtomContainer(AtomContainer atomContainer) {
         super(atomContainer);
+        this.name = atomContainer.name;
     }
 
     @Override
@@ -33,5 +42,14 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
     @Override
     public StructuralFamilyType getFamily() {
         return this.family;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

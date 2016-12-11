@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 
 import java.util.EnumMap;
@@ -13,12 +14,12 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
  * in the residues, where possible. No distance criterion is used but the knowledge of the residues and the usually
  * connected atoms. Different options can be set.
  */
-public class ResidueFactory {
+public class LeafFactory {
 
     /**
      * the factory used to parse all residues.
      */
-    private static final ResidueFactory factory = new ResidueFactory();
+    private static final LeafFactory factory = new LeafFactory();
 
     /**
      * Tries to saturate the residue with hydrogen atoms if they are in the given map of atoms.
@@ -30,12 +31,69 @@ public class ResidueFactory {
      */
     private boolean omitHydrogens = false;
 
-    private ResidueFactory() {
+    private LeafFactory() {
     }
 
-    public static Residue createResidueFromAtoms(int identifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
+    public static Nucleotide createNucleotideFromAtoms(int identifier, NucleotideFamily nucleotideFamily, EnumMap<AtomName, Atom> atoms) {
+        // create new Nucleotide
+        Nucleotide nucleotide = new Nucleotide(identifier, nucleotideFamily);
+        if (factory.omitHydrogens) {
+            // without hydrogens
+            atoms.values().stream()
+                    .filter(atom -> !atom.isHydrogen())
+                    .forEach(nucleotide::addNode);
+        } else {
+            // all
+            atoms.values().forEach(nucleotide::addNode);
+        }
 
-        // create new residue
+        connectRibose(nucleotide, atoms);
+
+        switch (nucleotideFamily) {
+            case ADENOSINE: {
+                break;
+            }
+            case CYTIDINE: {
+                break;
+            }
+            case DESOXYADENOSINE: {
+                break;
+            }
+            case DESOXYCYTIDINE: {
+                break;
+            }
+            case DESOXYGUANOSINE: {
+                break;
+            }
+            case DESOXYTHYMIDINE: {
+                break;
+            }
+            case DESOXYURIDINE: {
+                break;
+            }
+            case GUANOSINE: {
+                break;
+            }
+            case THYMIDINE: {
+
+            }
+            case URIDINE: {
+
+            }
+        }
+
+        return nucleotide;
+    }
+
+    private static void connectRibose(Nucleotide nucleotide, EnumMap<AtomName, Atom> atoms) {
+
+
+
+    }
+
+
+    public static Residue createResidueFromAtoms(int identifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
+        // create new Residue
         Residue residue = new Residue(identifier, residueFamily);
         // and add atoms
         if (factory.omitHydrogens) {

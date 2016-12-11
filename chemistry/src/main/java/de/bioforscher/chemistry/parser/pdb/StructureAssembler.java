@@ -5,10 +5,10 @@ import de.bioforscher.chemistry.parser.pdb.tokens.TerminatorTokens;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFactory;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 
 import java.util.EnumMap;
@@ -131,7 +131,7 @@ public class StructureAssembler {
     }
 
     private void assembleResidue() {
-        Residue currentResidue = ResidueFactory.createResidueFromAtoms(this.lastResidueSerial, this.lastResidueFamily, this.currentResidueAtoms);
+        Residue currentResidue = LeafFactory.createResidueFromAtoms(this.lastResidueSerial, this.lastResidueFamily, this.currentResidueAtoms);
         // when no chain is present put the residue in the current global substructure
         if (this.currentChain != null) {
             this.currentChain.addSubstructure(currentResidue);

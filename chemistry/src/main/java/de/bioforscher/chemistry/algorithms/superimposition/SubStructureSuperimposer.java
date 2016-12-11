@@ -214,7 +214,8 @@ public class SubStructureSuperimposer {
                         .get(positionMapping.get(atom.getIdentifier()))
                         .as(Vector3D.class))));
 
-        logger.debug("superimposed substructures: {}", toAlignmentString(perAtomAlignment));
+        logger.debug("superimposed substructures (RMSD {}): {}", vectorSuperimposition.getRmsd(),
+                toAlignmentString(perAtomAlignment));
 
         // compose superimposition container
         return new SubstructureSuperimposition(vectorSuperimposition.getRmsd(),

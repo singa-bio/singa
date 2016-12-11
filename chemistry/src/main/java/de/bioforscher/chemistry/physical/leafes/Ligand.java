@@ -11,7 +11,6 @@ import de.bioforscher.chemistry.physical.model.StructuralFamily;
  */
 public class Ligand extends LeafSubstructure<Ligand, StructuralFamily> {
 
-
     public Ligand(int identifier) {
         super(identifier);
     }
@@ -27,6 +26,12 @@ public class Ligand extends LeafSubstructure<Ligand, StructuralFamily> {
 
     @Override
     public StructuralFamily getFamily() {
+        return null;
+    }
+
+
+    @Override
+    public String getName() {
         return null;
     }
 }

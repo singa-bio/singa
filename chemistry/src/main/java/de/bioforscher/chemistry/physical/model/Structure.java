@@ -5,8 +5,9 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.families.LeafFactory;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -91,6 +92,13 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
+    public List<LeafSubstructure<?,?>> getAllLeafs() {
+        return this.substructures.values().stream()
+                .map(BranchSubstructure::getAtomContainingSubstructures)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     public List<Atom> getAllAtoms() {
         return this.substructures.values().stream()
                 .map(BranchSubstructure::getAllAtoms)
@@ -100,7 +108,7 @@ public class Structure {
 
     public static void main(String[] args) throws IOException {
 
-        ResidueFactory.setToOmitHydrogens(true);
+        LeafFactory.setToOmitHydrogens(true);
         Structure structure = PDBParserService.parseProteinById("4HHB");
 
         if (structure.isContainingModels()) {
@@ -125,6 +133,5 @@ public class Structure {
             });
         }
     }
-
 
 }
