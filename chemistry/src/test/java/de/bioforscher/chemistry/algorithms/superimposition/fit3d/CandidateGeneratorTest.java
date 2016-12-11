@@ -25,7 +25,7 @@ public class CandidateGeneratorTest {
         this.target = PDBParserService.parseProteinById("4CHA");
         this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("motif_HDS_02.pdb")).getSubstructures().stream()
-                .map(BranchSubstructure::getAtomContainingSubstructures)
+                .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
         ((Residue) this.queryMotif.get(0)).addExchangeableType(ResidueFamily.GLUTAMIC_ACID);

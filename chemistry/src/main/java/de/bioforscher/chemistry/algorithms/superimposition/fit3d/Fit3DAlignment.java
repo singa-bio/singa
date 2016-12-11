@@ -65,7 +65,7 @@ public class Fit3DAlignment {
         this.distanceTolerance = distanceTolerance;
         this.atomFilter = atomFilter;
 
-        if (queryMotif.size() > target.getAtomContainingSubstructures().size()) {
+        if (queryMotif.size() > target.getLeafSubstructures().size()) {
             throw new Fit3DException("search target must contain at least as many atom-containing substructures " +
                     "as the query");
         }
@@ -175,7 +175,7 @@ public class Fit3DAlignment {
                 .map(LeafSubstructure::getContainingTypes)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<Integer> toBeRemoved = this.target.getAtomContainingSubstructures().stream()
+        List<Integer> toBeRemoved = this.target.getLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
                 .map(LeafSubstructure::getIdentifier)
                 .collect(Collectors.toList());
@@ -187,7 +187,7 @@ public class Fit3DAlignment {
      */
     private void composeEnvironments() {
         // iterate over reduced target structure
-        for (LeafSubstructure<?, ?> currentSubstructure : this.target.getAtomContainingSubstructures()) {
+        for (LeafSubstructure<?, ?> currentSubstructure : this.target.getLeafSubstructures()) {
             // collect environments within the bounds if the motif extent
             RegularVector distanceToOthers = this.distanceMatrix.getColumnByLabel(currentSubstructure);
             List<LeafSubstructure<?, ?>> environment = new ArrayList<>();

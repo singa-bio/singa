@@ -22,12 +22,15 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     private final Vector translation;
     private final Matrix rotation;
     private final List<LeafSubstructure<?, ?>> mappedCandidate;
+    private final List<LeafSubstructure<?, ?>> mappedFullCandidate;
 
-    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?, ?>> mappedCandidate) {
+    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?, ?>> mappedCandidate,
+                                       List<LeafSubstructure<?,?>> mappedFullCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
         this.mappedCandidate = mappedCandidate;
+        this.mappedFullCandidate = mappedFullCandidate;
     }
 
     @Override
@@ -55,6 +58,11 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     @Override
     public List<LeafSubstructure<?, ?>> getMappedCandidate() {
         return this.mappedCandidate;
+    }
+
+    @Override
+    public List<LeafSubstructure<?, ?>> getMappedFullCandidate() {
+        return this.mappedFullCandidate;
     }
 
     @Override

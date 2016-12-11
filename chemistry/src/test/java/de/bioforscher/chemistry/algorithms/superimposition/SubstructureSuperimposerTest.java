@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author fk
  */
-public class BranchSubstructureSuperimposerTest {
+public class SubstructureSuperimposerTest {
 
     private BranchSubstructure<?> candidate;
     private BranchSubstructure<?> reference;
@@ -39,11 +40,11 @@ public class BranchSubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isAlphaCarbon());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
+                superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .flatMap(subStructure -> subStructure.getAllAtoms().stream())
                 .count(), 3);
-        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getAtomContainingSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 
     @Test
@@ -51,11 +52,11 @@ public class BranchSubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isBackbone());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
+                superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .flatMap(subStructure -> subStructure.getAllAtoms().stream())
                 .count(), 12);
-        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getAtomContainingSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 
     @Test
@@ -63,18 +64,29 @@ public class BranchSubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isSidechain());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
+                superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
-                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-                .count(), 12);
-        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getAtomContainingSubstructures().size());
+                .mapToLong(subStructure -> subStructure.getAllAtoms().size())
+                .sum(), 12);
+        assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 
     @Test
     public void shouldCalculateIdealSubStructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate);
-        assertEquals(superimposition.getRmsd(), 0.6439715367058053, 0E-9);
+        assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
+    }
+
+    @Test
+    public void shouldCalculateMappedFullCandidates() {
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                .calculateIdealSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isBackbone());
+        superimposition.getMappedFullCandidate().stream().map(leaf -> leaf.getPDBLines().stream().collect(Collectors.joining("\n"))).forEach(System.out::println);
+        assertEquals(24, superimposition.getMappedFullCandidate().stream()
+                .map(LeafSubstructure::getAllAtoms)
+                .mapToLong(Collection::size)
+                .sum());
     }
 
     @Test
@@ -84,11 +96,11 @@ public class BranchSubstructureSuperimposerTest {
 //        SubstructureSuperimposition superimposition = SubStructureSuperimposer
 //                .calculateSubstructureSuperimposition(referenceWithMissingAtoms, this.candidate);
 //        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
-//                superimposition.applyTo(this.candidate.getAtomContainingSubstructures());
+//                superimposition.applyTo(this.candidate.getLeafSubstructures());
 //        assertEquals(superimposition.getMappedCandidate().stream()
 //                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
 //                .count(), 3);
 //        assertEquals(reconstructedAndMappedCandidate.size(),
-//                referenceWithMissingAtoms.getAtomContainingSubstructures().size());
+//                referenceWithMissingAtoms.getLeafSubstructures().size());
     }
 }

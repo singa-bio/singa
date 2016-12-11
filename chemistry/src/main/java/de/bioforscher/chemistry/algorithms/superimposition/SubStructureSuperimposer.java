@@ -5,6 +5,7 @@ import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.algorithms.superimposition.VectorSuperimposer;
 import de.bioforscher.mathematics.algorithms.superimposition.VectorSuperimposition;
@@ -35,18 +36,14 @@ public class SubStructureSuperimposer {
     private double rmsd;
     private Vector translation;
     private Matrix rotation;
-    private Vector3D referenceCentroid;
-    private List<BranchSubstructure> shiftedReference;
-    private Vector3D candidateCentroid;
-    private List<BranchSubstructure> shiftedCandidate;
 
     private SubStructureSuperimposer(BranchSubstructure reference, BranchSubstructure candidate) {
         this(reference, candidate, AtomFilter.isArbitrary());
     }
 
     private SubStructureSuperimposer(BranchSubstructure<?> reference, BranchSubstructure<?> candidate, Predicate<Atom> atomFilter) {
-        this.reference = reference.getAtomContainingSubstructures();
-        this.candidate = candidate.getAtomContainingSubstructures();
+        this.reference = reference.getLeafSubstructures();
+        this.candidate = candidate.getLeafSubstructures();
         this.atomFilter = atomFilter;
 
         if (this.reference.size() != this.candidate.size() || this.reference.isEmpty() || this.candidate.isEmpty())
@@ -131,7 +128,7 @@ public class SubStructureSuperimposer {
 
 
     /**
-     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of substrutures.
+     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of {@link LeafSubstructure}.
      * <p>
      * <b>NOTE:</b> The superimposition is not necessarily the best. When matching incompatible residues one can obtain
      * a pseudo-better RMSD due to reduction of atoms.
@@ -151,6 +148,11 @@ public class SubStructureSuperimposer {
         return optionalSuperimposition.orElse(null);
     }
 
+    /**
+     * Finds the superimposition for a list of {@link LeafSubstructure} according to their input order
+     *
+     * @return the superimposition according to their order
+     */
     private SubstructureSuperimposition calculateSuperimposition() {
 
         Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment = new LinkedHashMap<>();
@@ -187,6 +189,11 @@ public class SubStructureSuperimposer {
                         .map(Atom::getPosition)
                         .collect(Collectors.toList()));
 
+        // store result
+        this.translation = vectorSuperimposition.getTranslation();
+        this.rotation = vectorSuperimposition.getRotation();
+        this.rmsd = vectorSuperimposition.getRmsd();
+
         // store mapping of atoms to vectors
         List<Vector> mappedPositions = vectorSuperimposition.getMappedCandidate();
         Map<Integer, Integer> positionMapping = new HashMap<>();
@@ -196,6 +203,11 @@ public class SubStructureSuperimposer {
 
         // use a copy of the candidate to apply the mapping after calculating the superimposition
         List<LeafSubstructure<?, ?>> mappedCandidate = this.candidate.stream()
+                .map(LeafSubstructure::getCopy)
+                .collect(Collectors.toList());
+
+        // also create a copy for the full all-atom candidate
+        List<LeafSubstructure<?, ?>> mappedFullCandidate = this.candidate.stream()
                 .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());
 
@@ -214,14 +226,23 @@ public class SubStructureSuperimposer {
                         .get(positionMapping.get(atom.getIdentifier()))
                         .as(Vector3D.class))));
 
-        logger.debug("superimposed substructures (RMSD {}): {}", vectorSuperimposition.getRmsd(),
+        // apply superimposition to full all-atom copy of the candidate
+        mappedFullCandidate.stream()
+                .map(Substructure::getAllAtoms)
+                .flatMap(List::stream)
+                .forEach(atom -> atom.setPosition(this.rotation
+                        .transpose()
+                        .multiply(atom.getPosition())
+                        .add(this.translation).as(Vector3D.class)));
+
+        logger.debug("superimposed substructures (RMSD {}): {}", this.rmsd,
                 toAlignmentString(perAtomAlignment));
 
         // compose superimposition container
         return new SubstructureSuperimposition(vectorSuperimposition.getRmsd(),
-                vectorSuperimposition.getTranslation(),
-                vectorSuperimposition.getRotation(),
-                mappedCandidate);
+                this.translation,
+                this.rotation,
+                mappedCandidate, mappedFullCandidate);
     }
 
     /**

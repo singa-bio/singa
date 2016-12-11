@@ -125,7 +125,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @return distance matrix of all {@link LeafSubstructure}s
      */
     public LabeledSymmetricMatrix<LeafSubstructure<?, ?>> getDistanceMatrix() {
-        List<LeafSubstructure<?, ?>> leafSubstructures = getAtomContainingSubstructures();
+        List<LeafSubstructure<?, ?>> leafSubstructures = getLeafSubstructures();
         SymmetricMatrix distanceMatrix = VectorMetricProvider.EUCLIDEAN_METRIC
                 .calculateDistancesPairwise(leafSubstructures.stream()
                         .map(LeafSubstructure::getPosition)
@@ -142,7 +142,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @return distance matrix of all {@link LeafSubstructure}s
      */
     public LabeledSymmetricMatrix<LeafSubstructure<?, ?>> getSquaredDistanceMatrix() {
-        List<LeafSubstructure<?, ?>> leafSubstructures = getAtomContainingSubstructures();
+        List<LeafSubstructure<?, ?>> leafSubstructures = getLeafSubstructures();
         SymmetricMatrix distanceMatrix = VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
                 .calculateDistancesPairwise(leafSubstructures.stream()
                         .map(LeafSubstructure::getPosition)
@@ -470,13 +470,13 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      *
      * @return list of atom-containing substructures
      */
-    public List<LeafSubstructure<?, ?>> getAtomContainingSubstructures() {
+    public List<LeafSubstructure<?, ?>> getLeafSubstructures() {
         List<LeafSubstructure<?, ?>> atomContainingSubstructures = new ArrayList<>();
         for (Substructure substructure : this.substructures.values()) {
             if (substructure instanceof LeafSubstructure) {
                 atomContainingSubstructures.add((LeafSubstructure) substructure);
             } else if (substructure instanceof BranchSubstructure) {
-                atomContainingSubstructures.addAll(((BranchSubstructure<?>) substructure).getAtomContainingSubstructures());
+                atomContainingSubstructures.addAll(((BranchSubstructure<?>) substructure).getLeafSubstructures());
             }
         }
         return atomContainingSubstructures;

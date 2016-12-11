@@ -33,7 +33,7 @@ public class Fit3DAlignmentTest {
         this.target = PDBParserService.parseProteinById("1GL0");
         this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb")).getSubstructures().stream()
-                .map(BranchSubstructure::getAtomContainingSubstructures)
+                .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
         ((Residue) this.queryMotif.get(0)).addExchangeableType(ResidueFamily.GLUTAMIC_ACID);
@@ -48,6 +48,6 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldGenerateCombinations() {
-        assertEquals(10L, StreamCombinations.combinations(3, this.queryMotif).count());
+        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif).count());
     }
 }

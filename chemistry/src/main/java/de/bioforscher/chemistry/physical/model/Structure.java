@@ -94,7 +94,7 @@ public class Structure {
 
     public List<LeafSubstructure<?,?>> getAllLeafs() {
         return this.substructures.values().stream()
-                .map(BranchSubstructure::getAtomContainingSubstructures)
+                .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

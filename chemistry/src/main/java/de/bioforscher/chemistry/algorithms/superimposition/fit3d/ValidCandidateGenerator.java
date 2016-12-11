@@ -4,10 +4,7 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,10 +15,10 @@ import java.util.stream.Collectors;
  * <pre>
  *  E(H) = (E)
  * </pre>
- *
+ * <p>
  * For a given extracted environment N=(H,E,D1,S1,D2,H2,S2) only the following candidates of size <i>k</i>
  * are generated to be then aligned to the query motif:
- *
+ * <p>
  * <pre>
  *  C1 =   H | D1 | S1
  *  C2 =   H | D1 | S2
@@ -82,7 +79,7 @@ public class ValidCandidateGenerator {
                                 return newCandidate;
                             })
                     )
-                    .filter(candidate -> candidate.stream().map(LeafSubstructure::getIdentifier).distinct().count() == currentPosition +1)
+                    .filter(candidate -> candidate.stream().map(LeafSubstructure::getIdentifier).distinct().count() == currentPosition + 1)
                     // FIXME we should implement equal method
                     .collect(Collectors.toSet());
         }
@@ -96,8 +93,30 @@ public class ValidCandidateGenerator {
                             .collect(Collectors.joining("\t", "[", "]")))
                     .collect(Collectors.joining("\n")));
         }
+
+//        filterRedundantCandidates();
+
         return this.candidates;
     }
+
+    /**
+     * Filters redundant candidates, because combination is regardless of the order of elements.
+     */
+    // TODO implement this reduction of candidates
+//    private void filterRedundantCandidates() {
+//        Iterator<List<LeafSubstructure<?, ?>>> candidateIterator = this.candidates.iterator();
+//        while (candidateIterator.hasNext()){
+//            List<LeafSubstructure<?, ?>> currentCandidate = candidateIterator.next();
+//            for (List<LeafSubstructure<?,?>> candidate: this.candidates){
+//                if(candidate.containsAll(currentCandidate)){
+//                    candidateIterator.remove();
+//                    break;
+//                }
+//            }
+//        }
+////        this.candidates.removeIf(candidate -> this.candidates.stream()
+////                .anyMatch(candidateToCheck -> candidateToCheck.containsAll(candidate)));
+//    }
 
     private List<LeafSubstructure<?, ?>> cloneList(List<LeafSubstructure<?, ?>> motif) {
         return motif.stream()

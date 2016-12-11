@@ -66,6 +66,6 @@ public class BranchSubstructureTest {
                                                             .getResource("1pqs.pdb").getPath());
         BranchSubstructure<?> firstsub = structure.getSubstructures().get(0);
         System.out.println(firstsub);
-        System.out.println(firstsub.getAtomContainingSubstructures());
+        System.out.println(firstsub.getLeafSubstructures());
     }
 }

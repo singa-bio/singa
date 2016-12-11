@@ -7,7 +7,7 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
@@ -21,7 +21,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,27 +42,21 @@ public class StructureViewer extends Application {
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.3;
-
+    public static Structure structure;
+    public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
     private final Group root = new Group();
     private final XForm world = new XForm();
-
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final XForm XYRotate = new XForm();
     private final XForm XYTranslate = new XForm();
     private final XForm ZRotate = new XForm();
-
     private final XForm moleculeGroup = new XForm();
-
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-
-    public static Structure structure;
-    public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
-
     private Map<String, PhongMaterial> chainMaterials;
 
     public static void main(String[] args) {
@@ -114,7 +107,7 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        final Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
+        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .as(Vector3D.class).multiply(3.0);
@@ -132,7 +125,7 @@ public class StructureViewer extends Application {
         this.world.getChildren().addAll(this.moleculeGroup);
     }
 
-    private void addLeaf(LeafSubstructure<?,?> leafSubstructure) {
+    private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
         leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
         leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }
@@ -141,7 +134,7 @@ public class StructureViewer extends Application {
         chain.getEdges().forEach(bond -> addChainBond(chain, bond));
     }
 
-    private void addAtom(LeafSubstructure<?,?> origin, Atom atom) {
+    private void addAtom(LeafSubstructure<?, ?> origin, Atom atom) {
         Sphere atomShape = new Sphere(1.0);
         atomShape.setMaterial(getMaterial(origin, atom));
         atomShape.setTranslateX(atom.getPosition().getX());
@@ -150,7 +143,7 @@ public class StructureViewer extends Application {
         this.moleculeGroup.getChildren().add(atomShape);
     }
 
-    private void addLeafBond(LeafSubstructure<?,?> origin, Bond bond) {
+    private void addLeafBond(LeafSubstructure<?, ?> origin, Bond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         this.moleculeGroup.getChildren().add(bondShape);
@@ -182,7 +175,7 @@ public class StructureViewer extends Application {
         return bond;
     }
 
-    private PhongMaterial getMaterial(LeafSubstructure<?,?> origin, Atom atom) {
+    private PhongMaterial getMaterial(LeafSubstructure<?, ?> origin, Atom atom) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
         } else {
@@ -195,7 +188,7 @@ public class StructureViewer extends Application {
         }
     }
 
-    private PhongMaterial getMaterial(LeafSubstructure<?,?> origin, Bond edge) {
+    private PhongMaterial getMaterial(LeafSubstructure<?, ?> origin, Bond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {
