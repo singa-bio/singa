@@ -45,7 +45,7 @@ public final class ElementProvider {
     public static final Element NICKEL = addElement(new Element("Nickel", "Ni", 27, 58.6934));
     public static final Element COBALT = addElement(new Element("Cobalt", "Co", 28, 58.9332));
     public static final Element COPPER = addElement(new Element("Copper", "Cu", 29, 63.546));
-    public static final Element ZINC = addElement(new Element("Zinc", "Zi", 30, 65.39));
+    public static final Element ZINC = addElement(new Element("Zinc", "Zn", 30, 65.39));
     public static final Element GALLIUM = addElement(new Element("Gallium", "Ga", 31, 69.723));
     public static final Element GERMANIUM = addElement(new Element("Germanium", "Ge", 32, 72.64));
     public static final Element ARSENIC = addElement(new Element("Arsenic", "As", 33, 74.9216));
