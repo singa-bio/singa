@@ -40,7 +40,7 @@ public final class ElementProvider {
     public static final Element TITANIUM = addElement(new Element("Titanium", "Ti", 22, 47.867));
     public static final Element VANADIUM = addElement(new Element("Vanadium", "V", 23, 50.9415));
     public static final Element CHROMIUM = addElement(new Element("Chromium", "Cr", 24, 51.9961));
-    public static final Element MANGANESE = addElement(new Element("Manganese", "Mg", 25, 54.938));
+    public static final Element MANGANESE = addElement(new Element("Manganese", "Mn", 25, 54.938));
     public static final Element IRON = addElement(new Element("Iron", "Fe", 26, 55.845));
     public static final Element NICKEL = addElement(new Element("Nickel", "Ni", 27, 58.6934));
     public static final Element COBALT = addElement(new Element("Cobalt", "Co", 28, 58.9332));
