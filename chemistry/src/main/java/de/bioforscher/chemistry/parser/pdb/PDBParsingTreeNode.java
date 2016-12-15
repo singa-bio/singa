@@ -19,6 +19,7 @@ public class PDBParsingTreeNode {
 
     private StructureLevel level;
     private String identifier;
+    private Map<Atom, UniqueAtomIdentifer> identiferMap;
     private Atom atom;
 
     private List<PDBParsingTreeNode> children;
@@ -27,6 +28,7 @@ public class PDBParsingTreeNode {
         this.identifier = identifier;
         this.level = level;
         this.children = new ArrayList<>();
+        this.identiferMap = new HashMap<>();
     }
 
     public PDBParsingTreeNode(String identifier, StructureLevel level, Atom atom) {
@@ -38,10 +40,6 @@ public class PDBParsingTreeNode {
 
     public StructureLevel getLevel() {
         return this.level;
-    }
-
-    public void setLevel(StructureLevel level) {
-        this.level = level;
     }
 
     public String getIdentifier() {
@@ -62,10 +60,6 @@ public class PDBParsingTreeNode {
 
     public List<PDBParsingTreeNode> getChildren() {
         return this.children;
-    }
-
-    public void setChildren(List<PDBParsingTreeNode> children) {
-        this.children = children;
     }
 
     public List<PDBParsingTreeNode> getNodesFromLevel(StructureLevel level) {
@@ -171,6 +165,7 @@ public class PDBParsingTreeNode {
                     }
                     // System.out.println("   added Leaf: " + identifer.getLeafIdentifer());
                     PDBParsingTreeNode pdbParsingTreeNode = new PDBParsingTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF);
+                    pdbParsingTreeNode.identiferMap.put(atom, identifer);
                     // System.out.println("    appending Atom: " + identifer.getAtomSerial());
                     pdbParsingTreeNode.children.add(new PDBParsingTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
                     iterator.add(pdbParsingTreeNode);
@@ -185,4 +180,7 @@ public class PDBParsingTreeNode {
         }
     }
 
+    public Map<Atom, UniqueAtomIdentifer> getIdentiferMap() {
+        return this.identiferMap;
+    }
 }

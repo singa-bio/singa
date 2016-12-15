@@ -18,6 +18,7 @@ import static de.bioforscher.chemistry.parser.pdb.tokens.AtomToken.*;
 
 /**
  * @author cl
+ * @deprecated
  */
 public class StructureAssembler {
 
@@ -76,7 +77,6 @@ public class StructureAssembler {
                 assembler.currentModel = new StructuralModel(modelSerial);
                 if (!assembler.containsModels) {
                     assembler.containsModels = true;
-                    assembler.globalStructure.setContainingModels(true);
                 }
             } else if (TerminatorTokens.MODEL_TERMINATOR.matcher(currentLine).matches()) {
                 assembler.assembleChain();

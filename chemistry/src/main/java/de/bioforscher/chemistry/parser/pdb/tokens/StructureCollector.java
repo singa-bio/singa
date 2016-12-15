@@ -5,6 +5,7 @@ import de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.LigandFamily;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
@@ -29,7 +30,7 @@ public class StructureCollector {
     private String currentPDB = "0000";
     private int currentModel = 0;
 
-    private Map<Atom, UniqueAtomIdentifer> atoms;
+    private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<String, String> leafStructure;
 
     public StructureCollector() {
@@ -43,48 +44,55 @@ public class StructureCollector {
         StructureCollector collector = new StructureCollector();
         logger.debug("collecting content from {} pdblines", pdbLines.size());
         for (String currentLine : pdbLines) {
-            if (RECORD_PATTERN.matcher(currentLine).matches()) {
+            if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = collector.createUniqueIdentifier(currentLine);
-                collector.atoms.put(AtomToken.assembleAtom(currentLine), identifier);
+                collector.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 collector.leafStructure.put(String.valueOf(identifier.getAtomSerial()), RESIDUE_NAME.extract(currentLine));
+            } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                collector.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
+            } else if (TitleToken.RECORD_PATTERN.matcher((currentLine)).matches()) {
+                collector.currentPDB = TitleToken.ID_CODE.extract(currentLine);
             }
         }
 
         logger.debug("grouping lines by content");
         PDBParsingTreeNode root = new PDBParsingTreeNode(collector.currentPDB, PDBParsingTreeNode.StructureLevel.STRUCTURE);
-        collector.atoms.forEach(root::appendAtom);
+        collector.atoms.forEach((identifer, atom) -> root.appendAtom(atom, identifer));
 
         Map<String, String> leafNames = root.getLeafNames(collector.leafStructure);
 
         Structure structure = new Structure();
 
         logger.debug("creating structure");
-        int graphId = 0;
-        for (PDBParsingTreeNode chainNode : root.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.CHAIN)) {
-            if (chainNode.getIdentifier().matches(chainId)) {
-                logger.trace("collecting leafs for chain {}", chainNode.getIdentifier());
-                Chain chain = new Chain(graphId++);
-                chain.setChainIdentifier(chainNode.getIdentifier());
-                for (PDBParsingTreeNode leafNode : chainNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.LEAF)) {
-                    String leafName = leafNames.get(leafNode.getIdentifier());
-                    logger.trace("creating leaf {}:{} for chain {}", leafNode.getIdentifier(), leafName, chainNode.getIdentifier());
-                    Optional<ResidueFamily> residueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(leafName);
-                    EnumMap<AtomName, Atom> atoms = leafNode.getAtomMap();
-                    Map<Atom, UniqueAtomIdentifer> identifierMap = new HashMap<>();
-                    collector.atoms.forEach(identifierMap::put);
-                    if (residueFamily.isPresent()) {
-                        Residue residue = LeafFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), atoms);
-                        residue.setIdentiferMap(identifierMap);
-                        chain.addSubstructure(residue);
-                    } else {
-                        AtomContainer<LigandFamily> container = new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
-                        container.setName(leafName);
-                        leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
-                        container.setIdentiferMap(identifierMap);
-                        chain.addSubstructure(container);
+        int chainGraphId = 0;
+        for (PDBParsingTreeNode modelNode : root.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.MODEL)) {
+            logger.debug("collecting chains for model {}", modelNode.getIdentifier());
+            StructuralModel model = new StructuralModel(Integer.valueOf(modelNode.getIdentifier()));
+            for (PDBParsingTreeNode chainNode : modelNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.CHAIN)) {
+                if (chainNode.getIdentifier().matches(chainId)) {
+                    logger.trace("collecting leafs for chain {}", chainNode.getIdentifier());
+                    Chain chain = new Chain(chainGraphId++);
+                    chain.setChainIdentifier(chainNode.getIdentifier());
+                    for (PDBParsingTreeNode leafNode : chainNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.LEAF)) {
+                        String leafName = leafNames.get(leafNode.getIdentifier());
+                        logger.trace("creating leaf {}:{} for chain {}", leafNode.getIdentifier(), leafName, chainNode.getIdentifier());
+                        Optional<ResidueFamily> residueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(leafName);
+                        EnumMap<AtomName, Atom> atoms = leafNode.getAtomMap();
+                        if (residueFamily.isPresent()) {
+                            Residue residue = LeafFactory.createResidueFromAtoms(Integer.valueOf(leafNode.getIdentifier()), residueFamily.get(), atoms);
+                            residue.setIdentiferMap(leafNode.getIdentiferMap());
+                            chain.addSubstructure(residue);
+                        } else {
+                            AtomContainer<LigandFamily> container = new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
+                            container.setName(leafName);
+                            leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
+                            container.setIdentiferMap(leafNode.getIdentiferMap());
+                            chain.addSubstructure(container);
+                        }
                     }
+                    model.addSubstructure(chain);
                 }
-                structure.addSubstructure(chain);
+                structure.addSubstructure(model);
             }
         }
 

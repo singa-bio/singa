@@ -24,28 +24,8 @@ public class Structure {
      */
     private Map<Integer, BranchSubstructure<?>> substructures;
 
-    private boolean containingModels;
-
     public Structure() {
         this.substructures = new TreeMap<>();
-    }
-
-    /**
-     * Returns true, if this Structure contains {@link StructuralModel}s.
-     *
-     * @return true, if this Structure contains {@link StructuralModel}s.
-     */
-    public boolean isContainingModels() {
-        return this.containingModels;
-    }
-
-    /**
-     * Sets whether this Structure contains {@link StructuralModel}s.
-     *
-     * @param containingModels true, if this Structure contains {@link StructuralModel}s.
-     */
-    public void setContainingModels(boolean containingModels) {
-        this.containingModels = containingModels;
     }
 
     public List<BranchSubstructure<?>> getSubstructures() {
@@ -63,26 +43,16 @@ public class Structure {
     }
 
     public List<StructuralModel> getAllModels() {
-        if (this.isContainingModels()) {
-            return this.getSubstructures().stream()
-                    .map(StructuralModel.class::cast)
-                    .collect(Collectors.toList());
-        } else {
-            throw new IllegalStateException("This structure does not contain models.");
-        }
+        return this.getSubstructures().stream()
+                .map(StructuralModel.class::cast)
+                .collect(Collectors.toList());
     }
 
     public List<Chain> getAllChains() {
-        if (this.isContainingModels()) {
-            return this.getAllModels().stream()
-                    .map(StructuralModel::getAllChains)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-        } else {
-            return this.getSubstructures().stream()
-                    .map(Chain.class::cast)
-                    .collect(Collectors.toList());
-        }
+        return this.getAllModels().stream()
+                .map(StructuralModel::getAllChains)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     public List<Residue> getAllResidues() {
@@ -92,7 +62,7 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public List<LeafSubstructure<?,?>> getAllLeafs() {
+    public List<LeafSubstructure<?, ?>> getAllLeafs() {
         return this.substructures.values().stream()
                 .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(Collection::stream)
@@ -110,28 +80,17 @@ public class Structure {
 
         LeafFactory.setToOmitHydrogens(true);
         Structure structure = PDBParserService.parseProteinById("4HHB");
-
-        if (structure.isContainingModels()) {
-            structure.getAllModels().forEach(model -> {
-                System.out.println("Model "+model.getIdentifier()+":");
-                model.getAllChains().forEach( chain -> {
-                    System.out.println(" Chain "+chain.getName()+":");
-                    chain.getResidues().forEach( residue -> {
-                        System.out.println("  Residue "+residue.toString()+"");
-                        residue.getAllAtoms().forEach(atom -> System.out.println("   Atom "+atom.getIdentifier()));
-                    });
-                });
-
-            });
-        } else {
-            structure.getAllChains().forEach( chain -> {
-                System.out.println("Chain "+chain.getName()+":");
-                chain.getResidues().forEach( residue -> {
-                    System.out.println(" Residue "+residue.toString()+"");
-                    residue.getAllAtoms().forEach(atom -> System.out.println("  Atom "+atom.getIdentifier()));
+        structure.getAllModels().forEach(model -> {
+            System.out.println("Model " + model.getIdentifier() + ":");
+            model.getAllChains().forEach(chain -> {
+                System.out.println(" Chain " + chain.getName() + ":");
+                chain.getResidues().forEach(residue -> {
+                    System.out.println("  Residue " + residue.toString() + "");
+                    residue.getAllAtoms().forEach(atom -> System.out.println("   Atom " + atom.getIdentifier()));
                 });
             });
-        }
+
+        });
     }
 
 }

@@ -13,6 +13,8 @@ import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -25,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static javafx.scene.input.KeyCode.L;
 
 /**
  * Created by Christoph on 27.09.2016.
@@ -42,7 +46,10 @@ public class StructureViewer extends Application {
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.3;
+
     public static Structure structure;
+    private Structure displayStructure;
+
     public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
     private final Group root = new Group();
     private final XForm world = new XForm();
@@ -71,7 +78,14 @@ public class StructureViewer extends Application {
         this.root.getChildren().add(this.world);
         this.root.setDepthTest(DepthTest.ENABLE);
 
-        // loadTestStructure();
+        if (structure.getAllModels().size() > 1) {
+            // add leafs
+            this.displayStructure = new Structure();
+            this.displayStructure.addSubstructure(structure.getSubstructures().get(0));
+        } else {
+            this.displayStructure = structure;
+        }
+
         translateToCentre();
         buildCamera();
         buildMolecule();
@@ -105,7 +119,7 @@ public class StructureViewer extends Application {
     }
 
     private void translateToCentre() {
-        List<Atom> allAtoms = structure.getAllAtoms();
+        List<Atom> allAtoms = this.displayStructure.getAllAtoms();
 
         final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
@@ -118,11 +132,12 @@ public class StructureViewer extends Application {
 
     private void buildMolecule() {
         // add leafs
-        structure.getAllLeafs().forEach(this::addLeaf);
+        this.displayStructure.getAllLeafs().forEach(this::addLeaf);
         // edges in chains (backbone connections)
-        structure.getAllChains().forEach(this::addChainConnections);
+        this.displayStructure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world
         this.world.getChildren().addAll(this.moleculeGroup);
+
     }
 
     private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
@@ -140,6 +155,12 @@ public class StructureViewer extends Application {
         atomShape.setTranslateX(atom.getPosition().getX());
         atomShape.setTranslateY(atom.getPosition().getY());
         atomShape.setTranslateZ(atom.getPosition().getZ());
+
+        // add tooltip
+        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomName()) + ":" +
+                atom.getIdentifier() + ") of " + origin.getName() + ":" + origin.getIdentifier());
+        Tooltip.install(atomShape, tooltip);
+
         this.moleculeGroup.getChildren().add(atomShape);
     }
 
@@ -167,8 +188,7 @@ public class StructureViewer extends Application {
         bond.setTranslateZ(newLocation.getZ());
 
         // phi
-        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate
-                .Z_AXIS));
+        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate.Z_AXIS));
         // theta
         bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.acos(delta.getZ() / distance)), Rotate.X_AXIS));
 
@@ -257,10 +277,11 @@ public class StructureViewer extends Application {
         });
     }
 
+
     private void handleKeyboard(Scene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case R:
+                case R: {
                     // reset to default
                     this.XYTranslate.translate.setX(0.0);
                     this.XYTranslate.translate.setY(0.0);
@@ -268,15 +289,9 @@ public class StructureViewer extends Application {
                     this.XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
                     this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
                     break;
+                }
             }
         });
     }
 
-    private void loadTestStructure() {
-        try {
-            structure = PDBParserService.parseProteinById("5E9R");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
