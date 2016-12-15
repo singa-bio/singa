@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.parser.pdb.tokens.AtomToken;
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.vectors.Vector3D;
@@ -189,6 +190,20 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     @Override
     public List<Atom> getAllAtoms() {
         return new ArrayList<>(this.atoms.values());
+    }
+
+    /**
+     * Gets the atom with this name, if possible.
+     *
+     * @param atomName The name of the atom.
+     * @return The Atom associated to this name.
+     * @throws NoSuchElementException if there is no atom with this name.
+     */
+    public Atom getAtomByName(AtomName atomName) {
+        return getNodes().stream()
+                .filter(atom -> atom.getAtomName() == atomName)
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     @Override

@@ -8,8 +8,10 @@ import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.LigandFamily;
+import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
+import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
@@ -62,6 +64,7 @@ public class StructureCollector {
         Map<String, String> leafNames = root.getLeafNames(collector.leafStructure);
 
         Structure structure = new Structure();
+        structure.setPdbID(root.getIdentifier());
 
         logger.debug("creating structure");
         int chainGraphId = 0;
@@ -83,11 +86,18 @@ public class StructureCollector {
                             residue.setIdentiferMap(leafNode.getIdentiferMap());
                             chain.addSubstructure(residue);
                         } else {
-                            AtomContainer<LigandFamily> container = new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
-                            container.setName(leafName);
-                            leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
-                            container.setIdentiferMap(leafNode.getIdentiferMap());
-                            chain.addSubstructure(container);
+                            Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
+                            if (nucleotideFamily.isPresent()) {
+                                Nucleotide nucleotide = LeafFactory.createNucleotideFromAtoms(Integer.valueOf(leafNode.getIdentifier()), nucleotideFamily.get(), atoms);
+                                nucleotide.setIdentiferMap(leafNode.getIdentiferMap());
+                                chain.addSubstructure(nucleotide);
+                            } else {
+                                AtomContainer<LigandFamily> container = new AtomContainer<>(Integer.valueOf(leafNode.getIdentifier()), LigandFamily.UNKNOWN);
+                                container.setName(leafName);
+                                leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
+                                container.setIdentiferMap(leafNode.getIdentiferMap());
+                                chain.addSubstructure(container);
+                            }
                         }
                     }
                     model.addSubstructure(chain);
@@ -95,7 +105,7 @@ public class StructureCollector {
                 structure.addSubstructure(model);
             }
         }
-
+        structure.getAllChains().forEach(Chain::connectChainBackbone);
         return structure;
     }
 

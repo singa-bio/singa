@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 
@@ -48,37 +49,76 @@ public class LeafFactory {
         }
 
         connectRibose(nucleotide, atoms);
+        connectPhosphateGroup(nucleotide, atoms);
+        nucleotide.addEdgeBetween(atoms.get(P), atoms.get(O5Pr));
 
         switch (nucleotideFamily) {
             case ADENOSINE: {
+                nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
+                connectPurine(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C6), atoms.get(N6));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N9));
                 break;
             }
             case CYTIDINE: {
+                nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(N4));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
                 break;
             }
             case DESOXYADENOSINE: {
+                connectPurine(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C6), atoms.get(N6));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N9));
                 break;
             }
             case DESOXYCYTIDINE: {
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(N4));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
                 break;
             }
             case DESOXYGUANOSINE: {
+                connectPurine(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C6), atoms.get(O6));
+                nucleotide.addEdgeBetween(atoms.get(C2), atoms.get(N2));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N9));
                 break;
             }
             case DESOXYTHYMIDINE: {
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
+                nucleotide.addEdgeBetween(atoms.get(C5), atoms.get(C7));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
                 break;
             }
             case DESOXYURIDINE: {
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
                 break;
             }
             case GUANOSINE: {
+                nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
+                connectPurine(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C6), atoms.get(O6));
+                nucleotide.addEdgeBetween(atoms.get(C2), atoms.get(N2));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N9));
                 break;
             }
             case THYMIDINE: {
-
+                nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
+                nucleotide.addEdgeBetween(atoms.get(C5), atoms.get(C7));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
             }
             case URIDINE: {
-
+                nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
+                connectPyrimidin(nucleotide, atoms);
+                nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
+                nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
             }
         }
 
@@ -86,11 +126,27 @@ public class LeafFactory {
     }
 
     private static void connectRibose(Nucleotide nucleotide, EnumMap<AtomName, Atom> atoms) {
-
-
-
+        connectInOrder(nucleotide, atoms, C1Pr, C2Pr, C3Pr, C4Pr, O4Pr, C1Pr);
+        nucleotide.addEdgeBetween(atoms.get(C3Pr), atoms.get(O3Pr));
+        nucleotide.addEdgeBetween(atoms.get(C4Pr), atoms.get(C5Pr));
+        nucleotide.addEdgeBetween(atoms.get(C5Pr), atoms.get(O5Pr));
     }
 
+    private static void connectPhosphateGroup(Nucleotide nucleotide, EnumMap<AtomName, Atom> atoms) {
+        nucleotide.addEdgeBetween(atoms.get(P), atoms.get(OP1));
+        nucleotide.addEdgeBetween(atoms.get(P), atoms.get(OP2));
+        nucleotide.addEdgeBetween(atoms.get(P), atoms.get(OP3));
+    }
+
+    private static void connectPyrimidin(Nucleotide nucleotide, EnumMap<AtomName, Atom> atoms) {
+        connectInOrder(nucleotide, atoms, N1, C2, N3, C4, C5, C6, N1);
+        nucleotide.addEdgeBetween(atoms.get(C2), atoms.get(O2));
+    }
+
+    private static void connectPurine(Nucleotide nucleotide, EnumMap<AtomName, Atom> atoms) {
+        connectInOrder(nucleotide, atoms, N1, C2, N3, C4, N9, C8, N7, C5, C6, N1);
+        nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(C5));
+    }
 
     public static Residue createResidueFromAtoms(int identifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
         // create new Residue
@@ -229,16 +285,16 @@ public class LeafFactory {
     /**
      * Connects the atoms in the given order.
      *
-     * @param residue The residue to connect in.
+     * @param substructure The residue to connect in.
      * @param atoms The atoms to take from.
      * @param names The names that should be connected.
      */
-    private static void connectInOrder(Residue residue, EnumMap<AtomName, Atom> atoms, AtomName... names) {
+    private static void connectInOrder(LeafSubstructure substructure, EnumMap<AtomName, Atom> atoms, AtomName... names) {
         if (names.length < 2) {
             throw new IllegalArgumentException("Two or more atom names are required in order to connect them.");
         }
         for (int i = 1; i < names.length; i++) {
-            residue.addEdgeBetween(atoms.get(names[i - 1]), atoms.get(names[i]));
+            substructure.addEdgeBetween(atoms.get(names[i - 1]), atoms.get(names[i]));
         }
     }
 

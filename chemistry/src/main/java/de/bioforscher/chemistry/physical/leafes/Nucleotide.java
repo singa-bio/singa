@@ -47,4 +47,5 @@ public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
     public String getName() {
         return this.family.getThreeLetterCode();
     }
+
 }

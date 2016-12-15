@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
  */
 public class Structure {
 
+    private String pdbID;
+
     /**
      * The substructures of the graph.
      */
@@ -93,4 +95,11 @@ public class Structure {
         });
     }
 
+    public String getPdbID() {
+        return pdbID;
+    }
+
+    public void setPdbID(String pdbID) {
+        this.pdbID = pdbID;
+    }
 }

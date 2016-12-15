@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Substructure;
@@ -8,6 +10,10 @@ import de.bioforscher.core.utility.Nameable;
 
 import java.util.Map;
 import java.util.TreeMap;
+
+import static de.bioforscher.chemistry.physical.atoms.AtomName.O3Pr;
+import static de.bioforscher.chemistry.physical.atoms.AtomName.OP3;
+import static de.bioforscher.chemistry.physical.atoms.AtomName.P;
 
 /**
  * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
@@ -82,12 +88,16 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      * List of Residues ({@link BranchSubstructure#getResidues()}).
      */
     public void connectChainBackbone() {
-        Residue lastResidue = null;
-        for (Residue currentResidue : getResidues()) {
-            if (lastResidue != null) {
-                connectPeptideBonds(lastResidue, currentResidue);
+        LeafSubstructure<?,?> lastSubstructure = null;
+        for (LeafSubstructure<?,?> currentSubstructure: getLeafSubstructures()) {
+            if (lastSubstructure != null) {
+                if (lastSubstructure instanceof Residue && currentSubstructure instanceof Residue) {
+                    connectPeptideBonds((Residue) lastSubstructure, (Residue) currentSubstructure);
+                } else if (lastSubstructure instanceof Nucleotide && currentSubstructure instanceof Nucleotide) {
+                    connectNucleotideBonds((Nucleotide) lastSubstructure, (Nucleotide) currentSubstructure);
+                }
             }
-            lastResidue = currentResidue;
+            lastSubstructure = currentSubstructure;
         }
     }
 
@@ -102,6 +112,11 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         // creates the peptide backbone
         Bond bond = new Bond(nextEdgeIdentifier());
         addEdgeBetween(bond, source.getBackboneCarbon(), target.getBackboneNitrogen());
+    }
+
+    public void connectNucleotideBonds(Nucleotide source, Nucleotide target) {
+        Bond bond = new Bond(nextEdgeIdentifier());
+        addEdgeBetween(bond, source.getAtomByName(O3Pr), target.getAtomByName(P));
     }
 
     /**

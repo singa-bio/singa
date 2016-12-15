@@ -1,20 +1,16 @@
 package de.bioforscher.chemistry.physical.viewer;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.Vectors;
 import javafx.application.Application;
-import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -22,13 +18,10 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static javafx.scene.input.KeyCode.L;
 
 /**
  * Created by Christoph on 27.09.2016.
@@ -51,20 +44,23 @@ public class StructureViewer extends Application {
     private Structure displayStructure;
 
     public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
-    private final Group root = new Group();
-    private final XForm world = new XForm();
+    private Map<String, PhongMaterial> chainMaterials;
+    private final Group displayGroup = new Group();
+    private XForm world = new XForm();
+    private XForm moleculeGroup = new XForm();
+
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final XForm XYRotate = new XForm();
     private final XForm XYTranslate = new XForm();
     private final XForm ZRotate = new XForm();
-    private final XForm moleculeGroup = new XForm();
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    private Map<String, PhongMaterial> chainMaterials;
+
+    private TreeView<String> treeView;
 
     public static void main(String[] args) {
         launch(args);
@@ -75,8 +71,16 @@ public class StructureViewer extends Application {
 
         this.chainMaterials = new HashMap<>();
 
-        this.root.getChildren().add(this.world);
-        this.root.setDepthTest(DepthTest.ENABLE);
+        this.treeView = new TreeView<>();
+        this.treeView.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        displayModel(newValue.getValue());
+                    }
+                });
+
+        this.displayGroup.getChildren().add(this.world);
+        this.displayGroup.setDepthTest(DepthTest.ENABLE);
 
         if (structure.getAllModels().size() > 1) {
             // add leafs
@@ -86,25 +90,29 @@ public class StructureViewer extends Application {
             this.displayStructure = structure;
         }
 
+        fillTree();
         translateToCentre();
         buildCamera();
-        buildMolecule();
+        buildDisplayedStructure();
 
-        Scene scene = new Scene(this.root, 800, 600, true);
-        handleKeyboard(scene);
-        handleMouse(scene);
-        scene.setFill(Color.WHITE);
+        SubScene structureScene = new SubScene(this.displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
+        handleKeyboard(structureScene);
+        handleMouse(structureScene);
+        structureScene.setFill(Color.WHITE);
+
+        SplitPane pane = new SplitPane(structureScene, this.treeView);
+        Scene mainScene = new Scene(pane);
 
         primaryStage.setTitle("Singa Molecule Viewer");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(mainScene);
         primaryStage.show();
 
-        scene.setCamera(this.camera);
+        structureScene.setCamera(this.camera);
     }
 
     private void buildCamera() {
         //defining the order of rotations
-        this.root.getChildren().add(this.XYRotate);
+        this.displayGroup.getChildren().add(this.XYRotate);
         this.XYRotate.getChildren().add(this.XYTranslate);
         this.XYTranslate.getChildren().add(this.ZRotate);
         this.ZRotate.getChildren().add(this.camera);
@@ -119,7 +127,7 @@ public class StructureViewer extends Application {
     }
 
     private void translateToCentre() {
-        List<Atom> allAtoms = this.displayStructure.getAllAtoms();
+        List<Atom> allAtoms = structure.getAllAtoms();
 
         final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
@@ -130,7 +138,7 @@ public class StructureViewer extends Application {
                 atom.getPosition().multiply(3.0).subtract(centroid)));
     }
 
-    private void buildMolecule() {
+    private void buildDisplayedStructure() {
         // add leafs
         this.displayStructure.getAllLeafs().forEach(this::addLeaf);
         // edges in chains (backbone connections)
@@ -164,6 +172,29 @@ public class StructureViewer extends Application {
         this.moleculeGroup.getChildren().add(atomShape);
     }
 
+    private void fillTree() {
+        TreeItem<String> rootItem = new TreeItem<>(structure.getPdbID());
+        if (structure.getSubstructures().size() > 1) {
+            for (Substructure<?> substructure : structure.getSubstructures()) {
+                TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(substructure.getIdentifier()));
+                rootItem.getChildren().add(modelNode);
+            }
+        }
+        this.treeView.setRoot(rootItem);
+    }
+
+    private void displayModel(final String identifier) {
+        if (identifier.contains("Model")) {
+            this.displayStructure = new Structure();
+            this.world = new XForm();
+            this.moleculeGroup = new XForm();
+            this.displayStructure.addSubstructure(structure.getSubstructures().get(Integer.valueOf(identifier.replace("Model: ", "")) - 1));
+            buildDisplayedStructure();
+            this.displayGroup.getChildren().retainAll();
+            this.displayGroup.getChildren().add(this.world);
+        }
+    }
+
     private void addLeafBond(LeafSubstructure<?, ?> origin, Bond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
@@ -174,6 +205,7 @@ public class StructureViewer extends Application {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin));
         this.moleculeGroup.getChildren().add(bondShape);
+
     }
 
     private Cylinder createCylinderConnecting(Vector3D source, Vector3D target) {
@@ -234,7 +266,7 @@ public class StructureViewer extends Application {
         }
     }
 
-    private void handleMouse(Scene scene) {
+    private void handleMouse(SubScene scene) {
 
         scene.setOnMousePressed(me -> {
             this.mousePosX = me.getSceneX();
@@ -278,7 +310,7 @@ public class StructureViewer extends Application {
     }
 
 
-    private void handleKeyboard(Scene scene) {
+    private void handleKeyboard(SubScene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case R: {

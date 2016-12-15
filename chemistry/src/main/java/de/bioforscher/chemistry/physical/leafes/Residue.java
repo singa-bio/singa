@@ -78,19 +78,6 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
         return this.family.getThreeLetterCode();
     }
 
-    /**
-     * Gets the atom with this name, if possible.
-     *
-     * @param atomName The name of the atom.
-     * @return The Atom associated to this name.
-     * @throws NoSuchElementException if there is no atom with this name.
-     */
-    public Atom getAtomByName(AtomName atomName) {
-        return getNodes().stream()
-                .filter(atom -> atom.getAtomName() == atomName)
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
-    }
 
     /**
      * Returns the {@link AtomName#CA alpha carbon} (carbon with the side cain attached).

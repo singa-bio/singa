@@ -26,14 +26,11 @@ public class PDBParserPlayground {
         // NMR: 2N3Y
 
         LeafFactory.setToOmitHydrogens(true);
-        Structure structure = PDBParserService.parseProteinById("2n3y");
+        Structure structure = PDBParserService.parseProteinById("1F7V", "B");
 
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
         StructureViewer.structure = structure;
         Application.launch(StructureViewer.class);
-
-        // structure.getAllLeafs().stream().map(LeafSubstructure::getPDBLines).flatMap(Collection::stream).forEach(System.out::println);
-        // AtomToken.assemblePDBLine(structure.getAllLeafs().get(0)).forEach(System.out::println);
 
     }
 
