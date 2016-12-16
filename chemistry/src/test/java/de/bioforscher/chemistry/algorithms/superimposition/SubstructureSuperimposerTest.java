@@ -31,8 +31,8 @@ public class SubstructureSuperimposerTest {
                 .getResourceAsStream("motif_HDS_01.pdb"));
         Structure motif2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("motif_HDS_02.pdb"));
-        this.reference = motif1.getSubstructures().stream().collect(Collectors.toList()).get(0);
-        this.candidate = motif2.getSubstructures().stream().collect(Collectors.toList()).get(0);
+        this.reference = motif1.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
+        this.candidate = motif2.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
     }
 
     @Test

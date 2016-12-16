@@ -36,7 +36,7 @@ public class ConsensusAlignmentTest {
                     }
                 })
                 .filter(Objects::nonNull)
-                .map(Structure::getSubstructures)
+                .map(Structure::getBranchSubstructures)
                 .flatMap(Collection::stream)
                 .map(BranchSubstructure::getLeafSubstructures)
                 .collect(Collectors.toList());

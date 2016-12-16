@@ -24,7 +24,7 @@ public class CandidateGeneratorTest {
     public void setUp() throws Exception {
         this.target = PDBParserService.parseProteinById("4CHA");
         this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("motif_HDS_02.pdb")).getSubstructures().stream()
+                .getResourceAsStream("motif_HDS_02.pdb")).getBranchSubstructures().stream()
                 .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());

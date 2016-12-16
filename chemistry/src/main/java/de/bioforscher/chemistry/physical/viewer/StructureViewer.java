@@ -85,7 +85,7 @@ public class StructureViewer extends Application {
         if (structure.getAllModels().size() > 1) {
             // add leafs
             this.displayStructure = new Structure();
-            this.displayStructure.addSubstructure(structure.getSubstructures().get(0));
+            this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(0));
         } else {
             this.displayStructure = structure;
         }
@@ -174,8 +174,8 @@ public class StructureViewer extends Application {
 
     private void fillTree() {
         TreeItem<String> rootItem = new TreeItem<>(structure.getPdbID());
-        if (structure.getSubstructures().size() > 1) {
-            for (Substructure<?> substructure : structure.getSubstructures()) {
+        if (structure.getBranchSubstructures().size() > 1) {
+            for (Substructure<?> substructure : structure.getBranchSubstructures()) {
                 TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(substructure.getIdentifier()));
                 rootItem.getChildren().add(modelNode);
             }
@@ -188,7 +188,7 @@ public class StructureViewer extends Application {
             this.displayStructure = new Structure();
             this.world = new XForm();
             this.moleculeGroup = new XForm();
-            this.displayStructure.addSubstructure(structure.getSubstructures().get(Integer.valueOf(identifier.replace("Model: ", "")) - 1));
+            this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(Integer.valueOf(identifier.replace("Model: ", "")) - 1));
             buildDisplayedStructure();
             this.displayGroup.getChildren().retainAll();
             this.displayGroup.getChildren().add(this.world);
@@ -231,12 +231,16 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
         } else {
-            String chain = origin.getIdentiferMap().get(atom).getChainIdentifer();
-            if (this.chainMaterials.containsKey(chain)) {
-                return this.chainMaterials.get(chain);
-            } else {
-                return getMaterialForChain(origin.getIdentiferMap().get(atom).getChainIdentifer());
+            // TODO for some reason singular atoms are not assigned to the correct leaf?
+            if (origin.getIdentiferMap().containsKey(atom)) {
+                String chain = origin.getIdentiferMap().get(atom).getChainIdentifer();
+                if (this.chainMaterials.containsKey(chain)) {
+                    return this.chainMaterials.get(chain);
+                } else {
+                    return getMaterialForChain(origin.getIdentiferMap().get(atom).getChainIdentifer());
+                }
             }
+            return MaterialProvider.crateMaterialFromColor(Color.BLUE);
         }
     }
 
@@ -244,7 +248,10 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {
-            return getMaterialForChain(origin.getIdentiferMap().get(edge.getSource()).getChainIdentifer());
+            if (origin.getIdentiferMap().containsKey(edge.getSource())) {
+                return getMaterialForChain(origin.getIdentiferMap().get(edge.getSource()).getChainIdentifer());
+            }
+            return MaterialProvider.crateMaterialFromColor(Color.BLUE);
         }
     }
 

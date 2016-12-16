@@ -32,7 +32,7 @@ public class Fit3DAlignmentTest {
     public void setUp() throws IOException {
         this.target = PDBParserService.parseProteinById("1GL0");
         this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb")).getSubstructures().stream()
+                .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb")).getBranchSubstructures().stream()
                 .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());

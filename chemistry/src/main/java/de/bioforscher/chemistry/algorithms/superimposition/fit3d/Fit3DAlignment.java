@@ -7,7 +7,7 @@ import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
-import de.bioforscher.chemistry.physical.model.StructureUtilities;
+import de.bioforscher.chemistry.physical.model.Structures;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.Matrices;
@@ -153,7 +153,7 @@ public class Fit3DAlignment {
      */
     private void calculateMotifExtent() {
         LabeledSymmetricMatrix<LeafSubstructure<?, ?>> queryDistanceMatrix =
-                StructureUtilities.calculateDistanceMatrix(this.queryMotif);
+                Structures.calculateDistanceMatrix(this.queryMotif);
         // position of maximal element is always symmetric, hence we consider the first
         Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix)
                 .stream()

@@ -160,15 +160,16 @@ public class PDBParsingTreeNode {
                         if (leaf.identifier.equals(String.valueOf(identifer.getLeafIdentifer()))) {
                             // System.out.println("   correct leaf, appending atom:"+identifer.getAtomSerial());
                             leaf.children.add(new PDBParsingTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
+                            leaf.identiferMap.put(atom, identifer);
                             return;
                         }
                     }
                     // System.out.println("   added Leaf: " + identifer.getLeafIdentifer());
-                    PDBParsingTreeNode pdbParsingTreeNode = new PDBParsingTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF);
-                    pdbParsingTreeNode.identiferMap.put(atom, identifer);
+                    PDBParsingTreeNode leafNode = new PDBParsingTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF);
+                    leafNode.identiferMap.put(atom, identifer);
                     // System.out.println("    appending Atom: " + identifer.getAtomSerial());
-                    pdbParsingTreeNode.children.add(new PDBParsingTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
-                    iterator.add(pdbParsingTreeNode);
+                    leafNode.children.add(new PDBParsingTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
+                    iterator.add(leafNode);
                     break;
                 }
                 case LEAF:

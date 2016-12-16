@@ -6,6 +6,8 @@ import de.bioforscher.chemistry.physical.leafes.Ligand;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.StructurePredicates;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
@@ -408,15 +410,10 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @return All residues.
      */
     public List<Residue> getResidues() {
-        List<Residue> residues = new ArrayList<>();
-        for (Substructure branchSubstructure : this.substructures.values()) {
-            if (branchSubstructure instanceof Residue) {
-                residues.add((Residue) branchSubstructure);
-            } else if (branchSubstructure instanceof BranchSubstructure) {
-                residues.addAll(((BranchSubstructure<?>) branchSubstructure).getResidues());
-            }
-        }
-        return residues;
+        return getLeafSubstructures().stream()
+                .filter(StructurePredicates.isResidue())
+                .map(Residue.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -441,29 +438,17 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
         return this.edges.containsValue(edge);
     }
 
-    /**
-     * Returns all atom-containing substructures for a branchSubstructure, i.e. all substructures with non-empty
-     * {@link Atom} lists, which can be for instance {@link Residue}s, {@link Nucleotide}s or {@link Ligand}.
-     * This method returns a list containing the element itself if this is already a {@link BranchSubstructure} with atoms
-     *
-     * @param atomContainingBranchSubstructures
-     * @param branchSubstructure                The branchSubstructure for which all atom-containing substructures are wanted.
-     * @return The list of atom containing substructures.
-     */
-    // TODO do we need this anymore?
-    @Deprecated
-    private List<Substructure> findAtomContainingSubStructures(List<Substructure> atomContainingBranchSubstructures, Substructure branchSubstructure) {
-        // branchSubstructure contains atoms
-        if (branchSubstructure != null && !branchSubstructure.getNodes().isEmpty()) {
-            atomContainingBranchSubstructures.add(branchSubstructure);
-        } else {
-            for (Substructure substructure : getSubstructures()) {
-                findAtomContainingSubStructures(atomContainingBranchSubstructures, substructure);
+    public List<BranchSubstructure<?>> getBranchSubstructures() {
+        List<BranchSubstructure<?>> branchSubStructures = new ArrayList<>();
+        for (Substructure substructure : this.substructures.values()) {
+            if (substructure instanceof BranchSubstructure) {
+                BranchSubstructure<?> branchSubstructure = (BranchSubstructure<?>) substructure;
+                branchSubStructures.add(branchSubstructure);
+                branchSubStructures.addAll(branchSubstructure.getBranchSubstructures());
             }
         }
-        return atomContainingBranchSubstructures;
+        return branchSubStructures;
     }
-
 
     /**
      * Returns all atom-containing substructures (@{@link LeafSubstructure}s) of this {@link BranchSubstructure}.
@@ -471,15 +456,21 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @return list of atom-containing substructures
      */
     public List<LeafSubstructure<?, ?>> getLeafSubstructures() {
-        List<LeafSubstructure<?, ?>> atomContainingSubstructures = new ArrayList<>();
+        List<LeafSubstructure<?, ?>> leafSubstructures = new ArrayList<>();
         for (Substructure substructure : this.substructures.values()) {
             if (substructure instanceof LeafSubstructure) {
-                atomContainingSubstructures.add((LeafSubstructure) substructure);
+                leafSubstructures.add((LeafSubstructure) substructure);
             } else if (substructure instanceof BranchSubstructure) {
-                atomContainingSubstructures.addAll(((BranchSubstructure<?>) substructure).getLeafSubstructures());
+                leafSubstructures.addAll(((BranchSubstructure<?>) substructure).getLeafSubstructures());
             }
         }
-        return atomContainingSubstructures;
+        return leafSubstructures;
+    }
+
+    public Structure toStructure() {
+        Structure structure = new Structure();
+        structure.addSubstructure(this);
+        return structure;
     }
 
     public abstract SubstructureType getCopy();
