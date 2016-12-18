@@ -3,6 +3,8 @@ package de.bioforscher.chemistry.algorithms.superimposition;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Substructure;
@@ -20,6 +22,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A
@@ -29,7 +32,9 @@ import java.util.stream.IntStream;
 public class SubStructureSuperimposer {
 
     private static final Logger logger = LoggerFactory.getLogger(SubstructureSuperimposition.class);
+    private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
     private final Predicate<Atom> atomFilter;
+    private final RepresentationScheme representationScheme;
     private final List<LeafSubstructure<?, ?>> reference;
     private final List<LeafSubstructure<?, ?>> candidate;
 
@@ -38,13 +43,15 @@ public class SubStructureSuperimposer {
     private Matrix rotation;
 
     private SubStructureSuperimposer(BranchSubstructure reference, BranchSubstructure candidate) {
-        this(reference, candidate, AtomFilter.isArbitrary());
+        this(reference, candidate, AtomFilter.isArbitrary(), null);
     }
 
-    private SubStructureSuperimposer(BranchSubstructure<?> reference, BranchSubstructure<?> candidate, Predicate<Atom> atomFilter) {
+    private SubStructureSuperimposer(BranchSubstructure<?> reference, BranchSubstructure<?> candidate, Predicate<Atom> atomFilter,
+                                     RepresentationScheme representationScheme) {
         this.reference = reference.getLeafSubstructures();
         this.candidate = candidate.getLeafSubstructures();
         this.atomFilter = atomFilter;
+        this.representationScheme = representationScheme;
 
         if (this.reference.size() != this.candidate.size() || this.reference.isEmpty() || this.candidate.isEmpty())
             throw new IllegalArgumentException("Two lists of substructures cannot be superimposed if they " +
@@ -52,14 +59,20 @@ public class SubStructureSuperimposer {
     }
 
     private SubStructureSuperimposer(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate,
-                                     Predicate<Atom> atomFilter) {
+                                     Predicate<Atom> atomFilter, RepresentationScheme representationScheme) {
         this.reference = reference;
         this.candidate = candidate;
         this.atomFilter = atomFilter;
+        this.representationScheme = representationScheme;
     }
 
     private SubStructureSuperimposer(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate) {
-        this(reference, candidate, AtomFilter.isArbitrary());
+        this(reference, candidate, DEFAULT_ATOM_FILTER, null);
+    }
+
+    public SubStructureSuperimposer(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate,
+                                    RepresentationScheme representationScheme) {
+        this(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme);
     }
 
     public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
@@ -70,7 +83,13 @@ public class SubStructureSuperimposer {
     public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
                                                                                         List<LeafSubstructure<?, ?>> candidate,
                                                                                         Predicate<Atom> atomFilter) {
-        return new SubStructureSuperimposer(reference, candidate, atomFilter).calculateIdealSuperimposition();
+        return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateIdealSuperimposition();
+    }
+
+    public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
+                                                                                        List<LeafSubstructure<?, ?>> candidate,
+                                                                                        RepresentationScheme representationScheme) {
+        return new SubStructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateIdealSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(BranchSubstructure reference,
@@ -81,7 +100,13 @@ public class SubStructureSuperimposer {
     public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(BranchSubstructure reference,
                                                                                         BranchSubstructure candidate,
                                                                                         Predicate<Atom> atomFilter) {
-        return new SubStructureSuperimposer(reference, candidate, atomFilter).calculateIdealSuperimposition();
+        return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateIdealSuperimposition();
+    }
+
+    public static SubstructureSuperimposition calculateIdealSubstructureSuperimposition(BranchSubstructure reference,
+                                                                                        BranchSubstructure candidate,
+                                                                                        RepresentationScheme representationScheme) {
+        return new SubStructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateIdealSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
@@ -92,7 +117,14 @@ public class SubStructureSuperimposer {
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
                                                                                    List<LeafSubstructure<?, ?>> candidate,
                                                                                    Predicate<Atom> atomFilter) {
-        return new SubStructureSuperimposer(reference, candidate, atomFilter).calculateSuperimposition();
+        return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateSuperimposition();
+    }
+
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
+                                                                                   List<LeafSubstructure<?, ?>> candidate,
+                                                                                   RepresentationScheme representationScheme) {
+        return new SubStructureSuperimposer(reference, candidate, representationScheme).calculateSuperimposition();
+
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
@@ -103,19 +135,34 @@ public class SubStructureSuperimposer {
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
                                                                                    BranchSubstructure candidate,
                                                                                    Predicate<Atom> atomFilter) {
-        return new SubStructureSuperimposer(reference, candidate, atomFilter).calculateSuperimposition();
+        return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateSuperimposition();
     }
 
-    private static String toAlignmentString(Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment) {
+    public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
+                                                                                   BranchSubstructure candidate,
+                                                                                   RepresentationScheme representationScheme) {
+        return new SubStructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateSuperimposition();
+    }
+
+
+    private String toAlignmentString(Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment) {
         StringJoiner referenceNameJoiner = new StringJoiner("|", "|", "|");
         perAtomAlignment.keySet().forEach(pair ->
                 referenceNameJoiner.add(String.format("%-50s", pair.getFirst().toString())));
         StringJoiner atomNameJoiner = new StringJoiner("|", "|", "|");
-        perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
-                .add(String.format("%-50s", atomNames.stream()
-                        .map(AtomName::getName)
-                        .sorted()
-                        .collect(Collectors.joining("-")))));
+        if (this.representationScheme == null) {
+            perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
+                    .add(String.format("%-50s", atomNames.stream()
+                            .map(AtomName::getName)
+                            .sorted()
+                            .collect(Collectors.joining("-")))));
+        } else {
+            perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
+                    .add(String.format("%-50s", Stream.of(RepresentationSchemeType.values())
+                            .filter(representationSchemeType -> representationSchemeType.getCompatibleRepresentationScheme()
+                                    .isInstance(this.representationScheme))
+                            .findAny().orElse(RepresentationSchemeType.CA))));
+        }
         StringJoiner candidateNameJoiner = new StringJoiner("|", "|", "|");
         perAtomAlignment.keySet().forEach(pair ->
                 candidateNameJoiner.add(String.format("%-50s", pair.getSecond().toString())));
@@ -125,7 +172,6 @@ public class SubStructureSuperimposer {
         alignmentJoiner.add(candidateNameJoiner.toString());
         return alignmentJoiner.toString();
     }
-
 
     /**
      * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of {@link LeafSubstructure}.
@@ -141,7 +187,7 @@ public class SubStructureSuperimposer {
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
                 .map(permutedCandidates -> new SubStructureSuperimposer(this.reference,
-                        permutedCandidates, this.atomFilter)
+                        permutedCandidates, this.atomFilter, this.representationScheme)
                         .calculateSuperimposition())
                 .reduce((SubstructureSuperimposition s1, SubstructureSuperimposition s2) ->
                         s1.getRmsd() < s2.getRmsd() ? s1 : s2);
@@ -166,19 +212,34 @@ public class SubStructureSuperimposer {
         perAtomAlignment.entrySet()
                 .forEach(this::defineIntersectingAtoms);
 
-        // collect intersecting, filtered and sorted reference atoms
-        List<Atom> referenceAtoms = perAtomAlignment.entrySet().stream()
-                .flatMap(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
-                        .filter(this.atomFilter)
-                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
-                        .sorted(Comparator.comparing(Atom::getAtomNameString)))
-                .collect(Collectors.toList());
-        List<Atom> candidateAtoms = perAtomAlignment.entrySet().stream()
-                .flatMap(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
-                        .filter(this.atomFilter)
-                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
-                        .sorted(Comparator.comparing(Atom::getAtomNameString)))
-                .collect(Collectors.toList());
+        List<Atom> referenceAtoms;
+        List<Atom> candidateAtoms;
+        // no representation scheme is defined
+        if (this.representationScheme == null) {
+            // collect intersecting, filtered and sorted reference atoms
+            referenceAtoms = perAtomAlignment.entrySet().stream()
+                    .flatMap(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
+                            .filter(this.atomFilter)
+                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                            .sorted(Comparator.comparing(Atom::getAtomNameString)))
+                    .collect(Collectors.toList());
+            candidateAtoms = perAtomAlignment.entrySet().stream()
+                    .flatMap(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
+                            .filter(this.atomFilter)
+                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                            .sorted(Comparator.comparing(Atom::getAtomNameString)))
+                    .collect(Collectors.toList());
+        } else {
+            // reduce each leaf substructure to single representation scheme atoms
+            referenceAtoms = perAtomAlignment.entrySet().stream()
+                    .map(pairSetEntry -> pairSetEntry.getKey().getFirst())
+                    .map(this.representationScheme::determineRepresentingAtom)
+                    .collect(Collectors.toList());
+            candidateAtoms = perAtomAlignment.entrySet().stream()
+                    .map(pairSetEntry -> pairSetEntry.getKey().getSecond())
+                    .map(this.representationScheme::determineRepresentingAtom)
+                    .collect(Collectors.toList());
+        }
 
         // calculate superimposition
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(
@@ -251,6 +312,7 @@ public class SubStructureSuperimposer {
      * @param pairListEntry the map entry for which intersecting atoms should be defined
      */
     private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> pairListEntry) {
+
         pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
                 .filter(this.atomFilter)
                 .map(Atom::getAtomName)

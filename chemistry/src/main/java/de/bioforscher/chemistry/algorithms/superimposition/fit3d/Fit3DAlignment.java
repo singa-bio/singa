@@ -4,7 +4,9 @@ import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimpo
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.Structures;
@@ -32,9 +34,10 @@ public class Fit3DAlignment {
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
-    private final List<LeafSubstructure<?, ?>> queryMotif;
+    private final StructuralMotif queryMotif;
     private final BranchSubstructure<?> target;
     private final double distanceTolerance;
+    private final RepresentationScheme representationScheme;
     private double queryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?, ?>> distanceMatrix;
     private List<List<LeafSubstructure<?, ?>>> environments;
@@ -43,27 +46,38 @@ public class Fit3DAlignment {
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private Predicate<Atom> atomFilter;
 
-    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target) {
-        this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER);
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target) {
+        this(queryMotif, target, DEFAULT_RMSD_CUTOFF, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER, null);
     }
 
-    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff) {
-        this(queryMotif, target, rmsdCutoff, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER);
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff) {
+        this(queryMotif, target, rmsdCutoff, DEFAULT_DISTANCE_TOLERANCE, DEFAULT_ATOM_FILTER, null);
     }
 
-    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance) {
-        this(queryMotif, target, rmsdCutoff, distanceTolerance, DEFAULT_ATOM_FILTER);
+        this(queryMotif, target, rmsdCutoff, distanceTolerance, DEFAULT_ATOM_FILTER, null);
     }
 
-    public Fit3DAlignment(List<LeafSubstructure<?, ?>> queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance, Predicate<Atom> atomFilter) {
+        this(queryMotif, target, rmsdCutoff, distanceTolerance, atomFilter, null);
+    }
+
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+                          double distanceTolerance, RepresentationScheme representationScheme) {
+        this(queryMotif, target, rmsdCutoff, distanceTolerance, DEFAULT_ATOM_FILTER, representationScheme);
+    }
+
+    public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
+                          double distanceTolerance, Predicate<Atom> atomFilter, RepresentationScheme representationScheme) {
         this.queryMotif = queryMotif;
         // TODO this cast is not nice, can we do something better?
         this.target = (BranchSubstructure<?>) target.getCopy();
         this.rmsdCutoff = rmsdCutoff;
         this.distanceTolerance = distanceTolerance;
         this.atomFilter = atomFilter;
+        this.representationScheme = representationScheme;
 
         if (queryMotif.size() > target.getLeafSubstructures().size()) {
             throw new Fit3DException("search target must contain at least as many atom-containing substructures " +
@@ -116,14 +130,25 @@ public class Fit3DAlignment {
      */
     private void computeAlignments(List<LeafSubstructure<?, ?>> leafSubstructures) {
         ValidAlignmentGenerator validAlignmentGenerator =
-                new ValidAlignmentGenerator(this.queryMotif, leafSubstructures);
+                new ValidAlignmentGenerator(this.queryMotif.getLeafSubstructures(), leafSubstructures);
         List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
         for (List<Pair<LeafSubstructure<?, ?>>> validAlignment : validAlignments) {
             // create candidate for alignment
             List<LeafSubstructure<?, ?>> alignmentCandidate = validAlignment.stream()
                     .map(Pair::getSecond).collect(Collectors.toList());
-            SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                    .calculateSubstructureSuperimposition(this.queryMotif, alignmentCandidate, this.atomFilter);
+
+            // apply representation scheme if defined
+            SubstructureSuperimposition superimposition;
+            if (this.representationScheme != null) {
+                 superimposition = SubStructureSuperimposer
+                        .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
+                                alignmentCandidate, this.representationScheme);
+            }else{
+                superimposition = SubStructureSuperimposer
+                        .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
+                                alignmentCandidate, this.atomFilter);
+            }
+
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
                 this.matches.put(superimposition.getRmsd(), superimposition);
             }
@@ -139,7 +164,9 @@ public class Fit3DAlignment {
 //                    .combinations(this.queryMotif.size(), environment)
 //                    .collect(Collectors.toList());
             // TODO continue here, evaluate, etc...
-            Set<List<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(this.queryMotif, environment).getValidCandidates();
+            Set<List<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(
+                    this.queryMotif.getLeafSubstructures(),
+                    environment).getValidCandidates();
             this.candidates.put(environment, currentCandidates);
         }
     }
@@ -152,9 +179,10 @@ public class Fit3DAlignment {
      * Determines the maximal spatial extent of the query motif, measured on the centroid of all atoms.
      */
     private void calculateMotifExtent() {
+        //FIXME get working again
         LabeledSymmetricMatrix<LeafSubstructure<?, ?>> queryDistanceMatrix =
                 Structures.calculateDistanceMatrix(this.queryMotif);
-        // position of maximal element is always symmetric, hence we consider the first
+//        position of maximal element is always symmetric, hence we consider the first
         Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix)
                 .stream()
                 .findFirst()
@@ -171,7 +199,7 @@ public class Fit3DAlignment {
      */
     private void reduceTargetStructure() {
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
-        Set<StructuralFamily> containingTypes = this.queryMotif.stream()
+        Set<StructuralFamily> containingTypes = this.queryMotif.getLeafSubstructures().stream()
                 .map(LeafSubstructure::getContainingTypes)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -198,10 +226,9 @@ public class Fit3DAlignment {
                 }
             }
             if (environment.size() >= this.queryMotif.size()) {
-                logger.debug("possible environment {} within {} around {} added", environment, this.queryExtent + DEFAULT_DISTANCE_TOLERANCE, currentSubstructure);
+                logger.debug("possible environment {} within {} around {} added", environment,
+                        this.queryExtent + DEFAULT_DISTANCE_TOLERANCE, currentSubstructure);
                 this.environments.add(environment);
-                // TODO apply fancy candidate generator here
-//                CandidateGenerator candidateGenerator = new CandidateGenerator(this.queryMotif,environment);
             }
         }
     }

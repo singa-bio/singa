@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
  * that determines the amino acid (and the overarching features). Based on this ResidueType a Residue can be created
- * from a set of atoms that belong to this residue using the
+ * of a set of atoms that belong to this residue using the
  * {@link LeafFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) LeafFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
@@ -84,7 +84,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      *
      * @return The C alpha carbon.
      */
-    public Atom getCAlpha() {
+    public Atom getAlphaCarbon() {
         return getAtomByName(AtomName.CA);
     }
 
@@ -93,7 +93,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      *
      * @return The C beta carbon.
      */
-    public Atom getCBeta() {
+    public Atom getBetaCarbon() {
         return getAtomByName(AtomName.CB);
     }
 

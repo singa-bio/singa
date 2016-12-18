@@ -7,6 +7,16 @@ import java.util.Comparator;
  */
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
+    @Override
+    public String toString() {
+        return "LeafIdentifier{" +
+                "pdbIdentifer='" + this.pdbIdentifer + '\'' +
+                ", modelIdentifer=" + this.modelIdentifer +
+                ", chainIdentifer='" + this.chainIdentifer + '\'' +
+                ", leafIdentifer=" + this.leafIdentifer +
+                '}';
+    }
+
     private static final Comparator<LeafIdentifier> comperator = Comparator
             .comparing(LeafIdentifier::getPdbIdentifer)
             .thenComparing(LeafIdentifier::getModelIdentifer)

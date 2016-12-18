@@ -2,6 +2,8 @@ package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
@@ -33,6 +35,22 @@ public class SubstructureSuperimposerTest {
                 .getResourceAsStream("motif_HDS_02.pdb"));
         this.reference = motif1.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
         this.candidate = motif2.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
+    }
+
+    @Test
+    public void shouldCalculateLastHeavySidechainSuperimposition(){
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                .calculateSubstructureSuperimposition(this.reference, this.candidate,
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN));
+        assertEquals(0.5706912104847501, superimposition.getRmsd(), 0E-9);
+    }
+
+    @Test
+    public void shouldCalculateSidechainCentroidSuperimposition(){
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                .calculateSubstructureSuperimposition(this.reference, this.candidate,
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
+        assertEquals(0.05433403549113087, superimposition.getRmsd(), 0E-9);
     }
 
     @Test

@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static de.bioforscher.chemistry.physical.atoms.AtomName.O3Pr;
-import static de.bioforscher.chemistry.physical.atoms.AtomName.OP3;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.P;
 
 /**
@@ -103,8 +102,8 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Connects two residues, using the Backbone Carbon ({@link de.bioforscher.chemistry.physical.atoms.AtomName#C C})
-     * from the source residue and the Backbone Nitrogen ({@link de.bioforscher.chemistry.physical.atoms.AtomName#N N})
-     * from the target residue.
+     * of the source residue and the Backbone Nitrogen ({@link de.bioforscher.chemistry.physical.atoms.AtomName#N N})
+     * of the target residue.
      * @param source Residue with Backbone Carbon.
      * @param target Residue with Backbone Nitrogen.
      */

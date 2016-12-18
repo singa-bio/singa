@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class StructurePredicates {
+public class StructureFilter {
 
     public static Predicate<BranchSubstructure<?>> isModel() {
         return branch -> branch instanceof StructuralModel;

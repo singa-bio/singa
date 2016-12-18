@@ -2,19 +2,20 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
-import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.LeafIdentifers;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.mathematics.combinatorics.StreamCombinations;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,18 +26,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class Fit3DAlignmentTest {
 
-    private List<LeafSubstructure<?, ?>> queryMotif;
+    private StructuralMotif queryMotif;
     private Structure target;
 
     @Before
     public void setUp() throws IOException {
         this.target = PDBParserService.parseProteinById("1GL0");
-        this.queryMotif = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb")).getBranchSubstructures().stream()
-                .map(BranchSubstructure::getLeafSubstructures)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        ((Residue) this.queryMotif.get(0)).addExchangeableType(ResidueFamily.GLUTAMIC_ACID);
+        Structure motifContainingStructure = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
+        this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
+                LeafIdentifers.of("E-57", "E-102", "E-195"));
+        this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), ResidueFamily.GLUTAMIC_ACID);
     }
 
     @Test
@@ -48,6 +48,24 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldGenerateCombinations() {
-        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif).count());
+        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif.getLeafSubstructures()).count());
     }
+
+//    @Test
+//    public void shouldAlignKDEEH() throws IOException {
+//
+//        Structure target1 = PDBParserService.parseProteinById("1BKH","A");
+//
+//        // KDEEH template motif
+//        Structure motifContainingStructure = PDBParserService.parsePDBFile("motif_KDEEH.pdb");
+//        StructuralMotif motif = StructuralMotif.fromLeafs(1, motifContainingStructure,
+//                LeafIdentifers.of("A-164", "A-195", "A-221", "A-247", "A-297"));
+//        motif.addExchangableType(LeafIdentifier.fromString("A-164"), ResidueFamily.HISTIDINE);
+//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), ResidueFamily.ASPARTIC_ACID);
+//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), ResidueFamily.ASPARAGINE);
+//        motif.addExchangableType(LeafIdentifier.fromString("H-297"), ResidueFamily.LYSINE);
+//
+//        Fit3DAlignment fit3d = new Fit3DAlignment(motif, target1.getAllBranches().get(0), 3.5, 3.0,
+//                RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
+//    }
 }

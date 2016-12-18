@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  */
 public class LeafIdentifers {
 
-    public static List<LeafIdentifier> from(String... identifers) {
+    public static List<LeafIdentifier> of(String... identifers) {
         return Arrays.stream(identifers).map(LeafIdentifier::fromString).collect(Collectors.toList());
     }
 

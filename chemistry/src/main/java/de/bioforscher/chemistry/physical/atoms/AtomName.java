@@ -242,7 +242,6 @@ public enum AtomName {
     // non standard
     UNK("UNK", UNKOWN);
 
-
     public static EnumSet<AtomName> ALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, HA, HB1, HB2, HB3, HN, HXT, THREEHB,
             D, D1, D2, D3, DA, DB1, DB2, DB3, C, CA, CB, N, O, OXT);
 

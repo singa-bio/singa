@@ -34,7 +34,8 @@ public class Scalar implements Vector {
     }
 
     @Override
-    public <V extends Vector> V as(Class<V> matrixClass) {
+    public <V extends Vector> V as(Class<V> vectorClass) {
+        //FIXME it cannot be intended that Scalar returns null
         return null;
     }
 

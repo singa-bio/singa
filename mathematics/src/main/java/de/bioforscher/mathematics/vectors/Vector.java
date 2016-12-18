@@ -22,7 +22,7 @@ import java.util.stream.DoubleStream;
  */
 public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisible<Vector>, Metrizable<Vector> {
 
-    <V extends Vector> V as(Class<V> matrixClass);
+    <V extends Vector> V as(Class<V> vectorClass);
 
     /**
      * Returns an element of this vector.

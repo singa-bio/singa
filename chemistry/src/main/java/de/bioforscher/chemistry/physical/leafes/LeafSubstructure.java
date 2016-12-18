@@ -22,41 +22,34 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * The identifier of this entity.
      */
     public int identifier;
-
-    /**
-     * Maps each of the atoms contained in this LeafSubstructure to it's unique identifier.
-     */
-    private Map<Atom, UniqueAtomIdentifer> identiferMap;
-
-    /**
-     * A iterating variable to add a new node.
-     */
-    private int nextNodeIdentifier;
-
-    /**
-     * A iterating variable to add a new edge.
-     */
-    private int nextEdgeIdentifier;
-
-    /**
-     * The neighboring leaf substructures.
-     */
-    private List<LeafSubstructureType> neighbours;
-
-    /**
-     * The atoms representing the nodes of the graph.
-     */
-    private Map<Integer, Atom> atoms;
-
-    /**
-     * The bonds representing the edges of the graph.
-     */
-    private Map<Integer, Bond> bonds;
-
     /**
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
     protected Set<FamilyType> exchangeableTypes;
+    /**
+     * Maps each of the atoms contained in this LeafSubstructure to it's unique identifier.
+     */
+    private Map<Atom, UniqueAtomIdentifer> identiferMap;
+    /**
+     * A iterating variable to add a new node.
+     */
+    private int nextNodeIdentifier;
+    /**
+     * A iterating variable to add a new edge.
+     */
+    private int nextEdgeIdentifier;
+    /**
+     * The neighboring leaf substructures.
+     */
+    private List<LeafSubstructureType> neighbours;
+    /**
+     * The atoms representing the nodes of the graph.
+     */
+    private Map<Integer, Atom> atoms;
+    /**
+     * The bonds representing the edges of the graph.
+     */
+    private Map<Integer, Bond> bonds;
 
     public LeafSubstructure(int identifier) {
         this.identifier = identifier;
@@ -165,6 +158,12 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     @Override
+    /**
+     * Returns the centroid of <b>ALL</b> atoms of the {@link LeafSubstructure}. This may be not intended, because
+     * hydrogens are considered as well. You can use an implementation of
+     * {@link de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme}
+     * that does not consider hydrogens at all.
+     */
     public Vector3D getPosition() {
         return Vectors.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)

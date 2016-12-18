@@ -2,12 +2,10 @@ package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Ligand;
-import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.StructurePredicates;
+import de.bioforscher.chemistry.physical.model.StructureFilter;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
@@ -225,7 +223,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
-     * Returns all atoms that are contained in this substructure. This does not imply all atoms from the contained
+     * Returns all atoms that are contained in this substructure. This does not imply all atoms of the contained
      * SubStructures. For example a chain could not contain any atoms, but only residues, that themselves contain the
      * actual atoms. To get all atoms use the {@link BranchSubstructure#getAllAtoms()} method.
      *
@@ -237,7 +235,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns a specific atom from this BranchSubstructure identified by its identifier.
+     * Returns a specific atom of this BranchSubstructure identified by its identifier.
      *
      * @param identifier The identifier
      * @return The atom associated with the identifier.
@@ -308,16 +306,23 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Adds all Substructures in order of their appearance in the list.
+     * Adds all {@link Substructure}s in order of their appearance in the list.
      *
-     * @param substructures The SubStructures to add.
+     * @param substructures The Substructures to add.
      */
     public void addAllSubstructures(List<Substructure> substructures) {
         substructures.forEach(ss -> this.substructures.put(ss.getIdentifier(), ss));
     }
 
-    public Substructure getSubStructure(int identifier) {
-        return this.substructures.get(identifier);
+    /**
+     * Returns the {@link Substructure} with the given identifier or {@link Optional#empty()} if no such substructure
+     * exists.
+     *
+     * @param identifier The identifier that should be returned.
+     * @return The matching Substructure or {@link Optional#empty()}.
+     */
+    public Optional<Substructure> getSubstructure(int identifier) {
+        return Optional.ofNullable(this.substructures.getOrDefault(identifier, null));
     }
 
     /**
@@ -339,7 +344,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     public void removeNode(int identifier) {
         // remove atoms and connecting edges from substructures
         this.nodes.entrySet().removeIf(node -> node.getValue().getIdentifier() == identifier);
-        // remove connecting edges from  in between substructures
+        // remove connecting edges from in between substructures
         this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(identifier));
     }
 
@@ -391,7 +396,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all atoms from this BranchSubstructure and all SubStructures that are contained in this BranchSubstructure.
+     * Returns all atoms of this BranchSubstructure and all SubStructures that are contained in this BranchSubstructure.
      *
      * @return All atoms.
      */
@@ -411,7 +416,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     public List<Residue> getResidues() {
         return getLeafSubstructures().stream()
-                .filter(StructurePredicates.isResidue())
+                .filter(StructureFilter.isResidue())
                 .map(Residue.class::cast)
                 .collect(Collectors.toList());
     }

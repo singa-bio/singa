@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * To handle structures with multiple models (from NMR).
+ * To handle structures with multiple models (of NMR).
  */
 public class StructuralModel extends BranchSubstructure<StructuralModel> {
 

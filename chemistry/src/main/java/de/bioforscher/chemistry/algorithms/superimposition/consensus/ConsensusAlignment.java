@@ -222,9 +222,9 @@ public class ConsensusAlignment {
     }
 
     /**
-     * Removes the given pair from alignments and recomputes them.
+     * Removes the given pair from the alignments and recomputes them.
      *
-     * @param substructurePair the pairto be removed
+     * @param substructurePair the pair to be removed
      */
     private void updateAlignments(Map.Entry<SubstructureSuperimposition,
             Pair<ConsensusContainer>> substructurePair) {
