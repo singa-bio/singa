@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser.pdb.tokens;
+package de.bioforscher.chemistry.parser.pdb.structures.tokens;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.LEFT;
-import static de.bioforscher.chemistry.parser.pdb.tokens.Justification.RIGHT;
+import static de.bioforscher.chemistry.parser.pdb.structures.tokens.Justification.LEFT;
+import static de.bioforscher.chemistry.parser.pdb.structures.tokens.Justification.RIGHT;
 
 /**
  * Created by Christoph on 23.06.2016.
@@ -70,7 +70,7 @@ public enum AtomToken implements PDBToken {
         String atomName = ATOM_NAME.extract(atomLine);
         // element
         Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("could not parse atom line: \n"+atomLine));
         return new RegularAtom(atomSerial, element, atomName, coordinates);
     }
 

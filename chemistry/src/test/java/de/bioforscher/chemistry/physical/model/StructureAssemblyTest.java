@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.physical.model;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,6 +1,5 @@
-package de.bioforscher.chemistry.parser.pdb;
+package de.bioforscher.chemistry.parser.pdb.structures;
 
-import de.bioforscher.chemistry.parser.pdb.tokens.StructureCollector;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 public class PDBParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(PDBParserService.class);
-
     public static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
 
     public static Structure parseProteinById(String pdbId, String chainId) throws IOException {

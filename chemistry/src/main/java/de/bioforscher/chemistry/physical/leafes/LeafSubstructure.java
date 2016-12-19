@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.parser.pdb.tokens.AtomToken;
+import de.bioforscher.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.model.*;
@@ -104,6 +104,10 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         this.bonds.entrySet().removeIf(bond -> bond.getValue().containsNode(identifier));
     }
 
+    public boolean hasAtom(AtomName atomName) {
+        return this.atoms.values().stream().map(Atom::getAtomName).anyMatch(name -> name.equals(atomName));
+    }
+
     @Override
     public int nextEdgeIdentifier() {
         return this.nextEdgeIdentifier++;
@@ -201,8 +205,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     public Atom getAtomByName(AtomName atomName) {
         return getNodes().stream()
                 .filter(atom -> atom.getAtomName() == atomName)
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
+                .findAny().orElseThrow(() -> new IllegalArgumentException("could not parse atom name: "+atomName));
     }
 
     @Override
@@ -225,6 +228,10 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     public String getChain() {
         return this.identiferMap.values().stream().map(UniqueAtomIdentifer::getChainIdentifer).findFirst().orElse("X");
+    }
+
+    public String getPdbId() {
+        return this.identiferMap.values().stream().map(UniqueAtomIdentifer::getPdbIdentifer).findFirst().orElse("0000");
     }
 
 }

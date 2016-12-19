@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser;
+package de.bioforscher.chemistry.parser.chebi;
 
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.parser.rest.AbstractRESTParser;

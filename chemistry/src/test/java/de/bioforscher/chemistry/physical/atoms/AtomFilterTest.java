@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.physical.atoms;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Structure;

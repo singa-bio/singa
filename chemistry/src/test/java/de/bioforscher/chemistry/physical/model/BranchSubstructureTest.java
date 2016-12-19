@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.physical.model;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;

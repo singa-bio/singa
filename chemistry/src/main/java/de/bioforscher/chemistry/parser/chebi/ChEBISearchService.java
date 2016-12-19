@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser;
+package de.bioforscher.chemistry.parser.chebi;
 
 import de.bioforscher.chemistry.descriptive.Species;
 import uk.ac.ebi.chebi.webapps.chebiWS.client.ChebiWebServiceClient;

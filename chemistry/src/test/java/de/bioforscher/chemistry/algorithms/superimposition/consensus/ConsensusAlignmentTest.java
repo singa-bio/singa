@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition.consensus;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;

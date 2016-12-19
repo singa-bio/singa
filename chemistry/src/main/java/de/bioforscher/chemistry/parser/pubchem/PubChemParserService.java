@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser;
+package de.bioforscher.chemistry.parser.pubchem;
 
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.core.parser.xml.AbstractXMLParser;

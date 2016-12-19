@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.application.components.chemicalEntities;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.chemistry.parser.ChEBIImageService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIImageService;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

@@ -1,6 +1,9 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.parser.chebi.ChEBIImageService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBISearchService;
 import org.junit.Test;
 
 import java.io.IOException;

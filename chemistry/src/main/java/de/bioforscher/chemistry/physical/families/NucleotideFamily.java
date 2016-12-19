@@ -19,7 +19,9 @@ public enum NucleotideFamily implements StructuralFamily {
     URIDINE("U","U"),
     DESOXYURIDINE("U", "dU"),
     CYTIDINE("C","C"),
-    DESOXYCYTIDINE("C", "dC");
+    DESOXYCYTIDINE("C", "dC"),
+
+    MODIFIED_NUCLEOTIDE("M", "M");
 
     private String oneLetterCode;
     private String threeLetterCode;

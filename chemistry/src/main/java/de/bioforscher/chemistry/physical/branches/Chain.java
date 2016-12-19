@@ -5,14 +5,16 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.StructureFilter;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.core.utility.Nameable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
-import static de.bioforscher.chemistry.physical.atoms.AtomName.O3Pr;
-import static de.bioforscher.chemistry.physical.atoms.AtomName.P;
+import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
  * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
@@ -110,12 +112,16 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     public void connectPeptideBonds(Residue source, Residue target) {
         // creates the peptide backbone
         Bond bond = new Bond(nextEdgeIdentifier());
-        addEdgeBetween(bond, source.getBackboneCarbon(), target.getBackboneNitrogen());
+        if (source.hasAtom(C) && target.hasAtom(N)) {
+            addEdgeBetween(bond, source.getBackboneCarbon(), target.getBackboneNitrogen());
+        }
     }
 
     public void connectNucleotideBonds(Nucleotide source, Nucleotide target) {
         Bond bond = new Bond(nextEdgeIdentifier());
-        addEdgeBetween(bond, source.getAtomByName(O3Pr), target.getAtomByName(P));
+        if (source.hasAtom(O3Pr) && target.hasAtom(P)) {
+            addEdgeBetween(bond, source.getAtomByName(O3Pr), target.getAtomByName(P));
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.research;
 
-import de.bioforscher.chemistry.parser.ChEBIParserService;
-import de.bioforscher.chemistry.parser.UniProtParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.chemistry.parser.uniprot.UniProtParserService;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import org.sbml.jsbml.CVTerm;

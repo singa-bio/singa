@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser.pdb;
+package de.bioforscher.chemistry.parser.pdb.structures;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
@@ -6,7 +6,7 @@ import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
 
 import java.util.*;
 
-import static de.bioforscher.chemistry.parser.pdb.PDBParsingTreeNode.StructureLevel.*;
+import static de.bioforscher.chemistry.parser.pdb.structures.PDBParsingTreeNode.StructureLevel.*;
 
 /**
  * @author cl
@@ -70,20 +70,6 @@ public class PDBParsingTreeNode {
             this.children.forEach(child -> nodes.addAll(child.getNodesFromLevel(level)));
         }
         return nodes;
-    }
-
-    public Map<String, String> getLeafNames(Map<String, String> leafStructure) {
-        Map<String, String> names = new HashMap<>();
-        if (this.level != LEAF) {
-            this.children.forEach(child -> names.putAll(child.getLeafNames(leafStructure)));
-        } else {
-            Set<String> uniqueNames = new HashSet<>();
-            for (PDBParsingTreeNode child: this.children) {
-                uniqueNames.add(leafStructure.get(child.getIdentifier()));
-            }
-            names.put(this.identifier, uniqueNames.iterator().next());
-        }
-        return names;
     }
 
     public EnumMap<AtomName, Atom> getAtomMap() {

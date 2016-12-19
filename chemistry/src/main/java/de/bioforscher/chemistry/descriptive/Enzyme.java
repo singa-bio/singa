@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.descriptive;
 
 
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.chemistry.parser.uniprot.UniProtParserService;
 import de.bioforscher.core.biology.Organism;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.units.quantities.MolarConcentration;
@@ -23,7 +24,7 @@ import static de.bioforscher.units.UnitProvider.PER_SECOND;
  * with kcat), a List of possible substrates and a critical substrate that is rate determining. Additionally multiple
  * predefined Annotations can be set (additional names, organisms, amino acid sequences, ...). Enzymes may be parsed
  * from the UniProt Database using the
- * {@link de.bioforscher.chemistry.parser.UniProtParserService UniProtParserService}.
+ * {@link UniProtParserService UniProtParserService}.
  *
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics">Wikipedia: Michaelis–Menten

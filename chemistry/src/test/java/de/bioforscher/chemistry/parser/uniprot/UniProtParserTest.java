@@ -3,7 +3,6 @@ package de.bioforscher.chemistry.parser.uniprot;
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
-import de.bioforscher.chemistry.parser.*;
 import de.bioforscher.core.biology.Organism;
 import de.bioforscher.core.biology.Taxon;
 import org.junit.Test;

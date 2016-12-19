@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser;
+package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.core.identifier.UniProtIdentifier;

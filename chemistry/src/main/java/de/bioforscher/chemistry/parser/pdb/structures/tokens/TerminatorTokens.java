@@ -1,4 +1,4 @@
-package de.bioforscher.chemistry.parser.pdb.tokens;
+package de.bioforscher.chemistry.parser.pdb.structures.tokens;
 
 import java.util.regex.Pattern;
 

@@ -1,10 +1,7 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
-import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
-import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
-import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifers;

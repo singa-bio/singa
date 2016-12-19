@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
@@ -418,6 +419,13 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
         return getLeafSubstructures().stream()
                 .filter(StructureFilter.isResidue())
                 .map(Residue.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public List<Nucleotide> getNucleotides() {
+        return this.getLeafSubstructures().stream()
+                .filter(StructureFilter.isNucleotide())
+                .map(Nucleotide.class::cast)
                 .collect(Collectors.toList());
     }
 

@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;

@@ -93,7 +93,7 @@ public final class ElementProvider {
     public static final Element RHENIUM = addElement(new Element("Rhenium", "Re", 75, 186.207));
     public static final Element OSMIUM = addElement(new Element("Osmium", "Os", 76, 190.23));
     public static final Element IRIDIUM = addElement(new Element("Iridium", "Ir", 77, 192.217));
-    public static final Element PLATINUM = addElement(new Element("Platinum", "P ", 78, 195.078));
+    public static final Element PLATINUM = addElement(new Element("Platinum", "Pt", 78, 195.078));
     public static final Element GOLD = addElement(new Element("Gold", "Au", 79, 196.9665));
     public static final Element MERCURY = addElement(new Element("Mercury", "Hg", 80, 200.59));
     public static final Element THALLIUM = addElement(new Element("Thallium", "Tl", 81, 204.3833));

@@ -2,7 +2,7 @@ package de.bioforscher.simulation.util;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.vectors.Vector2D;

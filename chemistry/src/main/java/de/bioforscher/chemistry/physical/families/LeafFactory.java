@@ -113,12 +113,14 @@ public class LeafFactory {
                 nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
                 nucleotide.addEdgeBetween(atoms.get(C5), atoms.get(C7));
                 nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
+                break;
             }
             case URIDINE: {
                 nucleotide.addEdgeBetween(atoms.get(C2Pr), atoms.get(O2Pr));
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(O4));
                 nucleotide.addEdgeBetween(atoms.get(C1Pr), atoms.get(N1));
+                break;
             }
         }
 
