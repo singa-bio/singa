@@ -26,8 +26,14 @@ public class SidechainCentroidRepresentationScheme extends AbstractRepresentatio
         if (!(leafSubstructure instanceof Residue)) {
             return determineCentroid(leafSubstructure);
         }
-        if(leafSubstructure.getFamily() == ResidueFamily.GLYCINE){
+        if (leafSubstructure.getFamily() == ResidueFamily.GLYCINE) {
             return new BetaCarbonRepresentationScheme().determineCentroid(leafSubstructure);
+        }
+        // fallback if no sidechain atoms exist
+        if (leafSubstructure.getAllAtoms().stream()
+                .filter(AtomFilter.isSidechain())
+                .count() == 0) {
+            return determineCentroid(leafSubstructure);
         }
         List<Vector> atomPositions = leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen().negate()))

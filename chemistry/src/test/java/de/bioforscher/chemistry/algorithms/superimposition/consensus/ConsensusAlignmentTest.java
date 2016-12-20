@@ -50,7 +50,12 @@ public class ConsensusAlignmentTest {
 
     @Test
     public void shouldCreateConsensusAlignment() {
-        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input,0.6);
+        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.6);
         System.out.println(consensusAlignment.getTopConsensusTree().toNewickString());
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getLeafSubstructures();
+        String consensusPDB = consensusMotif.stream().map(LeafSubstructure::getPDBLines)
+                .flatMap(Collection::stream)
+                .collect(Collectors.joining("\n"));
+        System.out.println(consensusPDB);
     }
 }

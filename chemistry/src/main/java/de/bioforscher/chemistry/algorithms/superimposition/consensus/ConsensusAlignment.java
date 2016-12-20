@@ -203,7 +203,7 @@ public class ConsensusAlignment {
     /**
      * Finds and merges the closest pair of all input structures and recomputes the alignment.
      */
-    public void findAndMergeClosestPair() {
+    private void findAndMergeClosestPair() {
 
         this.iterationCounter++;
 
@@ -339,7 +339,8 @@ public class ConsensusAlignment {
             }
             // create new atom container
             // TODO what is the identifier and the type of the new atom container?
-            AtomContainer<ResidueFamily> atomContainer = new AtomContainer<>(i, ResidueFamily.ALANINE);
+            AtomContainer<ResidueFamily> atomContainer = new AtomContainer<>(i, ResidueFamily.ALANINE,
+                    ResidueFamily.ALANINE.getThreeLetterCode());
             averagedAtoms.forEach(atomContainer::addNode);
             this.currentConsensus.addLeaveStructure(atomContainer);
         }

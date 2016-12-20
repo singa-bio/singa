@@ -29,6 +29,14 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         if (leafSubstructure.getFamily() == ResidueFamily.GLYCINE) {
             return new BetaCarbonRepresentationScheme().determineCentroid(leafSubstructure);
         }
+        // fallback if no sidechain atoms exist or no alpha carbon is present
+        if (leafSubstructure.getAllAtoms().stream()
+                .filter(AtomFilter.isSidechain())
+                .count() == 0 || leafSubstructure.getAllAtoms().stream()
+                .filter(AtomFilter.isAlphaCarbon())
+                .count() == 0) {
+            return determineCentroid(leafSubstructure);
+        }
         LabeledSymmetricMatrix<Atom> atomDistanceMatrix = Structures.calculateDistanceMatrix(leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen().negate()).or(AtomFilter.isAlphaCarbon()))
                 .collect(Collectors.toList()));
