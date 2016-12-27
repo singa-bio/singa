@@ -6,10 +6,15 @@ import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
+import de.bioforscher.mathematics.metrics.implementations.MinkowskiMetric;
+import de.bioforscher.mathematics.metrics.model.Metric;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
+import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 
 import java.util.function.BiConsumer;
 import java.util.stream.DoubleStream;
+
+import static de.bioforscher.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 
 /**
  * The {@code Vector} interface represents a collection of values where multiple
@@ -127,6 +132,49 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return The matrix of the dyadic product
      */
     Matrix dyadicProduct(Vector vector);
+
+    /**
+     * This method calculates the Eucledian distance between this vector and the given vector.
+     * <p>
+     * The Euclidean distance is the "ordinary" (i.e. straight-line) distance between two vectors in Euclidean space.
+     *
+     * @param another Another vector of the same dimension.
+     * @return The Euclidean distance.
+     * @throws IncompatibleDimensionsException if this vector has another dimension than the given vector.
+     * @see MinkowskiMetric
+     */
+    @Override
+    default double distanceTo(Vector another) {
+        assertThatDimensionsMatch(another);
+        return EUCLIDEAN_METRIC.calculateDistance(this, another);
+    }
+
+    /**
+     * This method calculates the distance between this vector and the given vector with the given metric.
+     *
+     * @param another Another vector of the same dimension.
+     * @param metric The metric to calculate the distance with.
+     * @return The distance.
+     * @throws IncompatibleDimensionsException if this vector has another dimension than the given vector.
+     * @see VectorMetricProvider
+     */
+    @Override
+    default double distanceTo(Vector another, Metric<Vector> metric) {
+        assertThatDimensionsMatch(another);
+        return metric.calculateDistance(this, another);
+    }
+
+    /**
+     * Returns the angle between this vector and the given vector in radians.
+     *
+     * @param  another Another vector.
+     * @return The angle in radians.
+     */
+    default double angleTo(Vector another) {
+        assertThatDimensionsMatch(another);
+        return Math.acos(this.dotProduct(another) / (this.getMagnitude() * another.getMagnitude()));
+    }
+
 
     /**
      * Checks if this vector contains only Zeros.

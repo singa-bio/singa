@@ -81,7 +81,7 @@ public class Vector2DTest {
 
     @Test
     public void testAngleCalculation() {
-        double actual = this.first.angleBetween(this.second);
+        double actual = this.first.angleTo(this.second);
         assertEquals(0.07677189126977, actual, 1e-10);
     }
 

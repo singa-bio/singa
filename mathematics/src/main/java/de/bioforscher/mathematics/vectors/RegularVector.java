@@ -247,21 +247,6 @@ public class RegularVector implements Vector {
     }
 
     /**
-     * This method calculates the Eucledian distance between this vector and the given vector.
-     * <p>
-     * The Euclidean distance is the "ordinary" (i.e. straight-line) distance between two vectors in Euclidean space.
-     *
-     * @param another Another vector of the same dimension.
-     * @return The Euclidean distance.
-     * @throws IncompatibleDimensionsException if this vector has another dimension than the given vector.
-     * @see MinkowskiMetric
-     */
-    @Override
-    public double distanceTo(Vector another) {
-        return EUCLIDEAN_METRIC.calculateDistance(this, another);
-    }
-
-    /**
      * This method calculates the distance between this vector and the given vector with the given metric.
      *
      * @param vector Another vector of the same dimension.

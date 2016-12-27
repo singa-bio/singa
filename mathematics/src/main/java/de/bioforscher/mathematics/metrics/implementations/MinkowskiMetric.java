@@ -1,6 +1,7 @@
 package de.bioforscher.mathematics.metrics.implementations;
 
 import de.bioforscher.mathematics.metrics.model.Metric;
+import de.bioforscher.mathematics.metrics.model.Metrizable;
 import de.bioforscher.mathematics.vectors.Vector;
 
 /**
@@ -31,7 +32,6 @@ public class MinkowskiMetric<VectorType extends Vector> implements Metric<Vector
 
     @Override
     public double calculateDistance(VectorType first, VectorType second) {
-        first.assertThatDimensionsMatch(second);
         if (this.p == Double.POSITIVE_INFINITY) {
             return getMaximalDifference(first, second);
         }
