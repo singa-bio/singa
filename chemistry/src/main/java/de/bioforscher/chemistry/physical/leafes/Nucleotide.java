@@ -2,6 +2,8 @@ package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.EnumMap;
 
@@ -55,4 +57,9 @@ public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
         this.name = name;
     }
 
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
+    }
 }

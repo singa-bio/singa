@@ -12,7 +12,7 @@ import java.util.*;
 import static de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType.*;
 
 /**
- * Created by Christoph on 17/11/2016.
+ * @author cl
  */
 public class SmilesParser {
 
@@ -113,8 +113,8 @@ public class SmilesParser {
 
     /**
      * Parses a SMILES String and returns a {@link MoleculeGraph} that contains all the atoms and their connections.
-     * @param smilesString The SMILES String to parse
      *
+     * @param smilesString The SMILES String to parse
      */
     public static MoleculeGraph parse(String smilesString) {
         SmilesParser parser = new SmilesParser();
@@ -311,7 +311,7 @@ public class SmilesParser {
                     dispose();
                     if (addLater) {
                         this.currentToken += "Br";
-                        this.currentElement = ElementProvider.getElementBySymbol(String.valueOf("Br"));
+                        this.currentElement = ElementProvider.BROMINE;
                     } else {
                         this.tokens.add("Br");
                         addAtomToGraph("Br");
@@ -329,7 +329,7 @@ public class SmilesParser {
                     dispose();
                     if (addLater) {
                         this.currentToken += "Cl";
-                        this.currentElement = ElementProvider.getElementBySymbol(String.valueOf("Cl"));
+                        this.currentElement = ElementProvider.CHLORINE;
                     } else {
                         this.tokens.add("Cl");
                         addAtomToGraph("Cl");
@@ -361,7 +361,8 @@ public class SmilesParser {
     private void handleAtom(boolean addLater) {
         if (addLater) {
             addToCurrentToken();
-            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(this.currentSymbol));
+            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(this.currentSymbol))
+                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + this.currentSymbol + " represents no valid element."));
         } else {
             addToTokens();
             addAtomToGraph(this.currentSymbol);
@@ -478,7 +479,7 @@ public class SmilesParser {
             if (this.symbols.peek() == 'e') {
                 // parse selenium
                 dispose();
-                this.currentElement = ElementProvider.getElementBySymbol(String.valueOf("Se"));
+                this.currentElement = ElementProvider.SELENIUM;
                 this.currentBondType = Optional.of(MoleculeBondType.AROMATIC_BOND);
                 poll();
                 return true;
@@ -488,7 +489,7 @@ public class SmilesParser {
             if (this.symbols.peek() == 's') {
                 // parse arsenic
                 dispose();
-                this.currentElement = ElementProvider.getElementBySymbol(String.valueOf("As"));
+                this.currentElement = ElementProvider.ARSENIC;
                 this.currentBondType = Optional.of(MoleculeBondType.AROMATIC_BOND);
                 poll();
                 return true;
@@ -510,7 +511,8 @@ public class SmilesParser {
                 element += this.currentSymbol;
                 poll();
             }
-            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(element));
+            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(element))
+                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + this.currentSymbol + " represents no valid element."));
             return true;
         }
         return false;

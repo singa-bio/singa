@@ -2,14 +2,10 @@ package de.bioforscher.chemistry.descriptive.molecules;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.chemistry.physical.bonds.BondType;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
-import de.bioforscher.mathematics.graphs.model.GenericEdge;
-import de.bioforscher.mathematics.graphs.model.RegularNode;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 /**
  * Created by Christoph on 21/11/2016.
@@ -18,26 +14,18 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
 
     private int atomCounter;
 
-    /**
-     * A iterating variable to add a new bond.
-     */
-    private int nextBondIdentifier;
-
-    public int getNextNodeIdentifier() {
-        return this.atomCounter++;
-    }
 
     public int addNextAtom(char elementSymbol) {
         return addNextAtom(String.valueOf(elementSymbol));
     }
 
     public int addNextAtom(String elementSymbol) {
-        return addNextAtom(ElementProvider.getElementBySymbol(elementSymbol));
+        return addNextAtom(ElementProvider.getElementBySymbol(elementSymbol).orElseThrow(() -> new IllegalArgumentException("The symbol "+elementSymbol+" represents no valid element.")));
     }
 
     public int addNextAtom(Element element) {
-        MoleculeAtom atom = new MoleculeAtom(getNextNodeIdentifier(),
-                VectorUtilities.generateRandomVectorInRectangle(new Rectangle(100,100)), element);
+        MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
+                Vectors.generateRandomVectorInRectangle(new Rectangle(100,100)), element);
         addNode(atom);
         return atom.getIdentifier();
     }
@@ -53,20 +41,21 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return addNextAtom(ion);
     }
 
+
     @Override
-    public void addEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
-        addEdgeBetween(source, target, MoleculeBondType.SINGLE_BOND);
+    public int addEdgeBetween(int identifier, MoleculeAtom source, MoleculeAtom target) {
+        return addEdgeBetween(new MoleculeBond(identifier), source, target);
     }
 
-    public void addEdgeBetween(MoleculeAtom source, MoleculeAtom target, MoleculeBondType bondType) {
-        MoleculeBond edge = new MoleculeBond(this.nextBondIdentifier);
-        edge.setType(bondType);
-        edge.setSource(source);
-        edge.setTarget(target);
-        addEdge(this.nextBondIdentifier, edge);
-        source.addNeighbour(target);
-        target.addNeighbour(source);
-        this.nextBondIdentifier++;
+    @Override
+    public int addEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
+        return addEdgeBetween(nextEdgeIdentifier(), source, target);
+    }
+
+    public int addEdgeBetween(MoleculeAtom source, MoleculeAtom target, MoleculeBondType bondType) {
+        MoleculeBond bond = new MoleculeBond(nextEdgeIdentifier());
+        bond.setType(bondType);
+        return addEdgeBetween(bond, source, target);
     }
 
 }

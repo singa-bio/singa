@@ -4,6 +4,8 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -148,5 +150,11 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     @Override
     public String getName() {
         return this.getThreeLetterCode();
+    }
+
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
     }
 }

@@ -8,6 +8,8 @@ import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.StructureFilter;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.core.utility.Nameable;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.Map;
@@ -153,4 +155,9 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         return this.chainIdentifier != null ? this.chainIdentifier.hashCode() : 0;
     }
 
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
+    }
 }

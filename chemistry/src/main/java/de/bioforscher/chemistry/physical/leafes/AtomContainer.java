@@ -1,9 +1,11 @@
 package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
- * Created by fkaiser on 06.12.16.
+ * @author fk
  */
 public class AtomContainer<StructuralFamilyType extends StructuralFamily>
         extends LeafSubstructure<AtomContainer<StructuralFamilyType>, StructuralFamilyType> {
@@ -51,5 +53,11 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
     }
 }

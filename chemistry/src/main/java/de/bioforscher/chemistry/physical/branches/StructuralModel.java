@@ -1,5 +1,8 @@
 package de.bioforscher.chemistry.physical.branches;
 
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,4 +35,9 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
         return new StructuralModel(this);
     }
 
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
+    }
 }

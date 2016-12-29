@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A ligand is a grouping element that should only contain
@@ -33,5 +35,11 @@ public class Ligand extends LeafSubstructure<Ligand, StructuralFamily> {
     @Override
     public String getName() {
         return null;
+    }
+
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
     }
 }

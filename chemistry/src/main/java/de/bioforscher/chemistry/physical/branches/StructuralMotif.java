@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.model.*;
+import de.bioforscher.mathematics.vectors.Vector3D;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -58,5 +60,11 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     @Override
     public StructuralMotif getCopy() {
         return new StructuralMotif(this);
+    }
+
+    @Override
+    public void setPosition(Vector3D position) {
+        //FIXME not yet implemented
+        throw new NotImplementedException();
     }
 }
