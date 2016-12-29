@@ -9,8 +9,7 @@ import de.bioforscher.mathematics.vectors.Vector2D;
 /**
  * A factory class used to create some Graphs.
  *
- * @author Christoph Leberecht
- * @version 1.0.1
+ * @author cl
  */
 public class GraphFactory {
 
@@ -22,12 +21,12 @@ public class GraphFactory {
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
-        UndirectedGraph graph = new UndirectedGraph(numberOfNodes, numberOfNodes - 1);
+        UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
             graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
         }
         for (int i = 0; i < numberOfNodes - 1; i++) {
-            graph.connect(i, graph.getNode(i), graph.getNode(i + 1));
+            graph.addEdgeBetween(i, graph.getNode(i), graph.getNode(i + 1));
         }
         return graph;
     }
@@ -42,7 +41,7 @@ public class GraphFactory {
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
         UndirectedGraph graph = buildLinearGraph(numberOfNodes, boundingBox);
-        graph.connect(numberOfNodes, graph.getNode(numberOfNodes - 1), graph.getNode(0));
+        graph.addEdgeBetween(numberOfNodes, graph.getNode(numberOfNodes - 1), graph.getNode(0));
         return graph;
     }
 
@@ -58,8 +57,7 @@ public class GraphFactory {
         if (depth < 1) {
             throw new IllegalArgumentException("The depth of a tree-like graph must be at least 1");
         }
-        UndirectedGraph graph = new UndirectedGraph(Sequences.mersenneSeries(depth),
-                Sequences.mersenneSeries(depth) - 1);
+        UndirectedGraph graph = new UndirectedGraph();
         RegularNode root = NodeFactory.createRandomlyPlacedNode(0, boundingBox);
         graph.addNode(root);
         GraphFactory.growTree(depth - 1, graph, root, boundingBox);
@@ -76,9 +74,8 @@ public class GraphFactory {
      */
     private static void growTree(int depth, UndirectedGraph graph, RegularNode predecessor, Rectangle boundingBox) {
         int next = graph.nextNodeIdentifier();
-        graph.addNode(
-                NodeFactory.createRandomlyPlacedNode(next, boundingBox));
-        graph.connect(graph.getNextEdgeIdentifier(), predecessor, graph.getNode(next));
+        graph.addNode(NodeFactory.createRandomlyPlacedNode(next, boundingBox));
+        graph.addEdgeBetween(graph.nextEdgeIdentifier(), predecessor, graph.getNode(next));
         if (depth > 0) {
             growTree(depth - 1, graph, graph.getNode(next), boundingBox);
             growTree(depth - 1, graph, graph.getNode(next), boundingBox);
@@ -94,7 +91,7 @@ public class GraphFactory {
      * @return A randomized graph.
      */
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
-        UndirectedGraph graph = new UndirectedGraph(numberOfNodes, numberOfNodes);
+        UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
             graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
         }
@@ -103,7 +100,7 @@ public class GraphFactory {
             for (RegularNode target : graph.getNodes()) {
                 if (!source.equals(target)) {
                     if (Math.random() < edgeProbability) {
-                        graph.connect(j, source, target);
+                        graph.addEdgeBetween(j, source, target);
                         j++;
                     }
                 }
@@ -122,11 +119,9 @@ public class GraphFactory {
      * @return A rectangular grid graph.
      */
     public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
-
-        UndirectedGraph graph = new UndirectedGraph(columns * rows, columns * rows);
+        UndirectedGraph graph = new UndirectedGraph();
         double horizontalSpacing = boundingBox.getWidth() / (rows + 1);
         double verticalSpacing = boundingBox.getHeight() / (columns + 1);
-
         // adding nodes
         int nodeCounter = 0;
         for (int row = 0; row < columns; row++) {
@@ -146,7 +141,7 @@ public class GraphFactory {
                 RegularNode target = graph.getNode(horizontalCounter + 1);
                 if (horizontalCounter < graph.getNodes().size() - 1) {
                     if (horizontalCounter % rows != rows - 1) {
-                        graph.connect(horizontalCounter, source, target);
+                        graph.addEdgeBetween(horizontalCounter, source, target);
                     }
                 }
                 horizontalCounter++;
@@ -160,7 +155,7 @@ public class GraphFactory {
                 RegularNode source = graph.getNode(verticalCounter);
                 RegularNode target = graph.getNode(verticalCounter + rows);
                 if (verticalCounter + rows < graph.getNodes().size()) {
-                    graph.connect(horizontalCounter + verticalCounter + 1, source, target);
+                    graph.addEdgeBetween(horizontalCounter + verticalCounter + 1, source, target);
                 }
                 verticalCounter++;
             }
@@ -173,14 +168,14 @@ public class GraphFactory {
             for (int c = 0; c < rows; c++) {
                 RegularNode source = graph.getNode(c);
                 RegularNode target = graph.getNode(graph.getNodes().size() - (rows - c));
-                graph.connect(horizontalCounter + verticalCounter + c + 1, source, target);
+                graph.addEdgeBetween(horizontalCounter + verticalCounter + c + 1, source, target);
             }
 
             // vertical connections
             for (int r = 0; r < columns; r++) {
                 RegularNode source = graph.getNode(r * columns);
                 RegularNode target = graph.getNode(r * columns + columns - 1);
-                graph.connect(horizontalCounter + verticalCounter + rows + r + 1, source, target);
+                graph.addEdgeBetween(horizontalCounter + verticalCounter + rows + r + 1, source, target);
             }
 
         }

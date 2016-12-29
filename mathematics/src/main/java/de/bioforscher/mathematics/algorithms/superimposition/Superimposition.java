@@ -35,11 +35,23 @@ public interface Superimposition<T> {
     Matrix getRotation();
 
     /**
-     * returns copied mapped candidates that were used to compute this superimposition
+     * Returns copied mapped candidates that were used to compute this superimposition, only containing the objects
+     * that were used to compute this superimposition.
      *
      * @return the candidates that were used for superimposition
      */
     List<T> getMappedCandidate();
+
+    /**
+     * Returns the full copied mapped candidates, which contain all objects, regardless of the ones used to calculate this
+     * superimpositon. The default method simply returns the mapped candidates as is.
+     *
+     * @return the candidates with their original objects that were used for superimposition
+     */
+    default List<T> getMappedFullCandidate(){
+        return getMappedCandidate();
+    }
+
 
     /**
      * applies this superimposition to a list of candidate

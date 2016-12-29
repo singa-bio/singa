@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.research;
 
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.graphs.util.RectangularGridCoordinateConverter;

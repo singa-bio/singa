@@ -84,7 +84,7 @@ public class Vector2D extends RegularVector {
      */
     @Override
     public Vector2D additivelyInvert() {
-        return createNewVector(super.additivelyInvert().getElements(), this.getClass());
+        return new Vector2D(-getX(), -getY());
     }
 
     /**
@@ -94,7 +94,7 @@ public class Vector2D extends RegularVector {
      * @return A new vector with inverted x coordinate.
      */
     public Vector2D invertX() {
-        return createNewVector(super.additiveleyInvertElement(X_INDEX).getElements(), this.getClass());
+        return new Vector2D(-getX(), getY());
     }
 
     /**
@@ -104,7 +104,7 @@ public class Vector2D extends RegularVector {
      * @return A new vector with inverted y coordinate.
      */
     public Vector2D invertY() {
-        return createNewVector(super.additiveleyInvertElement(Y_INDEX).getElements(), this.getClass());
+        return new Vector2D(getX(), -getY());
     }
 
     /**
@@ -116,7 +116,7 @@ public class Vector2D extends RegularVector {
      * @return The addition.
      */
     public Vector2D add(Vector2D vector) {
-        return createNewVector(super.add(vector).getElements(), this.getClass());
+        return new Vector2D(getX() + vector.getX(), getY() + vector.getY());
     }
 
     /**
@@ -128,7 +128,7 @@ public class Vector2D extends RegularVector {
      * @return The subtraction.
      */
     public Vector2D subtract(Vector2D vector) {
-        return createNewVector(super.subtract(vector).getElements(), this.getClass());
+        return new Vector2D(getX() - vector.getX(), getY() - vector.getY());
     }
 
     /**
@@ -140,12 +140,12 @@ public class Vector2D extends RegularVector {
      * @return The element-wise multiplication.
      */
     public Vector2D multiply(Vector2D vector) {
-        return createNewVector(super.multiply(vector).getElements(), this.getClass());
+        return new Vector2D(getX() * vector.getX(), getY() * vector.getY());
     }
 
     @Override
     public Vector2D multiply(double scalar) {
-        return createNewVector(super.multiply(scalar).getElements(), this.getClass());
+        return new Vector2D(getX() * scalar, getY() * scalar);
     }
 
     /**
@@ -157,17 +157,17 @@ public class Vector2D extends RegularVector {
      * @return The element-wise division.
      */
     public Vector2D divide(Vector2D vector) {
-        return createNewVector(super.divide(vector).getElements(), this.getClass());
+        return new Vector2D(getX() / vector.getX(), getY() / vector.getY());
     }
 
     @Override
     public Vector2D divide(double scalar) {
-        return createNewVector(super.divide(scalar).getElements(), this.getClass());
+        return new Vector2D(getX() / scalar, getY() / scalar);
     }
 
     @Override
     public Vector2D normalize() {
-        return createNewVector(super.normalize().getElements(), this.getClass());
+        return divide(getMagnitude());
     }
 
     /**
@@ -178,7 +178,17 @@ public class Vector2D extends RegularVector {
      * @return The dot product.
      */
     public double dotProduct(Vector2D vector) {
-        return super.dotProduct(vector);
+        return getX() * vector.getX() + getY() * vector.getY();
+    }
+
+    /**
+     * Returns the angle between this vector and the given vector in radians.
+     *
+     * @param vector Another 2D vector.
+     * @return The angle in radians.
+     */
+    public double angleBetween(Vector2D vector) {
+        return Math.acos(dotProduct(vector) / (getMagnitude() * vector.getMagnitude()));
     }
 
     /**
@@ -188,11 +198,11 @@ public class Vector2D extends RegularVector {
      * @return The Midpoint
      */
     public Vector2D getMidpointTo(Vector2D vector) {
-        return new Vector2D((this.getX() + vector.getX()) / 2, (this.getY() + vector.getY()) / 2);
+        return new Vector2D((getX() + vector.getX()) / 2, (getY() + vector.getY()) / 2);
     }
 
     /**
-     * Returns the distance between this vector and a {@link HorizontalLine}.
+     * Returns the distance between this vector and a {@link Line}.
      *
      * @param line A HorizontalLine.
      * @return The distance

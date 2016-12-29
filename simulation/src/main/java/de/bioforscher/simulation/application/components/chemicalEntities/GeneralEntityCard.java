@@ -2,10 +2,9 @@ package de.bioforscher.simulation.application.components.chemicalEntities;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
-import de.bioforscher.chemistry.parser.ChEBIImageService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIImageService;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
-import de.bioforscher.units.quantities.MolarMass;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
@@ -19,7 +18,6 @@ import javafx.scene.text.FontWeight;
 
 import javax.measure.Quantity;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by Christoph on 11/11/2016.

@@ -1,5 +1,8 @@
 package de.bioforscher.mathematics.graphs.trees;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BinaryTree<T> {
 
     private BinaryTreeNode<T> root;
@@ -7,6 +10,36 @@ public class BinaryTree<T> {
     public BinaryTree(BinaryTreeNode<T> root) {
         this.root = root;
     }
+
+    /**
+     * Traverses the tree in pre order and collects leave nodes.
+     *
+     * @param node       the starting node
+     * @param leaveNodes the storage for the leave nodes
+     */
+    private void collectLeavesPreOrder(BinaryTreeNode<T> node, List<BinaryTreeNode<T>> leaveNodes) {
+        if (node != null) {
+            BinaryTreeNode<T> left = node.getLeft();
+            BinaryTreeNode<T> right = node.getRight();
+            if (left == null && right == null) {
+                leaveNodes.add(node);
+            }
+            collectLeavesPreOrder(left, leaveNodes);
+            collectLeavesPreOrder(right, leaveNodes);
+        }
+    }
+
+    /**
+     * Returns all the leave nodes in the tree (every call to this method will traverse the entire tree).
+     *
+     * @return list of leave nodes
+     */
+    public List<BinaryTreeNode<T>> getLeafNodes() {
+        List<BinaryTreeNode<T>> leaveNodes = new ArrayList<>();
+        collectLeavesPreOrder(this.root, leaveNodes);
+        return leaveNodes;
+    }
+
 
     public BinaryTreeNode<T> getRoot() {
         return this.root;

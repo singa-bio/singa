@@ -69,14 +69,4 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         this.nextBondIdentifier++;
     }
 
-    public void saturareWithHydrogens() {
-
-    }
-
-    public void desaturateHydrogens() {
-
-    }
-
-
-
 }

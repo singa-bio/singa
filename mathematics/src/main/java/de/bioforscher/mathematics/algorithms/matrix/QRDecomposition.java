@@ -1,10 +1,10 @@
 package de.bioforscher.mathematics.algorithms.matrix;
 
+import de.bioforscher.mathematics.matrices.Matrices;
 import de.bioforscher.mathematics.matrices.Matrix;
-import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.vectors.Vector;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.*;
 
@@ -16,7 +16,7 @@ import java.util.*;
  * algorithm, the QR algorithm.</br>
  * <p>
  * This class implements the modified Gram-Schmidt Algorithm, which uses the {@link
- * VectorUtilities#orthonormalizeVectors(List)} method (see documentation there for more details). </br>
+ * Vectors#orthonormalizeVectors(List)} method (see documentation there for more details). </br>
  * <p>
  * Use the static method {@link #calculateQRDecomposition(Matrix)} to obtain a {@link QRDecomposition} that contains the
  * original matrix {@code A}, the orthogonal matrix {@code Q}, and the upper triangular matrix {@code R}.
@@ -83,11 +83,11 @@ public class QRDecomposition {
         // initialize decomposition
         QRDecomposition decomposition = new QRDecomposition(originalMatrix);
         // divide matrix into column vectors
-        List<Vector> columns = MatrixUtilities.divideIntoColumns(originalMatrix);
+        List<Vector> columns = Matrices.divideIntoColumns(originalMatrix);
         // use Gram-Schmidt process to calculate orthonormal vectors
-        List<Vector> orthonormalizedVectors = VectorUtilities.orthonormalizeVectors(columns);
+        List<Vector> orthonormalizedVectors = Vectors.orthonormalizeVectors(columns);
         // assemble orthonormal columns
-        decomposition.matrixQ = MatrixUtilities.assembleMatrixFromColumns(orthonormalizedVectors);
+        decomposition.matrixQ = Matrices.assembleMatrixFromColumns(orthonormalizedVectors);
         // compose R from previous results
         decomposition.matrixR = composeR(columns, orthonormalizedVectors);
         return decomposition;

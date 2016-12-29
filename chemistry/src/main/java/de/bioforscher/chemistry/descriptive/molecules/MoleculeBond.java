@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.descriptive.molecules;
 
-import de.bioforscher.chemistry.physical.bonds.BondType;
 import de.bioforscher.mathematics.graphs.model.AbstractEdge;
 
 /**

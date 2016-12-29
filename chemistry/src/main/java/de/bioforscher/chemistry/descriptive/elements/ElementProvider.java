@@ -15,9 +15,9 @@ public final class ElementProvider {
 
     private static final ElementProvider INSTANCE = new ElementProvider();
 
-    public static final Element HYDROGEN = addElement(new Element("Hydrogen", "H", 1,  1.008));
-    public static final Element DEUTERIUM = addElement(HYDROGEN.asIsotope(2));
-    public static final Element TRITIUM = addElement(HYDROGEN.asIsotope(3));
+    public static final Element HYDROGEN = addElement(new Element("Hydrogen", "H", 1, 1.008));
+    public static final Element DEUTERIUM = addElement(new Element("Hydrogen", "D", 1, 1.008).asIsotope(2));
+    public static final Element TRITIUM = addElement(new Element("Hydrogen", "T", 1, 1.008).asIsotope(2));
     public static final Element HELIUM = addElement(new Element("Helium", "He", 2, 4.002602));
     public static final Element LITHIUM = addElement(new Element("Lithium", "Li", 3, 6.94));
     public static final Element BERYLLIUM = addElement(new Element("Beryllium", "Be", 4, 6.94));
@@ -45,7 +45,7 @@ public final class ElementProvider {
     public static final Element NICKEL = addElement(new Element("Nickel", "Ni", 27, 58.6934));
     public static final Element COBALT = addElement(new Element("Cobalt", "Co", 28, 58.9332));
     public static final Element COPPER = addElement(new Element("Copper", "Cu", 29, 63.546));
-    public static final Element ZINC = addElement(new Element("Zinc", "Zi", 30, 65.39));
+    public static final Element ZINC = addElement(new Element("Zinc", "Zn", 30, 65.39));
     public static final Element GALLIUM = addElement(new Element("Gallium", "Ga", 31, 69.723));
     public static final Element GERMANIUM = addElement(new Element("Germanium", "Ge", 32, 72.64));
     public static final Element ARSENIC = addElement(new Element("Arsenic", "As", 33, 74.9216));
@@ -93,7 +93,7 @@ public final class ElementProvider {
     public static final Element RHENIUM = addElement(new Element("Rhenium", "Re", 75, 186.207));
     public static final Element OSMIUM = addElement(new Element("Osmium", "Os", 76, 190.23));
     public static final Element IRIDIUM = addElement(new Element("Iridium", "Ir", 77, 192.217));
-    public static final Element PLATINUM = addElement(new Element("Platinum", "P ", 78, 195.078));
+    public static final Element PLATINUM = addElement(new Element("Platinum", "Pt", 78, 195.078));
     public static final Element GOLD = addElement(new Element("Gold", "Au", 79, 196.9665));
     public static final Element MERCURY = addElement(new Element("Mercury", "Hg", 80, 200.59));
     public static final Element THALLIUM = addElement(new Element("Thallium", "Tl", 81, 204.3833));
@@ -142,11 +142,11 @@ public final class ElementProvider {
      * @param symbol The element symbol for which an {@link Element} should be retrieved.
      * @return {@link Optional} of the {@link Element}.
      */
-    public static Element getElementBySymbol(String symbol) {
+    public static Optional<Element> getElementBySymbol(String symbol) {
         // by contract one symbol cannot decode for multiple elements
         return INSTANCE.elements.stream()
                 .filter(element -> element.getSymbol().equalsIgnoreCase(symbol))
-                .findAny().orElse(UNKOWN);
+                .findAny();
     }
 
     /**

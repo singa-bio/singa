@@ -2,7 +2,7 @@ package de.bioforscher.simulation.parser;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.simulation.deprecated.EnzymeReaction;
 import org.xml.sax.Attributes;

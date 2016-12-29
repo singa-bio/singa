@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
- * in a {@link SubStructure}.
+ * in a {@link BranchSubstructure}.
  */
 public class RegularAtom implements Atom {
 
@@ -178,18 +178,12 @@ public class RegularAtom implements Atom {
         if (o == null || getClass() != o.getClass()) return false;
 
         RegularAtom that = (RegularAtom) o;
-        if (this.identifier != that.identifier) return false;
-        if (this.element != null ? !this.element.equals(that.element) : that.element != null) return false;
-        if (!this.atomNameString.equals(that.atomNameString)) return false;
-        return this.position.equals(that.position);
+
+        return this.identifier == that.identifier;
     }
 
     @Override
     public int hashCode() {
-        int result = this.identifier;
-        result = 31 * result + (this.element != null ? this.element.hashCode() : 0);
-        result = 31 * result + this.atomNameString.hashCode();
-        result = 31 * result + this.position.hashCode();
-        return result;
+        return this.identifier;
     }
 }

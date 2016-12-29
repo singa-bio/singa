@@ -1,6 +1,7 @@
 package de.bioforscher.mathematics.matrices;
 
 import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.vectors.RegularVector;
 
 import java.util.List;
 
@@ -20,6 +21,14 @@ public interface LabeledMatrix<LabelType> {
      * @param rowIndex The row index.
      */
     void setRowLabel(LabelType label, int rowIndex);
+
+    /**
+     * Returns the row with the matching label.
+     *
+     * @param label The label.
+     * @return the row
+     */
+    RegularVector getRowByLabel(LabelType label);
 
     /**
      * Returns the row label currently assigned to the given row index.
@@ -47,6 +56,14 @@ public interface LabeledMatrix<LabelType> {
      * @param columnIndex the column index.
      */
     void setColumnLabel(LabelType label, int columnIndex);
+
+    /**
+     * Returns the column with the matching label.
+     *
+     * @param label The label.
+     * @return the column
+     */
+    RegularVector getColumnByLabel(LabelType label);
 
     /**
      * Returns the column label currently assigned to the given row index.

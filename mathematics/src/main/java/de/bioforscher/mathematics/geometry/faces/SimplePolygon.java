@@ -2,7 +2,7 @@ package de.bioforscher.mathematics.geometry.faces;
 
 import de.bioforscher.mathematics.geometry.model.Polytope;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.ArrayList;
 
@@ -29,19 +29,19 @@ public class SimplePolygon implements Polytope<Vector2D> {
     }
 
     public double getLeftMostXPosition() {
-        return VectorUtilities.getMinimalValueForIndex(Vector2D.X_INDEX, getVertices());
+        return Vectors.getMinimalValueForIndex(Vector2D.X_INDEX, getVertices());
     }
 
     public double getRightMostXPosition() {
-        return VectorUtilities.getMaximalValueForIndex(Vector2D.X_INDEX, getVertices());
+        return Vectors.getMaximalValueForIndex(Vector2D.X_INDEX, getVertices());
     }
 
     public double getBottomMostYPosition() {
-        return VectorUtilities.getMinimalValueForIndex(Vector2D.Y_INDEX, getVertices());
+        return Vectors.getMinimalValueForIndex(Vector2D.Y_INDEX, getVertices());
     }
 
     public double getTopMostYPosition() {
-        return VectorUtilities.getMaximalValueForIndex(Vector2D.Y_INDEX, getVertices());
+        return Vectors.getMaximalValueForIndex(Vector2D.Y_INDEX, getVertices());
     }
 
     public double getWidth() {

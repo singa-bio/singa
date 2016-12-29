@@ -1,12 +1,10 @@
 package de.bioforscher.mathematics.algorithms.matrix;
 
-import de.bioforscher.core.utility.Pair;
+import de.bioforscher.mathematics.matrices.Matrices;
 import de.bioforscher.mathematics.matrices.Matrix;
-import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.List;
 public class LRDecomposition {
 
     public static Matrix calculateRowEchelonMatrix(Matrix originalMatrix) {
-        List<Vector> matrixRows = MatrixUtilities.divideIntoRows(originalMatrix);
+        List<Vector> matrixRows = Matrices.divideIntoRows(originalMatrix);
         for (int iteration = 0; iteration < Math.min(originalMatrix.getColumnDimension(), originalMatrix.getRowDimension()); iteration++) {
             // this row is the zero
             // FIXME: this can fail if the very first row is zero
@@ -49,7 +47,7 @@ public class LRDecomposition {
             }
 
         }
-        return MatrixUtilities.assembleMatrixFromRows(matrixRows);
+        return Matrices.assembleMatrixFromRows(matrixRows);
     }
 
     private static int getRowWithAbsolutMaximalElementAtIndex(List<Vector> matrixRows, int index, int startIndex) {
@@ -66,7 +64,7 @@ public class LRDecomposition {
     }
 
     public static int getRank(Matrix matrix) {
-        List<Vector> echelonRows = MatrixUtilities.divideIntoRows(calculateRowEchelonMatrix(matrix));
+        List<Vector> echelonRows = Matrices.divideIntoRows(calculateRowEchelonMatrix(matrix));
         // count non-zero rows
         int rank = 0;
         for (Vector row: echelonRows) {

@@ -1,128 +1,95 @@
 package de.bioforscher.chemistry.physical.model;
 
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.proteins.Chain;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueFactory;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Residue;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Structure represents chemical objects in a three dimensional space. Substructures are used to partition a structure
- * into smaller substructures that can be connected with edges.
+ * into smaller branchSubstructures that can be connected with edges.
  */
 public class Structure {
 
-    /**
-     * The substructures of the graph.
-     */
-    private Map<Integer, SubStructure> substructures;
+    private String pdbID;
 
-    private boolean containingModels;
+    /**
+     * The branchSubstructures of the graph.
+     */
+    private Map<Integer, BranchSubstructure<?>> branchSubstructures;
 
     public Structure() {
-        this.substructures = new TreeMap<>();
+        this.branchSubstructures = new TreeMap<>();
+    }
+
+    public List<BranchSubstructure<?>> getBranchSubstructures() {
+        return new ArrayList<>(this.branchSubstructures.values());
     }
 
     /**
-     * Returns true, if this Structure contains {@link StructuralModel}s.
-     *
-     * @return true, if this Structure contains {@link StructuralModel}s.
-     */
-    public boolean isContainingModels() {
-        return this.containingModels;
-    }
-
-    /**
-     * Sets whether this Structure contains {@link StructuralModel}s.
-     *
-     * @param containingModels true, if this Structure contains {@link StructuralModel}s.
-     */
-    public void setContainingModels(boolean containingModels) {
-        this.containingModels = containingModels;
-    }
-
-    public List<SubStructure> getSubstructures() {
-        return new ArrayList<>(this.substructures.values());
-    }
-
-    /**
-     * Adds a predefined {@link SubStructure} to this Structure. This {@link SubStructure} needs to have a unique
+     * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a unique
      * identifier, with which it can be addressed.
      *
-     * @param subStructure The {@link SubStructure} to add.
+     * @param branchSubstructure The {@link BranchSubstructure} to add.
      */
-    public void addSubstructure(SubStructure subStructure) {
-        this.substructures.put(subStructure.getIdentifier(), subStructure);
+    public void addSubstructure(BranchSubstructure<?> branchSubstructure) {
+        this.branchSubstructures.put(branchSubstructure.getIdentifier(), branchSubstructure);
     }
 
     public List<StructuralModel> getAllModels() {
-        if (this.isContainingModels()) {
-            return this.getSubstructures().stream()
-                    .map(StructuralModel.class::cast)
-                    .collect(Collectors.toList());
-        } else {
-            throw new IllegalStateException("This structure does not contain models.");
-        }
+        return this.getBranchSubstructures().stream()
+                .filter(StructureFilter.isModel())
+                .map(StructuralModel.class::cast)
+                .collect(Collectors.toList());
     }
 
     public List<Chain> getAllChains() {
-        if (this.isContainingModels()) {
-            return this.getAllModels().stream()
-                    .map(StructuralModel::getAllChains)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-        } else {
-            return this.getSubstructures().stream()
-                    .map(Chain.class::cast)
-                    .collect(Collectors.toList());
-        }
+        return this.getAllBranches().stream()
+                .filter(StructureFilter.isChain())
+                .map(Chain.class::cast)
+                .collect(Collectors.toList());
     }
 
     public List<Residue> getAllResidues() {
-        return this.substructures.values().stream()
-                .map(SubStructure::getResidues)
+        return this.branchSubstructures.values().stream()
+                .map(BranchSubstructure::getResidues)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public List<LeafSubstructure<?, ?>> getAllLeafs() {
+        return this.branchSubstructures.values().stream()
+                .map(BranchSubstructure::getLeafSubstructures)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public List<BranchSubstructure<?>> getAllBranches() {
+        List<BranchSubstructure<?>> branchSubstructures = this.branchSubstructures.values().stream()
+                .map(BranchSubstructure::getBranchSubstructures)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        branchSubstructures.addAll(this.branchSubstructures.values());
+        return branchSubstructures;
     }
 
     public List<Atom> getAllAtoms() {
-        return this.substructures.values().stream()
-                .map(SubStructure::getAllAtoms)
+        return this.branchSubstructures.values().stream()
+                .map(BranchSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    public static void main(String[] args) throws IOException {
-
-        ResidueFactory.setToOmitHydrogens(true);
-        Structure structure = PDBParserService.parseProteinById("4HHB");
-
-        if (structure.isContainingModels()) {
-            structure.getAllModels().forEach(model -> {
-                System.out.println("Model "+model.getIdentifier()+":");
-                model.getAllChains().forEach( chain -> {
-                    System.out.println(" Chain "+chain.getName()+":");
-                    chain.getResidues().forEach( residue -> {
-                        System.out.println("  Residue "+residue.getName()+"");
-                        residue.getAllAtoms().forEach(atom -> System.out.println("   Atom "+atom.getIdentifier()));
-                    });
-                });
-
-            });
-        } else {
-            structure.getAllChains().forEach( chain -> {
-                System.out.println("Chain "+chain.getName()+":");
-                chain.getResidues().forEach( residue -> {
-                    System.out.println(" Residue "+residue.getName()+"");
-                    residue.getAllAtoms().forEach(atom -> System.out.println("  Atom "+atom.getIdentifier()));
-                });
-            });
-        }
+    public String getPdbID() {
+        return this.pdbID;
     }
 
-
+    public void setPdbID(String pdbID) {
+        this.pdbID = pdbID;
+    }
 }

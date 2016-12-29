@@ -20,7 +20,7 @@ public class EnzymeAnnotationTest {
 
         Annotation<String> noteAnnotation = new Annotation<>(AnnotationType.NOTE, "This protein is involved in step 4" +
                 " of " +
-                "the subpathway that synthesizes D-glyceraldehyde 3-phosphate and glycerone phosphate from D-glucose.");
+                "the subpathway that synthesizes D-glyceraldehyde 3-phosphate and glycerone phosphate of D-glucose.");
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
                 .ADDITIONAL_IDENTIFIER, new PubChemIdentifier("CID 1234"));
 

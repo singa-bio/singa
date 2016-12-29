@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.model.SubStructure;
-import de.bioforscher.chemistry.physical.proteins.Residue;
-import de.bioforscher.chemistry.physical.proteins.ResidueType;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,32 +13,58 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by S on 28.11.2016.
+ * This class constructs valid alignments for the Fit3D algorithm.
+ * <p>
+ * Consider Q=(K,D,E,E,H) to be the query motif. Further, we allow exchanges that are:
+ * <p>
+ * <pre>
+ *  E(K1) = (H)
+ *  E(E2) = (D,N)
+ *  E(H)  = (K)
+ * </pre>
+ * <p>
+ * If we now consider T=(H,E,N,D,H) to be a target of unknown order to which Q should be matched,
+ * there are exactly two valid alignments:
+ * <p>
+ * <pre>
+ *  Q =   K | D | E | E | H
+ *  T =   H1| D | E | N | H2
+ * </pre>
+ * <p>
+ * <pre>
+ *  Q =   K | D | E | E | H
+ *  T =   H2| D | E | N | H1
+ * </pre>
+ * <p>
+ * @author sb
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<SubStructure> reference;
-    private List<SubStructure> candidate;
+    private List<LeafSubstructure<?, ?>> reference;
+    private List<LeafSubstructure<?, ?>> candidate;
 
-    private List<List<SubStructure>> pathsThroughSecondMotif;
+    private List<List<LeafSubstructure<?, ?>>> pathsThroughSecondMotif;
 
-    public List<List<Pair<SubStructure>>> getValidAlignments(List<SubStructure> reference, List<SubStructure> candidate) {
+    public ValidAlignmentGenerator(List<LeafSubstructure<?, ?>> reference, List<LeafSubstructure<?, ?>> candidate) {
         this.reference = reference;
         this.candidate = candidate;
+    }
+
+    public List<List<Pair<LeafSubstructure<?, ?>>>> getValidAlignments() {
 
         // initialize paths
         this.pathsThroughSecondMotif = new ArrayList<>();
         this.pathsThroughSecondMotif.add(new ArrayList<>());
 
         // handle each
-        for(int currentPathLength = 0; currentPathLength < reference.size(); currentPathLength++) {
+        for (int currentPathLength = 0; currentPathLength < this.reference.size(); currentPathLength++) {
             final int expectedLength = currentPathLength + 1;
             //TODO: could break
-            Residue currentReferenceResidue = (Residue) reference.get(currentPathLength);
-            logger.info("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
+            Residue currentReferenceResidue = (Residue) this.reference.get(currentPathLength);
+            logger.trace("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
 
             // for each candidate: append it to the currently known paths
-            this.pathsThroughSecondMotif = candidate.stream()
+            this.pathsThroughSecondMotif = this.candidate.stream()
                     // create each possible combination of the current paths and the available candidate residues
                     //TODO: this could improve, if not already consumed residues are appended
                     .flatMap(candidateResidue -> this.pathsThroughSecondMotif.stream()
@@ -54,29 +80,29 @@ public class ValidAlignmentGenerator {
                     // - they are invalid, when they contain the same residue multiple times
                     // - thus, when their distinct size is smaller than the currentPathLength
                     //TODO: subStructure.getIdentifier() could easily break - however, this.equals(this.getCopy()) will evaluate to false :x
-                    .filter(path -> path.stream().map(SubStructure::getIdentifier).distinct().count() == expectedLength)
+                    .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
-                        Residue recentlyAddedResidue = (Residue) path.get(path.size() - 1);
-                        ResidueType recentlyAddedResidueType = recentlyAddedResidue.getType();
-                        if(recentlyAddedResidueType == currentReferenceResidue.getType()) {
+                        LeafSubstructure<?,?> recentlyAddedResidue = path.get(path.size() - 1);
+                        StructuralFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
+                        if (recentlyAddedResidueFamily == currentReferenceResidue.getFamily()) {
                             return true;
                         }
-                        return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueType);
+                        return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueFamily);
                     })
                     .collect(Collectors.toList());
         }
 
         return this.pathsThroughSecondMotif.stream()
                 .map(path -> IntStream.range(0, path.size())
-                                      .mapToObj(index -> new Pair<>(reference.get(index), path.get(index)))
-                                      .collect(Collectors.toList()))
+                        .mapToObj(index -> new Pair<>(this.reference.get(index), path.get(index)))
+                        .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
-    private List<SubStructure> cloneList(List<SubStructure> motif) {
+    private List<LeafSubstructure<?, ?>> cloneList(List<LeafSubstructure<?, ?>> motif) {
         return motif.stream()
-                .map(SubStructure::getCopy)
+                .map(LeafSubstructure::getCopy)
                 .collect(Collectors.toList());
     }
 }

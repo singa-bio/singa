@@ -79,7 +79,7 @@ public class VectorTest {
         Vector v1 = new Vector3D(0, 1, 2);
         Vector v2 = new Vector3D(2, -2, 2);
         Vector v3 = new Vector3D(1, 4, -4);
-        Vector actual = VectorUtilities.getCentroid(Arrays.asList(v1, v2, v3));
+        Vector actual = Vectors.getCentroid(Arrays.asList(v1, v2, v3));
         assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements(), 0.0);
     }
 

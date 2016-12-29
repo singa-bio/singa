@@ -3,10 +3,9 @@ package de.bioforscher.simulation.parser;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Enzyme;
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -135,7 +134,7 @@ public class GraphMLContentHandler implements ContentHandler {
                 int edgeId = Integer.parseInt(atts.getValue("id"));
                 BioNode source = this.graph.getNode(Integer.parseInt(atts.getValue("source")));
                 BioNode target = this.graph.getNode(Integer.parseInt(atts.getValue("target")));
-                this.graph.connect(edgeId, source, target, BioEdge.class);
+                this.graph.addEdgeBetween(edgeId, source, target);
                 for (ChemicalEntity entity : this.speciesMap.values()) {
                     this.graph.getEdge(edgeId).addPermeability(entity, 1.0);
                 }

@@ -1,34 +1,27 @@
 package de.bioforscher.chemistry.physical.viewer;
 
-import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
-import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposition;
-import de.bioforscher.chemistry.parser.pdb.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.SubStructure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 import javafx.application.Application;
-import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
 /**
  * Created by Christoph on 27.09.2016.
@@ -40,28 +33,34 @@ public class StructureViewer extends Application {
     private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
     private static final double CAMERA_FAR_CLIP = 10000.0;
-    private static final double AXIS_LENGTH = 250.0;
+
     private static final double CONTROL_MULTIPLIER = 0.1;
     private static final double SHIFT_MULTIPLIER = 10.0;
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.3;
-    private final Group root = new Group();
-    private final Xform world = new Xform();
+
+    public static Structure structure;
+    private Structure displayStructure;
+
+    public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
+    private Map<String, PhongMaterial> chainMaterials;
+    private final Group displayGroup = new Group();
+    private XForm world = new XForm();
+    private XForm moleculeGroup = new XForm();
+
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
-    private final Xform cameraXform = new Xform();
-    private final Xform cameraXform2 = new Xform();
-    private final Xform cameraXform3 = new Xform();
-    private final Xform axisGroup = new Xform();
-    private final Xform moleculeGroup = new Xform();
+    private final XForm XYRotate = new XForm();
+    private final XForm XYTranslate = new XForm();
+    private final XForm ZRotate = new XForm();
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    private Structure structure;
 
+    private TreeView<String> treeView;
 
     public static void main(String[] args) {
         launch(args);
@@ -70,151 +69,143 @@ public class StructureViewer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        this.root.getChildren().add(this.world);
-        this.root.setDepthTest(DepthTest.ENABLE);
-        // this.root.getChildren().add(new Button("My test button"));
+        this.chainMaterials = new HashMap<>();
 
-        loadTestStructure();
+        this.treeView = new TreeView<>();
+        this.treeView.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        displayModel(newValue.getValue());
+                    }
+                });
+
+        this.displayGroup.getChildren().add(this.world);
+        this.displayGroup.setDepthTest(DepthTest.ENABLE);
+
+        if (structure.getAllModels().size() > 1) {
+            // add leafs
+            this.displayStructure = new Structure();
+            this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(0));
+        } else {
+            this.displayStructure = structure;
+        }
+
+        fillTree();
         translateToCentre();
         buildCamera();
-        buildAxes();
-        buildMolecule();
+        buildDisplayedStructure();
 
-        Scene scene = new Scene(this.root, 800, 600, true);
-        handleKeyboard(scene);
-        handleMouse(scene);
-        scene.setFill(Color.WHITE);
+        SubScene structureScene = new SubScene(this.displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
+        handleKeyboard(structureScene);
+        handleMouse(structureScene);
+        structureScene.setFill(Color.WHITE);
 
-        primaryStage.setTitle("Molecule Sample Application");
-        primaryStage.setScene(scene);
+        SplitPane pane = new SplitPane(structureScene, this.treeView);
+        Scene mainScene = new Scene(pane);
+
+        primaryStage.setTitle("Singa Molecule Viewer");
+        primaryStage.setScene(mainScene);
         primaryStage.show();
 
-        this.axisGroup.setVisible(false);
-
-        scene.setCamera(this.camera);
-
+        structureScene.setCamera(this.camera);
     }
 
     private void buildCamera() {
-        this.root.getChildren().add(this.cameraXform);
-        this.cameraXform.getChildren().add(this.cameraXform2);
-        this.cameraXform2.getChildren().add(this.cameraXform3);
-        this.cameraXform3.getChildren().add(this.camera);
-        this.cameraXform3.setRotateZ(180.0);
+        //defining the order of rotations
+        this.displayGroup.getChildren().add(this.XYRotate);
+        this.XYRotate.getChildren().add(this.XYTranslate);
+        this.XYTranslate.getChildren().add(this.ZRotate);
+        this.ZRotate.getChildren().add(this.camera);
+        this.ZRotate.setRotateZ(180.0);
 
         this.camera.setNearClip(CAMERA_NEAR_CLIP);
         this.camera.setFarClip(CAMERA_FAR_CLIP);
         this.camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-        this.cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        this.cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+
+        this.XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+        this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
-    private void buildAxes() {
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.DARKRED);
-        redMaterial.setSpecularColor(Color.RED);
+    private void translateToCentre() {
+        List<Atom> allAtoms = structure.getAllAtoms();
 
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(Color.DARKGREEN);
-        greenMaterial.setSpecularColor(Color.GREEN);
+        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
+                .map(Atom::getPosition)
+                .collect(Collectors.toList()))
+                .as(Vector3D.class).multiply(3.0);
 
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(Color.DARKBLUE);
-        blueMaterial.setSpecularColor(Color.BLUE);
-
-        final Box xAxis = new Box(AXIS_LENGTH, 1, 1);
-        final Box yAxis = new Box(1, AXIS_LENGTH, 1);
-        final Box zAxis = new Box(1, 1, AXIS_LENGTH);
-
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
-
-        this.axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        this.axisGroup.setVisible(true);
-        this.world.getChildren().addAll(this.axisGroup);
+        allAtoms.forEach(atom -> atom.setPosition(
+                atom.getPosition().multiply(3.0).subtract(centroid)));
     }
 
-    private void buildMolecule() {
-
-        final PhongMaterial carbonMaterial = new PhongMaterial();
-        carbonMaterial.setDiffuseColor(Color.DARKGREY);
-        carbonMaterial.setSpecularColor(Color.GREY);
-
-        final PhongMaterial nitrogenMaterial = new PhongMaterial();
-        nitrogenMaterial.setDiffuseColor(Color.CORNFLOWERBLUE.darker());
-        nitrogenMaterial.setSpecularColor(Color.CORNFLOWERBLUE.brighter());
-
-        final PhongMaterial oxygenMaterial = new PhongMaterial();
-        oxygenMaterial.setDiffuseColor(Color.INDIANRED.darker());
-        oxygenMaterial.setSpecularColor(Color.INDIANRED.brighter());
-
-        final PhongMaterial hydrogenMaterial = new PhongMaterial();
-        hydrogenMaterial.setDiffuseColor(Color.GREENYELLOW.darker());
-        hydrogenMaterial.setSpecularColor(Color.GREENYELLOW.brighter());
-
-
-        List<Xform> forms = new ArrayList<>();
-
-        Xform atoms = new Xform();
-
-        // draw atoms
-        this.structure.getAllResidues().forEach(residue -> {
-                    residue.getNodes().forEach(atom -> {
-                        Sphere atomSphere = new Sphere(1.0);
-                        if (atom.getElement().equals(CARBON)) {
-                            atomSphere.setMaterial(carbonMaterial);
-                        } else if (atom.getElement().equals(NITROGEN)) {
-                            atomSphere.setMaterial(nitrogenMaterial);
-                        } else if (atom.getElement().equals(OXYGEN)) {
-                            atomSphere.setMaterial(oxygenMaterial);
-                        } else {
-                            atomSphere.setMaterial(hydrogenMaterial);
-                        }
-
-                        atomSphere.setTranslateX(atom.getPosition().getX());
-                        atomSphere.setTranslateY(atom.getPosition().getY());
-                        atomSphere.setTranslateZ(atom.getPosition().getZ());
-
-                        Xform atomForm = new Xform();
-                        atomForm.getChildren().add(atomSphere);
-                        forms.add(atomForm);
-
-                        residue.getEdges().forEach(edge -> {
-
-                            Vector3D source = edge.getSource().getPosition();
-                            Vector3D target = edge.getTarget().getPosition();
-
-                            Cylinder bond = createCylinderConnecting(source, target);
-                            bond.setMaterial(carbonMaterial);
-
-                            Xform bondFrom = new Xform();
-                            bondFrom.getChildren().add(bond);
-                            forms.add(bondFrom);
-                        });
-
-                    });
-                }
-        );
-
-        // backbone edges between residues
-        this.structure.getAllResidues().forEach(residue ->
-                residue.getEdges().forEach(edge -> {
-
-                    Vector3D source = edge.getSource().getPosition();
-                    Vector3D target = edge.getTarget().getPosition();
-
-                    Cylinder bond = createCylinderConnecting(source, target);
-                    bond.setMaterial(carbonMaterial);
-
-                    Xform bondFrom = new Xform();
-                    bondFrom.getChildren().add(bond);
-                    forms.add(bondFrom);
-                }));
-
-        atoms.getChildren().addAll(forms);
-        this.moleculeGroup.getChildren().add(atoms);
+    private void buildDisplayedStructure() {
+        // add leafs
+        this.displayStructure.getAllLeafs().forEach(this::addLeaf);
+        // edges in chains (backbone connections)
+        this.displayStructure.getAllChains().forEach(this::addChainConnections);
+        // add the created molecule to the world
         this.world.getChildren().addAll(this.moleculeGroup);
+
+    }
+
+    private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
+        leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
+        leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
+    }
+
+    private void addChainConnections(Chain chain) {
+        chain.getEdges().forEach(bond -> addChainBond(chain, bond));
+    }
+
+    private void addAtom(LeafSubstructure<?, ?> origin, Atom atom) {
+        Sphere atomShape = new Sphere(1.0);
+        atomShape.setMaterial(getMaterial(origin, atom));
+        atomShape.setTranslateX(atom.getPosition().getX());
+        atomShape.setTranslateY(atom.getPosition().getY());
+        atomShape.setTranslateZ(atom.getPosition().getZ());
+
+        // add tooltip
+        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomName()) + ":" +
+                atom.getIdentifier() + ") of " + origin.getName() + ":" + origin.getIdentifier());
+        Tooltip.install(atomShape, tooltip);
+
+        this.moleculeGroup.getChildren().add(atomShape);
+    }
+
+    private void fillTree() {
+        TreeItem<String> rootItem = new TreeItem<>(structure.getPdbID());
+        if (structure.getBranchSubstructures().size() > 1) {
+            for (Substructure<?> substructure : structure.getBranchSubstructures()) {
+                TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(substructure.getIdentifier()));
+                rootItem.getChildren().add(modelNode);
+            }
+        }
+        this.treeView.setRoot(rootItem);
+    }
+
+    private void displayModel(final String identifier) {
+        if (identifier.contains("Model")) {
+            this.displayStructure = new Structure();
+            this.world = new XForm();
+            this.moleculeGroup = new XForm();
+            this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(Integer.valueOf(identifier.replace("Model: ", "")) - 1));
+            buildDisplayedStructure();
+            this.displayGroup.getChildren().retainAll();
+            this.displayGroup.getChildren().add(this.world);
+        }
+    }
+
+    private void addLeafBond(LeafSubstructure<?, ?> origin, Bond bond) {
+        Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
+        bondShape.setMaterial(getMaterial(origin, bond));
+        this.moleculeGroup.getChildren().add(bondShape);
+    }
+
+    private void addChainBond(Chain origin, Bond bond) {
+        Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
+        bondShape.setMaterial(getMaterial(origin));
+        this.moleculeGroup.getChildren().add(bondShape);
+
     }
 
     private Cylinder createCylinderConnecting(Vector3D source, Vector3D target) {
@@ -229,29 +220,61 @@ public class StructureViewer extends Application {
         bond.setTranslateZ(newLocation.getZ());
 
         // phi
-        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate
-                .Z_AXIS));
+        bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.atan2(delta.getY(), delta.getX())), Rotate.Z_AXIS));
         // theta
         bond.getTransforms().add(new Rotate(90 + Math.toDegrees(Math.acos(delta.getZ() / distance)), Rotate.X_AXIS));
 
         return bond;
     }
 
-    private void translateToCentre() {
-        List<Atom> allAtoms = this.structure.getSubstructures().stream()
-                .map(SubStructure::getAllAtoms)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        Vector3D centroid = VectorUtilities.getCentroid(allAtoms.stream()
-                .map(Atom::getPosition)
-                .collect(Collectors.toList()))
-                .as(Vector3D.class).multiply(3.0);
-        allAtoms.forEach(atom -> atom.setPosition(
-                atom.getPosition().multiply(3.0).subtract(centroid)));
+    private PhongMaterial getMaterial(LeafSubstructure<?, ?> origin, Atom atom) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
+        } else {
+            // TODO for some reason singular atoms are not assigned to the correct leaf?
+            if (origin.getIdentiferMap().containsKey(atom)) {
+                String chain = origin.getIdentiferMap().get(atom).getChainIdentifer();
+                if (this.chainMaterials.containsKey(chain)) {
+                    return this.chainMaterials.get(chain);
+                } else {
+                    return getMaterialForChain(origin.getIdentiferMap().get(atom).getChainIdentifer());
+                }
+            }
+            return MaterialProvider.crateMaterialFromColor(Color.BLUE);
+        }
     }
 
-    private void handleMouse(Scene scene) {
+    private PhongMaterial getMaterial(LeafSubstructure<?, ?> origin, Bond edge) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.CARBON;
+        } else {
+            if (origin.getIdentiferMap().containsKey(edge.getSource())) {
+                return getMaterialForChain(origin.getIdentiferMap().get(edge.getSource()).getChainIdentifer());
+            }
+            return MaterialProvider.crateMaterialFromColor(Color.BLUE);
+        }
+    }
+
+    private PhongMaterial getMaterial(Chain origin) {
+        if (colorScheme == ColorScheme.BY_ELEMENT) {
+            return MaterialProvider.CARBON;
+        } else {
+            return getMaterialForChain(origin.getChainIdentifier());
+        }
+    }
+
+    private PhongMaterial getMaterialForChain(String chain) {
+        if (this.chainMaterials.containsKey(chain)) {
+            return this.chainMaterials.get(chain);
+        } else {
+            PhongMaterial material = MaterialProvider.crateMaterialFromColor(Color.color(Math.random(), Math.random(), Math.random()));
+            this.chainMaterials.put(chain, material);
+            return material;
+        }
+    }
+
+    private void handleMouse(SubScene scene) {
+
         scene.setOnMousePressed(me -> {
             this.mousePosX = me.getSceneX();
             this.mousePosY = me.getSceneY();
@@ -276,65 +299,38 @@ public class StructureViewer extends Application {
                 modifier = SHIFT_MULTIPLIER;
             }
             if (me.isPrimaryButtonDown()) {
-                this.cameraXform.ry.setAngle(
-                        this.cameraXform.ry.getAngle() - this.mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED);
-                this.cameraXform.rx.setAngle(
-                        this.cameraXform.rx.getAngle() + this.mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
+                this.XYRotate.ry.setAngle(
+                        this.XYRotate.ry.getAngle() - this.mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED);
+                this.XYRotate.rx.setAngle(
+                        this.XYRotate.rx.getAngle() + this.mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
             } else if (me.isSecondaryButtonDown()) {
                 double z = this.camera.getTranslateZ();
                 double newZ = z + this.mouseDeltaX * MOUSE_SPEED * modifier;
                 this.camera.setTranslateZ(newZ);
             } else if (me.isMiddleButtonDown()) {
-                this.cameraXform2.t.setX(
-                        this.cameraXform2.t.getX() + this.mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
-                this.cameraXform2.t.setY(
-                        this.cameraXform2.t.getY() + this.mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
+                this.XYTranslate.translate.setX(
+                        this.XYTranslate.translate.getX() + this.mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
+                this.XYTranslate.translate.setY(
+                        this.XYTranslate.translate.getY() + this.mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
             }
         });
     }
 
-    private void handleKeyboard(Scene scene) {
+
+    private void handleKeyboard(SubScene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case Z:
-                    this.cameraXform2.t.setX(0.0);
-                    this.cameraXform2.t.setY(0.0);
+                case R: {
+                    // reset to default
+                    this.XYTranslate.translate.setX(0.0);
+                    this.XYTranslate.translate.setY(0.0);
                     this.camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-                    this.cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                    this.cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                    this.XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+                    this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
                     break;
-                case X:
-                    this.axisGroup.setVisible(!this.axisGroup.isVisible());
-                    break;
-                case V:
-                    this.moleculeGroup.setVisible(!this.moleculeGroup.isVisible());
-                    break;
+                }
             }
         });
     }
 
-    private void loadTestStructure() {
-        try {
-            // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
-//            ResidueFactory.setToOmitHydrogens(true);
-//            this.structure = PDBParserService.parseProteinById("1pqs");
-            // this.structure = PDBParserService.parsePDBFile("D:\\intellij\\singa\\chemistry\\src\\test\\resources\\5hwx.pdb");
-//            ResidueFactory.setToOmitHydrogens(true);
-            Structure motif1 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_01.pdb");
-            Structure motif2 = PDBParserService.parsePDBFile("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/motif_HDS_02.pdb");
-            SubStructure reference = motif1.getSubstructures().stream().collect(Collectors.toList()).get(0);
-            SubStructure candidate = motif2.getSubstructures().stream().collect(Collectors.toList()).get(0);
-            SubStructureSuperimposition superimposition =
-                    SubStructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, AtomFilter.isBackbone());
-
-            Structure structure = new Structure();
-            superimposition.applyTo(candidate.getAtomContainingSubstructures()).forEach(structure::addSubstructure);
-            structure.addSubstructure(reference);
-            this.structure = structure;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // StructureAssembler.parseAminoAcidAtoms(atomLines);
-        // this.structure = StructureAssembler.parseResidues(atomLines);
-    }
 }

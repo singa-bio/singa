@@ -14,13 +14,8 @@ public class BioEdge extends AbstractEdge<BioNode> {
         this.permeability = new HashMap<>();
     }
 
-    public BioEdge(BioNode source, BioNode target) {
-        super(source, target);
-        this.permeability = new HashMap<>();
-    }
-
-    public BioEdge(int identifier, BioNode source, BioNode target) {
-        super(identifier, source, target);
+    public BioEdge(int identifier) {
+        super(identifier);
         this.permeability = new HashMap<>();
     }
 
@@ -41,11 +36,6 @@ public class BioEdge extends AbstractEdge<BioNode> {
             return this.permeability.get(entity);
         }
         return 0.0;
-    }
-
-    @Override
-    public String toString() {
-        return "BioEdge [identifier=" + this.identifier + "]";
     }
 
 }

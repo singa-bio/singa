@@ -8,9 +8,9 @@ import static org.junit.Assert.*;
 
 public class Vector2DTest {
 
-    Vector2D first;
-    Vector2D second;
-    double scalar;
+    private Vector2D first;
+    private Vector2D second;
+    private double scalar;
 
     @Before
     public void initialize() {

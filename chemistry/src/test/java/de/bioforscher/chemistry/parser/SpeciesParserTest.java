@@ -1,6 +1,9 @@
 package de.bioforscher.chemistry.parser;
 
 import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.parser.chebi.ChEBIImageService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBISearchService;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,15 +16,6 @@ import static org.junit.Assert.assertTrue;
  * Created by Christoph on 19.04.2016.
  */
 public class SpeciesParserTest {
-
-    @Test
-    public void shouldParseMethanolFromPubChemXML() {
-        String resource = Thread.currentThread().getContextClassLoader().getResource("methanol-pubchem.xml").toString();
-        PubChemParserService parser = new PubChemParserService(resource);
-        Species methanol = parser.fetchSpecies();
-        assertEquals("methanol", methanol.getName().toLowerCase());
-        assertEquals(32.04186, methanol.getMolarMass().getValue().doubleValue(), 0.0);
-    }
 
     @Test
     public void shouldParseMethanolFromChEBIOnline() {

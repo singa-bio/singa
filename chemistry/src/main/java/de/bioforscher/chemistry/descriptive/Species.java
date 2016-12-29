@@ -1,12 +1,13 @@
 package de.bioforscher.chemistry.descriptive;
 
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 
 /**
  * A chemical species should be used to handle everything that can be described with a SMILES (Simplified Molecular
  * Input Line Entry Specification) String, such as small molecules and molecular fragments. The species needs to be
  * identifiable by a {@link ChEBIIdentifier}. Species can be parsed from the ChEBI Database using the {@link
- * de.bioforscher.chemistry.parser.ChEBIParserService ChEBIParserService}.
+ * ChEBIParserService ChEBIParserService}.
  *
  * @author cl
  * @see ChemicalEntity

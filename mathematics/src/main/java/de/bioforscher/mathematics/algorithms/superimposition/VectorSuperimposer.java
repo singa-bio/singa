@@ -2,12 +2,12 @@ package de.bioforscher.mathematics.algorithms.superimposition;
 
 import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.combinatorics.StreamPermutations;
+import de.bioforscher.mathematics.matrices.Matrices;
 import de.bioforscher.mathematics.matrices.Matrix;
-import de.bioforscher.mathematics.matrices.MatrixUtilities;
 import de.bioforscher.mathematics.matrices.SquareMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.mathematics.vectors.Vector;
-import de.bioforscher.mathematics.vectors.VectorUtilities;
+import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.List;
 import java.util.Optional;
@@ -84,11 +84,11 @@ public class VectorSuperimposer {
     }
 
     private void calculateRotation() {
-        Matrix referenceMatrix = MatrixUtilities.assembleMatrixFromRows(this.shiftedReference);
-        Matrix candidateMatrix = MatrixUtilities.assembleMatrixFromRows(this.shiftedCandidate);
+        Matrix referenceMatrix = Matrices.assembleMatrixFromRows(this.shiftedReference);
+        Matrix candidateMatrix = Matrices.assembleMatrixFromRows(this.shiftedCandidate);
 
         // calculate covariance
-        Matrix covarianceMatrix = MatrixUtilities.calculateCovarianceMatrix(referenceMatrix, candidateMatrix);
+        Matrix covarianceMatrix = Matrices.calculateCovarianceMatrix(referenceMatrix, candidateMatrix);
 
         // solve using SVD
         SVDecomposition svd = new SVDecomposition(covarianceMatrix);
@@ -113,10 +113,10 @@ public class VectorSuperimposer {
     }
 
     private void center() {
-        this.referenceCentroid = VectorUtilities.getCentroid(this.reference);
+        this.referenceCentroid = Vectors.getCentroid(this.reference);
         this.shiftedReference = this.reference.stream().map(vector -> vector.subtract(this.referenceCentroid))
                 .collect(Collectors.toList());
-        this.candidateCentroid = VectorUtilities.getCentroid(this.candidate);
+        this.candidateCentroid = Vectors.getCentroid(this.candidate);
         this.shiftedCandidate = this.candidate.stream().map(vector -> vector.subtract(this.candidateCentroid))
                 .collect(Collectors.toList());
     }

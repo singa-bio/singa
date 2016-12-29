@@ -2,7 +2,7 @@ package de.bioforscher.simulation.research;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Species;
-import de.bioforscher.chemistry.parser.ChEBIParserService;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.core.parameters.*;
 import de.bioforscher.mathematics.algorithms.optimization.AbstractGridSearch;
 import de.bioforscher.mathematics.combinatorics.Permutations;

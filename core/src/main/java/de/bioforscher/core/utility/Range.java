@@ -28,4 +28,5 @@ public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
     public Type getUpperBound() {
         return values.getSecond();
     }
+
 }

@@ -25,6 +25,10 @@ public final class AtomFilter {
         return atom -> atom.getElement().equals(ElementProvider.CARBON);
     }
 
+    public static Predicate<Atom> isHydrogen() {
+        return atom -> atom.getElement().equals(ElementProvider.HYDROGEN);
+    }
+
     public static Predicate<Atom> isOxygen() {
         return atom -> atom.getElement().equals(ElementProvider.OXYGEN);
     }
@@ -47,6 +51,10 @@ public final class AtomFilter {
 
     public static Predicate<Atom> isAlphaCarbon() {
         return atom -> atom.getAtomName() == AtomName.CA;
+    }
+
+    public static Predicate<Atom> isBetaCarbon() {
+        return atom -> atom.getAtomName() == AtomName.CB;
     }
 
     public static Predicate<Atom> isBackbone() {

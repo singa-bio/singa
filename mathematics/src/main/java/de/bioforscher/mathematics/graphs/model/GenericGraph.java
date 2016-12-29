@@ -7,20 +7,14 @@ import de.bioforscher.mathematics.vectors.Vector;
  */
 public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<ContentType>, GenericEdge<ContentType>, Vector> {
 
-    /**
-     * A iterating variable to add a new bond.
-     */
-    private int nextBondIdentifier;
+    @Override
+    public int addEdgeBetween(int identifier, GenericNode<ContentType> source, GenericNode<ContentType> target) {
+        return addEdgeBetween(new GenericEdge<>(identifier), source, target);
+    }
 
     @Override
-    public void addEdgeBetween(GenericNode<ContentType> source, GenericNode<ContentType> target) {
-        GenericEdge<ContentType> edge = new GenericEdge<>(this.nextBondIdentifier);
-        edge.setSource(source);
-        edge.setTarget(target);
-        addEdge(this.nextBondIdentifier, edge);
-        source.addNeighbour(target);
-        target.addNeighbour(source);
-        this.nextBondIdentifier++;
+    public int addEdgeBetween(GenericNode<ContentType> source, GenericNode<ContentType> target) {
+        return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
 
