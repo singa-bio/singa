@@ -128,6 +128,21 @@ public interface Renderer {
     }
 
     /**
+     * Draws the given line segment.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
+     * @param lineSegment The line segment.
+     */
+    default void dashLineSegment(LineSegment lineSegment, double... dashes) {
+        getGraphicsContext().setLineDashes(dashes);
+        drawStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
+        getGraphicsContext().setLineDashes(null);
+    }
+
+    /**
      * Draws the given line. The line is drawn over the whole displayed Canvas. 
      * <ul>
      * <li> The line width of the point is determined by the LineWidth (set by

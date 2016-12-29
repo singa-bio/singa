@@ -29,7 +29,7 @@ public class GraphRenderOptions {
     private double edgeThickness = 3;
     private boolean displayingEdges = true;
 
-    private Color identifierTextColor = Color.WHITESMOKE;
+    private Color identifierTextColor = Color.BLACK;
     // private Font identifierFont;
     private boolean displayingIdentifierText = false;
 

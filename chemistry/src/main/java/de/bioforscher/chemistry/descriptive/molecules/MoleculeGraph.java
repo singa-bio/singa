@@ -47,6 +47,12 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return addNextAtom(ion);
     }
 
+    public int addNextAtom(Element element, int charge, int numberOfNeutrons) {
+        Element ion = element.asIon(charge);
+        ion.asIsotope(numberOfNeutrons);
+        return addNextAtom(ion);
+    }
+
     @Override
     public void addEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
         addEdgeBetween(source, target, MoleculeBondType.SINGLE_BOND);
@@ -62,5 +68,15 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         target.addNeighbour(source);
         this.nextBondIdentifier++;
     }
+
+    public void saturareWithHydrogens() {
+
+    }
+
+    public void desaturateHydrogens() {
+
+    }
+
+
 
 }

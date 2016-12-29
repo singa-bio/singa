@@ -16,6 +16,10 @@ import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
  */
 public class Element {
 
+    // ................................................1s 2s 2p 3s 3p 4s  3d 4p 5s  4d 5p 6s  4f  5d 6p 7s  5f  6d 7p
+    private static final int[] orbitalElectrons = {2, 2, 6, 2, 6, 2, 10, 6, 2, 10, 6, 2, 14, 10, 6, 2, 14, 10, 6};
+
+
     /**
      * The element's name.
      */
@@ -49,8 +53,8 @@ public class Element {
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight.
      *
-     * @param name The name.
-     * @param symbol The symbol.
+     * @param name         The name.
+     * @param symbol       The symbol.
      * @param protonNumber The proton number.
      * @param atomicWeight The atomic weight.
      */
@@ -67,8 +71,8 @@ public class Element {
      * Creates a new Element with name, symbol, proton number and atomic weight in
      * {@link de.bioforscher.units.UnitProvider#GRAM_PER_MOLE g/mol}.
      *
-     * @param name The name.
-     * @param symbol The symbol.
+     * @param name         The name.
+     * @param symbol       The symbol.
      * @param protonNumber The proton number.
      * @param atomicWeight The atomic weight.
      */
@@ -79,9 +83,9 @@ public class Element {
     /**
      * Creates a new Element with the possibility to specify electron and neutron number.
      *
-     * @param element A previously defined element.
+     * @param element        A previously defined element.
      * @param electronNumber The electron number.
-     * @param neutronNumber The neutron number.
+     * @param neutronNumber  The neutron number.
      */
     private Element(Element element, int electronNumber, int neutronNumber) {
         this.name = element.getName();
@@ -97,8 +101,31 @@ public class Element {
         }
     }
 
+    private static int calculateValenceElectronNumber(int remainingElectrons) {
+        if (remainingElectrons == 1) {
+            return 1;
+        }
+        if (remainingElectrons == 2) {
+            return 2;
+        }
+        int nextOrbital = 0;
+        while (remainingElectrons > orbitalElectrons[nextOrbital]){
+            remainingElectrons -= orbitalElectrons[nextOrbital];
+            nextOrbital++;
+        }
+        System.out.println(orbitalElectrons[nextOrbital]);
+        System.out.println(remainingElectrons);
+        return orbitalElectrons[nextOrbital]-remainingElectrons;
+    }
+
+    public static void main(String[] args) {
+        Element.calculateValenceElectronNumber(ElementProvider.PHOSPHORUS.getElectronNumber());
+    }
+
+
     /**
      * Returns the name.
+     *
      * @return The name.
      */
     public String getName() {
@@ -107,6 +134,7 @@ public class Element {
 
     /**
      * Returns the symbol.
+     *
      * @return The symbol.
      */
     public String getSymbol() {
@@ -115,6 +143,7 @@ public class Element {
 
     /**
      * Returns the proton number.
+     *
      * @return The proton number.
      */
     public int getProtonNumber() {
@@ -123,6 +152,7 @@ public class Element {
 
     /**
      * Returns the atomic mass.
+     *
      * @return The atomic mass.
      */
     public Quantity<MolarMass> getAtomicMass() {
@@ -131,6 +161,7 @@ public class Element {
 
     /**
      * Sets the atomic mass.
+     *
      * @param atomicMass The atomic mass.
      */
     public void setAtomicMass(Quantity<MolarMass> atomicMass) {
@@ -139,6 +170,7 @@ public class Element {
 
     /**
      * Returns the electron number.
+     *
      * @return The electron number.
      */
     public int getElectronNumber() {
@@ -147,6 +179,7 @@ public class Element {
 
     /**
      * Returns the neutron number.
+     *
      * @return The neutron number.
      */
     public int getNeutronNumber() {
@@ -193,7 +226,10 @@ public class Element {
      * @return An isotope of this element.
      */
     public Element asIsotope(int numberOfNeutrons) {
-        return new Element(this, this.electronNumber, numberOfNeutrons);
+        if (numberOfNeutrons != this.neutronNumber) {
+            return new Element(this, this.electronNumber, numberOfNeutrons);
+        }
+        return this;
     }
 
     /**
@@ -229,7 +265,7 @@ public class Element {
      * @return The charge of this Element.
      */
     public int getCharge() {
-        return this.electronNumber-this.protonNumber;
+        return this.electronNumber - this.protonNumber;
     }
 
     /**
@@ -243,7 +279,7 @@ public class Element {
 
     @Override
     public String toString() {
-        return this.symbol + (getCharge() != 0 ? getCharge() : "");
+        return (this.neutronNumber != this.protonNumber ? this.neutronNumber : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
     }
 
     @Override

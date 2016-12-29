@@ -15,7 +15,7 @@ public final class ElementProvider {
 
     private static final ElementProvider INSTANCE = new ElementProvider();
 
-    public static final Element HYDROGEN = addElement(new Element("Hydrogen", "H", 1, 1.008));
+    public static final Element HYDROGEN = addElement(new Element("Hydrogen", "H", 1,  1.008));
     public static final Element DEUTERIUM = addElement(HYDROGEN.asIsotope(2));
     public static final Element TRITIUM = addElement(HYDROGEN.asIsotope(3));
     public static final Element HELIUM = addElement(new Element("Helium", "He", 2, 4.002602));
