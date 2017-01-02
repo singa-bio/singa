@@ -5,6 +5,7 @@ import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 
 import java.util.EnumMap;
 
@@ -35,9 +36,9 @@ public class LeafFactory {
     private LeafFactory() {
     }
 
-    public static Nucleotide createNucleotideFromAtoms(int identifier, NucleotideFamily nucleotideFamily, EnumMap<AtomName, Atom> atoms) {
+    public static Nucleotide createNucleotideFromAtoms(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, EnumMap<AtomName, Atom> atoms) {
         // create new Nucleotide
-        Nucleotide nucleotide = new Nucleotide(identifier, nucleotideFamily);
+        Nucleotide nucleotide = new Nucleotide(leafIdentifier, nucleotideFamily);
         if (factory.omitHydrogens) {
             // without hydrogens
             atoms.values().stream()
@@ -150,9 +151,9 @@ public class LeafFactory {
         nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(C5));
     }
 
-    public static Residue createResidueFromAtoms(int identifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
+    public static Residue createResidueFromAtoms(LeafIdentifier leafIdentifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
         // create new Residue
-        Residue residue = new Residue(identifier, residueFamily);
+        Residue residue = new Residue(leafIdentifier, residueFamily);
         // and add atoms
         if (factory.omitHydrogens) {
             // without hydrogens
@@ -209,6 +210,7 @@ public class LeafFactory {
             }
             case GLYCINE: {
                 // nothing ...
+                break;
             }
             case HISTIDINE: {
                 connectInOrder(residue, atoms,
@@ -276,7 +278,6 @@ public class LeafFactory {
                 residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
-
             default: {
                 break;
             }
@@ -333,21 +334,6 @@ public class LeafFactory {
         if (factory.connectHydrogens) {
             residue.addEdgeBetween(atoms.get(OXT), atoms.get(HXT));
         }
-    }
-
-    private static void saturateCarbon(Residue residue, EnumMap<AtomName, Atom> atoms, AtomName anyCarbon) {
-        final int currentSaturation = residue.getAtomByName(anyCarbon).getDegree();
-
-        switch (anyCarbon) {
-            case CA: {
-
-
-                break;
-            }
-
-        }
-
-
     }
 
     /**

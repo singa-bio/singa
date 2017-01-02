@@ -87,7 +87,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType e
         return this.drawingWidth;
     }
 
-    public DoubleProperty drawingHightProperty() {
+    public DoubleProperty drawingHeightProperty() {
         return this.drawingHeight;
     }
 

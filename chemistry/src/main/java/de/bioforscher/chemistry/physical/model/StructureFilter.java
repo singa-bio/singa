@@ -1,5 +1,7 @@
 package de.bioforscher.chemistry.physical.model;
 
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
@@ -37,12 +39,16 @@ public class StructureFilter {
         return leaf -> leaf instanceof Nucleotide;
     }
 
-    public static Predicate<LeafSubstructure<?,?>> isLigand() {
-        return leaf -> leaf instanceof Ligand;
-    }
-
     public static Predicate<Chain> isInChain(String chainIdentifier) {
         return chain -> chainIdentifier.equals(chain.getChainIdentifier());
+    }
+
+    public static Predicate<Atom> hasAtomName(AtomName atomName) {
+        return atom -> atom.getAtomName() == atomName;
+    }
+
+    public static Predicate<Atom> hasAtomName(String atomName) {
+        return atom -> atom.getAtomNameString().equals(atomName);
     }
 
 }

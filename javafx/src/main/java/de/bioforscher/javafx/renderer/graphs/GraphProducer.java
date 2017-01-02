@@ -4,9 +4,6 @@ import de.bioforscher.mathematics.graphs.model.Edge;
 import de.bioforscher.mathematics.graphs.model.Graph;
 import de.bioforscher.mathematics.graphs.model.Node;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import javafx.scene.canvas.Canvas;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Christoph on 24/11/2016.
@@ -27,7 +24,7 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D>, EdgeType e
     @Override
     public void run() {
         GraphDrawingTool<NodeType, EdgeType, GraphType> gdt = new GraphDrawingTool<>(this.graph,
-                this.renderer.drawingWidthProperty(), this.renderer.drawingHightProperty(), 100);
+                this.renderer.drawingWidthProperty(), this.renderer.drawingHeightProperty(), 100);
         for (int i = 0; i < this.totalIterations; i++) {
             this.renderer.getGraphQueue().add(gdt.arrangeGraph(i));
             try {

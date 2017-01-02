@@ -36,16 +36,16 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentCentroid() throws IOException {
-        Residue alanine = ResidueFamily.TYROSINE.getPrototype();
+        Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
         RepresentationScheme centroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CENTROID);
         assertArrayEquals(new double[]{0.032916666666666705, -0.1403333333333334, 0.04999999999999997},
-                centroidRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
+                centroidRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
                 1E-6);
     }
 
     @Test
     public void shouldRepresentLastHeavySidechain() throws IOException {
-        Residue tyrosine = ResidueFamily.ALANINE.getPrototype();
+        Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
         RepresentationScheme lastHavySidechainRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN);
         assertArrayEquals(tyrosine.getAtomByName(AtomName.OH).getPosition().getElements(),
                 lastHavySidechainRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
@@ -56,8 +56,6 @@ public class RepresentationSchemeTest {
     public void shouldRepresentSidechaiCentroid() throws IOException {
         Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
         RepresentationScheme sidechainCentroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID);
-        System.out.println();
-        System.out.println(sidechainCentroidRepresentation.determineRepresentingAtom(tyrosine));
         assertArrayEquals(new double[]{-0.22149999999999997, 1.09525, -0.906125},
                 sidechainCentroidRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
                 1E-6);

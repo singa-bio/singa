@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -14,38 +15,25 @@ import java.util.EnumMap;
  * {@link LeafFactory#createNucleotideFromAtoms(int, NucleotideFamily, EnumMap) NucleotideFactory}. This establishes the bonds
  * within the Nucleotides, where possible.
  *
- *
  * @author fkaiser
  */
-public class Nucleotide extends LeafSubstructure<Nucleotide,NucleotideFamily>{
+public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
 
-    private NucleotideFamily family;
     private String name;
 
-    public Nucleotide(int identifier) {
-        super(identifier);
-    }
-
-    public Nucleotide(int identifier, NucleotideFamily family) {
-        super(identifier);
-        this.family = family;
+    public Nucleotide(LeafIdentifier leafIdentifier, NucleotideFamily family) {
+        super(leafIdentifier, family);
         this.name = family.getThreeLetterCode();
     }
 
     public Nucleotide(Nucleotide nucleotide) {
         super(nucleotide);
-        this.family = nucleotide.family;
-        this.name = nucleotide.family.getThreeLetterCode();
+        this.name = getFamily().getThreeLetterCode();
     }
 
     @Override
     public Nucleotide getCopy() {
         return new Nucleotide(this);
-    }
-
-    @Override
-    public NucleotideFamily getFamily() {
-        return this.family;
     }
 
     @Override

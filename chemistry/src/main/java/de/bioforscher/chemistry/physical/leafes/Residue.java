@@ -4,6 +4,7 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -16,7 +17,7 @@ import java.util.Set;
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
  * that determines the amino acid (and the overarching features). Based on this ResidueType a Residue can be created
  * of a set of atoms that belong to this residue using the
- * {@link LeafFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) LeafFactory}. This establishes the bonds
+ * {@link LeafFactory#createResidueFromAtoms(LeafIdentifier, ResidueFamily, EnumMap)}  LeafFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
  * @author cl
@@ -24,21 +25,19 @@ import java.util.Set;
 public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
-     * The family of this residue.
-     */
-    private final ResidueFamily family;
-
-    /**
      * Creates a new Residue with a identifier and ResidueType. Preferably the
-     * {@link LeafFactory#createResidueFromAtoms(int, ResidueFamily, EnumMap) LeafFactory} should be used to create
+     * {@link LeafFactory#createResidueFromAtoms(LeafIdentifier, ResidueFamily, EnumMap)} LeafFactory} should be used to create
      * Residues.
      *
-     * @param identifier The identifier.
-     * @param family       The ResidueType.
+     * @param leafIdentifier The identifier.
+     * @param family The ResidueType.
      */
-    public Residue(int identifier, ResidueFamily family) {
-        super(identifier);
-        this.family = family;
+    public Residue(LeafIdentifier leafIdentifier, ResidueFamily family) {
+        super(leafIdentifier, family);
+    }
+
+    public Residue(int identifer, ResidueFamily family) {
+        super(new LeafIdentifier(identifer), family);
     }
 
     /**
@@ -53,13 +52,6 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      */
     public Residue(Residue residue) {
         super(residue);
-        this.family = residue.family;
-        this.exchangeableTypes = new HashSet<>(residue.exchangeableTypes);
-    }
-
-    @Override
-    public Set<ResidueFamily> getExchangeableTypes() {
-        return this.exchangeableTypes;
     }
 
     /**
@@ -68,7 +60,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      * @return The one letter code of this residue.
      */
     public String getOneLetterCode() {
-        return this.family.getOneLetterCode();
+        return getFamily().getOneLetterCode();
     }
 
     /**
@@ -77,7 +69,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      * @return The three letter code of this residue.
      */
     public String getThreeLetterCode() {
-        return this.family.getThreeLetterCode();
+        return getFamily().getThreeLetterCode();
     }
 
 
@@ -134,24 +126,32 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      */
     @Override
     public String toString() {
-        return this.family.getName() + ":" + getIdentifier();
+        return getFamily().getThreeLetterCode() + ":" + getIdentifier();
     }
 
-    public ResidueFamily getFamily() {
-        return this.family;
-    }
-
+    /**
+     * Returns a copy of this residue. See {@link this#Residue(Residue)}.
+     *
+     * @return A copy of this residue.
+     */
     @Override
     public Residue getCopy() {
         return new Residue(this);
     }
 
-
+    /**
+     * Returns the name (i.e. the three letter code) of this residue.
+     * @return The three letter code.
+     */
     @Override
     public String getName() {
         return this.getThreeLetterCode();
     }
 
+    /**
+     * Moves all atoms in this residue, such that the centroid of this residue is at the specified position.
+     * @param position The new centroid position.
+     */
     @Override
     public void setPosition(Vector3D position) {
         //FIXME not yet implemented

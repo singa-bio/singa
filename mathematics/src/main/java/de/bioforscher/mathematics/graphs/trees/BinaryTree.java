@@ -3,7 +3,7 @@ package de.bioforscher.mathematics.graphs.trees;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinaryTree<T> {
+public class BinaryTree<T>  {
 
     private BinaryTreeNode<T> root;
 

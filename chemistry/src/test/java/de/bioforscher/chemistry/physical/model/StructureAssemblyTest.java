@@ -1,22 +1,18 @@
 package de.bioforscher.chemistry.physical.model;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
+
 public class StructureAssemblyTest {
 
     // "normal" structure
     @Test
     public void shouldParseUncomplicatedStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("4HHB");
-        int actualChains = structure.getAllChains().size();
-        int actualAtoms = structure.getAllAtoms().size();
-        assertEquals(4, actualChains);
-        assertEquals(4387, actualAtoms);
+
     }
 
     // structure with models
@@ -52,6 +48,12 @@ public class StructureAssemblyTest {
     // structure with dna or rna
     @Test
     public void shouldParseStructureWithNucleotides() {
+
+    }
+
+    // structure with insertion codes
+    @Test
+    public void shouldParseStructureWithInsertionCodes() {
 
     }
 

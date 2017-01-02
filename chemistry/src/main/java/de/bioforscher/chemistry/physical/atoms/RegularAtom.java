@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
@@ -9,7 +9,9 @@ import java.util.List;
 
 /**
  * An Atom is the physical instance of an atom in three dimensional space. This is the smallest entity representable
- * in a {@link BranchSubstructure}.
+ * in a {@link LeafSubstructure}.
+ *
+ * @author cl
  */
 public class RegularAtom implements Atom {
 
@@ -17,22 +19,27 @@ public class RegularAtom implements Atom {
      * The identifier.
      */
     private int identifier;
+
     /**
      * The element.
      */
     private Element element;
+
     /**
      * An additional name such as CA or CB.
      */
     private AtomName atomName;
+
     /**
      * The AtomName as String
      */
     private String atomNameString;
+
     /**
      * The position.
      */
     private Vector3D position;
+
     /**
      * References of the neighboring atoms.
      */
@@ -73,9 +80,9 @@ public class RegularAtom implements Atom {
     }
 
     /**
-     * Returns the Element.
+     * Returns the element.
      *
-     * @return The Element.
+     * @return The element.
      */
     @Override
     public Element getElement() {
@@ -83,7 +90,7 @@ public class RegularAtom implements Atom {
     }
 
     /**
-     * Sets the Element.
+     * Sets the element.
      *
      * @param element The element.
      */
@@ -179,11 +186,17 @@ public class RegularAtom implements Atom {
 
         RegularAtom that = (RegularAtom) o;
 
-        return this.identifier == that.identifier;
+        if (this.identifier != that.identifier) return false;
+        if (this.atomNameString != null ? !this.atomNameString.equals(that.atomNameString) : that.atomNameString != null)
+            return false;
+        return this.position != null ? this.position.equals(that.position) : that.position == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier;
+        int result = this.identifier;
+        result = 31 * result + (this.atomNameString != null ? this.atomNameString.hashCode() : 0);
+        result = 31 * result + (this.position != null ? this.position.hashCode() : 0);
+        return result;
     }
 }

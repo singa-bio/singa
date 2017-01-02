@@ -259,32 +259,6 @@ public class RegularVector implements Vector {
         return metric.calculateDistance(this, vector);
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(this.elements);
-        return result;
-    }
-
-    /**
-     * Two vectors are equal if all of their coordinates are equal.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        RegularVector other = (RegularVector) obj;
-        return Arrays.equals(this.elements, other.elements);
-    }
-
     /**
      * Returns the string representation of this Vector. The string consists of the dimensionality and the actual
      * coordinates of the vector.
@@ -295,4 +269,21 @@ public class RegularVector implements Vector {
                 + Arrays.toString(this.elements).replace("[", "(").replace("]", ")");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RegularVector that = (RegularVector) o;
+
+        if (this.dimension != that.dimension) return false;
+        return Arrays.equals(this.elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(this.elements);
+        result = 31 * result + this.dimension;
+        return result;
+    }
 }

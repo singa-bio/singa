@@ -68,6 +68,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /*
      * GRAPH VARIABLES
      */
+
     /**
      * The actual nodes
      */

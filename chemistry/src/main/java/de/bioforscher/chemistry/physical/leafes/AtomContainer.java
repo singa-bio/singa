@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.physical.leafes;
 
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -10,18 +11,14 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class AtomContainer<StructuralFamilyType extends StructuralFamily>
         extends LeafSubstructure<AtomContainer<StructuralFamilyType>, StructuralFamilyType> {
 
-    private StructuralFamilyType family;
-
     private String name;
 
-    public AtomContainer(int identifier, StructuralFamilyType family) {
-        super(identifier);
-        this.family = family;
+    public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family) {
+        super(leafIdentifier, family);
     }
 
-    public AtomContainer(int identifier, StructuralFamilyType family, String name) {
-        super(identifier);
-        this.family = family;
+    public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family, String name) {
+        super(leafIdentifier, family);
         this.name = name;
     }
 
@@ -37,13 +34,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     @Override
     public String toString() {
-        return this.family.getThreeLetterCode() + ":" + getIdentifier();
-    }
-
-
-    @Override
-    public StructuralFamilyType getFamily() {
-        return this.family;
+        return this.name + ":" + getIdentifier();
     }
 
     @Override

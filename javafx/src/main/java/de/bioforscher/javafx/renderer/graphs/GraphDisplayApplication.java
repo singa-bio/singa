@@ -37,7 +37,7 @@ public class GraphDisplayApplication extends Application {
         primaryStage.show();
 
         renderer.drawingWidthProperty().bind(canvas.widthProperty());
-        renderer.drawingHightProperty().bind(canvas.heightProperty());
+        renderer.drawingHeightProperty().bind(canvas.heightProperty());
         renderer.setGraphicsContext(canvas.getGraphicsContext2D());
         renderer.arrangeGraph(graph);
     }

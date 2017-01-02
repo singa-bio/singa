@@ -1,10 +1,20 @@
 package de.bioforscher.mathematics.graphs.util;
 
+import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.mathematics.graphs.model.GenericGraph;
+import de.bioforscher.mathematics.graphs.model.GenericNode;
 import de.bioforscher.mathematics.graphs.model.RegularNode;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
+import de.bioforscher.mathematics.graphs.trees.BinaryTree;
+import de.bioforscher.mathematics.graphs.trees.BinaryTreeNode;
 import de.bioforscher.mathematics.sequences.Sequences;
 import de.bioforscher.mathematics.vectors.Vector2D;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A factory class used to create some Graphs.
@@ -181,6 +191,35 @@ public class GraphFactory {
         }
 
         return graph;
+    }
+
+
+    public static <ContentType> GenericGraph<ContentType> convertTreeToGraph(BinaryTree<ContentType> tree) {
+
+        GenericGraph<ContentType> graph = new GenericGraph<>();
+
+        List<BinaryTreeNode<ContentType>> leafNodes = tree.getLeafNodes();
+
+        List<Pair<Integer>> edges = new ArrayList<>();
+        // Map<Integer, BinaryTreeNode<ContentType>> nodes = new HashMap<>();
+
+        // collect nodes and assign them to identifer
+
+
+        for(BinaryTreeNode<ContentType> treeNode: leafNodes) {
+            GenericNode<ContentType> graphNode = new GenericNode<ContentType>(graph.nextNodeIdentifier(), treeNode.getData());
+            graph.addNode(graphNode);
+            if (!graph.getNodes().isEmpty()) {
+                BinaryTreeNode<ContentType> left = treeNode.getLeft();
+                if (left != null) {
+
+                }
+            }
+        }
+
+
+
+        return null;
     }
 
 }

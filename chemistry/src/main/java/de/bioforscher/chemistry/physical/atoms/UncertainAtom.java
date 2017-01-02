@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 /**
- * Created by Christoph on 09/11/2016.
+ * @author cl
  */
 public class UncertainAtom extends RegularAtom {
 
@@ -19,4 +19,5 @@ public class UncertainAtom extends RegularAtom {
     public UncertainAtom(int identifier, Element element, String atomNameString, Vector3D position) {
         super(identifier, element, atomNameString, position);
     }
+
 }

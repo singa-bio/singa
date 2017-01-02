@@ -59,13 +59,4 @@ public class BranchSubstructureTest {
 
     }
 
-    @Test
-    public void getAtomContainingSubStructures() throws Exception {
-        Structure structure = PDBParserService.parsePDBFile(Thread.currentThread()
-                                                            .getContextClassLoader()
-                                                            .getResource("1pqs.pdb").getPath());
-        BranchSubstructure<?> firstsub = structure.getBranchSubstructures().get(0);
-        System.out.println(firstsub);
-        System.out.println(firstsub.getLeafSubstructures());
-    }
 }

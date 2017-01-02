@@ -7,21 +7,15 @@ import java.util.Comparator;
  */
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
-    @Override
-    public String toString() {
-        return "LeafIdentifier{" +
-                "pdbIdentifer='" + this.pdbIdentifer + '\'' +
-                ", modelIdentifer=" + this.modelIdentifer +
-                ", chainIdentifer='" + this.chainIdentifer + '\'' +
-                ", leafIdentifer=" + this.leafIdentifer +
-                '}';
-    }
-
-    private static final Comparator<LeafIdentifier> comperator = Comparator
+    private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
             .comparing(LeafIdentifier::getPdbIdentifer)
             .thenComparing(LeafIdentifier::getModelIdentifer)
             .thenComparing(LeafIdentifier::getChainIdentifer)
             .thenComparing(LeafIdentifier::getLeafIdentifer);
+
+    public static final String DEFAULT_PDB_IDENTIFIER = "0000";
+    public static final int DEFAULT_MODEL_IDENTIFIER = 0;
+    public static final String DEFAULT_CHAIN_IDENTIFER = "X";
 
     private final String pdbIdentifer;
     private final int modelIdentifer;
@@ -36,7 +30,11 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     public LeafIdentifier(String chainIdentifer, int leafIdentifer) {
-        this("0000", 0, chainIdentifer, leafIdentifer);
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, leafIdentifer);
+    }
+
+    public LeafIdentifier(int leafIdentifer) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, leafIdentifer);
     }
 
     public static LeafIdentifier fromString(String identifier) {
@@ -61,6 +59,21 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     @Override
+    public int compareTo(LeafIdentifier o) {
+        return leafIdentiferComparator.compare(this, o);
+    }
+
+    @Override
+    public String toString() {
+        return "LeafIdentifier{" +
+                "pdbIdentifer='" + this.pdbIdentifer + '\'' +
+                ", modelIdentifer=" + this.modelIdentifer +
+                ", chainIdentifer='" + this.chainIdentifer + '\'' +
+                ", leafIdentifer=" + this.leafIdentifer +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -69,22 +82,16 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
         if (this.modelIdentifer != that.modelIdentifer) return false;
         if (this.leafIdentifer != that.leafIdentifer) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
-            return false;
-        return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
+        if (!this.pdbIdentifer.equals(that.pdbIdentifer)) return false;
+        return this.chainIdentifer.equals(that.chainIdentifer);
     }
 
     @Override
     public int hashCode() {
-        int result = this.pdbIdentifer != null ? this.pdbIdentifer.hashCode() : 0;
+        int result = this.pdbIdentifer.hashCode();
         result = 31 * result + this.modelIdentifer;
-        result = 31 * result + (this.chainIdentifer != null ? this.chainIdentifer.hashCode() : 0);
+        result = 31 * result + this.chainIdentifer.hashCode();
         result = 31 * result + this.leafIdentifer;
         return result;
-    }
-
-    @Override
-    public int compareTo(LeafIdentifier o) {
-        return comperator.compare(this, o);
     }
 }
