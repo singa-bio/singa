@@ -23,7 +23,7 @@ public class PDBParserPlayground {
         LeafFactory.setToOmitHydrogens(true);
 
         // serine protease catalytic triad
-        Structure structure = PDBParserService.parseProteinById("1c5q");
+        Structure structure = PDBParserService.parseProteinById("1brr");
 
         // Structure motif = StructuralMotif.fromLeafs(1, structure,
         // LeafIdentifers.of("A-36", "B-67", "B-60", "B-204")).toStructure();

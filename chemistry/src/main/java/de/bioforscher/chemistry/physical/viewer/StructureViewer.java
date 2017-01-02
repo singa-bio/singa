@@ -1,12 +1,11 @@
 package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.model.Bond;
-import de.bioforscher.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.Substructure;
+import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.Vectors;
 import javafx.application.Application;
@@ -19,6 +18,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +74,7 @@ public class StructureViewer extends Application {
         this.treeView.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        displayModel(newValue.getValue());
+                        toogleDisplay(newValue.getValue());
                     }
                 });
 
@@ -173,25 +173,51 @@ public class StructureViewer extends Application {
 
     private void fillTree() {
         TreeItem<String> rootItem = new TreeItem<>(structure.getPdbID());
-        if (structure.getBranchSubstructures().size() > 1) {
-            for (Substructure<?> substructure : structure.getBranchSubstructures()) {
-                TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(substructure.getIdentifier()));
-                rootItem.getChildren().add(modelNode);
-            }
+
+        for (StructuralModel model : structure.getAllModels()) {
+            TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getIdentifier()));
+            model.getAllChains().stream()
+                    .sorted(Comparator.comparing(Chain::getChainIdentifier))
+                    .forEach(chain -> {
+                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getChainIdentifier()));
+                        modelNode.getChildren().add(chainNode);
+                    });
+            rootItem.getChildren().add(modelNode);
         }
+
         this.treeView.setRoot(rootItem);
     }
 
-    private void displayModel(final String identifier) {
+    private void toogleDisplay(final String identifier) {
         if (identifier.contains("Model")) {
-            this.displayStructure = new Structure();
-            this.world = new XForm();
-            this.moleculeGroup = new XForm();
-            this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(Integer.valueOf(identifier.replace("Model: ", "")) - 1));
-            buildDisplayedStructure();
-            this.displayGroup.getChildren().retainAll();
-            this.displayGroup.getChildren().add(this.world);
+            displayModel(identifier);
+        } else if (identifier.contains("Chain")) {
+            displayChain(identifier);
         }
+    }
+
+    private void displayModel(final String identifier) {
+        this.displayStructure = new Structure();
+        this.world = new XForm();
+        this.moleculeGroup = new XForm();
+        this.displayStructure.addSubstructure(structure.getBranchSubstructures().get(Integer.valueOf(identifier.replace("Model: ", ""))));
+        buildDisplayedStructure();
+        this.displayGroup.getChildren().retainAll();
+        this.displayGroup.getChildren().add(this.world);
+    }
+
+    private void displayChain(final String identifier) {
+        this.displayStructure = new Structure();
+        this.world = new XForm();
+        this.moleculeGroup = new XForm();
+        Chain chain = structure.getAllChains().stream()
+                .filter(StructureFilter.isInChain(identifier.replace("Chain: ", "")))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Chould not retrieve chain " + identifier.replace("Chain: ", "")));
+        this.displayStructure.addSubstructure(chain);
+        buildDisplayedStructure();
+        this.displayGroup.getChildren().retainAll();
+        this.displayGroup.getChildren().add(this.world);
     }
 
     private void addLeafBond(LeafIdentifier origin, Bond bond) {
@@ -245,7 +271,7 @@ public class StructureViewer extends Application {
             return MaterialProvider.CARBON;
         } else {
 
-                return getMaterialForChain(origin.getChainIdentifer());
+            return getMaterialForChain(origin.getChainIdentifer());
         }
     }
 
