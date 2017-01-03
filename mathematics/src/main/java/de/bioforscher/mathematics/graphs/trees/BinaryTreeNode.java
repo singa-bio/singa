@@ -1,6 +1,10 @@
 package de.bioforscher.mathematics.graphs.trees;
 
-public class BinaryTreeNode<T> {
+import java.io.Serializable;
+
+public class BinaryTreeNode<T> implements Serializable{
+
+    private static final long serialVersionUID = -6444789577851989492L;
 
     private T data;
     private BinaryTreeNode<T> left;
