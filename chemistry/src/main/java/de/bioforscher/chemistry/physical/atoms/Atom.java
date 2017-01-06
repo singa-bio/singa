@@ -6,9 +6,6 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.DEUTERIUM;
-import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
-
 /**
  * @author cl
  */
@@ -35,7 +32,7 @@ public interface Atom extends StructuralEntity<Atom> {
     void setAtomNameString(String atomNameString);
 
     default boolean isHydrogen() {
-        return this.getElement().equals(HYDROGEN) || this.getElement().equals(DEUTERIUM);
+        return this.getElement().getProtonNumber() == 1;
     }
 
     default Atom getCopy() {

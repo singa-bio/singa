@@ -5,7 +5,10 @@ import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.core.utility.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -15,6 +18,11 @@ import static de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType.*;
  * @author cl
  */
 public class SmilesParser {
+
+    /**
+     * Logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(SmilesParser.class);
 
     /**
      * The symbols of the SMILES String
@@ -117,6 +125,7 @@ public class SmilesParser {
      * @param smilesString The SMILES String to parse
      */
     public static MoleculeGraph parse(String smilesString) {
+        logger.info("parsing smiles string {} ", smilesString);
         SmilesParser parser = new SmilesParser();
         // extract symbols
         for (char aChar : smilesString.toCharArray()) {
@@ -131,16 +140,6 @@ public class SmilesParser {
                         " after " + parser.tokens + " have been parsed).");
             }
         }
-
-        // parser.tokens.forEach(s -> System.out.print(s + " "));
-
-        // parser.molecule.getNodes().stream()
-        //        .sorted(Comparator.comparing(MoleculeAtom::getIdentifier))
-        //        .forEach(atom -> System.out.print(atom + " "));
-
-        parser.connectors.forEach((key, value) -> System.out.println(key + " - " + value));
-
-        // this.ringClosures.forEach((key, value) -> System.out.println(key + " - " + value));
 
         // add hydrogens to connectors
         parser.hydrogens.forEach((identifier) -> {
@@ -843,10 +842,12 @@ public class SmilesParser {
      * Adds the current symbol to the collected tokens.
      */
     private void addToTokens() {
+        logger.trace("read token {}", this.currentSymbol);
         this.tokens.add(String.valueOf(this.currentSymbol));
     }
 
     private void addAndClearCurrentToken() {
+        logger.trace("read token {}", this.currentToken);
         this.tokens.add(this.currentToken);
         this.currentToken = "";
     }

@@ -16,10 +16,6 @@ import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
  */
 public class Element {
 
-    // ................................................1s 2s 2p 3s 3p 4s  3d 4p 5s  4d 5p 6s  4f  5d 6p 7s  5f  6d 7p
-    private static final int[] orbitalElectrons = {2, 2, 6, 2, 6, 2, 10, 6, 2, 10, 6, 2, 14, 10, 6, 2, 14, 10, 6};
-
-
     /**
      * The element's name.
      */
@@ -41,6 +37,11 @@ public class Element {
     private final int electronNumber;
 
     /**
+     * The number of valence electrons.
+     */
+    private final int valenceElectronNumber;
+
+    /**
      * The element's number of neutrons.
      */
     private final int neutronNumber;
@@ -58,11 +59,12 @@ public class Element {
      * @param protonNumber The proton number.
      * @param atomicWeight The atomic weight.
      */
-    public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight) {
+    public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight, String electronConfiguration) {
         this.name = name;
         this.symbol = symbol;
         this.protonNumber = protonNumber;
         this.electronNumber = protonNumber;
+        this.valenceElectronNumber = ElectronConfiguration.parseElectronConfigurationFromString(electronConfiguration).getNumberOfValenceElectrons();
         this.neutronNumber = protonNumber;
         this.atomicMass = atomicWeight;
     }
@@ -76,8 +78,8 @@ public class Element {
      * @param protonNumber The proton number.
      * @param atomicWeight The atomic weight.
      */
-    public Element(String name, String symbol, int protonNumber, double atomicWeight) {
-        this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE));
+    public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration) {
+        this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);
     }
 
     /**
@@ -92,6 +94,7 @@ public class Element {
         this.symbol = element.getSymbol();
         this.protonNumber = element.getProtonNumber();
         this.electronNumber = electronNumber;
+        this.valenceElectronNumber = element.valenceElectronNumber;
         this.neutronNumber = neutronNumber;
         if (neutronNumber != this.protonNumber) {
             // TODO determine correctly
@@ -99,29 +102,8 @@ public class Element {
         } else {
             this.atomicMass = element.getAtomicMass();
         }
-    }
 
-    private static int calculateValenceElectronNumber(int remainingElectrons) {
-        if (remainingElectrons == 1) {
-            return 1;
-        }
-        if (remainingElectrons == 2) {
-            return 2;
-        }
-        int nextOrbital = 0;
-        while (remainingElectrons > orbitalElectrons[nextOrbital]){
-            remainingElectrons -= orbitalElectrons[nextOrbital];
-            nextOrbital++;
-        }
-        System.out.println(orbitalElectrons[nextOrbital]);
-        System.out.println(remainingElectrons);
-        return orbitalElectrons[nextOrbital]-remainingElectrons;
     }
-
-    public static void main(String[] args) {
-        Element.calculateValenceElectronNumber(ElementProvider.PHOSPHORUS.getElectronNumber());
-    }
-
 
     /**
      * Returns the name.
@@ -175,6 +157,31 @@ public class Element {
      */
     public int getElectronNumber() {
         return this.electronNumber;
+    }
+
+    /**
+     * Returns the number of valence electrons.
+     *
+     * @return The number of valence electrons.
+     */
+    public int getValenceElectronNumber() {
+        return this.valenceElectronNumber;
+    }
+
+    /**
+     * Estimates the Number of potential bonds this element forms.
+     * @return The number of potential bonds this element forms
+     */
+    public int getNumberOfPotentialBonds() {
+        // very preliminary
+        if (this.electronNumber <= 2) {
+            return 2 - this.electronNumber;
+        }
+        // octet rule
+        if (this.valenceElectronNumber <= 4) {
+            return this.valenceElectronNumber;
+        }
+        return 8 - this.valenceElectronNumber;
     }
 
     /**

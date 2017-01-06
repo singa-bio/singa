@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
 import de.bioforscher.chemistry.physical.families.LeafFactory;
+import de.bioforscher.chemistry.physical.model.LeafIdentifers;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.viewer.ColorScheme;
 import de.bioforscher.chemistry.physical.viewer.StructureViewer;
