@@ -51,7 +51,7 @@ public class StructureCollector {
 
     public static Structure collectStructure(List<String> pdbLines, String chainId) {
         StructureCollector collector = new StructureCollector();
-        logger.debug("collecting content from {} pdblines", pdbLines.size());
+        logger.debug("collecting content from {} PDB lines", pdbLines.size());
         for (String currentLine : pdbLines) {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = collector.createUniqueAtomIdentifier(currentLine);

@@ -2,7 +2,9 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifers;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
@@ -44,8 +46,30 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
+    public void shouldRunFindIntraMolecularMatches() throws IOException {
+        // TODO this is not functioning due to current limitations of the data model
+//        Structure target = PDBParserService.parseProteinById("4CHA");
+//        StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, target,
+//                LeafIdentifers.of("B-57", "B-102", "C-195"));
+//        Fit3DAlignment fit3d = new Fit3DAlignment(queryMotif, target.getAllModels().get(0));
+//        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+//        assertEquals(0.0000, matches.firstKey(), 1E-6);
+    }
+
+    @Test
     public void shouldGenerateCombinations() {
         assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif.getLeafSubstructures()).count());
+    }
+
+    @Test
+    public void shouldAlignNucleotideMotif() throws IOException {
+        Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
+                LeafIdentifers.of("A-22", "A-51", "A-52", "A-74"));
+        nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
+        Fit3DAlignment fit3d = new Fit3DAlignment(nucleotideMotif, nucleotideTarget.getAllChains().get(0));
+        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+        assertEquals(0.0,matches.firstKey(), 1E-6);
     }
 
 //    @Test

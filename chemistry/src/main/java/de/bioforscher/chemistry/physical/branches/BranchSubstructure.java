@@ -4,10 +4,7 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.model.Bond;
-import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.StructureFilter;
-import de.bioforscher.chemistry.physical.model.Substructure;
+import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
@@ -313,7 +310,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * @param substructures The Substructures to add.
      */
     public void addAllSubstructures(List<Substructure> substructures) {
-        substructures.forEach(ss -> this.substructures.put(ss.getIdentifier(), ss));
+        substructures.forEach(substructure -> this.substructures.put(substructure.getIdentifier(), substructure));
     }
 
     /**

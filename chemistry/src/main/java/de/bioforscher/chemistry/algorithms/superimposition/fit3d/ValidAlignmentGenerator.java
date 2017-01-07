@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
@@ -36,6 +35,7 @@ import java.util.stream.IntStream;
  *  T =   H2| D | E | N | H1
  * </pre>
  * <p>
+ *
  * @author sb
  */
 public class ValidAlignmentGenerator {
@@ -59,9 +59,10 @@ public class ValidAlignmentGenerator {
         // handle each
         for (int currentPathLength = 0; currentPathLength < this.reference.size(); currentPathLength++) {
             final int expectedLength = currentPathLength + 1;
-            //TODO: could break
-            Residue currentReferenceResidue = (Residue) this.reference.get(currentPathLength);
-            logger.trace("iteration {}: currently handling {} of reference motif", currentPathLength, currentReferenceResidue);
+
+            // because we handle this as LeafStructures we can deal with any type
+            LeafSubstructure currentReference = this.reference.get(currentPathLength);
+            logger.trace("iteration {}: currently handling {} of reference motif", currentPathLength, currentReference);
 
             // for each candidate: append it to the currently known paths
             this.pathsThroughSecondMotif = this.candidate.stream()
@@ -80,15 +81,17 @@ public class ValidAlignmentGenerator {
                     // - they are invalid, when they contain the same residue multiple times
                     // - thus, when their distinct size is smaller than the currentPathLength
                     //TODO: subStructure.getIdentifier() could easily break - however, this.equals(this.getCopy()) will evaluate to false :x
-                    .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
+//                    .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
+                    .filter(path -> path.stream()
+                            .collect(Collectors.toSet()).size() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
-                        LeafSubstructure<?,?> recentlyAddedResidue = path.get(path.size() - 1);
+                        LeafSubstructure<?, ?> recentlyAddedResidue = path.get(path.size() - 1);
                         StructuralFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
-                        if (recentlyAddedResidueFamily == currentReferenceResidue.getFamily()) {
+                        if (recentlyAddedResidueFamily == currentReference.getFamily()) {
                             return true;
                         }
-                        return currentReferenceResidue.getExchangeableTypes().contains(recentlyAddedResidueFamily);
+                        return currentReference.getExchangeableTypes().contains(recentlyAddedResidueFamily);
                     })
                     .collect(Collectors.toList());
         }

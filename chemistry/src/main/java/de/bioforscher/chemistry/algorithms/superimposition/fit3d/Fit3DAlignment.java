@@ -41,7 +41,7 @@ public class Fit3DAlignment {
     private double queryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?, ?>> distanceMatrix;
     private List<List<LeafSubstructure<?, ?>>> environments;
-    private HashMap<List<LeafSubstructure<?, ?>>, Set<List<LeafSubstructure<?, ?>>>> candidates;
+    private HashMap<List<LeafSubstructure<?, ?>>, Set<Set<LeafSubstructure<?, ?>>>> candidates;
     private double rmsdCutoff;
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private Predicate<Atom> atomFilter;
@@ -128,15 +128,14 @@ public class Fit3DAlignment {
      *
      * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
      */
-    private void computeAlignments(List<LeafSubstructure<?, ?>> leafSubstructures) {
+    private void computeAlignments(Set<LeafSubstructure<?, ?>> leafSubstructures) {
         ValidAlignmentGenerator validAlignmentGenerator =
-                new ValidAlignmentGenerator(this.queryMotif.getLeafSubstructures(), leafSubstructures);
+                new ValidAlignmentGenerator(this.queryMotif.getLeafSubstructures(), new ArrayList<>(leafSubstructures));
         List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
         for (List<Pair<LeafSubstructure<?, ?>>> validAlignment : validAlignments) {
             // create candidate for alignment
             List<LeafSubstructure<?, ?>> alignmentCandidate = validAlignment.stream()
                     .map(Pair::getSecond).collect(Collectors.toList());
-
             // apply representation scheme if defined
             SubstructureSuperimposition superimposition;
             if (this.representationScheme != null) {
@@ -164,7 +163,7 @@ public class Fit3DAlignment {
 //                    .combinations(this.queryMotif.size(), environment)
 //                    .collect(Collectors.toList());
             // TODO continue here, evaluate, etc...
-            Set<List<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(
+            Set<Set<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(
                     this.queryMotif.getLeafSubstructures(),
                     environment).getValidCandidates();
             this.candidates.put(environment, currentCandidates);
