@@ -21,7 +21,6 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
  * interface, the name of a chin is its chain identifier (a single letter).
  *
  * @author cl
- *
  * @see Residue
  */
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
@@ -69,6 +68,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Returns the chain identifier (the single letter identifier).
+     *
      * @return The chain identifier.
      */
     public String getChainIdentifier() {
@@ -77,6 +77,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Sets the chain identifier (the single letter identifier).
+     *
      * @param chainIdentifier The chain identifier.
      */
     public void setChainIdentifier(String chainIdentifier) {
@@ -88,8 +89,8 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      * List of Residues ({@link BranchSubstructure#getResidues()}).
      */
     public void connectChainBackbone() {
-        LeafSubstructure<?,?> lastSubstructure = null;
-        for (LeafSubstructure<?,?> currentSubstructure: getLeafSubstructures()) {
+        LeafSubstructure<?, ?> lastSubstructure = null;
+        for (LeafSubstructure<?, ?> currentSubstructure : getLeafSubstructures()) {
             if (lastSubstructure != null) {
                 if (lastSubstructure instanceof Residue && currentSubstructure instanceof Residue) {
                     connectPeptideBonds((Residue) lastSubstructure, (Residue) currentSubstructure);
@@ -105,6 +106,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      * Connects two residues, using the Backbone Carbon ({@link de.bioforscher.chemistry.physical.atoms.AtomName#C C})
      * of the source residue and the Backbone Nitrogen ({@link de.bioforscher.chemistry.physical.atoms.AtomName#N N})
      * of the target residue.
+     *
      * @param source Residue with Backbone Carbon.
      * @param target Residue with Backbone Nitrogen.
      */
@@ -125,6 +127,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Gets the name (i.e. the single letter chain identifier) of this chain.
+     *
      * @return The name.
      */
     @Override
@@ -150,6 +153,14 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     @Override
     public int hashCode() {
         return this.chainIdentifier != null ? this.chainIdentifier.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return getLeafSubstructures().stream()
+                .findAny()
+                .map(LeafSubstructure::getPdbId)
+                .orElse("") + "|" + this.chainIdentifier;
     }
 
     @Override

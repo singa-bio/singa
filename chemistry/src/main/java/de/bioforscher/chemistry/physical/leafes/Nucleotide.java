@@ -31,6 +31,18 @@ public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
         this.name = getFamily().getThreeLetterCode();
     }
 
+    /**
+     * Return the name of this {@link Nucleotide} in the format
+     * [Chain identifier of the {@link Nucleotide}]-[One Letter Code of the {@link Nucleotide}][Residue identifier]
+     * (e.g. A-A123 or A-U17).
+     *
+     * @return The String representation of this {@link Nucleotide}.
+     */
+    @Override
+    public String toString() {
+        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
+    }
+
     @Override
     public Nucleotide getCopy() {
         return new Nucleotide(this);

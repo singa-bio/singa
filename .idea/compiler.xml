@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="benchmark" />
         <module name="chemistry" />
         <module name="core" />
         <module name="javafx" />
@@ -15,6 +16,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="benchmark" target="1.8" />
       <module name="chemistry" target="1.8" />
       <module name="core" target="1.8" />
       <module name="javafx" target="1.8" />

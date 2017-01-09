@@ -71,7 +71,10 @@ public class Fit3DAlignment {
 
     public Fit3DAlignment(StructuralMotif queryMotif, BranchSubstructure<?> target, double rmsdCutoff,
                           double distanceTolerance, Predicate<Atom> atomFilter, RepresentationScheme representationScheme) {
-        this.queryMotif = queryMotif;
+
+        logger.info("computing Fit3D alignment of motif {} against {}", queryMotif, target);
+
+        this.queryMotif = queryMotif.getCopy();
         // TODO this cast is not nice, can we do something better?
         this.target = (BranchSubstructure<?>) target.getCopy();
         this.rmsdCutoff = rmsdCutoff;
@@ -139,10 +142,10 @@ public class Fit3DAlignment {
             // apply representation scheme if defined
             SubstructureSuperimposition superimposition;
             if (this.representationScheme != null) {
-                 superimposition = SubStructureSuperimposer
+                superimposition = SubStructureSuperimposer
                         .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
                                 alignmentCandidate, this.representationScheme);
-            }else{
+            } else {
                 superimposition = SubStructureSuperimposer
                         .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
                                 alignmentCandidate, this.atomFilter);

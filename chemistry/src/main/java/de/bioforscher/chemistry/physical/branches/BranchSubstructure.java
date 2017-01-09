@@ -294,6 +294,8 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
      * and {@link Bond}s as well
      *
+     * FIXME this may produce a NPE
+     *
      * @param identifier The identifier of the atom to remove.
      */
     public void removeSubstructure(int identifier) {

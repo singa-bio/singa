@@ -33,8 +33,8 @@ public class SubstructureSuperimposerTest {
                 .getResourceAsStream("motif_HDS_01.pdb"));
         Structure motif2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("motif_HDS_02.pdb"));
-        this.reference = motif1.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
-        this.candidate = motif2.getBranchSubstructures().stream().collect(Collectors.toList()).get(0);
+        this.reference = motif1.getAllChains().get(0);
+        this.candidate = motif2.getAllChains().get(0);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateMappedFullCandidates() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate, AtomFilter.isBackbone());
-        superimposition.getMappedFullCandidate().stream().map(leaf -> leaf.getPDBLines().stream().collect(Collectors.joining("\n"))).forEach(System.out::println);
+        superimposition.getMappedFullCandidate().stream().map(leaf -> leaf.getPdbLines().stream().collect(Collectors.joining("\n"))).forEach(System.out::println);
         assertEquals(24, superimposition.getMappedFullCandidate().stream()
                 .map(LeafSubstructure::getAllAtoms)
                 .mapToLong(Collection::size)
