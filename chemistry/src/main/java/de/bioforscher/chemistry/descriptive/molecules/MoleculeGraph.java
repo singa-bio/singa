@@ -1,18 +1,15 @@
 package de.bioforscher.chemistry.descriptive.molecules;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
-import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.descriptive.estimations.MoleculePathFinder;
 import de.bioforscher.chemistry.parser.smiles.SmilesParser;
-import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.mathematics.vectors.Vectors;
-import javafx.application.Application;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
@@ -21,8 +18,12 @@ import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
  */
 public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D> {
 
-    private static Predicate<MoleculeAtom> isElement(Element element) {
-        return atom ->  atom.getElement().getProtonNumber() == element.getProtonNumber();
+    public static Predicate<MoleculeAtom> isElement(Element element) {
+        return atom -> atom.getElement().getProtonNumber() == element.getProtonNumber();
+    }
+
+    public static Predicate<MoleculeAtom> isOneOfElements(final Set<Element> elements) {
+        return atom -> elements.contains(atom.getElement());
     }
 
     public int addNextAtom(char elementSymbol) {
@@ -74,55 +75,34 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public List<LinkedList<MoleculeAtom>> findPathOfElements(LinkedList<Element> path) {
+        return MoleculePathFinder.findPathInMolecule(this, path);
+    }
 
-        // find starting points
-        List<MoleculeAtom> startingPoints = this.getNodes().stream()
-                .filter(isElement(path.getFirst()))
-                .collect(Collectors.toList());
-
-        List<LinkedList<MoleculeAtom>> candidates = new LinkedList<>();
-        for (MoleculeAtom startingPoint : startingPoints) {
-            LinkedList<MoleculeAtom> candidate = new LinkedList<>();
-            candidate.add(startingPoint);
-            candidates.add(candidate);
-        }
-
-        Iterator<Element> pathIterator = path.iterator();
-        pathIterator.next();
-        while (pathIterator.hasNext()) {
-            Element nextElement = pathIterator.next();
-            ListIterator<LinkedList<MoleculeAtom>> candidateIterator = candidates.listIterator();
-            while (candidateIterator.hasNext()) {
-                LinkedList<MoleculeAtom> next = candidateIterator.next();
-                // vorletztes atom holen
-                next.getLast();
-                for (MoleculeAtom neighbour: next.getLast().getNeighbours()) {
-                    // if (neighbour.getIdentifier() != candidateIterator.)
-                    // TODO Start here
-                }
-            }
-
-        }
-
-        System.out.println(startingPoints);
-
-        return null;
+    public List<LinkedList<MoleculeAtom>> findMultiPathOfElements(LinkedList<Set<Element>> path) {
+        return MoleculePathFinder.findMultiPathInMolecule(this, path);
     }
 
     public static void main(String[] args) {
 
-        String smilesString = "NC1=NC=NC2=C1N=CN2[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
 
-        LinkedList<Element> path = new LinkedList<>(Arrays.asList(CARBON, NITROGEN));
+        // path
+        HashSet<Element> elements = new HashSet<>(Arrays.asList(NITROGEN, OXYGEN));
+        LinkedList<Set<Element>> path = new LinkedList<>();
+        path.add(new HashSet<>(Arrays.asList(CARBON)));
+        path.add(elements);
+        System.out.println(path);
 
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
-        moleculeGraph.findPathOfElements(path);
+        List<LinkedList<MoleculeAtom>> pathOfElements = moleculeGraph.findMultiPathOfElements(path);
+
+
+        System.out.println(pathOfElements);
 
         // GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
         // Application.launch(GraphDisplayApplication.class);
 
     }
-
 
 
 }
