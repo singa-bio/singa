@@ -80,8 +80,6 @@ public class ValidAlignmentGenerator {
                     // evaluate paths:
                     // - they are invalid, when they contain the same residue multiple times
                     // - thus, when their distinct size is smaller than the currentPathLength
-                    //TODO: subStructure.getIdentifier() could easily break - however, this.equals(this.getCopy()) will evaluate to false :x
-//                    .filter(path -> path.stream().map(LeafSubstructure::getIdentifier).distinct().count() == expectedLength)
                     .filter(path -> path.stream()
                             .collect(Collectors.toSet()).size() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue

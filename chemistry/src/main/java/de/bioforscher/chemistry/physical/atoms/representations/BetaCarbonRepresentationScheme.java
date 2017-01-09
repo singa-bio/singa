@@ -58,4 +58,9 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
                 .findAny()
                 .orElse(determineCentroid(leafSubstructure));
     }
+
+    @Override
+    public RepresentationSchemeType getType() {
+        return RepresentationSchemeType.CB;
+    }
 }

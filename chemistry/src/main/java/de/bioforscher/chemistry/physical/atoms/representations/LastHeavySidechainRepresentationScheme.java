@@ -46,4 +46,9 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(((Residue) leafSubstructure).getAlphaCarbon()));
         return atomDistanceMatrix.getColumnLabel(maximalElementIndex);
     }
+
+    @Override
+    public RepresentationSchemeType getType() {
+        return RepresentationSchemeType.LAST_HEAVY_SIDECHAIN;
+    }
 }

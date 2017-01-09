@@ -14,4 +14,9 @@ public class CentroidRepresentationScheme extends AbstractRepresentationScheme {
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
         return determineCentroid(leafSubstructure);
     }
+
+    @Override
+    public RepresentationSchemeType getType() {
+        return RepresentationSchemeType.CENTROID;
+    }
 }

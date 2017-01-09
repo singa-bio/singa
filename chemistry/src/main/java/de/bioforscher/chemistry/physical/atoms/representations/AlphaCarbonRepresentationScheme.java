@@ -23,4 +23,9 @@ public class AlphaCarbonRepresentationScheme extends AbstractRepresentationSchem
                 .findAny()
                 .orElse(determineCentroid(leafSubstructure));
     }
+
+    @Override
+    public RepresentationSchemeType getType() {
+        return RepresentationSchemeType.CA;
+    }
 }

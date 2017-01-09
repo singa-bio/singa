@@ -65,8 +65,8 @@ public class VectorSuperimposer {
         for (int i = 0; i < referenceSize; i++) {
             Vector referenceEntity = this.reference.get(i);
             Vector candidateEntity = this.mappedCandidate.get(i);
-            this.rmsd +=
-                    VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(referenceEntity, candidateEntity);
+            this.rmsd += VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
+                    .calculateDistance(referenceEntity, candidateEntity);
         }
         this.rmsd = Math.sqrt(this.rmsd / referenceSize);
     }
@@ -114,10 +114,12 @@ public class VectorSuperimposer {
 
     private void center() {
         this.referenceCentroid = Vectors.getCentroid(this.reference);
-        this.shiftedReference = this.reference.stream().map(vector -> vector.subtract(this.referenceCentroid))
+        this.shiftedReference = this.reference.stream()
+                .map(vector -> vector.subtract(this.referenceCentroid))
                 .collect(Collectors.toList());
         this.candidateCentroid = Vectors.getCentroid(this.candidate);
-        this.shiftedCandidate = this.candidate.stream().map(vector -> vector.subtract(this.candidateCentroid))
+        this.shiftedCandidate = this.candidate.stream()
+                .map(vector -> vector.subtract(this.candidateCentroid))
                 .collect(Collectors.toList());
     }
 

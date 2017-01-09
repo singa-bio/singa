@@ -1,6 +1,6 @@
 package de.bioforscher.benchmark.algorithms.superimposition;
 
-import de.bioforscher.chemistry.algorithms.superimposition.fit3d.Fit3DAlignment;
+import de.bioforscher.chemistry.algorithms.superimposition.fit3d.Fit3DBuilder;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A benchmark case that is build to analyze the performance of the Fit3D algorithm.
+ * A benchmark case that is run to analyze the performance of the Fit3D algorithm.
  *
  * @author fk
  */
@@ -35,10 +35,13 @@ public class Fit3DAlignmentBenchmark {
                 LeafIdentifers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), ResidueFamily.GLUTAMIC_ACID);
         System.out.println("setup");
-     }
+    }
 
     @Benchmark
-    public void benchmarkFit3DAlignment(){
-        new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(0));
+    public void benchmarkFit3DAlignment() {
+        Fit3DBuilder.create()
+                .query(this.queryMotif)
+                .target(this.target.getAllChains().get(0))
+                .run();
     }
 }

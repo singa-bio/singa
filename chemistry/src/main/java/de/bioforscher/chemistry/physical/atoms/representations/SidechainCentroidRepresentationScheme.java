@@ -44,4 +44,9 @@ public class SidechainCentroidRepresentationScheme extends AbstractRepresentatio
                 RepresentationSchemeType.SIDECHAIN_CENTROID.getAtomNameString(),
                 Vectors.getCentroid(atomPositions).as(Vector3D.class));
     }
+
+    @Override
+    public RepresentationSchemeType getType() {
+        return RepresentationSchemeType.SIDECHAIN_CENTROID;
+    }
 }

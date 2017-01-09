@@ -46,7 +46,10 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignment() {
-        Fit3DAlignment fit3d = new Fit3DAlignment(this.queryMotif, this.target.getAllChains().get(0));
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(this.queryMotif)
+                .target(this.target.getAllChains().get(0))
+                .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0005, matches.firstKey(), 1E-4);
     }
@@ -61,8 +64,11 @@ public class Fit3DAlignmentTest {
                 Paths.get("src/test/resources/RF00167"))
                 .map(Path::toString)
                 .collect(Collectors.toList());
-        Fit3DAlignmentBatch fit3dBatch = new Fit3DAlignmentBatch(nucleotideMotif, targetStructures);
-        assertTrue(fit3dBatch.getAllMatches().size() == 218);
+        Fit3D fit3dBatch = Fit3DBuilder.create()
+                .query(nucleotideMotif)
+                .targets(targetStructures)
+                .run();
+        assertTrue(fit3dBatch.getMatches().size() == 218);
     }
 
     @Test
@@ -87,7 +93,11 @@ public class Fit3DAlignmentTest {
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
-        Fit3DAlignment fit3d = new Fit3DAlignment(nucleotideMotif, nucleotideTarget.getAllChains().get(0), 2.5, 1.0, AtomFilter.isPhosphorus());
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(nucleotideMotif)
+                .target(nucleotideTarget.getAllChains().get(0))
+                .atomFilter(AtomFilter.isPhosphorus())
+                .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
