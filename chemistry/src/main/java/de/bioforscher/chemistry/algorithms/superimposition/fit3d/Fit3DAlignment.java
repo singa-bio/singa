@@ -8,6 +8,7 @@ import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSch
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.chemistry.physical.model.Structures;
 import de.bioforscher.core.utility.Pair;
@@ -176,11 +177,11 @@ public class Fit3DAlignment implements Fit3D {
                 .map(LeafSubstructure::getContainingTypes)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<Integer> toBeRemoved = this.target.getLeafSubstructures().stream()
+        List<LeafIdentifier> toBeRemoved = this.target.getLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
-                .map(LeafSubstructure::getIdentifier)
+                .map(LeafSubstructure::getLeafIdentifier)
                 .collect(Collectors.toList());
-        toBeRemoved.forEach(this.target::removeSubstructure);
+        toBeRemoved.forEach(this.target::removeLeafSubstructure);
     }
 
     /**

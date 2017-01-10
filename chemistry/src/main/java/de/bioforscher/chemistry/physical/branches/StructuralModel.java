@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.physical.branches;
 
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -33,6 +34,13 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
     @Override
     public StructuralModel getCopy() {
         return new StructuralModel(this);
+    }
+
+    @Override
+    public String toString() {
+        return "StructuralModel{" + getSubstructures().stream()
+                .map(Substructure::toString)
+                .collect(Collectors.joining(",")) + "}";
     }
 
     @Override

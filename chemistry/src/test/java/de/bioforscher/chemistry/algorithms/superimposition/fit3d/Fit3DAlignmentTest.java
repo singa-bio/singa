@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
@@ -56,6 +57,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
+        StructureCollector.parseLigandInformation = false;
         Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifers.of("A-22", "A-51", "A-52", "A-74"));
@@ -74,13 +76,15 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFindIntraMolecularMatches() throws IOException {
-        // TODO this is not functioning due to current limitations of the data model
-//        Structure target = PDBParserService.parseProteinById("4CHA");
-//        StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, target,
-//                LeafIdentifers.of("B-57", "B-102", "C-195"));
-//        Fit3DAlignment fit3d = new Fit3DAlignment(queryMotif, target.getAllModels().get(0));
-//        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-//        assertEquals(0.0000, matches.firstKey(), 1E-6);
+        Structure target = PDBParserService.parseProteinById("4CHA");
+        StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, target,
+                LeafIdentifers.of("B-57", "B-102", "C-195"));
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getAllModels().get(0))
+                .run();
+        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.firstKey(), 1E-6);
     }
 
     @Test

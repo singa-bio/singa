@@ -36,6 +36,8 @@ public class StructureCollector {
     private String currentPDB = "0000";
     private int currentModel = 0;
 
+    public static boolean parseLigandInformation = true;
+
     private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<LeafIdentifier, String> leafNames;
 
@@ -98,12 +100,16 @@ public class StructureCollector {
                                 chain.addSubstructure(collector.createNucleotide(leafName, leafIdentifier, nucleotideFamily.get(), atoms));
                             } else {
 
-                                if (!collector.typeMemory.containsKey(leafName)) {
-                                    try {
-                                        collector.typeMemory.put(leafName, LigandParserService.parseLigandTypeById(leafName));
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
+                                if (parseLigandInformation) {
+                                    if (!collector.typeMemory.containsKey(leafName)) {
+                                        try {
+                                            collector.typeMemory.put(leafName, LigandParserService.parseLigandTypeById(leafName));
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
+                                } else {
+                                    collector.typeMemory.put(leafName, "UNKNOWN");
                                 }
 
                                 if (collector.typeMemory.get(leafName).equals("RNA LINKING")) {

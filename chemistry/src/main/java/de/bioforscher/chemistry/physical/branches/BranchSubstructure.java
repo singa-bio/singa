@@ -293,7 +293,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
      * and {@link Bond}s as well
-     *
+     * <p>
      * FIXME this may produce a NPE
      *
      * @param identifier The identifier of the atom to remove.
@@ -304,6 +304,37 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
                 .collect(Collectors.toList());
         atomsToBeRemoved.forEach(this::removeNode);
         this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == identifier);
+    }
+
+    /**
+     * Removes the {@link LeafSubstructure} with the given {@link LeafIdentifier} and {@link Bond}s as well.
+     * <p>
+     * FIXME this may produce a NPE
+     *
+     * @param leafIdentifier The identifier of the atom to remove.
+     */
+    public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        List<Integer> atomsToBeRemoved = new ArrayList<>();
+
+        getLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                .findFirst()
+                .ifPresent(leafSubstructure -> atomsToBeRemoved.addAll(leafSubstructure.getAllAtoms().stream()
+                        .map(Atom::getIdentifier)
+                        .collect(Collectors.toList())));
+
+        atomsToBeRemoved.forEach(this::removeNode);
+
+        if (this instanceof Chain) {
+            this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
+        } else {
+            getBranchSubstructures().stream()
+                    .filter(StructureFilter.isChain())
+                    .map(Chain.class::cast)
+                    .filter(chain -> chain.getChainIdentifier().equals(leafIdentifier.getChainIdentifer()))
+                    .findFirst()
+                    .ifPresent(chain -> chain.removeSubstructure(leafIdentifier.getLeafIdentifer()));
+        }
     }
 
     /**

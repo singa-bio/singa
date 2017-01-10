@@ -28,7 +28,7 @@ public class Structure {
     }
 
     /**
-     * TODO behavior of this method is unexpected, this should return a {@link StructuralModel}? Is there a pseudo {@link StructuralModel} for Xtal structures?
+     * TODO behavior of this method is unexpected, this should return a {@link StructuralModel}?
      */
     private List<BranchSubstructure<?>> getBranchSubstructures() {
         return new ArrayList<>(this.branchSubstructures.values());
