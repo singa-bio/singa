@@ -67,6 +67,7 @@ public class Fit3DAlignmentTest {
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(nucleotideMotif)
                 .targets(targetStructures)
+                .maximalParallelism()
                 .run();
         assertTrue(fit3dBatch.getMatches().size() == 218);
     }

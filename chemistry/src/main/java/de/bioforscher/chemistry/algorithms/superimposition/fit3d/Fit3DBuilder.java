@@ -65,7 +65,7 @@ public class Fit3DBuilder {
          * @param targets The targets against the search should be run in batch mode.
          * @return The {@link ParallelStep} to define the level of parallelism the batch search should use.
          */
-        AtomStep targets(List<String> targets);
+        ParallelStep targets(List<String> targets);
     }
 
     public interface ParallelStep {
@@ -145,7 +145,6 @@ public class Fit3DBuilder {
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
         Predicate<Atom> atomFilter = DEFAULT_ATOM_FILTER;
         RepresentationScheme representationScheme;
-        private int limitedParallelism;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -162,7 +161,7 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public AtomStep targets(List<String> targets) {
+        public ParallelStep targets(List<String> targets) {
             Objects.requireNonNull(targets);
             if (targets.isEmpty()) {
                 throw new Fit3DException("targetStructures cannot be empty");
@@ -216,7 +215,7 @@ public class Fit3DBuilder {
             if (limitedParallelism <= 0.0) {
                 throw new Fit3DException("level of parallelism for batch calculation must be positive");
             }
-            this.limitedParallelism = limitedParallelism;
+            this.parallelism = limitedParallelism;
             return this;
         }
 

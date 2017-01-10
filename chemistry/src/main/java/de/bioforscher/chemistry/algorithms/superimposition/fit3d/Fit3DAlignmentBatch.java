@@ -53,7 +53,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     }
 
     /**
-     * creates jobs and executes them in parallel
+     * Creates jobs and executes them in parallel.
      */
     private void computeAlignments() {
         List<Fit3DCalculator> jobs = this.targetStructures.stream()

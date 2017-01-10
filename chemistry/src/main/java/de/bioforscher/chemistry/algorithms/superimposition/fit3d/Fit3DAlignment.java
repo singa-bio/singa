@@ -67,6 +67,8 @@ public class Fit3DAlignment implements Fit3D {
         this.matches = new TreeMap<>();
         this.candidates = new HashMap<>();
 
+        logger.info("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
+
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
         reduceTargetStructure();
 
@@ -126,7 +128,6 @@ public class Fit3DAlignment implements Fit3D {
                         .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
                                 alignmentCandidate, this.atomFilter);
             }
-
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
                 this.matches.put(superimposition.getRmsd(), superimposition);
             }
