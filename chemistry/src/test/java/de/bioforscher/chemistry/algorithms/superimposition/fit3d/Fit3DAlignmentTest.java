@@ -2,8 +2,10 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.ResidueFamily;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -97,13 +100,16 @@ public class Fit3DAlignmentTest {
         Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifers.of("A-22", "A-51", "A-52", "A-74"));
+
+        PDBWriterService.writeBranchSubstructures(nucleotideMotif, Paths.get("/tmp/a/query.pdb"));
+
         nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(nucleotideMotif)
                 .target(nucleotideTarget.getAllChains().get(0))
-                .atomFilter(AtomFilter.isPhosphorus())
                 .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
 
