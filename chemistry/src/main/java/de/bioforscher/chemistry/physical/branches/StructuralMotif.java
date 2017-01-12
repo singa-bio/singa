@@ -1,11 +1,13 @@
 package de.bioforscher.chemistry.physical.branches;
 
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * Created by leberech on 16/12/16.
@@ -34,6 +36,16 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         return motif;
     }
 
+    @Override
+    public String toString() {
+        return getSubstructures().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("_", getLeafSubstructures().stream()
+                        .findAny()
+                        .map(LeafSubstructure::getPdbId)
+                        .orElse("") + "|", ""));
+    }
+
     /**
      * Returns the size of the structural motif (the number of contained
      * {@link de.bioforscher.chemistry.physical.leafes.LeafSubstructure}s.
@@ -45,7 +57,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     }
 
     /**
-     * FIXME: here we have to find a nice solution to generify definition od exchanges
+     * FIXME: here we have to find a nice solution to generify definition of exchanges
      *
      * @param leafIdentifier
      * @param exchangeableType

@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A factory for creating implementations of {@link RepresentationScheme}s.
+ *
+ * @author fk
  */
 public abstract class RepresentationSchemeFactory {
 

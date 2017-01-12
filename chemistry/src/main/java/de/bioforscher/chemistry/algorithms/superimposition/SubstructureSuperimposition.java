@@ -25,12 +25,28 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     private final List<LeafSubstructure<?, ?>> mappedFullCandidate;
 
     public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?, ?>> mappedCandidate,
-                                       List<LeafSubstructure<?,?>> mappedFullCandidate) {
+                                       List<LeafSubstructure<?, ?>> mappedFullCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
         this.mappedCandidate = mappedCandidate;
         this.mappedFullCandidate = mappedFullCandidate;
+    }
+
+    /**
+     * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
+     * <p>
+     * <pre>[RMSD]_[PDB-ID of mapped candidates]|[candidate residues]...</pre>
+     *
+     * TODO move this to interface, as other superimpositions should also get a string representation.
+     *
+     * @return The full string representation of this {@link SubstructureSuperimposition}.
+     */
+    public String getStringRepresentation() {
+        return this.mappedCandidate.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("_", this.rmsd + "_" + this.mappedCandidate.get(0).getPdbId()
+                        + "|", ""));
     }
 
     @Override

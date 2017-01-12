@@ -59,9 +59,9 @@ public class ValidCandidateGeneratorTest {
 
     @Test
     public void shouldGenerateValidCandidates() {
-        Set<List<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2).getValidCandidates();
+        Set<Set<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2).getValidCandidates();
 
-        candidates.stream()
-                .forEach(System.out::println);
+//        candidates.stream()
+//                .forEach(System.out::println);
     }
 }

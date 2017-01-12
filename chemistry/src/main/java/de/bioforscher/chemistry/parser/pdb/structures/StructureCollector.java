@@ -36,6 +36,8 @@ public class StructureCollector {
     private String currentPDB = "0000";
     private int currentModel = 0;
 
+    public static boolean parseLigandInformation = true;
+
     private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<LeafIdentifier, String> leafNames;
 
@@ -51,7 +53,7 @@ public class StructureCollector {
 
     public static Structure collectStructure(List<String> pdbLines, String chainId) {
         StructureCollector collector = new StructureCollector();
-        logger.debug("collecting content from {} pdblines", pdbLines.size());
+        logger.debug("collecting content from {} PDB lines", pdbLines.size());
         for (String currentLine : pdbLines) {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = collector.createUniqueAtomIdentifier(currentLine);
@@ -98,12 +100,16 @@ public class StructureCollector {
                                 chain.addSubstructure(collector.createNucleotide(leafName, leafIdentifier, nucleotideFamily.get(), atoms));
                             } else {
 
-                                if (!collector.typeMemory.containsKey(leafName)) {
-                                    try {
-                                        collector.typeMemory.put(leafName, LigandParserService.parseLigandTypeById(leafName));
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
+                                if (parseLigandInformation) {
+                                    if (!collector.typeMemory.containsKey(leafName)) {
+                                        try {
+                                            collector.typeMemory.put(leafName, LigandParserService.parseLigandTypeById(leafName));
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
+                                } else {
+                                    collector.typeMemory.put(leafName, "UNKNOWN");
                                 }
 
                                 if (collector.typeMemory.get(leafName).equals("RNA LINKING")) {

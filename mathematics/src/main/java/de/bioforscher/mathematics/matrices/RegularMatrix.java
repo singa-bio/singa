@@ -17,6 +17,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class RegularMatrix implements Matrix, Serializable {
 
+    private static final long serialVersionUID = -3809415443253404586L;
+
     private final double[][] elements;
 
     private final int rowDimension;

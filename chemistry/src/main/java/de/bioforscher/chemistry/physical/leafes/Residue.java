@@ -9,9 +9,6 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
@@ -30,7 +27,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      * Residues.
      *
      * @param leafIdentifier The identifier.
-     * @param family The ResidueType.
+     * @param family         The ResidueType.
      */
     public Residue(LeafIdentifier leafIdentifier, ResidueFamily family) {
         super(leafIdentifier, family);
@@ -119,14 +116,15 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     }
 
     /**
-     * Return the name of this residue in the format [Three Letter Code of the Residue]:[Residue identifier] (e.g.
-     * Arg:123 or Met:17).
+     * Return the name of this residue in the format
+     * [Chain identifier of the Residue]-[One Letter Code of the Residue][Residue identifier]
+     * (e.g. A-D123 or A-M17).
      *
      * @return The String representation of this residue.
      */
     @Override
     public String toString() {
-        return getFamily().getThreeLetterCode() + ":" + getIdentifier();
+        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
     }
 
     /**
@@ -141,6 +139,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
      * Returns the name (i.e. the three letter code) of this residue.
+     *
      * @return The three letter code.
      */
     @Override
@@ -150,6 +149,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
      * Moves all atoms in this residue, such that the centroid of this residue is at the specified position.
+     *
      * @param position The new centroid position.
      */
     @Override

@@ -4,7 +4,10 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +41,7 @@ public class ValidCandidateGenerator {
     private List<LeafSubstructure<?, ?>> environment;
 
     private List<List<LeafSubstructure<?, ?>>> acceptedElementsAtEachPosition;
-    private Set<List<LeafSubstructure<?, ?>>> candidates;
+    private Set<Set<LeafSubstructure<?, ?>>> candidates;
 
     public ValidCandidateGenerator(List<LeafSubstructure<?, ?>> queryMotif, List<LeafSubstructure<?, ?>> environment) {
         this.queryMotif = queryMotif;
@@ -48,7 +51,7 @@ public class ValidCandidateGenerator {
         }
     }
 
-    public Set<List<LeafSubstructure<?, ?>>> getValidCandidates() {
+    public Set<Set<LeafSubstructure<?, ?>>> getValidCandidates() {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges
         for (LeafSubstructure<?, ?> currentLeafSubstructure : this.queryMotif) {
@@ -68,19 +71,19 @@ public class ValidCandidateGenerator {
                 .collect(Collectors.joining("\n")));
 
         this.candidates = new HashSet<>();
-        this.candidates.add(new ArrayList<>());
+        this.candidates.add(new HashSet<>());
         for (int position = 0; position < this.queryMotif.size(); position++) {
             final int currentPosition = position; // :>
             this.candidates = this.candidates.stream()
                     .flatMap(candidate -> this.acceptedElementsAtEachPosition.get(currentPosition).stream()
                             .map(acceptedElement -> {
-                                List<LeafSubstructure<?, ?>> newCandidate = cloneList(candidate);
+                                Set<LeafSubstructure<?, ?>> newCandidate = cloneSet(candidate);
                                 newCandidate.add(acceptedElement);
                                 return newCandidate;
                             })
                     )
-                    .filter(candidate -> candidate.stream().map(LeafSubstructure::getIdentifier).distinct().count() == currentPosition + 1)
-                    // FIXME we should implement equal method
+                    .filter(candidate -> candidate.stream()
+                            .collect(Collectors.toSet()).size() == currentPosition + 1)
                     .collect(Collectors.toSet());
         }
 
@@ -93,34 +96,18 @@ public class ValidCandidateGenerator {
                             .collect(Collectors.joining("\t", "[", "]")))
                     .collect(Collectors.joining("\n")));
         }
-
-//        filterRedundantCandidates();
-
         return this.candidates;
     }
 
     /**
-     * Filters redundant candidates, because combination is regardless of the order of elements.
+     * Copies each of the given {@link LeafSubstructure}s and collects them as a {@link Set}.
+     *
+     * @param leafSubstructures The {@link LeafSubstructure}s to be cloned.
+     * @return A {@link Set} of cloned {@link LeafSubstructure}s.
      */
-    // TODO implement this reduction of candidates
-//    private void filterRedundantCandidates() {
-//        Iterator<List<LeafSubstructure<?, ?>>> candidateIterator = this.candidates.iterator();
-//        while (candidateIterator.hasNext()){
-//            List<LeafSubstructure<?, ?>> currentCandidate = candidateIterator.next();
-//            for (List<LeafSubstructure<?,?>> candidate: this.candidates){
-//                if(candidate.containsAll(currentCandidate)){
-//                    candidateIterator.remove();
-//                    break;
-//                }
-//            }
-//        }
-////        this.candidates.removeIf(candidate -> this.candidates.stream()
-////                .anyMatch(candidateToCheck -> candidateToCheck.containsAll(candidate)));
-//    }
-
-    private List<LeafSubstructure<?, ?>> cloneList(List<LeafSubstructure<?, ?>> motif) {
-        return motif.stream()
+    private Set<LeafSubstructure<?, ?>> cloneSet(Set<LeafSubstructure<?, ?>> leafSubstructures) {
+        return leafSubstructures.stream()
                 .map(LeafSubstructure::getCopy)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

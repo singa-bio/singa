@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 /**
+ * An uncaught exception that may occur during a {@link Fit3D} calculation.
+ *
  * @author fk
  */
 public class Fit3DException extends RuntimeException {

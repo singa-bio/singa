@@ -27,7 +27,10 @@ public class Structure {
         this.branchSubstructures = new TreeMap<>();
     }
 
-    public List<BranchSubstructure<?>> getBranchSubstructures() {
+    /**
+     * TODO behavior of this method is unexpected, this should return a {@link StructuralModel}?
+     */
+    private List<BranchSubstructure<?>> getBranchSubstructures() {
         return new ArrayList<>(this.branchSubstructures.values());
     }
 

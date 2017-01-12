@@ -380,8 +380,8 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the original PDBID this leaf belongs to.
-     * @return The original PDBID this leaf belongs to.
+     * Returns the original PDB-ID this leaf belongs to.
+     * @return The original PDB-ID this leaf belongs to.
      */
     public String getPdbId() {
         return this.leafIdentifier.getPdbIdentifer();
@@ -391,7 +391,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * Assembles a list of strings, where each sting represents a atom of this leaf in PDBFormat.
      * @return A list of strings, where each sting represents a atom of this leaf in PDBFormat.
      */
-    public List<String> getPDBLines() {
+    public List<String> getPdbLines() {
         return AtomToken.assemblePDBLine(this);
     }
 

@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
- * The residue type should contain the general data, that is the same across all amino acids of this type.
+ * A {@link ResidueFamily} should contain the general data of an amino acid of the same type.
+ * // TODO we should probably refactor this to AminoAcidFamily
+ *
+ * @author cl
  */
 public enum ResidueFamily implements StructuralFamily {
 

@@ -1,14 +1,28 @@
 package de.bioforscher.mathematics.graphs.trees;
 
+import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinaryTree<T>  {
+public class BinaryTree<T> implements Serializable {
+
+    private static final long serialVersionUID = 7841821945964241393L;
 
     private BinaryTreeNode<T> root;
+    private LabeledSymmetricMatrix<String> distanceMatrix;
 
     public BinaryTree(BinaryTreeNode<T> root) {
         this.root = root;
+    }
+
+    public LabeledSymmetricMatrix<String> getDistanceMatrix() {
+        return this.distanceMatrix;
+    }
+
+    public void setDistanceMatrix(LabeledSymmetricMatrix<String> distanceMatrix) {
+        this.distanceMatrix = distanceMatrix;
     }
 
     /**

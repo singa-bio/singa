@@ -26,7 +26,7 @@ public class ConsensusAlignmentTest {
 
     @Before
     public void setUp() throws Exception {
-        this.input = Files.list(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/test/resources/consensus_alignment"))
+        this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
                 .map(path -> {
                     try {
                         return PDBParserService.parsePDBFile(path.toFile());
@@ -36,9 +36,7 @@ public class ConsensusAlignmentTest {
                     }
                 })
                 .filter(Objects::nonNull)
-                .map(Structure::getBranchSubstructures)
-                .flatMap(Collection::stream)
-                .map(BranchSubstructure::getLeafSubstructures)
+                .map(Structure::getAllLeafs)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +51,7 @@ public class ConsensusAlignmentTest {
         ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.6);
         System.out.println(consensusAlignment.getTopConsensusTree().toNewickString());
         List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getLeafSubstructures();
-        String consensusPDB = consensusMotif.stream().map(LeafSubstructure::getPDBLines)
+        String consensusPDB = consensusMotif.stream().map(LeafSubstructure::getPdbLines)
                 .flatMap(Collection::stream)
                 .collect(Collectors.joining("\n"));
         System.out.println(consensusPDB);

@@ -17,6 +17,13 @@ public class PDBParserService {
     private static final Logger logger = LoggerFactory.getLogger(PDBParserService.class);
     public static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
 
+    /**
+     * prevent instantiation
+     */
+    private PDBParserService(){
+
+    }
+
     public static Structure parseProteinById(String pdbId, String chainId) throws IOException {
         logger.info("parsing chain(s) {} of structure {}", chainId, pdbId);
         return parsePDBFile(new URL(String.format(PDB_FETCH_URL, pdbId)).openStream(), chainId);

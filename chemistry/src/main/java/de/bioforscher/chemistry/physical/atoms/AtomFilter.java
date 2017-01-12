@@ -64,6 +64,10 @@ public final class AtomFilter {
                 atom.getAtomName() == AtomName.O;
     }
 
+    public static Predicate<Atom> isPhosphorus() {
+        return atom -> atom.getAtomName() == AtomName.P;
+    }
+
     public static Predicate<Atom> isSidechain() {
         return isBackbone().negate();
     }

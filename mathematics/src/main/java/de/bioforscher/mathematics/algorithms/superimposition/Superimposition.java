@@ -43,7 +43,7 @@ public interface Superimposition<T> {
     List<T> getMappedCandidate();
 
     /**
-     * Returns the full copied mapped candidates, which contain all objects, regardless of the ones used to calculate this
+     * Returns the full copied mapped candidates, which contain all objects of type T, regardless of the ones used to calculate this
      * superimpositon. The default method simply returns the mapped candidates as is.
      *
      * @return the candidates with their original objects that were used for superimposition

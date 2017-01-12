@@ -4,10 +4,7 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.model.Bond;
-import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.model.StructureFilter;
-import de.bioforscher.chemistry.physical.model.Substructure;
+import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
@@ -296,6 +293,8 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
      * and {@link Bond}s as well
+     * <p>
+     * FIXME this may produce a NPE
      *
      * @param identifier The identifier of the atom to remove.
      */
@@ -308,12 +307,43 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
+     * Removes the {@link LeafSubstructure} with the given {@link LeafIdentifier} and {@link Bond}s as well.
+     * <p>
+     * FIXME this may produce a NPE
+     *
+     * @param leafIdentifier The identifier of the atom to remove.
+     */
+    public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        List<Integer> atomsToBeRemoved = new ArrayList<>();
+
+        getLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                .findFirst()
+                .ifPresent(leafSubstructure -> atomsToBeRemoved.addAll(leafSubstructure.getAllAtoms().stream()
+                        .map(Atom::getIdentifier)
+                        .collect(Collectors.toList())));
+
+        atomsToBeRemoved.forEach(this::removeNode);
+
+        if (this instanceof Chain) {
+            this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
+        } else {
+            getBranchSubstructures().stream()
+                    .filter(StructureFilter.isChain())
+                    .map(Chain.class::cast)
+                    .filter(chain -> chain.getChainIdentifier().equals(leafIdentifier.getChainIdentifer()))
+                    .findFirst()
+                    .ifPresent(chain -> chain.removeSubstructure(leafIdentifier.getLeafIdentifer()));
+        }
+    }
+
+    /**
      * Adds all {@link Substructure}s in order of their appearance in the list.
      *
      * @param substructures The Substructures to add.
      */
     public void addAllSubstructures(List<Substructure> substructures) {
-        substructures.forEach(ss -> this.substructures.put(ss.getIdentifier(), ss));
+        substructures.forEach(substructure -> this.substructures.put(substructure.getIdentifier(), substructure));
     }
 
     /**
