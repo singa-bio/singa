@@ -101,8 +101,6 @@ public class Fit3DAlignmentTest {
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifers.of("A-22", "A-51", "A-52", "A-74"));
 
-        PDBWriterService.writeBranchSubstructures(nucleotideMotif, Paths.get("/tmp/a/query.pdb"));
-
         nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(nucleotideMotif)
@@ -110,6 +108,20 @@ public class Fit3DAlignmentTest {
                 .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
 
+        assertEquals(0.0, matches.firstKey(), 1E-6);
+    }
+
+    @Test
+    public void shouldFindLigandContainingMotif() throws IOException {
+        Structure queryStructure = PDBParserService.parseProteinById("1acj");
+        StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, queryStructure, LeafIdentifers.of("A-84", "A-330", "A-999"));
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(queryStructure.getAllModels().get(0))
+                .run();
+
+        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
 
