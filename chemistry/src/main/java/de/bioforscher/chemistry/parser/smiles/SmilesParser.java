@@ -154,6 +154,8 @@ public class SmilesParser {
             }
         });
 
+        // transform aromatic bonds to double bonds
+
         return parser.molecule;
 
     }

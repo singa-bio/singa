@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.parser.smiles;
 
-import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraphRenderer;
 import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
 import javafx.application.Application;
@@ -12,8 +11,8 @@ public class SimilesParserPlayground {
 
     public static void main(String[] args) {
         SmilesParser playground = new SmilesParser();
-        // nested branches with aromatics
-        // String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        // nested branches with aromatics (COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
+         String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H]";
         // simple without ring closure
         // String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
         // simple with ring closure
@@ -24,7 +23,6 @@ public class SimilesParserPlayground {
         // String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
         // unconnected molecules
         // String smilesString = "O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O";
-        String smilesString = "NC1=NC=NC2=C1N=CN2[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
 
         System.out.println(smilesString);
 

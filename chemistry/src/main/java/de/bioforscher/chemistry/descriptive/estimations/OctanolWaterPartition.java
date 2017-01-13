@@ -1,17 +1,28 @@
 package de.bioforscher.chemistry.descriptive.estimations;
 
+import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBond;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.smiles.SmilesParser;
+import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.atoms.AtomFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
 /**
- * @author leberech
+ * @author cl
  */
 public class OctanolWaterPartition {
+
+    private static final Logger logger = LoggerFactory.getLogger(OctanolWaterPartition.class);
 
     /**
      * The class encapsulates a identifer for each equation and parameter to assign a specific value to.
@@ -72,6 +83,20 @@ public class OctanolWaterPartition {
         return parameterCoefficients.get(new FactorIdentifier(1, "CX"));
     }
 
+
+    private static LinkedList<Set<Element>> xyPath = new LinkedList<>(Arrays.asList(
+            new HashSet<>(Arrays.asList(NITROGEN, OXYGEN)),
+            new HashSet<>(Arrays.asList(NITROGEN, OXYGEN))
+    ));
+
+
+    private static LinkedList<Set<Element>> xayPath = new LinkedList<>(Arrays.asList(
+            new HashSet<>(Arrays.asList(NITROGEN, OXYGEN)),
+            new HashSet<>(Arrays.asList(CARBON, SULFUR, PHOSPHORUS)),
+            new HashSet<>(Arrays.asList(NITROGEN, OXYGEN))
+    ));
+
+
     private MoleculeGraph moleculeGraph;
 
     public OctanolWaterPartition(MoleculeGraph moleculeGraph) {
@@ -79,9 +104,12 @@ public class OctanolWaterPartition {
     }
 
     public static void calculateOctanolWaterPartitionCoefficient(MoleculeGraph moleculeGraph) {
+        logger.info("calculating octanol/water partition coefficient for molecule {}", moleculeGraph);
         OctanolWaterPartition partition = new OctanolWaterPartition(moleculeGraph);
-
-
+        partition.calculateCX();
+        partition.calcualteNO();
+        partition.calculatePRX();
+        partition.calculateUB();
     }
 
     /**
@@ -109,7 +137,6 @@ public class OctanolWaterPartition {
     }
 
 
-
     /**
      * Returns the summation of carbon and halogen atoms weighted by {@link ElementProvider#CARBON Carbon}: 1.0,
      * {@link ElementProvider#FLUORINE Flourine}: 0.5, {@link ElementProvider#CHLORINE Chlorine}: 1.0,
@@ -124,6 +151,7 @@ public class OctanolWaterPartition {
         cx += this.moleculeGraph.countAtomsOfElement(CHLORINE);
         cx += this.moleculeGraph.countAtomsOfElement(BROMINE) * 1.5;
         cx += this.moleculeGraph.countAtomsOfElement(IODINE) * 2.0;
+        logger.debug("CX parameter scored: {}", cx);
         return cx;
     }
 
@@ -137,14 +165,121 @@ public class OctanolWaterPartition {
         double no = 0;
         no += this.moleculeGraph.countAtomsOfElement(OXYGEN);
         no += this.moleculeGraph.countAtomsOfElement(NITROGEN);
+        logger.debug("NO parameter scored: {}", no);
         return no;
     }
 
+    /**
+     * Returns the proximity effect resulting from N/O; X-Y: 1.0, X-A-Y: 2.0 (X, Y: N/O, A: C,S, or P) with a correction
+     * (-1) for carboxoamide (RC(=O)NR2) and sulfonamide (RS(=O)2NR).
+     *
+     * @return Thr PRX parameter.
+     */
     private double calculatePRX() {
+        double prx = 0;
+        // score for N/O; X-Y: 1.0
+        final List<LinkedList<MoleculeAtom>> xy = this.moleculeGraph.findMultiPathOfElements(xyPath);
+        prx += xy.size();
+        // score for X-A-Y: 2.0 (X, Y: N/O, A: C,S, or P)
+        final List<LinkedList<MoleculeAtom>> xay = this.moleculeGraph.findMultiPathOfElements(xayPath);
+        for (LinkedList<MoleculeAtom> path : xay) {
+            boolean isReduced = false;
+            final MoleculeAtom firstAtom = path.get(0);
+            final MoleculeAtom centralAtom = path.get(1);
+            final MoleculeAtom lastAtom = path.get(2);
+            if (centralAtom.getElement().equals(CARBON)) {
+                // middle is carbon
+                if (firstAtom.getElement().equals(OXYGEN)) {
+                    // first is oxygen
+                    if (lastAtom.getElement().equals(NITROGEN)) {
+                        // last is nitrogen
+                        if (this.moleculeGraph.getEdgeBetween(centralAtom, firstAtom).getType().equals(MoleculeBondType.DOUBLE_BOND)) {
+                            isReduced = true;
+                        }
+                    }
+                } else if (lastAtom.getElement().equals(OXYGEN)) {
+                    // first can only be nitrogen if it is not oxygen
+                    // last is oxygen
+                    if (this.moleculeGraph.getEdgeBetween(centralAtom, lastAtom).getType().equals(MoleculeBondType.DOUBLE_BOND)) {
+                        isReduced = true;
+                    }
+                }
+            }
 
+            if (isReduced) {
+                logger.trace("{} scored: 1", path);
+                prx += 1;
+            } else {
+                logger.trace("{} scored: 2", path);
+                prx += 2;
+            }
+        }
+        logger.debug("PRX parameter scored: {}", prx);
+        return prx;
+    }
 
+    /**
+     * Returns the total number of unsaturated ({@link MoleculeBondType#DOUBLE_BOND double} or
+     * {@link MoleculeBondType#TRIPLE_BOND triple}) bonds except those in NO2.
+     *
+     * @return The UB parameter.
+     */
+    private double calculateUB() {
+        // TODO assemble test case
+        double ub = 0;
+        for (MoleculeBond bond : this.moleculeGraph.getEdges()) {
+            if (bond.getType() == MoleculeBondType.DOUBLE_BOND) {
+                MoleculeAtom source = bond.getSource();
+                MoleculeAtom target = bond.getTarget();
+                boolean isIgnored = false;
+                if (source.getElement().equals(NITROGEN)) {
+                    long oxygenCount = source.getNeighbours().stream()
+                            .filter(moleculeAtom -> moleculeAtom.getElement().equals(OXYGEN))
+                            .count();
+                    if (oxygenCount == 2) {
+                        isIgnored = true;
+                    }
+                }
+                if (target.getElement().equals(NITROGEN)) {
+                    long oxygenCount = target.getNeighbours().stream()
+                            .filter(moleculeAtom -> moleculeAtom.getElement().equals(OXYGEN))
+                            .count();
+                    if (oxygenCount == 2) {
+                        isIgnored = true;
+                    }
+                }
 
-        return 0;
+                if (!isIgnored) {
+                    ub += 1;
+                }
+
+            }
+        }
+        logger.debug("UB parameter scored: {}", ub);
+        return ub;
+    }
+
+    /**
+     * Returns the dummy variable for the presence of intramolecular hydrogen bonds as ortho-OH and -CO-R, -OH and -NH2
+     * and -COOH or 8-OH/NH2 in quinolines, 5 or 8-OH/NH2 in quinoxalines, ect.
+     *
+     * @return The HB parameter.
+     */
+    private double calculateHB() {
+
+        return 0.0;
+    }
+
+    public static void main(String[] args) {
+
+        String ampicilin = "[H][C@]12SC(C)(C)[C@@H](N1C(=O)[C@H]2NC(=O)[C@H](N)c1ccccc1)C(O)=O";
+        String valerolactone = "O=C1CCCCO1";
+        String oxazepam = "OC1N=C(C2=CC=CC=C2)C2=C(NC1=O)C=CC(Cl)=C2";
+
+        MoleculeGraph molecule = SmilesParser.parse(ampicilin);
+
+        OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule);
+
     }
 
 }

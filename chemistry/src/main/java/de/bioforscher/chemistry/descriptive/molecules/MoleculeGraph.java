@@ -8,6 +8,7 @@ import de.bioforscher.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.mathematics.vectors.Vectors;
 
+
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -17,6 +18,8 @@ import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
  * Created by Christoph on 21/11/2016.
  */
 public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D> {
+
+    // TODO add a reference of this to Species
 
     public static Predicate<MoleculeAtom> isElement(Element element) {
         return atom -> atom.getElement().getProtonNumber() == element.getProtonNumber();
@@ -68,6 +71,13 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return addEdgeBetween(bond, source, target);
     }
 
+    public MoleculeBond getEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
+        return this.getEdges().stream()
+                .filter(bond -> bond.containsNode(source) && bond.containsNode(target))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting "+source+" and "+target+"."));
+    }
+
     public int countAtomsOfElement(Element element) {
         return (int) this.getNodes().stream()
                 .filter(isElement(element))
@@ -96,11 +106,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
         List<LinkedList<MoleculeAtom>> pathOfElements = moleculeGraph.findMultiPathOfElements(path);
 
-
         System.out.println(pathOfElements);
-
-        // GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
-        // Application.launch(GraphDisplayApplication.class);
 
     }
 

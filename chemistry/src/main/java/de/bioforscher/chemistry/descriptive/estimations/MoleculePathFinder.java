@@ -2,6 +2,8 @@ package de.bioforscher.chemistry.descriptive.estimations;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBond;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 
 import java.awt.*;
@@ -42,6 +44,41 @@ public class MoleculePathFinder {
         pathFinder.findAllCandidatesForMultiPath(multiPath);
         pathFinder.cleanCandidates();
         return pathFinder.candidates;
+    }
+
+    public static List<MoleculeBond> findAromaticPath(MoleculeGraph molecule) {
+        MoleculePathFinder pathFinder = new MoleculePathFinder(molecule);
+        List<MoleculeBond> aromaticBonds = pathFinder.graph.getEdges().stream()
+                .filter(bond -> bond.getType() == MoleculeBondType.AROMATIC_BOND)
+                .collect(Collectors.toList());
+        // find continuous paths
+        // should be in the looping path
+        Iterator<MoleculeBond> iterator = aromaticBonds.listIterator();
+        List<LinkedList<MoleculeBond>> continuousAromaticPaths = new ArrayList<>();
+        LinkedList<MoleculeBond> initialList = new LinkedList<>();
+        initialList.add(iterator.next());
+        iterator.remove();
+        continuousAromaticPaths.add(initialList);
+
+        while (iterator.hasNext()) {
+            MoleculeBond nextBond = iterator.next();
+            for (LinkedList<MoleculeBond> path : continuousAromaticPaths) {
+                MoleculeBond last = path.getLast();
+                MoleculeBond first = path.getFirst();
+                if (last == first) {
+                    // try only last
+                } else {
+                    // try first
+                }
+                // try last
+
+                // try both atom ends and find overlapping atoms
+                // if atoms overlap add this fragment and remove it from the original collection
+                // continue with next fragment
+            }
+
+        }
+        // while bonds remain try to add them into the path
     }
 
     private void initializeCandidates(List<MoleculeAtom> startingPoints) {
