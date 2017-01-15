@@ -171,7 +171,7 @@ public class OctanolWaterPartition {
 
     /**
      * Returns the proximity effect resulting from N/O; X-Y: 1.0, X-A-Y: 2.0 (X, Y: N/O, A: C,S, or P) with a correction
-     * (-1) for carboxoamide (RC(=O)NR2) and sulfonamide (RS(=O)2NR).
+     * (-1.0) for carboxoamide (RC(=O)NR2) and sulfonamide (RS(=O)2NR).
      *
      * @return Thr PRX parameter.
      */
@@ -228,7 +228,7 @@ public class OctanolWaterPartition {
         // TODO assemble test case
         double ub = 0;
         for (MoleculeBond bond : this.moleculeGraph.getEdges()) {
-            if (bond.getType() == MoleculeBondType.DOUBLE_BOND) {
+            if (bond.getType() == MoleculeBondType.DOUBLE_BOND || bond.getType() == MoleculeBondType.TRIPLE_BOND) {
                 MoleculeAtom source = bond.getSource();
                 MoleculeAtom target = bond.getTarget();
                 boolean isIgnored = false;
@@ -277,6 +277,7 @@ public class OctanolWaterPartition {
         String oxazepam = "OC1N=C(C2=CC=CC=C2)C2=C(NC1=O)C=CC(Cl)=C2";
 
         MoleculeGraph molecule = SmilesParser.parse(ampicilin);
+        molecule.replaceAromaticsWithDoubleBonds();
 
         OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule);
 

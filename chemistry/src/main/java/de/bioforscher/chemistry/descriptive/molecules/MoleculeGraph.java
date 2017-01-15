@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import static de.bioforscher.chemistry.descriptive.elements.ElementProvider.*;
 
 /**
- * Created by Christoph on 21/11/2016.
+ * @author cl
  */
 public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D> {
 
@@ -75,7 +75,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return this.getEdges().stream()
                 .filter(bond -> bond.containsNode(source) && bond.containsNode(target))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting "+source+" and "+target+"."));
+                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
     }
 
     public int countAtomsOfElement(Element element) {
@@ -92,23 +92,19 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return MoleculePathFinder.findMultiPathInMolecule(this, path);
     }
 
-    public static void main(String[] args) {
-
-        String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
-
-        // path
-        HashSet<Element> elements = new HashSet<>(Arrays.asList(NITROGEN, OXYGEN));
-        LinkedList<Set<Element>> path = new LinkedList<>();
-        path.add(new HashSet<>(Arrays.asList(CARBON)));
-        path.add(elements);
-        System.out.println(path);
-
-        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
-        List<LinkedList<MoleculeAtom>> pathOfElements = moleculeGraph.findMultiPathOfElements(path);
-
-        System.out.println(pathOfElements);
-
+    public void replaceAromaticsWithDoubleBonds() {
+        // get all aromatic paths in the molecule
+        List<LinkedList<MoleculeBond>> aromaticPaths = MoleculePathFinder.findAromaticPath(this);
+        // replace every second bond with a double bond
+        for (List<MoleculeBond> path : aromaticPaths) {
+            for (int i = 0; i < path.size(); i++) {
+                if (i % 2  == 0) {
+                    path.get(i).setType(MoleculeBondType.DOUBLE_BOND);
+                } else {
+                    path.get(i).setType(MoleculeBondType.SINGLE_BOND);
+                }
+            }
+        }
     }
-
 
 }
