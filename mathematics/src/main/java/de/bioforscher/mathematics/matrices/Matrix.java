@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.matrices;
 
+import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.concepts.MultiDimensional;
 import de.bioforscher.mathematics.concepts.Ring;
 import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
@@ -7,6 +8,9 @@ import de.bioforscher.mathematics.vectors.RegularVector;
 import de.bioforscher.mathematics.vectors.Vector;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.stream.DoubleStream;
 
 /**
  * The {@code Matrix} interface represents a two-dimensional collection of values (like a table with rows and columns)
@@ -75,6 +79,32 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * @return All elements of this matrix as an two-dimensional array.
      */
     double[][] getElements();
+
+
+    /**
+     * Returns a stream of all elements in the matrix, where columns are traversed first and rows second. So e.g.
+     * a matrix with 3 rows and 4 columns is traversed column: c1,r1 - c1,r2 - c1,r3 - c2,r1 - ... c4,r3
+     *
+     * @return a stream of all elements in the matrix.
+     */
+    default DoubleStream streamElements() {
+        return Arrays.stream(getElements()).flatMapToDouble(Arrays::stream);
+    }
+
+    /**
+     * Returns a stream of all positions in the form of pairs and the respective elements. In the pairs, the first
+     * element represents the row index and the second element the column index.
+     *
+     * @param action
+     */
+    default void forEach(BiConsumer<Pair<Integer>, Double> action) {
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
+                action.accept(new Pair<>(rowIndex, columnIndex), getElement(rowIndex, columnIndex));
+            }
+        }
+    }
+
 
     /**
      * Returns an explicit copy of this matrix. A new array is created and filled with values.

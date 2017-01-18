@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -121,7 +122,7 @@ public class RegularMatrixTest {
 
     @Test
     public void testSummation() {
-        Matrix addition = Addable.sum(Arrays.asList(firstRectangularMatrix, firstRectangularMatrix, firstRectangularMatrix));
+        Matrix addition = Addable.sum(Arrays.asList(this.firstRectangularMatrix, this.firstRectangularMatrix, this.firstRectangularMatrix));
         assertTrue(Arrays.deepEquals(new double[][]{{3.0, 6.0}, {9.0, 12.0}, {15.0, 18.0}},
                 addition.getElements()));
     }
@@ -190,12 +191,6 @@ public class RegularMatrixTest {
     public void shouldNotConvertRegularToSquared() {
         SquareMatrix actual = this.firstRectangularMatrix.as(SquareMatrix.class);
         assertNull(actual);
-    }
-
-    @Test
-    public void testToString() {
-        String expected = " 9,00 10,00 11,00\n12,00 13,00 14,00\n";
-        assertEquals(expected, this.twoTimesThree.toString());
     }
 
     @Test
@@ -315,4 +310,14 @@ public class RegularMatrixTest {
         RegularVector row = lrm.getColumnByLabel("C1");
         assertTrue(row.equals(new RegularVector(1.0, 3.0, 5.0)));
     }
+
+    @Test
+    public void shouldStreamAllElements() {
+        List<Double> expectedElements = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+        List<Double> actualElements = this.firstRectangularMatrix.streamElements().boxed().collect(Collectors.toList());
+        for (int i = 0 ; i < expectedElements.size() ; i++ ) {
+            assertEquals(expectedElements.get(i), actualElements.get(i), 0.0);
+        }
+    }
+
 }
