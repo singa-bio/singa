@@ -409,9 +409,10 @@ public class SimulationExampleProvider {
     public static Simulation createPassiveMembraneTransportExample() {
 
         // get required species
-        Species water = ChEBIParserService.parse("CHEBI:15377");
+        // hydrophilic
         Species urea = ChEBIParserService.parse("CHEBI:16199");
-        Species glycerol = ChEBIParserService.parse("CHEBI:17754");
+        // hydrophobic
+        Species cobamamide = ChEBIParserService.parse("CHEBI:18408");
 
         // setup rectangular graph with number of nodes
         int numberOfNodes = 11;
@@ -422,26 +423,23 @@ public class SimulationExampleProvider {
         for (BioNode node : graph.getNodes()) {
 
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                node.addEntity(water, 1.0);
-                node.addEntity(urea, 0.2);
-                node.addEntity(glycerol, 0.2);
+                node.addEntity(urea, 1.0);
+                node.addEntity(cobamamide, 1.0);
                 node.setState(NodeState.AQUEOUS);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2) ) {
                 node.addEntity(urea, 0.0);
-                node.addEntity(glycerol, 0.0);
+                node.addEntity(cobamamide, 0.0);
                 node.setState(NodeState.CELL_MEMBRANE);
             } else {
-                node.addEntity(water, 1.0);
                 node.addEntity(urea, 0.0);
-                node.addEntity(glycerol, 0.0);
+                node.addEntity(cobamamide, 0.0);
                 node.setState(NodeState.AQUEOUS);
             }
         }
 
         for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(water, 1);
             edge.addPermeability(urea, 1);
-            edge.addPermeability(glycerol, 1);
+            edge.addPermeability(cobamamide, 1);
         }
 
         // setup time step size as given
@@ -458,7 +456,8 @@ public class SimulationExampleProvider {
         // add diffusion module
         simulation.getModules().add(new FreeDiffusion());
         // add desired species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(Arrays.asList(water, urea, glycerol));
+        simulation.getChemicalEntities().addAll(Arrays.asList(urea, cobamamide));
+
 
         return simulation;
 

@@ -29,7 +29,6 @@ public class SimilesParserPlayground {
         System.out.println(smilesString);
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
         moleculeGraph.replaceAromaticsWithDoubleBonds();
-        // FIXME does not really replace
         GraphDisplayApplication.graph = moleculeGraph;
         GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
         Application.launch(GraphDisplayApplication.class);

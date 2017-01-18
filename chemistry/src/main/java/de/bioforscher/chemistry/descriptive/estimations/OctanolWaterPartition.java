@@ -24,6 +24,14 @@ public class OctanolWaterPartition {
 
     private static final Logger logger = LoggerFactory.getLogger(OctanolWaterPartition.class);
 
+    public enum Method {
+
+        MLOGP_1,
+        MLOGP_2,
+        NC_NHET;
+
+    }
+
     /**
      * The class encapsulates a identifer for each equation and parameter to assign a specific value to.
      */
@@ -67,20 +75,24 @@ public class OctanolWaterPartition {
     private static Map<FactorIdentifier, Double> parameterCoefficients = new HashMap<>();
 
     static {
-        parameterCoefficients.put(new FactorIdentifier(1, "CX"), 0.246);
-        parameterCoefficients.put(new FactorIdentifier(1, "NO"), -0.386);
-        parameterCoefficients.put(new FactorIdentifier(1, "C"), 0.466);
-
-        parameterCoefficients.put(new FactorIdentifier(2, "CX"), 1.001);
-        parameterCoefficients.put(new FactorIdentifier(2, "ECX"), 0.6); // Exponent
-        parameterCoefficients.put(new FactorIdentifier(2, "NO"), -0.479);
-        parameterCoefficients.put(new FactorIdentifier(2, "ENO"), 0.9); // Exponent
-        parameterCoefficients.put(new FactorIdentifier(2, "C"), 0.7554);
-
+        // MLOGP Equation 1
+        parameterCoefficients.put(new FactorIdentifier(1, "MLOGP_CX"), 0.246);
+        parameterCoefficients.put(new FactorIdentifier(1, "MLOGP_NO"), -0.386);
+        parameterCoefficients.put(new FactorIdentifier(1, "MLOGP_C"), 0.466);
+        // MLOGP Equation 2
+        parameterCoefficients.put(new FactorIdentifier(2, "MLOGP_CX"), 1.001);
+        parameterCoefficients.put(new FactorIdentifier(2, "MLOGP_ECX"), 0.6); // Exponent
+        parameterCoefficients.put(new FactorIdentifier(2, "MLOGP_NO"), -0.479);
+        parameterCoefficients.put(new FactorIdentifier(2, "MLOGP_ENO"), 0.9); // Exponent
+        parameterCoefficients.put(new FactorIdentifier(2, "MLOGP_C"), 0.7554);
+        // NC+NHET
+        parameterCoefficients.put(new FactorIdentifier(1, "NC_NC"), 0.11);
+        parameterCoefficients.put(new FactorIdentifier(1, "NC_NHET"), -0.11);
+        parameterCoefficients.put(new FactorIdentifier(1, "NC_C"), 1.46);
     }
 
     private static double getFactor(int equation, String parameter) {
-        return parameterCoefficients.get(new FactorIdentifier(1, "CX"));
+        return parameterCoefficients.get(new FactorIdentifier(equation, parameter));
     }
 
 
@@ -103,37 +115,69 @@ public class OctanolWaterPartition {
         this.moleculeGraph = moleculeGraph;
     }
 
-    public static void calculateOctanolWaterPartitionCoefficient(MoleculeGraph moleculeGraph) {
-        logger.info("calculating octanol/water partition coefficient for molecule {}", moleculeGraph);
+    public static double calculateOctanolWaterPartitionCoefficient(MoleculeGraph moleculeGraph, Method method) {
+        logger.info("calculating octanol/water partition coefficient using {}", method.toString());
         OctanolWaterPartition partition = new OctanolWaterPartition(moleculeGraph);
-        partition.calculateCX();
-        partition.calcualteNO();
-        partition.calculatePRX();
-        partition.calculateUB();
+        switch (method) {
+            case MLOGP_1:
+                return partition.calculateCoefficientUsingMLOGP1();
+            case MLOGP_2:
+                return partition.calculateCoefficientUsingMLOGP2();
+            default:
+                return partition.calculateCoefficientUsingNCAndNHET();
+        }
+    }
+
+    /**
+     * Calculates the Octanol/Water partition coefficient using the NC + NHET Method presented in "Calculation of
+     * Molecular Lipophilicity: State-of-the-Art and Comparison of Log P Methods on More Than 96,000 Compounds" by
+     * Mannhold et al. 2008
+     *
+     * @return
+     */
+    private double calculateCoefficientUsingNCAndNHET() {
+        final double carbons = calculateNumberOfCarbonAtoms();
+        final double nonCarbon = this.moleculeGraph.getNodes().size() - carbons;
+        logger.debug("number of hetero atoms is: {}", nonCarbon);
+        final double result = getFactor(1, "NC_NC") * carbons +
+                getFactor(1, "NC_NHET") * nonCarbon +
+                getFactor(1, "NC_C");
+        logger.debug("calculated log p using NC + NHET (Mannhold 2008): {}", result);
+        return result;
+    }
+
+    private double calculateNumberOfCarbonAtoms() {
+        final double carbonAtoms = this.moleculeGraph.countAtomsOfElement(CARBON);
+        logger.debug("number of carbon atoms is: {}", carbonAtoms);
+        return carbonAtoms;
     }
 
     /**
      * Calculates the Octanol/Water partition coefficient using Equation 1 from "Simple Method of Calculating
-     * Octanol/Water Partition Coefficient".
+     * Octanol/Water Partition Coefficient" by Moriguchi et al. 1992.
      *
      * @return log P
      */
-    private double calculateCoefficientUsingEq1() {
-        return getFactor(1, "CX") * calculateCX() +
-                getFactor(1, "NO") * calcualteNO() +
-                getFactor(1, "C");
+    private double calculateCoefficientUsingMLOGP1() {
+        final double result = getFactor(1, "MLOGP_CX") * calculateCX() +
+                getFactor(1, "MLOGP_NO") * calcualteNO() +
+                getFactor(1, "MLOGP_C");
+        logger.debug("calculated log p using MLOGP1 (Moriguchi 1992): {}", result);
+        return result;
     }
 
     /**
      * Calculates the Octanol/Water partition coefficient using Equation 2 from "Simple Method of Calculating
-     * Octanol/Water Partition Coefficient".
+     * Octanol/Water Partition Coefficient" by Moriguchi et al. 1992.
      *
      * @return log P
      */
-    private double calculateCoefficientUsingEq2() {
-        return getFactor(2, "CX") * Math.pow(calculateCX(), getFactor(2, "ECX")) +
-                getFactor(2, "NO") * Math.pow(calcualteNO(), getFactor(2, "ENO")) +
-                getFactor(2, "C");
+    private double calculateCoefficientUsingMLOGP2() {
+        final double result = getFactor(2, "MLOGP_CX") * Math.pow(calculateCX(), getFactor(2, "MLOGP_ECX")) +
+                getFactor(2, "MLOGP_NO") * Math.pow(calcualteNO(), getFactor(2, "MLOGP_ENO")) +
+                getFactor(2, "MLOGP_C");
+        logger.debug("calculated log p using MLOGP2 Moriguchi 1992: {}", result);
+        return result;
     }
 
 
@@ -259,27 +303,17 @@ public class OctanolWaterPartition {
         return ub;
     }
 
-    /**
-     * Returns the dummy variable for the presence of intramolecular hydrogen bonds as ortho-OH and -CO-R, -OH and -NH2
-     * and -COOH or 8-OH/NH2 in quinolines, 5 or 8-OH/NH2 in quinoxalines, ect.
-     *
-     * @return The HB parameter.
-     */
-    private double calculateHB() {
-
-        return 0.0;
-    }
-
     public static void main(String[] args) {
 
         String ampicilin = "[H][C@]12SC(C)(C)[C@@H](N1C(=O)[C@H]2NC(=O)[C@H](N)c1ccccc1)C(O)=O";
         String valerolactone = "O=C1CCCCO1";
         String oxazepam = "OC1N=C(C2=CC=CC=C2)C2=C(NC1=O)C=CC(Cl)=C2";
 
-        MoleculeGraph molecule = SmilesParser.parse(ampicilin);
+        MoleculeGraph molecule = SmilesParser.parse(oxazepam);
         molecule.replaceAromaticsWithDoubleBonds();
 
-        OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule);
+        OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule, Method.NC_NHET);
+
 
     }
 
