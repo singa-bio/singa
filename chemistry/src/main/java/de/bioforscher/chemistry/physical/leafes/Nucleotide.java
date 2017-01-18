@@ -33,7 +33,7 @@ public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
 
     /**
      * Return the name of this {@link Nucleotide} in the format
-     * [Chain identifier of the {@link Nucleotide}]-[One Letter Code of the {@link Nucleotide}][Residue identifier]
+     * [Chain identifier of the {@link Nucleotide}]-[One Letter Code of the {@link Nucleotide}][AminoAcid identifier]
      * (e.g. A-A123 or A-U17).
      *
      * @return The String representation of this {@link Nucleotide}.

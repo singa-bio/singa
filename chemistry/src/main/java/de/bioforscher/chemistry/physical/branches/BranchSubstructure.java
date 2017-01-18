@@ -3,7 +3,7 @@ package de.bioforscher.chemistry.physical.branches;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain Atoms. Edges in a BranchSubstructure
  * are only able to connect Atoms, but this can be done across different substructures. For example, this makes it
- * possible to connect Residues in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
+ * possible to connect AminoAcids in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
  * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
  * @author cl
  * @see Chain
- * @see Residue
+ * @see AminoAcid
  * @see Atom
  */
 public abstract class BranchSubstructure<SubstructureType extends Substructure<SubstructureType>>
@@ -442,14 +442,14 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all Residues that are present in this or subordinate SubStructures.
+     * Returns all AminoAcids that are present in this or subordinate SubStructures.
      *
      * @return All residues.
      */
-    public List<Residue> getResidues() {
+    public List<AminoAcid> getResidues() {
         return getLeafSubstructures().stream()
                 .filter(StructureFilter.isResidue())
-                .map(Residue.class::cast)
+                .map(AminoAcid.class::cast)
                 .collect(Collectors.toList());
     }
 

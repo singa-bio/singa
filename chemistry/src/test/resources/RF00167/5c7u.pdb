@@ -311,35 +311,35 @@ REMARK 800
 REMARK 800 SITE                                                                 
 REMARK 800 SITE_IDENTIFIER: AC1                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 101                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 101
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC2                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 102                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 102
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC3                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 103                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 103
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC4                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 104                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 104
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC5                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 105                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 105
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC6                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 106                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 106
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC7                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue NCO B 107                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid NCO B 107
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC8                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue HPA B 108                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid HPA B 108
 REMARK 900                                                                      
 REMARK 900 RELATED ENTRIES                                                      
 REMARK 900 RELATED ID: 5C7W   RELATED DB: PDB                                   

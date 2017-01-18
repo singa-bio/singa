@@ -2,7 +2,7 @@ package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class AtomFilterTest {
         Structure structure = PDBParserService.parseProteinById("4HHB");
 
         // valine
-        Residue branchSubstructure = structure.getAllResidues().get(0);
+        AminoAcid branchSubstructure = structure.getAllResidues().get(0);
 
         List<Atom> backboneAtoms = branchSubstructure.getAllAtoms().stream()
                                                .filter(AtomFilter.isBackbone())

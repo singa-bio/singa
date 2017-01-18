@@ -2,13 +2,10 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
-import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
-import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifers;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -45,7 +41,7 @@ public class Fit3DAlignmentTest {
                 .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
                 LeafIdentifers.of("E-57", "E-102", "E-195"));
-        this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), ResidueFamily.GLUTAMIC_ACID);
+        this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
@@ -134,10 +130,10 @@ public class Fit3DAlignmentTest {
 //        Structure motifContainingStructure = PDBParserService.parsePDBFile("motif_KDEEH.pdb");
 //        StructuralMotif motif = StructuralMotif.fromLeafs(1, motifContainingStructure,
 //                LeafIdentifers.of("A-164", "A-195", "A-221", "A-247", "A-297"));
-//        motif.addExchangableType(LeafIdentifier.fromString("A-164"), ResidueFamily.HISTIDINE);
-//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), ResidueFamily.ASPARTIC_ACID);
-//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), ResidueFamily.ASPARAGINE);
-//        motif.addExchangableType(LeafIdentifier.fromString("H-297"), ResidueFamily.LYSINE);
+//        motif.addExchangableType(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARTIC_ACID);
+//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARAGINE);
+//        motif.addExchangableType(LeafIdentifier.fromString("H-297"), AminoAcidFamily.LYSINE);
 //
 //        Fit3DAlignment fit3d = new Fit3DAlignment(motif, target1.getAllBranches().get(0), 3.5, 3.0,
 //                RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));

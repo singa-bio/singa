@@ -1,9 +1,9 @@
 package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.Bond;
 import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.core.utility.Nameable;
@@ -21,7 +21,7 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
  * interface, the name of a chin is its chain identifier (a single letter).
  *
  * @author cl
- * @see Residue
+ * @see AminoAcid
  */
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
@@ -86,14 +86,14 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Connects the all residues, that are currently in the chain, in order of their appearance in the
-     * List of Residues ({@link BranchSubstructure#getResidues()}).
+     * List of AminoAcids ({@link BranchSubstructure#getResidues()}).
      */
     public void connectChainBackbone() {
         LeafSubstructure<?, ?> lastSubstructure = null;
         for (LeafSubstructure<?, ?> currentSubstructure : getLeafSubstructures()) {
             if (lastSubstructure != null) {
-                if (lastSubstructure instanceof Residue && currentSubstructure instanceof Residue) {
-                    connectPeptideBonds((Residue) lastSubstructure, (Residue) currentSubstructure);
+                if (lastSubstructure instanceof AminoAcid && currentSubstructure instanceof AminoAcid) {
+                    connectPeptideBonds((AminoAcid) lastSubstructure, (AminoAcid) currentSubstructure);
                 } else if (lastSubstructure instanceof Nucleotide && currentSubstructure instanceof Nucleotide) {
                     connectNucleotideBonds((Nucleotide) lastSubstructure, (Nucleotide) currentSubstructure);
                 }
@@ -107,10 +107,10 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      * of the source residue and the Backbone Nitrogen ({@link de.bioforscher.chemistry.physical.atoms.AtomName#N N})
      * of the target residue.
      *
-     * @param source Residue with Backbone Carbon.
-     * @param target Residue with Backbone Nitrogen.
+     * @param source AminoAcid with Backbone Carbon.
+     * @param target AminoAcid with Backbone Nitrogen.
      */
-    public void connectPeptideBonds(Residue source, Residue target) {
+    public void connectPeptideBonds(AminoAcid source, AminoAcid target) {
         // creates the peptide backbone
         Bond bond = new Bond(nextEdgeIdentifier());
         if (source.containsAtomWithName(C) && target.containsAtomWithName(N)) {

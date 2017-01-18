@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.physical.leafes;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * The leaf substructure class represents a atom containing grouping entry in the three dimensional physical
  * representation any macro molecular structure. This abstract class is used to handle the atoms contained in this
- * structure and the bonds connecting them in a graph-like fashion. Implementations comprise {@link Residue},
+ * structure and the bonds connecting them in a graph-like fashion. Implementations comprise {@link AminoAcid},
  * {@link AtomContainer},
  *
  * @param <LeafSubstructureType> A self reference to remember valid neighbours.

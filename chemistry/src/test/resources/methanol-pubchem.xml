@@ -3441,7 +3441,7 @@
                     class=&quot;pubchem-internal-link CID-1118&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Sulfuric%20acid&quot;&gt;Sulfuric
                     acid&lt;/a&gt; test (APHA) &lt;/td&gt;&lt;td&gt;&amp;lt;30 &lt;/td&gt;&lt;td&gt;&amp;lt;30 &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Boiling
                     point range (101.3 kPa), must include 64.6 + or - 0.1 deg C &lt;/td&gt;&lt;td&gt;&amp;lt;1 &lt;/td&gt;&lt;td&gt;&amp;lt;1
-                    &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Dry residue, mg/L &lt;/td&gt;&lt;td&gt;&amp;lt;10 &lt;/td&gt;&lt;td&gt;&amp;lt;10
+                    &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Dry aminoAcid, mg/L &lt;/td&gt;&lt;td&gt;&amp;lt;10 &lt;/td&gt;&lt;td&gt;&amp;lt;10
                     &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Density (20 deg C), g/cu cm) &lt;/td&gt;&lt;td&gt;0.7928
                     &lt;/td&gt;&lt;td&gt;0.7928 &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a class=&quot;pubchem-internal-link
                     CID-24401&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Permanganate&quot;&gt;Permanganate&lt;/a&gt;
@@ -7058,7 +7058,7 @@
                         as a commercial chemical product or manufacturing chemical intermediate or an off-specification
                         commercial chemical product or a manufacturing chemical intermediate, becomes a waste, it must
                         be managed according to Federal and/or State hazardous waste regulations. Also defined as a
-                        hazardous waste is any residue, contaminated soil, &lt;a class=&quot;pubchem-internal-link
+                        hazardous waste is any aminoAcid, contaminated soil, &lt;a class=&quot;pubchem-internal-link
                         CID-962&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/water&quot;&gt;water&lt;/a&gt;,
                         or other debris resulting from the cleanup of a spill, into &lt;a class=&quot;pubchem-internal-link
                         CID-962&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/water&quot;&gt;water&lt;/a&gt;
@@ -7177,8 +7177,8 @@
                     </Reference>
                     <StringValue>&lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/Methyl%20alcohol&quot;&gt;Methyl
                         alcohol&lt;/a&gt; may be present in the following foods under the conditions specified: (a) In
-                        spice oleoresins as a residue from the extraction of spice, at a level not to exceed 50 parts
-                        per million. (b) In hops extract as a residue from the extraction of hops, at a level not to
+                        spice oleoresins as a aminoAcid from the extraction of spice, at a level not to exceed 50 parts
+                        per million. (b) In hops extract as a aminoAcid from the extraction of hops, at a level not to
                         exceed 2.2 percent by weight; Provided, that: (1) The hops extract is added to the wort before
                         or during cooking in the manufacture of beer. (2) The label of the hops extract specifies the
                         presence of &lt;a class=&quot;pubchem-internal-link CID-887&quot; href=&quot;https://pubchem.ncbi.nlm.nih.gov/compound/methyl%20alcohol&quot;&gt;methyl

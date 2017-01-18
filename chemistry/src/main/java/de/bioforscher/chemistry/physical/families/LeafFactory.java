@@ -2,9 +2,9 @@ package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 
 import java.util.EnumMap;
@@ -151,61 +151,61 @@ public class LeafFactory {
         nucleotide.addEdgeBetween(atoms.get(C4), atoms.get(C5));
     }
 
-    public static Residue createResidueFromAtoms(LeafIdentifier leafIdentifier, ResidueFamily residueFamily, EnumMap<AtomName, Atom> atoms) {
-        // create new Residue
-        Residue residue = new Residue(leafIdentifier, residueFamily);
+    public static AminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, EnumMap<AtomName, Atom> atoms) {
+        // create new AminoAcid
+        AminoAcid aminoAcid = new AminoAcid(leafIdentifier, aminoAcidFamily);
         // and add atoms
         if (factory.omitHydrogens) {
             // without hydrogens
             atoms.values().stream()
                     .filter(atom -> !atom.isHydrogen())
-                    .forEach(residue::addNode);
+                    .forEach(aminoAcid::addNode);
         } else {
             // all
-            atoms.values().forEach(residue::addNode);
+            atoms.values().forEach(aminoAcid::addNode);
         }
         // connect backbone atoms first
-        connectBackboneAtoms(residue, atoms);
+        connectBackboneAtoms(aminoAcid, atoms);
 
         // TODO maybe order by relative occurrence to speedup
-        switch (residueFamily) {
+        switch (aminoAcidFamily) {
             case ALANINE: {
-                residue.addEdgeBetween(atoms.get(CA), atoms.get(CB));
+                aminoAcid.addEdgeBetween(atoms.get(CA), atoms.get(CB));
                 break;
             }
             case ARGININE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, NE, CZ, NH1);
-                residue.addEdgeBetween(atoms.get(CZ), atoms.get(NH2));
+                aminoAcid.addEdgeBetween(atoms.get(CZ), atoms.get(NH2));
                 break;
             }
             case ASPARAGINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, OD1);
-                residue.addEdgeBetween(atoms.get(CG), atoms.get(ND2));
+                aminoAcid.addEdgeBetween(atoms.get(CG), atoms.get(ND2));
                 break;
             }
             case ASPARTIC_ACID: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, OD1);
-                residue.addEdgeBetween(atoms.get(CG), atoms.get(OD2));
+                aminoAcid.addEdgeBetween(atoms.get(CG), atoms.get(OD2));
                 break;
             }
             case CYSTEINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, SG);
                 break;
             }
             case GLUTAMINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, OE1);
-                residue.addEdgeBetween(atoms.get(CD), atoms.get(NE2));
+                aminoAcid.addEdgeBetween(atoms.get(CD), atoms.get(NE2));
                 break;
             }
             case GLUTAMIC_ACID: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, OE1);
-                residue.addEdgeBetween(atoms.get(CD), atoms.get(OE2));
+                aminoAcid.addEdgeBetween(atoms.get(CD), atoms.get(OE2));
                 break;
             }
             case GLYCINE: {
@@ -213,76 +213,76 @@ public class LeafFactory {
                 break;
             }
             case HISTIDINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD2, NE2, CE1, ND1, CG);
                 break;
             }
             case ISOLEUCINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG1, CD1);
-                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
+                aminoAcid.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
             case LEUCINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD1);
-                residue.addEdgeBetween(atoms.get(CG), atoms.get(CD2));
+                aminoAcid.addEdgeBetween(atoms.get(CG), atoms.get(CD2));
                 break;
             }
             case LYSINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, CE, NZ);
                 break;
             }
             case METHIONINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, SD, CE);
                 break;
             }
             case PHENYLALANINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD2, CE2, CZ, CE1, CD1, CG);
                 break;
             }
             case PROLINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, N, CA);
                 break;
             }
             case SERINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, OG);
                 break;
             }
             case THREONINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, OG1);
-                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
+                aminoAcid.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
             case TRYPTOPHAN: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD, CD1, CE2, CE2, CZ2, CH2, CZ2, CE3, CD2, CG);
-                residue.addEdgeBetween(atoms.get(CD2), atoms.get(CE2));
+                aminoAcid.addEdgeBetween(atoms.get(CD2), atoms.get(CE2));
                 break;
             }
             case TYROSINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG, CD1, CE1, CZ, CE2, CD2, CG);
-                residue.addEdgeBetween(atoms.get(CZ), atoms.get(OH));
+                aminoAcid.addEdgeBetween(atoms.get(CZ), atoms.get(OH));
                 break;
             }
             case VALINE: {
-                connectInOrder(residue, atoms,
+                connectInOrder(aminoAcid, atoms,
                         CA, CB, CG1);
-                residue.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
+                aminoAcid.addEdgeBetween(atoms.get(CB), atoms.get(CG2));
                 break;
             }
             default: {
                 break;
             }
         }
-        return residue;
+        return aminoAcid;
     }
 
     /**
@@ -303,36 +303,36 @@ public class LeafFactory {
 
     /**
      * Connects the backbone atoms N-to-CA-to-C-to-O.
-     * @param residue The residue to connect in.
+     * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
-    private static void connectBackboneAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
-        residue.addEdgeBetween(atoms.get(N), atoms.get(CA));
-        residue.addEdgeBetween(atoms.get(CA), atoms.get(C));
-        residue.addEdgeBetween(atoms.get(C), atoms.get(O));
+    private static void connectBackboneAtoms(AminoAcid aminoAcid, EnumMap<AtomName, Atom> atoms) {
+        aminoAcid.addEdgeBetween(atoms.get(N), atoms.get(CA));
+        aminoAcid.addEdgeBetween(atoms.get(CA), atoms.get(C));
+        aminoAcid.addEdgeBetween(atoms.get(C), atoms.get(O));
     }
 
     /**
      * Connects the N terminal Hydrogens N-to-H and N-to-H2.
-     * @param residue The residue to connect in.
+     * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
-    private static void connectNTerminalAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
+    private static void connectNTerminalAtoms(AminoAcid aminoAcid, EnumMap<AtomName, Atom> atoms) {
         if (factory.connectHydrogens) {
-            residue.addEdgeBetween(atoms.get(N), atoms.get(H));
-            residue.addEdgeBetween(atoms.get(N), atoms.get(H2));
+            aminoAcid.addEdgeBetween(atoms.get(N), atoms.get(H));
+            aminoAcid.addEdgeBetween(atoms.get(N), atoms.get(H2));
         }
     }
 
     /**
      * Connects the C terminal Atoms C-to-OXT-to-HXT.
-     * @param residue The residue to connect in.
+     * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
-    private static void connectCTerminaAtoms(Residue residue, EnumMap<AtomName, Atom> atoms) {
-        residue.addEdgeBetween(atoms.get(C), atoms.get(OXT));
+    private static void connectCTerminaAtoms(AminoAcid aminoAcid, EnumMap<AtomName, Atom> atoms) {
+        aminoAcid.addEdgeBetween(atoms.get(C), atoms.get(OXT));
         if (factory.connectHydrogens) {
-            residue.addEdgeBetween(atoms.get(OXT), atoms.get(HXT));
+            aminoAcid.addEdgeBetween(atoms.get(OXT), atoms.get(HXT));
         }
     }
 

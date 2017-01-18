@@ -4,8 +4,8 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public List<Residue> getAllResidues() {
+    public List<AminoAcid> getAllResidues() {
         return this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getResidues)
                 .flatMap(Collection::stream)

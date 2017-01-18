@@ -4,9 +4,9 @@ import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.UncertainAtom;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.mathematics.vectors.Vector;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import de.bioforscher.mathematics.vectors.Vectors;
@@ -16,17 +16,17 @@ import java.util.stream.Collectors;
 
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its sidechain centroid. This is only available for
- * {@link Residue}s. For glycine this defaults to {@link BetaCarbonRepresentationScheme}.
+ * {@link AminoAcid}s. For glycine this defaults to {@link BetaCarbonRepresentationScheme}.
  *
  * @author fk
  */
 public class SidechainCentroidRepresentationScheme extends AbstractRepresentationScheme {
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
-        if (!(leafSubstructure instanceof Residue)) {
+        if (!(leafSubstructure instanceof AminoAcid)) {
             return determineCentroid(leafSubstructure);
         }
-        if (leafSubstructure.getFamily() == ResidueFamily.GLYCINE) {
+        if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
             return new BetaCarbonRepresentationScheme().determineCentroid(leafSubstructure);
         }
         // fallback if no sidechain atoms exist

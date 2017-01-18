@@ -7,7 +7,7 @@ import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
@@ -340,8 +340,8 @@ public class ConsensusAlignment {
             }
             // create new atom container
             // TODO what is the identifier and the type of the new atom container?
-            AtomContainer<ResidueFamily> atomContainer = new AtomContainer<>(new LeafIdentifier(i), ResidueFamily.ALANINE,
-                    ResidueFamily.ALANINE.getThreeLetterCode());
+            AtomContainer<AminoAcidFamily> atomContainer = new AtomContainer<>(new LeafIdentifier(i), AminoAcidFamily.ALANINE,
+                    AminoAcidFamily.ALANINE.getThreeLetterCode());
             averagedAtoms.forEach(atomContainer::addNode);
             this.currentConsensus.addLeaveStructure(atomContainer);
         }

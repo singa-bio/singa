@@ -1,10 +1,9 @@
 package de.bioforscher.chemistry.algorithms.superimposition.consensus;
 
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +41,7 @@ public class ConsensusAlignmentTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithInputOfDifferentSize() {
-        this.input.get(0).add(new Residue(0, ResidueFamily.ALANINE));
+        this.input.get(0).add(new AminoAcid(0, AminoAcidFamily.ALANINE));
         new ConsensusAlignment(this.input);
     }
 

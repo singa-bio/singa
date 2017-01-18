@@ -4,8 +4,8 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.core.utility.Range;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
@@ -78,7 +78,7 @@ public enum AtomToken implements PDBToken {
         List<String> lines = new ArrayList<>();
         for (Atom atom : leaf.getNodes()) {
             StringBuilder currentLine = new StringBuilder();
-            if (leaf instanceof Residue) {
+            if (leaf instanceof AminoAcid) {
                 currentLine.append(RECORD_TYPE.createTokenString("ATOM"));
             } else {
                 currentLine.append("HETATM");

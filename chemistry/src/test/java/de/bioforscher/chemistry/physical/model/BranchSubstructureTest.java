@@ -1,12 +1,11 @@
 package de.bioforscher.chemistry.physical.model;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
-import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import org.junit.Test;
 
@@ -35,7 +34,7 @@ public class BranchSubstructureTest {
         Atom a5 = new RegularAtom(4, HYDROGEN, "H2", new Vector3D(0.0,1.0,2.0));
         Atom a6 = new RegularAtom(5, HYDROGEN, "H3", new Vector3D(0.0,1.0,2.0));
 
-        Residue r1 = new Residue(0, ResidueFamily.ALANINE);
+        AminoAcid r1 = new AminoAcid(0, AminoAcidFamily.ALANINE);
         r1.addNode(a1);
         r1.addNode(a2);
         r1.addNode(a3);

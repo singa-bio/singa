@@ -11,10 +11,10 @@ import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.LigandFamily;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
@@ -89,11 +89,11 @@ public class StructureCollector {
 
                         LeafIdentifier leafIdentifier = new LeafIdentifier(collector.currentPDB, collector.currentModel, chainNode.getIdentifier(), Integer.valueOf(leafNode.getIdentifier()));
 
-                        Optional<ResidueFamily> residueFamily = ResidueFamily.getResidueTypeByThreeLetterCode(leafName);
+                        Optional<AminoAcidFamily> residueFamily = AminoAcidFamily.getResidueTypeByThreeLetterCode(leafName);
                         EnumMap<AtomName, Atom> atoms = leafNode.getAtomMap();
                         if (residueFamily.isPresent()) {
-                            Residue residue = LeafFactory.createResidueFromAtoms(leafIdentifier, residueFamily.get(), atoms);
-                            chain.addSubstructure(residue);
+                            AminoAcid aminoAcid = LeafFactory.createAminoAcidFromAtoms(leafIdentifier, residueFamily.get(), atoms);
+                            chain.addSubstructure(aminoAcid);
                         } else {
                             Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
                             if (nucleotideFamily.isPresent()) {

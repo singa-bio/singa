@@ -3,7 +3,7 @@ package de.bioforscher.chemistry.physical.families;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.model.StructuralFamily;
 
 import java.io.IOException;
@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
- * A {@link ResidueFamily} should contain the general data of an amino acid of the same type.
+ * A {@link AminoAcidFamily} should contain the general data of an amino acid of the same type.
  * // TODO we should probably refactor this to AminoAcidFamily
  *
  * @author cl
  */
-public enum ResidueFamily implements StructuralFamily {
+public enum AminoAcidFamily implements StructuralFamily {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
@@ -47,14 +47,14 @@ public enum ResidueFamily implements StructuralFamily {
     private String threeLetterCode;
     private EnumSet<AtomName> allowedAtoms;
 
-    ResidueFamily(String name, String oneLetterCode, String threeLetterCode, EnumSet<AtomName> allowedAtoms) {
+    AminoAcidFamily(String name, String oneLetterCode, String threeLetterCode, EnumSet<AtomName> allowedAtoms) {
         this.name = name;
         this.oneLetterCode = oneLetterCode;
         this.threeLetterCode = threeLetterCode;
         this.allowedAtoms = allowedAtoms;
     }
 
-    public static Optional<ResidueFamily> getResidueTypeByThreeLetterCode(String threeLetterCode) {
+    public static Optional<AminoAcidFamily> getResidueTypeByThreeLetterCode(String threeLetterCode) {
         return Arrays.stream(values())
                 .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
                 .findAny();
@@ -82,26 +82,26 @@ public enum ResidueFamily implements StructuralFamily {
      * Returns true if the set of Atoms contains only Atom names, that can occur in the given residue type.
      *
      * @param atoms         The atoms to be checked.
-     * @param residueFamily The expected type of residue.
+     * @param aminoAcidFamily The expected type of residue.
      * @return True, if the set of Atoms contains only Atom names, that can occur in the given residue type.
      */
-    public boolean containsExpectedAtoms(List<Atom> atoms, ResidueFamily residueFamily) {
+    public boolean containsExpectedAtoms(List<Atom> atoms, AminoAcidFamily aminoAcidFamily) {
         final Set<String> actualNames = atoms.stream()
                 .map(Atom::getAtomNameString)
                 .collect(Collectors.toSet());
-        final Set<String> expectedNames = residueFamily.getAllowedAtoms().stream()
+        final Set<String> expectedNames = aminoAcidFamily.getAllowedAtoms().stream()
                 .map(AtomName::getName)
                 .collect(Collectors.toSet());
         return expectedNames.containsAll(actualNames);
     }
 
     /**
-     * Returns a prototype of the {@link Residue} that are deposited in the project resources.
+     * Returns a prototype of the {@link AminoAcid} that are deposited in the project resources.
      *
-     * @return A {@link Residue} prototype.
+     * @return A {@link AminoAcid} prototype.
      * @throws IOException
      */
-    public Residue getPrototype() throws IOException {
+    public AminoAcid getPrototype() throws IOException {
         return PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR +
                         this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))

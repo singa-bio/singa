@@ -32,7 +32,7 @@ public class StructureFilter {
     }
 
     public static Predicate<LeafSubstructure<?,?>> isResidue() {
-        return leaf -> leaf instanceof Residue;
+        return leaf -> leaf instanceof AminoAcid;
     }
 
     public static Predicate<LeafSubstructure<?,?>> isNucleotide() {
