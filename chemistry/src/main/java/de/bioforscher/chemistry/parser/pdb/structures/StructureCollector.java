@@ -90,7 +90,7 @@ public class StructureCollector {
                         LeafIdentifier leafIdentifier = new LeafIdentifier(collector.currentPDB, collector.currentModel, chainNode.getIdentifier(), Integer.valueOf(leafNode.getIdentifier()));
 
                         Optional<AminoAcidFamily> residueFamily = AminoAcidFamily.getResidueTypeByThreeLetterCode(leafName);
-                        EnumMap<AtomName, Atom> atoms = leafNode.getAtomMap();
+                        Map<String, Atom> atoms = leafNode.getAtomMap();
                         if (residueFamily.isPresent()) {
                             AminoAcid aminoAcid = LeafFactory.createAminoAcidFromAtoms(leafIdentifier, residueFamily.get(), atoms);
                             chain.addSubstructure(aminoAcid);
@@ -143,7 +143,7 @@ public class StructureCollector {
         return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, atomSerial);
     }
 
-    private Nucleotide createNucleotide(String leafName, LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, EnumMap<AtomName, Atom> atoms) {
+    private Nucleotide createNucleotide(String leafName, LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, Map<String, Atom> atoms) {
         Nucleotide nucleotide = LeafFactory.createNucleotideFromAtoms(leafIdentifier , nucleotideFamily, atoms);
         if (nucleotideFamily == NucleotideFamily.MODIFIED_NUCLEOTIDE) {
             nucleotide.setName(leafName);

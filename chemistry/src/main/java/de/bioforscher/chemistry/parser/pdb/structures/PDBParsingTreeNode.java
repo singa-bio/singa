@@ -72,11 +72,11 @@ public class PDBParsingTreeNode {
         return nodes;
     }
 
-    public EnumMap<AtomName, Atom> getAtomMap() {
+    public Map<String, Atom> getAtomMap() {
         if (this.getLevel() == LEAF) {
-            EnumMap<AtomName, Atom> atoms = new EnumMap<>(AtomName.class);
+            Map<String, Atom> atoms = new HashMap<>();
             for (PDBParsingTreeNode node: this.children) {
-                atoms.put(node.getAtom().getAtomName(), node.getAtom());
+                atoms.put(node.getAtom().getAtomNameString(), node.getAtom());
             }
             return atoms;
         }

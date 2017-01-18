@@ -3,13 +3,16 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
+import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifers;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.viewer.StructureViewer;
 import de.bioforscher.mathematics.combinatorics.StreamCombinations;
+import javafx.application.Application;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -118,6 +121,14 @@ public class Fit3DAlignmentTest {
                 .run();
 
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+        Chain motifchain = new Chain(10);
+        motifchain.setChainIdentifier("Motifs");
+        // matches.forEach((key, value) -> value.getMappedFullCandidate().forEach(motifchain::addSubstructure));
+        matches.get(matches.keySet().iterator().next()).getMappedFullCandidate().forEach(motifchain::addSubstructure);
+        queryStructure.getAllModels().get(0).addSubstructure(motifchain);
+        StructureViewer.structure = queryStructure;
+        Application.launch(StructureViewer.class);
+
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
 
