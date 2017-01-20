@@ -127,7 +127,7 @@ public final class ElementProvider {
     public static final Element ROENTGENIUM = addElement(new Element("Roentgenium", "Rg", 111, 272));
     public static final Element HASSIUM = addElement(new Element("Hassium", "Hs", 108, 277));
 
-    public static final Element UNKOWN = addElement(new Element("Unkown", "?", 0, 0));
+    public static final Element UNKOWN = addElement(new Element("Unkown", "X", 0, 0));
 
     private final Set<Element> elements = new HashSet<>();
 

@@ -58,7 +58,7 @@ public class StructureCollector {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = collector.createUniqueAtomIdentifier(currentLine);
                 collector.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                collector.leafNames.put(new LeafIdentifier(identifier.getChainIdentifer(), identifier.getLeafIdentifer()), RESIDUE_NAME.extract(currentLine));
+                collector.leafNames.put(new LeafIdentifier(identifier.getPdbIdentifer(), identifier.getModelIdentifer(), identifier.getChainIdentifer(), identifier.getLeafIdentifer()), RESIDUE_NAME.extract(currentLine));
             } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 collector.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
             } else if (TitleToken.RECORD_PATTERN.matcher((currentLine)).matches()) {
@@ -84,10 +84,9 @@ public class StructureCollector {
                     Chain chain = new Chain(chainGraphId++);
                     chain.setChainIdentifier(chainNode.getIdentifier());
                     for (PDBParsingTreeNode leafNode : chainNode.getNodesFromLevel(PDBParsingTreeNode.StructureLevel.LEAF)) {
-                        String leafName = collector.leafNames.get(new LeafIdentifier(chainNode.getIdentifier(), Integer.valueOf(leafNode.getIdentifier())));
+                        LeafIdentifier leafIdentifier = new LeafIdentifier(collector.currentPDB, Integer.valueOf(modelNode.getIdentifier()), chainNode.getIdentifier(), Integer.valueOf(leafNode.getIdentifier()));
+                        String leafName = collector.leafNames.get(leafIdentifier);
                         logger.trace("creating leaf {}:{} for chain {}", leafNode.getIdentifier(), leafName, chainNode.getIdentifier());
-
-                        LeafIdentifier leafIdentifier = new LeafIdentifier(collector.currentPDB, collector.currentModel, chainNode.getIdentifier(), Integer.valueOf(leafNode.getIdentifier()));
 
                         Optional<AminoAcidFamily> residueFamily = AminoAcidFamily.getResidueTypeByThreeLetterCode(leafName);
                         Map<String, Atom> atoms = leafNode.getAtomMap();
@@ -115,7 +114,7 @@ public class StructureCollector {
                                 if (collector.typeMemory.get(leafName).equals("RNA LINKING")) {
                                     chain.addSubstructure(collector.createNucleotide(leafName, leafIdentifier, NucleotideFamily.MODIFIED_NUCLEOTIDE, atoms));
                                 } else {
-                                    AtomContainer<LigandFamily> container = new AtomContainer<>(leafIdentifier, LigandFamily.UNKNOWN);
+                                    AtomContainer<LigandFamily> container = new AtomContainer<>(leafIdentifier, new LigandFamily("U", "UNK"));
                                     container.setName(leafName);
                                     leafNode.getAtomMap().forEach((key, value) -> container.addNode(value));
                                     chain.addSubstructure(container);

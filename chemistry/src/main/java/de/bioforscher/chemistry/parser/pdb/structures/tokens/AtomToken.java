@@ -70,7 +70,7 @@ public enum AtomToken implements PDBToken {
         String atomName = ATOM_NAME.extract(atomLine);
         // element
         Element element = ElementProvider.getElementBySymbol(ELEMENT_SYMBOL.extract(atomLine))
-                .orElseThrow(() -> new IllegalArgumentException("could not parse atom line: \n"+atomLine));
+                .orElse(ElementProvider.UNKOWN);
         return new RegularAtom(atomSerial, element, atomName, coordinates);
     }
 

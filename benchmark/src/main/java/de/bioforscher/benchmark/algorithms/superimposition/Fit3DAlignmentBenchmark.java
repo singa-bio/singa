@@ -4,7 +4,7 @@ import de.bioforscher.chemistry.algorithms.superimposition.fit3d.Fit3DBuilder;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.chemistry.physical.model.LeafIdentifers;
+import de.bioforscher.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.openjdk.jmh.annotations.*;
@@ -32,7 +32,7 @@ public class Fit3DAlignmentBenchmark {
         Structure motifContainingStructure = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
-                LeafIdentifers.of("E-57", "E-102", "E-195"));
+                LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
         System.out.println("setup");
     }
