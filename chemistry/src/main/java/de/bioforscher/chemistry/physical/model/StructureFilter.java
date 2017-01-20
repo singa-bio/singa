@@ -8,6 +8,7 @@ import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.leafes.*;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -44,7 +45,7 @@ public class StructureFilter {
     }
 
     public static Predicate<Atom> hasAtomName(AtomName atomName) {
-        return atom -> atom.getAtomName() == atomName;
+        return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
     }
 
     public static Predicate<Atom> hasAtomName(String atomName) {

@@ -164,7 +164,7 @@ public class StructureViewer extends Application {
         atomShape.setTranslateZ(atom.getPosition().getZ());
 
         // add tooltip
-        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomName()) + ":" +
+        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomNameString()) + ":" +
                 atom.getIdentifier() + ") of " + origin.getName() + ":" + origin.getIdentifier());
         Tooltip.install(atomShape, tooltip);
 
@@ -256,7 +256,6 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
         } else {
-            // TODO for some reason singular atoms are not assigned to the correct leaf?
             String chain = origin.getChainIdentifer();
             if (this.chainMaterials.containsKey(chain)) {
                 return this.chainMaterials.get(chain);

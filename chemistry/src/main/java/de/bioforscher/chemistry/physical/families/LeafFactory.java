@@ -52,76 +52,76 @@ public class LeafFactory {
 
         connectRibose(nucleotide, atoms);
         connectPhosphateGroup(nucleotide, atoms);
-        nucleotide.addEdgeBetween(atoms.get("P"), atoms.get("O5Pr"));
+        nucleotide.addEdgeBetween(atoms.get("P"), atoms.get("O5'"));
 
         switch (nucleotideFamily) {
             case ADENOSINE: {
-                nucleotide.addEdgeBetween(atoms.get("C2Pr"), atoms.get("O2Pr"));
+                nucleotide.addEdgeBetween(atoms.get("C2'"), atoms.get("O2'"));
                 connectPurine(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C6"), atoms.get("N6"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N9"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N9"));
                 break;
             }
             case CYTIDINE: {
-                nucleotide.addEdgeBetween(atoms.get("C2Pr"), atoms.get("O2Pr"));
+                nucleotide.addEdgeBetween(atoms.get("C2'"), atoms.get("O2'"));
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("N4"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
             case DESOXYADENOSINE: {
                 connectPurine(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C6"), atoms.get("N6"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N9"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N9"));
                 break;
             }
             case DESOXYCYTIDINE: {
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("N4"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
             case DESOXYGUANOSINE: {
                 connectPurine(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C6"), atoms.get("O6"));
                 nucleotide.addEdgeBetween(atoms.get("C2"), atoms.get("N2"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N9"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N9"));
                 break;
             }
             case DESOXYTHYMIDINE: {
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("O4"));
                 nucleotide.addEdgeBetween(atoms.get("C5"), atoms.get("C7"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
             case DESOXYURIDINE: {
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("O4"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
             case GUANOSINE: {
-                nucleotide.addEdgeBetween(atoms.get("C2Pr"), atoms.get("O2Pr"));
+                nucleotide.addEdgeBetween(atoms.get("C2'"), atoms.get("O2'"));
                 connectPurine(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C6"), atoms.get("O6"));
                 nucleotide.addEdgeBetween(atoms.get("C2"), atoms.get("N2"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N9"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N9"));
                 break;
             }
             case THYMIDINE: {
-                nucleotide.addEdgeBetween(atoms.get("C2Pr"), atoms.get("O2Pr"));
+                nucleotide.addEdgeBetween(atoms.get("C2'"), atoms.get("O2'"));
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("O4"));
                 nucleotide.addEdgeBetween(atoms.get("C5"), atoms.get("C7"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
             case URIDINE: {
-                nucleotide.addEdgeBetween(atoms.get("C2Pr"), atoms.get("O2Pr"));
+                nucleotide.addEdgeBetween(atoms.get("C2'"), atoms.get("O2'"));
                 connectPyrimidin(nucleotide, atoms);
                 nucleotide.addEdgeBetween(atoms.get("C4"), atoms.get("O4"));
-                nucleotide.addEdgeBetween(atoms.get("C1Pr"), atoms.get("N1"));
+                nucleotide.addEdgeBetween(atoms.get("C1'"), atoms.get("N1"));
                 break;
             }
         }
@@ -130,10 +130,10 @@ public class LeafFactory {
     }
 
     private static void connectRibose(Nucleotide nucleotide, Map<String, Atom> atoms) {
-        connectInOrder(nucleotide, atoms, "C1Pr", "C2Pr", "C3Pr", "C4Pr", "O4Pr", "C1Pr");
-        nucleotide.addEdgeBetween(atoms.get("C3Pr"), atoms.get("O3Pr"));
-        nucleotide.addEdgeBetween(atoms.get("C4Pr"), atoms.get("C5Pr"));
-        nucleotide.addEdgeBetween(atoms.get("C5Pr"), atoms.get("O5Pr"));
+        connectInOrder(nucleotide, atoms, "C1'", "C2'", "C3'", "C4'", "O4'", "C1'");
+        nucleotide.addEdgeBetween(atoms.get("C3'"), atoms.get("O3'"));
+        nucleotide.addEdgeBetween(atoms.get("C4'"), atoms.get("C5'"));
+        nucleotide.addEdgeBetween(atoms.get("C5'"), atoms.get("O5'"));
     }
 
     private static void connectPhosphateGroup(Nucleotide nucleotide, Map<String, Atom> atoms) {

@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -50,22 +51,22 @@ public final class AtomFilter {
     }
 
     public static Predicate<Atom> isAlphaCarbon() {
-        return atom -> atom.getAtomName() == AtomName.CA;
+        return atom -> Objects.equals(atom.getAtomNameString(), AtomName.CA.getName());
     }
 
     public static Predicate<Atom> isBetaCarbon() {
-        return atom -> atom.getAtomName() == AtomName.CB;
+        return atom -> Objects.equals(atom.getAtomNameString(), AtomName.CB.getName());
     }
 
     public static Predicate<Atom> isBackbone() {
-        return atom -> atom.getAtomName() == AtomName.N ||
-                atom.getAtomName() == AtomName.CA ||
-                atom.getAtomName() == AtomName.C ||
-                atom.getAtomName() == AtomName.O;
+        return atom -> Objects.equals(atom.getAtomNameString(), AtomName.N.getName()) ||
+                Objects.equals(atom.getAtomNameString(), AtomName.CA.getName()) ||
+                Objects.equals(atom.getAtomNameString(), AtomName.C.getName()) ||
+                Objects.equals(atom.getAtomNameString(), AtomName.O.getName());
     }
 
     public static Predicate<Atom> isPhosphorus() {
-        return atom -> atom.getAtomName() == AtomName.P;
+        return atom -> Objects.equals(atom.getAtomNameString(), AtomName.P.getName());
     }
 
     public static Predicate<Atom> isSidechain() {

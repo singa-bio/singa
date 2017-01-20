@@ -5,7 +5,6 @@ import de.bioforscher.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.chemistry.parser.pdb.structures.tokens.ModelToken;
 import de.bioforscher.chemistry.parser.pdb.structures.tokens.TitleToken;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
@@ -14,7 +13,6 @@ import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
-import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
@@ -96,7 +94,7 @@ public class StructureCollector {
                         } else {
                             Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
                             if (nucleotideFamily.isPresent()) {
-                                chain.addSubstructure(collector.createNucleotide(leafName, leafIdentifier, nucleotideFamily.get(), atoms));
+                                chain.addSubstructure(LeafFactory.createNucleotideFromAtoms(leafIdentifier , nucleotideFamily.get(), atoms));
                             } else {
 
                                 if (parseLigandInformation) {
@@ -112,7 +110,11 @@ public class StructureCollector {
                                 }
 
                                 if (collector.typeMemory.get(leafName).equals("RNA LINKING")) {
-                                    chain.addSubstructure(collector.createNucleotide(leafName, leafIdentifier, NucleotideFamily.MODIFIED_NUCLEOTIDE, atoms));
+                                    try {
+                                        chain.addSubstructure(LigandParserService.parseLeafSubstructureFromCifFile(leafName, atoms, leafIdentifier));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     AtomContainer<LigandFamily> container = new AtomContainer<>(leafIdentifier, new LigandFamily("U", "UNK"));
                                     container.setName(leafName);
@@ -132,22 +134,11 @@ public class StructureCollector {
         return structure;
     }
 
-
-
-
     private UniqueAtomIdentifer createUniqueAtomIdentifier(String atomLine) {
         int atomSerial = Integer.valueOf(ATOM_SERIAL.extract(atomLine));
         String chain = CHAIN_IDENTIFIER.extract(atomLine);
         int leaf = Integer.valueOf(RESIDUE_SERIAL.extract(atomLine));
         return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, atomSerial);
-    }
-
-    private Nucleotide createNucleotide(String leafName, LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily, Map<String, Atom> atoms) {
-        Nucleotide nucleotide = LeafFactory.createNucleotideFromAtoms(leafIdentifier , nucleotideFamily, atoms);
-        if (nucleotideFamily == NucleotideFamily.MODIFIED_NUCLEOTIDE) {
-            nucleotide.setName(leafName);
-        }
-        return nucleotide;
     }
 
 }

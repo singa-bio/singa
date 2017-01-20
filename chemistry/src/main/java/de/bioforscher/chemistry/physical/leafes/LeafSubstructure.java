@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
  * {@link AtomContainer},
  *
  * @param <LeafSubstructureType> A self reference to remember valid neighbours.
- * @param <FamilyType> The possible representations of this leaf substructure implementation.
- *
+ * @param <FamilyType>           The possible representations of this leaf substructure implementation.
  * @author cl
  */
 public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstructure<LeafSubstructureType, FamilyType>,
@@ -108,6 +107,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returns the integer part of the leaf identifier.
+     *
      * @return The integer part of the leaf identifier.
      */
     @Override
@@ -117,6 +117,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returnt the complete leaf identifier.
+     *
      * @return The complete identifier.
      */
     public LeafIdentifier getLeafIdentifier() {
@@ -198,7 +199,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @return True, if any atom with the given name is present in this leaf substructure.
      */
     public boolean containsAtomWithName(AtomName atomName) {
-        return this.atoms.values().stream().map(Atom::getAtomName).anyMatch(name -> name.equals(atomName));
+        return this.atoms.values().stream().map(Atom::getAtomNameString).anyMatch(name -> name.equals(atomName.getName()));
     }
 
     /**
@@ -235,7 +236,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Adds a {@link BondType#COVALENT_BOND covalent} bond connecting the the given atoms. The order of the given atoms
+     * Adds a {@link BondType#SINGLE_BOND covalent} bond connecting the the given atoms. The order of the given atoms
      * does not matter, but is retained.
      *
      * @param identifier The identifer of the new bond.
@@ -271,7 +272,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Adds a {@link BondType#COVALENT_BOND covalent} bond connecting the the given atoms. The order of the given atoms
+     * Adds a {@link BondType#SINGLE_BOND covalent} bond connecting the the given atoms. The order of the given atoms
      * does not matter, but is retained.
      *
      * @param source The source atom.
@@ -281,6 +282,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     @Override
     public int addEdgeBetween(Atom source, Atom target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
+    }
+
+
+    public int addEdgeBetween(Atom source, Atom target, BondType type) {
+        return addEdgeBetween(new Bond(nextEdgeIdentifier(), type), source, target);
     }
 
     /**
@@ -296,6 +302,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returns the structural family.
+     *
      * @return The structural family.
      */
     @Override
@@ -329,6 +336,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returns all neighbours of this leaf substructure.
+     *
      * @return All neighbours of this leaf substructure.
      */
     @Override
@@ -338,6 +346,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returns The number of neighbours of this leaf substructure.
+     *
      * @return The number of neighbours of this leaf substructure.
      */
     @Override
@@ -348,6 +357,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     /**
      * Returns all atoms in this leaf substructure. This collection is <b>NOT</b> backed by the map, so changes to the
      * list are <b>NOT</b> reflected in the collection, but changes to the atoms <b>are</b>.
+     *
      * @return All atoms of the leaf substructure.
      */
     @Override
@@ -380,6 +390,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Returns the original PDB-ID this leaf belongs to.
+     *
      * @return The original PDB-ID this leaf belongs to.
      */
     public String getPdbId() {
@@ -388,6 +399,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Assembles a list of strings, where each sting represents a atom of this leaf in PDBFormat.
+     *
      * @return A list of strings, where each sting represents a atom of this leaf in PDBFormat.
      */
     public List<String> getPdbLines() {

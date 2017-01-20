@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
 
 import java.util.*;

@@ -9,32 +9,48 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
  * that determines the amino acid (and the overarching features). Based on this ResidueType a AminoAcid can be created
  * of a set of atoms that belong to this residue using the
- * {@link LeafFactory#createAminoAcidFromAtoms(LeafIdentifier, AminoAcidFamily, EnumMap)}  LeafFactory}. This establishes the bonds
+ * {@link LeafFactory#createAminoAcidFromAtoms(LeafIdentifier, AminoAcidFamily, Map)} LeafFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
  * @author cl
  */
 public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
 
+    private final boolean modified;
+    private final String modifiedName;
+
     /**
-     * Creates a new AminoAcid with a identifier and ResidueType. Preferably the
-     * {@link LeafFactory#createAminoAcidFromAtoms(LeafIdentifier, AminoAcidFamily, EnumMap)} LeafFactory} should be used to create
-     * AminoAcids.
+     * Creates a new AminoAcid.
      *
      * @param leafIdentifier The identifier.
      * @param family         The ResidueType.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
+        this.modified = false;
+        this.modifiedName = null;
     }
 
     public AminoAcid(int identifer, AminoAcidFamily family) {
-        super(new LeafIdentifier(identifer), family);
+        this(new LeafIdentifier(identifer), family);
+    }
+
+    /**
+     * Creates a new modified AminoAcid with a identifier and ResidueType.
+     *
+     * @param leafIdentifier The identifier.
+     * @param family         The ResidueType.
+     */
+    public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
+        super(leafIdentifier, family);
+        this.modified = true;
+        this.modifiedName = modifiedName;
     }
 
     /**
@@ -49,6 +65,8 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      */
     public AminoAcid(AminoAcid aminoAcid) {
         super(aminoAcid);
+        this.modified = aminoAcid.modified;
+        this.modifiedName = aminoAcid.modifiedName;
     }
 
     /**
@@ -66,9 +84,12 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      * @return The three letter code of this residue.
      */
     public String getThreeLetterCode() {
-        return getFamily().getThreeLetterCode();
+        return this.modified ? this.modifiedName : getFamily().getThreeLetterCode();
     }
 
+    public boolean isModified() {
+        return this.modified;
+    }
 
     /**
      * Returns the {@link AtomName#CA alpha carbon} (carbon with the side cain attached).

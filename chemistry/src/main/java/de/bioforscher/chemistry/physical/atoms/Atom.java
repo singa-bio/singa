@@ -26,10 +26,6 @@ public interface Atom extends StructuralEntity<Atom> {
 
     void setPosition(Vector3D position);
 
-    AtomName getAtomName();
-
-    void setAtomName(AtomName atomName);
-
     String getAtomNameString();
 
     void setAtomNameString(String atomNameString);

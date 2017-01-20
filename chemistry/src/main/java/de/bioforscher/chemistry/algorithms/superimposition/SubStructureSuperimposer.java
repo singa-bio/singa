@@ -145,7 +145,7 @@ public class SubStructureSuperimposer {
     }
 
 
-    private String toAlignmentString(Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment) {
+    private String toAlignmentString(Map<Pair<LeafSubstructure<?, ?>>, Set<String>> perAtomAlignment) {
         StringJoiner referenceNameJoiner = new StringJoiner("|", "|", "|");
         perAtomAlignment.keySet().forEach(pair ->
                 referenceNameJoiner.add(String.format("%-50s", pair.getFirst().toString())));
@@ -153,7 +153,6 @@ public class SubStructureSuperimposer {
         if (this.representationScheme == null) {
             perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
                     .add(String.format("%-50s", atomNames.stream()
-                            .map(AtomName::getName)
                             .sorted()
                             .collect(Collectors.joining("-")))));
         } else {
@@ -201,7 +200,7 @@ public class SubStructureSuperimposer {
      */
     private SubstructureSuperimposition calculateSuperimposition() {
 
-        Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment = new LinkedHashMap<>();
+        Map<Pair<LeafSubstructure<?, ?>>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
 
         // create pairs of substructures to align
         IntStream.range(0, this.reference.size())
@@ -220,13 +219,13 @@ public class SubStructureSuperimposer {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .flatMap(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
                             .filter(this.atomFilter)
-                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomNameString()))
                             .sorted(Comparator.comparing(Atom::getAtomNameString)))
                     .collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .flatMap(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
                             .filter(this.atomFilter)
-                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                            .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomNameString()))
                             .sorted(Comparator.comparing(Atom::getAtomNameString)))
                     .collect(Collectors.toList());
         } else {
@@ -311,15 +310,15 @@ public class SubStructureSuperimposer {
      *
      * @param pairListEntry the map entry for which intersecting atoms should be defined
      */
-    private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> pairListEntry) {
+    private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?, ?>>, Set<String>> pairListEntry) {
 
         pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
                 .filter(this.atomFilter)
-                .map(Atom::getAtomName)
+                .map(Atom::getAtomNameString)
                 .collect(Collectors.toSet()));
         pairListEntry.getValue().retainAll(pairListEntry.getKey().getSecond().getAllAtoms().stream()
                 .filter(this.atomFilter)
-                .map(Atom::getAtomName)
+                .map(Atom::getAtomNameString)
                 .collect(Collectors.toSet()));
     }
 }

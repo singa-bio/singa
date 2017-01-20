@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.parser.pdb.ligands;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +37,15 @@ public class LigandParserService {
         }
     }
 
-    public static LeafSubstructure<?,?> parseLeafSubstructureFromCifFile(String ligandId, Map<String, Atom> atoms) throws IOException {
+    public static LeafSubstructure<?,?> parseLeafSubstructureFromCifFile(String ligandId, Map<String, Atom> atoms, LeafIdentifier leafIdentifier) throws IOException {
         logger.info("parsing structure {} using the supplied atoms", ligandId);
-        return parseLeafSubstructureFromCifFile(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream(), atoms);
+        return parseLeafSubstructureFromCifFile(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream(), atoms, leafIdentifier);
     }
 
-    public static LeafSubstructure<?,?> parseLeafSubstructureFromCifFile(InputStream inputStream, Map<String, Atom> atoms) throws IOException {
+    public static LeafSubstructure<?,?> parseLeafSubstructureFromCifFile(InputStream inputStream, Map<String, Atom> atoms, LeafIdentifier leafIdentifier) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                return CifFileParser.parseLeafSubstructureFromCif(bufferedReader.lines().collect(Collectors.toList()));
+                return CifFileParser.parseLeafSubstructureFromCif(bufferedReader.lines().collect(Collectors.toList()), atoms, leafIdentifier);
             }
         }
     }

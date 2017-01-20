@@ -295,7 +295,7 @@ public class ConsensusAlignment {
 //        StructureViewer.structure = structure;
 //        Application.launch(StructureViewer.class);
 
-        Map<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> perAtomAlignment = new LinkedHashMap<>();
+        Map<Pair<LeafSubstructure<?, ?>>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
 
         // create pairs of substructures to align
         IntStream.range(0, reference.size())
@@ -310,14 +310,14 @@ public class ConsensusAlignment {
         List<List<Atom>> referenceAtoms = perAtomAlignment.entrySet().stream()
                 .map(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
                         .filter(this.atomFilter)
-                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomNameString()))
                         .sorted(Comparator.comparing(Atom::getAtomNameString))
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
         List<List<Atom>> candidateAtoms = perAtomAlignment.entrySet().stream()
                 .map(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
                         .filter(this.atomFilter)
-                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
+                        .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomNameString()))
                         .sorted(Comparator.comparing(Atom::getAtomNameString))
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
@@ -421,14 +421,14 @@ public class ConsensusAlignment {
      *
      * @param pairListEntry the map entry for which intersecting atoms should be defined
      */
-    private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?, ?>>, Set<AtomName>> pairListEntry) {
+    private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?, ?>>, Set<String>> pairListEntry) {
         pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
                 .filter(this.atomFilter)
-                .map(Atom::getAtomName)
+                .map(Atom::getAtomNameString)
                 .collect(Collectors.toSet()));
         pairListEntry.getValue().retainAll(pairListEntry.getKey().getSecond().getAllAtoms().stream()
                 .filter(this.atomFilter)
-                .map(Atom::getAtomName)
+                .map(Atom::getAtomNameString)
                 .collect(Collectors.toSet()));
     }
 

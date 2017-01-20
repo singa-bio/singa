@@ -72,7 +72,7 @@ public class RegularAtom implements Atom {
      */
     public RegularAtom(Atom atom) {
         this.atomNameString = atom.getAtomNameString();
-        this.atomName = atom.getAtomName();
+        this.atomName = AtomName.getAtomNameFromString(this.atomNameString);
         this.identifier = atom.getIdentifier();
         this.element =  atom.getElement();
         this.position = new Vector3D(atom.getPosition());
@@ -151,16 +151,6 @@ public class RegularAtom implements Atom {
     @Override
     public void setAtomNameString(String atomNameString) {
         this.atomNameString = atomNameString;
-    }
-
-    @Override
-    public AtomName getAtomName() {
-        return this.atomName;
-    }
-
-    @Override
-    public void setAtomName(AtomName atomName) {
-        this.atomName = atomName;
     }
 
     @Override

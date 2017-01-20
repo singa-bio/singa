@@ -8,11 +8,16 @@ public class Bond extends AbstractEdge<Atom> {
     private BondType bondType;
 
     public Bond() {
-        this(BondType.COVALENT_BOND);
+        this(BondType.SINGLE_BOND);
     }
 
     public Bond(int identifier) {
         super(identifier);
+    }
+
+    public Bond(int identifier, BondType bondType) {
+        super(identifier);
+        this.bondType = bondType;
     }
 
     public Bond(BondType bondType) {
