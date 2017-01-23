@@ -1,8 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb.ligands;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.families.LigandFamily;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
@@ -10,7 +12,6 @@ import de.bioforscher.chemistry.physical.model.BondType;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.core.utility.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +48,10 @@ public class CifFileParser {
 
     public static LeafSubstructure<?, ?> parseLeafSubstructureFromCif(List<String> lines, Map<String, Atom> atoms, LeafIdentifier identifier) {
         CifFileParser parser = new CifFileParser(lines);
-        return parser.assambleLeaf(atoms, identifier);
+        return parser.createLeaf(atoms, identifier);
     }
 
-    private LeafSubstructure<?, ?> assambleLeaf(Map<String, Atom> atoms, LeafIdentifier leafIdentifier) {
+    private LeafSubstructure<?, ?> createLeaf(Map<String, Atom> atoms, LeafIdentifier leafIdentifier) {
         this.atoms = atoms;
         boolean bondSection = false;
         // extract information
@@ -93,7 +94,7 @@ public class CifFileParser {
         // create leaf
         // check for nucleotides
         LeafSubstructure<?,?> leafSubstructure = null;
-        if (this.type.equals("RNA LINKING") || this.type.equals("DNA LINKING")) {
+        if (isNucleotide()) {
             if (!this.parent.equals("?")) {
                 NucleotideFamily nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent)
                         .orElse(NucleotideFamily.UNKNOWN);
@@ -101,12 +102,42 @@ public class CifFileParser {
                 atoms.values().forEach(leafSubstructure::addNode);
                 connectAtoms(leafSubstructure);
             }
+        } else if (isAminoAcid()) {
+            AminoAcidFamily aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent)
+                    .orElse(AminoAcidFamily.UNKNOWN);
+            leafSubstructure = new AminoAcid(leafIdentifier, aminoAcidFamily, this.threeLetterCode);
+            atoms.values().forEach(leafSubstructure::addNode);
+            connectAtoms(leafSubstructure);
+        } else {
+            leafSubstructure = new AtomContainer<>(leafIdentifier, new LigandFamily(this.oneLetterCode, this.threeLetterCode));
         }
 
         return leafSubstructure;
     }
 
-    private void connectAtoms(LeafSubstructure leafWithAtoms) {
+    /**
+     * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either
+     * {@code RNA LINKING} or {@code DNA LINKING}.
+     * @return
+     */
+    private boolean isNucleotide() {
+        return this.type.equalsIgnoreCase("RNA LINKING") || this.type.equalsIgnoreCase("DNA LINKING");
+    }
+
+    /**
+     * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is
+     * {@code L-PEPTIDE LINKING} and a valid parent is specified.
+     * @return
+     */
+    private boolean isAminoAcid() {
+        return this.type.equalsIgnoreCase("L-PEPTIDE LINKING") && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
+    }
+
+    /**
+     * Connects the atoms in the leaf as specified in the bonds map.
+     * @param leafWithAtoms The leaf to connect.
+     */
+    private void connectAtoms(LeafSubstructure<?,?> leafWithAtoms) {
         for (Map.Entry<Pair<String>, String> bond : this.bonds.entrySet()) {
             leafWithAtoms.addEdgeBetween(this.atoms.get(bond.getKey().getFirst()),
                     this.atoms.get(bond.getKey().getSecond()),
@@ -114,6 +145,11 @@ public class CifFileParser {
         }
     }
 
+    /**
+     * Extracts a value from a one line entry from a cif file. Trimming white spaces and removing double quotes.
+     * @param line the line to extract
+     * @return The extracted value.
+     */
     private static String extractValue(String line) {
         return line.substring(DEFAULT_VALUE_SPACING).replace("\"","").trim();
     }

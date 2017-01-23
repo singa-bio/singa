@@ -86,7 +86,7 @@ public class StructureCollector {
                         String leafName = collector.leafNames.get(leafIdentifier);
                         logger.trace("creating leaf {}:{} for chain {}", leafNode.getIdentifier(), leafName, chainNode.getIdentifier());
 
-                        Optional<AminoAcidFamily> residueFamily = AminoAcidFamily.getResidueTypeByThreeLetterCode(leafName);
+                        Optional<AminoAcidFamily> residueFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName);
                         Map<String, Atom> atoms = leafNode.getAtomMap();
                         if (residueFamily.isPresent()) {
                             AminoAcid aminoAcid = LeafFactory.createAminoAcidFromAtoms(leafIdentifier, residueFamily.get(), atoms);
@@ -94,7 +94,7 @@ public class StructureCollector {
                         } else {
                             Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
                             if (nucleotideFamily.isPresent()) {
-                                chain.addSubstructure(LeafFactory.createNucleotideFromAtoms(leafIdentifier , nucleotideFamily.get(), atoms));
+                                chain.addSubstructure(LeafFactory.createNucleotideFromAtoms(leafIdentifier, nucleotideFamily.get(), atoms));
                             } else {
 
                                 if (parseLigandInformation) {

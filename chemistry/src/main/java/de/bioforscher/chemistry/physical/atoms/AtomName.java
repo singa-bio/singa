@@ -321,6 +321,8 @@ public enum AtomName {
             HG13, HG21, HG22, HG23, DG11, DG12, DG13, DG21, DG22, DG23, HN, HXT, D, D1, D2, D3, DA, DB, D, C, CA, CB,
             N, O, OXT);
 
+    public static EnumSet<AtomName> UNKNOWN_ATOM_NAMES = EnumSet.of(H, C, O, N);
+
     private String name;
     private Element element;
 

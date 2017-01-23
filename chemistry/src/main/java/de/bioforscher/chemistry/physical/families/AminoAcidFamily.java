@@ -39,7 +39,8 @@ public enum AminoAcidFamily implements StructuralFamily {
     THREONINE("Threonine", "T", "Thr", THREONINE_ATOM_NAMES),
     TRYPTOPHAN("Tryptophan", "W", "Trp", TRYPTOPHAN_ATOM_NAMES),
     TYROSINE("Tyrosine", "Y", "Tyr", TYROSINE_ATOM_NAMES),
-    VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES);
+    VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES),
+    UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
 
     private static final String RESIDUE_PROTOTYPES_BASE_DIR = "physical/leafes/prototypes/";
     private String name;
@@ -54,7 +55,7 @@ public enum AminoAcidFamily implements StructuralFamily {
         this.allowedAtoms = allowedAtoms;
     }
 
-    public static Optional<AminoAcidFamily> getResidueTypeByThreeLetterCode(String threeLetterCode) {
+    public static Optional<AminoAcidFamily> getAminoAcidTypeByThreeLetterCode(String threeLetterCode) {
         return Arrays.stream(values())
                 .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
                 .findAny();
