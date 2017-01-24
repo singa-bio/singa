@@ -47,6 +47,23 @@ public class Fit3DBuilder {
          * @return The {@link TargetStep} to define one or several targets.
          */
         TargetStep query(StructuralMotif query);
+
+        /**
+         * Defines a site that should be aligned against another.
+         *
+         * @param site1
+         * @return The {@link SiteStep} to define the antagonist.
+         */
+        SiteStep site(StructuralMotif site1);
+    }
+
+    public interface SiteStep {
+        /**
+         * Defines the second site for the pairwise site alignment.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep vs(StructuralMotif site2);
     }
 
     public interface TargetStep {
@@ -135,7 +152,7 @@ public class Fit3DBuilder {
         ParameterStep distanceTolerance(double distanceTolerance);
     }
 
-    public static class Builder implements QueryStep, TargetStep, ParallelStep, AtomStep, ParameterStep {
+    public static class Builder implements QueryStep, SiteStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
 
         StructuralMotif queryMotif;
         BranchSubstructure<?> target;
@@ -145,11 +162,20 @@ public class Fit3DBuilder {
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
         Predicate<Atom> atomFilter = DEFAULT_ATOM_FILTER;
         RepresentationScheme representationScheme;
+        StructuralMotif site1;
+        StructuralMotif site2;
 
         @Override
         public TargetStep query(StructuralMotif query) {
             Objects.requireNonNull(query);
             this.queryMotif = query;
+            return this;
+        }
+
+        @Override
+        public SiteStep site(StructuralMotif site1) {
+            Objects.requireNonNull(site1);
+            this.site1 = site1;
             return this;
         }
 
@@ -172,8 +198,12 @@ public class Fit3DBuilder {
 
         @Override
         public Fit3D run() {
+            // decide which implementation should be used
             if (this.targetStructures != null) {
                 return new Fit3DAlignmentBatch(this);
+            }
+            if (this.site1 != null && this.site2 != null) {
+                return new Fit3DSiteAlignment(this);
             }
             return new Fit3DAlignment(this);
         }
@@ -222,6 +252,13 @@ public class Fit3DBuilder {
         @Override
         public AtomStep maximalParallelism() {
             this.parallelism = Runtime.getRuntime().availableProcessors();
+            return this;
+        }
+
+        @Override
+        public AtomStep vs(StructuralMotif site2) {
+            Objects.requireNonNull(site2);
+            this.site2 = site2;
             return this;
         }
     }

@@ -3,6 +3,7 @@ package de.bioforscher.chemistry.parser.pdb.structures;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
@@ -30,6 +31,10 @@ public class StructureSelector {
 
     public static ResidueStep selectFrom(Chain chain) {
         return new Selector(chain);
+    }
+
+    public static ResidueStep selectFrom(StructuralMotif structuralMotif) {
+        return new Selector(structuralMotif);
     }
 
     public static AtomStep selectFrom(AminoAcid aminoAcid) {
@@ -89,6 +94,7 @@ public class StructureSelector {
         private Structure structure;
         private StructuralModel structuralModel;
         private Chain chain;
+        private StructuralMotif structuralMotif;
         private AminoAcid aminoAcid;
         private Nucleotide nucleotide;
         private AtomContainer<?> atomContainer;
@@ -116,6 +122,10 @@ public class StructureSelector {
 
         public Selector(AtomContainer atomContainer) {
             this.atomContainer = atomContainer;
+        }
+
+        public Selector(StructuralMotif structuralMotif) {
+            this.structuralMotif = structuralMotif;
         }
 
         @Override

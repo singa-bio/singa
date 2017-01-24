@@ -325,7 +325,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
         atomsToBeRemoved.forEach(this::removeNode);
 
-        if (this instanceof Chain) {
+        if (this instanceof Chain || this instanceof StructuralMotif) {
             this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
         } else {
             getBranchSubstructures().stream()

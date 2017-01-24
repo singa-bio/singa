@@ -1,9 +1,9 @@
 package de.bioforscher.chemistry.physical.branches;
 
+import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.*;
 import de.bioforscher.mathematics.vectors.Vector3D;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,6 +22,14 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         super(branchSubstructure);
     }
 
+    /**
+     * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
+     *
+     * @param identifier      The internally-used identifier of the {@link StructuralMotif}.
+     * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
+     * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
     public static StructuralMotif fromLeafs(int identifier, Structure structure, List<LeafIdentifier> leafIdentifiers) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafIdentifiers.forEach(leafIdentifer -> {
@@ -33,6 +41,19 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                     .orElseThrow(NoSuchElementException::new);
             motif.addSubstructure(subStructure);
         });
+        return motif;
+    }
+
+    /**
+     * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
+     *
+     * @param identifier        The internally-used identifier of the {@link StructuralMotif}.
+     * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
+    public static StructuralMotif fromLeafs(int identifier, List<LeafSubstructure<?,?>> leafSubstructures) {
+        StructuralMotif motif = new StructuralMotif(identifier);
+        leafSubstructures.forEach(motif::addSubstructure);
         return motif;
     }
 
@@ -59,15 +80,50 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     /**
      * FIXME: here we have to find a nice solution to generify definition of exchanges
      *
-     * @param leafIdentifier
-     * @param exchangeableType
+     * @param leafIdentifier   The LeafIdentifier that represents the {@link LeafSubstructure} for which an exchangeable
+     *                         type should be assigned.
+     * @param exchangeableType The {@link StructuralFamily} which should be assigned as exchangeable type.
      */
-    public void addExchangableType(LeafIdentifier leafIdentifier, StructuralFamily exchangeableType) {
-        getSubstructure(leafIdentifier.getLeafIdentifer())
-                .map(Exchangeable.class::cast)
-                .orElseThrow(NoSuchElementException::new)
-                .addExchangeableType(exchangeableType);
+    public void addExchangeableType(LeafIdentifier leafIdentifier, StructuralFamily exchangeableType) {
+        if (exchangeableType instanceof MatcherFamily) {
+            ((MatcherFamily) exchangeableType).getMembers().forEach(aminoAcidFamily ->
+                    getLeafSubstructures().stream()
+                            .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                            .findFirst()
+                            .map(Exchangeable.class::cast).orElseThrow(NoSuchElementException::new)
+                            .addExchangeableType(aminoAcidFamily)
+            );
+        } else {
+            getLeafSubstructures().stream()
+                    .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                    .findFirst()
+                    .map(Exchangeable.class::cast).orElseThrow(NoSuchElementException::new)
+                    .addExchangeableType(exchangeableType);
+        }
+//        getSubstructure(leafIdentifier.getLeafIdentifer())
+//                .map(Exchangeable.class::cast)
+//                .orElseThrow(NoSuchElementException::new)
+//                .addExchangeableType(exchangeableType);
     }
+
+    /**
+     * FIXME: here we have to find a nice solution to generify definition of exchanges
+     *
+     * @param exchangeableType The {@link StructuralFamily} which should be assigned as exchangeable type.
+     */
+    public void addExchangeableTypeToAll(StructuralFamily exchangeableType) {
+        if (exchangeableType instanceof MatcherFamily) {
+            ((MatcherFamily) exchangeableType).getMembers().forEach(aminoAcidFamily ->
+                    getLeafSubstructures().stream()
+                            .map(Exchangeable.class::cast)
+                            .forEach(exchangeable -> exchangeable.addExchangeableType(aminoAcidFamily)));
+        } else {
+            getLeafSubstructures().stream()
+                    .map(Exchangeable.class::cast)
+                    .forEach(exchangeable -> exchangeable.addExchangeableType(exchangeableType));
+        }
+    }
+
 
     @Override
     public StructuralMotif getCopy() {
@@ -77,6 +133,6 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     @Override
     public void setPosition(Vector3D position) {
         //FIXME not yet implemented
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }

@@ -8,6 +8,7 @@ import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
      */
     public String getStringRepresentation() {
         return this.mappedCandidate.stream()
+                .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(Object::toString)
                 .collect(Collectors.joining("_", this.rmsd + "_" + this.mappedCandidate.get(0).getPdbId()
                         + "|", ""));

@@ -31,13 +31,13 @@ public interface Fit3D {
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
      * the query motif.
      *
-     * @param outptutDirectory The directory where the matches should be written.
+     * @param outputDirectory The directory where the matches should be written.
      */
-    default void writeMatches(Path outptutDirectory) {
+    default void writeMatches(Path outputDirectory) {
         getMatches().values().forEach(substructureSuperimposition -> {
             try {
                 PDBWriterService.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
-                        outptutDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
+                        outputDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
             } catch (IOException e) {
                 logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);
             }

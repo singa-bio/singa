@@ -36,7 +36,7 @@ public interface Exchangeable<R extends StructuralFamily> {
 
     /**
      * Returns all {@link StructuralFamily} types that are defined, this is the concrete type of the
-     * {@link Exchangeable} itself <b>plus</b> all exchangable types.
+     * {@link Exchangeable} itself <b>plus</b> all exchangeable types.
      *
      * @return a set of containing types (own type + exchangeable types)
      */
