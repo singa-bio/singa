@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.TreeMap;
 
 /**
@@ -42,5 +41,14 @@ public interface Fit3D {
                 logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);
             }
         });
+    }
+
+    /**
+     * Returns a string that represents the alignment. This is only available for the {@link Fit3DSiteAlignment}.
+     *
+     * @return The alignment in string representation.
+     */
+    default String getAlignmentString() {
+        throw new UnsupportedOperationException("unique alignment string can only be obtained with Fit3DSite algorithm");
     }
 }

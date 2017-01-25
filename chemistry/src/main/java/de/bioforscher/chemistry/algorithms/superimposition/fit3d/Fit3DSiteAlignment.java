@@ -1,10 +1,12 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.core.utility.Pair;
@@ -20,12 +22,16 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
+ * An implementation of an algorithm for pairwise comparision of structure sites (e.g. binding sites) that are not equal
+ * in size. This method iteratively extends a seed alignment until one site is fully aligned or a cutoff score is
+ * reached. Internally  the {@link Fit3DAlignment} algorithm is used if exchanges should be considered.
+ *
  * @author fk
  */
 public class Fit3DSiteAlignment implements Fit3D {
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DSiteAlignment.class);
-    private static final double DEFAULT_CUTOFF_SCORE = 0.6;
+    private static final double DEFAULT_CUTOFF_SCORE = 5.0;
 
     private final StructuralMotif site1;
     private final StructuralMotif site2;
@@ -37,6 +43,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final Predicate<Atom> atomFilter;
     private final double rmsdCutoff;
     private final double distanceTolerance;
+    private final boolean restrictToExchanges;
 
     private double cutoffScore = DEFAULT_CUTOFF_SCORE;
 
@@ -47,12 +54,22 @@ public class Fit3DSiteAlignment implements Fit3D {
     private SubstructureSuperimposition currentBestSuperimposition;
 
     private TreeMap<Double, SubstructureSuperimposition> matches;
+    private String alignmentString;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) {
         this.site1 = builder.site1.getCopy();
         this.site2 = builder.site2.getCopy();
+        this.restrictToExchanges = builder.restrictToExchanges;
 
-        logger.info("computing Fit3DSite alignment for {} against {}", this.site1, this.site2);
+        // add exchanges against arbitrary types if not restricted
+        if (!this.restrictToExchanges) {
+            logger.info("specified exchanges will be ignored for the Fit3DSite alignment and matched types will be arbitrary");
+            this.site1.addExchangeableTypeToAll(MatcherFamily.ALL);
+            this.site2.addExchangeableTypeToAll(MatcherFamily.ALL);
+        }
+
+        logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {})", this.site1,
+                this.site1.size(), this.site2, this.site2.size());
 
         this.currentAlignmentSize = 2;
         this.currentBestScore = Double.MAX_VALUE;
@@ -67,10 +84,21 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.rmsdCutoff = builder.rmsdCutoff;
         this.distanceTolerance = builder.distanceTolerance;
 
+        // initialize
+        this.matches = new TreeMap<>();
+
         calculateSimilarities();
         extendAlignment();
     }
 
+    @Override
+    public String getAlignmentString() {
+        return this.alignmentString;
+    }
+
+    /**
+     * Iteratively extends the alignment until a cutoff score is exceeded or one site is fully aligned.
+     */
     private void extendAlignment() {
 
         // iteratively extend alignment
@@ -89,12 +117,17 @@ public class Fit3DSiteAlignment implements Fit3D {
             }
         }
 
-        this.matches = new TreeMap<>();
-        this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
-
-        outputSummary();
+        if (this.currentBestSuperimposition != null) {
+            this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
+            outputSummary();
+        } else {
+            logger.info("no suitable alignment could be found");
+        }
     }
 
+    /**
+     * Writes the result (the best largest alignment) in string representation.
+     */
     private void outputSummary() {
         StringJoiner site1Joiner = new StringJoiner("|", "|", "|");
         StringJoiner site2Joiner = new StringJoiner("|", "|", "|");
@@ -102,11 +135,14 @@ public class Fit3DSiteAlignment implements Fit3D {
             site1Joiner.add(String.format("%-7s", this.currentBestMatchingPair.getFirst().get(i).toString()));
             site2Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getMappedCandidate().get(i).toString()));
         }
-        logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues): \nsite 1: {}\nsite 2: {}",
-                this.currentAlignmentSize, this.site1.size(), this.site2.size(), site1Joiner.toString(),
-                site2Joiner.toString());
+        this.alignmentString = "site 1:" + site1Joiner.toString() + "\nsite 2:" + site2Joiner.toString();
+        logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues): \n{}",
+                this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);
     }
 
+    /**
+     * Extends the partitions of the sites in the current round.
+     */
     private void extendPartitions() {
 
         // increment counter for current size of alignment
@@ -139,10 +175,17 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
     }
 
+    /**
+     * Calculates the similarity scores of the current round, either by naive superimposition or with a
+     * {@link Fit3DAlignment} if exchanges are defined.
+     */
     private void calculateSimilarities() {
 
         // reset best score for new iteration
-        this.currentBestScore = Double.MAX_VALUE;
+        double localBestScore = Double.MAX_VALUE;
+
+        // initialize storage for best superimposition of round
+        SubstructureSuperimposition localBestSuperimposition = null;
 
         double[][] temporarySimilarityMatrix = new double[this.site1Partitions.size()][this.site2Partitions.size()];
 
@@ -157,65 +200,70 @@ public class Fit3DSiteAlignment implements Fit3D {
                     columnLabels.add(site2Partition);
                 }
 
-                // align the subset of sites with Fit3D
-                StructuralMotif query = this.site1.getCopy();
-                List<LeafIdentifier> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
-                        .filter(leafSubstructure -> !site1Partition.contains(leafSubstructure))
-                        .map(LeafSubstructure::getLeafIdentifier)
-                        .collect(Collectors.toList());
-                queryLeavesToBeRemoved.forEach(query::removeLeafSubstructure);
-                StructuralMotif target = this.site2.getCopy();
-                List<LeafIdentifier> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
-                        .filter(leafSubstructure -> !site2Partition.contains(leafSubstructure))
-                        .map(LeafSubstructure::getLeafIdentifier)
-                        .collect(Collectors.toList());
-                targetLeavesToBeRemoved.forEach(target::removeLeafSubstructure);
+                // use Fit3D if exchanges should be considered, otherwise use exhaustive alignment
+                if (this.restrictToExchanges) {
+                    // align the subset of sites with Fit3D
+                    StructuralMotif query = this.site1.getCopy();
+                    List<LeafIdentifier> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
+                            .filter(leafSubstructure -> !site1Partition.contains(leafSubstructure))
+                            .map(LeafSubstructure::getLeafIdentifier)
+                            .collect(Collectors.toList());
+                    queryLeavesToBeRemoved.forEach(query::removeLeafSubstructure);
+                    StructuralMotif target = this.site2.getCopy();
+                    List<LeafIdentifier> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
+                            .filter(leafSubstructure -> !site2Partition.contains(leafSubstructure))
+                            .map(LeafSubstructure::getLeafIdentifier)
+                            .collect(Collectors.toList());
+                    targetLeavesToBeRemoved.forEach(target::removeLeafSubstructure);
 
-                // configure Fit3D to use exhaustive search
-                Fit3D fit3d;
-                if (this.representationScheme != null) {
-                    fit3d = Fit3DBuilder.create()
-                            .query(query)
-                            .target(target)
-                            .representationScheme(this.representationScheme.getType())
-                            .rmsdCutoff(this.rmsdCutoff)
-                            .distanceTolerance(this.distanceTolerance)
-                            .run();
-                } else {
-                    fit3d = Fit3DBuilder.create()
-                            .query(query)
-                            .target(target)
-                            .atomFilter(this.atomFilter)
-                            .rmsdCutoff(this.rmsdCutoff)
-                            .distanceTolerance(this.distanceTolerance)
-                            .run();
-                }
+                    // configure Fit3D to use exhaustive search
+                    Fit3D fit3d;
+                    if (this.representationScheme != null) {
+                        fit3d = Fit3DBuilder.create()
+                                .query(query)
+                                .target(target)
+                                .representationScheme(this.representationScheme.getType())
+                                .rmsdCutoff(this.rmsdCutoff)
+                                .distanceTolerance(this.distanceTolerance)
+                                .run();
+                    } else {
+                        fit3d = Fit3DBuilder.create()
+                                .query(query)
+                                .target(target)
+                                .atomFilter(this.atomFilter)
+                                .rmsdCutoff(this.rmsdCutoff)
+                                .distanceTolerance(this.distanceTolerance)
+                                .run();
+                    }
 
-                // collect results
-                if (fit3d.getMatches().isEmpty()) {
-                    temporarySimilarityMatrix[i][j] = Double.MAX_VALUE;
+                    // collect results
+                    if (fit3d.getMatches().isEmpty()) {
+                        temporarySimilarityMatrix[i][j] = Double.MAX_VALUE;
+                    } else {
+                        double rmsd = fit3d.getMatches().firstKey();
+                        temporarySimilarityMatrix[i][j] = rmsd;
+                        // test if current score is new global winner and cutoff is not exceeded
+                        if (rmsd < localBestScore) {
+                            localBestSuperimposition = fit3d.getMatches().firstEntry().getValue();
+                            localBestScore = rmsd;
+                        }
+                    }
                 } else {
-                    double rmsd = fit3d.getMatches().firstKey();
+                    SubstructureSuperimposition superimposition;
+                    if (this.representationScheme != null) {
+                        superimposition = SubStructureSuperimposer
+                                .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.representationScheme);
+                    } else {
+                        superimposition = SubStructureSuperimposer
+                                .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.atomFilter);
+                    }
+                    double rmsd = superimposition.getRmsd();
                     temporarySimilarityMatrix[i][j] = rmsd;
-                    // test if current score is new global winner and cutoff is not exceeded
-                    if (rmsd < this.currentBestScore && rmsd <= this.cutoffScore) {
-                        this.currentBestSuperimposition = fit3d.getMatches().firstEntry().getValue();
+                    if (rmsd < localBestScore) {
+                        localBestSuperimposition = superimposition;
+                        localBestScore = rmsd;
                     }
                 }
-
-//                SubstructureSuperimposition superimposition;
-//                if (this.representationScheme != null) {
-//                    superimposition = SubStructureSuperimposer
-//                            .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.representationScheme);
-//                } else {
-//                    superimposition = SubStructureSuperimposer
-//                            .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.atomFilter);
-//                }
-//                double rmsd = superimposition.getRmsd();
-//                temporarySimilarityMatrix[i][j] = rmsd;
-//                if (rmsd < this.currentBestScore && rmsd <= this.cutoffScore) {
-//                    this.currentBestSuperimposition = superimposition;
-//                }
                 j++;
             }
             i++;
@@ -224,7 +272,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.currentSimilarityMatrix = new LabeledRegularMatrix<>(temporarySimilarityMatrix);
         this.currentSimilarityMatrix.setRowLabels(rowLabels);
         this.currentSimilarityMatrix.setColumnLabels(columnLabels);
-        logger.info("current similarity matrix is \n{}", this.currentSimilarityMatrix.getStringRepresentation());
+//        logger.info("current similarity matrix is \n{}", this.currentSimilarityMatrix.getStringRepresentation());
         Optional<Pair<Integer>> minimalScore = Matrices.getPositionOfMinimalElement(this.currentSimilarityMatrix);
         if (minimalScore.isPresent()) {
             List<LeafSubstructure<?, ?>> first = this.currentSimilarityMatrix.getRowLabel(minimalScore.get().getFirst());
@@ -232,12 +280,14 @@ public class Fit3DSiteAlignment implements Fit3D {
             // if the alignment terminates in the next round do not set new best matching pair and score
             double scoreValue = this.currentSimilarityMatrix.getValueFromPosition(minimalScore.get());
             if (scoreValue > this.cutoffScore) {
+                logger.info("cutoff score exceeded");
                 this.currentAlignmentSize--;
+                this.currentBestScore = Double.MAX_VALUE;
                 return;
             }
             this.currentBestMatchingPair = new Pair<>(first, second);
             this.currentBestScore = scoreValue;
-            // FIXME currentBestSuperimposition is also not allowed to be set if cutoff exceeded
+            this.currentBestSuperimposition = localBestSuperimposition;
             logger.info("current best matching pair of size {} is {} with RMSD {}", this.currentAlignmentSize,
                     this.currentBestMatchingPair, this.currentBestScore);
         } else {
@@ -268,13 +318,26 @@ public class Fit3DSiteAlignment implements Fit3D {
 
     @Override
     public void writeMatches(Path outputDirectory) {
+        if (this.matches.isEmpty()) {
+            throw new Fit3DException("cannot write matches as they are currently empty");
+        }
         SubstructureSuperimposition bestSuperimposition = this.matches.firstEntry().getValue();
         List<LeafSubstructure<?, ?>> mappedSite2 = bestSuperimposition.applyTo(this.site2.getCopy().getLeafSubstructures());
         try {
             PDBWriterService.writeLeafSubstructures(this.site1.getLeafSubstructures(),
-                    outputDirectory.resolve(bestSuperimposition.getStringRepresentation() + "_site1.pdb"));
+                    outputDirectory.resolve(this.site1.getLeafSubstructures().stream()
+                            .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
+                            .map(Object::toString)
+                            .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
+                                    + this.site1.getLeafSubstructures().get(0).getPdbId()
+                                    + "|", "")) + "_site1.pdb"));
             PDBWriterService.writeLeafSubstructures(mappedSite2,
-                    outputDirectory.resolve(bestSuperimposition.getStringRepresentation() + "_site2.pdb"));
+                    outputDirectory.resolve(this.site2.getLeafSubstructures().stream()
+                            .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
+                            .map(Object::toString)
+                            .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
+                                    + this.site2.getLeafSubstructures().get(0).getPdbId()
+                                    + "|", "")) + "_site2.pdb"));
         } catch (IOException e) {
             logger.error("error writing Fit3DSite results", e);
         }

@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +21,13 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asp_1c0a.pdb"));
+                .getResourceAsStream("Ala_1yfr.pdb"));
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
         Structure bindingSiteStructure2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asn_3m4p.pdb"));
-        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
+                .getResourceAsStream("Asp_1c0a.pdb"));
+        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2
+                .getAllLeafs());
+
 
 //        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
 //                .getResourceAsStream("2OCF_A.pdb"));
@@ -38,14 +40,12 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldCreateBindingSiteAlignment(){
-
-        this.bindingSite1.addExchangeableTypeToAll(MatcherFamily.ALL);
-        this.bindingSite2.addExchangeableTypeToAll(MatcherFamily.ALL);
-
+    public void shouldCreateBindingSiteAlignment() {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)
+                .ignoreSpecifiedExchanges()
+                .atomFilter(AtomFilter.isBackbone())
                 .run();
         fit3d.writeMatches(Paths.get("/tmp/fit3dsite"));
     }

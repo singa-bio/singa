@@ -63,7 +63,23 @@ public class Fit3DBuilder {
          *
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
-        AtomStep vs(StructuralMotif site2);
+        SiteConfigurationStep vs(StructuralMotif site2);
+    }
+
+    public interface SiteConfigurationStep {
+        /**
+         * Restricts the site alignment to the specified exchanges of the input sites.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep restrictToSpecifiedExchanges();
+
+        /**
+         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep ignoreSpecifiedExchanges();
     }
 
     public interface TargetStep {
@@ -136,7 +152,8 @@ public class Fit3DBuilder {
         Fit3D run();
 
         /**
-         * Defines the RMSD cutoff up to which matches should be reported.
+         * Defines the RMSD cutoff up to which matches should be reported. If a {@link Fit3DSiteAlignment} is performed
+         * this is the cutoff that is used for the internal call of the Fit3D algorithm.
          *
          * @param rmsdCutoff The RMSD cutoff up to which alignments should be reported.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -144,7 +161,9 @@ public class Fit3DBuilder {
         ParameterStep rmsdCutoff(double rmsdCutoff);
 
         /**
-         * Defines the distance tolerance that is accepted when extracting local environments.
+         * Defines the distance tolerance that is accepted when extracting local environments. If a
+         * {@link Fit3DSiteAlignment} is performed this is the cutoff that is used for the internal call of the
+         * Fit3D algorithm.
          *
          * @param distanceTolerance The distance tolerance considered when extracting local environments.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -152,7 +171,7 @@ public class Fit3DBuilder {
         ParameterStep distanceTolerance(double distanceTolerance);
     }
 
-    public static class Builder implements QueryStep, SiteStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
+    public static class Builder implements QueryStep, SiteStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
 
         StructuralMotif queryMotif;
         BranchSubstructure<?> target;
@@ -164,6 +183,7 @@ public class Fit3DBuilder {
         RepresentationScheme representationScheme;
         StructuralMotif site1;
         StructuralMotif site2;
+        boolean restrictToExchanges;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -190,7 +210,7 @@ public class Fit3DBuilder {
         public ParallelStep targets(List<String> targets) {
             Objects.requireNonNull(targets);
             if (targets.isEmpty()) {
-                throw new Fit3DException("targetStructures cannot be empty");
+                throw new Fit3DException("target structures cannot be empty");
             }
             this.targetStructures = targets;
             return this;
@@ -256,9 +276,21 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public AtomStep vs(StructuralMotif site2) {
+        public SiteConfigurationStep vs(StructuralMotif site2) {
             Objects.requireNonNull(site2);
             this.site2 = site2;
+            return this;
+        }
+
+        @Override
+        public AtomStep restrictToSpecifiedExchanges() {
+            this.restrictToExchanges = true;
+            return this;
+        }
+
+        @Override
+        public AtomStep ignoreSpecifiedExchanges() {
+            this.restrictToExchanges = false;
             return this;
         }
     }

@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
-import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
@@ -295,8 +294,8 @@ public class SubStructureSuperimposer {
                         .multiply(atom.getPosition())
                         .add(this.translation).as(Vector3D.class)));
 
-        logger.debug("superimposed substructures (RMSD {}): {}", this.rmsd,
-                toAlignmentString(perAtomAlignment));
+        logger.debug("superimposed substructures with RMSD {}", this.rmsd);
+        logger.trace("alignment string representation:\n{}", toAlignmentString(perAtomAlignment));
 
         // compose superimposition container
         return new SubstructureSuperimposition(vectorSuperimposition.getRmsd(),
