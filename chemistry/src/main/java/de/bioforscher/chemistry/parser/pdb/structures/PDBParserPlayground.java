@@ -1,6 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
+import de.bioforscher.chemistry.parser.pdb.ligands.LigandParserService;
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.viewer.ColorScheme;
 import de.bioforscher.chemistry.physical.viewer.StructureViewer;
@@ -23,7 +27,16 @@ public class PDBParserPlayground {
         LeafFactory.setToOmitHydrogens(true);
 
         // serine protease catalytic triad
-        Structure structure = PDBParserService.parseProteinById("1c0a");
+        // Structure structure = PDBParserService.parseProteinById("1c0a");
+
+        LeafSubstructure<?,?> leaf = LigandParserService.parseLeafSubstructureById("ALA");
+        Structure structure = new Structure();
+        StructuralModel structuralModel = new StructuralModel(0);
+        Chain chain = new Chain(1);
+        chain.setChainIdentifier("A");
+        chain.addSubstructure(leaf);
+        structuralModel.addSubstructure(chain);
+        structure.addSubstructure(structuralModel);
 
         // Structure motif = StructuralMotif.fromLeafs(1, structure,
         // LeafIdentifiers.of("A-36", "B-67", "B-60", "B-204")).toStructure();

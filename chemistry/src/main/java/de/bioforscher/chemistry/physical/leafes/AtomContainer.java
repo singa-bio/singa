@@ -15,6 +15,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family) {
         super(leafIdentifier, family);
+        this.name = family.getThreeLetterCode();
     }
 
     public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family, String name) {
