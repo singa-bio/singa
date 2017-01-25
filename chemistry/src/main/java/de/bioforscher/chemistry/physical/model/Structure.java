@@ -60,7 +60,7 @@ public class Structure {
 
     public List<AminoAcid> getAllResidues() {
         return this.branchSubstructures.values().stream()
-                .map(BranchSubstructure::getResidues)
+                .map(BranchSubstructure::getAminoAcids)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

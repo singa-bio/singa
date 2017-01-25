@@ -3,7 +3,10 @@ package de.bioforscher.mathematics.algorithms.superimposition;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.vectors.Vector;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Representing a superimposition that is defined by a root-mean-squared deviation, a translation vector and a rotation
@@ -13,12 +16,26 @@ import java.util.List;
  */
 public interface Superimposition<T> {
 
+    String RMSD_FORMAT_PATTERN = "0.0000";
+
     /**
      * returns the root-mean-squared deviation of this superimposition
      *
      * @return the root-mean-squared deviation
      */
     double getRmsd();
+
+    /**
+     * Formats the given RMSD value.
+     *
+     * @return The formatted RMSD value.
+     */
+    default String getFormattedRmsd() {
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.applyPattern(RMSD_FORMAT_PATTERN);
+        return df.format(getRmsd());
+    }
 
     /**
      * returns the translation {@link Vector} of this superimposition
@@ -48,7 +65,7 @@ public interface Superimposition<T> {
      *
      * @return the candidates with their original objects that were used for superimposition
      */
-    default List<T> getMappedFullCandidate(){
+    default List<T> getMappedFullCandidate() {
         return getMappedCandidate();
     }
 

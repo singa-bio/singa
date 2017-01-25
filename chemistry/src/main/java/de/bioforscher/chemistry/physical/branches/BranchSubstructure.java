@@ -446,7 +446,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      *
      * @return All residues.
      */
-    public List<AminoAcid> getResidues() {
+    public List<AminoAcid> getAminoAcids() {
         return getLeafSubstructures().stream()
                 .filter(StructureFilter.isResidue())
                 .map(AminoAcid.class::cast)

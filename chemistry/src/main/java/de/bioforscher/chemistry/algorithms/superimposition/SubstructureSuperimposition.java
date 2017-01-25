@@ -44,10 +44,11 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
      * @return The full string representation of this {@link SubstructureSuperimposition}.
      */
     public String getStringRepresentation() {
+
         return this.mappedCandidate.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(Object::toString)
-                .collect(Collectors.joining("_", this.rmsd + "_" + this.mappedCandidate.get(0).getPdbId()
+                .collect(Collectors.joining("_", getFormattedRmsd() + "_" + this.mappedCandidate.get(0).getPdbId()
                         + "|", ""));
     }
 

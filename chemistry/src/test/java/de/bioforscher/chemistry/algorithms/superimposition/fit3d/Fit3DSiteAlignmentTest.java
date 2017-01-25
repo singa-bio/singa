@@ -3,15 +3,12 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.*;
 
 /**
  * @author fk
@@ -24,10 +21,10 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("2OCF_A.pdb"));
+                .getResourceAsStream("Asp_1c0a.pdb"));
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
         Structure bindingSiteStructure2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("1FDW_A.pdb"));
+                .getResourceAsStream("Asn_3m4p.pdb"));
         this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
 
 //        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
