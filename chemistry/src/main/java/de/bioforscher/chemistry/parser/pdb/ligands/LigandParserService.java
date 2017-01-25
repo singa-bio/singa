@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class LigandParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(LigandParserService.class);
-    public static final String CIF_FETCH_URL = "https://files.rcsb.org/ligands/view/%s.cif";
+    private static final String CIF_FETCH_URL = "https://files.rcsb.org/ligands/view/%s.cif";
 
     public static LeafSubstructure<?, ?> parseLeafSubstructureById(String ligandId) throws IOException {
         logger.info("parsing structure {}", ligandId);

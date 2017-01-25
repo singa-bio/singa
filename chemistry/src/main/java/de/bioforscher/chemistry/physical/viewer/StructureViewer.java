@@ -149,7 +149,7 @@ public class StructureViewer extends Application {
 
     private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
         leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
-        leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure.getLeafIdentifier(), bond));
+        leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }
 
     private void addChainConnections(Chain chain) {
@@ -158,7 +158,7 @@ public class StructureViewer extends Application {
 
     private void addAtom(LeafSubstructure<?, ?> origin, Atom atom) {
         Sphere atomShape = new Sphere(1.0);
-        atomShape.setMaterial(getMaterial(origin.getLeafIdentifier(), atom));
+        atomShape.setMaterial(getMaterial(origin, atom));
         atomShape.setTranslateX(atom.getPosition().getX());
         atomShape.setTranslateY(atom.getPosition().getY());
         atomShape.setTranslateZ(atom.getPosition().getZ());
@@ -220,7 +220,7 @@ public class StructureViewer extends Application {
         this.displayGroup.getChildren().add(this.world);
     }
 
-    private void addLeafBond(LeafIdentifier origin, Bond bond) {
+    private void addLeafBond(LeafSubstructure origin, Bond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         this.moleculeGroup.getChildren().add(bondShape);
@@ -228,7 +228,7 @@ public class StructureViewer extends Application {
 
     private void addChainBond(Chain origin, Bond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
-        bondShape.setMaterial(getMaterial(origin));
+        bondShape.setMaterial(getMaterial(origin, bond));
         this.moleculeGroup.getChildren().add(bondShape);
 
     }
@@ -252,29 +252,33 @@ public class StructureViewer extends Application {
         return bond;
     }
 
-    private PhongMaterial getMaterial(LeafIdentifier origin, Atom atom) {
+    private PhongMaterial getMaterial(LeafSubstructure origin, Atom atom) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
+        } else if (colorScheme == ColorScheme.BY_FAMILY) {
+            return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
-            String chain = origin.getChainIdentifer();
-            if (this.chainMaterials.containsKey(chain)) {
-                return this.chainMaterials.get(chain);
-            } else {
-                return getMaterialForChain(origin.getChainIdentifer());
+                String chain = origin.getLeafIdentifier().getChainIdentifer();
+                if (this.chainMaterials.containsKey(chain)) {
+                    return this.chainMaterials.get(chain);
+                } else {
+                    return getMaterialForChain(origin.getLeafIdentifier().getChainIdentifer());
+                }
             }
-        }
+
     }
 
-    private PhongMaterial getMaterial(LeafIdentifier origin, Bond edge) {
+    private PhongMaterial getMaterial(LeafSubstructure origin, Bond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
+        } else if (colorScheme == ColorScheme.BY_FAMILY) {
+            return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
-
-            return getMaterialForChain(origin.getChainIdentifer());
+            return getMaterialForChain(origin.getLeafIdentifier().getChainIdentifer());
         }
     }
 
-    private PhongMaterial getMaterial(Chain origin) {
+    private PhongMaterial getMaterial(Chain origin, Bond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {

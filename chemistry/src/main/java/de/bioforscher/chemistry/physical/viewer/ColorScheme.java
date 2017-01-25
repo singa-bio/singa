@@ -5,6 +5,6 @@ package de.bioforscher.chemistry.physical.viewer;
  */
 public enum ColorScheme {
 
-    BY_ELEMENT, BY_CHAIN
+    BY_ELEMENT, BY_CHAIN, BY_FAMILY
 
 }

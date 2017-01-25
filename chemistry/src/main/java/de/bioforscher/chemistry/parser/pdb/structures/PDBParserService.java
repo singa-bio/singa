@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class PDBParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(PDBParserService.class);
-    public static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
+    private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
 
     /**
      * prevent instantiation
