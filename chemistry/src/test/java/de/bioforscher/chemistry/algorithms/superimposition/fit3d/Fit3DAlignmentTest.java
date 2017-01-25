@@ -4,6 +4,7 @@ import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimpo
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifiers;
@@ -41,7 +42,7 @@ public class Fit3DAlignmentTest {
                 .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        this.queryMotif.addExchangableType(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        this.queryMotif.addExchangeableType(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
@@ -55,12 +56,26 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
+    public void shouldRunFit3DAlignmentWithExchangesAgainstAll() {
+        this.queryMotif.addExchangeableType(LeafIdentifier.fromString("E-57"), MatcherFamily.ALL);
+        this.queryMotif.addExchangeableType(LeafIdentifier.fromString("E-102"), MatcherFamily.ALL);
+        this.queryMotif.addExchangeableType(LeafIdentifier.fromString("E-195"), MatcherFamily.ALL);
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(this.queryMotif)
+                .target(this.target.getAllChains().get(0))
+                .run();
+        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
+        assertEquals(0.0005, matches.firstKey(), 1E-4);
+    }
+
+
+    @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
         StructureCollector.parseLigandInformation = false;
         Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
-        nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
+        nucleotideMotif.addExchangeableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<String> targetStructures = Files.list(
                 Paths.get("src/test/resources/RF00167"))
                 .map(Path::toString)
@@ -97,7 +112,7 @@ public class Fit3DAlignmentTest {
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
 
-        nucleotideMotif.addExchangableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
+        nucleotideMotif.addExchangeableType(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(nucleotideMotif)
                 .target(nucleotideTarget.getAllChains().get(0))
@@ -124,18 +139,20 @@ public class Fit3DAlignmentTest {
 //    @Test
 //    public void shouldAlignKDEEH() throws IOException {
 //
-//        Structure target1 = PDBParserService.parseProteinById("1BKH","A");
+//        Structure target1 = PDBParserService.parseProteinById("1BKH", "A");
 //
 //        // KDEEH template motif
 //        Structure motifContainingStructure = PDBParserService.parsePDBFile("motif_KDEEH.pdb");
 //        StructuralMotif motif = StructuralMotif.fromLeafs(1, motifContainingStructure,
 //                LeafIdentifiers.of("A-164", "A-195", "A-221", "A-247", "A-297"));
-//        motif.addExchangableType(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
-//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARTIC_ACID);
-//        motif.addExchangableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARAGINE);
-//        motif.addExchangableType(LeafIdentifier.fromString("H-297"), AminoAcidFamily.LYSINE);
+//        motif.addExchangeableType(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+//        motif.addExchangeableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARTIC_ACID);
+//        motif.addExchangeableType(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARAGINE);
+//        motif.addExchangeableType(LeafIdentifier.fromString("H-297"), AminoAcidFamily.LYSINE);
 //
-//        Fit3DAlignment fit3d = new Fit3DAlignment(motif, target1.getAllBranches().get(0), 3.5, 3.0,
-//                RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
+//        Fit3D fit3d = Fit3DBuilder.create()
+//                .query(motif)
+//                .target(target1.getAllChains().get(0))
+//                .run();
 //    }
 }

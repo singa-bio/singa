@@ -86,7 +86,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
      * Connects the all residues, that are currently in the chain, in order of their appearance in the
-     * List of AminoAcids ({@link BranchSubstructure#getResidues()}).
+     * List of AminoAcids ({@link BranchSubstructure#getAminoAcids()}).
      */
     public void connectChainBackbone() {
         LeafSubstructure<?, ?> lastSubstructure = null;
