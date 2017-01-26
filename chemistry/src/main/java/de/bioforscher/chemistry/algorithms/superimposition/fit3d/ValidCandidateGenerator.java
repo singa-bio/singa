@@ -55,7 +55,7 @@ public class ValidCandidateGenerator {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges
         for (LeafSubstructure<?, ?> currentLeafSubstructure : this.queryMotif) {
-            Set<?> typesAtPosition = currentLeafSubstructure.getContainingTypes();
+            Set<?> typesAtPosition = currentLeafSubstructure.getContainingFamilies();
 
             List<LeafSubstructure<?, ?>> validLeafSubstructures = this.environment.stream()
                     .filter(leafSubstructure -> typesAtPosition.contains(leafSubstructure.getFamily()))

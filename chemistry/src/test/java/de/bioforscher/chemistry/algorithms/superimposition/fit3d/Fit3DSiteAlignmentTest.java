@@ -3,6 +3,8 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
+import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +23,10 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Ala_1yfr.pdb"));
+                .getResourceAsStream("binding_sites_class2/Phe_3cmq.pdb"));
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
         Structure bindingSiteStructure2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asp_1c0a.pdb"));
+                .getResourceAsStream("binding_sites_class2/Lys_1bbu.pdb"));
         this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2
                 .getAllLeafs());
 
@@ -47,6 +49,17 @@ public class Fit3DSiteAlignmentTest {
                 .ignoreSpecifiedExchanges()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
-        fit3d.writeMatches(Paths.get("/tmp/fit3dsite"));
+    }
+
+    @Test
+    public void shouldCreateGutteridgeBindingSiteAlignment() {
+        // exchanges have only be added for one of the sites because their are transitive
+        StructuralMotifs.assignExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
+        Fit3D fit3d = Fit3DBuilder.create()
+                .site(this.bindingSite1)
+                .vs(this.bindingSite2)
+                .restrictToSpecifiedExchanges()
+                .atomFilter(AtomFilter.isBackbone())
+                .run();
     }
 }

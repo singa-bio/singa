@@ -22,16 +22,33 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
+    private final List<LeafSubstructure<?, ?>> reference;
+    private final List<LeafSubstructure<?, ?>> candidate;
     private final List<LeafSubstructure<?, ?>> mappedCandidate;
     private final List<LeafSubstructure<?, ?>> mappedFullCandidate;
 
-    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation, List<LeafSubstructure<?, ?>> mappedCandidate,
+    public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation,
+                                       List<LeafSubstructure<?, ?>> reference,
+                                       List<LeafSubstructure<?, ?>> candidate,
+                                       List<LeafSubstructure<?, ?>> mappedCandidate,
                                        List<LeafSubstructure<?, ?>> mappedFullCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
+        this.reference = reference;
+        this.candidate = candidate;
         this.mappedCandidate = mappedCandidate;
         this.mappedFullCandidate = mappedFullCandidate;
+    }
+
+    @Override
+    public List<LeafSubstructure<?, ?>> getReference() {
+        return this.reference;
+    }
+
+    @Override
+    public List<LeafSubstructure<?, ?>> getCandidate() {
+        return this.candidate;
     }
 
     /**
@@ -44,11 +61,11 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
      * @return The full string representation of this {@link SubstructureSuperimposition}.
      */
     public String getStringRepresentation() {
-
         return this.mappedCandidate.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(Object::toString)
-                .collect(Collectors.joining("_", getFormattedRmsd() + "_" + this.mappedCandidate.get(0).getPdbId()
+                .collect(Collectors.joining("_", getFormattedRmsd() + "_"
+                        + this.mappedCandidate.get(0).getPdbId()
                         + "|", ""));
     }
 

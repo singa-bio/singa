@@ -17,12 +17,18 @@ public class VectorSuperimposition implements Superimposition<Vector> {
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
+    private final List<Vector> reference;
+    private final List<Vector> candidate;
     private final List<Vector> mappedCandidate;
 
-    public VectorSuperimposition(double rmsd, Vector translation, Matrix rotation, List<Vector> mappedCandidate) {
+    public VectorSuperimposition(double rmsd, Vector translation, Matrix rotation, List<Vector> reference,
+                                 List<Vector> candidate,
+                                 List<Vector> mappedCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
+        this.reference = reference;
+        this.candidate = candidate;
         this.mappedCandidate = mappedCandidate;
     }
 
@@ -56,5 +62,15 @@ public class VectorSuperimposition implements Superimposition<Vector> {
     public List<Vector> applyTo(List<Vector> vectors) {
         return vectors.stream().map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Vector> getReference() {
+        return this.reference;
+    }
+
+    @Override
+    public List<Vector> getCandidate() {
+        return this.candidate;
     }
 }

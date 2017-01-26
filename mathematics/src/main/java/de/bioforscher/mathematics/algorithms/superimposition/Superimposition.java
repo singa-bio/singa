@@ -19,6 +19,12 @@ public interface Superimposition<T> {
     String RMSD_FORMAT_PATTERN = "0.0000";
 
     /**
+     * Returns the reference that was used for this {@link Superimposition}.
+     * @return The reference of this {@link Superimposition}.
+     */
+    List<T> getReference();
+
+    /**
      * returns the root-mean-squared deviation of this superimposition
      *
      * @return the root-mean-squared deviation
@@ -52,6 +58,12 @@ public interface Superimposition<T> {
     Matrix getRotation();
 
     /**
+     * Returns the candidate that was used for this {@link Superimposition}.
+     * @return The candidate of this {@link Superimposition}.
+     */
+    List<T> getCandidate();
+
+    /**
      * Returns copied mapped candidates that were used to compute this superimposition, only containing the objects
      * that were used to compute this superimposition.
      *
@@ -61,7 +73,7 @@ public interface Superimposition<T> {
 
     /**
      * Returns the full copied mapped candidates, which contain all objects of type T, regardless of the ones used to calculate this
-     * superimpositon. The default method simply returns the mapped candidates as is.
+     * superimposition. The default method simply returns the mapped candidates as is.
      *
      * @return the candidates with their original objects that were used for superimposition
      */

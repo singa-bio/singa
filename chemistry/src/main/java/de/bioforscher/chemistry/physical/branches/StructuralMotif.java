@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
- * Created by leberech on 16/12/16.
+ * @author cl
  */
 public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
 
@@ -51,7 +51,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafs(int identifier, List<LeafSubstructure<?,?>> leafSubstructures) {
+    public static StructuralMotif fromLeafs(int identifier, List<LeafSubstructure<?, ?>> leafSubstructures) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafSubstructures.forEach(motif::addSubstructure);
         return motif;
@@ -82,28 +82,34 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
      *
      * @param leafIdentifier   The LeafIdentifier that represents the {@link LeafSubstructure} for which an exchangeable
      *                         type should be assigned.
-     * @param exchangeableType The {@link StructuralFamily} which should be assigned as exchangeable type.
+     * @param exchangeableFamily The {@link StructuralFamily} which should be assigned as exchangeable family.
      */
-    public void addExchangeableType(LeafIdentifier leafIdentifier, StructuralFamily exchangeableType) {
-        if (exchangeableType instanceof MatcherFamily) {
-            ((MatcherFamily) exchangeableType).getMembers().forEach(aminoAcidFamily ->
+    public void addExchangeableFamily(LeafIdentifier leafIdentifier, StructuralFamily exchangeableFamily) {
+        if (exchangeableFamily instanceof MatcherFamily) {
+            ((MatcherFamily) exchangeableFamily).getMembers().forEach(aminoAcidFamily ->
                     getLeafSubstructures().stream()
-                            .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                            // TODO when selecting with LeafIdentifiers we have to ignore PDB-ID and model ID, not nice though
+                            .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().getChainIdentifer().equals(leafIdentifier.getChainIdentifer())
+                                    && leafSubstructure.getLeafIdentifier().getLeafIdentifer() == leafIdentifier.getLeafIdentifer())
                             .findFirst()
-                            .map(Exchangeable.class::cast).orElseThrow(NoSuchElementException::new)
+                            .map(Exchangeable.class::cast)
+                            .orElseThrow(NoSuchElementException::new)
                             .addExchangeableType(aminoAcidFamily)
             );
         } else {
             getLeafSubstructures().stream()
-                    .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().equals(leafIdentifier))
+                    // TODO when selecting with LeafIdentifiers we have to ignore PDB-ID and model ID, not nice though
+                    .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().getChainIdentifer().equals(leafIdentifier.getChainIdentifer())
+                            && leafSubstructure.getLeafIdentifier().getLeafIdentifer() == leafIdentifier.getLeafIdentifer())
                     .findFirst()
-                    .map(Exchangeable.class::cast).orElseThrow(NoSuchElementException::new)
-                    .addExchangeableType(exchangeableType);
+                    .map(Exchangeable.class::cast)
+                    .orElseThrow(NoSuchElementException::new)
+                    .addExchangeableType(exchangeableFamily);
         }
 //        getSubstructure(leafIdentifier.getLeafIdentifer())
 //                .map(Exchangeable.class::cast)
 //                .orElseThrow(NoSuchElementException::new)
-//                .addExchangeableType(exchangeableType);
+//                .addExchangeableFamily(exchangeableFamily);
     }
 
     /**
@@ -111,12 +117,12 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
      *
      * @param exchangeableType The {@link StructuralFamily} which should be assigned as exchangeable type.
      */
-    public void addExchangeableTypeToAll(StructuralFamily exchangeableType) {
+    public void addExchangeableFamilyToAll(StructuralFamily exchangeableType) {
         if (exchangeableType instanceof MatcherFamily) {
-            ((MatcherFamily) exchangeableType).getMembers().forEach(aminoAcidFamily ->
+            ((MatcherFamily) exchangeableType).getMembers().forEach(family ->
                     getLeafSubstructures().stream()
                             .map(Exchangeable.class::cast)
-                            .forEach(exchangeable -> exchangeable.addExchangeableType(aminoAcidFamily)));
+                            .forEach(exchangeable -> exchangeable.addExchangeableType(family)));
         } else {
             getLeafSubstructures().stream()
                     .map(Exchangeable.class::cast)

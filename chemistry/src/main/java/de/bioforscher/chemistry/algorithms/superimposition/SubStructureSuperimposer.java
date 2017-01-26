@@ -143,7 +143,6 @@ public class SubStructureSuperimposer {
         return new SubStructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateSuperimposition();
     }
 
-
     private String toAlignmentString(Map<Pair<LeafSubstructure<?, ?>>, Set<String>> perAtomAlignment) {
         StringJoiner referenceNameJoiner = new StringJoiner("|", "|", "|");
         perAtomAlignment.keySet().forEach(pair ->
@@ -294,13 +293,14 @@ public class SubStructureSuperimposer {
                         .multiply(atom.getPosition())
                         .add(this.translation).as(Vector3D.class)));
 
-        logger.debug("superimposed substructures with RMSD {}", this.rmsd);
-        logger.trace("alignment string representation:\n{}", toAlignmentString(perAtomAlignment));
+        logger.debug("superimposed substructures with RMSD {}{}", this.rmsd, toAlignmentString(perAtomAlignment));
 
         // compose superimposition container
         return new SubstructureSuperimposition(vectorSuperimposition.getRmsd(),
                 this.translation,
                 this.rotation,
+                this.reference,
+                this.candidate,
                 mappedCandidate, mappedFullCandidate);
     }
 

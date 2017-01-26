@@ -39,7 +39,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     /**
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
-    private Set<FamilyType> exchangeableTypes;
+    private Set<FamilyType> exchangeableFamilies;
 
     /**
      * A iterating variable to add a new node.
@@ -72,7 +72,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         this.neighbours = new ArrayList<>();
         this.atoms = new TreeMap<>();
         this.bonds = new HashMap<>();
-        this.exchangeableTypes = new HashSet<>();
+        this.exchangeableFamilies = new HashSet<>();
     }
 
     /**
@@ -100,8 +100,8 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
             addEdgeBetween(edgeCopy, sourceCopy, targetCopy);
         }
         // add exchangeable types
-        for (FamilyType type : leafSubstructure.getExchangeableTypes()) {
-            this.exchangeableTypes.add(type);
+        for (FamilyType type : leafSubstructure.getExchangeableFamilies()) {
+            this.exchangeableFamilies.add(type);
         }
     }
 
@@ -407,13 +407,13 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     @Override
-    public Set<FamilyType> getExchangeableTypes() {
-        return this.exchangeableTypes;
+    public Set<FamilyType> getExchangeableFamilies() {
+        return this.exchangeableFamilies;
     }
 
     @Override
     public void addExchangeableType(FamilyType exchangeableType) {
-        this.exchangeableTypes.add(exchangeableType);
+        this.exchangeableFamilies.add(exchangeableType);
     }
 
     @Override

@@ -19,9 +19,18 @@ import java.util.function.Predicate;
  */
 public class Fit3DBuilder {
 
+    /**
+     * Default values for the Fit3D algorithm.
+     */
     private static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
     private static final double DEFAULT_RMSD_CUTOFF = 2.5;
     private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
+
+    /**
+     * Default values for the Fit3DSite algorithm.
+     */
+    private static final double DEFAULT_CUTOFF_SCORE = 5.0;
+
 
     /**
      * prevent instantiation
@@ -51,22 +60,24 @@ public class Fit3DBuilder {
         /**
          * Defines a site that should be aligned against another.
          *
-         * @param site1
+         * @param site The first site to be aligned.
          * @return The {@link SiteStep} to define the antagonist.
          */
-        SiteStep site(StructuralMotif site1);
+        SiteStep site(StructuralMotif site);
     }
 
     public interface SiteStep {
         /**
          * Defines the second site for the pairwise site alignment.
          *
+         * @param site The second site to be aligned.
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
-        SiteConfigurationStep vs(StructuralMotif site2);
+        SiteParameterConfigurationStep vs(StructuralMotif site);
     }
 
     public interface SiteConfigurationStep {
+
         /**
          * Restricts the site alignment to the specified exchanges of the input sites.
          *
@@ -80,6 +91,15 @@ public class Fit3DBuilder {
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
         AtomStep ignoreSpecifiedExchanges();
+    }
+
+    public interface SiteParameterConfigurationStep extends SiteConfigurationStep {
+        /**
+         * The cutoff score that should be used when extending the site alignment.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        SiteConfigurationStep cutoffScore(double cutoffScore);
     }
 
     public interface TargetStep {
@@ -171,7 +191,7 @@ public class Fit3DBuilder {
         ParameterStep distanceTolerance(double distanceTolerance);
     }
 
-    public static class Builder implements QueryStep, SiteStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
+    public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
 
         StructuralMotif queryMotif;
         BranchSubstructure<?> target;
@@ -183,6 +203,7 @@ public class Fit3DBuilder {
         RepresentationScheme representationScheme;
         StructuralMotif site1;
         StructuralMotif site2;
+        double cutoffScore = DEFAULT_CUTOFF_SCORE;
         boolean restrictToExchanges;
 
         @Override
@@ -276,9 +297,15 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public SiteConfigurationStep vs(StructuralMotif site2) {
+        public SiteParameterConfigurationStep vs(StructuralMotif site2) {
             Objects.requireNonNull(site2);
             this.site2 = site2;
+            return this;
+        }
+
+        @Override
+        public SiteConfigurationStep cutoffScore(double cutoffScore) {
+            this.cutoffScore = cutoffScore;
             return this;
         }
 

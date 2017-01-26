@@ -45,7 +45,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final double distanceTolerance;
     private final boolean restrictToExchanges;
 
-    private double cutoffScore = DEFAULT_CUTOFF_SCORE;
+    private double cutoffScore;
 
     private int currentAlignmentSize;
     private LabeledRegularMatrix<List<LeafSubstructure<?, ?>>> currentSimilarityMatrix;
@@ -64,19 +64,18 @@ public class Fit3DSiteAlignment implements Fit3D {
         // add exchanges against arbitrary types if not restricted
         if (!this.restrictToExchanges) {
             logger.info("specified exchanges will be ignored for the Fit3DSite alignment and matched types will be arbitrary");
-            this.site1.addExchangeableTypeToAll(MatcherFamily.ALL);
-            this.site2.addExchangeableTypeToAll(MatcherFamily.ALL);
+            this.site1.addExchangeableFamilyToAll(MatcherFamily.ALL);
+            this.site2.addExchangeableFamilyToAll(MatcherFamily.ALL);
         }
-
-        logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {})", this.site1,
-                this.site1.size(), this.site2, this.site2.size());
 
         this.currentAlignmentSize = 2;
         this.currentBestScore = Double.MAX_VALUE;
 
-        logger.info("calculating initial 2-partitions");
+        logger.debug("calculating initial 2-partitions");
         this.site1Partitions = createInitialPartitions(this.site1);
         this.site2Partitions = createInitialPartitions(this.site2);
+
+        this.cutoffScore = builder.cutoffScore;
 
         this.atomFilter = builder.atomFilter;
         this.representationScheme = builder.representationScheme;
@@ -86,6 +85,9 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         // initialize
         this.matches = new TreeMap<>();
+
+        logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {}) with cutoff score {}", this.site1,
+                this.site1.size(), this.site2, this.site2.size(), this.cutoffScore);
 
         calculateSimilarities();
         extendAlignment();
@@ -132,11 +134,12 @@ public class Fit3DSiteAlignment implements Fit3D {
         StringJoiner site1Joiner = new StringJoiner("|", "|", "|");
         StringJoiner site2Joiner = new StringJoiner("|", "|", "|");
         for (int i = 0; i < this.currentAlignmentSize; i++) {
-            site1Joiner.add(String.format("%-7s", this.currentBestMatchingPair.getFirst().get(i).toString()));
-            site2Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getMappedCandidate().get(i).toString()));
+            site1Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getReference().get(i).toString()));
+            site2Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getCandidate().get(i).toString()));
         }
-        this.alignmentString = "site 1:" + site1Joiner.toString() + "\nsite 2:" + site2Joiner.toString();
-        logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues): \n{}",
+        this.alignmentString = String.format("%-7s", "RMSD") + "|" + this.currentBestSuperimposition.getRmsd() + "\n" +
+                String.format("%-7s", "s1") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2") + site2Joiner.toString();
+        logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);
     }
 
@@ -291,8 +294,13 @@ public class Fit3DSiteAlignment implements Fit3D {
             logger.info("current best matching pair of size {} is {} with RMSD {}", this.currentAlignmentSize,
                     this.currentBestMatchingPair, this.currentBestScore);
         } else {
-            throw new Fit3DException("could not find minimal agreement of partitions in iteration " +
-                    this.currentAlignmentSize);
+            if (this.currentAlignmentSize == 2) {
+                throw new Fit3DException("could not find minimal agreement of partitions in first iteration");
+            }
+            logger.info("no suitable alignment found in iteration {}", this.currentAlignmentSize);
+            this.currentAlignmentSize--;
+            this.currentBestScore = Double.MAX_VALUE;
+            return;
         }
     }
 

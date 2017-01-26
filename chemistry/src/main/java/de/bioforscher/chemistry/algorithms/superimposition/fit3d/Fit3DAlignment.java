@@ -68,11 +68,14 @@ public class Fit3DAlignment implements Fit3D {
         this.matches = new TreeMap<>();
         this.candidates = new HashMap<>();
 
-        logger.info("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
+        logger.debug("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
 
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
         reduceTargetStructure();
-
+        if (this.queryMotif.size() > this.target.getLeafSubstructures().size()) {
+            logger.debug("reduced target structure smaller than query motif, no matches can be found");
+            return;
+        }
         // calculate squared motif extent
         calculateMotifExtent();
 
@@ -174,7 +177,7 @@ public class Fit3DAlignment implements Fit3D {
     private void reduceTargetStructure() {
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
         Set<StructuralFamily> containingTypes = this.queryMotif.getLeafSubstructures().stream()
-                .map(LeafSubstructure::getContainingTypes)
+                .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         List<LeafIdentifier> toBeRemoved = this.target.getLeafSubstructures().stream()

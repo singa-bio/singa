@@ -85,11 +85,9 @@ public class ValidAlignmentGenerator {
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
                         LeafSubstructure<?, ?> recentlyAddedResidue = path.get(path.size() - 1);
-                        StructuralFamily recentlyAddedResidueFamily = recentlyAddedResidue.getFamily();
-                        if (recentlyAddedResidueFamily == currentReference.getFamily()) {
-                            return true;
-                        }
-                        return currentReference.getExchangeableTypes().contains(recentlyAddedResidueFamily);
+                        StructuralFamily recentlyAddedFamily = recentlyAddedResidue.getFamily();
+                        return recentlyAddedFamily == currentReference.getFamily()
+                                || currentReference.getExchangeableFamilies().contains(recentlyAddedFamily);
                     })
                     .collect(Collectors.toList());
         }

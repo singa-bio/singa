@@ -33,7 +33,7 @@ public class Fit3DAlignmentBenchmark {
                 .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        this.queryMotif.addExchangeableType(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
         System.out.println("setup");
     }
 
