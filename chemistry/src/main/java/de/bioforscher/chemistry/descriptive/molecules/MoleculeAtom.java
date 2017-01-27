@@ -4,7 +4,6 @@ import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.mathematics.vectors.Vector3D;
 
 /**
  * Created by Christoph on 21/11/2016.

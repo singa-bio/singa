@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
  * information. <br/>
  * <p>
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
- * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain Atoms. Edges in a BranchSubstructure
- * are only able to connect Atoms, but this can be done across different substructures. For example, this makes it
+ * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain AtomFilter. Edges in a BranchSubstructure
+ * are only able to connect AtomFilter, but this can be done across different substructures. For example, this makes it
  * possible to connect AminoAcids in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
  * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
@@ -262,7 +262,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * Adds all nodes in the collection to this BranchSubstructure.
      *
-     * @param atoms The Atoms to add.
+     * @param atoms The AtomFilter to add.
      */
     public void addAllNodes(Collection<Atom> atoms) {
         atoms.forEach(this::addNode);
@@ -329,7 +329,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
             this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
         } else {
             getBranchSubstructures().stream()
-                    .filter(StructureFilter.isChain())
+                    .filter(StructuralEntityFilter.isChain())
                     .map(Chain.class::cast)
                     .filter(chain -> chain.getChainIdentifier().equals(leafIdentifier.getChainIdentifer()))
                     .findFirst()
@@ -448,14 +448,14 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     public List<AminoAcid> getAminoAcids() {
         return getLeafSubstructures().stream()
-                .filter(StructureFilter.isResidue())
+                .filter(StructuralEntityFilter.isAminoAcid())
                 .map(AminoAcid.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Nucleotide> getNucleotides() {
         return this.getLeafSubstructures().stream()
-                .filter(StructureFilter.isNucleotide())
+                .filter(StructuralEntityFilter.isNucleotide())
                 .map(Nucleotide.class::cast)
                 .collect(Collectors.toList());
     }

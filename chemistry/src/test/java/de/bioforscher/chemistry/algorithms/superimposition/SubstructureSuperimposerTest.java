@@ -1,9 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition;
 
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
-import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
@@ -15,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -60,8 +60,8 @@ public class SubstructureSuperimposerTest {
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
-                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-                .count(), 3);
+                .mapToLong(subStructure -> subStructure.getAllAtoms().size())
+                .sum(), 3);
         assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 
@@ -72,8 +72,8 @@ public class SubstructureSuperimposerTest {
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
-                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-                .count(), 12);
+                .mapToLong(subStructure -> subStructure.getAllAtoms().size())
+                .sum(), 12);
         assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 

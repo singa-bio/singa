@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
@@ -11,6 +10,8 @@ import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * A builder that guides through the creation of a {@link Fit3D} alignment.
@@ -147,9 +148,10 @@ public class Fit3DBuilder {
         Fit3D run();
 
         /**
-         * Defines a {@link AtomFilter} to be used for the {@link Fit3D} alignment (e.g. only sidechain atoms).
+         * Defines a {@link de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g. only
+         * sidechain atoms).
          *
-         * @param atomFilter The {@link AtomFilter} to be used for the alignment.
+         * @param atomFilter The {@link de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter} filter to be used for the alignment.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
          */
         ParameterStep atomFilter(Predicate<Atom> atomFilter);

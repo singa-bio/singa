@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
@@ -11,6 +10,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * @author fk
@@ -23,13 +24,11 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("binding_sites_class2/Phe_3cmq.pdb"));
+                .getResourceAsStream("Asn_1nnh.pdb"));
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
         Structure bindingSiteStructure2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("binding_sites_class2/Lys_1bbu.pdb"));
-        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2
-                .getAllLeafs());
-
+                .getResourceAsStream("Asn_3m4p.pdb"));
+        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
 
 //        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
 //                .getResourceAsStream("2OCF_A.pdb"));
@@ -46,14 +45,16 @@ public class Fit3DSiteAlignmentTest {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)
+                .cutoffScore(1.5)
                 .ignoreSpecifiedExchanges()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
+        fit3d.writeMatches(Paths.get("/tmp/"));
     }
 
     @Test
     public void shouldCreateGutteridgeBindingSiteAlignment() {
-        // exchanges have only be added for one of the sites because their are transitive
+        // exchanges have only be added for one of the sites because they are transitive
         StructuralMotifs.assignExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)

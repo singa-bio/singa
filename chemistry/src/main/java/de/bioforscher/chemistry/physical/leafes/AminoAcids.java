@@ -27,7 +27,7 @@ public class AminoAcids {
      * @return The virtual beta carbon of glycine.
      * @throws IOException If prototype alanine aminoAcid could not be read.
      */
-    public static Atom createVirtualCBAtom(AminoAcid aminoAcid) throws IOException {
+    public static Atom createVirtualCBAtom(AminoAcid aminoAcid) {
         if (aminoAcid.getFamily() != AminoAcidFamily.GLYCINE) {
             throw new IllegalArgumentException("virtual beta carbon can only be calculated for glycine");
         }

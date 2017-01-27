@@ -97,10 +97,10 @@ public class Fit3DAlignmentBatch implements Fit3D {
         @Override
         public TreeMap<Double, SubstructureSuperimposition> call() throws Exception {
 
-            // FIXME here we are dealing only with the first chain
+            // FIXME here we are dealing only with the first model
             BranchSubstructure<?> target = new File(this.targetStructure).exists() ?
-                    PDBParserService.parsePDBFile(this.targetStructure).getAllChains().get(0) :
-                    PDBParserService.parseProteinById(this.targetStructure).getAllChains().get(0);
+                    PDBParserService.parsePDBFile(this.targetStructure).getAllModels().get(0) :
+                    PDBParserService.parseProteinById(this.targetStructure).getAllModels().get(0);
 
             // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
             Fit3D fit3d;

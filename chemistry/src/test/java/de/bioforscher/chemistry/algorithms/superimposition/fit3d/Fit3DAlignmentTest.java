@@ -85,7 +85,7 @@ public class Fit3DAlignmentTest {
                 .targets(targetStructures)
                 .maximalParallelism()
                 .run();
-        assertTrue(fit3dBatch.getMatches().size() == 218);
+        assertTrue(fit3dBatch.getMatches().size() == 240);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindLigandContainingMotif() throws IOException {
-        Structure queryStructure = PDBParserService.parseProteinById("1acj");
+        Structure queryStructure = PDBParserService.parseProteinById("1ACJ");
         StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()

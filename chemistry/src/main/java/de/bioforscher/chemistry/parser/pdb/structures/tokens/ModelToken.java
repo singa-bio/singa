@@ -19,7 +19,7 @@ public enum ModelToken implements PDBToken {
 
     private final Range<Integer> columns;
 
-    ModelToken(Range columns) {
+    ModelToken(Range<Integer> columns) {
         this.columns = columns;
     }
 

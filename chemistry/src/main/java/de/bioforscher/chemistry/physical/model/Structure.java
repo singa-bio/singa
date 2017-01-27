@@ -46,14 +46,14 @@ public class Structure {
 
     public List<StructuralModel> getAllModels() {
         return this.getBranchSubstructures().stream()
-                .filter(StructureFilter.isModel())
+                .filter(StructuralEntityFilter.isModel())
                 .map(StructuralModel.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Chain> getAllChains() {
         return this.getAllBranches().stream()
-                .filter(StructureFilter.isChain())
+                .filter(StructuralEntityFilter.isChain())
                 .map(Chain.class::cast)
                 .collect(Collectors.toList());
     }

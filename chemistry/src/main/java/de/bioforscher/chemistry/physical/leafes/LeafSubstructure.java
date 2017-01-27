@@ -12,6 +12,8 @@ import de.bioforscher.mathematics.vectors.Vectors;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.*;
+
 /**
  * The leaf substructure class represents a atom containing grouping entry in the three dimensional physical
  * representation any macro molecular structure. This abstract class is used to handle the atoms contained in this
@@ -374,7 +376,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     public Atom getAtomByName(AtomName atomName) {
         return getNodes().stream()
-                .filter(StructureFilter.hasAtomName(atomName))
+                .filter(AtomFilter.hasAtomName(atomName))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("could not parse atom name: " + atomName));
     }
@@ -412,7 +414,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     @Override
-    public void addExchangeableType(FamilyType exchangeableType) {
+    public void addExchangeableFamily(FamilyType exchangeableType) {
         this.exchangeableFamilies.add(exchangeableType);
     }
 

@@ -222,7 +222,7 @@ public class StructureSelector {
             return leafSubstructure.getAllAtoms().stream()
                     .filter(atom -> atom.getIdentifier() == atomId)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no atom container with ID " + atomId));
+                    .orElseThrow(() -> new NoSuchElementException("no atom with ID " + atomId));
         }
 
         @Override

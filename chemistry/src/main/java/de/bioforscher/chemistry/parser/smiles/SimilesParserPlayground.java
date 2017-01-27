@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.parser.smiles;
 
-import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraphRenderer;
 import de.bioforscher.javafx.renderer.graphs.GraphDisplayApplication;
 import javafx.application.Application;

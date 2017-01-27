@@ -3,6 +3,7 @@ package de.bioforscher.chemistry.physical.atoms;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by fkaiser on 10.11.16.
+ * @author fk
  */
 public class AtomFilterTest {
 
@@ -27,10 +28,10 @@ public class AtomFilterTest {
         AminoAcid branchSubstructure = structure.getAllResidues().get(0);
 
         List<Atom> backboneAtoms = branchSubstructure.getAllAtoms().stream()
-                                               .filter(AtomFilter.isBackbone())
+                                               .filter(StructuralEntityFilter.AtomFilter.isBackbone())
                                                .collect(Collectors.toList());
         List<Atom> sidechainAtoms = branchSubstructure.getAllAtoms().stream()
-                                                .filter(AtomFilter.isSidechain())
+                                                .filter(StructuralEntityFilter.AtomFilter.isSidechain())
                                                 .collect(Collectors.toList());
 
         // check backbone atoms

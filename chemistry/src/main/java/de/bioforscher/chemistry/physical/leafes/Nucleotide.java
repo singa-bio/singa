@@ -6,7 +6,6 @@ import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 /**

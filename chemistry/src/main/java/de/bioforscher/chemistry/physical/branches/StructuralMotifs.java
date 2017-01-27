@@ -23,9 +23,8 @@ public class StructuralMotifs {
         for (LeafSubstructure<?, ?> leafSubstructure : structuralMotif.getLeafSubstructures()) {
             familyGroup.stream()
                     .filter(family -> family.getMembers().contains(leafSubstructure.getFamily()))
-                    .forEach(familyMember -> {
-                        structuralMotif.addExchangeableFamily(leafSubstructure.getLeafIdentifier(), familyMember);
-                    });
+                    .forEach(familyMember -> structuralMotif.addExchangeableFamily(leafSubstructure.getLeafIdentifier(),
+                            familyMember));
         }
     }
 }

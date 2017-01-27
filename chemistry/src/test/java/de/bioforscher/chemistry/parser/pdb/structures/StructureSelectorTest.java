@@ -6,7 +6,6 @@ import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.model.Structure;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;

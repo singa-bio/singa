@@ -40,7 +40,7 @@ public interface Exchangeable<R extends StructuralFamily> {
      *
      * @return a set of containing types (own type + exchangeable types)
      */
-    default Set<R> getContainingFamilies(){
+    default Set<R> getContainingFamilies() {
         Set<R> types = new HashSet<>();
         types.add(getFamily());
         types.addAll(getExchangeableFamilies());
@@ -50,9 +50,9 @@ public interface Exchangeable<R extends StructuralFamily> {
     /**
      * Adds an exchangeable {@link StructuralFamily}.
      *
-     * @param exchangeableType the {@link StructuralFamily} to be added
+     * @param exchangeableFamily the {@link StructuralFamily} to be added
      */
-    default void addExchangeableType(R exchangeableType) {
-        getExchangeableFamilies().add(exchangeableType);
+    default void addExchangeableFamily(R exchangeableFamily) {
+        getExchangeableFamilies().add(exchangeableFamily);
     }
 }

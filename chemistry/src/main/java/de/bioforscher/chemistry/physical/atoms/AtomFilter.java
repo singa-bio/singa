@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.physical.atoms;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.physical.model.StructuralEntityFilter;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -9,9 +10,12 @@ import java.util.function.Predicate;
  * This static class bundles filters for {@link Atom}s that can be concatenated by using the {@link Predicate}
  * interface.
  *
+ * <b>This deprecates, use {@link StructuralEntityFilter.AtomFilter} instead</b>
+ *
  * @author fk
  * @see Predicate
  */
+@Deprecated
 public final class AtomFilter {
 
     private AtomFilter() {

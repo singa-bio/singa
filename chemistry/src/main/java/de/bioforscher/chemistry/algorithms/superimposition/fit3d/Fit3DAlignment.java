@@ -3,7 +3,6 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
@@ -28,10 +27,6 @@ import java.util.stream.Collectors;
  * @author fk
  */
 public class Fit3DAlignment implements Fit3D {
-
-    public static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
-    public static final double DEFAULT_RMSD_CUTOFF = 2.5;
-    private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
@@ -204,7 +199,7 @@ public class Fit3DAlignment implements Fit3D {
             }
             if (environment.size() >= this.queryMotif.size()) {
                 logger.debug("possible environment {} within {} around {} added", environment,
-                        this.squaredQueryExtent + DEFAULT_DISTANCE_TOLERANCE, currentSubstructure);
+                        Math.sqrt(this.squaredQueryExtent + this.squaredDistanceTolerance), currentSubstructure);
                 this.environments.add(environment);
             }
         }

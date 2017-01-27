@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.physical.atoms.representations;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
@@ -13,6 +12,8 @@ import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its sidechain centroid. This is only available for
@@ -36,7 +37,8 @@ public class SidechainCentroidRepresentationScheme extends AbstractRepresentatio
             return determineCentroid(leafSubstructure);
         }
         List<Vector> atomPositions = leafSubstructure.getAllAtoms().stream()
-                .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen().negate()))
+                .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen()
+                        .negate()))
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
         return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),

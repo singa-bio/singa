@@ -5,7 +5,6 @@ import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimpo
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
@@ -15,6 +14,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its beta carbon. This is only available for

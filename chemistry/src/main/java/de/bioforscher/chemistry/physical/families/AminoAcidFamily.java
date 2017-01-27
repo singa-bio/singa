@@ -80,11 +80,11 @@ public enum AminoAcidFamily implements StructuralFamily {
     }
 
     /**
-     * Returns true if the set of Atoms contains only Atom names, that can occur in the given residue type.
+     * Returns true if the set of AtomFilter contains only Atom names, that can occur in the given residue type.
      *
      * @param atoms         The atoms to be checked.
      * @param aminoAcidFamily The expected type of residue.
-     * @return True, if the set of Atoms contains only Atom names, that can occur in the given residue type.
+     * @return True, if the set of AtomFilter contains only Atom names, that can occur in the given residue type.
      */
     public boolean containsExpectedAtoms(List<Atom> atoms, AminoAcidFamily aminoAcidFamily) {
         final Set<String> actualNames = atoms.stream()

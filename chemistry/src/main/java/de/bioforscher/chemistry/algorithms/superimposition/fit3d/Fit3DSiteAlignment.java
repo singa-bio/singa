@@ -6,7 +6,6 @@ import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.core.utility.Pair;
@@ -64,8 +63,6 @@ public class Fit3DSiteAlignment implements Fit3D {
         // add exchanges against arbitrary types if not restricted
         if (!this.restrictToExchanges) {
             logger.info("specified exchanges will be ignored for the Fit3DSite alignment and matched types will be arbitrary");
-            this.site1.addExchangeableFamilyToAll(MatcherFamily.ALL);
-            this.site2.addExchangeableFamilyToAll(MatcherFamily.ALL);
         }
 
         this.currentAlignmentSize = 2;
@@ -219,7 +216,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                             .collect(Collectors.toList());
                     targetLeavesToBeRemoved.forEach(target::removeLeafSubstructure);
 
-                    // configure Fit3D to use exhaustive search
+                    // configure Fit3D
                     Fit3D fit3d;
                     if (this.representationScheme != null) {
                         fit3d = Fit3DBuilder.create()
@@ -275,7 +272,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.currentSimilarityMatrix = new LabeledRegularMatrix<>(temporarySimilarityMatrix);
         this.currentSimilarityMatrix.setRowLabels(rowLabels);
         this.currentSimilarityMatrix.setColumnLabels(columnLabels);
-//        logger.info("current similarity matrix is \n{}", this.currentSimilarityMatrix.getStringRepresentation());
+
         Optional<Pair<Integer>> minimalScore = Matrices.getPositionOfMinimalElement(this.currentSimilarityMatrix);
         if (minimalScore.isPresent()) {
             List<LeafSubstructure<?, ?>> first = this.currentSimilarityMatrix.getRowLabel(minimalScore.get().getFirst());
@@ -300,7 +297,6 @@ public class Fit3DSiteAlignment implements Fit3D {
             logger.info("no suitable alignment found in iteration {}", this.currentAlignmentSize);
             this.currentAlignmentSize--;
             this.currentBestScore = Double.MAX_VALUE;
-            return;
         }
     }
 

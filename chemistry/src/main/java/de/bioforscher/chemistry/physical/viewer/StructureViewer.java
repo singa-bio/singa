@@ -1,7 +1,6 @@
 package de.bioforscher.chemistry.physical.viewer;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
@@ -23,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.*;
 
 /**
  * Created by Christoph on 27.09.2016.
@@ -211,7 +212,7 @@ public class StructureViewer extends Application {
         this.world = new XForm();
         this.moleculeGroup = new XForm();
         Chain chain = structure.getAllChains().stream()
-                .filter(StructureFilter.isInChain(identifier.replace("Chain: ", "")))
+                .filter(ChainFilter.isInChain(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chain " + identifier.replace("Chain: ", "")));
         this.displayStructure.addSubstructure(chain);

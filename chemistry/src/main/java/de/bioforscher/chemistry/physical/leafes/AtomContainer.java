@@ -23,7 +23,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
         this.name = name;
     }
 
-    public AtomContainer(AtomContainer atomContainer) {
+    public AtomContainer(AtomContainer<StructuralFamilyType> atomContainer) {
         super(atomContainer);
         this.name = atomContainer.name;
     }

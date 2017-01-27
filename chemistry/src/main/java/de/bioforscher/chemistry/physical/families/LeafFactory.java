@@ -1,19 +1,15 @@
 package de.bioforscher.chemistry.physical.families;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 
-import java.util.EnumMap;
 import java.util.Map;
 
-import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
-
 /**
- * The residue factory is used to create residues from a set of Atoms with their AtomNames. This also connects the atoms
+ * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the atoms
  * in the residues, where possible. No distance criterion is used but the knowledge of the residues and the usually
  * connected atoms. Different options can be set.
  */
@@ -326,7 +322,7 @@ public class LeafFactory {
     }
 
     /**
-     * Connects the C terminal Atoms C-to-OXT-to-HXT.
+     * Connects the C terminal AtomFilter C-to-OXT-to-HXT.
      * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */

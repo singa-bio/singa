@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.parser.smiles;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.core.utility.Pair;

@@ -1,13 +1,21 @@
 package de.bioforscher.chemistry.physical.branches;
 
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
+import de.bioforscher.chemistry.physical.families.NucleotideFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.model.*;
+import de.bioforscher.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.*;
 
 /**
  * @author cl
@@ -34,7 +42,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafIdentifiers.forEach(leafIdentifer -> {
             Substructure subStructure = structure.getAllChains().stream()
-                    .filter(StructureFilter.isInChain(leafIdentifer.getChainIdentifer()))
+                    .filter(ChainFilter.isInChain(leafIdentifer.getChainIdentifer()))
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new)
                     .getSubstructure(leafIdentifer.getLeafIdentifer())
@@ -77,57 +85,71 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         return getLeafSubstructures().size();
     }
 
-    /**
-     * FIXME: here we have to find a nice solution to generify definition of exchanges
-     *
-     * @param leafIdentifier   The LeafIdentifier that represents the {@link LeafSubstructure} for which an exchangeable
-     *                         type should be assigned.
-     * @param exchangeableFamily The {@link StructuralFamily} which should be assigned as exchangeable family.
-     */
-    public void addExchangeableFamily(LeafIdentifier leafIdentifier, StructuralFamily exchangeableFamily) {
-        if (exchangeableFamily instanceof MatcherFamily) {
-            ((MatcherFamily) exchangeableFamily).getMembers().forEach(aminoAcidFamily ->
-                    getLeafSubstructures().stream()
-                            // TODO when selecting with LeafIdentifiers we have to ignore PDB-ID and model ID, not nice though
-                            .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().getChainIdentifer().equals(leafIdentifier.getChainIdentifer())
-                                    && leafSubstructure.getLeafIdentifier().getLeafIdentifer() == leafIdentifier.getLeafIdentifer())
-                            .findFirst()
-                            .map(Exchangeable.class::cast)
-                            .orElseThrow(NoSuchElementException::new)
-                            .addExchangeableType(aminoAcidFamily)
-            );
-        } else {
-            getLeafSubstructures().stream()
-                    // TODO when selecting with LeafIdentifiers we have to ignore PDB-ID and model ID, not nice though
-                    .filter(leafSubstructure -> leafSubstructure.getLeafIdentifier().getChainIdentifer().equals(leafIdentifier.getChainIdentifer())
-                            && leafSubstructure.getLeafIdentifier().getLeafIdentifer() == leafIdentifier.getLeafIdentifer())
-                    .findFirst()
-                    .map(Exchangeable.class::cast)
-                    .orElseThrow(NoSuchElementException::new)
-                    .addExchangeableType(exchangeableFamily);
-        }
-//        getSubstructure(leafIdentifier.getLeafIdentifer())
-//                .map(Exchangeable.class::cast)
-//                .orElseThrow(NoSuchElementException::new)
-//                .addExchangeableFamily(exchangeableFamily);
+    public void addExchangeableFamily(LeafIdentifier leafIdentifier, MatcherFamily matcherFamily) {
+        matcherFamily.getMembers().forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
+    }
+
+    public void addExchangeableFamily(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily) {
+        getLeafSubstructures().stream()
+                .filter(isNucleotide())
+                .map(Nucleotide.class::cast)
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getChainIdentifer()
+                        .equals(leafIdentifier.getChainIdentifer()))
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getLeafIdentifer()
+                        == leafIdentifier.getLeafIdentifer())
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new)
+                .addExchangeableFamily(nucleotideFamily);
+    }
+
+    public void addExchangeableFamily(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily) {
+        getLeafSubstructures().stream()
+                .filter(isAminoAcid())
+                .map(AminoAcid.class::cast)
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getChainIdentifer()
+                        .equals(leafIdentifier.getChainIdentifer()))
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getLeafIdentifer()
+                        == leafIdentifier.getLeafIdentifer())
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new)
+                .addExchangeableFamily(aminoAcidFamily);
     }
 
     /**
-     * FIXME: here we have to find a nice solution to generify definition of exchanges
+     * Assigns an {@link AminoAcidFamily} to all members as exchange.
      *
-     * @param exchangeableType The {@link StructuralFamily} which should be assigned as exchangeable type.
+     * @param aminoAcidFamily The {@link AminoAcidFamily} which should be assigned as exchangeable type.
      */
-    public void addExchangeableFamilyToAll(StructuralFamily exchangeableType) {
-        if (exchangeableType instanceof MatcherFamily) {
-            ((MatcherFamily) exchangeableType).getMembers().forEach(family ->
-                    getLeafSubstructures().stream()
-                            .map(Exchangeable.class::cast)
-                            .forEach(exchangeable -> exchangeable.addExchangeableType(family)));
-        } else {
-            getLeafSubstructures().stream()
-                    .map(Exchangeable.class::cast)
-                    .forEach(exchangeable -> exchangeable.addExchangeableType(exchangeableType));
-        }
+    public void addExchangeableFamilyToAll(AminoAcidFamily aminoAcidFamily) {
+        getLeafSubstructures().stream()
+                .filter(isAminoAcid())
+                .map(AminoAcid.class::cast)
+                .forEach(exchangeable -> exchangeable.addExchangeableFamily(aminoAcidFamily));
+
+    }
+
+    /**
+     * Assigns an {@link NucleotideFamily} to all members as exchange.
+     *
+     * @param nucleotideFamily The {@link NucleotideFamily} which should be assigned as exchangeable type.
+     */
+    public void addExchangeableFamilyToAll(NucleotideFamily nucleotideFamily) {
+        getLeafSubstructures().stream()
+                .filter(isNucleotide())
+                .map(Nucleotide.class::cast)
+                .forEach(exchangeable -> exchangeable.addExchangeableFamily(nucleotideFamily));
+    }
+
+    /**
+     * Assigns each member of a {@link MatcherFamily} to all members as exchange.
+     *
+     * @param matcherFamily The {@link MatcherFamily} that bundles all members which should be assigned as
+     *                      exchangeable type.
+     */
+    public void addExchangeableFamilyToAll(MatcherFamily matcherFamily) {
+        getLeafSubstructures().forEach(leafSubstructure -> matcherFamily.getMembers()
+                .forEach(matcherFamilyMember -> addExchangeableFamily(leafSubstructure.getLeafIdentifier(),
+                        matcherFamilyMember)));
     }
 
 

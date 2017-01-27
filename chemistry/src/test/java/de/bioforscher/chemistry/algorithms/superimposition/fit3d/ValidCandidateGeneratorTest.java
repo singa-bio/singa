@@ -28,10 +28,10 @@ public class ValidCandidateGeneratorTest {
         AminoAcid motif1Histidine1 = new AminoAcid(5, AminoAcidFamily.HISTIDINE);
 
         // set exchanges 1
-        motif1Lysine1.addExchangeableType(AminoAcidFamily.HISTIDINE);
-        motif1GlutamicAcid2.addExchangeableType(AminoAcidFamily.ASPARTIC_ACID);
-        motif1GlutamicAcid2.addExchangeableType(AminoAcidFamily.ASPARAGINE);
-        motif1Histidine1.addExchangeableType(AminoAcidFamily.LYSINE);
+        motif1Lysine1.addExchangeableFamily(AminoAcidFamily.HISTIDINE);
+        motif1GlutamicAcid2.addExchangeableFamily(AminoAcidFamily.ASPARTIC_ACID);
+        motif1GlutamicAcid2.addExchangeableFamily(AminoAcidFamily.ASPARAGINE);
+        motif1Histidine1.addExchangeableFamily(AminoAcidFamily.LYSINE);
 
         // compose motif 1
         this.motif1 = new ArrayList<>();
@@ -59,9 +59,7 @@ public class ValidCandidateGeneratorTest {
 
     @Test
     public void shouldGenerateValidCandidates() {
-        Set<Set<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2).getValidCandidates();
-
-//        candidates.stream()
-//                .forEach(System.out::println);
+        Set<Set<LeafSubstructure<?, ?>>> candidates = new ValidCandidateGenerator(this.motif1, this.motif2)
+                .getValidCandidates();
     }
 }
