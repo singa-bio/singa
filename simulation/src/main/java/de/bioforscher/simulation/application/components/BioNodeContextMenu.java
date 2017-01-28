@@ -9,8 +9,12 @@ import de.bioforscher.simulation.modules.model.Simulation;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BioNodeContextMenu extends ContextMenu {
+
+    private static final Logger logger = LoggerFactory.getLogger(BioNodeContextMenu.class);
 
     private final BioGraphSimulation owner;
     private BioNode node;
@@ -71,6 +75,7 @@ public class BioNodeContextMenu extends ContextMenu {
     }
 
     private void deleteNode(ActionEvent event) {
+        logger.debug("Removing node {} from currently displayed graph ...",this.node.getIdentifier());
         this.owner.getGraph().removeNode(this.node.getIdentifier());
         this.owner.redrawGraph();
     }

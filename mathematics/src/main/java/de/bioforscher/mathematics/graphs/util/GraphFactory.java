@@ -10,6 +10,7 @@ import de.bioforscher.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.mathematics.graphs.trees.BinaryTreeNode;
 import de.bioforscher.mathematics.sequences.Sequences;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,8 @@ import java.util.Map;
  * @author cl
  */
 public class GraphFactory {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GraphFactory.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -129,10 +132,13 @@ public class GraphFactory {
      * @return A rectangular grid graph.
      */
     public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
+        logger.debug("Creating grid graph ...");
         UndirectedGraph graph = new UndirectedGraph();
         double horizontalSpacing = boundingBox.getWidth() / (rows + 1);
         double verticalSpacing = boundingBox.getHeight() / (columns + 1);
+
         // adding nodes
+        logger.debug("Creating and placing nodes ...");
         int nodeCounter = 0;
         for (int row = 0; row < columns; row++) {
             for (int column = 0; column < rows; column++) {
@@ -144,6 +150,7 @@ public class GraphFactory {
         }
 
         // horizontal connections
+        logger.debug("Adding horizontal connections ...");
         int horizontalCounter = 0;
         for (int row = 0; row < columns; row++) {
             for (int column = 0; column < rows; column++) {
@@ -159,6 +166,7 @@ public class GraphFactory {
         }
 
         // vertical connections
+        logger.debug("Adding vertical connections ...");
         int verticalCounter = 0;
         for (int row = 0; row < columns; row++) {
             for (int column = 0; column < rows; column++) {
@@ -173,23 +181,20 @@ public class GraphFactory {
 
         // periodic border conditions
         if (periodic) {
-
+            logger.debug("Adding periodic boundary connections");
             // horizontal connections
             for (int c = 0; c < rows; c++) {
                 RegularNode source = graph.getNode(c);
                 RegularNode target = graph.getNode(graph.getNodes().size() - (rows - c));
                 graph.addEdgeBetween(horizontalCounter + verticalCounter + c + 1, source, target);
             }
-
             // vertical connections
             for (int r = 0; r < columns; r++) {
                 RegularNode source = graph.getNode(r * columns);
                 RegularNode target = graph.getNode(r * columns + columns - 1);
                 graph.addEdgeBetween(horizontalCounter + verticalCounter + rows + r + 1, source, target);
             }
-
         }
-
         return graph;
     }
 

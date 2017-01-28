@@ -5,6 +5,8 @@ import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.util.AutomatonGraphUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -29,15 +31,16 @@ import java.util.Map;
  */
 public class GraphMLExportService {
 
+    private static final Logger logger = LoggerFactory.getLogger(GraphMLExportService.class);
+
     /**
-     * Exports a Graph to
-     * a GraphML file.
+     * Exports a Graph to a GraphML file.
      *
      * @param graph The graph.
      * @param file  The new target file.
      */
     public static void exportGraph(AutomatonGraph graph, File file) {
-
+        logger.info("Writing graph to file {}" , file.getAbsolutePath());
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

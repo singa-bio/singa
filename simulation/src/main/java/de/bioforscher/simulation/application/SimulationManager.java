@@ -5,6 +5,8 @@ import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.GraphUpdatedEvent;
 import de.bioforscher.simulation.modules.model.Simulation;
 import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,16 +15,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class SimulationManager extends Task<Simulation> implements UpdateEventEmitter<GraphUpdatedEvent> {
 
+    private static final Logger logger = LoggerFactory.getLogger(SimulationManager.class);
+
     private final Simulation simulation;
     private CopyOnWriteArrayList<UpdateEventListener<GraphUpdatedEvent>> listeners;
 
     public SimulationManager(Simulation simulation) {
+        logger.debug("Initializing simulation manager ...");
         this.simulation = simulation;
         this.listeners = new CopyOnWriteArrayList<>();
     }
 
-    public Simulation getSimulation() {
-        return this.simulation;
+    @Override
+    public void addEventListener(UpdateEventListener<GraphUpdatedEvent> listener) {
+        logger.info("Added {} to registered update listeners.", listener.getClass().getSimpleName());
+        this.listeners.add(listener);
     }
 
     @Override
