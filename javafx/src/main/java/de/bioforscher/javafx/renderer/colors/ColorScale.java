@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.application.renderer;
+package de.bioforscher.javafx.renderer.colors;
 
 import javafx.scene.paint.Color;
 
@@ -89,7 +89,6 @@ public class ColorScale {
         }
 
         public ColorScale build() {
-            // TODO make it possible to go both ways
             if (this.minimalHue > this.maximalHue) {
                 throw new IllegalArgumentException(
                         "The value for minimal hue has to be larger than the one for maximal hue.");

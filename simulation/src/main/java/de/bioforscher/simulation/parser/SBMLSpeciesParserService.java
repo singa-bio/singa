@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
  */
 public class SBMLSpeciesParserService {
 
-
     private static SBMLSpeciesParserService service;
 
     private SBMLDocument document;

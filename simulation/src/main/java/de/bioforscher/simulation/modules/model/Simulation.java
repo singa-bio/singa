@@ -7,6 +7,7 @@ import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import tec.units.ri.quantity.Quantities;
 
@@ -30,6 +31,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     private int epoch;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
+    private EpochUpdateWriter writer;
 
     public Simulation() {
         this.modules = new HashSet<>();
@@ -84,6 +86,15 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     public Quantity<Time> getElapsedTime() {
         return Quantities.getQuantity(EnvironmentalVariables.getInstance().getTimeStep().getValue().doubleValue() *
                 this.epoch, EnvironmentalVariables.getInstance().getTimeStep().getUnit());
+    }
+
+    public EpochUpdateWriter getWriter() {
+        return this.writer;
+    }
+
+    public void setWriter(EpochUpdateWriter writer) {
+        this.writer = writer;
+        this.listeners.add(writer);
     }
 
     private void emitNextEpochEvent(BioNode node) {

@@ -1,6 +1,7 @@
 package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.javafx.renderer.colors.ColorScale;
 import de.bioforscher.simulation.model.BioEdge;
 import de.bioforscher.simulation.model.BioNode;
 import javafx.scene.paint.Color;

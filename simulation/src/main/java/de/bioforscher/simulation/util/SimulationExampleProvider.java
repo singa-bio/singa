@@ -329,7 +329,9 @@ public class SimulationExampleProvider {
      * @return The ready to go simulation.
      */
     public static Simulation createIodineMultiReactionExample() {
-
+        logger.info("Setting up the passive membrane diffusion example ...");
+        // get required species
+        logger.debug("Importing species ...");
         // Hydron (H+)
         Species hydron = ChEBIParserService.parse("CHEBI:15378");
         // Iodide (I-)
@@ -347,15 +349,19 @@ public class SimulationExampleProvider {
         // Iodate (IO3-)
         Species iodate = ChEBIParserService.parse("CHEBI:29226");
 
+        logger.debug("Setting up example graph ...");
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(
                 GraphFactory.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
+        logger.debug("Initializing starting concentrations of species and node states in graph ...");
         graph.getNode(0).addAllEntities(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
         // setup time step size
+        logger.debug("Adjusting time step size ... ");
         EnvironmentalVariables.getInstance().setTimeStep(Quantities.getQuantity(5.0, MILLI(SECOND)));
 
+        logger.debug("Composing simulation ... ");
         // create reactions module
         Reactions reactions = new Reactions();
 
@@ -450,7 +456,7 @@ public class SimulationExampleProvider {
         logger.debug("Adjusting time step size ... ");
         EnvironmentalVariables.getInstance().setTimeStep(Quantities.getQuantity(100,
                 NANO(SECOND)));
-        // setup node distance to diameter / (numberOfNodes - 1)
+        // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
         EnvironmentalVariables.getInstance().setNodeSpacingToDiameter(
                 Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);

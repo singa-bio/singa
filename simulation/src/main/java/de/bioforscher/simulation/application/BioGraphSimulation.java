@@ -59,7 +59,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExampleProvider.createPassiveMembraneTransportExample();
+        this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
@@ -238,14 +238,8 @@ public class BioGraphSimulation extends Application {
 
     private void arrangeGraph(ActionEvent event) {
         logger.debug("Starting rearrangement cycle ...");
-        Thread graphProducer = new Thread(new BioGraphProducer(
-                this.simulationCanvas.getRenderer().getGraphQueue(),
-                this.simulation.getGraph(),
-                100));
-        graphProducer.start();
-        this.simulationCanvas.getRenderer().start();
+        this.simulationCanvas.getRenderer().arrangeGraph(this.simulation.getGraph());
     }
-
 
     private Stage prepareUtilityWindow(int width, int height, String title) {
         Stage utilityStage = new Stage();
