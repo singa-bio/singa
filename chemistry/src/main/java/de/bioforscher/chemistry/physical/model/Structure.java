@@ -10,6 +10,9 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isModel;
+
 /**
  * Structure represents chemical objects in a three dimensional space. Substructures are used to partition a structure
  * into smaller branchSubstructures that can be connected with edges.
@@ -46,14 +49,14 @@ public class Structure {
 
     public List<StructuralModel> getAllModels() {
         return this.getBranchSubstructures().stream()
-                .filter(StructuralEntityFilter.isModel())
+                .filter(isModel())
                 .map(StructuralModel.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Chain> getAllChains() {
         return this.getAllBranches().stream()
-                .filter(StructuralEntityFilter.isChain())
+                .filter(isChain())
                 .map(Chain.class::cast)
                 .collect(Collectors.toList());
     }

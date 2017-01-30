@@ -1,10 +1,13 @@
 package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.chemistry.physical.model.*;
+import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
@@ -13,6 +16,10 @@ import de.bioforscher.mathematics.vectors.Vectors;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isAminoAcid;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isNucleotide;
 
 /**
  * The BranchSubstructure is the central component in the three dimensional structure representation of macro molecules.
@@ -329,7 +336,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
             this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
         } else {
             getBranchSubstructures().stream()
-                    .filter(StructuralEntityFilter.isChain())
+                    .filter(isChain())
                     .map(Chain.class::cast)
                     .filter(chain -> chain.getChainIdentifier().equals(leafIdentifier.getChainIdentifer()))
                     .findFirst()
@@ -448,14 +455,14 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     public List<AminoAcid> getAminoAcids() {
         return getLeafSubstructures().stream()
-                .filter(StructuralEntityFilter.isAminoAcid())
+                .filter(isAminoAcid())
                 .map(AminoAcid.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Nucleotide> getNucleotides() {
         return this.getLeafSubstructures().stream()
-                .filter(StructuralEntityFilter.isNucleotide())
+                .filter(isNucleotide())
                 .map(Nucleotide.class::cast)
                 .collect(Collectors.toList());
     }

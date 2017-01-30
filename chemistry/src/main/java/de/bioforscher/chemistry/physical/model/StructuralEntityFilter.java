@@ -11,6 +11,7 @@ import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.core.utility.Range;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -24,28 +25,27 @@ import java.util.function.Predicate;
  */
 public class StructuralEntityFilter {
 
-    public static Predicate<BranchSubstructure<?>> isModel() {
-        return branch -> branch instanceof StructuralModel;
-    }
+    /**
+     * Filters for {@link BranchSubstructure}s.
+     */
+    public static final class BranchFilter {
 
-    public static Predicate<BranchSubstructure<?>> isChain() {
-        return branch -> branch instanceof Chain;
-    }
+        public static Predicate<BranchSubstructure<?>> hasId(int id) {
+            return branchSubstructure -> branchSubstructure.getIdentifier() == id;
+        }
 
-    public static Predicate<BranchSubstructure<?>> isStructuralMotif() {
-        return branch -> branch instanceof StructuralMotif;
-    }
+        public static Predicate<BranchSubstructure<?>> isChain() {
+            return branch -> branch instanceof Chain;
+        }
 
-    public static Predicate<LeafSubstructure<?, ?>> isAminoAcid() {
-        return leaf -> leaf instanceof AminoAcid;
-    }
+        public static Predicate<BranchSubstructure<?>> isModel() {
+            return branch -> branch instanceof StructuralModel;
+        }
 
-    public static Predicate<LeafSubstructure<?, ?>> isNucleotide() {
-        return leaf -> leaf instanceof Nucleotide;
-    }
+        public static Predicate<BranchSubstructure<?>> isStructuralMotif() {
+            return branch -> branch instanceof StructuralMotif;
+        }
 
-    public static Predicate<LeafSubstructure<?, ?>> isAtomContainer() {
-        return leaf -> leaf instanceof AtomContainer;
     }
 
     /**
@@ -58,27 +58,62 @@ public class StructuralEntityFilter {
     }
 
     /**
+     * Filters for {@link LeafSubstructure}s.
+     */
+    public static final class LeafFilter {
+
+        public static Predicate<LeafSubstructure<?, ?>> hasId(int id) {
+            return leafSubstructure -> leafSubstructure.getIdentifier() == id;
+        }
+
+        public static Predicate<LeafSubstructure<?, ?>> isAminoAcid() {
+            return leaf -> leaf instanceof AminoAcid;
+        }
+
+        public static Predicate<LeafSubstructure<?, ?>> isAtomContainer() {
+            return leaf -> leaf instanceof AtomContainer;
+        }
+
+        public static Predicate<LeafSubstructure<?, ?>> isNucleotide() {
+            return leaf -> leaf instanceof Nucleotide;
+        }
+
+        public static Predicate<LeafSubstructure<?, ?>> isWithinRange(int startId, int endId) {
+            Range<Integer> range = new Range<>(startId, endId);
+            return leaf -> range.isInRange(leaf.getIdentifier());
+        }
+    }
+
+    /**
      * Filters for {@link Atom}s.
      */
     public static final class AtomFilter {
+
+        public static Predicate<Atom> hasAtomName(String atomName) {
+            return atom -> Objects.equals(atom.getAtomNameString(), atomName);
+        }
+
+        public static Predicate<Atom> hasAtomName(AtomName atomName) {
+            return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
+        }
+
+        public static Predicate<Atom> hasId(int id) {
+            return atom -> atom.getIdentifier() == id;
+        }
+
+        public static Predicate<Atom> isAlphaCarbon() {
+            return atom -> Objects.equals(atom.getAtomNameString(), AtomName.CA.getName());
+        }
+
         public static Predicate<Atom> isArbitrary() {
             return atom -> true;
         }
 
-        public static Predicate<Atom> isCarbon() {
-            return atom -> atom.getElement().equals(ElementProvider.CARBON);
-        }
-
-        public static Predicate<Atom> isHydrogen() {
-            return atom -> atom.getElement().equals(ElementProvider.HYDROGEN);
-        }
-
-        public static Predicate<Atom> isOxygen() {
-            return atom -> atom.getElement().equals(ElementProvider.OXYGEN);
-        }
-
-        public static Predicate<Atom> isNitrogen() {
-            return atom -> atom.getElement().equals(ElementProvider.NITROGEN);
+        public static Predicate<Atom> isBackbone() {
+            return atom -> Objects.equals(atom.getAtomNameString(), AtomName.N.getName()) ||
+                    Objects.equals(atom.getAtomNameString(), AtomName.CA.getName()) ||
+                    Objects.equals(atom.getAtomNameString(), AtomName.C.getName()) ||
+                    Objects.equals(atom.getAtomNameString(), AtomName.O.getName());
         }
 
         public static Predicate<Atom> isBackboneCarbon() {
@@ -93,19 +128,24 @@ public class StructuralEntityFilter {
             return isBackbone().and(isOxygen());
         }
 
-        public static Predicate<Atom> isAlphaCarbon() {
-            return atom -> Objects.equals(atom.getAtomNameString(), AtomName.CA.getName());
-        }
-
         public static Predicate<Atom> isBetaCarbon() {
             return atom -> Objects.equals(atom.getAtomNameString(), AtomName.CB.getName());
         }
 
-        public static Predicate<Atom> isBackbone() {
-            return atom -> Objects.equals(atom.getAtomNameString(), AtomName.N.getName()) ||
-                    Objects.equals(atom.getAtomNameString(), AtomName.CA.getName()) ||
-                    Objects.equals(atom.getAtomNameString(), AtomName.C.getName()) ||
-                    Objects.equals(atom.getAtomNameString(), AtomName.O.getName());
+        public static Predicate<Atom> isCarbon() {
+            return atom -> atom.getElement().equals(ElementProvider.CARBON);
+        }
+
+        public static Predicate<Atom> isHydrogen() {
+            return atom -> atom.getElement().equals(ElementProvider.HYDROGEN);
+        }
+
+        public static Predicate<Atom> isNitrogen() {
+            return atom -> atom.getElement().equals(ElementProvider.NITROGEN);
+        }
+
+        public static Predicate<Atom> isOxygen() {
+            return atom -> atom.getElement().equals(ElementProvider.OXYGEN);
         }
 
         public static Predicate<Atom> isPhosphorus() {
@@ -116,12 +156,9 @@ public class StructuralEntityFilter {
             return isBackbone().negate();
         }
 
-        public static Predicate<Atom> hasAtomName(AtomName atomName) {
-            return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
-        }
-
-        public static Predicate<Atom> hasAtomName(String atomName) {
-            return atom -> Objects.equals(atom.getAtomNameString(), atomName);
+        public static Predicate<Atom> isWithinRange(int startId, int endId) {
+            Range<Integer> range = new Range<>(startId, endId);
+            return atom -> range.isInRange(atom.getIdentifier());
         }
     }
 }

@@ -16,6 +16,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.*;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isAminoAcid;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isNucleotide;
 
 /**
  * @author cl
