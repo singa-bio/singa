@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
@@ -49,7 +48,6 @@ public class Fit3DSiteAlignmentTest {
                 .ignoreSpecifiedExchanges()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
-        fit3d.writeMatches(Paths.get("/tmp/"));
     }
 
     @Test

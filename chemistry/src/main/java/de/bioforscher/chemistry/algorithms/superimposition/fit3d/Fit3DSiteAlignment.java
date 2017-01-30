@@ -54,6 +54,7 @@ public class Fit3DSiteAlignment implements Fit3D {
 
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private String alignmentString;
+    private boolean cutoffScoreReached;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) {
         this.site1 = builder.site1.getCopy();
@@ -111,8 +112,9 @@ public class Fit3DSiteAlignment implements Fit3D {
             extendPartitions();
             // recalculate similarities
             calculateSimilarities();
-            if (this.currentBestScore > DEFAULT_CUTOFF_SCORE) {
+            if (this.cutoffScoreReached) {
                 logger.info("alignment reached cutoff score of {}", this.cutoffScore);
+                break;
             }
         }
 
@@ -282,7 +284,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             if (scoreValue > this.cutoffScore) {
                 logger.info("cutoff score exceeded");
                 this.currentAlignmentSize--;
-                this.currentBestScore = Double.MAX_VALUE;
+                this.cutoffScoreReached = true;
                 return;
             }
             this.currentBestMatchingPair = new Pair<>(first, second);
