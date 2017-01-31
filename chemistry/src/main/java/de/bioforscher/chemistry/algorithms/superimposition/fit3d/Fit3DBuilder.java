@@ -87,11 +87,19 @@ public class Fit3DBuilder {
         AtomStep restrictToSpecifiedExchanges();
 
         /**
-         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type.
+         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type using
+         * a heuristic that does not necessarily yield the best alignment possible.
          *
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
         AtomStep ignoreSpecifiedExchanges();
+
+        /**
+         * Guarantees to find the ideal alignment of the input sites.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep exhaustive();
     }
 
     public interface SiteParameterConfigurationStep extends SiteConfigurationStep {
@@ -206,6 +214,7 @@ public class Fit3DBuilder {
         StructuralMotif site1;
         StructuralMotif site2;
         double cutoffScore = DEFAULT_CUTOFF_SCORE;
+        boolean exhaustive;
         boolean restrictToExchanges;
 
         @Override
@@ -320,6 +329,12 @@ public class Fit3DBuilder {
         @Override
         public AtomStep ignoreSpecifiedExchanges() {
             this.restrictToExchanges = false;
+            return this;
+        }
+
+        @Override
+        public AtomStep exhaustive() {
+            this.exhaustive = true;
             return this;
         }
     }

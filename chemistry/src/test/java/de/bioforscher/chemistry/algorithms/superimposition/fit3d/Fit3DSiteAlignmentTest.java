@@ -24,7 +24,7 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 =  StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_1nnh.pdb").getFile())
+                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asp_1c0a.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
@@ -49,8 +49,8 @@ public class Fit3DSiteAlignmentTest {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)
-                .cutoffScore(1.5)
-                .ignoreSpecifiedExchanges()
+                .cutoffScore(5.0)
+                .exhaustive()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
     }
