@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.descriptive;
 
 import de.bioforscher.core.identifier.ChEBIIdentifier;
+import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -21,7 +22,7 @@ public class SpeciesTest {
 
     @Test
     public void shouldCreateSpeciesWithIdentifier() {
-        Species methanol = new Species.Builder(new ChEBIIdentifier("CHEBI:123")).build();
+        Species methanol = new Species.Builder(new SimpleStringIdentifier("CHEBI:123")).build();
         assertEquals(methanol.getIdentifier().getIdentifier(), "CHEBI:123");
     }
 

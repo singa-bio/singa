@@ -5,6 +5,7 @@ import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.PubChemIdentifier;
+import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -13,7 +14,7 @@ import org.xml.sax.SAXException;
 class PubChemContentHandler implements ContentHandler {
 
     // species attributes
-    private ChEBIIdentifier chebiIdentifier;
+    private SimpleStringIdentifier chebiIdentifier;
     private String pubChemIdentifier;
     private String name;
     private String smilesRepresentation;
@@ -104,7 +105,7 @@ class PubChemContentHandler implements ContentHandler {
                     String potentialChebiIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialChebiIdentifier).matches()) {
                         // set chebi identifier
-                        this.chebiIdentifier = new ChEBIIdentifier(potentialChebiIdentifier);
+                        this.chebiIdentifier = new SimpleStringIdentifier(potentialChebiIdentifier);
                         this.inSynonyms = false;
                         this.inSynonymsInformation = false;
                     }

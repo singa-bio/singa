@@ -2,11 +2,12 @@ package de.bioforscher.chemistry.descriptive;
 
 import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.core.identifier.ChEBIIdentifier;
+import de.bioforscher.core.identifier.SimpleStringIdentifier;
 
 /**
  * A chemical species should be used to handle everything that can be described with a SMILES (Simplified Molecular
  * Input Line Entry Specification) String, such as small molecules and molecular fragments. The species needs to be
- * identifiable by a {@link ChEBIIdentifier}. Species can be parsed from the ChEBI Database using the {@link
+ * identifiable by a {@link SimpleStringIdentifier}. Species can be parsed from the ChEBI Database using the {@link
  * ChEBIParserService ChEBIParserService}.
  *
  * @author cl
@@ -14,7 +15,7 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public class Species extends ChemicalEntity<ChEBIIdentifier> {
+public class Species extends ChemicalEntity<SimpleStringIdentifier> {
 
     public final static Species UNKNOWN_SPECIES = new Species.Builder("CHEBI:00000")
             .name("Unknown chemical species")
@@ -29,19 +30,19 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> {
     /**
      * Creates a new Species with the given {@link ChEBIIdentifier}.
      *
-     * @param identifier The {@link ChEBIIdentifier}.
+     * @param identifier The {@link SimpleStringIdentifier}.
      */
-    protected Species(ChEBIIdentifier identifier) {
+    protected Species(SimpleStringIdentifier identifier) {
         super(identifier);
     }
 
     /**
-     * Creates a new Species using a String representation of a {@link ChEBIIdentifier}.
+     * Creates a new Species using a String representation of a {@link SimpleStringIdentifier}.
      *
-     * @param identifier A String representation of the {@link ChEBIIdentifier}.
+     * @param identifier A String representation of the {@link SimpleStringIdentifier}.
      */
     protected Species(String identifier) {
-        this(new ChEBIIdentifier(identifier));
+        this(new SimpleStringIdentifier(identifier));
     }
 
     /**
@@ -68,18 +69,18 @@ public class Species extends ChemicalEntity<ChEBIIdentifier> {
                 + " weight: " + getMolarMass() + " smiles: " + getSmilesRepresentation();
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Species, Builder, ChEBIIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {
 
-        public Builder(ChEBIIdentifier identifier) {
+        public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
         }
 
         public Builder(String identifier) {
-            this(new ChEBIIdentifier(identifier));
+            this(new SimpleStringIdentifier(identifier));
         }
 
         @Override
-        protected Species createObject(ChEBIIdentifier identifier) {
+        protected Species createObject(SimpleStringIdentifier identifier) {
             return new Species(identifier);
         }
 

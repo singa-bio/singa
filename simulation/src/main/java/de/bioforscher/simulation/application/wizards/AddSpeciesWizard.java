@@ -3,6 +3,7 @@ package de.bioforscher.simulation.application.wizards;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.components.chemicalEntities.EntityCell;
+import de.bioforscher.simulation.application.components.chemicalEntities.SBMLSearchPane;
 import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesSearchPane;
 import de.bioforscher.simulation.parser.BioModelsParserService;
 import javafx.collections.FXCollections;
@@ -152,7 +153,7 @@ class SpeciesFromChEBI extends WizardPage {
 
 class SpeciesFromSBML extends WizardPage {
 
-    ObservableList<ChemicalEntity> entities;
+    private SBMLSearchPane searchPane;
 
     public SpeciesFromSBML() {
         super("Species from SBML");
@@ -162,24 +163,21 @@ class SpeciesFromSBML extends WizardPage {
 
     @Override
     public Parent getContent() {
-        //GridPane content = new GridPane();
-
-        BorderPane content = new BorderPane();
+        // left half
+        this.searchPane = new SBMLSearchPane(3);
+        // right half
         ListView<ChemicalEntity> speciesList = new ListView<>();
         speciesList.setCellFactory(param -> new EntityCell());
-        entities = FXCollections.observableArrayList();
-        try {
-            entities.addAll(BioModelsParserService.parseModelById("BIOMD0000000038").values());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        speciesList.setItems(entities);
-        content.setCenter(speciesList);
-        return content;
+        speciesList.setItems(this.searchPane.getSelectedSpecies());
+        // create SplitPane
+        SplitPane split = new SplitPane(this.searchPane, speciesList);
+        split.setPrefHeight(530);
+        SplitPane.setResizableWithParent(split, Boolean.FALSE);
+        return split;
     }
 
     public Set<ChemicalEntity> prepareSelectedSpecies() {
-        return this.entities.stream().collect(Collectors.toSet());
+        return this.searchPane.getSelectedSpecies().stream().collect(Collectors.toSet());
     }
 
 }
