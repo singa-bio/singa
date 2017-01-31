@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_ONLINE;
 import static org.junit.Assert.*;
 
 /**
@@ -20,7 +21,10 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectModelFromStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("4CHA");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("4CHA")
+                .everything()
+                .parse();
         StructuralModel structuralModel = StructureSelector.selectFrom(structure)
                 .model(0)
                 .selectModel();
@@ -29,7 +33,10 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectChainFromStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("4CHA");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("4CHA")
+                .everything()
+                .parse();
         Chain chain = StructureSelector.selectFrom(structure)
                 .model(0)
                 .chain(0)
@@ -39,7 +46,10 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectAminoAcidFromStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("4CHA");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("4CHA")
+                .everything()
+                .parse();
         AminoAcid aminoAcid = StructureSelector.selectFrom(structure)
                 .model(0)
                 .chain(1)
@@ -50,7 +60,10 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectNucleotideFromStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("1C0A");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("1C0A")
+                .everything()
+                .parse();
         Nucleotide nucleotide = StructureSelector.selectFrom(structure)
                 .model(0)
                 .chain(1)
@@ -61,7 +74,10 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectAtomFromStructure() throws IOException {
-        Structure structure = PDBParserService.parseProteinById("1C0A");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("1C0A")
+                .everything()
+                .parse();
         Atom atom = StructureSelector.selectFrom(structure)
                 .model(0)
                 .chain(1)

@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.physical.families;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.PDBParserPlayground;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
@@ -103,9 +105,11 @@ public enum AminoAcidFamily implements StructuralFamily {
      * @throws IOException
      */
     public AminoAcid getPrototype() throws IOException {
-        return PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR +
-                        this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
+        // TODO potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
+        return StructureParser.from(StructureSources.PDB_FILE)
+                .identifier(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
+                .everything()
+                .parse()
                 .getAllResidues()
                 .get(0);
     }

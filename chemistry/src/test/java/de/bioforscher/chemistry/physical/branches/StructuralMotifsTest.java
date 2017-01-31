@@ -1,6 +1,8 @@
 package de.bioforscher.chemistry.physical.branches;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
@@ -14,8 +16,10 @@ public class StructuralMotifsTest {
 
     @Before
     public void setUp() throws Exception {
-        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asn_3m4p.pdb"));
+        Structure bindingSiteStructure1 = StructureParser.from(StructureSources.PDB_FILE)
+                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+                .everything()
+                .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
     }
 

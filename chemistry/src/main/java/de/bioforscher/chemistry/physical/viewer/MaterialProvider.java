@@ -16,7 +16,7 @@ public class MaterialProvider {
     public static PhongMaterial NITROGEN = crateMaterialFromColor(Color.CORNFLOWERBLUE);
     public static PhongMaterial OXYGEN = crateMaterialFromColor(Color.INDIANRED);
     public static PhongMaterial HYDROGEN = crateMaterialFromColor(Color.LIGHTSKYBLUE);
-    public static PhongMaterial OTHER_ELEMENT = crateMaterialFromColor(Color.CORAL);
+    public static PhongMaterial OTHER_ELEMENT = crateMaterialFromColor(Color.GREEN);
 
     public static PhongMaterial NUCLEOTIDE = NITROGEN;
     public static PhongMaterial AMINOACID = OXYGEN;

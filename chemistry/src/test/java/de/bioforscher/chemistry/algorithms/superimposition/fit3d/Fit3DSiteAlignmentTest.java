@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
@@ -22,11 +23,15 @@ public class Fit3DSiteAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asn_1nnh.pdb"));
+        Structure bindingSiteStructure1 =  StructureParser.from(StructureSources.PDB_FILE)
+                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_1nnh.pdb").getFile())
+                .everything()
+                .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
-        Structure bindingSiteStructure2 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("Asn_3m4p.pdb"));
+        Structure bindingSiteStructure2 = StructureParser.from(StructureSources.PDB_FILE)
+                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+                .everything()
+                .parse();
         this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
 
 //        Structure bindingSiteStructure1 = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()

@@ -1,6 +1,6 @@
 package de.bioforscher.chemistry.physical.atoms;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.model.StructuralEntityFilter;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_ONLINE;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,7 +23,10 @@ public class AtomFilterTest {
     @Test
     public void shouldApplyAtomFilter() throws IOException {
         LeafFactory.setToOmitHydrogens(true);
-        Structure structure = PDBParserService.parseProteinById("4HHB");
+        Structure structure = StructureParser.from(PDB_ONLINE)
+                .identifier("4HHB")
+                .everything()
+                .parse();
 
         // valine
         AminoAcid branchSubstructure = structure.getAllResidues().get(0);

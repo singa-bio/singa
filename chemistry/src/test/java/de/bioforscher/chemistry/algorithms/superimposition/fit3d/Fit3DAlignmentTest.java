@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
-import de.bioforscher.chemistry.parser.pdb.structures.StructureCollector;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
@@ -37,9 +37,15 @@ public class Fit3DAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        this.target = PDBParserService.parseProteinById("1GL0");
-        Structure motifContainingStructure = PDBParserService.parsePDBFile(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"));
+        this.target = StructureParser
+                .from(StructureSources.PDB_ONLINE)
+                .identifier("1GL0")
+                .everything()
+                .parse();
+        Structure motifContainingStructure = StructureParser.from(StructureSources.PDB_FILE)
+                .identifier(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
+                .everything()
+                .parse();
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
@@ -71,8 +77,10 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
-        StructureCollector.parseLigandInformation = false;
-        Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
+        Structure nucleotideTarget = StructureParser.from(StructureSources.PDB_ONLINE)
+                .identifier("2EES")
+                .chain("A")
+                .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
@@ -90,7 +98,10 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindInterMolecularMatches() throws IOException {
-        Structure target = PDBParserService.parseProteinById("4CHA");
+        Structure target =  StructureParser.from(StructureSources.PDB_ONLINE)
+                .identifier("4CHA")
+                .everything()
+                .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, target,
                 LeafIdentifiers.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
@@ -108,7 +119,10 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldAlignNucleotideMotif() throws IOException {
-        Structure nucleotideTarget = PDBParserService.parseProteinById("2EES", "A");
+        Structure nucleotideTarget = StructureParser.from(StructureSources.PDB_ONLINE)
+                .identifier("2EES")
+                .chain("A")
+                .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
@@ -123,7 +137,11 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindLigandContainingMotif() throws IOException {
-        Structure queryStructure = PDBParserService.parseProteinById("1ACJ");
+        Structure queryStructure =  StructureParser.from(StructureSources.PDB_ONLINE)
+                .identifier("1ACJ")
+                .everything()
+                .parse();
+
         StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()

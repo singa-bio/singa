@@ -1,6 +1,10 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
+import de.bioforscher.chemistry.physical.branches.Chain;
+import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
 import de.bioforscher.chemistry.physical.viewer.ColorScheme;
 import de.bioforscher.chemistry.physical.viewer.StructureViewer;
@@ -22,21 +26,19 @@ public class PDBParserPlayground {
 
         LeafFactory.setToOmitHydrogens(true);
 
-        Structure structure = PDBParserService.parseProteinById("1ET4");
-
-        // LeafSubstructure<?,?> leaf = LigandParserService.parseLeafSubstructureById("CNC");
-        // Structure structure = new Structure();
-        // StructuralModel structuralModel = new StructuralModel(0);
-        // Chain chain = new Chain(1);
-        // chain.setChainIdentifier("A");
-        // chain.addSubstructure(leaf);
-        // structuralModel.addSubstructure(chain);
-        // structure.addSubstructure(structuralModel);
+         LeafSubstructure<?,?> leaf = AminoAcidFamily.ARGININE.getPrototype();;
+         Structure structure = new Structure();
+         StructuralModel structuralModel = new StructuralModel(0);
+         Chain chain = new Chain(1);
+         chain.setChainIdentifier("A");
+         chain.addSubstructure(leaf);
+         structuralModel.addSubstructure(chain);
+         structure.addSubstructure(structuralModel);
 
         // Structure motif = StructuralMotif.fromLeafs(1, structure,
         // LeafIdentifiers.of("A-36", "B-67", "B-60", "B-204")).toStructure();
 
-        StructureViewer.colorScheme = ColorScheme.BY_FAMILY;
+        StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
         StructureViewer.structure = structure;
         Application.launch(StructureViewer.class);
 

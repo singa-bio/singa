@@ -2,6 +2,7 @@ package de.bioforscher.chemistry.parser.pdb.ligands;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.chemistry.parser.pdb.structures.tokens.LeafSkeleton;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
@@ -13,13 +14,11 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.chemistry.physical.model.BondType;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.vectors.Vector3D;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,57 +36,39 @@ public class CifFileParser {
     private String threeLetterCode;
     private String parent;
 
+    private List<String> atomLines;
+    private List<String> bondLines;
+
     private Map<String, Atom> atoms;
-    private Map<Pair<String>, String> bonds;
+    private Map<Pair<String>, BondType> bonds;
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
         this.atoms = new HashMap<>();
         this.bonds = new HashMap<>();
+        this.bondLines = new ArrayList<>();
+        this.atomLines = new ArrayList<>();
     }
 
 
-    public static LeafSubstructure<?, ?> parseLeafSubstructureFromCif(List<String> lines) {
+    public static LeafSubstructure<?, ?> parseLeafSubstructure(List<String> lines) {
         CifFileParser parser = new CifFileParser(lines);
-        return parser.createLeaf();
+        return parser.parseCompleteLeaf();
     }
 
-    public static LeafSubstructure<?, ?> parseLeafSubstructureFromCif(List<String> lines, Map<String, Atom> atoms, LeafIdentifier identifier) {
+    public static LeafSkeleton parseLeafSkeleton(List<String> lines) {
         CifFileParser parser = new CifFileParser(lines);
-        return parser.createLeaf(atoms, identifier);
+        return parser.parseLeafSkeleton();
     }
 
-    private LeafSubstructure<?, ?> createLeaf(Map<String, Atom> atoms, LeafIdentifier leafIdentifier) {
-        this.atoms = atoms;
-        boolean bondSection = false;
-        List<String> bondLines = new ArrayList<>();
-        // extract information
-        for (String line : this.lines) {
-            // extract information
-            extractInformation(line);
-            // signifies start of bond section
-            if (line.startsWith("_chem_comp_bond.pdbx_ordinal")) {
-                bondSection = true;
-                continue;
-            }
-            if (bondSection) {
-                // extract bonds connecting the given atoms
-                if (line.startsWith("#")) {
-                    break;
-                }
-                bondLines.add(line);
-            }
-
-        }
-        extractBonds(bondLines);
-        return createLeaf(leafIdentifier);
-    }
-
-    private LeafSubstructure<?, ?> createLeaf() {
+    /**
+     * Collect all relevant lines that are later required for extracting information.
+     * @param skipAtoms True, if no atom lines should be parsed.
+     */
+    private void collectLines(boolean skipAtoms) {
         boolean bondSection = false;
         boolean atomSection = false;
-        List<String> bondLines = new ArrayList<>();
-        List<String> atomLines = new ArrayList<>();
+
         // extract information
         for (String line : this.lines) {
             // extract information
@@ -103,30 +84,30 @@ public class CifFileParser {
                     bondSection = false;
                     continue;
                 }
-                bondLines.add(line);
+                this.bondLines.add(line);
             }
-
-            if (line.startsWith("_chem_comp_atom.pdbx_ordinal")) {
-                atomSection = true;
-                continue;
-            }
-            if (atomSection) {
-                // extract bonds connecting the given atoms
-                if (line.startsWith("#")) {
-                    atomSection = false;
+            if (!skipAtoms) {
+                if (line.startsWith("_chem_comp_atom.pdbx_ordinal")) {
+                    atomSection = true;
                     continue;
                 }
-                atomLines.add(line);
+                if (atomSection) {
+                    // extract bonds connecting the given atoms
+                    if (line.startsWith("#")) {
+                        atomSection = false;
+                        continue;
+                    }
+                    this.atomLines.add(line);
+                }
             }
-
         }
-        extractAtoms(atomLines);
-        extractBonds(bondLines);
-        return createLeaf(LeafIdentifier.fromString("A-1"));
     }
 
-    private void extractAtoms(List<String> atomLines) {
-        for (String line : atomLines) {
+    /**
+     * Extracts and creates atoms from the extracted lines.
+     */
+    private void extractAtoms() {
+        for (String line : this.atomLines) {
             String[] splitLine = line.split("\\s+");
             /// 1 = atom name, 3 = element, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
             int identifier = Integer.valueOf(splitLine[17]);
@@ -138,15 +119,23 @@ public class CifFileParser {
         }
     }
 
-    private void extractBonds(List<String> bondLines) {
+    /**
+     * Extracts the information required to create bonds.
+     */
+    private void extractBonds() {
         // for each of the collected bond lines
-        for (String line : bondLines) {
+        for (String line : this.bondLines) {
             String[] splitLine = line.split("\\s+");
             // 1 = first atom, 2 = second atom, 3 = bond type
-            this.bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")), splitLine[3]);
+            this.bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
+                    BondType.getBondTypeByCifName(splitLine[3]).orElse(BondType.SINGLE_BOND));
         }
     }
 
+    /**
+     * Extracts information about the ligand.
+     * @param line
+     */
     private void extractInformation(String line) {
         // extract compound name
         if (line.startsWith("_chem_comp.name")) {
@@ -170,20 +159,41 @@ public class CifFileParser {
         }
     }
 
+    /**
+     * Parses a leaf from scratch using only information provided in the cif file.
+     * @return
+     */
+    private LeafSubstructure<?, ?> parseCompleteLeaf() {
+        collectLines(false);
+        extractAtoms();
+        extractBonds();
+        return createLeaf(LeafIdentifier.fromString("A-1"));
+    }
+
+    /**
+     * Creates a complete leaf using the information collected until the call of this method.
+     * @param leafIdentifier
+     * @return
+     */
     private LeafSubstructure<?, ?> createLeaf(LeafIdentifier leafIdentifier) {
         LeafSubstructure<?, ?> leafSubstructure = null;
         if (isNucleotide()) {
             // check for nucleotides
-            if (!this.parent.equals("?")) {
-                NucleotideFamily nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent)
-                        .orElse(NucleotideFamily.UNKNOWN);
-                leafSubstructure = new Nucleotide(leafIdentifier, nucleotideFamily, this.threeLetterCode);
+                Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);
+            if(nucleotideFamily.isPresent()) {
+                leafSubstructure = new Nucleotide(leafIdentifier, nucleotideFamily.get(), this.threeLetterCode);
+            } else {
+                leafSubstructure = new Nucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(this.threeLetterCode).get());
             }
+
         } else if (isAminoAcid()) {
             // check for amino acids
-            AminoAcidFamily aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent)
-                    .orElse(AminoAcidFamily.UNKNOWN);
-            leafSubstructure = new AminoAcid(leafIdentifier, aminoAcidFamily, this.threeLetterCode);
+            Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent);
+            if(aminoAcidFamily.isPresent()) {
+                leafSubstructure = new AminoAcid(leafIdentifier, aminoAcidFamily.get(), this.threeLetterCode);
+            } else {
+                leafSubstructure = new AminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.threeLetterCode).get());
+            }
         } else {
             // else this is a ligand
             leafSubstructure = new AtomContainer<>(leafIdentifier, new LigandFamily(this.oneLetterCode, this.threeLetterCode));
@@ -191,6 +201,38 @@ public class CifFileParser {
         this.atoms.values().forEach(leafSubstructure::addNode);
         connectAtoms(leafSubstructure);
         return leafSubstructure;
+    }
+
+    /**
+     * Creates a leaf skeleton to be used to create complete leafs from.
+     * @return
+     */
+    private LeafSkeleton parseLeafSkeleton() {
+        collectLines(true);
+        extractBonds();
+        return createLeafSkeleton();
+    }
+
+    /**
+     * Creates a leaf skeleton only containing the information required to build a new leaf.
+     * @return
+     */
+    private LeafSkeleton createLeafSkeleton() {
+        LeafSkeleton.AssignedFamily assignedFamily = null;
+        StructuralFamily structuralFamily = null;
+        if (isNucleotide()) {
+            // check for nucleotides
+            if (!this.parent.equals("?")) {
+                assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
+            }
+        } else if (isAminoAcid()) {
+            // check for amino acids
+            assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_AMINO_ACID;
+        } else {
+            // else this is a ligand
+            assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
+        }
+        return new LeafSkeleton(this.threeLetterCode, this.parent, assignedFamily, this.bonds);
     }
 
     /**
@@ -210,7 +252,7 @@ public class CifFileParser {
      * @return
      */
     private boolean isAminoAcid() {
-        return this.type.equalsIgnoreCase("L-PEPTIDE LINKING") && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
+        return this.type.equalsIgnoreCase("L-PEPTIDE LINKING"); // && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
     }
 
     /**
@@ -219,10 +261,9 @@ public class CifFileParser {
      * @param leafWithAtoms The leaf to connect.
      */
     private void connectAtoms(LeafSubstructure<?, ?> leafWithAtoms) {
-        for (Map.Entry<Pair<String>, String> bond : this.bonds.entrySet()) {
+        for (Map.Entry<Pair<String>, BondType> bond : this.bonds.entrySet()) {
             leafWithAtoms.addEdgeBetween(this.atoms.get(bond.getKey().getFirst()),
-                    this.atoms.get(bond.getKey().getSecond()),
-                    BondType.getBondTypeByCifName(bond.getValue()).orElse(BondType.SINGLE_BOND));
+                    this.atoms.get(bond.getKey().getSecond()),bond.getValue());
         }
     }
 
@@ -234,19 +275,6 @@ public class CifFileParser {
      */
     private static String extractValue(String line) {
         return line.substring(DEFAULT_VALUE_SPACING).replace("\"", "").trim();
-    }
-
-    public static String getLeafType(List<String> lines) {
-        for (String line : lines) {
-            if (line.startsWith("_chem_comp.type")) {
-                Pattern pattern = Pattern.compile("\"(.*)\"");
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    return matcher.group(1);
-                }
-            }
-        }
-        return "UNKNOWN";
     }
 
 }

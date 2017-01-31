@@ -1,9 +1,9 @@
 package de.bioforscher.chemistry.algorithms.superimposition.consensus;
 
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_FILE;
 
 /**
  * @author fk
@@ -28,7 +30,10 @@ public class ConsensusAlignmentTest {
         this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
                 .map(path -> {
                     try {
-                        return PDBParserService.parsePDBFile(path.toFile());
+                        return StructureParser.from(PDB_FILE)
+                                .identifier(path.toString())
+                                .everything()
+                                .parse();
                     } catch (IOException e) {
                         e.printStackTrace();
                         return null;

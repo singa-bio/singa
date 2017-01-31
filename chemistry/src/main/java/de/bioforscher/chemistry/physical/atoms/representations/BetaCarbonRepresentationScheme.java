@@ -24,6 +24,7 @@ import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.Ato
  * @author fk
  */
 public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme {
+
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
         if (!(leafSubstructure instanceof AminoAcid)) {

@@ -1,7 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.chemistry.parser.pdb.structures.PDBParserService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
@@ -99,8 +100,15 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
             // FIXME here we are dealing only with the first model
             BranchSubstructure<?> target = new File(this.targetStructure).exists() ?
-                    PDBParserService.parsePDBFile(this.targetStructure).getAllModels().get(0) :
-                    PDBParserService.parseProteinById(this.targetStructure).getAllModels().get(0);
+                    StructureParser.from(StructureSources.PDB_FILE)
+                            .identifier(this.targetStructure)
+                            .everything()
+                            .parse()
+                            .getAllModels().get(0) :
+                    StructureParser.from(StructureSources.PDB_ONLINE)
+                            .identifier(this.targetStructure)
+                            .everything()
+                            .parse().getAllModels().get(0);
 
             // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
             Fit3D fit3d;
