@@ -224,6 +224,9 @@ public class CifFileParser {
             // check for nucleotides
             if (!this.parent.equals("?")) {
                 assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
+            }else{
+                // TODO fix this fallback solution
+                assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
             }
         } else if (isAminoAcid()) {
             // check for amino acids

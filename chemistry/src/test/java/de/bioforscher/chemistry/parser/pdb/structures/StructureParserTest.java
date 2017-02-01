@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
+import de.bioforscher.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Test;
 
@@ -82,7 +83,6 @@ public class StructureParserTest {
                 .parse();
     }
 
-
     // structure with modified nucleotides
     @Test
     public void shouldParseResiduesWithModifiedNucleotides() throws IOException {
@@ -100,4 +100,12 @@ public class StructureParserTest {
         // TODO issue #35
     }
 
+    @Test
+    public void shouldParseFromLocalPDB() throws IOException {
+        LocalPDB localPdb = new LocalPDB("/srv/pdb");
+        Structure structure = StructureParser.from(localPdb)
+                .identifier("1C0A")
+                .everything()
+                .parse();
+    }
 }

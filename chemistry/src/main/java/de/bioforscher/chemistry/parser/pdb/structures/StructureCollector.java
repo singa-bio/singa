@@ -5,9 +5,9 @@ import de.bioforscher.chemistry.parser.pdb.structures.tokens.*;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
@@ -20,8 +20,11 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import static de.bioforscher.chemistry.parser.pdb.structures.tokens.AtomToken.*;
 
@@ -62,10 +65,10 @@ public class StructureCollector {
     }
 
     static Structure parse(StructureParser.Parser parser) throws IOException {
-        StructureCollector collector;
+        StructureCollector collector = null;
         switch (parser.source) {
             case PDB_ONLINE: {
-                logger.info("parsing structure from pdb {}", parser.identifier);
+                logger.info("parsing structure from PDB online {}", parser.identifier);
                 InputStream inputStream = new URL(String.format(PDB_FETCH_URL, parser.identifier)).openStream();
                 try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
                     try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
@@ -84,11 +87,31 @@ public class StructureCollector {
                 }
                 break;
             }
-            default: {
-                collector = null;
+            case PDB_LOCAL: {
+                logger.info("parsing structure from local PDB {}", parser.identifier);
+                try {
+                    InputStream inputStream = new LocalPDBFileReader(parser.identifier, parser.localPdb).readFromLocal();
+                    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+                        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                            collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.warn("parsing structure from local PDB {} failed, trying to fetch online", parser.identifier, e);
+                    InputStream inputStream = new URL(String.format(PDB_FETCH_URL, parser.identifier)).openStream();
+                    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+                        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                            collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
+                        }
+                    }
+                }
+                break;
             }
         }
 
+        if (collector == null) {
+            throw new IOException("could not parse structure " + parser.identifier + " with method " + parser.source);
+        }
 
         return collector.collectStructure();
     }
@@ -265,5 +288,36 @@ public class StructureCollector {
         return leafSkeleton.toRealLeafSubStructure(identifier, atoms);
     }
 
+    /**
+     * A reader for local PDB files that can handle compression.
+     */
+    private static class LocalPDBFileReader {
 
+        private static final String PDB_BASE_PATH = "data/structures/divided/pdb";
+        private static final String CIF_BASE_PATH = "data/structures/divided/mmCIF";
+        private String identifier;
+        private StructureParser.LocalPDB localPdb;
+        private Path pdbFilePath;
+
+        private LocalPDBFileReader(String identifier, StructureParser.LocalPDB localPdb) {
+            this.identifier = identifier;
+            this.localPdb = localPdb;
+            this.pdbFilePath = assemblePath();
+        }
+
+        private Path assemblePath() {
+            return this.localPdb.getLocalPdbPath().resolve(Paths.get(PDB_BASE_PATH + "/"
+                    + this.identifier.substring(1, this.identifier.length() - 1).toLowerCase()
+                    + "/pdb" + this.identifier.toLowerCase() + ".ent.gz"));
+        }
+
+        /**
+         * Tries to read a PDB file locally and returns an {@link InputStream}.
+         *
+         * @return The {@link InputStream} of the local PDB file.
+         */
+        public InputStream readFromLocal() throws IOException {
+            return new GZIPInputStream(new FileInputStream(this.pdbFilePath.toFile()));
+        }
+    }
 }
