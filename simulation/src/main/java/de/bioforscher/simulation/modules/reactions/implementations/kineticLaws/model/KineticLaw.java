@@ -7,7 +7,7 @@ import javax.measure.Quantity;
 import java.util.List;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author leberech
  */
 public interface KineticLaw {
 

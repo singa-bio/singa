@@ -19,7 +19,7 @@ import java.util.List;
 import static de.bioforscher.units.UnitProvider.PER_SECOND;
 
 /**
- * Created by Christoph on 15.07.2016.
+ * @author cl
  */
 public final class MichaelsMentenWithKM implements KineticLaw {
 

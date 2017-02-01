@@ -5,7 +5,7 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import javax.measure.Quantity;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author leberech 
  */
 public class EntityDependentKineticParameter<ParameterType extends Quantity<ParameterType>> extends
         KineticParameter<ParameterType> {

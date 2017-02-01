@@ -25,7 +25,9 @@ public class BioModelsParserService {
     }
 
     public  static HashMap<String, ChemicalEntity> parseModelFromStream(InputStream inputStream) throws IOException {
-        return SBMLSpeciesParserService.parseStream(inputStream);
+        SBMLSpeciesParserService parser = new SBMLSpeciesParserService(inputStream);
+        parser.parse();
+        return parser.getChemicalEntities();
     }
 
 }

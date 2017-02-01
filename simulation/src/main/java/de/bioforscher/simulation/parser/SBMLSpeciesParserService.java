@@ -10,9 +10,9 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
-import org.sbml.jsbml.CVTerm;
-import org.sbml.jsbml.SBMLDocument;
-import org.sbml.jsbml.SBMLReader;
+import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
+import org.sbml.jsbml.*;
+import uk.co.cogitolearning.cogpar.SetVariable;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
@@ -24,28 +24,34 @@ import java.util.regex.Matcher;
  */
 public class SBMLSpeciesParserService {
 
-
-    private static SBMLSpeciesParserService service;
-
     private SBMLDocument document;
     private HashMap<String, ChemicalEntity> entities;
     private HashMap<Identifier, ChemicalEntity> allreadyParsedEntities;
 
-    private SBMLSpeciesParserService() {
+    private DynamicKineticLaw currentKineticLaw;
+
+    public SBMLSpeciesParserService(InputStream inputStream) {
         this.entities = new HashMap<>();
         this.allreadyParsedEntities = new HashMap<>();
+        initializeDocument(inputStream);
     }
 
-    public static HashMap<String, ChemicalEntity> parseStream(InputStream stream) {
-        SBMLSpeciesParserService.service = new SBMLSpeciesParserService();
+    private void initializeDocument(InputStream inputStream) {
         SBMLReader reader = new SBMLReader();
         try {
-            SBMLSpeciesParserService.service.document = reader.readSBMLFromStream(stream);
+            this.document = reader.readSBMLFromStream(inputStream);
         } catch (XMLStreamException e) {
             e.printStackTrace();
         }
-        SBMLSpeciesParserService.service.parseSpecies();
-        return SBMLSpeciesParserService.service.entities;
+    }
+
+    public HashMap<String, ChemicalEntity> getChemicalEntities() {
+        return this.entities;
+    }
+
+    public void parse() {
+        this.parseSpecies();
+        this.parseReactions();
     }
 
     private void parseSpecies() {
@@ -101,6 +107,40 @@ public class SBMLSpeciesParserService {
         });
     }
 
+    private void parseReactions() {
+
+        this.document.getModel().getListOfReactions().forEach(reaction -> {
+
+            System.out.println("Reaction:" + reaction);
+            // substrates
+            reaction.getListOfReactants().forEach( reactant -> {
+                System.out.println(" Reactant: " + reactant.getSpecies());
+            });
+            // products
+            reaction.getListOfProducts().forEach( product -> {
+                System.out.println(" Product: " + product.getSpecies());
+            });
+
+            // kinetics
+            KineticLaw kineticLawSBML = reaction.getKineticLaw();
+            // supply math
+            this.currentKineticLaw = new DynamicKineticLaw(kineticLawSBML.getMath().toString());
+            // assign local parameters
+            assignLocalParameters(kineticLawSBML.getListOfLocalParameters());
+            //
+
+        });
+
+
+
+    }
+
+    private void assignLocalParameters(ListOf<LocalParameter> localParameters) {
+        for (LocalParameter parameter: localParameters) {
+            this.currentKineticLaw.setLocalParameter(parameter.getId(), parameter.getValue());
+        }
+    }
+
     /**
      * Parses and adds a component using the first parsable resource in the given CVTerm.
      *
@@ -117,7 +157,8 @@ public class SBMLSpeciesParserService {
             }
         }
         this.entities.put(identifier, Species.UNKNOWN_SPECIES);
-        System.out.println("  -> could not parse " + identifier + " from any database, referencing " + Species.UNKNOWN_SPECIES);
+        System.out.println("  -> could not parse " + identifier + " from any database, referencing " +
+                Species.UNKNOWN_SPECIES);
     }
 
     /**

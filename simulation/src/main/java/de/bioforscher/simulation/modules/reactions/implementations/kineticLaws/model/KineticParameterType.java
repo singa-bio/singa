@@ -6,7 +6,7 @@ import de.bioforscher.units.quantities.ReactionRate;
 import javax.measure.quantity.Dimensionless;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author leberech
  */
 public enum KineticParameterType {
 
