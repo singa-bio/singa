@@ -10,7 +10,10 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
+import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
+import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
+import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import org.sbml.jsbml.*;
 import uk.co.cogitolearning.cogpar.SetVariable;
 
@@ -28,6 +31,7 @@ public class SBMLSpeciesParserService {
     private HashMap<String, ChemicalEntity> entities;
     private HashMap<Identifier, ChemicalEntity> allreadyParsedEntities;
 
+    private DynamicReaction currentReaction;
     private DynamicKineticLaw currentKineticLaw;
 
     public SBMLSpeciesParserService(InputStream inputStream) {
@@ -111,23 +115,20 @@ public class SBMLSpeciesParserService {
 
         this.document.getModel().getListOfReactions().forEach(reaction -> {
 
-            System.out.println("Reaction:" + reaction);
-            // substrates
-            reaction.getListOfReactants().forEach( reactant -> {
-                System.out.println(" Reactant: " + reactant.getSpecies());
-            });
-            // products
-            reaction.getListOfProducts().forEach( product -> {
-                System.out.println(" Product: " + product.getSpecies());
-            });
 
             // kinetics
             KineticLaw kineticLawSBML = reaction.getKineticLaw();
             // supply math
             this.currentKineticLaw = new DynamicKineticLaw(kineticLawSBML.getMath().toString());
+            this.currentReaction = new DynamicReaction(this.currentKineticLaw);
             // assign local parameters
             assignLocalParameters(kineticLawSBML.getListOfLocalParameters());
-            //
+            // our substrates are their reactants
+            assignSubstrates(reaction.getListOfReactants());
+            // and products
+            assignProducts(reaction.getListOfProducts());
+            System.out.println(this.currentReaction.getDisplayString());
+
 
         });
 
@@ -138,6 +139,22 @@ public class SBMLSpeciesParserService {
     private void assignLocalParameters(ListOf<LocalParameter> localParameters) {
         for (LocalParameter parameter: localParameters) {
             this.currentKineticLaw.setLocalParameter(parameter.getId(), parameter.getValue());
+        }
+    }
+
+    private void assignSubstrates(ListOf<SpeciesReference> substrates) {
+        for (SpeciesReference reference: substrates) {
+            String identifier = reference.getSpecies();
+            this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
+            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.DECREASING, 1));
+        }
+    }
+
+    private void assignProducts(ListOf<SpeciesReference> substrates) {
+        for (SpeciesReference reference: substrates) {
+            String identifier = reference.getSpecies();
+            this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
+            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.INCREASING, 1));
         }
     }
 

@@ -1,13 +1,10 @@
 package de.bioforscher.simulation.research;
 
 import de.bioforscher.simulation.parser.BioModelsParserService;
-import org.sbml.jsbml.*;
-import uk.co.cogitolearning.cogpar.SetVariable;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 /**
@@ -21,9 +18,7 @@ public class LibSBMLPLayground {
 
     public static void main(String[] args) throws IOException, XMLStreamException {
         String modelLocation = LibSBMLPLayground.class.getResource(MODEL_38_XML).getPath();
-
         BioModelsParserService.parseModelFromFile(modelLocation);
-
 
 
 

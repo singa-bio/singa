@@ -41,6 +41,7 @@ public abstract class Reaction {
 
     /**
      * Sets the list of reactants for this reaction.
+     *
      * @param stoichiometricReactants The list of reactants for this reaction.
      */
     public void setStoichiometricReactants(List<StoichiometricReactant> stoichiometricReactants) {
@@ -66,7 +67,7 @@ public abstract class Reaction {
      *
      * @param node The node, where the concentrations are collected.
      * @param role The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
-     * ReactantRole#DECREASING} for Substrates).
+     *             ReactantRole#DECREASING} for Substrates).
      * @return The total concentration.
      */
     protected Quantity<MolarConcentration> determineConcentration(BioNode node, ReactantRole role) {
@@ -94,6 +95,7 @@ public abstract class Reaction {
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
 
     public abstract Set<ChemicalEntity> collectAllReferencedEntities();
+
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      *
@@ -116,14 +118,14 @@ public abstract class Reaction {
         final DecimalFormat format = new DecimalFormat("#.##");
         String substrates = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
-                .map(substrate -> format.format(substrate.getStoichiometricNumber()) + " "
-                        + substrate.getEntity().getName())
+                .map(substrate -> format.format( substrate.getStoichiometricNumber() > 0 ? substrate.getStoichiometricNumber() : " ") + " "
+                        +  substrate.getEntity().getIdentifier())
                 .collect(Collectors.joining(" + "));
 
         String products = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
-                .map(substrate -> format.format(substrate.getStoichiometricNumber()) + " "
-                        + substrate.getEntity().getName())
+                .map(product -> format.format(product.getStoichiometricNumber() > 0 ? product.getStoichiometricNumber() : " ") + " "
+                        + product.getEntity().getIdentifier())
                 .collect(Collectors.joining(" + "));
 
         return substrates + " \u27f6 " + products;
