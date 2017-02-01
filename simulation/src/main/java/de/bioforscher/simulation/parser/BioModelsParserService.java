@@ -4,6 +4,7 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,8 +21,12 @@ public class BioModelsParserService {
         return parseModelFromStream(new URL(String.format(BIOMODELS_FETCH_URL, modelIdentifier)).openStream());
     }
 
-    public static HashMap<String, ChemicalEntity> parseModelFromFile(String filepath) throws IOException {
-        return parseModelFromStream(Files.newInputStream(Paths.get(filepath)));
+    public static HashMap<String, ChemicalEntity> parseModelFromFile(String filePath) {
+        try {
+            return parseModelFromStream(Files.newInputStream(Paths.get(filePath)));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not find file " + filePath, e);
+        }
     }
 
     public  static HashMap<String, ChemicalEntity> parseModelFromStream(InputStream inputStream) throws IOException {

@@ -12,8 +12,8 @@ public class SimilesParserPlayground {
 
     public static void main(String[] args) {
         SmilesParser playground = new SmilesParser();
-        // nested branches with aromatics
-        // String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
+        // nested branches with aromatics (COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
+        // String smilesString = "Nc1ncnc2n(cnc12)[C@@H]1O[C@H]";
         // simple without ring closure
         // String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO";
         // simple with ring closure
@@ -24,11 +24,12 @@ public class SimilesParserPlayground {
         // String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
         // unconnected molecules
         // String smilesString = "O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O";
-        String smilesString = "NC1=NC=NC2=C1N=CN2[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O";
-
+        // 9,10-bis(phenylethynyl)anthracene
+        String smilesString = "c1ccc2cc3ccccc3cc2c1";
         System.out.println(smilesString);
-
-        GraphDisplayApplication.graph = SmilesParser.parse(smilesString);
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+        moleculeGraph.replaceAromaticsWithDoubleBonds();
+        GraphDisplayApplication.graph = moleculeGraph;
         GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
         Application.launch(GraphDisplayApplication.class);
 

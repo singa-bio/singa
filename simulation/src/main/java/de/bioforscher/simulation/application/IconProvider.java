@@ -305,6 +305,8 @@ public class IconProvider {
         public static final String ICON_FOLDER_OPEN_ALT = "\uf115";
         public static final String ICON_DOT_CIRCLE = "\uf192";
         public static final String ICON_LINE_CHART = "\uf201";
+        public static final String ICON_FILE_XML = "\uf1c9";
+        public static final String ICON_DATABASE = "\uf1c0";
 
         // adapted from: http://www.jensd.de/wordpress/?p=132
 

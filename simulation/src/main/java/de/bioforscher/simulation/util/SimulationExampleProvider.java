@@ -19,12 +19,13 @@ import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.units.UnitProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import static de.bioforscher.units.UnitProvider.*;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
@@ -39,7 +40,7 @@ import static tec.units.ri.unit.Units.SECOND;
  */
 public class SimulationExampleProvider {
 
-    private static final Logger log = Logger.getLogger(SimulationExampleProvider.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(SimulationExampleProvider.class);
 
     private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
 
@@ -328,7 +329,9 @@ public class SimulationExampleProvider {
      * @return The ready to go simulation.
      */
     public static Simulation createIodineMultiReactionExample() {
-
+        logger.info("Setting up the passive membrane diffusion example ...");
+        // get required species
+        logger.debug("Importing species ...");
         // Hydron (H+)
         Species hydron = ChEBIParserService.parse("CHEBI:15378");
         // Iodide (I-)
@@ -346,15 +349,19 @@ public class SimulationExampleProvider {
         // Iodate (IO3-)
         Species iodate = ChEBIParserService.parse("CHEBI:29226");
 
+        logger.debug("Setting up example graph ...");
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(
                 GraphFactory.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
+        logger.debug("Initializing starting concentrations of species and node states in graph ...");
         graph.getNode(0).addAllEntities(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
         // setup time step size
+        logger.debug("Adjusting time step size ... ");
         EnvironmentalVariables.getInstance().setTimeStep(Quantities.getQuantity(5.0, MILLI(SECOND)));
 
+        logger.debug("Composing simulation ... ");
         // create reactions module
         Reactions reactions = new Reactions();
 
@@ -407,62 +414,63 @@ public class SimulationExampleProvider {
     }
 
     public static Simulation createPassiveMembraneTransportExample() {
-
+        logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
-        Species water = ChEBIParserService.parse("CHEBI:15377");
+        logger.debug("Importing species ...");
+        // hydrophilic
         Species urea = ChEBIParserService.parse("CHEBI:16199");
-        Species glycerol = ChEBIParserService.parse("CHEBI:17754");
+        // hydrophobic
+        Species cobamamide = ChEBIParserService.parse("CHEBI:18408");
 
         // setup rectangular graph with number of nodes
+        logger.debug("Setting up example graph ...");
         int numberOfNodes = 11;
         AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
+        logger.debug("Initializing starting concentrations of species and node states in graph ...");
         for (BioNode node : graph.getNodes()) {
-
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                node.addEntity(water, 1.0);
-                node.addEntity(urea, 0.2);
-                node.addEntity(glycerol, 0.2);
+                node.addEntity(urea, 1.0);
+                node.addEntity(cobamamide, 1.0);
                 node.setState(NodeState.AQUEOUS);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2) ) {
                 node.addEntity(urea, 0.0);
-                node.addEntity(glycerol, 0.0);
+                node.addEntity(cobamamide, 0.0);
                 node.setState(NodeState.CELL_MEMBRANE);
             } else {
-                node.addEntity(water, 1.0);
                 node.addEntity(urea, 0.0);
-                node.addEntity(glycerol, 0.0);
+                node.addEntity(cobamamide, 0.0);
                 node.setState(NodeState.AQUEOUS);
             }
         }
 
+        logger.debug("Adding default permeability to edges ... ");
         for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(water, 1);
             edge.addPermeability(urea, 1);
-            edge.addPermeability(glycerol, 1);
+            edge.addPermeability(cobamamide, 1);
         }
 
         // setup time step size as given
+        logger.debug("Adjusting time step size ... ");
         EnvironmentalVariables.getInstance().setTimeStep(Quantities.getQuantity(100,
                 NANO(SECOND)));
-        // setup node distance to diameter / (numberOfNodes - 1)
+        // setup node distance to diameter
+        logger.debug("Adjusting spatial step size ... ");
         EnvironmentalVariables.getInstance().setNodeSpacingToDiameter(
                 Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // setup simulation
+        logger.debug("Composing simulation ... ");
         Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
         simulation.getModules().add(new FreeDiffusion());
         // add desired species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(Arrays.asList(water, urea, glycerol));
-
+        simulation.getChemicalEntities().addAll(Arrays.asList(urea, cobamamide));
         return simulation;
-
-
     }
 
 

@@ -3,7 +3,7 @@ package de.bioforscher.chemistry.descriptive.molecules;
 import de.bioforscher.mathematics.graphs.model.AbstractEdge;
 
 /**
- * Created by Christoph on 21/11/2016.
+ * @author cl
  */
 public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
 

@@ -76,8 +76,8 @@ public class SBMLSpeciesParserService {
                         // assuming here, that if the annotations are from different databases, they are alternatives
                         // and if they are from the same database they are a different parts of a complex entity
                         if (resourcesHaveTheSameOrigin(term)) {
-                            System.out.println(term.getResourceCount() + " Resources one source");
-                            parseAndAddComplexComponent(species.getId(), term);
+                            System.out.println(term.getResourceCount() + " Resources from one source");
+                            parseAndAddComplexComponent(species.getId(), species, term);
                         } else {
                             System.out.println(term.getResourceCount() + " Resources from different sources");
                             parseAndAddSingularComponent(species.getId(), term);
@@ -89,8 +89,8 @@ public class SBMLSpeciesParserService {
                         // has part should have at least two components it is the only annotation
                         System.out.print("  annotated as \"" + term.getQualifier().getElementNameEquivalent() + "\" with ");
                         if (resourcesHaveTheSameOrigin(term)) {
-                            System.out.println(term.getResourceCount() + " Resources one source");
-                            parseAndAddComplexComponent(species.getId(), term);
+                            System.out.println(term.getResourceCount() + " Resources from one source");
+                            parseAndAddComplexComponent(species.getId(), species, term);
                         } else {
                             System.out.println(term.getResourceCount() + " Resources from different sources");
                             parseAndAddAllComponents(species.getId(), term);
@@ -167,13 +167,25 @@ public class SBMLSpeciesParserService {
      * @param identifier The identifier as referenced in the model.
      * @param cvTerm     The CVTerm containing the resources.
      */
-    private void parseAndAddComplexComponent(String identifier, CVTerm cvTerm) {
+    private void parseAndAddComplexComponent(String identifier, org.sbml.jsbml.Species species, CVTerm cvTerm) {
         ComplexedChemicalEntity complex = new ComplexedChemicalEntity.Builder(identifier).build();
         for (String resource : cvTerm.getResources()) {
-            complex.addAssociatedPart(parseEntity(resource).orElse(Species.UNKNOWN_SPECIES));
+            Optional<ChemicalEntity> chemicalEntity = parseEntity(resource);
+            chemicalEntity.ifPresent(complex::addAssociatedPart);
         }
-        System.out.println("  -> parsed as " + complex);
-        this.entities.put(identifier, complex);
+        if (complex.getAssociatedParts().size() > 1) {
+            System.out.println("  -> parsed as " + complex);
+            this.entities.put(identifier, complex);
+        } else {
+            ChemicalEntity referenceEntity = createReferenceEntity(species);
+            this.entities.put(referenceEntity.getIdentifier().toString(), referenceEntity);
+        }
+    }
+
+    private ChemicalEntity createReferenceEntity(org.sbml.jsbml.Species species) {
+        species.getName();
+        species.getId();
+        return new Species.Builder(species.getId()).name(species.getName()).molarMass(1.0).build();
     }
 
     private void parseAndAddAllComponents(String identifier, CVTerm cvTerm) {
@@ -241,6 +253,7 @@ public class SBMLSpeciesParserService {
 
     /**
      * Tries to parse an entity using the given resource. If it can not be parsed an empty Optional is returned.
+     *
      * @param resource The resource to parse.
      * @return The parsed chemical entity, if a parser is available.
      */
@@ -275,6 +288,7 @@ public class SBMLSpeciesParserService {
 
     /**
      * Checks, whether the resources in a CVTerm have the same origin.
+     *
      * @param term The CVTerm to be checked
      * @return True, if the resources in a CVTerm have the same origin.
      */

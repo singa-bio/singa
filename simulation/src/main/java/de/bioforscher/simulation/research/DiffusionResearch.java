@@ -25,9 +25,7 @@ import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
 
-/**
- * Created by Christoph on 03.08.2016.
- */
+
 public class DiffusionResearch {
 
     public static void main(String[] args) {

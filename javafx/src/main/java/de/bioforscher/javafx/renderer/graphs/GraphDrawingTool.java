@@ -12,7 +12,6 @@ import javafx.beans.property.DoubleProperty;
 
 import java.util.HashMap;
 
-
 /**
  * This class tries to arrange a graph using force directed placement. <br>
  * The algorithm is based on Fruchterman, Thomas MJ, and Edward M. Reingold.

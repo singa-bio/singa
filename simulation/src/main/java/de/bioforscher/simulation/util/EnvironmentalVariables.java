@@ -1,6 +1,8 @@
 package de.bioforscher.simulation.util;
 
 import de.bioforscher.units.quantities.DynamicViscosity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -14,6 +16,8 @@ import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.KELVIN;
 
 public class EnvironmentalVariables extends Observable {
+
+    private static final Logger logger = LoggerFactory.getLogger(EnvironmentalVariables.class);
 
     private static EnvironmentalVariables instance;
 
@@ -73,12 +77,14 @@ public class EnvironmentalVariables extends Observable {
     }
 
     public void setNodeDistance(Quantity<Length> nodeDistance) {
+        logger.debug("Setting new spatial step size to {}.", nodeDistance);
         this.nodeDistance = nodeDistance;
         setChanged();
         notifyObservers();
     }
 
     public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
+        logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
         this.setNodeDistance(
                 Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
     }
@@ -97,6 +103,7 @@ public class EnvironmentalVariables extends Observable {
     }
 
     public void setTimeStep(Quantity<Time> timeStep) {
+        logger.debug("Setting new time step size to {}.", timeStep);
         this.timeStep = timeStep;
         setChanged();
         notifyObservers();

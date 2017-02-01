@@ -116,7 +116,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
      * @param node The {@link Node}.
      * @return {@code true} only if the node is source or target of this edge.
      */
-    public boolean containsNode(RegularNode node) {
+    public boolean containsNode(NodeType node) {
         return this.source.equals(node) || this.target.equals(node);
     }
 

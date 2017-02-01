@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.application.wizards;
 
+import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.simulation.application.components.SimulationSpace;
 import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
@@ -171,11 +171,11 @@ class GraphConfigurationPage extends WizardPage {
         if (this.tgMethods.getSelectedToggle().equals(this.rbRectangularGraph)) {
             return AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
                     this.spNumberVerticalNodes.getValue(), this.spNumberHorizontalNodes.getValue(),
-                    SimulationSpace.getInstance().getRectangle(), false));
+                    new Rectangle(400, 400), false));
         } else {
             return AutomatonGraphUtilities
                     .castUndirectedGraphToBioGraph(GraphFactory.buildRandomGraph(this.spNumberNodes.getValue(),
-                            this.spConnectivity.getValue(), SimulationSpace.getInstance().getRectangle()));
+                            this.spConnectivity.getValue(), new Rectangle(400, 400)));
         }
     }
 

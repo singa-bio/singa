@@ -1,26 +1,27 @@
 package de.bioforscher.simulation.application.components.plots;
 
-import de.bioforscher.simulation.application.BioGraphSimulation;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Christoph on 27.07.2016.
  */
 public class PlotPane extends GridPane {
 
-    private BioGraphSimulation owner;
+    private static final Logger logger = LoggerFactory.getLogger(PlotPane.class);
 
     private PlotCard currentPlotCard;
     private ListView<PlotCard> plotCards;
     private boolean initialized = false;
 
-    public PlotPane(BioGraphSimulation owner) {
-        this.owner = owner;
+    public PlotPane() {
+        logger.debug("Initializing {}" , this.getClass().getSimpleName());
         this.plotCards = new ListView<>();
         configureGrid();
         configurePlots();
@@ -41,15 +42,12 @@ public class PlotPane extends GridPane {
 
     private void configurePlotCards() {
         this.plotCards.setOrientation(Orientation.HORIZONTAL);
-        this.plotCards.getItems().addListener(new ListChangeListener<PlotCard>() {
-            @Override
-            public void onChanged(Change<? extends PlotCard> change) {
-                if (!PlotPane.this.initialized) {
-                    PlotPane.this.initialized = true;
-                    change.next();
-                    setSelectedPlot(change.getAddedSubList().get(0));
-                    addControlsToGrid();
-                }
+        this.plotCards.getItems().addListener((ListChangeListener<PlotCard>) change -> {
+            if (!PlotPane.this.initialized) {
+                PlotPane.this.initialized = true;
+                change.next();
+                setSelectedPlot(change.getAddedSubList().get(0));
+                addControlsToGrid();
             }
         });
     }

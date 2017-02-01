@@ -150,9 +150,12 @@ public class SmilesParser {
         // add bonds
         parser.connectors.forEach((connector, type) -> {
             if (type != MoleculeBondType.UNCONNECTED) {
-                parser.molecule.addEdgeBetween(parser.molecule.getNode(connector.getFirst()), parser.molecule.getNode(connector.getSecond()), type);
+                parser.molecule.addEdgeBetween(parser.molecule.getNode(connector.getFirst()),
+                        parser.molecule.getNode(connector.getSecond()), type);
             }
         });
+
+        // transform aromatic bonds to double bonds
 
         return parser.molecule;
 

@@ -1,13 +1,12 @@
 package de.bioforscher.simulation.application;
 
-import de.bioforscher.core.utility.LogManager;
 import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
 import de.bioforscher.simulation.application.components.ResizablePane;
 import de.bioforscher.simulation.application.components.SimulationCanvas;
+import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesOverviewPane;
 import de.bioforscher.simulation.application.components.modules.ModuleOverviewPane;
 import de.bioforscher.simulation.application.components.plots.PlotPane;
 import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
-import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesOverviewPane;
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
@@ -33,18 +32,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import tec.units.ri.quantity.Quantities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static tec.units.ri.unit.MetricPrefix.NANO;
-import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
-    private static final Logger log = Logger.getLogger(BioGraphSimulation.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(BioGraphSimulation.class);
 
     private Stage stage;
 
@@ -52,28 +47,20 @@ public class BioGraphSimulation extends Application {
     private PlotPane plotPane;
     private Slider concentrationSlider;
 
-    private AutomatonGraph graph;
     private Simulation simulation;
     private SimulationManager simulationManager = new SimulationManager(this.simulation);
 
     public static void main(String[] args) {
+        logger.info("Started simulation GUI.");
         launch();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-
-        LogManager.setDebugLevel(Level.FINE);
-
-        log.log(Level.INFO, "setup automaton");
         // setup the simulation
-        this.simulation = SimulationExampleProvider.createPassiveMembraneTransportExample();
-        //SimulationExampleProvider.createDiffusionModuleExample(10, Quantities.getQuantity(100,
-        // NANO(SECOND)));
-        //this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
-        this.graph = this.simulation.getGraph();
-        // Charts
-
+        logger.info("Setting up simulation from example ...");
+        this.simulation = SimulationExampleProvider.createIodineMultiReactionExample();
+        logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
         this.stage.setMaximized(true);
@@ -82,7 +69,7 @@ public class BioGraphSimulation extends Application {
         // Setup the Root and Top Container
         BorderPane root = new BorderPane();
         VBox topContainer = new VBox();
-
+        logger.debug("Initializing menus and buttons ...");
         // Menu Bar
         MenuBar menuBar = new MenuBar();
 
@@ -149,13 +136,13 @@ public class BioGraphSimulation extends Application {
         mIPlot.setOnAction(this::showPlotPreferencesControlPanel);
 
         menuPreferences.getItems().add(mIPlot);
-
         menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuPreferences);
 
+        logger.debug("Initializing graphs tab ...");
         // Chart Half
         final TabPane rightPane = new TabPane();
         rightPane.setMinWidth(200);
-        this.plotPane = new PlotPane(this);
+        this.plotPane = new PlotPane();
 
         Tab chartTab = new Tab();
         chartTab.setText("Plots");
@@ -163,6 +150,7 @@ public class BioGraphSimulation extends Application {
         chartTab.setContent(this.plotPane);
         rightPane.getTabs().add(chartTab);
 
+        logger.debug("Initializing environment tab ...");
         Tab environmentTab = new Tab();
         environmentTab.setText("Environment");
         environmentTab.setClosable(false);
@@ -172,6 +160,7 @@ public class BioGraphSimulation extends Application {
         environmentTab.setContent(environmentControlPanel);
         rightPane.getTabs().add(environmentTab);
 
+        logger.debug("Initializing simulation canvas ...");
         this.simulationCanvas = new SimulationCanvas(this);
         ResizablePane anchorPane = new ResizablePane(this.simulationCanvas);
         // Simulation Half
@@ -183,6 +172,7 @@ public class BioGraphSimulation extends Application {
         // Main Content Pane
         SplitPane splitPane = new SplitPane(anchorPane, rightPane);
         splitPane.setDividerPosition(0, 0.4);
+
         // ToolBar
         ToolBar toolBar = new ToolBar();
         // simulate button
@@ -222,8 +212,9 @@ public class BioGraphSimulation extends Application {
     }
 
     private void startSimulation(ActionEvent event) {
+        logger.debug("Starting simulation ...");
         if (!this.simulationManager.isRunning()) {
-            resetSimulation();
+            initializeSimulationManager();
             Thread thread = new Thread(this.simulationManager);
             thread.setDaemon(true);
             thread.start();
@@ -231,28 +222,24 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    private void resetSimulation() {
-        this.simulationManager = new SimulationManager(this.simulation);
-        this.simulationManager.getListeners().add(this.simulationCanvas.getRenderer());
-    }
-
     private void pauseSimulation(ActionEvent event) {
+        logger.debug("Pausing simulation ...");
         if (this.simulationManager.isRunning()) {
             this.simulationManager.cancel();
             this.simulationCanvas.getRenderer().stop();
-            resetSimulation();
+            initializeSimulationManager();
         }
     }
 
-    private void arrangeGraph(ActionEvent event) {
-        Thread graphProducer = new Thread(new BioGraphProducer(
-                this.simulationCanvas.getRenderer().getGraphQueue(),
-                this.graph,
-                100));
-        graphProducer.start();
-        this.simulationCanvas.getRenderer().start();
+    private void initializeSimulationManager() {
+        this.simulationManager = new SimulationManager(this.simulation);
+        this.simulationManager.addEventListener(this.simulationCanvas.getRenderer());
     }
 
+    private void arrangeGraph(ActionEvent event) {
+        logger.debug("Starting rearrangement cycle ...");
+        this.simulationCanvas.getRenderer().arrangeGraph(this.simulation.getGraph());
+    }
 
     private Stage prepareUtilityWindow(int width, int height, String title) {
         Stage utilityStage = new Stage();
@@ -362,7 +349,7 @@ public class BioGraphSimulation extends Application {
         FileChooser fileChooser = prepareFileChooser("Save graph to file", "xml");
         File file = fileChooser.showSaveDialog(this.stage);
         if (file != null) {
-            GraphMLExportService.exportGraph(this.graph, file);
+            GraphMLExportService.exportGraph(this.simulation.getGraph(), file);
         }
     }
 
@@ -378,8 +365,7 @@ public class BioGraphSimulation extends Application {
     }
 
     private void resetGraph(AutomatonGraph graph) {
-        this.graph = graph;
-        this.simulation.setGraph(this.graph);
+        this.simulation.setGraph(graph);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(null);
         this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(null);
         this.simulationCanvas.resetGraphContextMenu();
@@ -391,9 +377,6 @@ public class BioGraphSimulation extends Application {
     }
 
     public void redrawGraph() {
-        this.graph = this.simulation.getGraph();
-        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(null);
-        // this.simulationCanvas.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(null);
         this.simulationCanvas.draw();
     }
 
@@ -422,11 +405,11 @@ public class BioGraphSimulation extends Application {
     }
 
     public AutomatonGraph getGraph() {
-        return this.graph;
+        return this.simulation.getGraph();
     }
 
     public void setGraph(AutomatonGraph graph) {
-        this.graph = graph;
+        this.simulation.setGraph(graph);
     }
 
     public Simulation getSimulation() {

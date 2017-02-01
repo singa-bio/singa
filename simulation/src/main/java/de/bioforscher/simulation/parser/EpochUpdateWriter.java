@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.parser;
 
-import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
@@ -11,10 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class can be used to write the concentrations of a node to a file while
@@ -24,34 +21,32 @@ import java.util.Map;
  */
 public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 
-    public static char COMMENT_CHARCTER = '#';
-    public static char SEPERATOR_CHARACTER = ',';
-    public static char LINEBREAK = '\n';
+    private static char COMMENT_CHARACTER = '#';
+    private static char SEPARATOR_CHARACTER = ',';
+    private static String LINEBREAK = System.getProperty("line.separator");
 
     private Path workspacePath;
     private Path folder;
-    private boolean printSpeciesInformation;
+    private boolean printEntityInformation;
     private Map<BioNode, BufferedWriter> registeredWriters;
-    private Map<String, Species> speciesToObserve;
-    private List<Species> orderingOfSpecies;
+    private List<ChemicalEntity> observedEntities;
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Map<String, Species> speciesToObserve) throws IOException {
-        this(workspacePath, folder, speciesToObserve, true);
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve) throws IOException {
+        this(workspacePath, folder, entitiesToObserve, true);
     }
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Map<String, Species> speciesToObserve, boolean printSpeciesInformation) throws IOException {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, boolean printEntityInformation) throws IOException {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
-        this.speciesToObserve = speciesToObserve;
-        this.printSpeciesInformation = printSpeciesInformation;
-        this.orderingOfSpecies = new ArrayList<>();
+        this.observedEntities = initializeOrdering(entitiesToObserve);
+        this.printEntityInformation = printEntityInformation;
         this.registeredWriters = new HashMap<>();
-        initializeOrdering();
+
     }
 
-    private void initializeOrdering() {
-        this.orderingOfSpecies.addAll(this.speciesToObserve.values());
+    private List<ChemicalEntity> initializeOrdering(Set<ChemicalEntity> unorderedEntities) {
+        return new ArrayList<>(unorderedEntities);
     }
 
     public void addNodeToObserve(BioNode node) throws IOException {
@@ -62,10 +57,10 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     private void createFolderStructure() {
-        Path workspacefolder = Paths.get(this.workspacePath.toString(), this.folder.toString());
+        Path workspaceFolder = Paths.get(this.workspacePath.toString(), this.folder.toString());
         try {
-            if (!Files.exists(workspacefolder)) {
-                Files.createDirectory(workspacefolder);
+            if (!Files.exists(workspaceFolder)) {
+                Files.createDirectory(workspaceFolder);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,30 +77,42 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     private void writeHeader(BioNode node) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append(COMMENT_CHARCTER + " Node " + node.getIdentifier());
-        if (this.printSpeciesInformation) {
-            sb.append(prepareSpeciesInformation());
+        sb.append(COMMENT_CHARACTER)
+                .append(" Node ")
+                .append(node.getIdentifier())
+                .append(LINEBREAK);
+        if (this.printEntityInformation) {
+            sb.append(prepareEntityInformation());
         }
-        sb.append(prepareSpeciesHeader());
+        sb.append(prepareEntityHeader());
         appendContent(node, sb.toString());
     }
 
-    private String prepareSpeciesInformation() {
+    private String prepareEntityInformation() {
         StringBuilder sb = new StringBuilder();
-        for (Species species : this.orderingOfSpecies) {
-            sb.append(COMMENT_CHARCTER + " " + species.getName() + " " + species.getIdentifier() + LINEBREAK);
+        for (ChemicalEntity entity : this.observedEntities) {
+            sb.append(COMMENT_CHARACTER)
+                    .append(" ")
+                    .append(entity.getName())
+                    .append(" ")
+                    .append(entity.getIdentifier())
+                    .append(LINEBREAK);
         }
         return sb.toString();
     }
 
-    private String prepareSpeciesHeader() {
+    private String prepareEntityHeader() {
         StringBuilder sb = new StringBuilder();
+        sb.append("epoch")
+                .append(SEPARATOR_CHARACTER);
         int count = 0;
-        for (Species species : this.orderingOfSpecies) {
-            if (count < this.orderingOfSpecies.size() - 1) {
-                sb.append(species.getName() + SEPERATOR_CHARACTER);
+        for (ChemicalEntity entity : this.observedEntities) {
+            if (count < this.observedEntities.size() - 1) {
+                sb.append(entity.getName())
+                        .append(SEPARATOR_CHARACTER);
             } else {
-                sb.append(species.getName() + LINEBREAK);
+                sb.append(entity.getName())
+                        .append(LINEBREAK);
             }
             count++;
         }
@@ -119,13 +126,15 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toString(event.getEpoch())).append(SEPERATOR_CHARACTER);
+        sb.append(Integer.toString(event.getEpoch())).append(SEPARATOR_CHARACTER);
         int count = 0;
-        for (Species species : this.orderingOfSpecies) {
-            if (count < event.getNode().getConcentrations().size() - 1) {
-                sb.append(Double.toString(event.getNode().getConcentrations().get(species).getValue().doubleValue())).append(SEPERATOR_CHARACTER);
+        for (ChemicalEntity entity : this.observedEntities) {
+            if (count < this.observedEntities.size() - 1) {
+                sb.append(Double.toString(event.getNode().getConcentrations().get(entity).getValue().doubleValue()))
+                        .append(SEPARATOR_CHARACTER);
             } else {
-                sb.append(Double.toString(event.getNode().getConcentrations().get(species).getValue().doubleValue())).append(LINEBREAK);
+                sb.append(Double.toString(event.getNode().getConcentrations().get(entity).getValue().doubleValue()))
+                        .append(LINEBREAK);
             }
             count++;
         }

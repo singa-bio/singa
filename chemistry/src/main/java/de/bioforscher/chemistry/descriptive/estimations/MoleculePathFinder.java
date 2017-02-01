@@ -2,7 +2,10 @@ package de.bioforscher.chemistry.descriptive.estimations;
 
 import de.bioforscher.chemistry.descriptive.elements.Element;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeAtom;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBond;
+import de.bioforscher.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.chemistry.parser.smiles.SmilesParser;
 
 import java.awt.*;
 import java.util.*;
@@ -42,6 +45,53 @@ public class MoleculePathFinder {
         pathFinder.findAllCandidatesForMultiPath(multiPath);
         pathFinder.cleanCandidates();
         return pathFinder.candidates;
+    }
+
+    public static List<LinkedList<MoleculeBond>> findAromaticPath(MoleculeGraph molecule) {
+        MoleculePathFinder pathFinder = new MoleculePathFinder(molecule);
+        // find all aromatic bonds
+        List<MoleculeBond> aromaticBonds = pathFinder.graph.getEdges().stream()
+                .filter(bond -> bond.getType() == MoleculeBondType.AROMATIC_BOND)
+                .collect(Collectors.toList());
+        // find continuous paths
+        List<LinkedList<MoleculeBond>> continuousAromaticPaths = new ArrayList<>();
+        // while bonds remain try to add them into the path
+        while (!aromaticBonds.isEmpty()) {
+            Iterator<MoleculeBond> iterator = aromaticBonds.listIterator();
+            LinkedList<MoleculeBond> candidate = new LinkedList<>();
+            candidate.add(iterator.next());
+            iterator.remove();
+            continuousAromaticPaths.add(candidate);
+            // remembers if anything could be added
+            boolean added = true;
+            // while anything could be added
+            while (added) {
+                iterator = aromaticBonds.listIterator();
+                added = false;
+                // for each of the bonds
+                while (iterator.hasNext()) {
+                    MoleculeBond nextBond = iterator.next();
+                    MoleculeBond first = candidate.getFirst();
+                    MoleculeBond last = candidate.getLast();
+                    if (last != first) {
+                        // see if first fits
+                        if (first.containsNode(nextBond.getSource()) || first.containsNode(nextBond.getTarget())) {
+                            candidate.addFirst(nextBond);
+                            added = true;
+                            iterator.remove();
+                            continue;
+                        }
+                    }
+                    // see if last fits
+                    if (last.containsNode(nextBond.getSource()) || last.containsNode(nextBond.getTarget())) {
+                        candidate.addLast(nextBond);
+                        added = true;
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+        return continuousAromaticPaths;
     }
 
     private void initializeCandidates(List<MoleculeAtom> startingPoints) {

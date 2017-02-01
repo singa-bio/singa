@@ -3,7 +3,7 @@ package de.bioforscher.simulation.application.components;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.BioGraphSimulation;
-import de.bioforscher.simulation.application.renderer.GraphRenderer;
+import de.bioforscher.simulation.application.renderer.BioGraphRenderer;
 import de.bioforscher.simulation.model.BioNode;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
@@ -12,20 +12,21 @@ import javafx.scene.input.MouseEvent;
 public class SimulationCanvas extends Canvas {
 
     private BioGraphSimulation owner;
-    private GraphRenderer renderer;
+    private BioGraphRenderer renderer;
     private BioGraphContextMenu graphContextMenu;
 
     public SimulationCanvas(BioGraphSimulation owner) {
         this.owner = owner;
-        this.renderer = new GraphRenderer(this);
+        this.renderer = new BioGraphRenderer();
         this.graphContextMenu = new BioGraphContextMenu(this.owner.getSimulation(), this);
 
         this.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
         this.widthProperty().addListener(observable -> draw());
         this.heightProperty().addListener(observable -> draw());
 
-        SimulationSpace.getInstance().getWidth().bind(this.widthProperty());
-        SimulationSpace.getInstance().getHeight().bind(this.heightProperty());
+        this.renderer.drawingWidthProperty().bind(this.widthProperty());
+        this.renderer.drawingHeightProperty().bind(this.heightProperty());
+        this.renderer.setGraphicsContext(this.getGraphicsContext2D());
     }
 
     private void handleClick(MouseEvent event) {
@@ -63,16 +64,16 @@ public class SimulationCanvas extends Canvas {
     }
 
     private boolean isClickedOnNode(MouseEvent event, BioNode node) {
-        return node.getPosition().isNearVector(new Vector2D(event.getX()+this.renderer.getOptions().getNodeDiameter() / 2,
-                        event.getY()+this.renderer.getOptions().getNodeDiameter() / 2),
-                this.renderer.getOptions().getNodeDiameter() / 2);
+        return node.getPosition().isNearVector(new Vector2D(event.getX()+this.renderer.getRenderingOptions().getNodeDiameter() / 2,
+                        event.getY()+this.renderer.getRenderingOptions().getNodeDiameter() / 2),
+                this.renderer.getRenderingOptions().getNodeDiameter() / 2);
     }
 
-    public GraphRenderer getRenderer() {
+    public BioGraphRenderer getRenderer() {
         return this.renderer;
     }
 
-    public void setRenderer(GraphRenderer renderer) {
+    public void setRenderer(BioGraphRenderer renderer) {
         this.renderer = renderer;
     }
 

@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.parser;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.deprecated.GraphAutomaton;
+import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;
@@ -33,14 +33,14 @@ public class SBMLModelExportService {
     private Document document;
     private Element root;
 
-    private GraphAutomaton automata;
+    private Simulation simulation;
 
-    public SBMLModelExportService(GraphAutomaton automata) throws ParserConfigurationException {
+    public SBMLModelExportService(Simulation simulation) throws ParserConfigurationException {
         log.log(Level.FINER, "Setting up xml documnent.");
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         this.document = docBuilder.newDocument();
-        this.automata = automata;
+        this.simulation = simulation;
         createRootElement();
     }
 
@@ -189,7 +189,7 @@ public class SBMLModelExportService {
     private Element createSpecies() {
         log.log(Level.FINER, "Creating species for SBML.");
         Element listOfSpecies = this.document.createElement("listOfSpecies");
-        Map<String, ChemicalEntity> speciesMap = AutomatonGraphUtilities.generateMapOfEntities(this.automata.getGraph());
+        Map<String, ChemicalEntity> speciesMap = AutomatonGraphUtilities.generateMapOfEntities(this.simulation.getGraph());
         for (String speciesName : speciesMap.keySet()) {
             Element species = this.document.createElement("species");
             species.setAttribute("id", speciesMap.get(speciesName).getIdentifier().toString());

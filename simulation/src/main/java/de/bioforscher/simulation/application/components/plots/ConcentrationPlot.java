@@ -20,6 +20,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import java.text.DecimalFormat;
@@ -36,6 +38,8 @@ import java.util.Set;
  */
 public class ConcentrationPlot extends LineChart<Number, Number> implements UpdateEventListener<NodeUpdatedEvent> {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConcentrationPlot.class);
+
     private ObservableList<ChemicalEntity> observedEntities = FXCollections.observableArrayList();
     private Simulation simulation;
     // mirrors the data received from events
@@ -48,6 +52,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     public ConcentrationPlot(Set<ChemicalEntity> observedEntities, BioNode referencedNode, Simulation simulation) {
         super(new NumberAxis(), new NumberAxis());
+        logger.debug("Initializing {} for node {} ...", this.getClass().getSimpleName(), referencedNode.getIdentifier());
         this.simulation = simulation;
         this.referencedNode = referencedNode;
         this.mirroredData = new HashMap<>();
