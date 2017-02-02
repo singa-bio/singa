@@ -1,9 +1,12 @@
 package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
+import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.parser.FetchResultContainer;
 import de.bioforscher.core.parser.xml.AbstractXMLParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -18,22 +21,34 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by Christoph on 10.09.2016.
+ * @author cl
  */
 public class UniProtParserService extends AbstractXMLParser {
 
-    private static final UniProtParserService INSTANCE = new UniProtParserService();
+    private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
 
     private UniProtIdentifier identifier;
 
-    public UniProtParserService() {
+    private UniProtParserService(String uniProtIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler());
         setResource("http://www.uniprot.org/uniprot/");
+        setIdentifier(new UniProtIdentifier(uniProtIdentifier));
+    }
+
+    private UniProtParserService(String uniProtIdentifier, String primaryIdentifier) {
+        getXmlReader().setContentHandler(new UniProtContentHandler(primaryIdentifier));
+        setResource("http://www.uniprot.org/uniprot/");
+        setIdentifier(new UniProtIdentifier(uniProtIdentifier));
     }
 
     public static Enzyme parse(String uniProtIdentifier) {
-        INSTANCE.setIdentifier(new UniProtIdentifier(uniProtIdentifier));
-        return INSTANCE.fetchChemicalEntity();
+        UniProtParserService parser = new UniProtParserService(uniProtIdentifier);
+        return parser.fetchChemicalEntity();
+    }
+
+    public static Enzyme parse(String uniProtIdentifier, String primaryIdentifier) {
+        UniProtParserService parser = new UniProtParserService(uniProtIdentifier, primaryIdentifier);
+        return parser.fetchChemicalEntity();
     }
 
     public void setIdentifier(UniProtIdentifier identifier) {

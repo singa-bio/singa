@@ -115,20 +115,17 @@ public abstract class Reaction {
     }
 
     public String getDisplayString() {
-        final DecimalFormat format = new DecimalFormat("#.##");
         String substrates = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
-                .map(substrate -> format.format( substrate.getStoichiometricNumber() > 0 ? substrate.getStoichiometricNumber() : " ") + " "
+                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
                         +  substrate.getEntity().getIdentifier())
-                .collect(Collectors.joining(" + "));
-
+                .collect(Collectors.joining(" +"));
         String products = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
-                .map(product -> format.format(product.getStoichiometricNumber() > 0 ? product.getStoichiometricNumber() : " ") + " "
+                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
                         + product.getEntity().getIdentifier())
-                .collect(Collectors.joining(" + "));
-
-        return substrates + " \u27f6 " + products;
+                .collect(Collectors.joining(" +"));
+        return substrates + " \u27f6" + products;
     }
 
 

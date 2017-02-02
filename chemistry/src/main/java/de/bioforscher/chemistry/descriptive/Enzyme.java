@@ -4,6 +4,7 @@ package de.bioforscher.chemistry.descriptive;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.parser.uniprot.UniProtParserService;
 import de.bioforscher.core.biology.Organism;
+import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -30,7 +31,7 @@ import static de.bioforscher.units.UnitProvider.PER_SECOND;
  * @see <a href="https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics">Wikipedia: Michaelis–Menten
  * kinetics</a>
  */
-public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
+public class Enzyme extends ChemicalEntity<SimpleStringIdentifier> {
 
     /**
      * The michaelis constant is an inverse measure of the substrate's affinity to the enzyme.
@@ -57,7 +58,7 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
      *
      * @param identifier The {@link UniProtIdentifier}.
      */
-    protected Enzyme(UniProtIdentifier identifier) {
+    protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
     }
 
@@ -225,20 +226,20 @@ public class Enzyme extends ChemicalEntity<UniProtIdentifier> {
         return "Enzyme: " + getIdentifier() + " " + getName() + " weight: " + getMolarMass();
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder, UniProtIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder, SimpleStringIdentifier> {
 
-        public Builder(UniProtIdentifier identifier) {
+        public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
             this.topLevelObject.setSubstrates(new ArrayList<>());
         }
 
         public Builder(String identifier) {
-            this(new UniProtIdentifier(identifier));
+            this(new SimpleStringIdentifier(identifier));
         }
 
         @Override
-        protected Enzyme createObject(UniProtIdentifier identifier) {
-            return new Enzyme(identifier);
+        protected Enzyme createObject(SimpleStringIdentifier primaryIdentifer) {
+            return new Enzyme(primaryIdentifer);
         }
 
         @Override

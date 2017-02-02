@@ -15,4 +15,6 @@ public class SimpleStringIdentifier extends AbstractIdentifier {
         super(identifier,  PATTERN);
     }
 
+
+
 }

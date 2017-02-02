@@ -8,20 +8,23 @@ import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 /**
- * Created by Christoph on 07/11/2016.
+ * @author cl
  */
 public class BioModelsParserService {
 
     public static final String BIOMODELS_FETCH_URL = "http://www.ebi.ac.uk/biomodels-main/download?mid=%s";
 
-    public static HashMap<String, ChemicalEntity> parseModelById(String modelIdentifier) throws IOException {
-        return parseModelFromStream(new URL(String.format(BIOMODELS_FETCH_URL, modelIdentifier)).openStream());
+    public static SBMLParser parseModelById(String modelIdentifier) {
+        try {
+            return parseModelFromStream(new URL(String.format(BIOMODELS_FETCH_URL, modelIdentifier)).openStream());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not find model " + modelIdentifier, e);
+        }
     }
 
-    public static HashMap<String, ChemicalEntity> parseModelFromFile(String filePath) {
+    public static SBMLParser parseModelFromFile(String filePath) {
         try {
             return parseModelFromStream(Files.newInputStream(Paths.get(filePath)));
         } catch (IOException e) {
@@ -29,10 +32,10 @@ public class BioModelsParserService {
         }
     }
 
-    public  static HashMap<String, ChemicalEntity> parseModelFromStream(InputStream inputStream) throws IOException {
-        SBMLSpeciesParserService parser = new SBMLSpeciesParserService(inputStream);
+    public  static SBMLParser parseModelFromStream(InputStream inputStream) throws IOException {
+        SBMLParser parser = new SBMLParser(inputStream);
         parser.parse();
-        return parser.getChemicalEntities();
+        return parser;
     }
 
 }

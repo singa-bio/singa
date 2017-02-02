@@ -8,7 +8,7 @@ import java.io.IOException;
 
 
 /**
- * Created by Christoph on 09.09.2016.
+ * @author cl
  */
 public class LibSBMLPLayground {
 

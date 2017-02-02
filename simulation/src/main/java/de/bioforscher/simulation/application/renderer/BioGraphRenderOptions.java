@@ -15,7 +15,7 @@ public class BioGraphRenderOptions {
     private ColorScale nodeColorScale;
 
     public BioGraphRenderOptions() {
-        this.nodeColorScale = new ColorScale.Builder(0, 1).build();
+        this.nodeColorScale = new ColorScale.Builder(0, 5000).build();
     }
 
     public ChemicalEntity getNodeHighlightEntity() {

@@ -63,8 +63,8 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
         }
 
         @Override
-        protected ComplexedChemicalEntity createObject(SimpleStringIdentifier identifier) {
-            return new ComplexedChemicalEntity(identifier);
+        protected ComplexedChemicalEntity createObject(SimpleStringIdentifier primaryIdentifer) {
+            return new ComplexedChemicalEntity(primaryIdentifer);
         }
 
         @Override

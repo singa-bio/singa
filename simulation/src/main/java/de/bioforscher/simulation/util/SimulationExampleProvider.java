@@ -18,6 +18,8 @@ import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReact
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.simulation.parser.BioModelsParserService;
+import de.bioforscher.simulation.parser.SBMLParser;
 import de.bioforscher.units.UnitProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -413,6 +415,52 @@ public class SimulationExampleProvider {
         return simulation;
     }
 
+    public static Simulation createSimulationFromSBML() {
+
+        // TODO replace functions in model with actual calculation (eg BIOMD0000000064)
+        // TODO revert previous step until a sufficient configuration has been found
+
+        logger.info("Setting up simulation for model BIOMD0000000023 ...");
+        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000023");
+
+        logger.debug("Setting up example graph ...");
+        // setup graph with a single node
+        AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(
+                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+
+        // initialize species in graph with desired concentration
+        logger.debug("Initializing starting concentrations of species and node states in graph ...");
+        BioNode node = graph.getNode(0);
+        model.getStartingConcentrations().forEach(node::setConcentration);
+
+        // setup time step size
+        logger.debug("Adjusting time step size ... ");
+        EnvironmentalVariables.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
+
+        // compartment is never initialized for this reaction
+        model.getReactions().forEach(reaction -> {
+            reaction.getKineticLaw().setLocalParameter("compartment", 1);
+        });
+
+        // create reactions module
+        Reactions reactions = new Reactions();
+
+        // add reaction to the reactions used in the simulation
+        reactions.getReactions().addAll(model.getReactions());
+
+        // setup simulation
+        Simulation simulation = new Simulation();
+        // add graph
+        simulation.setGraph(graph);
+        // add the reactions module
+        simulation.getModules().add(reactions);
+        // add all referenced species to the simulation for easy access
+        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
+
+        return simulation;
+    }
+
+
     public static Simulation createPassiveMembraneTransportExample() {
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
@@ -435,7 +483,7 @@ public class SimulationExampleProvider {
                 node.addEntity(urea, 1.0);
                 node.addEntity(cobamamide, 1.0);
                 node.setState(NodeState.AQUEOUS);
-            } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2) ) {
+            } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
                 node.addEntity(urea, 0.0);
                 node.addEntity(cobamamide, 0.0);
                 node.setState(NodeState.CELL_MEMBRANE);

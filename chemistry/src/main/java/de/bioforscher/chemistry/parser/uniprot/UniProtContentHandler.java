@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Christoph on 10.09.2016.
+ * @author cl
  */
 public class UniProtContentHandler implements ContentHandler {
 
@@ -28,6 +28,9 @@ public class UniProtContentHandler implements ContentHandler {
                 "function",
                 "catalytic activity");
     }
+
+    // preassigned primary Identifier
+    private String primaryIdentifier;
 
     // enzyme attributes
     private UniProtIdentifier identifier;
@@ -55,12 +58,27 @@ public class UniProtContentHandler implements ContentHandler {
         this.textComments = new ArrayList<>();
     }
 
+    public UniProtContentHandler(String primaryIdentifier) {
+        this.primaryIdentifier = primaryIdentifier;
+        this.additionalNames = new ArrayList<>();
+        this.textComments = new ArrayList<>();
+    }
+
     Enzyme getChemicalSpecies() {
         // create base enzyme
-        Enzyme enzyme = new Enzyme.Builder(this.identifier)
+        Enzyme enzyme;
+        if (this.primaryIdentifier == null) {
+             enzyme = new Enzyme.Builder(this.identifier.toString())
                 .name(this.recommendedName)
                 .molarMass(this.molarMass)
                 .build();
+        } else {
+            enzyme = new Enzyme.Builder(this.primaryIdentifier)
+                    .additionalIdentifier(this.identifier)
+                    .name(this.recommendedName)
+                    .molarMass(this.molarMass)
+                    .build();
+        }
         // add organism
         enzyme.addOrganism(this.sourceOrganism);
         // add sequence without white spaces

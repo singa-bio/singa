@@ -17,7 +17,7 @@ import de.bioforscher.core.identifier.SimpleStringIdentifier;
  */
 public class Species extends ChemicalEntity<SimpleStringIdentifier> {
 
-    public final static Species UNKNOWN_SPECIES = new Species.Builder("CHEBI:00000")
+    public final static Species UNKNOWN_SPECIES = new Species.Builder("UNK")
             .name("Unknown chemical species")
             .molarMass(10.0)
             .build();
@@ -63,12 +63,6 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
         this.smilesRepresentation = smilesRepresentation;
     }
 
-    @Override
-    public String toString() {
-        return "Species: " + getIdentifier() + " " + Character.toUpperCase(getName().charAt(0)) + getName().substring(1)
-                + " weight: " + getMolarMass() + " smiles: " + getSmilesRepresentation();
-    }
-
     public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {
 
         public Builder(SimpleStringIdentifier identifier) {
@@ -80,8 +74,8 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
         }
 
         @Override
-        protected Species createObject(SimpleStringIdentifier identifier) {
-            return new Species(identifier);
+        protected Species createObject(SimpleStringIdentifier primaryIdentifer) {
+            return new Species(primaryIdentifer);
         }
 
         @Override

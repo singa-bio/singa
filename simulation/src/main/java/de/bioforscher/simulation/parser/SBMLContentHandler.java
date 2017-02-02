@@ -57,7 +57,7 @@ class SBMLContentHandler implements ContentHandler {
 
     public EnzymeReaction getReaction() {
         // build enzyme
-        Enzyme enzyme = new Enzyme.Builder(this.enzymeIdentifier)
+        Enzyme enzyme = new Enzyme.Builder(this.enzymeIdentifier.toString())
                 .name(this.enzymeName)
                 .turnoverNumber(this.turnoverNumber)
                 .michaelisConstant(this.michaelisConstant)

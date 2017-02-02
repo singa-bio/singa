@@ -110,7 +110,7 @@ public class SBMLSearchPane extends GridPane {
         fileChooser.getExtensionFilters().add(extFilter);
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            this.handleResults(BioModelsParserService.parseModelFromFile(file.getPath()).values().stream()
+            this.handleResults(BioModelsParserService.parseModelFromFile(file.getPath()).getChemicalEntities().values().stream()
                     .collect(Collectors.toList()));
             this.searchField.setText(file.getName());
         }
@@ -134,7 +134,7 @@ public class SBMLSearchPane extends GridPane {
             @Override
             protected List<ChemicalEntity> call() throws Exception {
                 String searchTerm = SBMLSearchPane.this.searchField.getText();
-                return BioModelsParserService.parseModelById(searchTerm).values().stream().collect(Collectors.toList());
+                return BioModelsParserService.parseModelById(searchTerm).getChemicalEntities().values().stream().collect(Collectors.toList());
             }
         };
 

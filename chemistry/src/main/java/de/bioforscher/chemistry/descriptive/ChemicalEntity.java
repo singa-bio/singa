@@ -14,6 +14,7 @@ import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.ADDITIONAL_IDENTIFIER;
 import static de.bioforscher.chemistry.descriptive.annotations.AnnotationType.ADDITIONAL_NAME;
 import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 
@@ -130,6 +131,22 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return getContentOfAnnotations(String.class, ADDITIONAL_NAME);
     }
 
+    public void addAdditionalIdentifer(Identifier identifier) {
+        addAnnotation(new Annotation<>(ADDITIONAL_IDENTIFIER, identifier));
+    }
+
+    public List<Identifier> getAdditionalIdentifiers() {
+        return getContentOfAnnotations(Identifier.class, ADDITIONAL_IDENTIFIER);
+    }
+
+    @Override
+    public String toString() {
+        return "ChemicalEntity{" +
+                "identifier=" + this.identifier +
+                ", name='" + this.name + '\'' +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -153,7 +170,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
             this.builderObject = getBuilder();
         }
 
-        protected abstract TopLevelType createObject(IdentifierType identifier);
+        protected abstract TopLevelType createObject(IdentifierType primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
 
@@ -169,6 +186,11 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
         public BuilderType molarMass(double molarMass) {
             this.topLevelObject.setMolarMass(molarMass);
+            return this.builderObject;
+        }
+
+        public BuilderType additionalIdentifier(Identifier identifier) {
+            this.topLevelObject.addAdditionalIdentifer(identifier);
             return this.builderObject;
         }
 

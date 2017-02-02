@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.parser.chebi;
 
 import de.bioforscher.chemistry.descriptive.Species;
+import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.parser.AbstractParser;
 import de.bioforscher.core.parser.FetchResultContainer;
 import org.slf4j.Logger;
@@ -16,19 +17,25 @@ public class ChEBIParserService extends AbstractParser<Entity> {
 
     private static final Logger logger = LoggerFactory.getLogger(ChEBIParserService.class);
 
-    private static final ChEBIParserService INSTANCE = new ChEBIParserService();
+    private String primaryIdentifier;
 
-    public ChEBIParserService(String chebiId) {
-        setResource(chebiId);
+    public ChEBIParserService(String chebiIdentifier) {
+        setResource(chebiIdentifier);
     }
 
     public ChEBIParserService() {
 
     }
 
-    public static Species parse(String chebiId) {
-        INSTANCE.setResource(chebiId);
-        return INSTANCE.fetchSpecies();
+    public static Species parse(String chebiIdentifier) {
+        ChEBIParserService parser = new ChEBIParserService(chebiIdentifier);
+        return parser.fetchSpecies();
+    }
+
+    public static Species parse(String chebiIdentifier, String primaryIdentifier) {
+        ChEBIParserService parser = new ChEBIParserService(chebiIdentifier);
+        parser.primaryIdentifier = primaryIdentifier;
+        return parser.fetchSpecies();
     }
 
     @Override
@@ -49,11 +56,22 @@ public class ChEBIParserService extends AbstractParser<Entity> {
         List<Object> list = new ArrayList<>();
         Entity entity = getFetchResult().getContent();
         logger.debug("Creating {} from retrieved information ... ", entity.getChebiAsciiName());
-        Species species = new Species.Builder(entity.getChebiId())
-                .name(entity.getChebiAsciiName())
-                .molarMass(handleWeight(entity.getMass()))
-                .smilesRepresentation(entity.getSmiles())
-                .build();
+        Species species;
+        if (this.primaryIdentifier == null) {
+            species = new Species.Builder(entity.getChebiId())
+                    .name(entity.getChebiAsciiName())
+                    .molarMass(handleWeight(entity.getMass()))
+                    .smilesRepresentation(entity.getSmiles())
+                    .build();
+        } else {
+            species = new Species.Builder(this.primaryIdentifier)
+                    .additionalIdentifier(new ChEBIIdentifier(entity.getChebiId()))
+                    .name(entity.getChebiAsciiName())
+                    .molarMass(handleWeight(entity.getMass()))
+                    .smilesRepresentation(entity.getSmiles())
+                    .build();
+
+        }
         list.add(species);
         return list;
     }

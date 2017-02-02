@@ -12,10 +12,12 @@ import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
+import de.bioforscher.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import org.sbml.jsbml.*;
-import uk.co.cogitolearning.cogpar.SetVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
@@ -23,44 +25,76 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 /**
- * Created by Christoph on 04/11/2016.
+ * @author cl
  */
-public class SBMLSpeciesParserService {
+public class SBMLParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(SBMLParser.class);
+
+    // todo parse global parameters
 
     private SBMLDocument document;
-    private HashMap<String, ChemicalEntity> entities;
-    private HashMap<Identifier, ChemicalEntity> allreadyParsedEntities;
+
+    // results
+    private Map<String, ChemicalEntity> entities;
+    private List<DynamicReaction> reactions;
+    private Map<ChemicalEntity, Double> startingConcentrations;
+    private Map<String, Double> globalParameters;
+
+    private Map<Identifier, ChemicalEntity> entitiesByPrimaryId;
+    private Map<Identifier, ChemicalEntity> entitiesByDatabaseId;
 
     private DynamicReaction currentReaction;
     private DynamicKineticLaw currentKineticLaw;
 
-    public SBMLSpeciesParserService(InputStream inputStream) {
+    public SBMLParser(InputStream inputStream) {
         this.entities = new HashMap<>();
-        this.allreadyParsedEntities = new HashMap<>();
+        this.entitiesByPrimaryId = new HashMap<>();
+        this.entitiesByDatabaseId = new HashMap<>();
+        this.startingConcentrations = new HashMap<>();
+        this.reactions = new ArrayList<>();
+        this.globalParameters = new HashMap<>();
         initializeDocument(inputStream);
     }
 
     private void initializeDocument(InputStream inputStream) {
         SBMLReader reader = new SBMLReader();
+        logger.info("Parsing SBML...");
         try {
             this.document = reader.readSBMLFromStream(inputStream);
         } catch (XMLStreamException e) {
+            logger.error("Could not read SBML File.");
             e.printStackTrace();
         }
     }
 
-    public HashMap<String, ChemicalEntity> getChemicalEntities() {
+    public Map<String, ChemicalEntity> getChemicalEntities() {
         return this.entities;
+    }
+
+    public List<DynamicReaction> getReactions() {
+        return this.reactions;
+    }
+
+    public Map<ChemicalEntity, Double> getStartingConcentrations() {
+        return this.startingConcentrations;
+    }
+
+    public Map<String, Double> getGlobalParameters() {
+        return this.globalParameters;
     }
 
     public void parse() {
         this.parseSpecies();
         this.parseReactions();
+        this.parseStartingConcentrations();
+        this.parseGlobalParameters();
     }
 
     private void parseSpecies() {
+        logger.info("Parsing Chemical Entity Data ...");
         this.document.getModel().getListOfSpecies().forEach(species -> {
-            System.out.println("Species: " + species.getId());
+            logger.debug("Parsing Chemical Entity {} ...", species.getId());
             // the annotations describe the entity used and is composed of CVTerms
             // each cv term is composed of
             // Qualifiers: the relationship between the entity and the resource
@@ -70,33 +104,31 @@ public class SBMLSpeciesParserService {
                 CVTerm term = species.getAnnotation().getCVTerm(0);
                 if (term.getQualifier() == CVTerm.Qualifier.BQB_IS || term.getQualifier() == CVTerm.Qualifier.BQB_IS_VERSION_OF) {
                     // with only one "is" qualifier
-                    System.out.print("  annotated as \"" + term.getQualifier().getElementNameEquivalent() + "\" with ");
                     if (term.getResourceCount() == 1) {
                         // and one resource
-                        System.out.println("only " + term.getResourceCount() + " Resource");
-                        parseAndAddSingularComponent(species.getId(), term);
+                        logger.debug("Chemical Entity {} is annotated with one {} resource", species.getId(), term.getQualifier().getElementNameEquivalent());
+                        parseAndAddSingularComponent(species.getId(), term, species);
                     } else {
                         // and multiple resources
-                        // assuming here, that if the annotations are from different databases, they are alternatives
-                        // and if they are from the same database they are a different parts of a complex entity
                         if (resourcesHaveTheSameOrigin(term)) {
-                            System.out.println(term.getResourceCount() + " Resources from one source");
+                            // assuming here, that if the annotations are from different databases, they are alternatives
+                            logger.debug("Chemical Entity {} is annotated with multiple {} resources from the same origin.", species.getId(), term.getQualifier().getElementNameEquivalent());
                             parseAndAddComplexComponent(species.getId(), species, term);
                         } else {
-                            System.out.println(term.getResourceCount() + " Resources from different sources");
-                            parseAndAddSingularComponent(species.getId(), term);
+                            // and if they are from the same database they are a different parts of a complex entity
+                            logger.debug("Chemical Entity {} is annotated with multiple {} resources from different sources.", species.getId(), term.getQualifier().getElementNameEquivalent());
+                            parseAndAddSingularComponent(species.getId(), term, species);
                         }
                     }
                 } else {
                     // with
                     if (term.getQualifier() == CVTerm.Qualifier.BQB_HAS_PART) {
                         // has part should have at least two components it is the only annotation
-                        System.out.print("  annotated as \"" + term.getQualifier().getElementNameEquivalent() + "\" with ");
                         if (resourcesHaveTheSameOrigin(term)) {
-                            System.out.println(term.getResourceCount() + " Resources from one source");
+                            logger.debug("Chemical Entity {} is annotated with multiple {} resources from the same origin.", species.getId(), term.getQualifier().getElementNameEquivalent());
                             parseAndAddComplexComponent(species.getId(), species, term);
                         } else {
-                            System.out.println(term.getResourceCount() + " Resources from different sources");
+                            logger.debug("Chemical Entity {} is annotated with multiple {} resources from different sources.", species.getId(), term.getQualifier().getElementNameEquivalent());
                             parseAndAddAllComponents(species.getId(), term);
                         }
                     }
@@ -104,18 +136,16 @@ public class SBMLSpeciesParserService {
                 }
             } else {
                 // multiple annotations
-                System.out.print("  annotated with multiple annotations");
+                logger.debug("Chemical Entity {} is annotated with multiple annotations.", species.getId());
                 parseAndAddAllComponents(species.getId(), species.getAnnotation().getListOfCVTerms());
             }
-            System.out.println();
         });
     }
 
     private void parseReactions() {
-
+        logger.info("Parsing Reaction Data ...");
         this.document.getModel().getListOfReactions().forEach(reaction -> {
-
-
+            logger.debug("Parsing Reaction {} ...", reaction.getId());
             // kinetics
             KineticLaw kineticLawSBML = reaction.getKineticLaw();
             // supply math
@@ -127,34 +157,59 @@ public class SBMLSpeciesParserService {
             assignSubstrates(reaction.getListOfReactants());
             // and products
             assignProducts(reaction.getListOfProducts());
-            System.out.println(this.currentReaction.getDisplayString());
-
-
+            // assign modifiers
+            assignModifiers(reaction.getListOfModifiers());
+            // add reaction
+            this.reactions.add(this.currentReaction);
+            logger.debug("Parsed Reaction:{}", this.currentReaction.getDisplayString());
         });
+    }
 
 
+    private void parseStartingConcentrations() {
+        logger.info("Parsing initial concentrations ...");
+        this.document.getModel().getListOfSpecies().forEach(species -> {
+            ChemicalEntity entity = this.entities.get(species.getId());
+            this.startingConcentrations.put(entity, species.getInitialConcentration());
+        });
+    }
 
+    private void parseGlobalParameters() {
+        logger.info("Parsing global parameters ...");
+        this.document.getModel().getListOfParameters().forEach(parameter -> this.globalParameters.put(parameter.getId(), parameter.getValue()));
     }
 
     private void assignLocalParameters(ListOf<LocalParameter> localParameters) {
-        for (LocalParameter parameter: localParameters) {
+        for (LocalParameter parameter : localParameters) {
+            logger.debug("Assigning local parameter {} to {}.", parameter.getId(), parameter.getValue());
             this.currentKineticLaw.setLocalParameter(parameter.getId(), parameter.getValue());
         }
     }
 
     private void assignSubstrates(ListOf<SpeciesReference> substrates) {
-        for (SpeciesReference reference: substrates) {
+        for (SpeciesReference reference : substrates) {
+            logger.debug("Assigning Chemical Entity {} as substrate.", reference.getSpecies());
             String identifier = reference.getSpecies();
             this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
             this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.DECREASING, 1));
         }
     }
 
-    private void assignProducts(ListOf<SpeciesReference> substrates) {
-        for (SpeciesReference reference: substrates) {
+    private void assignProducts(ListOf<SpeciesReference> products) {
+        for (SpeciesReference reference : products) {
+            logger.debug("Assigning Chemical Entity {} as product.", reference.getSpecies());
             String identifier = reference.getSpecies();
             this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
             this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.INCREASING, 1));
+        }
+    }
+
+    private void assignModifiers(ListOf<ModifierSpeciesReference> modifiers) {
+        for (ModifierSpeciesReference reference : modifiers) {
+            logger.debug("Assigning Chemical Entity {} as catalytic modifier.", reference.getSpecies());
+            String identifier = reference.getSpecies();
+            this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
+            this.currentReaction.getCatalyticReactants().add(new CatalyticReactant(this.entities.get(identifier), ReactantRole.INCREASING));
         }
     }
 
@@ -164,18 +219,15 @@ public class SBMLSpeciesParserService {
      * @param identifier The identifier as referenced in the model.
      * @param cvTerm     The CVTerm containing the resources.
      */
-    private void parseAndAddSingularComponent(String identifier, CVTerm cvTerm) {
+    private void parseAndAddSingularComponent(String identifier, CVTerm cvTerm, org.sbml.jsbml.Species species) {
         for (String resource : cvTerm.getResources()) {
-            Optional<ChemicalEntity> entity = parseEntity(resource);
+            Optional<ChemicalEntity> entity = parseEntity(identifier, resource);
             if (entity.isPresent()) {
                 this.entities.put(identifier, entity.get());
-                System.out.println("  -> parsed as " + entity.get());
                 return;
             }
         }
-        this.entities.put(identifier, Species.UNKNOWN_SPECIES);
-        System.out.println("  -> could not parse " + identifier + " from any database, referencing " +
-                Species.UNKNOWN_SPECIES);
+        this.entities.put(identifier, createReferenceEntity(species));
     }
 
     /**
@@ -191,7 +243,7 @@ public class SBMLSpeciesParserService {
             chemicalEntity.ifPresent(complex::addAssociatedPart);
         }
         if (complex.getAssociatedParts().size() > 1) {
-            System.out.println("  -> parsed as " + complex);
+            logger.debug("Parsed Chemical Entity as {}", complex);
             this.entities.put(identifier, complex);
         } else {
             ChemicalEntity referenceEntity = createReferenceEntity(species);
@@ -252,18 +304,18 @@ public class SBMLSpeciesParserService {
      * just added to the map of entities.
      *
      * @param identifier The identifier as referenced in the model.
-     * @param complex The complex to add to the map of entities.
+     * @param complex    The complex to add to the map of entities.
      */
     private void checkAndAddComplexedChemicalEntity(String identifier, ComplexedChemicalEntity complex) {
         if (complex.getAssociatedChemicalEntities().size() == 1) {
             ChemicalEntity parsedPart = complex.getAssociatedParts().keySet().iterator().next();
-            System.out.println("  -> parsed as " + parsedPart);
+            logger.debug("Parsed Chemical Entity as {}", parsedPart);
             this.entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
-            System.out.println("  -> parsed as " + Species.UNKNOWN_SPECIES);
+            logger.debug("Parsed Chemical Entity as {}", Species.UNKNOWN_SPECIES);
             this.entities.put(identifier, Species.UNKNOWN_SPECIES);
         } else {
-            System.out.println("  -> parsed as " + complex);
+            logger.debug("Parsed Chemical Entity as {}", complex);
             this.entities.put(identifier, complex);
         }
     }
@@ -274,16 +326,19 @@ public class SBMLSpeciesParserService {
      * @param resource The resource to parse.
      * @return The parsed chemical entity, if a parser is available.
      */
-    private Optional<ChemicalEntity> parseEntity(String resource) {
+    private Optional<ChemicalEntity> parseEntity(String primaryIdentifier, String resource) {
         // try to parse as ChEBI
+        SimpleStringIdentifier stringIdentifier = new SimpleStringIdentifier(primaryIdentifier);
         Matcher matcherChEBI = ChEBIIdentifier.PATTERN.matcher(resource);
         if (matcherChEBI.find()) {
             ChEBIIdentifier identifier = new ChEBIIdentifier(matcherChEBI.group(0));
-            if (this.allreadyParsedEntities.containsKey(identifier)) {
-                return Optional.of(this.allreadyParsedEntities.get(identifier));
+            if (this.entitiesByPrimaryId.containsKey(stringIdentifier)) {
+                logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
+                return Optional.of(this.entitiesByPrimaryId.get(stringIdentifier));
             } else {
-                Species species = ChEBIParserService.parse(identifier.toString());
-                this.allreadyParsedEntities.put(identifier, species);
+                Species species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
+                this.entitiesByPrimaryId.put(stringIdentifier, species);
+                this.entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
             }
         }
@@ -291,11 +346,44 @@ public class SBMLSpeciesParserService {
         Matcher matcherUniProt = UniProtIdentifier.PATTERN.matcher(resource);
         if (matcherUniProt.find()) {
             UniProtIdentifier identifier = new UniProtIdentifier(matcherUniProt.group(0));
-            if (this.allreadyParsedEntities.containsKey(identifier)) {
-                return Optional.of(this.allreadyParsedEntities.get(identifier));
+            if (this.entitiesByPrimaryId.containsKey(stringIdentifier)) {
+                logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
+                return Optional.of(this.entitiesByPrimaryId.get(stringIdentifier));
+            } else {
+                Enzyme enzyme = UniProtParserService.parse(identifier.toString(), primaryIdentifier);
+                this.entitiesByPrimaryId.put(stringIdentifier, enzyme);
+                this.entitiesByDatabaseId.put(identifier, enzyme);
+                return Optional.of(enzyme);
+            }
+        }
+        // no parser available
+        return Optional.empty();
+    }
+
+    private Optional<ChemicalEntity> parseEntity(String resource) {
+        // try to parse as ChEBI
+        Matcher matcherChEBI = ChEBIIdentifier.PATTERN.matcher(resource);
+        if (matcherChEBI.find()) {
+            ChEBIIdentifier identifier = new ChEBIIdentifier(matcherChEBI.group(0));
+            if (this.entitiesByDatabaseId.containsKey(identifier)) {
+                logger.debug("Already parsed Chemical Entity for {}", identifier);
+                return Optional.of(this.entitiesByDatabaseId.get(identifier));
+            } else {
+                Species species = ChEBIParserService.parse(identifier.toString());
+                this.entitiesByDatabaseId.put(identifier, species);
+                return Optional.of(species);
+            }
+        }
+        // try to parse as UniProt
+        Matcher matcherUniProt = UniProtIdentifier.PATTERN.matcher(resource);
+        if (matcherUniProt.find()) {
+            UniProtIdentifier identifier = new UniProtIdentifier(matcherUniProt.group(0));
+            if (this.entitiesByDatabaseId.containsKey(identifier)) {
+                logger.debug("Already parsed Chemical Entity for {}", identifier);
+                return Optional.of(this.entitiesByDatabaseId.get(identifier));
             } else {
                 Enzyme enzyme = UniProtParserService.parse(identifier.toString());
-                this.allreadyParsedEntities.put(identifier, enzyme);
+                this.entitiesByDatabaseId.put(identifier, enzyme);
                 return Optional.of(enzyme);
             }
         }

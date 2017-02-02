@@ -4,13 +4,16 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
+import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.util.SimulationExampleProvider;
 import de.bioforscher.units.UnitProvider;
+import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
-import uk.co.cogitolearning.cogpar.ExpressionNode;
-import uk.co.cogitolearning.cogpar.Parser;
-import uk.co.cogitolearning.cogpar.SetVariable;
+import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
@@ -23,9 +26,13 @@ import java.util.Map;
  */
 public class DynamicKineticLaw implements KineticLaw {
 
+    private static final Logger logger = LoggerFactory.getLogger(DynamicKineticLaw.class);
+
     private ExpressionNode expression;
     private List<SetVariable> localParameters;
     private Map<ChemicalEntity, String> entityReference;
+
+    private double appliedScale = 1;
 
     public DynamicKineticLaw(String expression) {
         Parser parser = new Parser();
@@ -52,7 +59,16 @@ public class DynamicKineticLaw implements KineticLaw {
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.accept(new SetVariable(parameterName, concentration.getValue().doubleValue()));
         }
-        return Quantities.getQuantity(this.expression.getValue(), UnitProvider.PER_SECOND);
+
+        double value;
+        try {
+            value = this.expression.getValue();
+        } catch (ParserException | EvaluationException e) {
+            logger.error("Could not calculate acceleration for " + this.expression.toString(), e);
+            throw e;
+        }
+
+        return Quantities.getQuantity(value / this.appliedScale, UnitProvider.PER_SECOND);
     }
 
     @Override
