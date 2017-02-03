@@ -1,4 +1,5 @@
-HEADER    LIGASE/RNA                              15-JUL-99   3m4p              ATOM   1511  N   SER A 846      25.792  11.411  80.107  1.00 43.71           N
+HEADER    LIGASE/RNA                              15-JUL-99   3m4p
+ATOM   1511  N   SER A 846      25.792  11.411  80.107  1.00 43.71           N
 ATOM   1512  CA  SER A 846      24.981  10.543  80.961  1.00 44.64           C
 ATOM   1513  C   SER A 846      25.379  10.621  82.443  1.00 44.05           C
 ATOM   1514  O   SER A 846      25.029   9.741  83.233  1.00 43.72           O

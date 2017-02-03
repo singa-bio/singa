@@ -66,4 +66,10 @@ public class Fit3DSiteAlignmentTest {
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
     }
+
+    @Test
+    public void shouldCreateAllAgainstBindingSiteAlignment(){
+
+
+    }
 }

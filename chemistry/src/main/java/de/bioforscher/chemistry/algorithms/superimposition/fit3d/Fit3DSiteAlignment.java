@@ -139,9 +139,19 @@ public class Fit3DSiteAlignment implements Fit3D {
             site1Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getReference().get(i).toString()));
             site2Joiner.add(String.format("%-7s", this.currentBestSuperimposition.getCandidate().get(i).toString()));
         }
-        this.alignmentString = String.format("%-7s", "RMSD") + "|" + this.currentBestSuperimposition.getRmsd() + "\n" +
+        this.alignmentString = String.format("%-7s", "s1size") + "|" + this.site1.size() + "\n" +
+                String.format("%-7s", "s2size") + "|" + this.site2.size() + "\n" +
+                this.site1.getLeafSubstructures().stream()
+                        .map(LeafSubstructure::toString)
+                        .map(s1 -> String.format("%-7s", s1))
+                        .collect(Collectors.joining("|", String.format("%-7s", "s1") + "|", "|")) + "\n" +
+                this.site2.getLeafSubstructures().stream()
+                        .map(LeafSubstructure::toString)
+                        .map(s1 -> String.format("%-7s", s1))
+                        .collect(Collectors.joining("|", String.format("%-7s", "s2") + "|", "|")) + "\n" +
+                String.format("%-7s", "RMSD") + "|" + this.currentBestSuperimposition.getRmsd() + "\n" +
                 String.format("%-7s", "frac") + "|" + getAlignedResidueFraction() + "\n" +
-                String.format("%-7s", "s1") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2") + site2Joiner.toString();
+                String.format("%-7s", "s1algn") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2algn") + site2Joiner.toString();
         logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);
     }
