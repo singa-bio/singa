@@ -16,7 +16,6 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 
 /**
  * A {@link AminoAcidFamily} should contain the general data of an amino acid of the same type.
- * // TODO we should probably refactor this to AminoAcidFamily
  *
  * @author cl
  */
@@ -105,10 +104,9 @@ public enum AminoAcidFamily implements StructuralFamily {
      * @throws IOException
      */
     public AminoAcid getPrototype() throws IOException {
-        // TODO potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
-        return StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
-                .everything()
+        // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
+        return StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
                 .parse()
                 .getAllResidues()
                 .get(0);

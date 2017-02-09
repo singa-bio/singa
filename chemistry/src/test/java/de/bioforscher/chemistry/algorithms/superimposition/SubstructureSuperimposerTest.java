@@ -30,13 +30,11 @@ public class SubstructureSuperimposerTest {
 
     @Before
     public void setUp() throws IOException {
-        Structure motif1 = StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_01.pdb").getFile())
-                .everything()
+        Structure motif1 = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_01.pdb").getFile())
                 .parse();
-        Structure motif2 = StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_02.pdb").getFile())
-                .everything()
+        Structure motif2 = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_02.pdb").getFile())
                 .parse();
         this.reference = motif1.getAllChains().get(0);
         this.candidate = motif2.getAllChains().get(0);

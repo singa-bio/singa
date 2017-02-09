@@ -100,14 +100,12 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
             // FIXME here we are dealing only with the first model
             BranchSubstructure<?> target = new File(this.targetStructure).exists() ?
-                    StructureParser.from(StructureSources.PDB_FILE)
-                            .identifier(this.targetStructure)
-                            .everything()
+                    StructureParser.local()
+                            .fileLocation(this.targetStructure)
                             .parse()
                             .getAllModels().get(0) :
-                    StructureParser.from(StructureSources.PDB_ONLINE)
+                    StructureParser.online()
                             .identifier(this.targetStructure)
-                            .everything()
                             .parse().getAllModels().get(0);
 
             // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme

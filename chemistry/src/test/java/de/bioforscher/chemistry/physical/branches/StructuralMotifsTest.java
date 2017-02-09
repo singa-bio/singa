@@ -16,8 +16,8 @@ public class StructuralMotifsTest {
 
     @Before
     public void setUp() throws Exception {
-        Structure bindingSiteStructure1 = StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+        Structure bindingSiteStructure1 = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
@@ -25,7 +25,6 @@ public class StructuralMotifsTest {
 
     @Test
     public void shouldAssignExchanges(){
-
         StructuralMotifs.assignExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
         System.out.println();
     }

@@ -17,14 +17,7 @@ import de.bioforscher.chemistry.physical.model.UniqueAtomIdentifer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import static de.bioforscher.chemistry.parser.pdb.structures.tokens.AtomToken.*;
 
@@ -44,98 +37,45 @@ public class StructureCollector {
 
     private ContentTreeNode contentTree;
 
-    private Map<String, LeafSkeleton> skeletons;
-
-    private StructureParser.Parser parser;
+    private StructureParser.Reducer reducer;
     private List<String> pdbLines;
 
 
     public StructureCollector() {
         this.atoms = new HashMap<>();
         this.leafNames = new TreeMap<>();
-        this.skeletons = new HashMap<>();
     }
 
-    public StructureCollector(List<String> pdbLines, StructureParser.Parser parser) {
-        this.parser = parser;
+    public StructureCollector(List<String> pdbLines, StructureParser.Reducer reducer) {
+        this.reducer = reducer;
         this.pdbLines = pdbLines;
         this.atoms = new HashMap<>();
         this.leafNames = new TreeMap<>();
-        this.skeletons = new HashMap<>();
     }
 
-    static Structure parse(StructureParser.Parser parser) throws IOException {
-        StructureCollector collector = null;
-        switch (parser.source) {
-            case PDB_ONLINE: {
-                logger.info("parsing structure from PDB online {}", parser.identifier);
-                InputStream inputStream = new URL(String.format(PDB_FETCH_URL, parser.identifier)).openStream();
-                try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-                    try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                        collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
-                    }
-                }
-                break;
-            }
-            case PDB_FILE: {
-                logger.info("parsing structure from file {}", parser.identifier);
-                InputStream inputStream = Files.newInputStream(new File(parser.identifier).toPath());
-                try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-                    try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                        collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
-                    }
-                }
-                break;
-            }
-            case PDB_LOCAL: {
-                logger.info("parsing structure from local PDB {}", parser.identifier);
-                try {
-                    InputStream inputStream = new LocalPDBFileReader(parser.identifier, parser.localPdb).readFromLocal();
-                    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-                        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                            collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
-                        }
-                    }
-                } catch (IOException e) {
-                    logger.warn("parsing structure from local PDB {} failed, trying to fetch online", parser.identifier, e);
-                    InputStream inputStream = new URL(String.format(PDB_FETCH_URL, parser.identifier)).openStream();
-                    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-                        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                            collector = reduceLines(bufferedReader.lines().collect(Collectors.toList()), parser);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-
-        if (collector == null) {
-            throw new IOException("could not parse structure " + parser.identifier + " with method " + parser.source);
-        }
-
+    static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) {
+        StructureCollector collector = new StructureCollector(pdbLines, reducer);
+        collector.reduceLines();
         return collector.collectStructure();
     }
 
-    public static StructureCollector reduceLines(List<String> pdbLines, StructureParser.Parser parser) {
-        StructureCollector collector = new StructureCollector(pdbLines, parser);
-        logger.debug("collecting content from {} PDB lines", pdbLines.size());
-        String firstLine = pdbLines.get(0);
+    private void reduceLines() {
+        logger.debug("Collecting content from {} PDB lines", this.pdbLines.size());
+        String firstLine = this.pdbLines.get(0);
         // parse meta information
         if (TitleToken.RECORD_PATTERN.matcher(firstLine).matches()) {
-            collector.currentPDB = TitleToken.ID_CODE.extract(firstLine);
+            this.currentPDB = TitleToken.ID_CODE.extract(firstLine);
         }
-        if (!parser.allModels) {
+        if (!this.reducer.allModels) {
             // parse only specific model
             // reduce lines to specific model
-            collector.reduceToModel(parser.modelIdentifier);
+            this.reduceToModel(this.reducer.modelIdentifier);
         }
-        if (!parser.allChains) {
+        if (!this.reducer.allChains) {
             // parse only specific chain
             // reduce lines to specific chain
-            collector.reduceToChain(parser.chainIdentifier);
+            this.reduceToChain(this.reducer.chainIdentifier);
         }
-
-        return collector;
     }
 
     private void reduceToModel(int modelIdentifier) {
@@ -279,45 +219,14 @@ public class StructureCollector {
 
     private LeafSubstructure<?, ?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {
         LeafSkeleton leafSkeleton = null;
-        if (!this.skeletons.containsKey(leafName)) {
+        if (!this.reducer.skeletons.containsKey(leafName)) {
             leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
-            this.skeletons.put(leafName, leafSkeleton);
+            this.reducer.skeletons.put(leafName, leafSkeleton);
         } else {
-            leafSkeleton = this.skeletons.get(leafName);
+            leafSkeleton = this.reducer.skeletons.get(leafName);
         }
         return leafSkeleton.toRealLeafSubStructure(identifier, atoms);
     }
 
-    /**
-     * A reader for local PDB files that can handle compression.
-     */
-    private static class LocalPDBFileReader {
 
-        private static final String PDB_BASE_PATH = "data/structures/divided/pdb";
-        private static final String CIF_BASE_PATH = "data/structures/divided/mmCIF";
-        private String identifier;
-        private StructureParser.LocalPDB localPdb;
-        private Path pdbFilePath;
-
-        private LocalPDBFileReader(String identifier, StructureParser.LocalPDB localPdb) {
-            this.identifier = identifier;
-            this.localPdb = localPdb;
-            this.pdbFilePath = assemblePath();
-        }
-
-        private Path assemblePath() {
-            return this.localPdb.getLocalPdbPath().resolve(Paths.get(PDB_BASE_PATH + "/"
-                    + this.identifier.substring(1, this.identifier.length() - 1).toLowerCase()
-                    + "/pdb" + this.identifier.toLowerCase() + ".ent.gz"));
-        }
-
-        /**
-         * Tries to read a PDB file locally and returns an {@link InputStream}.
-         *
-         * @return The {@link InputStream} of the local PDB file.
-         */
-        public InputStream readFromLocal() throws IOException {
-            return new GZIPInputStream(new FileInputStream(this.pdbFilePath.toFile()));
-        }
-    }
 }

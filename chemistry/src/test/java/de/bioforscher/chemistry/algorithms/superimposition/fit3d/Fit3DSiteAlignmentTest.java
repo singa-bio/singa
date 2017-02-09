@@ -23,13 +23,13 @@ public class Fit3DSiteAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        Structure bindingSiteStructure1 =  StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asp_1c0a.pdb").getFile())
+        Structure bindingSiteStructure1 =  StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asp_1c0a.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
-        Structure bindingSiteStructure2 = StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+        Structure bindingSiteStructure2 = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());

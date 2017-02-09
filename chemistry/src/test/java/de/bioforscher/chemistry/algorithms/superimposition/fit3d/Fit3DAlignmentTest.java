@@ -37,14 +37,11 @@ public class Fit3DAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        this.target = StructureParser
-                .from(StructureSources.PDB_ONLINE)
+        this.target = StructureParser.online()
                 .identifier("1GL0")
-                .everything()
                 .parse();
-        Structure motifContainingStructure = StructureParser.from(StructureSources.PDB_FILE)
-                .identifier(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
-                .everything()
+        Structure motifContainingStructure = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
                 .parse();
         this.queryMotif = StructuralMotif.fromLeafs(1, motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
@@ -77,7 +74,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
-        Structure nucleotideTarget = StructureParser.from(StructureSources.PDB_ONLINE)
+        Structure nucleotideTarget = StructureParser.online()
                 .identifier("2EES")
                 .chain("A")
                 .parse();
@@ -98,7 +95,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindInterMolecularMatches() throws IOException {
-        Structure target =  StructureParser.from(StructureSources.PDB_ONLINE)
+        Structure target =  StructureParser.online()
                 .identifier("4CHA")
                 .everything()
                 .parse();
@@ -119,7 +116,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldAlignNucleotideMotif() throws IOException {
-        Structure nucleotideTarget = StructureParser.from(StructureSources.PDB_ONLINE)
+        Structure nucleotideTarget = StructureParser.online()
                 .identifier("2EES")
                 .chain("A")
                 .parse();
@@ -137,7 +134,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindLigandContainingMotif() throws IOException {
-        Structure queryStructure =  StructureParser.from(StructureSources.PDB_ONLINE)
+        Structure queryStructure =  StructureParser.online()
                 .identifier("1ACJ")
                 .everything()
                 .parse();

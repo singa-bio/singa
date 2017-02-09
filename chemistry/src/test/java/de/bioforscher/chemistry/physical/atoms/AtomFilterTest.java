@@ -23,9 +23,8 @@ public class AtomFilterTest {
     @Test
     public void shouldApplyAtomFilter() throws IOException {
         LeafFactory.setToOmitHydrogens(true);
-        Structure structure = StructureParser.from(PDB_ONLINE)
+        Structure structure = StructureParser.online()
                 .identifier("4HHB")
-                .everything()
                 .parse();
 
         // valine

@@ -28,18 +28,9 @@ public class ConsensusAlignmentTest {
     @Before
     public void setUp() throws Exception {
         this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
-                .map(path -> {
-                    try {
-                        return StructureParser.from(PDB_FILE)
-                                .identifier(path.toString())
-                                .everything()
-                                .parse();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
+                .map(path -> StructureParser.local()
+                        .fileLocation(path.toString())
+                        .parse())
                 .map(Structure::getAllLeafs)
                 .collect(Collectors.toList());
     }
