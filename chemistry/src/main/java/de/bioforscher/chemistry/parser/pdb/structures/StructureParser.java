@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by leberech on 25/01/17.
@@ -86,10 +86,12 @@ public class StructureParser {
         MultiBranchStep localPDB(LocalPDB localPDB, List<String> identifiers);
 
         SingleBranchStep fileLocation(String location);
+
+        MultiBranchStep fileLocations(List<String> targetStructures);
     }
 
 
-    public interface MultiBranchStep extends MultiChainStep{
+    public interface MultiBranchStep extends MultiChainStep {
 
         /**
          * If only a single model should be parsed, give its identifier here.
@@ -129,15 +131,21 @@ public class StructureParser {
 
     public interface SingleChainStep {
         SingleParser chain(String chainIdentifier);
+
         SingleParser allChains();
+
         SingleParser everything();
+
         Structure parse();
     }
 
     public interface MultiChainStep {
         MultiParser chain(String chainIdentifier);
+
         MultiParser allChains();
+
         MultiParser everything();
+
         List<Structure> parse();
     }
 
@@ -152,10 +160,9 @@ public class StructureParser {
         public Structure parse() {
             return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
         }
-
     }
 
-    public static class MultiParser {
+    public static class MultiParser implements Iterator<Structure> {
 
         MultiReducingSelector selector;
 
@@ -164,11 +171,27 @@ public class StructureParser {
         }
 
         public List<Structure> parse() {
+            logger.info("parsing {} structures ", this.selector.sourceSelector.contentIterator.getNumberOfQueuedStructures());
             List<Structure> structures = new ArrayList<>();
-            this.selector.sourceSelector.contentIterator.forEachRemaining(lines -> structures.add(StructureCollector.parse(lines, this.selector)));
+            this.selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
+                try {
+                    structures.add(StructureCollector.parse(lines, this.selector));
+                } catch (UncheckedIOException e) {
+                    logger.warn("failed to parse structure", e);
+                }
+            });
             return structures;
         }
 
+        @Override
+        synchronized public boolean hasNext() {
+            return this.selector.sourceSelector.contentIterator.hasNext();
+        }
+
+        @Override
+        synchronized public Structure next() {
+            return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
+        }
     }
 
 
@@ -342,7 +365,7 @@ public class StructureParser {
 
         @Override
         public MultiBranchStep paths(List<Path> paths) {
-            this.contentIterator = new StructureContentIterator(String.class, paths);
+            this.contentIterator = new StructureContentIterator(Path.class, paths);
             return new MultiReducingSelector(this);
         }
 
@@ -362,6 +385,15 @@ public class StructureParser {
         public SingleBranchStep fileLocation(String location) {
             this.contentIterator = new StructureContentIterator(Paths.get(location));
             return new SingleReducingSelector(this);
+        }
+
+        @Override
+        public MultiBranchStep fileLocations(List<String> locations) {
+            List<Path> paths = locations.stream()
+                    .map(Paths::get)
+                    .collect(Collectors.toList());
+            this.contentIterator = new StructureContentIterator(Path.class, paths);
+            return new MultiReducingSelector(this);
         }
     }
 

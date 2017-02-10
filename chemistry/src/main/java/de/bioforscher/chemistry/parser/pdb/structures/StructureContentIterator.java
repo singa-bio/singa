@@ -1,6 +1,5 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
-import de.bioforscher.core.identifier.model.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +9,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -24,17 +26,10 @@ class StructureContentIterator implements Iterator<List<String>> {
     private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
     private static final String PDB_BASE_PATH = "data/structures/divided/pdb";
     private StructureParser.LocalPDB localPdb;
-
-    enum SourceLocation {
-        ONLINE, OFFLINE
-    }
-
     private List<URL> identifiers;
     private List<Path> paths;
-
     private Iterator<URL> currentURL;
     private Iterator<Path> currentPath;
-
     private SourceLocation location;
 
     public StructureContentIterator(String identifier) {
@@ -121,6 +116,19 @@ class StructureContentIterator implements Iterator<List<String>> {
         return new GZIPInputStream(new FileInputStream(path.toFile()));
     }
 
+    /**
+     * Returns the the number of structures enqueued structures to parse.
+     *
+     * @return The the number of structures enqueued structures to parse.
+     */
+    public int getNumberOfQueuedStructures() {
+        if (this.location == SourceLocation.ONLINE) {
+            return this.identifiers.size();
+        } else {
+            return this.paths.size();
+        }
+    }
+
     @Override
     public boolean hasNext() {
         if (this.location == SourceLocation.ONLINE) {
@@ -158,6 +166,10 @@ class StructureContentIterator implements Iterator<List<String>> {
                 return bufferedReader.lines().collect(Collectors.toList());
             }
         }
+    }
+
+    enum SourceLocation {
+        ONLINE, OFFLINE
     }
 
 }

@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
@@ -10,9 +9,9 @@ import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -37,11 +36,15 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final double rmsdCutoff;
     private final double distanceTolerance;
     private final ExecutorService executorService;
+    private final StructureParser.MultiParser multiParser;
     private TreeMap<Double, SubstructureSuperimposition> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
         this.queryMotif = builder.queryMotif;
         this.targetStructures = builder.targetStructures;
+        this.multiParser = StructureParser.local()
+                .fileLocations(builder.targetStructures)
+                .everything();
         this.parallelism = builder.parallelism;
         this.executorService = Executors.newWorkStealingPool(this.parallelism);
         this.atomFilter = builder.atomFilter;
@@ -58,7 +61,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
      */
     private void computeAlignments() {
         List<Fit3DCalculator> jobs = this.targetStructures.stream()
-                .map(Fit3DCalculator::new)
+                .map(targetStructure -> new Fit3DCalculator())
                 .collect(Collectors.toList());
         try {
             this.allMatches = this.executorService.invokeAll(jobs).stream()
@@ -69,6 +72,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                             throw new IllegalStateException(e);
                         }
                     })
+                    .filter(Objects::nonNull)
                     .collect(TreeMap::new, Map::putAll, Map::putAll);
         } catch (InterruptedException e) {
             logger.error("Ft3D parallel execution failed", e);
@@ -80,8 +84,17 @@ public class Fit3DAlignmentBatch implements Fit3D {
      *
      * @return The matches in all target structures.
      */
+    @Override
     public TreeMap<Double, SubstructureSuperimposition> getMatches() {
         return this.allMatches;
+    }
+
+    /**
+     * Returns the fraction of aligned residues, which is always 1.0 for this kind of alignment.
+     */
+    @Override
+    public double getFraction() {
+        return 1.0;
     }
 
     /**
@@ -91,43 +104,34 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
         private String targetStructure;
 
-        private Fit3DCalculator(String targetStructure) {
-            this.targetStructure = targetStructure;
-        }
-
         @Override
         public TreeMap<Double, SubstructureSuperimposition> call() throws Exception {
-
             // FIXME here we are dealing only with the first model
-            BranchSubstructure<?> target = new File(this.targetStructure).exists() ?
-                    StructureParser.local()
-                            .fileLocation(this.targetStructure)
-                            .parse()
-                            .getAllModels().get(0) :
-                    StructureParser.online()
-                            .identifier(this.targetStructure)
-                            .parse().getAllModels().get(0);
-
-            // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
             Fit3D fit3d;
-            if (Fit3DAlignmentBatch.this.representationScheme == null) {
-                fit3d = Fit3DBuilder.create()
-                        .query(Fit3DAlignmentBatch.this.queryMotif)
-                        .target(target)
-                        .atomFilter(Fit3DAlignmentBatch.this.atomFilter)
-                        .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
-                        .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
-                        .run();
-            } else {
-                fit3d = Fit3DBuilder.create()
-                        .query(Fit3DAlignmentBatch.this.queryMotif)
-                        .target(target)
-                        .representationScheme(Fit3DAlignmentBatch.this.representationScheme.getType())
-                        .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
-                        .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
-                        .run();
+            if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
+                BranchSubstructure<?> target = Fit3DAlignmentBatch.this.multiParser.next().getAllModels().get(0);
+                logger.info("computing Fit3D alignment against {}", target);
+                // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
+                if (Fit3DAlignmentBatch.this.representationScheme == null) {
+                    fit3d = Fit3DBuilder.create()
+                            .query(Fit3DAlignmentBatch.this.queryMotif)
+                            .target(target)
+                            .atomFilter(Fit3DAlignmentBatch.this.atomFilter)
+                            .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
+                            .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                            .run();
+                } else {
+                    fit3d = Fit3DBuilder.create()
+                            .query(Fit3DAlignmentBatch.this.queryMotif)
+                            .target(target)
+                            .representationScheme(Fit3DAlignmentBatch.this.representationScheme.getType())
+                            .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
+                            .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                            .run();
+                }
+                return fit3d.getMatches();
             }
-            return fit3d.getMatches();
+            return null;
         }
     }
 }

@@ -27,6 +27,13 @@ public interface Fit3D {
     TreeMap<Double, SubstructureSuperimposition> getMatches();
 
     /**
+     * Returns the fraction of residues that were aligned.
+     *
+     * @return The fractions of matches that were aligned.
+     */
+    double getFraction();
+
+    /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
      * the query motif.
      *

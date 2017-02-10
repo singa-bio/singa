@@ -95,6 +95,14 @@ public class Fit3DAlignment implements Fit3D {
     }
 
     /**
+     * Returns the fraction of aligned residues, which is always 1.0 for this kind of alignment.
+     */
+    @Override
+    public double getFraction() {
+        return 1.0;
+    }
+
+    /**
      * Computes all matches of the generated candidates.
      */
     private void computeMatches() {

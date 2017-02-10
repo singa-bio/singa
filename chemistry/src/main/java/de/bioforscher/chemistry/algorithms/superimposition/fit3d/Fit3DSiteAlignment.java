@@ -411,4 +411,12 @@ public class Fit3DSiteAlignment implements Fit3D {
     public TreeMap<Double, SubstructureSuperimposition> getMatches() {
         return this.matches;
     }
+
+    /**
+     * Returns the fraction of aligned residues, in respect to the smaller site.
+     */
+    @Override
+    public double getFraction() {
+        return getAlignedResidueFraction();
+    }
 }

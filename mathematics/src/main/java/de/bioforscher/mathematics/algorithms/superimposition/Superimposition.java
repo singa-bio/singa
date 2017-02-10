@@ -16,7 +16,7 @@ import java.util.Locale;
  */
 public interface Superimposition<T> {
 
-    String RMSD_FORMAT_PATTERN = "0.0000";
+    String RMSD_FORMAT_PATTERN = "0.000000";
 
     /**
      * Returns the reference that was used for this {@link Superimposition}.
