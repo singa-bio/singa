@@ -94,7 +94,7 @@ public abstract class Reaction {
      */
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
 
-    public abstract Set<ChemicalEntity> collectAllReferencedEntities();
+    public abstract Set<ChemicalEntity<?>> collectAllReferencedEntities();
 
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.

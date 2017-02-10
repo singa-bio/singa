@@ -37,7 +37,7 @@ public class PlotCard extends GridPane {
     private Simulation simulation;
 
     private HBox toolBar = new HBox();
-    private ListView<ChemicalEntity> speciesList = new ListView<>();
+    private ListView<ChemicalEntity<?>> speciesList = new ListView<>();
     private MenuButton optionsMenu = new MenuButton("", IconProvider.FontAwesome.createIconLabel(IconProvider.FontAwesome.ICON_COGS));;
 
     public PlotCard(Simulation simulation, ConcentrationPlot plot) {
@@ -144,7 +144,7 @@ public class PlotCard extends GridPane {
         return this.plot;
     }
 
-    public ListView<ChemicalEntity> getSpeciesList() {
+    public ListView<ChemicalEntity<?>> getSpeciesList() {
         return this.speciesList;
     }
 }

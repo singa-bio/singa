@@ -12,13 +12,13 @@ public interface Parser {
     /**
      * Fetches the resource.
      */
-    public void fetchResource();
+    void fetchResource();
 
     /**
      * Parses the result of {@code fetchResource()}.
      *
      * @return a list of Objects
      */
-    public List<Object> parseObjects();
+    List<Object> parseObjects();
 
 }

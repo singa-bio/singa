@@ -35,7 +35,7 @@ public class AutomatonGraphUtilities {
         return results;
     }
 
-    public static Map<String, ChemicalEntity> generateEntityMapFromSet(Set<ChemicalEntity> entities) {
+    public static Map<String, ChemicalEntity<?>> generateEntityMapFromSet(Set<ChemicalEntity<?>> entities) {
         return entities.stream()
                 .collect(Collectors.toMap( entity -> entity.getIdentifier().toString(), Function.identity()));
     }

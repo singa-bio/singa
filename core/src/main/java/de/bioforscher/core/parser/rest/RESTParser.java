@@ -30,7 +30,7 @@ public interface RESTParser extends Parser {
      * {@code  setFetchResult(String fetchResult)} method.
      */
     @Override
-    default public void fetchResource() {
+    default void fetchResource() {
 
         // create client
         Client client = ClientBuilder.newClient();

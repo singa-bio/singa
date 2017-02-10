@@ -32,9 +32,10 @@ public class DynamicKineticLaw implements KineticLaw {
     private List<SetVariable> localParameters;
     private Map<ChemicalEntity, String> entityReference;
 
-    private double appliedScale = 1;
+    private double appliedScale = 4;
 
     public DynamicKineticLaw(String expression) {
+        System.out.println(expression);
         Parser parser = new Parser();
         this.expression = parser.parse(expression);
         this.localParameters = new ArrayList<>();

@@ -22,7 +22,7 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
     }
 
     @Override
-    public Set<ChemicalEntity> collectAllReferencesEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
         return null;
     }
 

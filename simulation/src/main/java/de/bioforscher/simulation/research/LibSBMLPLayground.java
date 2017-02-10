@@ -1,10 +1,12 @@
 package de.bioforscher.simulation.research;
 
+import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.parser.BioModelsParserService;
+import de.bioforscher.simulation.parser.SabioRKParserService;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-
+import java.util.List;
 
 
 /**
@@ -17,9 +19,9 @@ public class LibSBMLPLayground {
 
 
     public static void main(String[] args) throws IOException, XMLStreamException {
-        String modelLocation = LibSBMLPLayground.class.getResource(MODEL_38_XML).getPath();
-        BioModelsParserService.parseModelFromFile(modelLocation);
 
+        SabioRKParserService parser =  new SabioRKParserService("10790");
+        List<DynamicReaction> dynamicReactions = parser.fetchReaction();
 
 
     }

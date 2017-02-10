@@ -206,8 +206,8 @@ class GetSuggestionsPage extends WizardPage {
             String sabioId = matcher.group(1);
             SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
                     + sabioId);
-            EnzymeReaction reaction = sabiorkParser.fetchReaction();
-            this.results.add(reaction);
+            // EnzymeReaction reaction = sabiorkParser.fetchReaction();
+            // this.results.add(reaction);
             count++;
         }
     }

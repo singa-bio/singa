@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class Reactions implements Module, ImmediateUpdateBehavior {
 
     private List<Reaction> reactions;
-    private Map<ChemicalEntity, Quantity<ReactionRate>> velocities;
+    private Map<ChemicalEntity<?>, Quantity<ReactionRate>> velocities;
 
     public Reactions() {
         this.reactions = new ArrayList<>();
@@ -46,7 +46,7 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
     }
 
     @Override
-    public Set<ChemicalEntity> collectAllReferencesEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
         return this.reactions.stream()
                 .map(Reaction::collectAllReferencedEntities)
                 .flatMap(Collection::stream)

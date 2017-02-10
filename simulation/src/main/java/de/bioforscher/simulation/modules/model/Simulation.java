@@ -27,7 +27,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     private AutomatonGraph graph;
     private Set<Module> modules;
-    private Set<ChemicalEntity> chemicalEntities;
+    private Set<ChemicalEntity<?>> chemicalEntities;
     private int epoch;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
@@ -40,7 +40,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.epoch = 0;
     }
 
-    public Set<ChemicalEntity> collectAllReferencedEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
         return this.modules.stream()
                            .map(Module::collectAllReferencesEntities)
                            .flatMap(Collection::stream)
@@ -71,11 +71,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.modules = modules;
     }
 
-    public Set<ChemicalEntity> getChemicalEntities() {
+    public Set<ChemicalEntity<?>> getChemicalEntities() {
         return this.chemicalEntities;
     }
 
-    public void setChemicalEntities(Set<ChemicalEntity> chemicalEntities) {
+    public void setChemicalEntities(Set<ChemicalEntity<?>> chemicalEntities) {
         this.chemicalEntities = chemicalEntities;
     }
 

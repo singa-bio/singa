@@ -40,7 +40,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationPlot.class);
 
-    private ObservableList<ChemicalEntity> observedEntities = FXCollections.observableArrayList();
+    private ObservableList<ChemicalEntity<?>> observedEntities = FXCollections.observableArrayList();
     private Simulation simulation;
     // mirrors the data received from events
     private Map<Integer, Set<PotentialUpdate>> mirroredData;
@@ -50,7 +50,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     private int tickSpacing;
     private boolean scaleXAxis = false;
 
-    public ConcentrationPlot(Set<ChemicalEntity> observedEntities, BioNode referencedNode, Simulation simulation) {
+    public ConcentrationPlot(Set<ChemicalEntity<?>> observedEntities, BioNode referencedNode, Simulation simulation) {
         super(new NumberAxis(), new NumberAxis());
         logger.debug("Initializing {} for node {} ...", this.getClass().getSimpleName(), referencedNode.getIdentifier());
         this.simulation = simulation;
@@ -124,7 +124,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
         this.getYAxis().setLabel("Molar concentration in " + UnitProvider.GRAM_PER_MOLE.toString());
     }
 
-    public void setObservedSpecies(Set<ChemicalEntity> observedSpecies) {
+    public void setObservedSpecies(Set<ChemicalEntity<?>> observedSpecies) {
         observedSpecies.forEach(this.observedEntities::add);
     }
 
@@ -198,7 +198,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     }
 
-    public ObservableList<ChemicalEntity> getObservedEntities() {
+    public ObservableList<ChemicalEntity<?>> getObservedEntities() {
         return this.observedEntities;
     }
 

@@ -144,6 +144,12 @@ public class SBMLParser {
 
     private void parseReactions() {
         logger.info("Parsing Reaction Data ...");
+        this.document.getModel().getListOfFunctionDefinitions().forEach(function -> {
+            // TODO replace funtion in equation
+            System.out.println(function.getId()+":"+function.getMath().toString());
+        });
+
+
         this.document.getModel().getListOfReactions().forEach(reaction -> {
             logger.debug("Parsing Reaction {} ...", reaction.getId());
             // kinetics

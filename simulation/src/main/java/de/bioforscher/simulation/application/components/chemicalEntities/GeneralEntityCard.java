@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by Christoph on 11/11/2016.
  */
-public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPane {
+public class GeneralEntityCard<EntityType extends ChemicalEntity<?>> extends GridPane {
 
     private EntityType chemicalEntity;
 
@@ -33,8 +33,11 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPa
 
     private TreeView<String> annotationsTree;
     private TreeItem<String> nameAnnotations = new TreeItem<>("Additional names");
+    private TreeItem<String> identifiersAnnotations = new TreeItem<>("Additional identifiers");
     private TreeItem<String> organismAnnotation = new TreeItem<>("Organisms");
     private TreeItem<String> functionAnnotation = new TreeItem<>("Function");
+    private TreeItem<String> otherAnnotation = new TreeItem<>("Other");
+
 
     public GeneralEntityCard(EntityType chemicalEntity) {
         this.chemicalEntity = chemicalEntity;
@@ -63,13 +66,23 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPa
 
     private void configureImageView() {
         if (this.chemicalEntity.getIdentifier() instanceof ChEBIIdentifier) {
-            ChEBIImageService imageService = new ChEBIImageService(this.chemicalEntity.getIdentifier().toString());
-            imageService.fetchResource();
-            Image imageRepresentation = new Image(imageService.getImageStream());
-            this.imageView = new ImageView(imageRepresentation);
+            this.imageView = new ImageView(retrieveImage(this.chemicalEntity.getIdentifier()));
+            return;
         } else {
-            this.imageView = new ImageView();
+            for (Identifier identifier : this.chemicalEntity.getAdditionalIdentifiers()) {
+                if (identifier instanceof ChEBIIdentifier) {
+                    this.imageView = new ImageView(retrieveImage(identifier));
+                    return;
+                }
+            }
         }
+        this.imageView = new ImageView();
+    }
+
+    private Image retrieveImage(Identifier identifier) {
+        ChEBIImageService imageService = new ChEBIImageService(identifier.toString());
+        imageService.fetchResource();
+        return new Image(imageService.getImageStream());
     }
 
     private void configurePrimaryName(String primaryName) {
@@ -88,8 +101,10 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPa
     private void configureAnnotationsTree(List<Annotation> annotations) {
         TreeItem<String> rootItem = new TreeItem<>("Annotations");
         rootItem.getChildren().add(this.nameAnnotations);
+        rootItem.getChildren().add(this.identifiersAnnotations);
         rootItem.getChildren().add(this.organismAnnotation);
         rootItem.getChildren().add(this.functionAnnotation);
+        rootItem.getChildren().add(this.otherAnnotation);
         this.annotationsTree = new TreeView<>(rootItem);
         this.annotationsTree.setStyle("-fx-background-color:transparent;");
         annotations.forEach(this::addAnnotationItem);
@@ -103,9 +118,15 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPa
                 this.nameAnnotations.getChildren().add(item);
                 break;
             }
+            case ADDITIONAL_IDENTIFIER: {
+                item.setValue(annotation.getContent().toString());
+                this.identifiersAnnotations.getChildren().add(item);
+                break;
+            }
             case ORGANISM: {
-                item.setValue(annotation.getDescription()+" "+annotation.getContent().toString());
+                item.setValue(annotation.getDescription() + " " + annotation.getContent().toString());
                 this.organismAnnotation.getChildren().add(item);
+                break;
             }
             case NOTE: {
                 if (annotation.getDescription() != null && annotation.getDescription().equals("function")) {
@@ -113,14 +134,17 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity> extends GridPa
                     this.functionAnnotation.getChildren().add(item);
                 }
             }
+            default : {
+                item.setValue(annotation.getDescription()+": "+annotation.getContent().toString());
+                this.functionAnnotation.getChildren().add(item);
+            }
         }
-
     }
 
     private void addComponentsToGrid() {
-        this.add(this.imageView, 0, 0, 1, 1);
-        this.add(new VBox(this.primaryName, this.primaryIdentifier, this.weight), 1, 0, 1, 1);
-        this.add(this.annotationsTree, 0, 1, 2, 1);
+        this.add(new VBox(this.primaryName, this.primaryIdentifier, this.weight), 0, 0, 1, 1);
+        this.add(this.imageView, 0, 1, 1, 1);
+        this.add(this.annotationsTree, 0, 2, 1, 1);
     }
 
 }

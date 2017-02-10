@@ -40,7 +40,7 @@ public class BioGraphContextMenu extends ContextMenu {
     private void configureColorByChemicalEntityMenu() {
         this.colorByChemicalEntityMenu = new Menu("Color by entity ...");
         this.chemicalEntitiesGrouping = new ToggleGroup();
-        Map<String, ChemicalEntity> chemicalEntities = AutomatonGraphUtilities
+        Map<String, ChemicalEntity<?>> chemicalEntities = AutomatonGraphUtilities
                 .generateEntityMapFromSet(this.simulation.getChemicalEntities());
         // add MenuItem for every Species
         if (!chemicalEntities.isEmpty()) {
@@ -53,8 +53,8 @@ public class BioGraphContextMenu extends ContextMenu {
         }
     }
 
-    private void fillSpeciesMenu(Map<String, ChemicalEntity> speciesMap) {
-        for (Entry<String, ChemicalEntity> species : speciesMap.entrySet()) {
+    private void fillSpeciesMenu(Map<String, ChemicalEntity<?>> speciesMap) {
+        for (Entry<String, ChemicalEntity<?>> species : speciesMap.entrySet()) {
             RadioMenuItem speciesMenuItem = setupSpeciesMenuItem(species.getValue());
             this.colorByChemicalEntityMenu.getItems().add(speciesMenuItem);
         }

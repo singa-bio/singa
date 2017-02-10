@@ -31,15 +31,15 @@ import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
-    private Map<ChemicalEntity, Quantity<Diffusivity>> diffusionCoefficients;
-    private Map<ChemicalEntity, Double> octanolWaterCoefficients;
+    private Map<ChemicalEntity<?>, Quantity<Diffusivity>> diffusionCoefficients;
+    private Map<ChemicalEntity<?>, Double> octanolWaterCoefficients;
 
     public FreeDiffusion() {
         this.diffusionCoefficients = new HashMap<>();
         this.octanolWaterCoefficients = new HashMap<>();
     }
 
-    public void prepareDiffusionCoefficients(Set<ChemicalEntity> entities) {
+    public void prepareDiffusionCoefficients(Set<ChemicalEntity<?>> entities) {
         for (ChemicalEntity entity : entities) {
             // determine diffusion coefficients
             Quantity<Diffusivity> diffusionCoefficient = determineDiffusionCoefficient(entity);
@@ -57,7 +57,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     }
 
     @Override
-    public Set<ChemicalEntity> collectAllReferencesEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
         return this.diffusionCoefficients.keySet();
     }
 

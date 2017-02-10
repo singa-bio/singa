@@ -29,13 +29,13 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     private Path folder;
     private boolean printEntityInformation;
     private Map<BioNode, BufferedWriter> registeredWriters;
-    private List<ChemicalEntity> observedEntities;
+    private List<ChemicalEntity<?>> observedEntities;
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve) throws IOException {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) throws IOException {
         this(workspacePath, folder, entitiesToObserve, true);
     }
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, boolean printEntityInformation) throws IOException {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, boolean printEntityInformation) throws IOException {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
@@ -45,7 +45,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     }
 
-    private List<ChemicalEntity> initializeOrdering(Set<ChemicalEntity> unorderedEntities) {
+    private List<ChemicalEntity<?>> initializeOrdering(Set<ChemicalEntity<?>> unorderedEntities) {
         return new ArrayList<>(unorderedEntities);
     }
 

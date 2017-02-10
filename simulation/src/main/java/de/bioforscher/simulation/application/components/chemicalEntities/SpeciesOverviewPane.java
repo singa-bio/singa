@@ -35,8 +35,8 @@ public class SpeciesOverviewPane extends BorderPane {
     private ComboBox<String> cbGrouping;
     private TreeView<String> treeView;
     private TreeItem<String> rootItem;
-    private Map<String, ChemicalEntity> entityMapping;
-    private Map<String, ChemicalEntityCard> cardMapping;
+    private Map<String, ChemicalEntity<?>> entityMapping;
+    private Map<String, GeneralEntityCard<?>> cardMapping;
 
     private VBox currentDetailView;
 
@@ -51,7 +51,7 @@ public class SpeciesOverviewPane extends BorderPane {
     private void initializeCards() {
         this.cardMapping = new HashMap<>();
         this.entityMapping.forEach((key, value) -> {
-            this.cardMapping.put(key, new ChemicalEntityCard(value));
+            this.cardMapping.put(key, new GeneralEntityCard<>(value));
         });
     }
 

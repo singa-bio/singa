@@ -39,7 +39,7 @@ public class NthOrderReaction extends Reaction {
     }
 
     @Override
-    public Set<ChemicalEntity> collectAllReferencedEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
         return this.getStoichiometricReactants().stream()
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toSet());
