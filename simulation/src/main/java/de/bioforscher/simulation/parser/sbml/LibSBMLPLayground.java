@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.research;
+package de.bioforscher.simulation.parser.sbml;
 
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.parser.BioModelsParserService;
@@ -20,8 +20,8 @@ public class LibSBMLPLayground {
 
     public static void main(String[] args) throws IOException, XMLStreamException {
 
-        SabioRKParserService parser =  new SabioRKParserService("10790");
-        List<DynamicReaction> dynamicReactions = parser.fetchReaction();
+        SBMLParser parser = BioModelsParserService.parseModelById("BIOMD0000000064");
+        List<DynamicReaction> dynamicReactions = parser.getReactions();
 
 
     }

@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.parser;
+package de.bioforscher.simulation.parser.sbml;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.ComplexedChemicalEntity;
@@ -46,6 +46,7 @@ public class SBMLParser {
 
     private DynamicReaction currentReaction;
     private DynamicKineticLaw currentKineticLaw;
+    private Map<String, FunctionReference> functions;
 
     public SBMLParser(InputStream inputStream) {
         this.entities = new HashMap<>();
@@ -54,6 +55,7 @@ public class SBMLParser {
         this.startingConcentrations = new HashMap<>();
         this.reactions = new ArrayList<>();
         this.globalParameters = new HashMap<>();
+        this.functions = new HashMap<>();
         initializeDocument(inputStream);
     }
 
@@ -145,28 +147,33 @@ public class SBMLParser {
     private void parseReactions() {
         logger.info("Parsing Reaction Data ...");
         this.document.getModel().getListOfFunctionDefinitions().forEach(function -> {
-            // TODO replace funtion in equation
-            System.out.println(function.getId()+":"+function.getMath().toString());
+            this.functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()));
         });
-
 
         this.document.getModel().getListOfReactions().forEach(reaction -> {
             logger.debug("Parsing Reaction {} ...", reaction.getId());
             // kinetics
             KineticLaw kineticLawSBML = reaction.getKineticLaw();
-            // supply math
-            this.currentKineticLaw = new DynamicKineticLaw(kineticLawSBML.getMath().toString());
-            this.currentReaction = new DynamicReaction(this.currentKineticLaw);
-            // assign local parameters
-            assignLocalParameters(kineticLawSBML.getListOfLocalParameters());
-            // our substrates are their reactants
-            assignSubstrates(reaction.getListOfReactants());
-            // and products
-            assignProducts(reaction.getListOfProducts());
-            // assign modifiers
-            assignModifiers(reaction.getListOfModifiers());
-            // add reaction
-            this.reactions.add(this.currentReaction);
+            // supply math with replaced functions
+            String kineticLawExpression = replaceFunction(kineticLawSBML.getMath().toString());
+            logger.debug("Creating kinetic law with expression {} ...", kineticLawExpression);
+            if (!kineticLawExpression.equals("NaN")) {
+                this.currentKineticLaw = new DynamicKineticLaw(kineticLawExpression);
+                // create reaction
+                this.currentReaction = new DynamicReaction(this.currentKineticLaw);
+                // assign local parameters
+                assignLocalParameters(kineticLawSBML.getListOfLocalParameters());
+                // our substrates are their reactants
+                assignSubstrates(reaction.getListOfReactants());
+                // and products
+                assignProducts(reaction.getListOfProducts());
+                // assign modifiers
+                assignModifiers(reaction.getListOfModifiers());
+                // add reaction
+                this.reactions.add(this.currentReaction);
+            } else {
+                logger.warn("Could not parse a valid expression for this reaction.");
+            }
             logger.debug("Parsed Reaction:{}", this.currentReaction.getDisplayString());
         });
     }
@@ -217,6 +224,16 @@ public class SBMLParser {
             this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
             this.currentReaction.getCatalyticReactants().add(new CatalyticReactant(this.entities.get(identifier), ReactantRole.INCREASING));
         }
+    }
+
+    private String replaceFunction(String kineticLawString) {
+        String replacedString = kineticLawString;
+        for (String functionIdentifier : this.functions.keySet()) {
+            if (kineticLawString.contains(functionIdentifier)) {
+                replacedString = this.functions.get(functionIdentifier).replaceInEquation(replacedString);
+            }
+        }
+        return replacedString;
     }
 
     /**

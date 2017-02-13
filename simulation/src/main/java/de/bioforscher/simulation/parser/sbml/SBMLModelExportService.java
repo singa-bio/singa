@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.parser;
+package de.bioforscher.simulation.parser.sbml;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.modules.model.Simulation;

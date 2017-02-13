@@ -2,6 +2,7 @@ package de.bioforscher.simulation.parser;
 
 import de.bioforscher.core.parser.rest.AbstractRESTParser;
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
+import de.bioforscher.simulation.parser.sbml.SBMLParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

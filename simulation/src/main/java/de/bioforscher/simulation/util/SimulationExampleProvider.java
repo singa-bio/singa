@@ -19,7 +19,7 @@ import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.simulation.parser.BioModelsParserService;
-import de.bioforscher.simulation.parser.SBMLParser;
+import de.bioforscher.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.units.UnitProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

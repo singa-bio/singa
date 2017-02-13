@@ -35,7 +35,6 @@ public class DynamicKineticLaw implements KineticLaw {
     private double appliedScale = 4;
 
     public DynamicKineticLaw(String expression) {
-        System.out.println(expression);
         Parser parser = new Parser();
         this.expression = parser.parse(expression);
         this.localParameters = new ArrayList<>();
