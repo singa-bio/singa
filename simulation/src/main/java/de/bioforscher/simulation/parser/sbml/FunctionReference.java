@@ -36,11 +36,10 @@ public class FunctionReference {
     }
 
     public String replaceInEquation(String equationMathString) {
-        String result = equationMathString;
         Pattern pattern = Pattern.compile(this.identifier + "\\((.[^\\)]+)\\)");
         Matcher matcher = pattern.matcher(equationMathString);
+        StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            // extract function parameters
             String[] functionParameters = matcher.group(1).split(",");
             // replace parameters with correct ones
             String preparedFunction = prepareEquation(functionParameters);
@@ -49,19 +48,28 @@ public class FunctionReference {
                 // add some braces
                 preparedFunction = "(" + preparedFunction + ")";
             }
-            // assign result
-            result = result.replace(matcher.group(0), preparedFunction);
+            // leave prefix and suffix alone only replace parameter identifier with actual value
+            matcher.appendReplacement(sb, preparedFunction);
         }
-        return result;
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     private String prepareEquation(String[] functionParameters) {
         String replacedFunction = this.equation;
+        if (this.identifier.equals("R_PFK")) {
+            System.out.println();
+        }
         for (int i = 0; i < this.parameters.size(); i++) {
-            replacedFunction = replacedFunction.replace(this.parameters.get(i), functionParameters[i].trim());
+            Pattern pattern = Pattern.compile("(\\W|^)("+this.parameters.get(i)+")(\\W|$)");
+            Matcher matcher = pattern.matcher(replacedFunction);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                matcher.appendReplacement(sb, matcher.group(1) +functionParameters[i].trim() + matcher.group(3));
+            }
+            matcher.appendTail(sb);
+            replacedFunction = sb.toString();
         }
         return replacedFunction;
     }
-
-
 }

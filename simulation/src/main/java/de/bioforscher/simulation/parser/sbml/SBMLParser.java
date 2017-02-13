@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author cl
@@ -30,8 +31,6 @@ import java.util.regex.Matcher;
 public class SBMLParser {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLParser.class);
-
-    // todo parse global parameters
 
     private SBMLDocument document;
 
@@ -87,10 +86,11 @@ public class SBMLParser {
     }
 
     public void parse() {
-        this.parseSpecies();
-        this.parseReactions();
-        this.parseStartingConcentrations();
-        this.parseGlobalParameters();
+        parseGlobalParameters();
+        parseFunctions();
+        parseSpecies();
+        parseReactions();
+        parseStartingConcentrations();
     }
 
     private void parseSpecies() {
@@ -144,18 +144,21 @@ public class SBMLParser {
         });
     }
 
+    private void parseFunctions() {
+        this.document.getModel().getListOfFunctionDefinitions().forEach(function ->
+                this.functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()))
+        );
+    }
+
     private void parseReactions() {
         logger.info("Parsing Reaction Data ...");
-        this.document.getModel().getListOfFunctionDefinitions().forEach(function -> {
-            this.functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()));
-        });
-
         this.document.getModel().getListOfReactions().forEach(reaction -> {
             logger.debug("Parsing Reaction {} ...", reaction.getId());
             // kinetics
             KineticLaw kineticLawSBML = reaction.getKineticLaw();
             // supply math with replaced functions
-            String kineticLawExpression = replaceFunction(kineticLawSBML.getMath().toString());
+            logger.debug("raw kinetic law {} ...", kineticLawSBML.getMath().toString());
+            String kineticLawExpression = prepareKineticLaw(kineticLawSBML.getMath().toString());
             logger.debug("Creating kinetic law with expression {} ...", kineticLawExpression);
             if (!kineticLawExpression.equals("NaN")) {
                 this.currentKineticLaw = new DynamicKineticLaw(kineticLawExpression);
@@ -177,19 +180,24 @@ public class SBMLParser {
             logger.debug("Parsed Reaction:{}", this.currentReaction.getDisplayString());
         });
     }
-
-
+    
     private void parseStartingConcentrations() {
         logger.info("Parsing initial concentrations ...");
         this.document.getModel().getListOfSpecies().forEach(species -> {
             ChemicalEntity entity = this.entities.get(species.getId());
+            if (species.getId().equals("ATP")) {
+                System.out.println();
+            }
             this.startingConcentrations.put(entity, species.getInitialConcentration());
         });
     }
 
     private void parseGlobalParameters() {
         logger.info("Parsing global parameters ...");
-        this.document.getModel().getListOfParameters().forEach(parameter -> this.globalParameters.put(parameter.getId(), parameter.getValue()));
+        this.document.getModel().getListOfParameters().forEach(parameter -> {
+            logger.info("Set parameter {} to {}.", parameter.getId(), parameter.getValue());
+            this.globalParameters.put(parameter.getId(), parameter.getValue());
+        });
     }
 
     private void assignLocalParameters(ListOf<LocalParameter> localParameters) {
@@ -226,12 +234,34 @@ public class SBMLParser {
         }
     }
 
+    private String prepareKineticLaw(String kineticLawString) {
+        String replacedFunctions = replaceFunction(kineticLawString);
+        return replaceGlobalParameter(replacedFunctions);
+    }
+
     private String replaceFunction(String kineticLawString) {
         String replacedString = kineticLawString;
         for (String functionIdentifier : this.functions.keySet()) {
             if (kineticLawString.contains(functionIdentifier)) {
                 replacedString = this.functions.get(functionIdentifier).replaceInEquation(replacedString);
             }
+        }
+        return replacedString;
+    }
+
+    private String replaceGlobalParameter(String kineticLawString) {
+        // TODO parameters can probably be handled better
+        String replacedString = kineticLawString;
+        for (String globalParameterName : this.globalParameters.keySet()) {
+            Pattern pattern = Pattern.compile("(\\W|^)("+globalParameterName+")(\\W|$)");
+            Matcher matcher = pattern.matcher(replacedString);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                // leave prefix and suffix alone only replace parameter identifier with actual value
+                matcher.appendReplacement(sb, matcher.group(1) + String.valueOf(this.globalParameters.get(globalParameterName))+matcher.group(3));
+            }
+            matcher.appendTail(sb);
+            replacedString = sb.toString();
         }
         return replacedString;
     }
@@ -335,8 +365,9 @@ public class SBMLParser {
             logger.debug("Parsed Chemical Entity as {}", parsedPart);
             this.entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
-            logger.debug("Parsed Chemical Entity as {}", Species.UNKNOWN_SPECIES);
-            this.entities.put(identifier, Species.UNKNOWN_SPECIES);
+            Species species = new Species.Builder(identifier).molarMass(10.0).build();
+            logger.debug("Parsed Chemical Entity as {}", species);
+            this.entities.put(identifier, species);
         } else {
             logger.debug("Parsed Chemical Entity as {}", complex);
             this.entities.put(identifier, complex);

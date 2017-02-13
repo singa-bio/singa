@@ -32,7 +32,7 @@ public class DynamicKineticLaw implements KineticLaw {
     private List<SetVariable> localParameters;
     private Map<ChemicalEntity, String> entityReference;
 
-    private double appliedScale = 4;
+    private double appliedScale = 10;
 
     public DynamicKineticLaw(String expression) {
         Parser parser = new Parser();
@@ -67,7 +67,9 @@ public class DynamicKineticLaw implements KineticLaw {
             logger.error("Could not calculate acceleration for " + this.expression.toString(), e);
             throw e;
         }
-
+        if (Double.isNaN(value)) {
+            System.out.println();
+        }
         return Quantities.getQuantity(value / this.appliedScale, UnitProvider.PER_SECOND);
     }
 

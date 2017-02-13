@@ -418,10 +418,11 @@ public class SimulationExampleProvider {
     public static Simulation createSimulationFromSBML() {
 
         // TODO replace functions in model with actual calculation (eg BIOMD0000000064)
+        // BIOMD0000000023
         // TODO revert previous step until a sufficient configuration has been found
 
-        logger.info("Setting up simulation for model BIOMD0000000023 ...");
-        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000023");
+        logger.info("Setting up simulation for model BIOMD0000000064 ...");
+        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000064");
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
@@ -439,7 +440,7 @@ public class SimulationExampleProvider {
 
         // compartment is never initialized for this reaction
         model.getReactions().forEach(reaction -> {
-            reaction.getKineticLaw().setLocalParameter("compartment", 1);
+            reaction.getKineticLaw().setLocalParameter("cytosol", 1);
         });
 
         // create reactions module
