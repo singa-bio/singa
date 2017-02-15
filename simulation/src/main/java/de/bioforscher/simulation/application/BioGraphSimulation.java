@@ -59,7 +59,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExampleProvider.createSimulationFromSBML();
+        this.simulation = SimulationExampleProvider.createCompartmentTestEnvironment();
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
@@ -162,6 +162,7 @@ public class BioGraphSimulation extends Application {
 
         logger.debug("Initializing simulation canvas ...");
         this.simulationCanvas = new SimulationCanvas(this);
+        this.simulationCanvas.getRenderer().getRenderingOptions().setNodeDiameter(8);
         ResizablePane anchorPane = new ResizablePane(this.simulationCanvas);
         // Simulation Half
         AnchorPane.setTopAnchor(this.simulationCanvas, 0.0);

@@ -57,9 +57,6 @@ public class FunctionReference {
 
     private String prepareEquation(String[] functionParameters) {
         String replacedFunction = this.equation;
-        if (this.identifier.equals("R_PFK")) {
-            System.out.println();
-        }
         for (int i = 0; i < this.parameters.size(); i++) {
             Pattern pattern = Pattern.compile("(\\W|^)("+this.parameters.get(i)+")(\\W|$)");
             Matcher matcher = pattern.matcher(replacedFunction);

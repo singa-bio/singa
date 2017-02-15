@@ -12,9 +12,8 @@ import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
-import de.bioforscher.simulation.modules.reactions.model.CatalyticReactant;
-import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.simulation.modules.reactions.model.*;
+import de.bioforscher.simulation.modules.reactions.model.AssignmentRule;
 import org.sbml.jsbml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,7 @@ public class SBMLParser {
     private DynamicReaction currentReaction;
     private DynamicKineticLaw currentKineticLaw;
     private Map<String, FunctionReference> functions;
+    private Set<AssignmentRule> assignmentRules;
 
     public SBMLParser(InputStream inputStream) {
         this.entities = new HashMap<>();
@@ -55,6 +55,7 @@ public class SBMLParser {
         this.reactions = new ArrayList<>();
         this.globalParameters = new HashMap<>();
         this.functions = new HashMap<>();
+        this.assignmentRules = new HashSet<>();
         initializeDocument(inputStream);
     }
 
@@ -85,12 +86,21 @@ public class SBMLParser {
         return this.globalParameters;
     }
 
+    public Set<AssignmentRule> getAssignmentRules() {
+        return this.assignmentRules;
+    }
+
+    public void setAssignmentRules(Set<AssignmentRule> assignmentRules) {
+        this.assignmentRules = assignmentRules;
+    }
+
     public void parse() {
         parseGlobalParameters();
         parseFunctions();
         parseSpecies();
         parseReactions();
         parseStartingConcentrations();
+        parseAssignmentRules();
     }
 
     private void parseSpecies() {
@@ -144,7 +154,31 @@ public class SBMLParser {
         });
     }
 
+    private void parseAssignmentRules() {
+        logger.info("Parsing Assignment Rules ...");
+        this.document.getModel().getListOfRules().forEach( rule -> {
+            if (rule.isAssignment()) {
+                AssignmentRule assignmentRule = new AssignmentRule(this.entities.get(((org.sbml.jsbml.AssignmentRule) rule).getVariable()),
+                        new DynamicKineticLaw(prepareKineticLaw(rule.getMath().toString())));
+                // find referenced entities
+                for (String identifier: this.entities.keySet()) {
+                    Pattern pattern = Pattern.compile("(\\W|^)("+identifier+")(\\W|$)");
+                    Matcher matcher = pattern.matcher(rule.getMath().toString());
+                    if (matcher.find()) {
+                        assignmentRule.getKineticLaw().referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
+                    }
+                }
+
+
+                this.assignmentRules.add(assignmentRule);
+
+            }
+
+        });
+    }
+
     private void parseFunctions() {
+        logger.info("Parsing Functions ...");
         this.document.getModel().getListOfFunctionDefinitions().forEach(function ->
                 this.functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()))
         );
@@ -180,14 +214,11 @@ public class SBMLParser {
             logger.debug("Parsed Reaction:{}", this.currentReaction.getDisplayString());
         });
     }
-    
+
     private void parseStartingConcentrations() {
         logger.info("Parsing initial concentrations ...");
         this.document.getModel().getListOfSpecies().forEach(species -> {
             ChemicalEntity entity = this.entities.get(species.getId());
-            if (species.getId().equals("ATP")) {
-                System.out.println();
-            }
             this.startingConcentrations.put(entity, species.getInitialConcentration());
         });
     }
@@ -212,7 +243,7 @@ public class SBMLParser {
             logger.debug("Assigning Chemical Entity {} as substrate.", reference.getSpecies());
             String identifier = reference.getSpecies();
             this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
-            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.DECREASING, 1));
+            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.DECREASING, reference.getStoichiometry()));
         }
     }
 
@@ -221,7 +252,7 @@ public class SBMLParser {
             logger.debug("Assigning Chemical Entity {} as product.", reference.getSpecies());
             String identifier = reference.getSpecies();
             this.currentKineticLaw.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
-            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.INCREASING, 1));
+            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.INCREASING, reference.getStoichiometry()));
         }
     }
 

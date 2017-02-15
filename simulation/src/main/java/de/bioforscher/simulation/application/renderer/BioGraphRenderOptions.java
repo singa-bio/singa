@@ -12,6 +12,7 @@ public class BioGraphRenderOptions {
     private ChemicalEntity edgeHighlightEntity;
 
     private boolean coloringByEntity = true;
+    private boolean coloringByCompartment = false;
     private ColorScale nodeColorScale;
 
     public BioGraphRenderOptions() {
@@ -63,5 +64,11 @@ public class BioGraphRenderOptions {
 
     }
 
+    public boolean isColoringByCompartment() {
+        return this.coloringByCompartment;
+    }
 
+    public void setColoringByCompartment(boolean coloringByCompartment) {
+        this.coloringByCompartment = coloringByCompartment;
+    }
 }

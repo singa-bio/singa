@@ -37,9 +37,25 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
     }
 
     @Override
+    public void render(AutomatonGraph graph) {
+        // Background
+        // getRenderingOptions().setIdentifierFont(Font.getDefault());
+        getGraphicsContext().setFill(getRenderingOptions().getBackgroundColor());
+        getGraphicsContext().fillRect(0, 0, getDrawingWidth(), getDrawingHeight());
+        // render edges
+        if (getRenderingOptions().isDisplayingEdges()) {
+            graph.getEdges().forEach(this::drawEdge);
+        }
+        // render nodes
+        if (getRenderingOptions().isDisplayingNodes()) {
+            graph.getNodes().forEach(this::drawNode);
+        }
+    }
+
+    @Override
     protected void drawNode(BioNode node) {
         // decide on style
-        if (!this.bioRenderingOptions.isColoringByEntity()) {
+        if (!this.bioRenderingOptions.isColoringByEntity() && !this.bioRenderingOptions.isColoringByCompartment()) {
             switch (node.getState()) {
                 case AQUEOUS: {
                     getGraphicsContext().setFill(Color.CADETBLUE);
@@ -54,9 +70,16 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
                     break;
                 }
             }
+        } else if (this.bioRenderingOptions.isColoringByCompartment()) {
+            if (node.getContainingCompartment().equals("default")) {
+                getGraphicsContext().setFill(Color.CADETBLUE);
+            } else {
+                getGraphicsContext().setFill(Color.BURLYWOOD);
+            }
         } else {
             getGraphicsContext().setFill(this.bioRenderingOptions.getNodeColor(node));
         }
+
         drawPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
 
         // circle point if node is observed
@@ -80,10 +103,10 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
             // connection between membrane nodes
             getGraphicsContext().setStroke(Color.BURLYWOOD);
             // draw upper parallel
-            LineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter()/2.0);
+            LineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
             drawLineSegment(upperParallelSegment);
             // draw lower parallel
-            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter()/2.0);
+            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
             drawLineSegment(lowerParallelSegment);
         }
     }

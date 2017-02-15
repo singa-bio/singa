@@ -21,6 +21,7 @@ public class BioGraphContextMenu extends ContextMenu {
     private Simulation simulation;
 
     private MenuItem colorByStateItem = new MenuItem();
+    private MenuItem colorByCompartment = new MenuItem();
     private Menu colorByChemicalEntityMenu;
     private ToggleGroup chemicalEntitiesGrouping;
 
@@ -28,8 +29,14 @@ public class BioGraphContextMenu extends ContextMenu {
         this.simulation = simulation;
         this.owner = canvas;
         configureColorByStateItem();
+        configureColorByCompartmentItem();
         configureColorByChemicalEntityMenu();
         addItemsToMenu();
+    }
+
+    private void configureColorByCompartmentItem() {
+        this.colorByCompartment.setText("Color by compartment");
+        this.colorByCompartment.setOnAction(this::colorByCompartment);
     }
 
     private void configureColorByStateItem() {
@@ -69,12 +76,13 @@ public class BioGraphContextMenu extends ContextMenu {
     }
 
     private void addItemsToMenu() {
-        this.getItems().addAll(this.colorByStateItem, this.colorByChemicalEntityMenu);
+        this.getItems().addAll(this.colorByStateItem, this.colorByCompartment, this.colorByChemicalEntityMenu);
     }
 
     private void colorBySpecies(ActionEvent event) {
         ChemicalEntity chemicalEntity = (ChemicalEntity)((RadioMenuItem)event.getSource()).getUserData();
         this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(true);
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(false);
         this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(chemicalEntity);
         this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(chemicalEntity);
         this.owner.draw();
@@ -82,6 +90,13 @@ public class BioGraphContextMenu extends ContextMenu {
 
     private void colorByState(ActionEvent event) {
         this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(false);
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(false);
+        this.owner.draw();
+    }
+
+    private void colorByCompartment(ActionEvent event) {
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(false);
+        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(true);
         this.owner.draw();
     }
 

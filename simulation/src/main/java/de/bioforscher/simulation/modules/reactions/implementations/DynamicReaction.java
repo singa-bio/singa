@@ -47,7 +47,6 @@ public class DynamicReaction extends Reaction {
     @Override
     public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
         Quantity<ReactionRate> reactionRateQuantity = this.kineticLaw.calculateAcceleration(node);
-        System.out.println(reactionRateQuantity);
         return reactionRateQuantity;
     }
 

@@ -32,10 +32,13 @@ public class DynamicKineticLaw implements KineticLaw {
     private List<SetVariable> localParameters;
     private Map<ChemicalEntity, String> entityReference;
 
-    private double appliedScale = 10;
+    private String expressionString;
+
+    private double appliedScale = 70;
 
     public DynamicKineticLaw(String expression) {
         Parser parser = new Parser();
+        this.expressionString = expression;
         this.expression = parser.parse(expression);
         this.localParameters = new ArrayList<>();
         this.entityReference = new HashMap<>();
@@ -51,6 +54,22 @@ public class DynamicKineticLaw implements KineticLaw {
         this.entityReference.put(entity, parameterName);
     }
 
+    public Map<ChemicalEntity, String> getEntityReference() {
+        return this.entityReference;
+    }
+
+    public void setEntityReference(Map<ChemicalEntity, String> entityReference) {
+        this.entityReference = entityReference;
+    }
+
+    public double getAppliedScale() {
+        return this.appliedScale;
+    }
+
+    public void setAppliedScale(double appliedScale) {
+        this.appliedScale = appliedScale;
+    }
+
     @Override
     public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
         // set entity parameters
@@ -60,15 +79,14 @@ public class DynamicKineticLaw implements KineticLaw {
             this.expression.accept(new SetVariable(parameterName, concentration.getValue().doubleValue()));
         }
 
-        double value;
+        double value = 0.0;
         try {
             value = this.expression.getValue();
         } catch (ParserException | EvaluationException e) {
-            logger.error("Could not calculate acceleration for " + this.expression.toString(), e);
-            throw e;
+            logger.error("Could not calculate acceleration for {}.", this.expression.toString(), e);
         }
         if (Double.isNaN(value)) {
-            System.out.println();
+            logger.error("Could not calculate acceleration for {}.", this.expression.toString());
         }
         return Quantities.getQuantity(value / this.appliedScale, UnitProvider.PER_SECOND);
     }
@@ -81,5 +99,12 @@ public class DynamicKineticLaw implements KineticLaw {
     @Override
     public List<KineticParameterType> getRequiredParameters() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicKineticLaw{" +
+                "expressionString='" + this.expressionString + '\'' +
+                '}';
     }
 }

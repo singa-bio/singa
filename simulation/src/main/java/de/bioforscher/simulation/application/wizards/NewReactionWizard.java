@@ -51,7 +51,6 @@ public class NewReactionWizard extends Wizard {
 
     @Override
     public void cancel() {
-        System.out.println("Cancelled");
         this.owner.close();
     }
 

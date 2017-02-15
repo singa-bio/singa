@@ -72,8 +72,13 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
                     }
                 }));
         // update every concentration using the calculateUpdateMethod
-        this.velocities.forEach(((entity, velocity) ->
-                updateSpecies(node, entity)));
+
+        this.velocities.forEach(((entity, velocity) -> {
+                if (entity.getIdentifier().toString().equals("BPG")) {
+                    System.out.println("BPG "+velocity);
+                }
+                updateSpecies(node, entity);
+        }));
         this.velocities.clear();
     }
 

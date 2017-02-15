@@ -231,14 +231,30 @@ public class Vector2D extends RegularVector {
      * Validates, if this vector can be placed in the given {@link Rectangle}.
      *
      * @param rectangle The rectangle.
-     * @return {@code true} if the rectangle can be placed in the vector.
+     * @return {@code true} if vector can be placed in the rectangle.
      */
     public boolean canBePlacedIn(Rectangle rectangle) {
         return valueOfXIsBetween(rectangle.getLeftMostXPosition(), rectangle.getRightMostXPosition())
                 && valueOfYIsBetween(rectangle.getBottomMostYPosition(), rectangle.getTopMostYPosition());
     }
 
-    private boolean valueOfXIsBetween(double origin, double boundary) {
+    public boolean isAbove(Vector2D vector) {
+        return this.getY() < vector.getY();
+    }
+
+    public boolean isBelow(Vector2D vector) {
+        return this.getY() > vector.getY();
+    }
+
+    public boolean isLeftOf(Vector2D vector2D) {
+        return this.getX() < vector2D.getX();
+    }
+
+    public boolean isRightOf(Vector2D vector2D) {
+        return this.getX() > vector2D.getX();
+    }
+
+    public boolean valueOfXIsBetween(double origin, double boundary) {
         return this.getX() < boundary && this.getX() > origin;
     }
 

@@ -7,26 +7,25 @@ import de.bioforscher.simulation.model.AutomatonGraph;
 import de.bioforscher.simulation.model.BioNode;
 import de.bioforscher.simulation.model.NodeUpdatedEvent;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.simulation.modules.reactions.model.AssignmentRule;
 import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 06.07.2016.
+ * @author cl
  */
 public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     private AutomatonGraph graph;
     private Set<Module> modules;
+    private List<AssignmentRule> assignmentRules;
     private Set<ChemicalEntity<?>> chemicalEntities;
     private int epoch;
 
@@ -42,9 +41,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
         return this.modules.stream()
-                           .map(Module::collectAllReferencesEntities)
-                           .flatMap(Collection::stream)
-                           .collect(Collectors.toSet());
+                .map(Module::collectAllReferencesEntities)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     public void nextEpoch() {
@@ -53,6 +52,74 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         );
         this.graph.getNodes().stream().filter(BioNode::isObserved).forEach(this::emitNextEpochEvent);
         this.epoch++;
+    }
+
+    public void sortAssignmentsByPriority() {
+        // assignments have to be done in a certain order, if they depend on other assignment rules
+        // initialize assignment rules and their requirements
+        Map<AssignmentRule, Set<ChemicalEntity<?>>> assignmentRequirements = new HashMap<>();
+        // and the priority of the rule
+        Map<AssignmentRule, Integer> priorityMap = new HashMap<>();
+        for (AssignmentRule rule : this.assignmentRules) {
+            assignmentRequirements.put(rule, new HashSet<>());
+            priorityMap.put(rule, Integer.MAX_VALUE);
+        }
+
+        for (AssignmentRule targetRule : this.assignmentRules) {
+            // rule provides
+            ChemicalEntity<?> targetEntity = targetRule.getTargetEntity();
+            // check if it is required elsewhere
+            for (AssignmentRule sourceRule : this.assignmentRules) {
+                if (sourceRule != targetRule) {
+                    if (sourceRule.getKineticLaw().getEntityReference().keySet().contains(targetEntity)) {
+                        assignmentRequirements.get(sourceRule).add(targetEntity);
+                    }
+                }
+            }
+        }
+
+        List<AssignmentRule> handledRules = new ArrayList<>();
+        List<ChemicalEntity<?>> suppliedEntities = new ArrayList<>();
+        // rules without requirements to top
+        for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                // if no requirements are needed assign priority 0
+                priorityMap.put(entry.getKey(), 0);
+                suppliedEntities.add(entry.getKey().getTargetEntity());
+                handledRules.add(entry.getKey());
+            }
+        }
+
+        boolean allAssigned = false;
+        int level = 0;
+        while (!allAssigned) {
+            allAssigned = true;
+            level++;
+            for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
+                if (!handledRules.contains(entry.getKey())) {
+                    if (suppliedEntities.containsAll(entry.getValue())) {
+                        priorityMap.put(entry.getKey(), level);
+                        suppliedEntities.add(entry.getKey().getTargetEntity());
+                        handledRules.add(entry.getKey());
+                        allAssigned = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        this.assignmentRules = priorityMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+    }
+
+    public void applyAssignmentRules() {
+        this.assignmentRules.forEach(rule ->
+                this.graph.getNodes().forEach(rule::applyRule)
+        );
     }
 
     public AutomatonGraph getGraph() {
@@ -69,6 +136,14 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public void setModules(Set<Module> modules) {
         this.modules = modules;
+    }
+
+    public List<AssignmentRule> getAssignmentRules() {
+        return this.assignmentRules;
+    }
+
+    public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
+        this.assignmentRules = assignmentRules;
     }
 
     public Set<ChemicalEntity<?>> getChemicalEntities() {
@@ -110,8 +185,8 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     public FreeDiffusion getFreeDiffusionModule() {
         // FIXME: probably temporary
         Optional<FreeDiffusion> diffusion = this.modules.stream()
-                           .filter(module -> module.getClass().equals(FreeDiffusion.class))
-                           .findFirst().map(module -> (FreeDiffusion) module);
+                .filter(module -> module.getClass().equals(FreeDiffusion.class))
+                .findFirst().map(module -> (FreeDiffusion) module);
         this.collectAllReferencedEntities();
         diffusion.get().prepareDiffusionCoefficients(this.getChemicalEntities());
         return diffusion.get();

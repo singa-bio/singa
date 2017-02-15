@@ -27,6 +27,7 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static de.bioforscher.units.UnitProvider.*;
@@ -44,7 +45,7 @@ public class SimulationExampleProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(SimulationExampleProvider.class);
 
-    private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
+    private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
 
     /**
      * This simulation simulates the thermal decomposition of dinitrogen pentaoxide.
@@ -417,12 +418,12 @@ public class SimulationExampleProvider {
 
     public static Simulation createSimulationFromSBML() {
 
-        // TODO replace functions in model with actual calculation (eg BIOMD0000000064)
         // BIOMD0000000023
+        // BIOMD0000000064
         // TODO revert previous step until a sufficient configuration has been found
 
-        logger.info("Setting up simulation for model BIOMD0000000064 ...");
-        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000064");
+        logger.info("Setting up simulation for model BIOMD0000000184 ...");
+        SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000184");
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
@@ -432,7 +433,10 @@ public class SimulationExampleProvider {
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         BioNode node = graph.getNode(0);
-        model.getStartingConcentrations().forEach(node::setConcentration);
+        model.getStartingConcentrations().forEach((entity, value) -> {
+            logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
+                node.setConcentration(entity, value);
+        });
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
@@ -440,7 +444,9 @@ public class SimulationExampleProvider {
 
         // compartment is never initialized for this reaction
         model.getReactions().forEach(reaction -> {
-            reaction.getKineticLaw().setLocalParameter("cytosol", 1);
+            reaction.getKineticLaw().setLocalParameter("ER", 1);
+            reaction.getKineticLaw().setLocalParameter("compartment", 1);
+
         });
 
         // create reactions module
@@ -455,12 +461,32 @@ public class SimulationExampleProvider {
         simulation.setGraph(graph);
         // add the reactions module
         simulation.getModules().add(reactions);
+        // add, sort and apply assignment rules
+        simulation.setAssignmentRules(new ArrayList<>(model.getAssignmentRules()));
+        simulation.sortAssignmentsByPriority();
+        simulation.applyAssignmentRules();
         // add all referenced species to the simulation for easy access
         simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
 
+    public static Simulation createCompartmentTestEnvironment() {
+
+        logger.info("Setting up Compartment Test Example ...");
+        // setup rectangular graph with number of nodes
+        logger.debug("Setting up example graph ...");
+        int numberOfNodes = 50;
+        AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
+                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        // setup simulation
+        logger.debug("Composing simulation ... ");
+        Simulation simulation = new Simulation();
+        // add graph
+        simulation.setGraph(graph);
+
+        return simulation;
+    }
 
     public static Simulation createPassiveMembraneTransportExample() {
         logger.info("Setting up the passive membrane diffusion example ...");

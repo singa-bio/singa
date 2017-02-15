@@ -21,10 +21,13 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     private boolean isObserved;
     private boolean isSource;
 
+    private String containingCompartment;
+
     public BioNode(int identifier) {
         super(identifier);
         this.state = NodeState.AQUEOUS;
         this.concentrations = new HashMap<>();
+        this.containingCompartment = "default";
     }
 
     public Set<BioNode> getNeighboursInState(NodeState state) {
@@ -114,6 +117,14 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
                            Math.abs(this.getConcentration(entity).getValue().doubleValue() -
                                    neighbour.getConcentration(entity).getValue().doubleValue()))
                    .max().orElse(0.0);
+    }
+
+    public String getContainingCompartment() {
+        return this.containingCompartment;
+    }
+
+    public void setContainingCompartment(String containingCompartment) {
+        this.containingCompartment = containingCompartment;
     }
 
     @Override
