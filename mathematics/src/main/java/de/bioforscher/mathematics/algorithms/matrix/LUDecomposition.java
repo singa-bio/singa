@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by chris on 05.10.2016.
+ * @author cl
  */
-public class LRDecomposition {
+public class LUDecomposition {
 
     public static Matrix calculateRowEchelonMatrix(Matrix originalMatrix) {
         List<Vector> matrixRows = Matrices.divideIntoRows(originalMatrix);
@@ -23,7 +23,7 @@ public class LRDecomposition {
                 continue;
             }
             // search for vector with largest absolute value in the current iteration
-            int pivotIndex = getRowWithAbsolutMaximalElementAtIndex(matrixRows, iteration, iteration);
+            int pivotIndex = getRowWithAbsoluteMaximalElementAtIndex(matrixRows, iteration, iteration);
             // if this element is zero
             if (matrixRows.get(pivotIndex).getElement(iteration) == 0) {
                 // no decomposition possible
@@ -50,7 +50,7 @@ public class LRDecomposition {
         return Matrices.assembleMatrixFromRows(matrixRows);
     }
 
-    private static int getRowWithAbsolutMaximalElementAtIndex(List<Vector> matrixRows, int index, int startIndex) {
+    private static int getRowWithAbsoluteMaximalElementAtIndex(List<Vector> matrixRows, int index, int startIndex) {
         double maximalValue = -Double.MAX_VALUE;
         int maximalIndex = 0;
         for (int row = startIndex; row < matrixRows.size(); row++) {

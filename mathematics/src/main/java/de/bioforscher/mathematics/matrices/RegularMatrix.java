@@ -7,6 +7,8 @@ import de.bioforscher.mathematics.vectors.Vector;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
+import static de.bioforscher.mathematics.matrices.FastMatrices.*;
+
 /**
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
  * to store values it provides the fundamental operations of linear algebra. This implementation declares all values
@@ -143,17 +145,6 @@ public class RegularMatrix implements Matrix, Serializable {
         return this.elements;
     }
 
-//    @Override
-//    public double[][] getCopyOfElements() {
-//        final double[][] copyOfElements = new double[this.elements.length][];
-//        for (int i = 0; i < this.elements.length; i++) {
-//            final double[] row = this.elements[i];
-//            copyOfElements[i] = new double[row.length];
-//            System.arraycopy(row, 0, copyOfElements[i], 0, row.length);
-//        }
-//        return copyOfElements;
-//    }
-
     @Override
     public RegularVector getRow(int rowNumber) {
         return new RegularVector(this.elements[rowNumber]);
@@ -188,7 +179,7 @@ public class RegularMatrix implements Matrix, Serializable {
                         + summand.getElement(rowIndex, columnIndex);
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -201,7 +192,7 @@ public class RegularMatrix implements Matrix, Serializable {
                         - subtrahend.getElement(rowIndex, columnIndex);
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -212,7 +203,7 @@ public class RegularMatrix implements Matrix, Serializable {
                 values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex) * multiplicand;
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -243,7 +234,7 @@ public class RegularMatrix implements Matrix, Serializable {
                 }
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -256,7 +247,7 @@ public class RegularMatrix implements Matrix, Serializable {
                         * multiplicand.getElement(rowIndex, columnIndex);
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -267,7 +258,7 @@ public class RegularMatrix implements Matrix, Serializable {
                 values[rowIndex][columnIndex] = -this.getElement(rowIndex, columnIndex);
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override
@@ -278,7 +269,7 @@ public class RegularMatrix implements Matrix, Serializable {
                 values[columnIndex][rowIndex] = this.getElement(rowIndex, columnIndex);
             }
         }
-        return new RegularMatrix(values);
+        return createRegularMatrix(values);
     }
 
     @Override

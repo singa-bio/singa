@@ -194,7 +194,7 @@ public class RegularMatrixTest {
 
     @Test
     public void testToString() {
-        String expected = " 9,00 10,00 11,00\n12,00 13,00 14,00\n";
+        String expected = " 9.00 10.00 11.00\n12.00 13.00 14.00\n";
         assertEquals(expected, this.twoTimesThree.toString());
     }
 

@@ -36,7 +36,7 @@ public class ShortestPathMetric implements Metric<Node<?, ?>> {
         // nodes
         if (!(this.graph.containsNode(first) && this.graph.containsNode(second))) {
             throw new DegenerateCaseException("The graph has to contain both nodes " + first + " and " + second
-                    + " in ored to calculate the shortest path between both.");
+                    + " in order to calculate the shortest path between both.");
         }
 
         // trivial solution: first is equal to first2DVector
