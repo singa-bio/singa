@@ -32,6 +32,10 @@ public class SymmetricMatrix extends SquareMatrix {
         super(values, true);
     }
 
+    SymmetricMatrix(double[][] values, int rowDimension, int columnDimension) {
+        super(values, rowDimension, columnDimension);
+    }
+
     /**
      * Returns {@code true} if the potential values are square and symmetric (mirrored at the main diagonal) and {@code
      * false} otherwise.

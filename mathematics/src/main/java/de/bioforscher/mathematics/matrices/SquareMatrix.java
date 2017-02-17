@@ -37,6 +37,10 @@ public class SquareMatrix extends RegularMatrix {
         super(values, isSymmetric);
     }
 
+    SquareMatrix(double[][] values, int rowDimension, int columnDimension) {
+        super(values, rowDimension, columnDimension);
+    }
+
     /**
      * Returns {@code true} if all potential columns are of the same length as the potential rows and {@code false}
      * otherwise.

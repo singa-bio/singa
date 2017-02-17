@@ -67,8 +67,15 @@ public class RegularMatrix implements Matrix, Serializable {
             this.rowDimension = values.length;
             this.columnDimension = this.rowDimension;
         }
+    }
 
-
+    /**
+     * A fast constructor usable from the fast Matrices class.
+     */
+    RegularMatrix(double[][] values, int rowDimension, int columnDimension) {
+        this.elements = values;
+        this.rowDimension = rowDimension;
+        this.columnDimension = columnDimension;
     }
 
     /**
