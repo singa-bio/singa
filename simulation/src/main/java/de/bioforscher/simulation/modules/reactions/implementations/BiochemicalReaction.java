@@ -2,7 +2,7 @@ package de.bioforscher.simulation.modules.reactions.implementations;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.Enzyme;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.MichaelisMentenWithKCat;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.EntityDependentKineticParameter;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;

@@ -10,7 +10,7 @@ import de.bioforscher.simulation.application.components.plots.PlotPreferencesCon
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
-import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.parser.GraphMLExportService;
 import de.bioforscher.simulation.parser.GraphMLParserService;
@@ -59,7 +59,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExampleProvider.createCompartmentTestEnvironment();
+        this.simulation = SimulationExampleProvider.createSimulationFromSBML();
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
@@ -309,11 +309,7 @@ public class BioGraphSimulation extends Application {
         NewReactionWizard reactionWizard = new NewReactionWizard(reactionStage);
         reactionStage.setScene(new Scene(reactionWizard, width, height));
         reactionStage.showAndWait();
-        if (reactionWizard.getReaction() != null) {
-            // TODO migrate to new interface and reaction interface
-            // this.simulation.addReaction(reactionWizard.getReaction(), true);
-            // redrawGraph();
-        }
+        // TODO migrate to new interface and reaction interface
     }
 
     private void showPlotPreferencesControlPanel(ActionEvent event) {

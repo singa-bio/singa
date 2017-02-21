@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.model.compartments;
 
 /**
  * Created by Christoph on 17.08.2016.

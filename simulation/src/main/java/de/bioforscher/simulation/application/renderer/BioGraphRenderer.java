@@ -1,26 +1,16 @@
 package de.bioforscher.simulation.application.renderer;
 
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.javafx.renderer.Renderer;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
-import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.graphs.voronoi.VoronoiFaceEdge;
-import de.bioforscher.mathematics.graphs.voronoi.VoronoiFactory;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
-import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.GraphUpdatedEvent;
-import javafx.animation.AnimationTimer;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioEdge;
+import de.bioforscher.simulation.model.graphs.BioNode;
+import de.bioforscher.simulation.events.GraphUpdatedEvent;
 import javafx.scene.paint.Color;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static de.bioforscher.simulation.model.NodeState.CELL_MEMBRANE;
+import static de.bioforscher.simulation.model.compartments.NodeState.CELL_MEMBRANE;
 
 public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonGraph> implements UpdateEventListener<GraphUpdatedEvent> {
 

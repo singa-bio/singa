@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model;
 
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.units.quantities.ReactionRate;
 
 import javax.measure.Quantity;

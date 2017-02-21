@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.modules.reactions.implementations;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;

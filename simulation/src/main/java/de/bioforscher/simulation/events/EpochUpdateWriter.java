@@ -1,9 +1,8 @@
-package de.bioforscher.simulation.parser;
+package de.bioforscher.simulation.events;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NodeUpdatedEvent;
+import de.bioforscher.simulation.model.graphs.BioNode;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

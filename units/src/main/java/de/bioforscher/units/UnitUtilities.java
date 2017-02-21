@@ -2,6 +2,7 @@ package de.bioforscher.units;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -115,14 +116,14 @@ public class UnitUtilities {
      * @return A list of units with prefixes as string
      */
     public static List<String> generateUnitNamesForPrefixes(EnumSet<UnitPrefix> prefixes, UnitName unitName) {
-        return prefixes.stream().sorted((p1, p2) -> Integer.compare(p1.getScale(), p2.getScale())).map(prefix ->
+        return prefixes.stream().sorted(Comparator.comparingInt(UnitPrefix::getScale)).map(prefix ->
                 prefix.getSymbol() + unitName.getSymbol()).collect(Collectors.toList());
     }
 
 
     public static <Q extends Quantity<Q>> List<Unit<Q>> generateUnitsForPrefixes(EnumSet<UnitPrefix> prefixes, Unit<Q>
             unit) {
-        return prefixes.stream().sorted((p1, p2) -> Integer.compare(p1.getScale(), p2.getScale())).map(p -> unit
+        return prefixes.stream().sorted(Comparator.comparingInt(UnitPrefix::getScale)).map(p -> unit
                 .transform(p.getCorrespondingConverter())).collect(Collectors.toList());
     }
 

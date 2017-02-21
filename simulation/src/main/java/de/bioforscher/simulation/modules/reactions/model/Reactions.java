@@ -1,8 +1,8 @@
 package de.bioforscher.simulation.modules.reactions.model;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.model.ImmediateUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;

@@ -2,7 +2,7 @@ package de.bioforscher.simulation.application.wizards;
 
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.util.AutomatonGraphUtilities;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;

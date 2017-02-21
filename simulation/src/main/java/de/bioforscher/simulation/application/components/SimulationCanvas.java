@@ -1,16 +1,13 @@
 package de.bioforscher.simulation.application.components;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.renderer.BioGraphRenderer;
-import de.bioforscher.simulation.model.BioNode;
-import javafx.event.Event;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 

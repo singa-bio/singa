@@ -1,21 +1,15 @@
-package de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations;
+package de.bioforscher.simulation.model.rules;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.simulation.model.rules.AppliedExpression;
-import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
-import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
-import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.MolarConcentration;
-import de.bioforscher.units.quantities.ReactionRate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
@@ -23,22 +17,26 @@ import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * @author cl
  */
-public class DynamicKineticLaw implements KineticLaw {
+public class AssignmentRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamicKineticLaw.class);
+    private static final Logger logger = LoggerFactory.getLogger(AssignmentRule.class);
 
     private AppliedExpression expression;
+    private ChemicalEntity<?> targetEntity;
     private Map<ChemicalEntity, String> entityReference;
 
-    private double appliedScale = 70;
-
-    public DynamicKineticLaw(AppliedExpression expression) {
+    public AssignmentRule(ChemicalEntity<?> targetEntity, AppliedExpression expression) {
+        this.targetEntity = targetEntity;
         this.expression = expression;
         this.entityReference = new HashMap<>();
     }
 
-    public AppliedExpression getExpression() {
-        return this.expression;
+    public ChemicalEntity<?> getTargetEntity() {
+        return this.targetEntity;
+    }
+
+    public void setTargetEntity(ChemicalEntity<?> targetEntity) {
+        this.targetEntity = targetEntity;
     }
 
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
@@ -51,34 +49,20 @@ public class DynamicKineticLaw implements KineticLaw {
         return this.entityReference;
     }
 
-    public double getAppliedScale() {
-        return this.appliedScale;
+    public void setEntityReference(Map<ChemicalEntity, String> entityReference) {
+        this.entityReference = entityReference;
     }
 
-    public void setAppliedScale(double appliedScale) {
-        this.appliedScale = appliedScale;
-    }
-
-    @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
+    public void applyRule(BioNode node) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
             final Quantity<MolarConcentration> concentration = node.getConcentration(entry.getKey());
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        // FIXME scale depending on timestep
-        return Quantities.getQuantity(this.expression.evaluate().getValue().doubleValue() / this.appliedScale, UnitProvider.PER_SECOND);
-    }
-
-    @Override
-    public void prepareAppliedRateConstants() {
-        // FIXME scale depending on timestep
-    }
-
-    @Override
-    public List<KineticParameterType> getRequiredParameters() {
-        return null;
+        Quantity<?> concentration = this.expression.evaluate();
+        logger.debug("Initialized concentration of {} to {}.", this.targetEntity.getIdentifier(), concentration );
+        node.setConcentration(this.targetEntity, concentration.getValue().doubleValue());
     }
 
 }

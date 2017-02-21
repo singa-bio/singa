@@ -1,8 +1,8 @@
 package de.bioforscher.simulation.modules.model;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioNode;
 
 public interface UpdateBehavior {
 

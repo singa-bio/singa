@@ -1,9 +1,9 @@
 package de.bioforscher.simulation.modules.model;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.deprecated.Reaction;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioNode;
+import de.bioforscher.simulation.modules.reactions.model.Reaction;
 
 /**
  * This {@link UpdateBehavior} calculates an update and applies it immediately. This behavior should by applied to

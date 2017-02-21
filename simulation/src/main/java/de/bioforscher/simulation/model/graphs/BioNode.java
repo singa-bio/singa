@@ -1,8 +1,9 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.model.graphs;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.simulation.model.compartments.NodeState;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 

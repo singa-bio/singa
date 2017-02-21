@@ -1,6 +1,6 @@
-package de.bioforscher.simulation.endocytosis;
+package de.bioforscher.simulation.model.compartments;
 
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.BioNode;
 
 import java.util.Set;
 

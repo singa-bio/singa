@@ -1,4 +1,6 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.events;
+
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 
 /**
  * Created by Christoph on 01.08.2016.

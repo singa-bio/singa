@@ -6,10 +6,11 @@ import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioEdge;
-import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NodeState;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioEdge;
+import de.bioforscher.simulation.model.graphs.BioNode;
+import de.bioforscher.simulation.model.compartments.NodeState;
+import de.bioforscher.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.modules.reactions.implementations.BiochemicalReaction;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static de.bioforscher.units.UnitProvider.*;
+import static tec.units.ri.AbstractUnit.ONE;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -419,7 +421,8 @@ public class SimulationExampleProvider {
     public static Simulation createSimulationFromSBML() {
 
         // BIOMD0000000023
-        // BIOMD0000000064
+        // BIOMD0000000064 //
+        // BIOMD0000000184 // ca oscillations
         // TODO revert previous step until a sufficient configuration has been found
 
         logger.info("Setting up simulation for model BIOMD0000000184 ...");
@@ -444,8 +447,8 @@ public class SimulationExampleProvider {
 
         // compartment is never initialized for this reaction
         model.getReactions().forEach(reaction -> {
-            reaction.getKineticLaw().setLocalParameter("ER", 1);
-            reaction.getKineticLaw().setLocalParameter("compartment", 1);
+            reaction.getKineticLaw().getExpression().setParameter(new SimulationParameter<>("ER", Quantities.getQuantity(1, ONE)));
+            reaction.getKineticLaw().getExpression().setParameter(new SimulationParameter<>("compartment", Quantities.getQuantity(1, ONE)));
 
         });
 

@@ -2,9 +2,8 @@ package de.bioforscher.simulation.application;
 
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.model.GraphUpdatedEvent;
+import de.bioforscher.simulation.events.GraphUpdatedEvent;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.parser.EpochUpdateWriter;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

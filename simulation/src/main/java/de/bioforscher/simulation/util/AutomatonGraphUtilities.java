@@ -4,8 +4,8 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.RegularNode;
 import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioNode;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.model.PotentialUpdate;
 import de.bioforscher.units.quantities.MolarConcentration;
 

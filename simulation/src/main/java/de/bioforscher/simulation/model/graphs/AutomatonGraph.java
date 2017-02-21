@@ -1,11 +1,10 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.model.graphs;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
-import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.endocytosis.Compartment;
+import de.bioforscher.simulation.model.compartments.Compartment;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 

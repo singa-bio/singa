@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.parser;
 
 import de.bioforscher.core.parser.xml.AbstractXMLParser;
-import de.bioforscher.simulation.model.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package de.bioforscher.simulation.model;
+package de.bioforscher.simulation.model.graphs;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.AbstractEdge;

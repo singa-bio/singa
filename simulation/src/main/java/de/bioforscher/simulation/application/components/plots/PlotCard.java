@@ -5,7 +5,7 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.components.chemicalEntities.ColoredEntityCell;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.parser.EpochUpdateWriter;
+import de.bioforscher.simulation.events.EpochUpdateWriter;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

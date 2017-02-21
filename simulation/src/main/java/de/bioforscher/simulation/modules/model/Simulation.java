@@ -3,12 +3,13 @@ package de.bioforscher.simulation.modules.model;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventEmitter;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.model.AutomatonGraph;
-import de.bioforscher.simulation.model.BioNode;
-import de.bioforscher.simulation.model.NodeUpdatedEvent;
+import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.BioNode;
+import de.bioforscher.simulation.events.NodeUpdatedEvent;
+import de.bioforscher.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
-import de.bioforscher.simulation.modules.reactions.model.AssignmentRule;
-import de.bioforscher.simulation.parser.EpochUpdateWriter;
+import de.bioforscher.simulation.model.rules.AssignmentRule;
+import de.bioforscher.simulation.events.EpochUpdateWriter;
 import de.bioforscher.simulation.util.EnvironmentalVariables;
 import tec.units.ri.quantity.Quantities;
 
@@ -27,6 +28,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     private Set<Module> modules;
     private List<AssignmentRule> assignmentRules;
     private Set<ChemicalEntity<?>> chemicalEntities;
+    private Set<SimulationParameter> globalParameters;
     private int epoch;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
@@ -71,7 +73,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
             // check if it is required elsewhere
             for (AssignmentRule sourceRule : this.assignmentRules) {
                 if (sourceRule != targetRule) {
-                    if (sourceRule.getKineticLaw().getEntityReference().keySet().contains(targetEntity)) {
+                    if (sourceRule.getEntityReference().keySet().contains(targetEntity)) {
                         assignmentRequirements.get(sourceRule).add(targetEntity);
                     }
                 }
