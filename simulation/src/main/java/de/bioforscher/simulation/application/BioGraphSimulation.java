@@ -1,21 +1,22 @@
 package de.bioforscher.simulation.application;
 
-import de.bioforscher.simulation.application.components.EnvironmentalOptionsControlPanel;
-import de.bioforscher.simulation.application.components.ResizablePane;
-import de.bioforscher.simulation.application.components.SimulationCanvas;
-import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesOverviewPane;
-import de.bioforscher.simulation.application.components.modules.ModuleOverviewPane;
-import de.bioforscher.simulation.application.components.plots.PlotPane;
-import de.bioforscher.simulation.application.components.plots.PlotPreferencesControlPanel;
+import de.bioforscher.simulation.application.components.controlpanles.CompartmentControlPanel;
+import de.bioforscher.simulation.application.components.controlpanles.EnvironmentalParameterControlPanel;
+import de.bioforscher.simulation.application.components.panes.ResizablePane;
+import de.bioforscher.simulation.application.components.panes.SimulationCanvas;
+import de.bioforscher.simulation.application.components.panes.SpeciesOverviewPane;
+import de.bioforscher.simulation.application.components.panes.ModuleOverviewPane;
+import de.bioforscher.simulation.application.components.controlpanles.PlotControlPanel;
+import de.bioforscher.simulation.application.components.panes.PlotPreferencesPane;
 import de.bioforscher.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.parser.GraphMLExportService;
-import de.bioforscher.simulation.parser.GraphMLParserService;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
-import de.bioforscher.simulation.util.SimulationExampleProvider;
+import de.bioforscher.simulation.parser.graphs.GraphMLExportService;
+import de.bioforscher.simulation.parser.graphs.GraphMLParserService;
+import de.bioforscher.simulation.modules.model.SimulationExamples;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -44,7 +45,9 @@ public class BioGraphSimulation extends Application {
     private Stage stage;
 
     private SimulationCanvas simulationCanvas;
-    private PlotPane plotPane;
+    private PlotControlPanel plotControlPanel;
+
+    private CompartmentControlPanel compartmentControlPanel;
     private Slider concentrationSlider;
 
     private Simulation simulation;
@@ -59,7 +62,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExampleProvider.createSimulationFromSBML();
+        this.simulation = SimulationExamples.createSimulationFromSBML();
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
@@ -142,21 +145,28 @@ public class BioGraphSimulation extends Application {
         // Chart Half
         final TabPane rightPane = new TabPane();
         rightPane.setMinWidth(200);
-        this.plotPane = new PlotPane();
 
+        this.plotControlPanel = new PlotControlPanel();
         Tab chartTab = new Tab();
         chartTab.setText("Plots");
         chartTab.setClosable(false);
-        chartTab.setContent(this.plotPane);
+        chartTab.setContent(this.plotControlPanel);
         rightPane.getTabs().add(chartTab);
+
+        this.compartmentControlPanel = new CompartmentControlPanel(this.simulation);
+        Tab compartmentTab = new Tab();
+        compartmentTab.setText("Compartments");
+        compartmentTab.setClosable(false);
+        compartmentTab.setContent(this.compartmentControlPanel);
+        rightPane.getTabs().add(compartmentTab);
 
         logger.debug("Initializing environment tab ...");
         Tab environmentTab = new Tab();
         environmentTab.setText("Environment");
         environmentTab.setClosable(false);
-        EnvironmentalOptionsControlPanel environmentControlPanel = new EnvironmentalOptionsControlPanel();
+        EnvironmentalParameterControlPanel environmentControlPanel = new EnvironmentalParameterControlPanel();
         environmentControlPanel.setDirtyableText(environmentTab.textProperty());
-        environmentControlPanel.update(EnvironmentalVariables.getInstance(), null);
+        environmentControlPanel.update(EnvironmentalParameters.getInstance(), null);
         environmentTab.setContent(environmentControlPanel);
         rightPane.getTabs().add(environmentTab);
 
@@ -316,7 +326,7 @@ public class BioGraphSimulation extends Application {
         int width = 400;
         int height = 300;
         Stage plotPreferencesStage = prepareUtilityWindow(width, height, "Plot preferences");
-        PlotPreferencesControlPanel plotPreferencesControlPanel = new PlotPreferencesControlPanel(plotPreferencesStage);
+        PlotPreferencesPane plotPreferencesControlPanel = new PlotPreferencesPane(plotPreferencesStage);
         plotPreferencesStage.setScene(new Scene(plotPreferencesControlPanel));
         plotPreferencesStage.showAndWait();
     }
@@ -385,12 +395,20 @@ public class BioGraphSimulation extends Application {
         }
     }
 
-    public PlotPane getPlotPane() {
-        return this.plotPane;
+    public PlotControlPanel getPlotControlPanel() {
+        return this.plotControlPanel;
     }
 
-    public void setPlotPane(PlotPane plotPane) {
-        this.plotPane = plotPane;
+    public void setPlotControlPanel(PlotControlPanel plotControlPanel) {
+        this.plotControlPanel = plotControlPanel;
+    }
+
+    public CompartmentControlPanel getCompartmentControlPanel() {
+        return this.compartmentControlPanel;
+    }
+
+    public void setCompartmentControlPanel(CompartmentControlPanel compartmentControlPanel) {
+        this.compartmentControlPanel = compartmentControlPanel;
     }
 
     public Slider getConcentrationSlider() {

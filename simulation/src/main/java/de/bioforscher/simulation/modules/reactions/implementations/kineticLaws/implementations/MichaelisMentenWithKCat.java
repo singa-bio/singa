@@ -7,7 +7,7 @@ import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.m
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameter;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -67,7 +67,7 @@ public class MichaelisMentenWithKCat implements KineticLaw {
     @Override
     public void prepareAppliedRateConstants() {
         this.appliedKCat = UnitScaler.rescaleReactionRate(this.kCat.getValue(),
-                EnvironmentalVariables.getInstance().getTimeStep());
+                EnvironmentalParameters.getInstance().getTimeStep());
     }
 
     @Override

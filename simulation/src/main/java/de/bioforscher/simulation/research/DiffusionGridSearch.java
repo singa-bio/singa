@@ -11,12 +11,12 @@ import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.graphs.util.RectangularGridCoordinateConverter;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.AutomatonGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.quantities.Diffusivity;
 import tec.units.ri.quantity.Quantities;
 
@@ -90,7 +90,7 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         int numberOfNodes = numberOfNodesParameter.getValue();
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
@@ -107,9 +107,9 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         }
 
         // setup time step size as given
-        EnvironmentalVariables.getInstance().setTimeStep(timeStep);
+        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
-        EnvironmentalVariables.getInstance().setNodeSpacingToDiameter(
+        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
                 Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // setup simulation

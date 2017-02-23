@@ -2,7 +2,7 @@ package de.bioforscher.simulation.research;
 
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.SimulationExampleProvider;
+import de.bioforscher.simulation.modules.model.SimulationExamples;
 
 /**
  * @author cl
@@ -11,7 +11,7 @@ public class CalciumOscillationExample {
 
     public static void main(String[] args) {
 
-        Simulation simulation = SimulationExampleProvider.createSimulationFromSBML();
+        Simulation simulation = SimulationExamples.createSimulationFromSBML();
 
         Species x = new Species.Builder("X").build();
 

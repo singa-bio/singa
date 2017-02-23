@@ -7,6 +7,6 @@ public enum NodeState {
 
     AQUEOUS,
     CYTOSOL,
-    CELL_MEMBRANE
+    MEMBRANE
 
 }

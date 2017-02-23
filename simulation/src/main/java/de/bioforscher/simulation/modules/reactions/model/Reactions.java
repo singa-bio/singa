@@ -3,9 +3,10 @@ package de.bioforscher.simulation.modules.reactions.model;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioNode;
-import de.bioforscher.simulation.modules.model.ImmediateUpdateBehavior;
+import de.bioforscher.simulation.modules.model.updates.ImmediateUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
-import de.bioforscher.simulation.modules.model.PotentialUpdate;
+import de.bioforscher.simulation.modules.model.updates.PotentialUpdate;
+import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * The Reactions module defines the entirety of chemical conversions that take place in the
- * {@link de.bioforscher.simulation.modules.model.Simulation Simulation}. All Reactions are calculated according to
+ * {@link Simulation Simulation}. All Reactions are calculated according to
  * their specified {@link KineticLaw KineticLaws}s
  * and new concentrations are set using the {@link Reactions#applyTo(AutomatonGraph)} method.
  */

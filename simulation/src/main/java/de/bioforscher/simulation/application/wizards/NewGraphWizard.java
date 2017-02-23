@@ -3,8 +3,8 @@ package de.bioforscher.simulation.application.wizards;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.simulation.util.AutomatonGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.graphs.AutomatonGraphs;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
 import de.bioforscher.units.UnitUtilities;
@@ -169,12 +169,12 @@ class GraphConfigurationPage extends WizardPage {
 
     public AutomatonGraph createGraph() {
         if (this.tgMethods.getSelectedToggle().equals(this.rbRectangularGraph)) {
-            return AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildGridGraph(
+            return AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
                     this.spNumberVerticalNodes.getValue(), this.spNumberHorizontalNodes.getValue(),
                     new Rectangle(400, 400), false));
         } else {
-            return AutomatonGraphUtilities
-                    .castUndirectedGraphToBioGraph(GraphFactory.buildRandomGraph(this.spNumberNodes.getValue(),
+            return AutomatonGraphs
+                    .copyStructureToBioGraph(GraphFactory.buildRandomGraph(this.spNumberNodes.getValue(),
                             this.spConnectivity.getValue(), new Rectangle(400, 400)));
         }
     }
@@ -263,7 +263,7 @@ class EnvironmentalConfigurationPage extends WizardPage {
     }
 
     public void createEnvironmentalVariables() {
-        // TODO duplicated code in EnvironmentalOptionsControlPanel
+        // TODO duplicated code in EnvironmentalParameterControlPanel
         Quantity<Length> nodeDistance = Quantities.getQuantity(this.spNodeDistance.getValue(), this.cbNodeDistance
                 .getValue());
         Quantity<Time> timeStep = Quantities.getQuantity(this.spTimeStep.getValue(), this.cbTimeStep.getValue());
@@ -272,11 +272,11 @@ class EnvironmentalConfigurationPage extends WizardPage {
         Quantity<DynamicViscosity> systemViscosity = Quantities.getQuantity(this.spViscosity.getValue(),
                 MILLI(PASCAL_SECOND));
 
-        EnvironmentalVariables.getInstance().setNodeDistance(nodeDistance);
-        EnvironmentalVariables.getInstance().setTimeStep(timeStep);
-        EnvironmentalVariables.getInstance().setSystemTemperature(systemTemperature);
-        EnvironmentalVariables.getInstance().setSystemViscosity(systemViscosity);
-        EnvironmentalVariables.getInstance().setCellularEnvironment(false);
+        EnvironmentalParameters.getInstance().setNodeDistance(nodeDistance);
+        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
+        EnvironmentalParameters.getInstance().setSystemTemperature(systemTemperature);
+        EnvironmentalParameters.getInstance().setSystemViscosity(systemViscosity);
+        EnvironmentalParameters.getInstance().setCellularEnvironment(false);
 
     }
 

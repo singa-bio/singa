@@ -10,22 +10,24 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
 
-    private Set<Compartment> compartments;
+    private Map<String, Compartment> compartments;
 
     public AutomatonGraph() {
-        this.compartments = new HashSet<>();
+        this.compartments = new HashMap<>();
     }
 
     public AutomatonGraph(int nodeCapacity, int edgeCapacity) {
         super(nodeCapacity, edgeCapacity);
-        this.compartments = new HashSet<>();
+        this.compartments = new HashMap<>();
     }
 
     @Override
@@ -44,12 +46,8 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
     }
 
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        this.getNodes().forEach(node -> {
-            node.setConcentration(entity, concentration);
-        });
-        this.getEdges().forEach(edge -> {
-            edge.addPermeability(entity, 1.0);
-        });
+        this.getNodes().forEach(node -> node.setConcentration(entity, concentration));
+        this.getEdges().forEach(edge -> edge.addPermeability(entity, 1.0));
     }
 
     public Quantity<MolarConcentration> getSteepestDifference(ChemicalEntity entity) {
@@ -58,18 +56,25 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
                 .max().orElse(0.0), MOLE_PER_LITRE);
     }
 
-    public void addCompartment(Rectangle rectangle) {
+    public Set<Compartment> getCompartments() {
+        return new HashSet<>(this.compartments.values());
+    }
+
+    public void addCompartment(Compartment compartment) {
+        this.compartments.put(compartment.getIdentifier(), compartment);
+    }
+
+    public void addNodesToCompartment(String compartmentIdentifier, Rectangle rectangle) {
         Set<BioNode> compartmentContent = new HashSet<>();
         Rectangle r = new Rectangle(rectangle.getTopRightVertex(), rectangle.getBottomLeftVertex());
         this.getNodes().forEach(node -> {
             if (node.getPosition().canBePlacedIn(r)) {
                 compartmentContent.add(node);
-                node.setContainingCompartment("not default");
+                node.setContainingCompartment(compartmentIdentifier);
             }
         });
-        this.compartments.add(new Compartment("not default", compartmentContent));
+        this.compartments.get(compartmentIdentifier).getContent().addAll(compartmentContent);
+        this.compartments.get(compartmentIdentifier).generateBorder(this);
     }
-
-
 
 }

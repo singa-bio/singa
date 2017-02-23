@@ -4,13 +4,14 @@ import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.simulation.model.compartments.Compartment;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.events.GraphUpdatedEvent;
 import javafx.scene.paint.Color;
 
-import static de.bioforscher.simulation.model.compartments.NodeState.CELL_MEMBRANE;
+import static de.bioforscher.simulation.model.compartments.NodeState.MEMBRANE;
 
 public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonGraph> implements UpdateEventListener<GraphUpdatedEvent> {
 
@@ -55,16 +56,17 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
                     getGraphicsContext().setFill(Color.LIGHTGREEN);
                     break;
                 }
-                case CELL_MEMBRANE: {
+                case MEMBRANE: {
                     getGraphicsContext().setFill(Color.BURLYWOOD);
                     break;
                 }
             }
         } else if (this.bioRenderingOptions.isColoringByCompartment()) {
             if (node.getContainingCompartment().equals("default")) {
-                getGraphicsContext().setFill(Color.CADETBLUE);
+                getGraphicsContext().setFill(Color.LIGHTGRAY);
             } else {
-                getGraphicsContext().setFill(Color.BURLYWOOD);
+                // todo prevent creation of compartment
+                getGraphicsContext().setFill(ColorManager.getInstance().getColor(new Compartment(node.getContainingCompartment(), "")));
             }
         } else {
             getGraphicsContext().setFill(this.bioRenderingOptions.getNodeColor(node));
@@ -85,7 +87,7 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
         getGraphicsContext().setLineWidth(getRenderingOptions().getEdgeThickness());
         LineSegment connectingSegment = new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
         // decide on style
-        if (edge.getSource().getState() != CELL_MEMBRANE || edge.getTarget().getState() != CELL_MEMBRANE) {
+        if (edge.getSource().getState() != MEMBRANE || edge.getTarget().getState() != MEMBRANE) {
             // connection not between membrane nodes
             getGraphicsContext().setStroke(this.bioRenderingOptions.getEdgeColor(edge));
             drawLineSegment(connectingSegment);

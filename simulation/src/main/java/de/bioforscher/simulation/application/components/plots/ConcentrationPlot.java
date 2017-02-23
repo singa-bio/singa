@@ -2,15 +2,14 @@ package de.bioforscher.simulation.application.components.plots;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.core.events.UpdateEventListener;
-import de.bioforscher.simulation.application.components.chemicalEntities.ColorableChemicalEntity;
-import de.bioforscher.simulation.application.renderer.SpeciesColorManager;
+import de.bioforscher.simulation.application.renderer.ColorManager;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.events.NodeUpdatedEvent;
-import de.bioforscher.simulation.modules.model.PotentialUpdate;
+import de.bioforscher.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.AutomatonGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
-import de.bioforscher.simulation.util.SingaPreferences;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
+import de.bioforscher.simulation.application.SingaPreferences;
+import de.bioforscher.simulation.modules.model.updates.PotentialUpdates;
 import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.MolarConcentration;
 import javafx.application.Platform;
@@ -77,9 +76,9 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
             XYChart.Series<Number, Number> series = new Series<>();
             series.setName(entity.getIdentifier().toString());
             this.getData().add(series);
-            SpeciesColorManager.getInstance().initializeEntity(entity, ColorableChemicalEntity.generateRandomColor());
+            ColorManager.getInstance().initializeEntity(entity, ColorManager.generateRandomColor());
             series.getNode().setStyle("-fx-stroke: " +
-                    ColorableChemicalEntity.getHexColor(SpeciesColorManager.getInstance().getColor(entity)) + " ");
+                    ColorManager.getHexColor(ColorManager.getInstance().getColor(entity)) + " ");
         }
     }
 
@@ -88,7 +87,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
                 .filter(s -> s.getName().equals(entity.getIdentifier().toString()))
                 .findFirst().get();
         series.getNode().setStyle("-fx-stroke: " +
-                ColorableChemicalEntity.getHexColor(SpeciesColorManager.getInstance().getColor(entity)) + " ");
+                ColorManager.getHexColor(ColorManager.getInstance().getColor(entity)) + " ");
     }
 
     private void configureChart() {
@@ -102,14 +101,14 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
         ((NumberAxis) this.getXAxis()).setLowerBound(0);
         ((NumberAxis) this.getXAxis()).setUpperBound(this.maximalDataPoints);
         ((NumberAxis) this.getXAxis()).setTickUnit(this.tickSpacing);
-        this.getXAxis().setLabel("Time in " + EnvironmentalVariables.getInstance().getTimeStep().getUnit().toString());
+        this.getXAxis().setLabel("Time in " + EnvironmentalParameters.getInstance().getTimeStep().getUnit().toString());
         ((NumberAxis) this.getXAxis()).setTickLabelFormatter(new StringConverter<Number>() {
 
             private NumberFormat formatter = new DecimalFormat("0.000E0");
 
             @Override
             public String toString(Number object) {
-                return this.formatter.format(object.doubleValue() * EnvironmentalVariables.getInstance().getTimeStep()
+                return this.formatter.format(object.doubleValue() * EnvironmentalParameters.getInstance().getTimeStep()
                         .getValue().doubleValue());
             }
 
@@ -171,7 +170,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
                         .filter(s -> s.getName().equals(entity.getIdentifier().toString()))
                         .findFirst().get();
                 // add to mirrored values
-                this.mirroredData.put(event.getEpoch(), AutomatonGraphUtilities.collectAsPotentialUpdates(concentrations));
+                this.mirroredData.put(event.getEpoch(), PotentialUpdates.collectAsPotentialUpdates(concentrations));
                 // get concentration of entity
                 double concentration = concentrations.get(entity).getValue().doubleValue();
                 // add to plot

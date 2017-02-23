@@ -8,13 +8,13 @@ import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.mathematics.vectors.Vector2D;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.simulation.util.AutomatonGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentFactory;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameterExamples;
 import de.bioforscher.units.UnitProvider;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
@@ -30,7 +30,7 @@ import static de.bioforscher.units.UnitProvider.*;
 public class ReactionsTest {
 
     private AutomatonGraph prepareGraph() {
-        return AutomatonGraphUtilities.castUndirectedGraphToBioGraph(GraphFactory.buildLinearGraph(1,
+        return AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildLinearGraph(1,
                 new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
     }
 
@@ -81,7 +81,7 @@ public class ReactionsTest {
         }
 
         // Environment
-        EnvironmentFactory.createEnzymeReactionTestEnvironment();
+        EnvironmentalParameterExamples.createEnzymeReactionTestEnvironment();
 
         BiochemicalReaction reaction = new BiochemicalReaction(aldolase);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
@@ -136,7 +136,7 @@ public class ReactionsTest {
         }
 
         // Environment
-        EnvironmentFactory.createFirstOrderReactionTestEnvironment();
+        EnvironmentalParameterExamples.createFirstOrderReactionTestEnvironment();
 
         EquilibriumReaction reaction = new EquilibriumReaction(
                 Quantities.getQuantity(5, PER_SECOND),
@@ -198,7 +198,7 @@ public class ReactionsTest {
         }
 
         // Environment
-        EnvironmentFactory.createFirstOrderReactionTestEnvironment();
+        EnvironmentalParameterExamples.createFirstOrderReactionTestEnvironment();
 
         NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
         reaction.setElementary(true);

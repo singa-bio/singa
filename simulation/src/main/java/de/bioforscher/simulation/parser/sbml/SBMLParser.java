@@ -10,6 +10,8 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
+import de.bioforscher.simulation.model.compartments.*;
+import de.bioforscher.simulation.model.compartments.Compartment;
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
@@ -40,13 +42,14 @@ public class SBMLParser {
 
     // the units
     private Map<String, Unit<?>> units;
+    // the controlpanles mapped to their sizes
+    private Map<Compartment, Double> compartments;
     // the chemical entities
     private Map<String, ChemicalEntity> entities;
     // their starting concentrations
     private Map<ChemicalEntity, Double> startingConcentrations;
     // a utility map to provide species by their database identifier
     private Map<Identifier, ChemicalEntity> entitiesByDatabaseId;
-
     // the reactions
     private List<DynamicReaction> reactions;
     // the functions
@@ -54,12 +57,7 @@ public class SBMLParser {
     // the global parameters
     private Map<String, SimulationParameter<?>> globalParameters;
     // assignment rules
-    private Set<AssignmentRule> assignmentRules;
-
-
-    private DynamicReaction currentReaction;
-    private DynamicKineticLaw currentKineticLaw;
-
+    private List<AssignmentRule> assignmentRules;
 
     public SBMLParser(InputStream inputStream) {
         this.entities = new HashMap<>();
@@ -68,7 +66,8 @@ public class SBMLParser {
         this.reactions = new ArrayList<>();
         this.globalParameters = new HashMap<>();
         this.functions = new HashMap<>();
-        this.assignmentRules = new HashSet<>();
+        this.assignmentRules = new ArrayList<>();
+        this.compartments = new HashMap<>();
         initializeDocument(inputStream);
     }
 
@@ -87,6 +86,10 @@ public class SBMLParser {
         return this.entities;
     }
 
+    public Map<Compartment, Double> getCompartments() {
+        return this.compartments;
+    }
+
     public List<DynamicReaction> getReactions() {
         return this.reactions;
     }
@@ -99,23 +102,30 @@ public class SBMLParser {
         return this.globalParameters;
     }
 
-    public Set<AssignmentRule> getAssignmentRules() {
+    public List<AssignmentRule> getAssignmentRules() {
         return this.assignmentRules;
-    }
-
-    public void setAssignmentRules(Set<AssignmentRule> assignmentRules) {
-        this.assignmentRules = assignmentRules;
     }
 
     public void parse() {
         parseUnits();
         parseGlobalParameters();
+        parseCompartments();
         parseFunctions();
         parseSpecies();
         parseReactions();
         parseStartingConcentrations();
         parseAssignmentRules();
     }
+
+    private void parseCompartments() {
+        logger.info("Parsing Compartments ...");
+        this.document.getModel().getListOfCompartments().forEach(compartment -> {
+            Compartment singaCompartment = new Compartment(compartment.getId(), compartment.getName());
+            this.compartments.put(singaCompartment, compartment.getSize());
+        });
+    }
+
+
 
     private void parseSpecies() {
         logger.info("Parsing Chemical Entity Data ...");

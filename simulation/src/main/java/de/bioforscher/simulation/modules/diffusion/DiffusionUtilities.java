@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.modules.diffusion;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.units.quantities.Diffusivity;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.MolarMass;
@@ -13,7 +13,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static de.bioforscher.simulation.util.SystemDefaultConstants.WATER;
+import static de.bioforscher.simulation.model.parameters.EnvironmentalParameterDefaults.WATER;
 import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
 import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
 import static java.lang.Math.log;
@@ -95,8 +95,8 @@ public final class DiffusionUtilities {
     public static Quantity<Diffusivity> calculateYoungCorrelation(ChemicalEntity chemicalEntity) {
         // D = c * (T/n*M^1/3)
         final double diffusivity = YOUNG_DIFFUSION_COEFFICIENT_CONSTANT.getValue().doubleValue()
-                * (EnvironmentalVariables.getInstance().getSystemTemperature().getValue().doubleValue()
-                / (EnvironmentalVariables.getInstance().getSystemViscosity().getValue().doubleValue()
+                * (EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue()
+                / (EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()
                 * Math.cbrt(chemicalEntity.getMolarMass().getValue().doubleValue())));
         return Quantities.getQuantity(diffusivity, SQUARECENTIMETER_PER_SECOND);
     }
@@ -114,9 +114,9 @@ public final class DiffusionUtilities {
         final double dividend = WILKE_DIFFUSION_COEFFICIENT_CONSTANT.getValue().doubleValue()
                 * Math.pow(WATER.getMolarMass().getValue().doubleValue() * WILKE_ASSOCIATION_WATER.getValue()
                 .doubleValue(), 0.5)
-                * EnvironmentalVariables.getInstance().getSystemTemperature().getValue().doubleValue();
+                * EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue();
         // b = n * M(Sp)^0.6
-        final double divisor = EnvironmentalVariables.getInstance().getSystemViscosity().getValue().doubleValue()
+        final double divisor = EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()
                 * Math.pow(estimateMolarVolume(chemicalEntity), 0.6);
         // D = a / b
         return Quantities.getQuantity(dividend / divisor, SQUARECENTIMETER_PER_SECOND);

@@ -2,9 +2,9 @@ package de.bioforscher.simulation.application.components.plots;
 
 import com.sun.javafx.geom.Point2D;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.application.components.modules.ModuleOverviewPane;
+import de.bioforscher.simulation.application.components.panes.ModuleOverviewPane;
 import de.bioforscher.simulation.modules.diffusion.DiffusionUtilities;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -127,7 +127,7 @@ public class SimulationRobustnessPlot extends LineChart<Number, Number> {
 
         while (isInRange) {
             // calculate value
-            Quantity<Time> timeStep = Quantities.getQuantity(timeStepCounter, EnvironmentalVariables
+            Quantity<Time> timeStep = Quantities.getQuantity(timeStepCounter, EnvironmentalParameters
                     .getInstance().getTimeStep().getUnit());
             Quantity<Length> distance = DiffusionUtilities.calculateThresholdForDistance(timeStep, this.owner
                     .getMaximalDegree(), this.owner.getMaximalDifference(), this.owner.getMaximalDiffusivity()

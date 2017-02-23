@@ -7,10 +7,11 @@ import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
+import de.bioforscher.simulation.model.rules.AssignmentRules;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.model.rules.AssignmentRule;
 import de.bioforscher.simulation.events.EpochUpdateWriter;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -56,68 +57,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.epoch++;
     }
 
-    public void sortAssignmentsByPriority() {
-        // assignments have to be done in a certain order, if they depend on other assignment rules
-        // initialize assignment rules and their requirements
-        Map<AssignmentRule, Set<ChemicalEntity<?>>> assignmentRequirements = new HashMap<>();
-        // and the priority of the rule
-        Map<AssignmentRule, Integer> priorityMap = new HashMap<>();
-        for (AssignmentRule rule : this.assignmentRules) {
-            assignmentRequirements.put(rule, new HashSet<>());
-            priorityMap.put(rule, Integer.MAX_VALUE);
-        }
-
-        for (AssignmentRule targetRule : this.assignmentRules) {
-            // rule provides
-            ChemicalEntity<?> targetEntity = targetRule.getTargetEntity();
-            // check if it is required elsewhere
-            for (AssignmentRule sourceRule : this.assignmentRules) {
-                if (sourceRule != targetRule) {
-                    if (sourceRule.getEntityReference().keySet().contains(targetEntity)) {
-                        assignmentRequirements.get(sourceRule).add(targetEntity);
-                    }
-                }
-            }
-        }
-
-        List<AssignmentRule> handledRules = new ArrayList<>();
-        List<ChemicalEntity<?>> suppliedEntities = new ArrayList<>();
-        // rules without requirements to top
-        for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
-            if (entry.getValue().isEmpty()) {
-                // if no requirements are needed assign priority 0
-                priorityMap.put(entry.getKey(), 0);
-                suppliedEntities.add(entry.getKey().getTargetEntity());
-                handledRules.add(entry.getKey());
-            }
-        }
-
-        boolean allAssigned = false;
-        int level = 0;
-        while (!allAssigned) {
-            allAssigned = true;
-            level++;
-            for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
-                if (!handledRules.contains(entry.getKey())) {
-                    if (suppliedEntities.containsAll(entry.getValue())) {
-                        priorityMap.put(entry.getKey(), level);
-                        suppliedEntities.add(entry.getKey().getTargetEntity());
-                        handledRules.add(entry.getKey());
-                        allAssigned = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        this.assignmentRules = priorityMap.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-    }
-
     public void applyAssignmentRules() {
         this.assignmentRules.forEach(rule ->
                 this.graph.getNodes().forEach(rule::applyRule)
@@ -145,7 +84,8 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
-        this.assignmentRules = assignmentRules;
+        this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
+
     }
 
     public Set<ChemicalEntity<?>> getChemicalEntities() {
@@ -161,8 +101,8 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public Quantity<Time> getElapsedTime() {
-        return Quantities.getQuantity(EnvironmentalVariables.getInstance().getTimeStep().getValue().doubleValue() *
-                this.epoch, EnvironmentalVariables.getInstance().getTimeStep().getUnit());
+        return Quantities.getQuantity(EnvironmentalParameters.getInstance().getTimeStep().getValue().doubleValue() *
+                this.epoch, EnvironmentalParameters.getInstance().getTimeStep().getUnit());
     }
 
     public EpochUpdateWriter getWriter() {

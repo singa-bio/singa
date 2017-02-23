@@ -1,8 +1,6 @@
 package de.bioforscher.simulation.model.rules;
 
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
-import de.bioforscher.units.UnitProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
@@ -10,7 +8,10 @@ import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author cl

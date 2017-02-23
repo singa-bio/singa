@@ -2,23 +2,18 @@ package de.bioforscher.simulation.application.wizards;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.BioGraphSimulation;
-import de.bioforscher.simulation.application.components.chemicalEntities.EntityCell;
-import de.bioforscher.simulation.application.components.chemicalEntities.SBMLSearchPane;
-import de.bioforscher.simulation.application.components.chemicalEntities.SpeciesSearchPane;
-import de.bioforscher.simulation.parser.BioModelsParserService;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import de.bioforscher.simulation.application.components.cells.EntityCell;
+import de.bioforscher.simulation.application.components.panes.SBMLSearchPane;
+import de.bioforscher.simulation.application.components.panes.SpeciesSearchPane;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 

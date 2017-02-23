@@ -1,9 +1,9 @@
 package de.bioforscher.simulation.parser.sbml;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.simulation.model.graphs.AutomatonGraphs;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.simulation.modules.model.Simulation;
-import de.bioforscher.simulation.util.AutomatonGraphUtilities;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
 import de.bioforscher.units.UnitUtilities;
@@ -26,6 +26,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author cl
+ * @deprecated the LibSBML exporter will be used in the future
+ */
 public class SBMLModelExportService {
 
     private static final Logger log = Logger.getLogger(SBMLModelExportService.class.getName());
@@ -36,7 +40,7 @@ public class SBMLModelExportService {
     private Simulation simulation;
 
     public SBMLModelExportService(Simulation simulation) throws ParserConfigurationException {
-        log.log(Level.FINER, "Setting up xml documnent.");
+        log.log(Level.FINER, "Setting up xml document.");
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         this.document = docBuilder.newDocument();
@@ -66,13 +70,13 @@ public class SBMLModelExportService {
         log.log(Level.FINER, "Creating unit definitions for SBML.");
         Element unitDefinitions = this.document.createElement("listOfUnitDefinitions");
         unitDefinitions.appendChild(
-                createOneDimensionalUnitDefinition(EnvironmentalVariables.getInstance().getNodeDistance()));
+                createOneDimensionalUnitDefinition(EnvironmentalParameters.getInstance().getNodeDistance()));
         unitDefinitions.appendChild(
-                createOneDimensionalUnitDefinition(EnvironmentalVariables.getInstance().getTimeStep()));
+                createOneDimensionalUnitDefinition(EnvironmentalParameters.getInstance().getTimeStep()));
         unitDefinitions.appendChild(
-                createOneDimensionalUnitDefinition(EnvironmentalVariables.getInstance().getSystemTemperature()));
+                createOneDimensionalUnitDefinition(EnvironmentalParameters.getInstance().getSystemTemperature()));
         unitDefinitions.appendChild(
-                createMultiDimensionalUnitDefinition(EnvironmentalVariables.getInstance().getSystemViscosity()));
+                createMultiDimensionalUnitDefinition(EnvironmentalParameters.getInstance().getSystemViscosity()));
         return unitDefinitions;
     }
 
@@ -139,36 +143,36 @@ public class SBMLModelExportService {
         Element nodeDistanceParameter = this.document.createElement("parameter");
         nodeDistanceParameter.setAttribute("id", "NodeDistance");
         nodeDistanceParameter.setAttribute("value",
-                String.valueOf(EnvironmentalVariables.getInstance().getNodeDistance().getValue().doubleValue()));
+                String.valueOf(EnvironmentalParameters.getInstance().getNodeDistance().getValue().doubleValue()));
         nodeDistanceParameter.setAttribute("units",
-                EnvironmentalVariables.getInstance().getNodeDistance().getUnit().toString());
+                EnvironmentalParameters.getInstance().getNodeDistance().getUnit().toString());
 
         parameters.appendChild(nodeDistanceParameter);
 
         Element timeStepParameter = this.document.createElement("parameter");
         timeStepParameter.setAttribute("id", "TimeStep");
         timeStepParameter.setAttribute("value",
-                String.valueOf(EnvironmentalVariables.getInstance().getTimeStep().getValue().doubleValue()));
+                String.valueOf(EnvironmentalParameters.getInstance().getTimeStep().getValue().doubleValue()));
         timeStepParameter.setAttribute("units",
-                EnvironmentalVariables.getInstance().getTimeStep().getUnit().toString());
+                EnvironmentalParameters.getInstance().getTimeStep().getUnit().toString());
 
         parameters.appendChild(timeStepParameter);
 
         Element systemTemperatureParameter = this.document.createElement("parameter");
         systemTemperatureParameter.setAttribute("id", "SystemTemperature");
         systemTemperatureParameter.setAttribute("value",
-                String.valueOf(EnvironmentalVariables.getInstance().getSystemTemperature().getValue().doubleValue()));
+                String.valueOf(EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue()));
         systemTemperatureParameter.setAttribute("units",
-                EnvironmentalVariables.getInstance().getSystemTemperature().getUnit().toString());
+                EnvironmentalParameters.getInstance().getSystemTemperature().getUnit().toString());
 
         parameters.appendChild(systemTemperatureParameter);
 
         Element systemViscosityParameter = this.document.createElement("parameter");
         systemViscosityParameter.setAttribute("id", "SystemViscosity");
         systemViscosityParameter.setAttribute("value",
-                String.valueOf(EnvironmentalVariables.getInstance().getSystemViscosity().getValue().doubleValue()));
+                String.valueOf(EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()));
         systemViscosityParameter.setAttribute("units", UnitUtilities.formatMultidimensionalUnit(
-                EnvironmentalVariables.getInstance().getSystemViscosity().getUnit()));
+                EnvironmentalParameters.getInstance().getSystemViscosity().getUnit()));
 
         parameters.appendChild(systemViscosityParameter);
 
@@ -177,7 +181,7 @@ public class SBMLModelExportService {
     }
 
     private Element createCompartments() {
-        log.log(Level.FINER, "Creating compartments for SBML.");
+        log.log(Level.FINER, "Creating controlpanles for SBML.");
         Element compartments = this.document.createElement("listOfCompartments");
         Element compartment = this.document.createElement("compartment");
         compartment.setAttribute("id", "cell");
@@ -189,7 +193,7 @@ public class SBMLModelExportService {
     private Element createSpecies() {
         log.log(Level.FINER, "Creating species for SBML.");
         Element listOfSpecies = this.document.createElement("listOfSpecies");
-        Map<String, ChemicalEntity> speciesMap = AutomatonGraphUtilities.generateMapOfEntities(this.simulation.getGraph());
+        Map<String, ChemicalEntity> speciesMap = AutomatonGraphs.generateMapOfEntities(this.simulation.getGraph());
         for (String speciesName : speciesMap.keySet()) {
             Element species = this.document.createElement("species");
             species.setAttribute("id", speciesMap.get(speciesName).getIdentifier().toString());

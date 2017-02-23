@@ -5,7 +5,7 @@ import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.simulation.modules.reactions.model.StoichiometricReactant;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.MolarConcentration;
 import de.bioforscher.units.quantities.ReactionRate;
@@ -55,9 +55,9 @@ public class EquilibriumReaction extends Reaction {
 
     public void prepareAppliedRateConstants() {
         this.appliedForwardsRateConstant = UnitScaler.rescaleReactionRate(this.forwardsRateConstant,
-                EnvironmentalVariables.getInstance().getTimeStep());
+                EnvironmentalParameters.getInstance().getTimeStep());
         this.appliedBackwardsRateConstant = UnitScaler.rescaleReactionRate(this.backwardsRateConstant,
-                EnvironmentalVariables.getInstance().getTimeStep());
+                EnvironmentalParameters.getInstance().getTimeStep());
     }
 
     public Quantity<ReactionRate> getBackwardsRateConstant() {

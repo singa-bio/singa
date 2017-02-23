@@ -8,10 +8,10 @@ import de.bioforscher.chemistry.parser.smiles.SmilesParser;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.model.compartments.NodeState;
-import de.bioforscher.simulation.modules.model.CumulativeUpdateBehavior;
+import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
+import de.bioforscher.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.simulation.modules.model.Module;
-import de.bioforscher.simulation.modules.model.PotentialUpdate;
-import de.bioforscher.simulation.util.EnvironmentalVariables;
+import de.bioforscher.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.units.UnitScaler;
 import de.bioforscher.units.quantities.Diffusivity;
 import tec.units.ri.quantity.Quantities;
@@ -75,7 +75,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         double scaledNonMembraneConcentration = 0.0;
         // traverse each neighbouring cell
         for (BioNode neighbour: node.getNeighbours()) {
-            if (neighbour.getState() == NodeState.CELL_MEMBRANE) {
+            if (neighbour.getState() == NodeState.MEMBRANE) {
                 // if the node is part of the membrane
                 numberOfMembraneNeighbours++;
                 scaledMembraneConcentration += neighbour.getConcentration(entity).getValue().doubleValue() * membraneFactor;
@@ -148,10 +148,10 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
      */
     private Quantity<Diffusivity> scaleDiffusivity(Quantity<Diffusivity> diffusivity) {
         Quantity<Diffusivity> correlatedDiffusivity = UnitScaler.rescaleDiffusivity(diffusivity,
-                EnvironmentalVariables.getInstance().getTimeStep(),
-                EnvironmentalVariables.getInstance().getNodeDistance());
+                EnvironmentalParameters.getInstance().getTimeStep(),
+                EnvironmentalParameters.getInstance().getNodeDistance());
         // artificially slow if this is a cellular environment
-        if (EnvironmentalVariables.getInstance().isCellularEnvironment()) {
+        if (EnvironmentalParameters.getInstance().isCellularEnvironment()) {
             correlatedDiffusivity = correlatedDiffusivity.multiply(DiffusionUtilities.STDF_CELL_WATER.getValue());
         }
         return correlatedDiffusivity;

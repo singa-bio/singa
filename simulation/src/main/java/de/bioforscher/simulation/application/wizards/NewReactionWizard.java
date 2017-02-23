@@ -1,7 +1,7 @@
 package de.bioforscher.simulation.application.wizards;
 
 import de.bioforscher.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.simulation.parser.SabioRKParserService;
+import de.bioforscher.simulation.parser.sbml.SabioRKParserService;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
