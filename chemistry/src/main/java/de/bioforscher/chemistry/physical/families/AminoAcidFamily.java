@@ -62,6 +62,12 @@ public enum AminoAcidFamily implements StructuralFamily {
                 .findAny();
     }
 
+    public static Optional<AminoAcidFamily> getAminoAcidTypeByOneLetterCode(String oneLetterCode) {
+        return Arrays.stream(values())
+                .filter(type -> oneLetterCode.equalsIgnoreCase(type.getOneLetterCode()))
+                .findAny();
+    }
+
     public String getName() {
         return this.name;
     }

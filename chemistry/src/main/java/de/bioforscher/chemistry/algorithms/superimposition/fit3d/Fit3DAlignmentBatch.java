@@ -97,6 +97,11 @@ public class Fit3DAlignmentBatch implements Fit3D {
         return 1.0;
     }
 
+    @Override
+    public double getXieScore() {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     /**
      * Internal class for parallel calculation of {@link Fit3DAlignment}s.
      */

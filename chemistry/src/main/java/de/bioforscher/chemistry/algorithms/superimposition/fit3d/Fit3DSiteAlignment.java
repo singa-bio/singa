@@ -5,12 +5,16 @@ import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimpo
 import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
+import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.mathematics.matrices.LabeledRegularMatrix;
+import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.Matrices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +37,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private static final Logger logger = LoggerFactory.getLogger(Fit3DSiteAlignment.class);
     private static final int PERMUTATION_CUTOFF = 3;
 
+
     private final StructuralMotif site1;
     private final StructuralMotif site2;
 
@@ -45,6 +50,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final double distanceTolerance;
     private final boolean exhaustive;
     private final boolean restrictToExchanges;
+    private final LabeledSymmetricMatrix<StructuralFamily> substitutionMatrix;
 
     private double cutoffScore;
 
@@ -57,6 +63,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private String alignmentString;
     private boolean cutoffScoreReached;
+    private double xieScore;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) {
         this.site1 = builder.site1.getCopy();
@@ -84,6 +91,8 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.rmsdCutoff = builder.rmsdCutoff;
         this.distanceTolerance = builder.distanceTolerance;
 
+        this.substitutionMatrix = builder.substitutionMatrix;
+
         // initialize
         this.matches = new TreeMap<>();
 
@@ -92,6 +101,11 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         calculateSimilarities();
         extendAlignment();
+    }
+
+    @Override
+    public double getXieScore() {
+        return this.xieScore;
     }
 
     @Override
@@ -123,9 +137,47 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         if (this.currentBestSuperimposition != null) {
             this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
+            try {
+                calculateXieScore();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             outputSummary();
         } else {
             logger.info("no suitable alignment could be found");
+        }
+    }
+
+    /**
+     * Calculates the ligand binding site similarity score according to dio:10.1093/bioinformatics/btp220.
+     */
+    private void calculateXieScore() throws IOException {
+        this.xieScore = 0.0;
+        RepresentationScheme xieRepresentationScheme = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
+        for (int i = 0; i < this.currentBestSuperimposition.getReference().size(); i++) {
+            LeafSubstructure<?, ?> reference = this.currentBestSuperimposition.getReference().get(i);
+            LeafSubstructure<?, ?> candidate = this.currentBestSuperimposition.getMappedCandidate().get(i);
+            double m = substitutionMatrix.getValueFromPosition(substitutionMatrix.getPositionFromLabels(reference.getFamily(), candidate.getFamily()));
+            double angle = xieRepresentationScheme.determineRepresentingAtom(reference).getPosition().angleTo(xieRepresentationScheme.determineRepresentingAtom(candidate).getPosition());
+            if (Double.isNaN(angle)) {
+                angle = 0.0;
+            }
+            double pa;
+            if (angle > Math.PI / 2.0) {
+                pa = 0.0;
+            } else {
+                pa = Math.cos(angle);
+            }
+            double pd;
+            double distance = xieRepresentationScheme.determineRepresentingAtom(reference).getPosition().distanceTo(xieRepresentationScheme.determineRepresentingAtom(candidate).getPosition());
+            if (distance > 4.0) {
+                pd = 0.0;
+            } else if (distance <= 2.0) {
+                pd = 1.0;
+            } else {
+                pd = Math.exp(-(distance - 2.0) * (distance - 2.0) / 2.0);
+            }
+            this.xieScore += m * pa * pd;
         }
     }
 
@@ -151,6 +203,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                         .collect(Collectors.joining("|", String.format("%-7s", "s2") + "|", "|")) + "\n" +
                 String.format("%-7s", "RMSD") + "|" + this.currentBestSuperimposition.getRmsd() + "\n" +
                 String.format("%-7s", "frac") + "|" + getAlignedResidueFraction() + "\n" +
+                String.format("%-7s", "XieS") + "|" + getXieScore() + "\n" +
                 String.format("%-7s", "s1algn") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2algn") + site2Joiner.toString();
         logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);

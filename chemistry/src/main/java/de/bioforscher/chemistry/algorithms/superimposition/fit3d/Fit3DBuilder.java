@@ -6,6 +6,9 @@ import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSch
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +34,7 @@ public class Fit3DBuilder {
      * Default values for the Fit3DSite algorithm.
      */
     private static final double DEFAULT_CUTOFF_SCORE = 5.0;
-
+    private static final LabeledSymmetricMatrix<StructuralFamily> DEFAULT_SUBSTITUTION_MATRIX = SubstitutionMatrix.BLOSUM_45.getMatrix();
 
     /**
      * prevent instantiation
@@ -106,9 +109,24 @@ public class Fit3DBuilder {
         /**
          * The cutoff score that should be used when extending the site alignment.
          *
-         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
-        SiteConfigurationStep cutoffScore(double cutoffScore);
+        SiteParameterConfigurationStep cutoffScore(double cutoffScore);
+
+        /**
+         * The {@link SubstitutionMatrix} to be used to calculate the Xie score.
+         *
+         * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
+         */
+        SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix);
+
+        /**
+         * TODO not nice that we have to call this method to complete configuration
+         * Stop the configuration of the {@link Fit3DSiteAlignment}
+         *
+         * @return The {@link SiteConfigurationStep} to define the level of exhaustiveness.
+         */
+        SiteConfigurationStep finishConfiguration();
     }
 
     public interface TargetStep {
@@ -216,6 +234,7 @@ public class Fit3DBuilder {
         double cutoffScore = DEFAULT_CUTOFF_SCORE;
         boolean exhaustive;
         boolean restrictToExchanges;
+        LabeledSymmetricMatrix<StructuralFamily> substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -315,8 +334,19 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public SiteConfigurationStep cutoffScore(double cutoffScore) {
+        public SiteParameterConfigurationStep cutoffScore(double cutoffScore) {
             this.cutoffScore = cutoffScore;
+            return this;
+        }
+
+        @Override
+        public SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix) {
+            this.substitutionMatrix = substitutionMatrix.getMatrix();
+            return this;
+        }
+
+        @Override
+        public SiteConfigurationStep finishConfiguration() {
             return this;
         }
 

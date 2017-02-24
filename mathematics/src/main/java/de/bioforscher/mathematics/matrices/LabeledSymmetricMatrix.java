@@ -42,6 +42,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     public void setRowLabel(LabelType label, int rowIndex) {
         if (rowIndex > getRowDimension())
             throw new IllegalArgumentException("specified index " + rowIndex + " exceeds dimension " + getRowDimension());
+        this.labelMap.values().remove(rowIndex);
         this.labelMap.put(label, rowIndex);
     }
 

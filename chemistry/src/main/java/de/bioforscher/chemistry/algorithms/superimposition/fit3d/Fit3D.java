@@ -34,6 +34,13 @@ public interface Fit3D {
     double getFraction();
 
     /**
+     * Returns the Xie-score of aligned residues.
+     *
+     * @return The Xie-score that were aligned.
+     */
+    double getXieScore();
+
+    /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
      * the query motif.
      *

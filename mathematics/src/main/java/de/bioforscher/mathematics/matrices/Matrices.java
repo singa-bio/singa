@@ -6,9 +6,14 @@ import de.bioforscher.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.mathematics.vectors.Vector;
 import de.bioforscher.mathematics.vectors.Vectors;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class Matrices {
 
@@ -181,7 +186,104 @@ public final class Matrices {
 
     public static QRDecomposition performQRDecomposition(Matrix matrix) {
         return QRDecomposition.calculateQRDecomposition(matrix);
+    }
 
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Path csvPath) throws IOException {
+        List<String[]> rawRows = Files.lines(csvPath)
+                .map(line -> line.split(","))
+                .map(splittedLine -> Arrays.stream(splittedLine)
+                        .filter(cell -> !cell.isEmpty())
+                        .collect(Collectors.toList()).toArray(new String[0]))
+                .collect(Collectors.toList());
+        // check if columns are potentially labeled
+        List<Integer> rowLengths = rawRows.stream()
+                .map(rawRow -> rawRow.length)
+                .distinct()
+                .collect(Collectors.toList());
+        List<String[]> rawColumns = new ArrayList<>();
+        if (rowLengths.size() == 2 && (rowLengths.get(0) == rowLengths.get(1) - 1)) {
+            List<String> columnLabels = Arrays.asList(rawRows.get(0));
+            int rowLength = rawRows.get(1).length;
+            for (int i = 0; i < rowLength; i++) {
+                String[] rawColumn = new String[rawRows.size() - 1];
+                for (int j = 1; j < rawRows.size(); j++) {
+                    rawColumn[j - 1] = rawRows.get(j)[i];
+                }
+                rawColumns.add(rawColumn);
+            }
+            List<String> rowLabels = Arrays.asList(rawColumns.get(0));
+            double[][] values = new double[rawRows.size() - 1][rawColumns.size() - 1];
+            for (int i = 1; i < rawRows.size(); i++) {
+                for (int j = 1; j < rawColumns.size(); j++) {
+                    double value = Double.valueOf(rawRows.get(i)[j]);
+                    values[i - 1][j - 1] = value;
+                }
+            }
+            // construct appropriate matrix
+            if (SymmetricMatrix.isSymmetric(values)) {
+                LabeledSymmetricMatrix<String> labeledSymmetricMatrix = new LabeledSymmetricMatrix<>(values);
+                labeledSymmetricMatrix.setColumnLabels(columnLabels);
+                return labeledSymmetricMatrix;
+            } else {
+                LabeledMatrix<String> labeledRegularMatrix = new LabeledRegularMatrix<>(values);
+                labeledRegularMatrix.setColumnLabels(columnLabels);
+                labeledRegularMatrix.setRowLabels(rowLabels);
+                return labeledRegularMatrix;
+            }
+        } else {
+            throw new IllegalArgumentException("labeling seems to be incorrect");
+        }
+    }
+
+    public static Matrix readUnlabeledMatrixFromCSV(Path csvPath) throws IOException {
+        List<String[]> rawRows = Files.lines(csvPath)
+                .map(line -> line.split(","))
+                .map(splittedLine -> Arrays.stream(splittedLine)
+                        .filter(cell -> !cell.isEmpty())
+                        .toArray(String[]::new))
+                .collect(Collectors.toList());
+        // check if rows are all of same length
+        boolean rowsOfSameLength = rawRows.stream()
+                .map(rawRow -> rawRow.length)
+                .distinct()
+                .count() == 1;
+        if (!rowsOfSameLength) {
+            throw new IllegalArgumentException("rows seem to contain missing values");
+        }
+        int rowLength = rawRows.get(0).length;
+        List<String[]> rawColumns = new ArrayList<>();
+        for (int i = 0; i < rowLength; i++) {
+            String[] rawColumn = new String[rawRows.size()];
+            for (int j = 0; j < rawRows.size(); j++) {
+                rawColumn[j] = rawRows.get(j)[i];
+            }
+            rawColumns.add(rawColumn);
+        }
+        // check if columns are all of same length
+        boolean columnsOfSameLength = rawColumns.stream()
+                .map(rawColumn -> rawColumn.length)
+                .distinct()
+                .count() == 1;
+        if (!columnsOfSameLength) {
+            throw new IllegalArgumentException("columns seem to contain missing values");
+        }
+        // construct double array
+        double[][] values = new double[rawRows.size()][rawColumns.size()];
+        for (int i = 0; i < rawRows.size(); i++) {
+            for (int j = 0; j < rawColumns.size(); j++) {
+                double value = Double.valueOf(rawRows.get(i)[j]);
+                values[i][j] = value;
+            }
+        }
+
+        // construct appropriate matrix
+        if (SymmetricMatrix.isSymmetric(values)) {
+            return new SymmetricMatrix(values);
+        } else if (SquareMatrix.isSquare(values)) {
+            return new SquareMatrix(values);
+        } else {
+            return new RegularMatrix(values);
+        }
     }
 
     /**

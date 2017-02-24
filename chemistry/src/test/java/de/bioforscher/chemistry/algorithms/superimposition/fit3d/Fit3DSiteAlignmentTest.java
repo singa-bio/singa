@@ -1,10 +1,10 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
+import de.bioforscher.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class Fit3DSiteAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        Structure bindingSiteStructure1 =  StructureParser.local()
+        Structure bindingSiteStructure1 = StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asp_1c0a.pdb").getFile())
                 .everything()
                 .parse();
@@ -45,11 +45,34 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldCreateBindingSiteAlignment() {
+    public void shouldCreateBindingSiteAlignment() throws IOException {
+//
+//
+//        LabeledSymmetricMatrix<String> blosum = (LabeledSymmetricMatrix<String>) Matrices.readLabeledMatrixFromCSV(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/main/resources/physical/families/substitution/matrices/BLOSUM45.csv"));
+//        List<String> mappedLabels = new ArrayList<>();
+//        for (int i = 0; i < blosum.getRowDimension(); i++) {
+//            Optional<AminoAcidFamily> label = AminoAcidFamily.getAminoAcidTypeByOneLetterCode(blosum.getRowLabel(i));
+//            String stringLabel;
+//            if (label.isPresent()) {
+//                stringLabel = label.get().name();
+//            }else
+//                stringLabel = blosum.getRowLabel(i);
+//            blosum.setRowLabel(stringLabel,i);
+//        }
+//        System.out.println(blosum.getStringRepresentation());
+//        LabeledSymmetricMatrix<String> blosum2 = (LabeledSymmetricMatrix<String>) Matrices.readLabeledMatrixFromCSV(Paths.get("/home/fkaiser/Workspace/IdeaProjects/singa/chemistry/src/main/resources/physical/families/substitution/matrices/BLOSUM45.csv"));
+//
+//        blosum2.setRowLabels(mappedLabels);
+//        blosum.setColumnLabels(mappedLabels);
+//
+//        System.out.println(blosum.getStringRepresentation());
+//
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)
-                .cutoffScore(5.0)
+                .cutoffScore(0.5)
+                .substitutionMatrix(SubstitutionMatrix.BLOSUM_45)
+                .finishConfiguration()
                 .exhaustive()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
@@ -68,7 +91,7 @@ public class Fit3DSiteAlignmentTest {
     }
 
     @Test
-    public void shouldCreateAllAgainstBindingSiteAlignment(){
+    public void shouldCalculateXieScore() {
 
 
     }
