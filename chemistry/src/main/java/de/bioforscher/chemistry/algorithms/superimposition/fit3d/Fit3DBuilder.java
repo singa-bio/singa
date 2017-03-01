@@ -34,7 +34,7 @@ public class Fit3DBuilder {
      * Default values for the Fit3DSite algorithm.
      */
     private static final double DEFAULT_CUTOFF_SCORE = 5.0;
-    private static final LabeledSymmetricMatrix<StructuralFamily> DEFAULT_SUBSTITUTION_MATRIX = SubstitutionMatrix.BLOSUM_45.getMatrix();
+    private static final SubstitutionMatrix DEFAULT_SUBSTITUTION_MATRIX = SubstitutionMatrix.BLOSUM_45;
 
     /**
      * prevent instantiation
@@ -119,14 +119,6 @@ public class Fit3DBuilder {
          * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
         SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix);
-
-        /**
-         * TODO not nice that we have to call this method to complete configuration
-         * Stop the configuration of the {@link Fit3DSiteAlignment}
-         *
-         * @return The {@link SiteConfigurationStep} to define the level of exhaustiveness.
-         */
-        SiteConfigurationStep finishConfiguration();
     }
 
     public interface TargetStep {
@@ -234,7 +226,7 @@ public class Fit3DBuilder {
         double cutoffScore = DEFAULT_CUTOFF_SCORE;
         boolean exhaustive;
         boolean restrictToExchanges;
-        LabeledSymmetricMatrix<StructuralFamily> substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
+        SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -341,12 +333,7 @@ public class Fit3DBuilder {
 
         @Override
         public SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix) {
-            this.substitutionMatrix = substitutionMatrix.getMatrix();
-            return this;
-        }
-
-        @Override
-        public SiteConfigurationStep finishConfiguration() {
+            this.substitutionMatrix = substitutionMatrix;
             return this;
         }
 

@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
@@ -98,7 +99,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     }
 
     @Override
-    public double getXieScore() {
+    public XieScore getXieScore() {
         throw new UnsupportedOperationException("not implemented");
     }
 

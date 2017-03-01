@@ -6,6 +6,7 @@ import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.chemistry.physical.model.Structure;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,12 +25,12 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asp_1c0a.pdb").getFile())
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("binding_sites_E2/1A27_A.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
         Structure bindingSiteStructure2 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("binding_sites_E2/2D06_A.pdb").getFile())
                 .everything()
                 .parse();
         this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
@@ -70,12 +71,15 @@ public class Fit3DSiteAlignmentTest {
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)
-                .cutoffScore(0.5)
-                .substitutionMatrix(SubstitutionMatrix.BLOSUM_45)
-                .finishConfiguration()
+                .cutoffScore(8.5)
+                .substitutionMatrix(SubstitutionMatrix.MC_LACHLAN)
                 .exhaustive()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
+        System.out.println(fit3d.getXieScore());
+        Assert.assertEquals(2.7888003232092946, fit3d.getMatches().firstKey(),1E-6);
+        Assert.assertEquals(8.95782257821579, fit3d.getXieScore().getScore(), 1E-6);
+        Assert.assertEquals(0.0026668227445263426, fit3d.getXieScore().getSignificance(), 1E-6);
     }
 
     @Test
@@ -88,11 +92,5 @@ public class Fit3DSiteAlignmentTest {
                 .restrictToSpecifiedExchanges()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
-    }
-
-    @Test
-    public void shouldCalculateXieScore() {
-
-
     }
 }

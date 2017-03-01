@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public interface Fit3D {
      *
      * @return The Xie-score that were aligned.
      */
-    double getXieScore();
+    XieScore getXieScore();
 
     /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
