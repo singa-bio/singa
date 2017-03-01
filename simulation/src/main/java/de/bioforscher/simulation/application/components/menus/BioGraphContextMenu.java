@@ -3,6 +3,7 @@ package de.bioforscher.simulation.application.components.menus;
 import de.bioforscher.chemistry.descriptive.ChemicalEntities;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.simulation.application.components.panes.SimulationCanvas;
+import de.bioforscher.simulation.application.renderer.RenderingMode;
 import de.bioforscher.simulation.modules.model.Simulation;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -82,22 +83,19 @@ public class BioGraphContextMenu extends ContextMenu {
 
     private void colorBySpecies(ActionEvent event) {
         ChemicalEntity chemicalEntity = (ChemicalEntity)((RadioMenuItem)event.getSource()).getUserData();
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(true);
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(false);
+        this.owner.getRenderer().getBioRenderingOptions().setRenderingMode(RenderingMode.ENTITY_BASED);
         this.owner.getRenderer().getBioRenderingOptions().setNodeHighlightEntity(chemicalEntity);
         this.owner.getRenderer().getBioRenderingOptions().setEdgeHighlightEntity(chemicalEntity);
         this.owner.draw();
     }
 
     private void colorByState(ActionEvent event) {
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(false);
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(false);
+        this.owner.getRenderer().getBioRenderingOptions().setRenderingMode(RenderingMode.STATE_BASED);
         this.owner.draw();
     }
 
     private void colorByCompartment(ActionEvent event) {
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByEntity(false);
-        this.owner.getRenderer().getBioRenderingOptions().setColoringByCompartment(true);
+        this.owner.getRenderer().getBioRenderingOptions().setRenderingMode(RenderingMode.COMPARTMENT_BASED);
         this.owner.draw();
     }
 

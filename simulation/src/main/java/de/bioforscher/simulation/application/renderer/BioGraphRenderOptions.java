@@ -11,12 +11,29 @@ public class BioGraphRenderOptions {
     private ChemicalEntity nodeHighlightEntity;
     private ChemicalEntity edgeHighlightEntity;
 
-    private boolean coloringByEntity = true;
-    private boolean coloringByCompartment = false;
+    private RenderingMode renderingMode;
     private ColorScale nodeColorScale;
 
     public BioGraphRenderOptions() {
+        // todo render depending on maximal value in any node
         this.nodeColorScale = new ColorScale.Builder(0, 5000).build();
+        this.renderingMode = RenderingMode.STATE_BASED;
+    }
+
+    public RenderingMode getRenderingMode() {
+        return this.renderingMode;
+    }
+
+    public void setRenderingMode(RenderingMode renderingMode) {
+        this.renderingMode = renderingMode;
+    }
+
+    public ColorScale getNodeColorScale() {
+        return this.nodeColorScale;
+    }
+
+    public void setNodeColorScale(ColorScale nodeColorScale) {
+        this.nodeColorScale = nodeColorScale;
     }
 
     public ChemicalEntity getNodeHighlightEntity() {
@@ -35,14 +52,6 @@ public class BioGraphRenderOptions {
         this.edgeHighlightEntity = edgeHighlightEntity;
     }
 
-    public boolean isColoringByEntity() {
-        return this.coloringByEntity;
-    }
-
-    public void setColoringByEntity(boolean coloringByEntity) {
-        this.coloringByEntity = coloringByEntity;
-    }
-
     public Color getNodeColor(BioNode node) {
         if (this.nodeHighlightEntity != null) {
             double concentration = node.getConcentration(this.nodeHighlightEntity).getValue().doubleValue();
@@ -50,25 +59,10 @@ public class BioGraphRenderOptions {
         } else {
             return Color.GRAY;
         }
-
     }
 
     public Color getEdgeColor(BioEdge edge) {
-        // TODO currently not implemented
-        // if (this.edgeHighlightEntity != null) {
-        //     double opacity = edge.getPermeability(this.edgeHighlightEntity);
-        //     return new Color(0, 0, 0, opacity);
-        // } else {
             return Color.LIGHTGREY;
-        // }
-
     }
 
-    public boolean isColoringByCompartment() {
-        return this.coloringByCompartment;
-    }
-
-    public void setColoringByCompartment(boolean coloringByCompartment) {
-        this.coloringByCompartment = coloringByCompartment;
-    }
 }

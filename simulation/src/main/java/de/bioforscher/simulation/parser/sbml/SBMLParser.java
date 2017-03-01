@@ -23,7 +23,11 @@ import de.bioforscher.simulation.parser.sbml.converter.SBMLUnitConverter;
 import org.sbml.jsbml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.units.ri.AbstractUnit;
+import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.Units;
 
+import javax.measure.*;
 import javax.measure.Unit;
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
@@ -122,10 +126,11 @@ public class SBMLParser {
         this.document.getModel().getListOfCompartments().forEach(compartment -> {
             Compartment singaCompartment = new Compartment(compartment.getId(), compartment.getName());
             this.compartments.put(singaCompartment, compartment.getSize());
+            this.globalParameters.put(singaCompartment.getIdentifier(),
+                    new SimulationParameter<>(singaCompartment.getIdentifier(),
+                            Quantities.getQuantity(compartment.getSize(), AbstractUnit.ONE)));
         });
     }
-
-
 
     private void parseSpecies() {
         logger.info("Parsing Chemical Entity Data ...");

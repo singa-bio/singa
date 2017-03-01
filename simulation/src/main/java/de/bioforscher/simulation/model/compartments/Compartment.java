@@ -44,7 +44,6 @@ public class Compartment implements Nameable {
                         .anyMatch(neighbour -> neighbour.getContainingCompartment().equals(this.getIdentifier())))
                 .findAny().get();
 
-
         this.border.add(first);
         BioNode step = first;
         boolean notConnected = true;

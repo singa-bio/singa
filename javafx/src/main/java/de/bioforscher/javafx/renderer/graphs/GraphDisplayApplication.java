@@ -11,18 +11,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Created by Christoph on 24/11/2016.
+ * @author cl
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph graph = GraphFactory.buildTreeGraph(5 , new Rectangle(500,500));
+    public static Graph graph = GraphFactory.buildTreeGraph(10 , new Rectangle(500,500));
     public static GraphRenderer renderer = new GraphRenderer();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Canvas  canvas = new Canvas();
-        canvas.setWidth(500);
-        canvas.setHeight(500);
+        canvas.setWidth(1400);
+        canvas.setHeight(1400);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);

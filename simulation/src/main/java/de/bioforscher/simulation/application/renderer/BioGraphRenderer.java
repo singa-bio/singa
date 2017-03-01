@@ -29,8 +29,7 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
 
     @Override
     public void render(AutomatonGraph graph) {
-        // Background
-        // getRenderingOptions().setIdentifierFont(Font.getDefault());
+        // background
         getGraphicsContext().setFill(getRenderingOptions().getBackgroundColor());
         getGraphicsContext().fillRect(0, 0, getDrawingWidth(), getDrawingHeight());
         // render edges
@@ -46,34 +45,37 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
     @Override
     protected void drawNode(BioNode node) {
         // decide on style
-        if (!this.bioRenderingOptions.isColoringByEntity() && !this.bioRenderingOptions.isColoringByCompartment()) {
-            switch (node.getState()) {
-                case AQUEOUS: {
-                    getGraphicsContext().setFill(Color.CADETBLUE);
-                    break;
+        switch (this.bioRenderingOptions.getRenderingMode()) {
+            case ENTITY_BASED: {
+                getGraphicsContext().setFill(this.bioRenderingOptions.getNodeColor(node));
+                break;
+            }
+            case COMPARTMENT_BASED: {
+                if (node.getContainingCompartment().equals("default")) {
+                    getGraphicsContext().setFill(Color.LIGHTGRAY);
+                } else {
+                    getGraphicsContext().setFill(ColorManager.getInstance().getCompartmentColor(node.getContainingCompartment()));
                 }
-                case CYTOSOL: {
-                    getGraphicsContext().setFill(Color.LIGHTGREEN);
-                    break;
-                }
-                case MEMBRANE: {
-                    getGraphicsContext().setFill(Color.BURLYWOOD);
-                    break;
+                break;
+            }
+            case STATE_BASED: {
+                switch (node.getState()) {
+                    case AQUEOUS: {
+                        getGraphicsContext().setFill(Color.CADETBLUE);
+                        break;
+                    }
+                    case CYTOSOL: {
+                        getGraphicsContext().setFill(Color.LIGHTGREEN);
+                        break;
+                    }
+                    case MEMBRANE: {
+                        getGraphicsContext().setFill(Color.BURLYWOOD);
+                        break;
+                    }
                 }
             }
-        } else if (this.bioRenderingOptions.isColoringByCompartment()) {
-            if (node.getContainingCompartment().equals("default")) {
-                getGraphicsContext().setFill(Color.LIGHTGRAY);
-            } else {
-                // todo prevent creation of compartment
-                getGraphicsContext().setFill(ColorManager.getInstance().getColor(new Compartment(node.getContainingCompartment(), "")));
-            }
-        } else {
-            getGraphicsContext().setFill(this.bioRenderingOptions.getNodeColor(node));
         }
-
         drawPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
-
         // circle point if node is observed
         if (node.isObserved()) {
             getGraphicsContext().setStroke(Color.BLUEVIOLET);

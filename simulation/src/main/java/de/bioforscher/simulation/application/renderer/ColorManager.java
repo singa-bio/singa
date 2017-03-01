@@ -17,7 +17,7 @@ public class ColorManager {
     private static ColorManager instance;
 
     private Map<ChemicalEntity, ColorableChemicalEntity> entityColorMap;
-    private Map<Compartment, Color> compartmentColorMap;
+    private Map<String, Color> compartmentColorMap;
 
     public static ColorManager getInstance() {
         if (instance == null) {
@@ -57,7 +57,11 @@ public class ColorManager {
     }
 
     public Color getColor(Compartment compartment) {
-        return this.compartmentColorMap.get(compartment);
+        return getCompartmentColor(compartment.getIdentifier());
+    }
+
+    public Color getCompartmentColor(String compartmentIdentifier) {
+        return this.compartmentColorMap.get(compartmentIdentifier);
     }
 
     public void setColor(ChemicalEntity entity, Color color) {
@@ -69,7 +73,7 @@ public class ColorManager {
     }
 
     public void setColor(Compartment compartment, Color color) {
-        this.compartmentColorMap.put(compartment, color);
+        this.compartmentColorMap.put(compartment.getIdentifier(), color);
     }
 
     public boolean getVisibility(ChemicalEntity entity) {

@@ -448,17 +448,10 @@ public class SimulationExamples {
         logger.debug("Adjusting time step size ... ");
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
-        // compartment is never initialized for this reaction
-        model.getReactions().forEach(reaction -> {
-            reaction.getKineticLaw().getExpression().setParameter(new SimulationParameter<>("ER", Quantities.getQuantity(1, ONE)));
-            reaction.getKineticLaw().getExpression().setParameter(new SimulationParameter<>("compartment", Quantities.getQuantity(1, ONE)));
-
-        });
-
         // create reactions module
         Reactions reactions = new Reactions();
 
-        // add reaction to the reactions used in the simulation
+        // add reaction to the reactions used in the simulations
         reactions.getReactions().addAll(model.getReactions());
 
         // setup simulation
