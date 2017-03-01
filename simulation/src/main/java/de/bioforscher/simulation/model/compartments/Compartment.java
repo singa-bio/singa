@@ -47,7 +47,6 @@ public class Compartment implements Nameable {
         this.border.add(first);
         BioNode step = first;
         boolean notConnected = true;
-        ShortestPathFinder<BioNode> pathFinder = new ShortestPathFinder<>();
 
         while (notConnected) {
 
@@ -77,7 +76,7 @@ public class Compartment implements Nameable {
 
             // try to traverse bridge
             if (!foundNeighbour) {
-                LinkedList<BioNode> nextBest = pathFinder.trackBasedOnPredicates(step, this::isNewBorder, this::isInThisCompartment);
+                LinkedList<BioNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step, this::isNewBorder, this::isInThisCompartment);
                 if (nextBest != null) {
                     for (BioNode node : nextBest) {
                         if (!this.border.contains(node)) {

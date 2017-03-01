@@ -1,7 +1,7 @@
 package de.bioforscher.mathematics.algorithms.graphs;
 
 import de.bioforscher.mathematics.graphs.model.Node;
-import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.mathematics.vectors.Vector;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -9,13 +9,13 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class ShortestPathFinder<NodeType extends Node<NodeType, Vector2D>> {
+public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> {
 
     private Queue<NodeType> queue;
     private Map<NodeType, Integer> distances;
     private Map<NodeType, NodeType> predecessors;
 
-    public ShortestPathFinder() {
+    private ShortestPathFinder() {
 
     }
 
@@ -27,13 +27,14 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, Vector2D>> {
         this.distances.put(sourceNode, 0);
     }
 
-    public LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
-        initialize(sourceNode);
+    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
+        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
+        pathfinder.initialize(sourceNode);
         // processes
-        while (!this.queue.isEmpty()) {
-            NodeType currentNode = this.queue.poll();
+        while (!pathfinder.queue.isEmpty()) {
+            NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
-                LinkedList<NodeType> path = checkTarget(currentNode, neighbour, targetPredicate);
+                LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                 if (path!= null) {
                     return path;
                 }
@@ -42,14 +43,15 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, Vector2D>> {
         return null;
     }
 
-    public LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
-        initialize(sourceNode);
+    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
+        pathfinder.initialize(sourceNode);
         // processes
-        while (!this.queue.isEmpty()) {
-            NodeType currentNode = this.queue.poll();
+        while (!pathfinder.queue.isEmpty()) {
+            NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 if (trackPredicate.test(currentNode)) {
-                    LinkedList<NodeType> path = checkTarget(currentNode, neighbour, targetPredicate);
+                    LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                     if (path!= null) {
                         return path;
                     }

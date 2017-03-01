@@ -16,8 +16,7 @@ import de.bioforscher.mathematics.vectors.Vector;
  * inequality.
  *
  * @param <VectorDimension> The type of vector that the distance is applied to.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Cosine_similarity">Wikipedia: Cosine similarity</a>
  */
 public class CosineSimilarity<VectorDimension extends Vector> implements Metric<VectorDimension> {

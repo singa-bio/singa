@@ -12,8 +12,7 @@ import java.util.Set;
  * sets. To infer a metric from the Jaccard index it is necessary to subtract the Index from 1.
  *
  * @param <Type> The type of object that is contained in the collection.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Jaccard_index">Wikipedia: Jaccard index</a>
  */
 public class JaccardMetric<Type> implements Metric<Collection<Type>> {

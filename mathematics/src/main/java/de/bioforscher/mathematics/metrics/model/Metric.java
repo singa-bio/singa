@@ -43,6 +43,7 @@ public interface Metric<MetrizableType> {
         for (int rowIndex = 0; rowIndex < list.size(); rowIndex++) {
             compactValues[rowIndex] = new double[rowIndex + 1];
         }
+        // compute distances
         for (int rowIndex = 0; rowIndex < compactValues.length; rowIndex++) {
             for (int columnIndex = 0; columnIndex < compactValues[rowIndex].length; columnIndex++) {
                 compactValues[rowIndex][columnIndex] = calculateDistance(list.get(rowIndex), list.get(columnIndex));
@@ -51,6 +52,13 @@ public interface Metric<MetrizableType> {
         return new SymmetricMatrix(compactValues);
     }
 
+    /**
+     * Calculates the distance for each Vector in the given target list to the reference vector.
+     * @param list The list of targets.
+     * @param reference The reference vector.
+     * @param <SubType> The Type or Subtype of the Metrizable.
+     * @return A mapping of the target vector to its distance.
+     */
     default <SubType extends MetrizableType> Map<SubType, Double> calculateDistancesToReference(List<SubType> list,
                                                                                                 SubType reference) {
         Map<SubType, Double> result = new HashMap<>();
@@ -58,8 +66,15 @@ public interface Metric<MetrizableType> {
         return result;
     }
 
-    default <SubType extends MetrizableType> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list, SubType
-            reference) {
+    /**
+     * Returns the closest element in the given target list to the reference vector.
+     * @param list The list of targets.
+     * @param reference The reference vector.
+     * @param <SubType> The Type or Subtype of the Metrizable.
+     * @returnA A Entry with the closest element and its distance.
+     */
+    default <SubType extends MetrizableType> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list,
+                                                                                                 SubType reference) {
         Map<SubType, Double> distances = calculateDistancesToReference(list, reference);
         Map.Entry<SubType, Double> min = null;
         for (Map.Entry<SubType, Double> entry : distances.entrySet()) {

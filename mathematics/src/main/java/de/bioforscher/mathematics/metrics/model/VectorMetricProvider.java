@@ -21,9 +21,8 @@ public final class VectorMetricProvider {
     private VectorMetricProvider() {
     }
 
-    private final Set<Metric<Vector>> metrics = new HashSet<>();
-
     private static final VectorMetricProvider INSTANCE = new VectorMetricProvider();
+    private final Set<Metric<Vector>> metrics = new HashSet<>();
 
     /**
      * Contains all the metrics of this library. This set can be used to quickly calculate all provided distance
@@ -32,10 +31,16 @@ public final class VectorMetricProvider {
      * @return All metrics in this library.
      */
     public Set<Metric<Vector>> getElements() {
-        return Collections.unmodifiableSet(metrics);
+        return Collections.unmodifiableSet(this.metrics);
     }
 
-    private static <M extends Metric<Vector>> M addElement(M element) {
+    /**
+     * Adds a metric to the internal library.
+     * @param element The metric to add.
+     * @param <MetricType> The type of the metric to add.
+     * @return The metric.
+     */
+    private static <MetricType extends Metric<Vector>> MetricType addElement(MetricType element) {
         INSTANCE.metrics.add(element);
         return element;
     }
@@ -56,6 +61,9 @@ public final class VectorMetricProvider {
      */
     public static final MinkowskiMetric<Vector> EUCLIDEAN_METRIC = addElement(new MinkowskiMetric<>(2));
 
+    /**
+     * Calculates the squared euclidean distance between two {@link Vector}s.
+     */
     public static final SquaredEuclideanDistance<Vector> SQUARED_EUCLIDEAN_METRIC = addElement(new SquaredEuclideanDistance<>());
 
     /**

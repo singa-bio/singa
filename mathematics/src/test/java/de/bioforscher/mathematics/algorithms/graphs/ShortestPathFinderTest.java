@@ -31,9 +31,8 @@ public class ShortestPathFinderTest {
 
     @Test
     public void shouldFindWithPredicate() {
-        ShortestPathFinder<RegularNode> finder = new ShortestPathFinder<>();
         RegularNode source = this.linearGraph.getNode(9);
-        LinkedList<RegularNode> basedOnPredicate = finder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
+        LinkedList<RegularNode> basedOnPredicate = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
         System.out.println(basedOnPredicate);
     }
 

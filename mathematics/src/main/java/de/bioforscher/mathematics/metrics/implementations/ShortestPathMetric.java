@@ -15,8 +15,7 @@ import java.util.Queue;
  * between them with a hybrid implementation of Breadth-first search and
  * Dijkstra's algorithm.
  *
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  */
 public class ShortestPathMetric implements Metric<Node<?, ?>> {
 

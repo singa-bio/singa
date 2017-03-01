@@ -8,7 +8,7 @@ import de.bioforscher.mathematics.vectors.Vector;
  * distance calculation is time critical and only the oder of distance is relevant.
  *
  * @param <VectorType> The type of vector that the distance is applied to.
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia: Euclidean distance</a>
  */
 public class SquaredEuclideanDistance<VectorType extends Vector> implements Metric<VectorType> {

@@ -16,8 +16,7 @@ import de.bioforscher.mathematics.vectors.Vector;
  * triangle inequality.
  *
  * @param <VectorType> The type of vector that the distance is applied to.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Wikipedia: Minkowski distance</a>
  * @see <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia: Euclidean distance</a>
  * @see <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Wikipedia: Taxicab geometry</a>
