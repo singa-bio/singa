@@ -5,10 +5,11 @@ import de.bioforscher.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.Matrices;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,25 +26,27 @@ public enum SubstitutionMatrix {
 
     SubstitutionMatrix(String resourceLocation) {
         try {
-            URL resource = Thread.currentThread()
+            InputStream resource = Thread.currentThread()
                     .getContextClassLoader()
-                    .getResource(resourceLocation);
+                    .getResourceAsStream(resourceLocation);
             if (resource != null) {
-                LabeledSymmetricMatrix<String> stringLabeledMatrix = (LabeledSymmetricMatrix<String>) Matrices
-                        .readLabeledMatrixFromCSV(Paths.get(resource.toURI()));
-                List<StructuralFamily> structuralFamilyLabels = new ArrayList<>();
-                for (int i = 0; i < stringLabeledMatrix.getRowDimension(); i++) {
-                    String matrixLabel = stringLabeledMatrix.getRowLabel(i);
-                    if (Arrays.stream(AminoAcidFamily.values())
-                            .map(AminoAcidFamily::name)
-                            .anyMatch(name -> name.equals(matrixLabel))) {
-                        structuralFamilyLabels.add(AminoAcidFamily.valueOf(stringLabeledMatrix.getRowLabel(i)));
+                try (BufferedReader buffer = new BufferedReader(new InputStreamReader(resource))) {
+                    LabeledSymmetricMatrix<String> stringLabeledMatrix = (LabeledSymmetricMatrix<String>) Matrices
+                            .readLabeledMatrixFromCSV(buffer.lines());
+                    List<StructuralFamily> structuralFamilyLabels = new ArrayList<>();
+                    for (int i = 0; i < stringLabeledMatrix.getRowDimension(); i++) {
+                        String matrixLabel = stringLabeledMatrix.getRowLabel(i);
+                        if (Arrays.stream(AminoAcidFamily.values())
+                                .map(AminoAcidFamily::name)
+                                .anyMatch(name -> name.equals(matrixLabel))) {
+                            structuralFamilyLabels.add(AminoAcidFamily.valueOf(stringLabeledMatrix.getRowLabel(i)));
+                        }
                     }
+                    this.matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
+                    this.matrix.setRowLabels(structuralFamilyLabels);
                 }
-                this.matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
-                this.matrix.setRowLabels(structuralFamilyLabels);
             }
-        } catch (URISyntaxException | IOException ignored) {
+        } catch (IOException ignored) {
 
         }
     }

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Matrices {
 
@@ -188,8 +189,8 @@ public final class Matrices {
         return QRDecomposition.calculateQRDecomposition(matrix);
     }
 
-    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Path csvPath) throws IOException {
-        List<String[]> rawRows = Files.lines(csvPath)
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Stream<String> csvLines) throws IOException {
+        List<String[]> rawRows = csvLines
                 .map(line -> line.split(","))
                 .map(splittedLine -> Arrays.stream(splittedLine)
                         .filter(cell -> !cell.isEmpty())
@@ -235,9 +236,8 @@ public final class Matrices {
         }
     }
 
-    public static Matrix readUnlabeledMatrixFromCSV(Path csvPath) throws IOException {
-        List<String[]> rawRows = Files.lines(csvPath)
-                .map(line -> line.split(","))
+    public static Matrix readUnlabeledMatrixFromCSV(Stream<String> csvLines) throws IOException {
+        List<String[]> rawRows = csvLines.map(line -> line.split(","))
                 .map(splittedLine -> Arrays.stream(splittedLine)
                         .filter(cell -> !cell.isEmpty())
                         .toArray(String[]::new))
@@ -284,6 +284,14 @@ public final class Matrices {
         } else {
             return new RegularMatrix(values);
         }
+    }
+
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Path path) throws IOException {
+        return readLabeledMatrixFromCSV(Files.lines(path));
+    }
+
+    public static Matrix readUnlabeledMatrixFromCSV(Path path) throws IOException {
+        return readUnlabeledMatrixFromCSV(Files.lines(path));
     }
 
     /**
