@@ -96,9 +96,9 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
-                node.addEntity(entity, 1.0);
+                node.setConcentration(entity, 1.0);
             } else {
-                node.addEntity(entity, 0.0);
+                node.setConcentration(entity, 0.0);
             }
         }
 

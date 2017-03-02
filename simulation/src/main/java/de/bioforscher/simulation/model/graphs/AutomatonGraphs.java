@@ -4,14 +4,9 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.RegularNode;
 import de.bioforscher.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.units.quantities.MolarConcentration;
 
-import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -32,24 +27,11 @@ public class AutomatonGraphs {
     public static Map<String, ChemicalEntity> generateMapOfEntities(AutomatonGraph graph) {
         Map<String, ChemicalEntity> results = new HashMap<>();
         for (BioNode node : graph.getNodes()) {
-            for (ChemicalEntity entity : node.getConcentrations().keySet()) {
+            for (ChemicalEntity entity : node.getAllReferencedEntities()) {
                 results.put(entity.getName(), entity);
             }
         }
         return results;
-    }
-
-    /**
-     * Populates the given graph with the given chemical entity in the desired concentration.
-     *
-     * @param graph The graph to populate
-     * @param entity The chemical entity
-     * @param concentration The desired concentration.
-     */
-    public static void fillGraphWithEntity(AutomatonGraph graph, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        for (BioNode node : graph.getNodes()) {
-            node.addEntity(entity, concentration);
-        }
     }
 
     /**

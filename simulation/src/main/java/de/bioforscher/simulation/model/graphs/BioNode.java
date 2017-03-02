@@ -11,97 +11,48 @@ import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     private NodeState state;
-    private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
+    private ConcentrationContainer concentrations;
     private boolean isObserved;
-    private boolean isSource;
 
-    private String containingCompartment;
+    private String compartmentIdentifier;
 
     public BioNode(int identifier) {
         super(identifier);
         this.state = NodeState.AQUEOUS;
-        this.concentrations = new HashMap<>();
-        this.containingCompartment = "default";
+        this.compartmentIdentifier = "default";
+        this.concentrations = new MultiConcentrationContainer(this.compartmentIdentifier);
     }
 
-    public Set<BioNode> getNeighboursInState(NodeState state) {
-        return this.getNeighbours().stream()
-                .filter(node -> node.getState() == state)
-                .collect(Collectors.toSet());
-    }
-
-    public void addEntity(ChemicalEntity entity, double concentration) {
-        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE));
-    }
-
-    public void addEntity(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        setConcentration(entity, concentration);
-    }
-
-    public void addAllEntities(Quantity<MolarConcentration> concentration, ChemicalEntity... entities) {
+    public void setConcentrations(double concentration, ChemicalEntity... entities) {
         for (ChemicalEntity entity : entities) {
             setConcentration(entity, concentration);
         }
-    }
-
-    public void addAllEntities(double concentration, ChemicalEntity... entities) {
-        for (ChemicalEntity entity : entities) {
-            setConcentration(entity, concentration);
-        }
-    }
-
-    public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        if (!this.concentrations.containsKey(entity)) {
-            setConcentration(entity, 0.0);
-        }
-        return this.concentrations.get(entity);
-    }
-
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getConcentrations() {
-        return this.concentrations;
-    }
-
-    public void setConcentrations(Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations) {
-        this.concentrations = concentrations;
-    }
-
-    public HashMap<String, ChemicalEntity> getMapOfEntities() {
-        HashMap<String, ChemicalEntity> results = new HashMap<>();
-        for (ChemicalEntity entity : this.concentrations.keySet()) {
-            results.put(entity.getName(), entity);
-        }
-        return results;
-    }
-
-    public boolean isObserved() {
-        return this.isObserved;
-    }
-
-    public void setObserved(boolean isObserved) {
-        this.isObserved = isObserved;
-    }
-
-    public boolean isSource() {
-        return this.isSource;
-    }
-
-    public void setSource(boolean isSource) {
-        this.isSource = isSource;
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        this.concentrations.put(entity, quantity);
+        this.concentrations.setConcentration(entity, quantity);
     }
 
     public void setConcentration(ChemicalEntity entity, double value) {
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+    }
+
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
+        return this.concentrations.getAllConcentrations();
+    }
+
+    public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
+        return this.concentrations.getConcentration(entity);
+    }
+
+    public Set<ChemicalEntity> getAllReferencedEntities() {
+        return this.concentrations.getAllReferencedEntities();
     }
 
     public NodeState getState() {
@@ -112,20 +63,28 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         this.state = state;
     }
 
-    public double getSteepestConcentrationDifference(ChemicalEntity entity) {
+    public boolean isObserved() {
+        return this.isObserved;
+    }
+
+    public void setObserved(boolean isObserved) {
+        this.isObserved = isObserved;
+    }
+
+    public String getCompartmentIdentifier() {
+        return this.compartmentIdentifier;
+    }
+
+    public void setCompartmentIdentifier(String compartmentIdentifier) {
+        this.compartmentIdentifier = compartmentIdentifier;
+    }
+
+    double getSteepestConcentrationDifference(ChemicalEntity entity) {
         return this.getNeighbours().stream()
-                   .mapToDouble(neighbour ->
-                           Math.abs(this.getConcentration(entity).getValue().doubleValue() -
-                                   neighbour.getConcentration(entity).getValue().doubleValue()))
-                   .max().orElse(0.0);
-    }
-
-    public String getContainingCompartment() {
-        return this.containingCompartment;
-    }
-
-    public void setContainingCompartment(String containingCompartment) {
-        this.containingCompartment = containingCompartment;
+                .mapToDouble(neighbour ->
+                        Math.abs(this.getConcentration(entity).getValue().doubleValue() -
+                                neighbour.getConcentration(entity).getValue().doubleValue()))
+                .max().orElse(0.0);
     }
 
     @Override

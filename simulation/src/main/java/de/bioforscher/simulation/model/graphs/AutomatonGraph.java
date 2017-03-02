@@ -70,7 +70,7 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
         this.getNodes().forEach(node -> {
             if (node.getPosition().canBePlacedIn(r)) {
                 compartmentContent.add(node);
-                node.setContainingCompartment(compartmentIdentifier);
+                node.setCompartmentIdentifier(compartmentIdentifier);
             }
         });
         this.compartments.get(compartmentIdentifier).getContent().addAll(compartmentContent);

@@ -3,7 +3,6 @@ package de.bioforscher.simulation.model.compartments;
 import de.bioforscher.core.utility.Nameable;
 import de.bioforscher.mathematics.algorithms.graphs.ShortestPathFinder;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
 
 import java.util.*;
@@ -41,7 +40,7 @@ public class Compartment implements Nameable {
         // find starting point
         BioNode first = this.content.stream()
                 .filter(bioNode -> bioNode.getNeighbours().stream()
-                        .anyMatch(neighbour -> neighbour.getContainingCompartment().equals(this.getIdentifier())))
+                        .anyMatch(neighbour -> neighbour.getCompartmentIdentifier().equals(this.getIdentifier())))
                 .findAny().get();
 
         this.border.add(first);
@@ -97,7 +96,7 @@ public class Compartment implements Nameable {
     }
 
     private boolean isInThisCompartment(BioNode node) {
-        return node.getContainingCompartment().equals(this.getIdentifier());
+        return node.getCompartmentIdentifier().equals(this.getIdentifier());
     }
 
     private boolean hasNeighbourInOtherCompartment(BioNode node) {

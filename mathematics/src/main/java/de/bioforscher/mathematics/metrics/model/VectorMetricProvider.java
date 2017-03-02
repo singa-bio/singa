@@ -13,8 +13,7 @@ import java.util.Set;
 /**
  * This library provides some of the most used metrics ready to receive values to calculate distances of.
  *
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  */
 public final class VectorMetricProvider {
 

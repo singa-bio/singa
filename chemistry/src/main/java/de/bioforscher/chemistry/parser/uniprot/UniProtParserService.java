@@ -63,6 +63,7 @@ public class UniProtParserService extends AbstractXMLParser {
         WebTarget query = targetResource.path(this.identifier.toString() + ".xml");
         // build request
         Invocation.Builder invocationBuilder = query.request(MediaType.TEXT_PLAIN);
+        logger.info("Waiting for response.");
         // get response
         Response response = invocationBuilder.get();
         // set result

@@ -4,7 +4,6 @@ import de.bioforscher.core.events.UpdateEventListener;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.mathematics.geometry.edges.LineSegment;
-import de.bioforscher.simulation.model.compartments.Compartment;
 import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
@@ -51,10 +50,10 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
                 break;
             }
             case COMPARTMENT_BASED: {
-                if (node.getContainingCompartment().equals("default")) {
+                if (node.getCompartmentIdentifier().equals("default")) {
                     getGraphicsContext().setFill(Color.LIGHTGRAY);
                 } else {
-                    getGraphicsContext().setFill(ColorManager.getInstance().getCompartmentColor(node.getContainingCompartment()));
+                    getGraphicsContext().setFill(ColorManager.getInstance().getCompartmentColor(node.getCompartmentIdentifier()));
                 }
                 break;
             }

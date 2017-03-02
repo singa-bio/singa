@@ -31,7 +31,7 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
      * @param node
      */
     default void updateNode(BioNode node) {
-        node.getConcentrations().keySet().forEach(entity -> updateSpecies(node, entity));
+        node.getAllReferencedEntities().forEach(entity -> updateSpecies(node, entity));
     }
 
     /**

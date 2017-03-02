@@ -67,10 +67,10 @@ public class ReactionsTest {
 
         // set concentrations
         for (BioNode node : graph.getNodes()) {
-            node.addEntity(fp, 0.1);
-            node.addEntity(aldolase, 0.2);
-            node.addEntity(ga, 0);
-            node.addEntity(gp, 0);
+            node.setConcentration(fp, 0.1);
+            node.setConcentration(aldolase, 0.2);
+            node.setConcentration(ga, 0);
+            node.setConcentration(gp, 0);
         }
         // set permeability
         for (BioEdge edge : graph.getEdges()) {
@@ -93,14 +93,14 @@ public class ReactionsTest {
         Reactions reactions = new Reactions();
         reactions.getReactions().add(reaction);
 
-        String header = graph.getNode(0).getConcentrations().keySet().stream()
+        String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
                 .collect(Collectors.joining(","));
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
             reactions.applyTo(graph);
-            String csvLine = graph.getNode(0).getConcentrations().entrySet().stream()
+            String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
             System.out.println(time + "," + csvLine);
@@ -126,8 +126,8 @@ public class ReactionsTest {
                 .build();
 
         for (BioNode node : graph.getNodes()) {
-            node.addEntity(speciesA, 1.0);
-            node.addEntity(speciesB, 0.0);
+            node.setConcentration(speciesA, 1.0);
+            node.setConcentration(speciesB, 0.0);
         }
 
         for (BioEdge edge : graph.getEdges()) {
@@ -150,14 +150,14 @@ public class ReactionsTest {
         Reactions reactions = new Reactions();
         reactions.getReactions().add(reaction);
 
-        String header = graph.getNode(0).getConcentrations().keySet().stream()
+        String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
                 .collect(Collectors.joining(","));
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
             reactions.applyTo(graph);
-            String csvLine = graph.getNode(0).getConcentrations().entrySet().stream()
+            String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
             System.out.println(time + "," + csvLine);
@@ -186,9 +186,9 @@ public class ReactionsTest {
         Species oxygen = chebiService.fetchSpecies();
 
         for (BioNode node : graph.getNodes()) {
-            node.addEntity(dpo, 0.020);
-            node.addEntity(ndo, 0);
-            node.addEntity(oxygen, 0);
+            node.setConcentration(dpo, 0.020);
+            node.setConcentration(ndo, 0);
+            node.setConcentration(oxygen, 0);
         }
 
         for (BioEdge edge : graph.getEdges()) {
@@ -211,14 +211,14 @@ public class ReactionsTest {
         Reactions reactions = new Reactions();
         reactions.getReactions().add(reaction);
 
-        String header = graph.getNode(0).getConcentrations().keySet().stream()
+        String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
                 .collect(Collectors.joining(","));
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
             reactions.applyTo(graph);
-            String csvLine = graph.getNode(0).getConcentrations().entrySet().stream()
+            String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
             System.out.println(time + "," + csvLine);

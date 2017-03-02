@@ -12,7 +12,6 @@ import de.bioforscher.simulation.model.graphs.BioEdge;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.simulation.model.compartments.NodeState;
 import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
-import de.bioforscher.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.simulation.modules.reactions.implementations.EquilibriumReaction;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static de.bioforscher.units.UnitProvider.*;
-import static tec.units.ri.AbstractUnit.ONE;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -292,15 +290,15 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
-                node.addEntity(methanol, 1);
-                node.addEntity(ethyleneGlycol, 1);
-                node.addEntity(valine, 1);
-                node.addEntity(sucrose, 1);
+                node.setConcentration(methanol, 1);
+                node.setConcentration(ethyleneGlycol, 1);
+                node.setConcentration(valine, 1);
+                node.setConcentration(sucrose, 1);
             } else {
-                node.addEntity(methanol, 0);
-                node.addEntity(ethyleneGlycol, 0);
-                node.addEntity(valine, 0);
-                node.addEntity(sucrose, 0);
+                node.setConcentration(methanol, 0);
+                node.setConcentration(ethyleneGlycol, 0);
+                node.setConcentration(valine, 0);
+                node.setConcentration(sucrose, 0);
             }
         }
 
@@ -361,7 +359,7 @@ public class SimulationExamples {
                 GraphFactory.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0).addAllEntities(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
+        graph.getNode(0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
@@ -505,16 +503,16 @@ public class SimulationExamples {
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                node.addEntity(urea, 1.0);
-                node.addEntity(cobamamide, 1.0);
+                node.setConcentration(urea, 1.0);
+                node.setConcentration(cobamamide, 1.0);
                 node.setState(NodeState.AQUEOUS);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
-                node.addEntity(urea, 0.0);
-                node.addEntity(cobamamide, 0.0);
+                node.setConcentration(urea, 0.0);
+                node.setConcentration(cobamamide, 0.0);
                 node.setState(NodeState.MEMBRANE);
             } else {
-                node.addEntity(urea, 0.0);
-                node.addEntity(cobamamide, 0.0);
+                node.setConcentration(urea, 0.0);
+                node.setConcentration(cobamamide, 0.0);
                 node.setState(NodeState.AQUEOUS);
             }
         }

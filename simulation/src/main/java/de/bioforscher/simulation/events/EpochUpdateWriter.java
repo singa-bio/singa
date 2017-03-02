@@ -129,10 +129,10 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         int count = 0;
         for (ChemicalEntity entity : this.observedEntities) {
             if (count < this.observedEntities.size() - 1) {
-                sb.append(Double.toString(event.getNode().getConcentrations().get(entity).getValue().doubleValue()))
+                sb.append(Double.toString(event.getNode().getAllConcentrations().get(entity).getValue().doubleValue()))
                         .append(SEPARATOR_CHARACTER);
             } else {
-                sb.append(Double.toString(event.getNode().getConcentrations().get(entity).getValue().doubleValue()))
+                sb.append(Double.toString(event.getNode().getAllConcentrations().get(entity).getValue().doubleValue()))
                         .append(LINEBREAK);
             }
             count++;

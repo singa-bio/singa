@@ -11,8 +11,7 @@ import java.util.Map;
  * needs to be non-negative, symmetric, has a identity of indiscernibles, and satisfies the triangle inequality.
  *
  * @param <MetrizableType> A reference to the type of object that is to be compared.
- * @author Christoph Leberecht
- * @version cl
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Metric_(mathematics)">Wikipedia: Metric</a>
  */
 public interface Metric<MetrizableType> {

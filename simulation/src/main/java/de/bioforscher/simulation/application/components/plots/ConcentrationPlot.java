@@ -162,7 +162,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     public void onEventReceived(NodeUpdatedEvent event) {
 
         if (event.getNode().equals(this.referencedNode)) {
-            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = event.getNode().getConcentrations();
+            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = event.getNode().getAllConcentrations();
             // TODO iterate over species instead of series
             for (ChemicalEntity entity : this.observedEntities) {
                 // get associated value

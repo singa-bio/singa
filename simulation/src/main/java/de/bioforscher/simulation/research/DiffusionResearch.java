@@ -56,9 +56,9 @@ public class DiffusionResearch {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
-                speciesList.forEach(species -> node.addEntity(species, 1.0));
+                speciesList.forEach(species -> node.setConcentration(species, 1.0));
             } else {
-                speciesList.forEach(species -> node.addEntity(species, 0.0));
+                speciesList.forEach(species -> node.setConcentration(species, 0.0));
             }
         }
 

@@ -39,7 +39,7 @@ public interface CumulativeUpdateBehavior extends UpdateBehavior {
      * @return
      */
     default Set<PotentialUpdate> calculateNode(BioNode node) {
-        return node.getConcentrations().keySet().stream()
+        return node.getAllReferencedEntities().stream()
                 .map(entity -> calculateUpdate(node, entity))
                 .collect(Collectors.toSet());
     }
