@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.*;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.ChainFilter;
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isAminoAcid;
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isNucleotide;
 
@@ -47,7 +47,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                     .filter(ChainFilter.isInChain(leafIdentifer.getChainIdentifer()))
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new)
-                    .getSubstructure(leafIdentifer.getLeafIdentifer())
+                    .getSubstructure(leafIdentifer.getIdentifier())
                     .orElseThrow(NoSuchElementException::new);
             motif.addSubstructure(subStructure);
         });
@@ -97,8 +97,8 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                 .map(Nucleotide.class::cast)
                 .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getChainIdentifer()
                         .equals(leafIdentifier.getChainIdentifer()))
-                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getLeafIdentifer()
-                        == leafIdentifier.getLeafIdentifer())
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getIdentifier()
+                        == leafIdentifier.getIdentifier())
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new)
                 .addExchangeableFamily(nucleotideFamily);
@@ -110,8 +110,8 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                 .map(AminoAcid.class::cast)
                 .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getChainIdentifer()
                         .equals(leafIdentifier.getChainIdentifer()))
-                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getLeafIdentifer()
-                        == leafIdentifier.getLeafIdentifer())
+                .filter(aminoAcid -> aminoAcid.getLeafIdentifier().getIdentifier()
+                        == leafIdentifier.getIdentifier())
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new)
                 .addExchangeableFamily(aminoAcidFamily);

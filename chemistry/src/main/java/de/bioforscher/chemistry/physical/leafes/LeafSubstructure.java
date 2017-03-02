@@ -114,7 +114,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     @Override
     public int getIdentifier() {
-        return this.leafIdentifier.getLeafIdentifer();
+        return this.leafIdentifier.getIdentifier();
     }
 
     /**

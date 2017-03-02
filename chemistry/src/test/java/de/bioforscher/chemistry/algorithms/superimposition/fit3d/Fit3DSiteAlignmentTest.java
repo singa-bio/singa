@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author fk
@@ -76,10 +77,9 @@ public class Fit3DSiteAlignmentTest {
                 .exhaustive()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
-        System.out.println(fit3d.getXieScore());
-        Assert.assertEquals(2.7888003232092946, fit3d.getMatches().firstKey(),1E-6);
-        Assert.assertEquals(8.95782257821579, fit3d.getXieScore().getScore(), 1E-6);
-        Assert.assertEquals(0.0026668227445263426, fit3d.getXieScore().getSignificance(), 1E-6);
+        assertEquals(2.7888003232092946, fit3d.getMatches().firstKey(),1E-6);
+        assertEquals(8.95782257821579, fit3d.getXieScore().getScore(), 1E-6);
+        assertEquals(0.0026668227445263426, fit3d.getXieScore().getSignificance(), 1E-6);
     }
 
     @Test

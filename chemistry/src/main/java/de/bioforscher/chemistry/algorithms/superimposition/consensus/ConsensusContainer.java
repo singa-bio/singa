@@ -1,50 +1,43 @@
 package de.bioforscher.chemistry.algorithms.superimposition.consensus;
 
-import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.mathematics.graphs.trees.BinaryTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
+ * A container encapsulating a {@link StructuralMotif} with a {@link BinaryTree} that represents its associated
+ * consensus tree.
+ *
  * @author fk
  */
 public class ConsensusContainer {
 
-    private List<LeafSubstructure<?, ?>> leafSubstructures;
+    private StructuralMotif structuralMotif;
     private double consensusDistance;
     private BinaryTree<ConsensusContainer> consensusTree;
-    public ConsensusContainer(List<LeafSubstructure<?, ?>> leafSubstructures) {
-        this.leafSubstructures = leafSubstructures;
+    private SubstructureSuperimposition superimposition;
+
+    public ConsensusContainer(StructuralMotif structuralMotif) {
+        this.structuralMotif = structuralMotif;
         this.consensusDistance = 0.0;
     }
 
-    public ConsensusContainer() {
-        this(new ArrayList<>());
+    public SubstructureSuperimposition getSuperimposition() {
+        return this.superimposition;
+    }
+
+    public void setSuperimposition(SubstructureSuperimposition superimposition) {
+        this.superimposition = superimposition;
     }
 
     @Override
     public String toString() {
-        return this.leafSubstructures.stream()
-                .map(leafSubstructure -> leafSubstructure.getFamily().getOneLetterCode() + "-"
-                        + leafSubstructure.getIdentifier())
-                .collect(Collectors.joining("_")) + ":" + this.consensusDistance;
+        return this.structuralMotif.toString() +
+                ":" + this.consensusDistance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ConsensusContainer that = (ConsensusContainer) o;
-
-        return this.leafSubstructures != null ? this.leafSubstructures.equals(that.leafSubstructures) : that.leafSubstructures == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.leafSubstructures != null ? this.leafSubstructures.hashCode() : 0;
+    public StructuralMotif getStructuralMotif() {
+        return this.structuralMotif;
     }
 
     public BinaryTree<ConsensusContainer> getConsensusTree() {
@@ -55,10 +48,6 @@ public class ConsensusContainer {
         this.consensusTree = consensusTree;
     }
 
-    public void addLeaveStructure(LeafSubstructure<?, ?> leafSubstructure) {
-        this.leafSubstructures.add(leafSubstructure);
-    }
-
     public void addToConsensusDistance(double delta) {
         this.consensusDistance += delta;
     }
@@ -67,11 +56,18 @@ public class ConsensusContainer {
         return this.consensusDistance;
     }
 
-    public List<LeafSubstructure<?, ?>> getLeafSubstructures() {
-        return this.leafSubstructures;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ConsensusContainer that = (ConsensusContainer) o;
+
+        return this.structuralMotif != null ? this.structuralMotif.equals(that.structuralMotif) : that.structuralMotif == null;
     }
 
-    public void setLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures) {
-        this.leafSubstructures = leafSubstructures;
+    @Override
+    public int hashCode() {
+        return this.structuralMotif != null ? this.structuralMotif.hashCode() : 0;
     }
 }
