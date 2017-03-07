@@ -1,7 +1,7 @@
 package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
-import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.chemistry.descriptive.Protein;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.parser.FetchResultContainer;
 import de.bioforscher.core.parser.xml.AbstractXMLParser;
@@ -41,14 +41,14 @@ public class UniProtParserService extends AbstractXMLParser {
         setIdentifier(new UniProtIdentifier(uniProtIdentifier));
     }
 
-    public static Enzyme parse(String uniProtIdentifier) {
+    public static Protein parse(String uniProtIdentifier) {
         UniProtParserService parser = new UniProtParserService(uniProtIdentifier);
-        return parser.fetchChemicalEntity();
+        return parser.fetchProtein();
     }
 
-    public static Enzyme parse(String uniProtIdentifier, String primaryIdentifier) {
+    public static Protein parse(String uniProtIdentifier, String primaryIdentifier) {
         UniProtParserService parser = new UniProtParserService(uniProtIdentifier, primaryIdentifier);
-        return parser.fetchChemicalEntity();
+        return parser.fetchProtein();
     }
 
     public void setIdentifier(UniProtIdentifier identifier) {
@@ -77,7 +77,7 @@ public class UniProtParserService extends AbstractXMLParser {
         }
     }
 
-    public Enzyme fetchChemicalEntity() {
+    public Protein fetchProtein() {
         fetchResource();
         return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getChemicalSpecies();
     }

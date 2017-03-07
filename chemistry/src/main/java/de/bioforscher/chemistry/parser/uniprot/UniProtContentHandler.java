@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
+import de.bioforscher.chemistry.descriptive.Protein;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.biology.Organism;
@@ -64,14 +65,14 @@ public class UniProtContentHandler implements ContentHandler {
         this.textComments = new ArrayList<>();
     }
 
-    Enzyme getChemicalSpecies() {
+    Protein getChemicalSpecies() {
         // create base enzyme
-        Enzyme enzyme;
+        Protein enzyme;
         if (this.primaryIdentifier == null) {
-             enzyme = new Enzyme.Builder(this.identifier.toString())
-                .name(this.recommendedName)
-                .molarMass(this.molarMass)
-                .build();
+            enzyme = new Protein.Builder(this.identifier.toString())
+                    .name(this.recommendedName)
+                    .molarMass(this.molarMass)
+                    .build();
         } else {
             enzyme = new Enzyme.Builder(this.primaryIdentifier)
                     .additionalIdentifier(this.identifier)

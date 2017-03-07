@@ -224,7 +224,7 @@ public class SimulationExamples {
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
                 .molarMass(82142.0)
-                .criticalSubstrate(fructosePhosphate)
+                .addSubstrate(fructosePhosphate)
                 .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
                 .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
                 .build();
@@ -422,7 +422,6 @@ public class SimulationExamples {
         // BIOMD0000000023
         // BIOMD0000000064 //
         // BIOMD0000000184 // ca oscillations
-        // TODO revert previous step until a sufficient configuration has been found
 
         logger.info("Setting up simulation for model BIOMD0000000184 ...");
         SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000184");

@@ -1,6 +1,7 @@
 package de.bioforscher.chemistry.parser.uniprot;
 
 import de.bioforscher.chemistry.descriptive.Enzyme;
+import de.bioforscher.chemistry.descriptive.Protein;
 import de.bioforscher.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.core.biology.Organism;
@@ -33,7 +34,7 @@ public class UniProtParserTest {
                 if (i[0] % (10) == 0) {
                     System.out.println(i[0] + " of " + totalNumber + " parsed");
                 }
-                Enzyme entity = UniProtParserService.parse(accession);
+                Protein entity = UniProtParserService.parse(accession);
                 assertTrue(!entity.getName().equals(""));
                 i[0]++;
             });
@@ -45,7 +46,7 @@ public class UniProtParserTest {
 
     @Test
     public void testExemplaryUniProtAccession() {
-        Enzyme entity = UniProtParserService.parse("P12345");
+        Protein entity = UniProtParserService.parse("P12345");
         System.out.println("Primary name:");
         System.out.println(entity.getName());
         System.out.println();

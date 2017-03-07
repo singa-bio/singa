@@ -31,7 +31,7 @@ import static de.bioforscher.units.UnitProvider.PER_SECOND;
  * @see <a href="https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics">Wikipedia: Michaelis–Menten
  * kinetics</a>
  */
-public class Enzyme extends ChemicalEntity<SimpleStringIdentifier> {
+public class Enzyme extends Protein {
 
     /**
      * The michaelis constant is an inverse measure of the substrate's affinity to the enzyme.
@@ -49,38 +49,12 @@ public class Enzyme extends ChemicalEntity<SimpleStringIdentifier> {
     private List<Species> substrates;
 
     /**
-     * The primary or critical substrate used in a reaction.
-     */
-    private Species criticalSubstrate;
-
-    /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.
      *
      * @param identifier The {@link UniProtIdentifier}.
      */
     protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
-    }
-
-    /**
-     * Returns the critical Substrate.
-     *
-     * @return The critical Substrate.
-     */
-    public Species getCriticalSubstrate() {
-        return this.criticalSubstrate;
-    }
-
-    /**
-     * Sets the critical Substrate.
-     *
-     * @param criticalSubstrate The critical substrate.
-     */
-    public void setCriticalSubstrate(Species criticalSubstrate) {
-        this.criticalSubstrate = criticalSubstrate;
-        if (!this.substrates.contains(criticalSubstrate)) {
-            this.substrates.add(criticalSubstrate);
-        }
     }
 
     /**
@@ -155,71 +129,7 @@ public class Enzyme extends ChemicalEntity<SimpleStringIdentifier> {
         this.substrates = substrates;
     }
 
-    /**
-     * Adds an organism as an annotation.
-     *
-     * @param organism The organism.
-     */
-    public void addOrganism(Organism organism) {
-        addAnnotation(new Annotation<>(ORGANISM, organism));
-    }
 
-    /**
-     * Adds an organism with a description as an annotation to
-     *
-     * @param organism The organism.
-     * @param description The description.
-     */
-    public void addOrganism(Organism organism, String description) {
-        addAnnotation(new Annotation<>(ORGANISM, description, organism));
-    }
-
-    /**
-     * Retrieves all Organisms annotated.
-     *
-     * @return All Organisms annotated.
-     */
-    public List<Organism> getAllOrganisms() {
-        return getContentOfAnnotations(Organism.class, ORGANISM);
-    }
-
-    /**
-     * Tries to retrieve organisms with a certain description.
-     *
-     * @param description The description.
-     * @return The Organisms.
-     */
-    public List<Organism> getOrganismsWith(String description) {
-        return getContentOfAnnotations(Organism.class, description, ORGANISM);
-    }
-
-    /**
-     * Adds an amino acid sequence as an annotation.
-     *
-     * @param sequence The amino acid sequence.
-     */
-    public void addAminoAcidSequence(String sequence) {
-        addAnnotation(new Annotation<>(AMINO_ACID_SEQUENCE, sequence));
-    }
-
-    /**
-     * Gets all amino acid sequences annotated.
-     *
-     * @return The amino acid sequences.
-     */
-    public List<String> getAllAminoAcidSequences() {
-        return getContentOfAnnotations(String.class, AMINO_ACID_SEQUENCE);
-    }
-
-    /**
-     * Gets all amino acid sequences annotated with a certain description.
-     *
-     * @param description The description
-     * @return The amino acid sequences.
-     */
-    public List<String> getAllAminoAcidSequenceWith(String description) {
-        return getContentOfAnnotations(String.class, description, AMINO_ACID_SEQUENCE);
-    }
 
     @Override
     public String toString() {
@@ -254,11 +164,6 @@ public class Enzyme extends ChemicalEntity<SimpleStringIdentifier> {
 
         public Builder addSubstrate(Species substrate) {
             this.topLevelObject.getSubstrates().add(substrate);
-            return this;
-        }
-
-        public Builder criticalSubstrate(Species criticalSubstrate) {
-            this.topLevelObject.setCriticalSubstrate(criticalSubstrate);
             return this;
         }
 

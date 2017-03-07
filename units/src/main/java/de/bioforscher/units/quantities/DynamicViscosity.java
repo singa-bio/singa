@@ -8,7 +8,6 @@ import javax.measure.Quantity;
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 3.1
- * @see KinematicViscosity
  * @see <a href="http://en.wikipedia.org/wiki/Viscosity">Wikipedia: Viscosity</a>
  */
 public interface DynamicViscosity extends Quantity<DynamicViscosity> {

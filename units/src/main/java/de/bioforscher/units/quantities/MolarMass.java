@@ -7,7 +7,7 @@ import javax.measure.Quantity;
  * mass of a given substance (chemical element or chemical compound) divided by
  * its amount of substance.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface MolarMass extends Quantity<MolarMass> {
 

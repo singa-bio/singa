@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
+import static de.bioforscher.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
@@ -56,17 +56,17 @@ public class DiffusionGridSearch extends AbstractGridSearch {
         Species ethaneDiol = ChEBIParserService.parse("CHEBI:30742");
 
         this.lookupSpecies.put(hydrogen, Quantities.getQuantity(4.40E-05,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         this.lookupSpecies.put(ammonia, Quantities.getQuantity(2.28E-05,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         this.lookupSpecies.put(benzene, Quantities.getQuantity(1.09E-05,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         this.lookupSpecies.put(methanol, Quantities.getQuantity(1.66E-05,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         this.lookupSpecies.put(succinicAcid, Quantities.getQuantity(8.60E-06,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         this.lookupSpecies.put(ethaneDiol, Quantities.getQuantity(6.40E-06,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
 
 
     }

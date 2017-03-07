@@ -2,7 +2,7 @@ package de.bioforscher.simulation.parser.sbml;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.chemistry.descriptive.ComplexedChemicalEntity;
-import de.bioforscher.chemistry.descriptive.Enzyme;
+import de.bioforscher.chemistry.descriptive.Protein;
 import de.bioforscher.chemistry.descriptive.Species;
 import de.bioforscher.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.chemistry.parser.uniprot.UniProtParserService;
@@ -10,30 +10,27 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
-import de.bioforscher.simulation.model.compartments.*;
 import de.bioforscher.simulation.model.compartments.Compartment;
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
-import de.bioforscher.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
 import de.bioforscher.simulation.model.rules.AssignmentRule;
+import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.simulation.parser.sbml.converter.SBMLAssignmentRuleConverter;
 import de.bioforscher.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.simulation.parser.sbml.converter.SBMLReactionConverter;
 import de.bioforscher.simulation.parser.sbml.converter.SBMLUnitConverter;
-import org.sbml.jsbml.*;
+import org.sbml.jsbml.CVTerm;
+import org.sbml.jsbml.SBMLDocument;
+import org.sbml.jsbml.SBMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.AbstractUnit;
 import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.Units;
 
-import javax.measure.*;
 import javax.measure.Unit;
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author cl
@@ -325,7 +322,7 @@ public class SBMLParser {
             logger.debug("Parsed Chemical Entity as {}", parsedPart);
             this.entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
-            Species species = new Species.Builder(identifier).molarMass(10.0).build();
+            Species species = new de.bioforscher.chemistry.descriptive.Species.Builder(identifier).molarMass(10.0).build();
             logger.debug("Parsed Chemical Entity as {}", species);
             this.entities.put(identifier, species);
         } else {
@@ -349,7 +346,7 @@ public class SBMLParser {
                 logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
                 return Optional.of(this.entities.get(primaryIdentifier));
             } else {
-                Species species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
+                de.bioforscher.chemistry.descriptive.Species species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
                 this.entities.put(primaryIdentifier, species);
                 this.entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
@@ -363,10 +360,10 @@ public class SBMLParser {
                 logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
                 return Optional.of(this.entities.get(primaryIdentifier));
             } else {
-                Enzyme enzyme = UniProtParserService.parse(identifier.toString(), primaryIdentifier);
-                this.entities.put(primaryIdentifier, enzyme);
-                this.entitiesByDatabaseId.put(identifier, enzyme);
-                return Optional.of(enzyme);
+                Protein protein = UniProtParserService.parse(identifier.toString(), primaryIdentifier);
+                this.entities.put(primaryIdentifier, protein);
+                this.entitiesByDatabaseId.put(identifier, protein);
+                return Optional.of(protein);
             }
         }
         // no parser available
@@ -395,9 +392,9 @@ public class SBMLParser {
                 logger.debug("Already parsed Chemical Entity for {}", identifier);
                 return Optional.of(this.entitiesByDatabaseId.get(identifier));
             } else {
-                Enzyme enzyme = UniProtParserService.parse(identifier.toString());
-                this.entitiesByDatabaseId.put(identifier, enzyme);
-                return Optional.of(enzyme);
+                Protein protein = UniProtParserService.parse(identifier.toString());
+                this.entitiesByDatabaseId.put(identifier, protein);
+                return Optional.of(protein);
             }
         }
         // no parser available

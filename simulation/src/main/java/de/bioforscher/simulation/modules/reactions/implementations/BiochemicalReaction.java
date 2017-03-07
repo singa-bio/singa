@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author cl
  */
 public class BiochemicalReaction extends Reaction {
 
@@ -31,9 +31,9 @@ public class BiochemicalReaction extends Reaction {
 
     public BiochemicalReaction(Enzyme enzyme) {
         this.enzyme = enzyme;
-        this.kineticLaw = new MichaelisMentenWithKCat(enzyme.getCriticalSubstrate(), enzyme,
+        this.kineticLaw = new MichaelisMentenWithKCat(enzyme.getSubstrates().iterator().next(), enzyme,
                 new EntityDependentKineticParameter<>(KineticParameterType.MICHAELIS_CONSTANT,
-                        enzyme.getMichaelisConstant(), enzyme.getCriticalSubstrate()),
+                        enzyme.getMichaelisConstant(), enzyme.getSubstrates().iterator().next()),
                 new KineticParameter<>(KineticParameterType.CATALYTIC_CONSTANT, enzyme.getTurnoverNumber()));
     }
 

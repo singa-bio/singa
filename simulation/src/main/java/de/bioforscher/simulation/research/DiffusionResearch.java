@@ -20,7 +20,7 @@ import javax.measure.quantity.Time;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
+import static de.bioforscher.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
@@ -83,17 +83,17 @@ public class DiffusionResearch {
         FreeDiffusion freeDiffusion = new FreeDiffusion();
         // fix diffusion values from literature
         // freeDiffusion.fixDiffusionCoefficientForEntity(hydrogen, Quantities.getQuantity(4.40E-05,
-        //        SQUARECENTIMETER_PER_SECOND));
+        //        SQUARE_CENTIMETER_PER_SECOND));
         freeDiffusion.fixDiffusionCoefficientForEntity(ammonia, Quantities.getQuantity(2.28E-05,
-                SQUARECENTIMETER_PER_SECOND));
+                SQUARE_CENTIMETER_PER_SECOND));
         // freeDiffusion.fixDiffusionCoefficientForEntity(benzene, Quantities.getQuantity(1.09E-05,
-        //       SQUARECENTIMETER_PER_SECOND));
+        //       SQUARE_CENTIMETER_PER_SECOND));
         //freeDiffusion.fixDiffusionCoefficientForEntity(methanol, Quantities.getQuantity(1.66E-05,
-        //       SQUARECENTIMETER_PER_SECOND));
+        //       SQUARE_CENTIMETER_PER_SECOND));
         //freeDiffusion.fixDiffusionCoefficientForEntity(succinicAcid, Quantities.getQuantity(8.60E-06,
-        //        SQUARECENTIMETER_PER_SECOND));
+        //        SQUARE_CENTIMETER_PER_SECOND));
         //freeDiffusion.fixDiffusionCoefficientForEntity(ethaneDiol, Quantities.getQuantity(6.40E-06,
-        //        SQUARECENTIMETER_PER_SECOND));
+        //        SQUARE_CENTIMETER_PER_SECOND));
         // add diffusion module
         simulation.getModules().add(freeDiffusion);
         // add desired species to the simulation for easy access

@@ -60,7 +60,7 @@ public class ReactionsTest {
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
                 .molarMass(82142.0)
-                .criticalSubstrate(fp)
+                .addSubstrate(fp)
                 .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
                 .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
                 .build();

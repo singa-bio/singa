@@ -9,7 +9,7 @@ import javax.measure.Quantity;
  * the diffusivity (of one substance with respect to another), the faster they
  * diffuse into each other.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Diffusivity extends Quantity<Diffusivity> {
 

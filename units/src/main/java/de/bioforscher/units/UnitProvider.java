@@ -18,7 +18,7 @@ import static tec.units.ri.AbstractUnit.ONE;
  * This class defines some units commonly used in systems biology. I'll add
  * units and their interfaces as I need them.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public final class UnitProvider extends AbstractSystemOfUnits {
 
@@ -32,6 +32,9 @@ public final class UnitProvider extends AbstractSystemOfUnits {
      */
     private final Map<Class<? extends Quantity>, AbstractUnit> quantityToUnit = new HashMap<>();
 
+    public static final Unit<Permeability> CENTIMETER_PER_SECOND = addUnit(
+            new ProductUnit<>(METRE.divide(100).divide(SECOND)), Permeability.class);
+
     /**
      * Diffusivity or diffusion coefficient is a proportionality constant
      * between the molar flux due to molecular diffusion and the gradient in the
@@ -39,7 +42,7 @@ public final class UnitProvider extends AbstractSystemOfUnits {
      * higher the diffusivity (of one substance with respect to another), the
      * faster they diffuse into each other.
      */
-    public static final Unit<Diffusivity> SQUARECENTIMETER_PER_SECOND = addUnit(
+    public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = addUnit(
             new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND)), Diffusivity.class);
 
     /**
@@ -47,8 +50,8 @@ public final class UnitProvider extends AbstractSystemOfUnits {
      * mass of a given substance (chemical element or chemical compound) divided
      * by its amount of substance.
      */
-    public static final Unit<MolarMass> GRAM_PER_MOLE = addUnit(new ProductUnit<>(GRAM.divide(MOLE)),
-            MolarMass.class);
+    public static final Unit<MolarMass> GRAM_PER_MOLE = addUnit(
+            new ProductUnit<>(GRAM.divide(MOLE)), MolarMass.class);
 
     /**
      * Molar concentration, also called molarity, amount concentration or

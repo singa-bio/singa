@@ -7,7 +7,7 @@ import javax.measure.Quantity;
  * concentration, is a measure of the concentration of a solute in a solution,
  * or of any chemical species in terms of amount of substance in a given volume.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface MolarConcentration extends Quantity<MolarConcentration> {
 

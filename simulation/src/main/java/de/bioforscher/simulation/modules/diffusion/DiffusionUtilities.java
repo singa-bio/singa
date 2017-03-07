@@ -15,7 +15,7 @@ import javax.measure.quantity.Time;
 
 import static de.bioforscher.simulation.model.parameters.EnvironmentalParameterDefaults.WATER;
 import static de.bioforscher.units.UnitProvider.GRAM_PER_MOLE;
-import static de.bioforscher.units.UnitProvider.SQUARECENTIMETER_PER_SECOND;
+import static de.bioforscher.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
 import static java.lang.Math.log;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.AbstractUnit.ONE;
@@ -98,7 +98,7 @@ public final class DiffusionUtilities {
                 * (EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue()
                 / (EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()
                 * Math.cbrt(chemicalEntity.getMolarMass().getValue().doubleValue())));
-        return Quantities.getQuantity(diffusivity, SQUARECENTIMETER_PER_SECOND);
+        return Quantities.getQuantity(diffusivity, SQUARE_CENTIMETER_PER_SECOND);
     }
 
     /**
@@ -119,7 +119,7 @@ public final class DiffusionUtilities {
         final double divisor = EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()
                 * Math.pow(estimateMolarVolume(chemicalEntity), 0.6);
         // D = a / b
-        return Quantities.getQuantity(dividend / divisor, SQUARECENTIMETER_PER_SECOND);
+        return Quantities.getQuantity(dividend / divisor, SQUARE_CENTIMETER_PER_SECOND);
     }
 
     /**
