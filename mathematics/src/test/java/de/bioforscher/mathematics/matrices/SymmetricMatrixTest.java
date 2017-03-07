@@ -4,7 +4,9 @@ import de.bioforscher.mathematics.vectors.RegularVector;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -79,7 +81,7 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldRetrieveValueForLabel() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
@@ -88,7 +90,6 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetStringRepresentation() {
-
         LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
@@ -101,11 +102,24 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetStringRepresentationWithoutLabels() {
-
         LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         assertEquals("1.000000,2.000000,3.000000\n" +
                 "2.000000,4.000000,5.000000\n" +
                 "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
+    }
+
+    @Test
+    public void shouldRetrieveLabelsOfSymmetricMatrix(){
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        lsm.setRowLabel("L1", 0);
+        lsm.setRowLabel("L2", 1);
+        lsm.setRowLabel("L3", 2);
+        List<String> labelsToCheck = new ArrayList<>();
+        labelsToCheck.add("L1");
+        labelsToCheck.add("L2");
+        labelsToCheck.add("L3");
+        assertTrue(lsm.getRowLabels().equals(labelsToCheck));
+        assertTrue(lsm.getColumnsLabels().equals(labelsToCheck));
     }
 
     @Test

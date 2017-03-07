@@ -5,16 +5,15 @@ import de.bioforscher.mathematics.vectors.RegularVector;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by fkaiser on 04.10.16.
  */
 public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements LabeledMatrix<LabelType> {
+
+    private static final long serialVersionUID = 6232384719610197540L;
 
     private final Map<LabelType, Integer> rowLabelMap;
     private final Map<LabelType, Integer> columnLabelMap;
@@ -27,8 +26,9 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public void setRowLabel(LabelType label, int rowIndex) {
-        if (rowIndex > getRowDimension())
+        if (rowIndex > getRowDimension()) {
             throw new IllegalArgumentException("specified index " + rowIndex + " exceeds row dimension " + getRowDimension());
+        }
         this.rowLabelMap.put(label, rowIndex);
     }
 
@@ -45,13 +45,22 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
     @Override
     public LabelType getRowLabel(int rowIndex) {
         return this.rowLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("no row label exists for row index " + rowIndex));
+    }
+
+    @Override
+    public List<LabelType> getRowLabels() {
+        return this.rowLabelMap.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void setColumnLabel(LabelType label, int columnIndex) {
-        if (columnIndex > getColumnDimension())
+        if (columnIndex > getColumnDimension()) {
             throw new IllegalArgumentException("specified index " + columnIndex + " exceeds column dimension " + getColumnDimension());
+        }
         this.columnLabelMap.put(label, columnIndex);
     }
 
@@ -68,7 +77,15 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
     @Override
     public LabelType getColumnLabel(int columnIndex) {
         return this.columnLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(columnIndex)).map(Map.Entry::getKey)
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("no column label exists for column index " + columnIndex));
+    }
+
+    @Override
+    public List<LabelType> getColumnsLabels() {
+        return this.columnLabelMap.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override

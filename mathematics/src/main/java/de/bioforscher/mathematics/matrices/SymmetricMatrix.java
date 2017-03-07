@@ -13,6 +13,8 @@ import de.bioforscher.mathematics.exceptions.MalformedMatrixException;
  */
 public class SymmetricMatrix extends SquareMatrix {
 
+    private static final long serialVersionUID = -6578419947334743873L;
+
     /**
      * Creates a new {@code SymmetricMatrix} with the given double values. The first index of the double array
      * represents the row index and the second index represents the column index. <br>

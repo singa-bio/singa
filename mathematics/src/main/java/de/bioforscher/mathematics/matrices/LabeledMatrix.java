@@ -39,6 +39,12 @@ public interface LabeledMatrix<LabelType> {
     LabelType getRowLabel(int rowIndex);
 
     /**
+     * Returns all row labels as list.
+     * @return The row labels as list.
+     */
+    List<LabelType> getRowLabels();
+
+    /**
      * Sets all row labels at once, using the index of the label in the list.
      *
      * @param labels The labels.
@@ -72,6 +78,12 @@ public interface LabeledMatrix<LabelType> {
      * @return The label of the column.
      */
     LabelType getColumnLabel(int columnIndex);
+
+    /**
+     * Returns all column labels as list.
+     * @return The column labels as list.
+     */
+    List<LabelType> getColumnsLabels();
 
     /**
      * Sets all column labels at once, using the index of the label in the list.

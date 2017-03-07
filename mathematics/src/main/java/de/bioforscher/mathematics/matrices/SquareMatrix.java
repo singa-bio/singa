@@ -8,6 +8,8 @@ import de.bioforscher.mathematics.vectors.Vector;
  */
 public class SquareMatrix extends RegularMatrix {
 
+    private static final long serialVersionUID = -8834271370988935890L;
+
     /**
      * Creates a new {@code SquareMatrix} with the given double values. The first index of the double array
      * represents the row index and the second index represents the column index. <br>

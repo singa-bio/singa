@@ -11,6 +11,7 @@ import de.bioforscher.mathematics.vectors.Vector;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -194,7 +195,7 @@ public class RegularMatrixTest {
 
     @Test
     public void testToString() {
-        String expected = " 9,00 10,00 11,00\n12,00 13,00 14,00\n";
+        String expected = " 9.00 10.00 11.00\n12.00 13.00 14.00\n";
         assertEquals(expected, this.twoTimesThree.toString());
     }
 
@@ -314,5 +315,24 @@ public class RegularMatrixTest {
         assertTrue(column.equals(new RegularVector(1.0, 2.0)));
         RegularVector row = lrm.getColumnByLabel("C1");
         assertTrue(row.equals(new RegularVector(1.0, 3.0, 5.0)));
+    }
+
+    @Test
+    public void shouldRetrieveLabelsOfSymmetricMatrix(){
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        lrm.setRowLabel("R3", 2);
+        lrm.setRowLabel("R2", 1);
+        lrm.setRowLabel("R1", 0);
+        lrm.setColumnLabel("C1", 0);
+        lrm.setColumnLabel("C2", 1);
+        List<String> rowLabelsToCheck = new ArrayList<>();
+        rowLabelsToCheck.add("R1");
+        rowLabelsToCheck.add("R2");
+        rowLabelsToCheck.add("R3");
+        List<String> columnLabelsToCheck = new ArrayList<>();
+        columnLabelsToCheck.add("C1");
+        columnLabelsToCheck.add("C2");
+        assertTrue(lrm.getRowLabels().equals(rowLabelsToCheck));
+        assertTrue(lrm.getColumnsLabels().equals(columnLabelsToCheck));
     }
 }

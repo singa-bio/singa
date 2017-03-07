@@ -5,16 +5,15 @@ import de.bioforscher.mathematics.vectors.RegularVector;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by Christoph on 21.06.2016.
  */
 public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implements LabeledMatrix<LabelType> {
+
+    private static final long serialVersionUID = 2860722869189599846L;
 
     private Map<LabelType, Integer> labelMap;
 
@@ -60,12 +59,25 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     @Override
     public LabelType getRowLabel(int rowIndex) {
         return this.labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("no label exists for index " + rowIndex));
+    }
+
+    @Override
+    public List<LabelType> getRowLabels() {
+        return this.labelMap.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
     public LabelType getColumnLabel(int columnIndex) {
         return getRowLabel(columnIndex);
+    }
+
+    @Override
+    public List<LabelType> getColumnsLabels() {
+        return getRowLabels();
     }
 
     @Override
