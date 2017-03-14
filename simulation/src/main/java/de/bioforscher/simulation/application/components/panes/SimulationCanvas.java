@@ -7,7 +7,8 @@ import de.bioforscher.simulation.application.BioGraphSimulation;
 import de.bioforscher.simulation.application.components.menus.BioGraphContextMenu;
 import de.bioforscher.simulation.application.components.menus.BioNodeContextMenu;
 import de.bioforscher.simulation.application.renderer.BioGraphRenderer;
-import de.bioforscher.simulation.model.compartments.Compartment;
+import de.bioforscher.simulation.model.compartments.CellSection;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
@@ -52,9 +53,10 @@ public class SimulationCanvas extends Canvas {
             } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 this.renderer.getGraphicsContext().setFill(Color.DARKOLIVEGREEN.deriveColor(1, 1, 1, 0.5));
                 Rectangle rectangle = this.renderer.drawDraggedRectangle(this.dragStart, new Vector2D(event.getX(), event.getY()));
-                Compartment compartment = this.owner.getCompartmentControlPanel().getSelectedCompartment();
-                if (compartment != null) {
-                    this.owner.getGraph().addNodesToCompartment(compartment.getIdentifier(), rectangle);
+                CellSection cellSection = this.owner.getCompartmentControlPanel().getSelectedCellSection();
+                if (cellSection != null && cellSection instanceof EnclosedCompartment) {
+                    this.owner.getGraph().addNodesToCompartment((EnclosedCompartment) cellSection, rectangle);
+                    this.owner.getCompartmentControlPanel().updateData(this.owner.getGraph().getSections());
                 }
                 this.draw();
             }

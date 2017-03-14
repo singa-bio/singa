@@ -1,6 +1,7 @@
 package de.bioforscher.simulation.model.graphs;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.simulation.model.compartments.CellSection;
 import de.bioforscher.units.UnitProvider;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
@@ -17,12 +18,18 @@ import java.util.Set;
 public class MultiConcentrationContainer implements ConcentrationContainer {
 
     private Set<ChemicalEntity> referencedEntities;
-    private Map<String, Map<ChemicalEntity, Quantity<MolarConcentration>>> concentrations;
+    private Map<CellSection, Map<ChemicalEntity, Quantity<MolarConcentration>>> concentrations;
 
-    public MultiConcentrationContainer(String defaultCompartment) {
+    public MultiConcentrationContainer(CellSection cellSection) {
         this.referencedEntities = new HashSet<>();
         this.concentrations = new HashMap<>();
-        this.concentrations.put(defaultCompartment, new HashMap<>());
+        this.concentrations.put(cellSection, new HashMap<>());
+    }
+
+    public MultiConcentrationContainer(Set<CellSection> cellSections) {
+        this.referencedEntities = new HashSet<>();
+        this.concentrations = new HashMap<>();
+        cellSections.forEach(compartment -> this.concentrations.put(compartment, new HashMap<>()));
     }
 
     @Override
@@ -31,14 +38,13 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
         return Quantities.getQuantity(this.concentrations.keySet().stream()
                 .mapToDouble(identifier -> getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue())
                 .average().orElse(0.0), UnitProvider.MOLE_PER_LITRE);
-
     }
 
     @Override
-    public Quantity<MolarConcentration> getAvailableConcentration(String compartmentIdentifier, ChemicalEntity chemicalEntity) {
-        if (this.concentrations.containsKey(compartmentIdentifier) &&
-                this.concentrations.get(compartmentIdentifier).containsKey(chemicalEntity)) {
-            return this.concentrations.get(compartmentIdentifier).get(chemicalEntity);
+    public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
+        if (this.concentrations.containsKey(cellSection) &&
+                this.concentrations.get(cellSection).containsKey(chemicalEntity)) {
+            return this.concentrations.get(cellSection).get(chemicalEntity);
         }
         // FIXME this always assumes mol/l
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
@@ -46,24 +52,29 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        this.concentrations.keySet().forEach(identifier -> setAvailableConcentration(identifier, chemicalEntity, concentration));
+        this.concentrations.keySet().forEach(compartment -> setAvailableConcentration(compartment, chemicalEntity, concentration));
     }
 
     @Override
-    public void setAvailableConcentration(String compartmentIdentifier, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
+    public void setAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
         this.referencedEntities.add(chemicalEntity);
-        if (this.concentrations.containsKey(compartmentIdentifier)) {
-            this.concentrations.get(compartmentIdentifier).put(chemicalEntity, concentration);
+        if (this.concentrations.containsKey(cellSection)) {
+            this.concentrations.get(cellSection).put(chemicalEntity, concentration);
         } else {
             Map<ChemicalEntity, Quantity<MolarConcentration>> concentrationMap = new HashMap<>();
             concentrationMap.put(chemicalEntity, concentration);
-            this.concentrations.put(compartmentIdentifier, concentrationMap);
+            this.concentrations.put(cellSection, concentrationMap);
         }
     }
 
     @Override
     public Set<ChemicalEntity> getAllReferencedEntities() {
         return this.referencedEntities;
+    }
+
+    @Override
+    public Set<CellSection> getAllReferencedSections() {
+        return this.concentrations.keySet();
     }
 
     @Override

@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public class MembraneProtein extends Protein {
 
-    private Compartment sourceCompartment;
-    private Compartment targetCompartment;
+    private EnclosedCompartment sourceEnclosedCompartment;
+    private EnclosedCompartment targetEnclosedCompartment;
 
     private Map<ChemicalEntity, Permeability> basePermeability;
 

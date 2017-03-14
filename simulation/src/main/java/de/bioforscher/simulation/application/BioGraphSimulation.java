@@ -125,7 +125,7 @@ public class BioGraphSimulation extends Application {
         mISpeciesOverview.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN));
         mISpeciesOverview.setOnAction(this::showSpeciesOverview);
 
-        // Species Overview
+        // Module Overview
         MenuItem mIModuleOverview = new MenuItem("Modules", new ImageView(IconProvider.MOLECULE_ICON_IMAGE));
         mIModuleOverview.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.ALT_DOWN));
         mIModuleOverview.setOnAction(this::showModuleOverview);

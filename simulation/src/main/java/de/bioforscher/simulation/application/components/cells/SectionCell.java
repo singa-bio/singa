@@ -2,7 +2,9 @@ package de.bioforscher.simulation.application.components.cells;
 
 import de.bioforscher.simulation.application.IconProvider;
 import de.bioforscher.simulation.application.renderer.ColorManager;
-import de.bioforscher.simulation.model.compartments.Compartment;
+import de.bioforscher.simulation.model.compartments.CellSection;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.simulation.model.compartments.Membrane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -14,14 +16,14 @@ import javafx.scene.text.FontWeight;
 /**
  * @author cl
  */
-public class CompartmentCell extends ListCell<Compartment> {
+public class SectionCell extends ListCell<CellSection> {
 
     private GridPane grid = new GridPane();
     private Label name = new Label();
     private Label identifier = new Label();
     private Label legendIndicator = new Label();
 
-    public CompartmentCell() {
+    public SectionCell() {
         configureGrid();
         configureName();
         configureLegendIndicator();
@@ -45,7 +47,15 @@ public class CompartmentCell extends ListCell<Compartment> {
 
     private void configureLegendIndicator() {
         this.legendIndicator.setFont(IconProvider.FONT_AWESOME_LARGE);
-        this.legendIndicator.setText(IconProvider.FontAwesome.ICON_CUBE);
+    }
+
+    private void updateLegendIndicator(CellSection cellSection) {
+        if (cellSection instanceof EnclosedCompartment) {
+            this.legendIndicator.setText(IconProvider.FontAwesome.ICON_SQUARE_FULL);
+        } else {
+            this.legendIndicator.setText(IconProvider.FontAwesome.ICON_SQUARE_EMPTY);
+        }
+        this.legendIndicator.setTextFill(ColorManager.getInstance().getColor(cellSection));
     }
 
     private void addControlsToGrid() {
@@ -55,7 +65,7 @@ public class CompartmentCell extends ListCell<Compartment> {
     }
 
     @Override
-    public void updateItem(Compartment entity, boolean empty) {
+    public void updateItem(CellSection entity, boolean empty) {
         super.updateItem(entity, empty);
         if (empty) {
             clearContent();
@@ -69,13 +79,13 @@ public class CompartmentCell extends ListCell<Compartment> {
         setGraphic(null);
     }
 
-    private void addContent(Compartment compartment) {
+    private void addContent(CellSection cellSection) {
         setText(null);
-        this.legendIndicator.setTextFill(ColorManager.getInstance().getColor(compartment));
-        this.name.setText(compartment.getName());
-        this.identifier.setText(compartment.getIdentifier());
+        updateLegendIndicator(cellSection);
+        this.name.setText(cellSection.getName());
+        this.identifier.setText(cellSection.getIdentifier());
         setGraphic(this.grid);
-        this.name.setText(compartment.getName());
+        this.name.setText(cellSection.getName());
         setGraphic(this.grid);
     }
 

@@ -59,7 +59,8 @@ public class IconProvider {
         public static final String ICON_LINE_CHART = "\uf201";
         public static final String ICON_FILE_XML = "\uf1c9";
         public static final String ICON_DATABASE = "\uf1c0";
-        public static final String ICON_CUBE = "\uf1b2";
+        public static final String ICON_SQUARE_FULL = "\uf0c8";
+        public static final String ICON_SQUARE_EMPTY = "\uf096";
 
         // adapted from: http://www.jensd.de/wordpress/?p=132
 

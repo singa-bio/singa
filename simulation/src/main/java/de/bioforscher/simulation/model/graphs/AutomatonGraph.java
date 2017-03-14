@@ -4,7 +4,9 @@ import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.mathematics.vectors.Vector2D;
-import de.bioforscher.simulation.model.compartments.Compartment;
+import de.bioforscher.simulation.model.compartments.CellSection;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.simulation.model.compartments.Membrane;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
@@ -19,15 +21,15 @@ import static de.bioforscher.units.UnitProvider.MOLE_PER_LITRE;
 
 public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
 
-    private Map<String, Compartment> compartments;
+    private Map<String, CellSection> sections;
 
     public AutomatonGraph() {
-        this.compartments = new HashMap<>();
+        this.sections = new HashMap<>();
     }
 
     public AutomatonGraph(int nodeCapacity, int edgeCapacity) {
         super(nodeCapacity, edgeCapacity);
-        this.compartments = new HashMap<>();
+        this.sections = new HashMap<>();
     }
 
     @Override
@@ -56,25 +58,27 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
                 .max().orElse(0.0), MOLE_PER_LITRE);
     }
 
-    public Set<Compartment> getCompartments() {
-        return new HashSet<>(this.compartments.values());
+    public Set<CellSection> getSections() {
+        return new HashSet<>(this.sections.values());
     }
 
-    public void addCompartment(Compartment compartment) {
-        this.compartments.put(compartment.getIdentifier(), compartment);
+    public void addSection(CellSection cellSection) {
+        this.sections.put(cellSection.getIdentifier(), cellSection);
     }
 
-    public void addNodesToCompartment(String compartmentIdentifier, Rectangle rectangle) {
+    public void addNodesToCompartment(EnclosedCompartment enclosedCompartment, Rectangle rectangle) {
         Set<BioNode> compartmentContent = new HashSet<>();
         Rectangle r = new Rectangle(rectangle.getTopRightVertex(), rectangle.getBottomLeftVertex());
         this.getNodes().forEach(node -> {
             if (node.getPosition().canBePlacedIn(r)) {
                 compartmentContent.add(node);
-                node.setCompartmentIdentifier(compartmentIdentifier);
+                node.setCellSection(enclosedCompartment);
             }
         });
-        this.compartments.get(compartmentIdentifier).getContent().addAll(compartmentContent);
-        this.compartments.get(compartmentIdentifier).generateBorder(this);
+        this.sections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
+        Membrane membrane = enclosedCompartment.generateMembrane();
+        enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
+        this.sections.put(membrane.getIdentifier(), membrane);
     }
 
 }

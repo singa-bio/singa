@@ -431,7 +431,7 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
                 GraphFactory.buildGridGraph(20, 20, defaultBoundingBox, false));
 
-        model.getCompartments().keySet().forEach(graph::addCompartment);
+        model.getCompartments().keySet().forEach(graph::addSection);
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");

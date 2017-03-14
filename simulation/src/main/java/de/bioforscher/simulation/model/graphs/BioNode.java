@@ -3,12 +3,13 @@ package de.bioforscher.simulation.model.graphs;
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.simulation.model.compartments.CellSection;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.simulation.model.compartments.NodeState;
 import de.bioforscher.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,13 +21,13 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     private ConcentrationContainer concentrations;
     private boolean isObserved;
 
-    private String compartmentIdentifier;
+    private CellSection cellSection;
 
     public BioNode(int identifier) {
         super(identifier);
         this.state = NodeState.AQUEOUS;
-        this.compartmentIdentifier = "default";
-        this.concentrations = new MultiConcentrationContainer(this.compartmentIdentifier);
+        this.cellSection = new EnclosedCompartment("default", "Default Compartment");
+        this.concentrations = new MultiConcentrationContainer(this.cellSection);
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -71,12 +72,20 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         this.isObserved = isObserved;
     }
 
-    public String getCompartmentIdentifier() {
-        return this.compartmentIdentifier;
+    public CellSection getCellSection() {
+        return this.cellSection;
     }
 
-    public void setCompartmentIdentifier(String compartmentIdentifier) {
-        this.compartmentIdentifier = compartmentIdentifier;
+    public void setCellSection(CellSection cellSection) {
+        this.cellSection = cellSection;
+    }
+
+    public ConcentrationContainer getConcentrations() {
+        return this.concentrations;
+    }
+
+    public void setConcentrations(ConcentrationContainer concentrations) {
+        this.concentrations = concentrations;
     }
 
     double getSteepestConcentrationDifference(ChemicalEntity entity) {

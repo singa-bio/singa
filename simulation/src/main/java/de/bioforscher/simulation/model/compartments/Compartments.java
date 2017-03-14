@@ -1,7 +1,6 @@
 package de.bioforscher.simulation.model.compartments;
 
 import de.bioforscher.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.simulation.model.graphs.BioNode;
 import de.bioforscher.units.quantities.MolarConcentration;
 
@@ -17,17 +16,16 @@ public final class Compartments {
     }
 
     /**
-     * Fills a {@link Compartment} with the given concentration of a {@link ChemicalEntity}.
+     * Fills a {@link EnclosedCompartment} with the given concentration of a {@link ChemicalEntity}.
      *
-     * @param compartment The {@link Compartment} to fill
+     * @param enclosedCompartment The {@link EnclosedCompartment} to fill
      * @param chemicalEntity The {@link ChemicalEntity}
      * @param concentration The concentration.
      */
-    public static void fillCompartmentWithEntity(Compartment compartment, ChemicalEntity<?> chemicalEntity, Quantity<MolarConcentration> concentration) {
-        for (BioNode node: compartment.getContent()) {
+    public static void fillCompartmentWithEntity(EnclosedCompartment enclosedCompartment, ChemicalEntity<?> chemicalEntity, Quantity<MolarConcentration> concentration) {
+        for (BioNode node: enclosedCompartment.getContent()) {
             node.setConcentration(chemicalEntity, concentration);
         }
     }
-
 
 }

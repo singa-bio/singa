@@ -1,8 +1,9 @@
 package de.bioforscher.simulation.application.components.controlpanles;
 
-import de.bioforscher.simulation.application.components.cells.CompartmentCell;
+import de.bioforscher.simulation.application.components.cells.SectionCell;
 import de.bioforscher.simulation.application.renderer.ColorManager;
-import de.bioforscher.simulation.model.compartments.Compartment;
+import de.bioforscher.simulation.model.compartments.CellSection;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.simulation.modules.model.Simulation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,12 +18,12 @@ import java.util.Collection;
  */
 public class CompartmentControlPanel extends GridPane {
 
-    private ObservableList<Compartment> observedCompartments = FXCollections.observableArrayList();
+    private ObservableList<CellSection> observedCompartments = FXCollections.observableArrayList();
 
-    private ListView<Compartment> compartmentList = new ListView<>();
+    private ListView<CellSection> compartmentList = new ListView<>();
 
     public CompartmentControlPanel(Simulation simulation) {
-        initializeData(simulation.getGraph().getCompartments());
+        initializeData(simulation.getGraph().getSections());
         configureGrid();
         configureCompartmentList();
         addControlsToGrid();
@@ -35,26 +36,35 @@ public class CompartmentControlPanel extends GridPane {
     }
 
     private void configureCompartmentList() {
-        this.compartmentList.setCellFactory(param -> new CompartmentCell());
+        this.compartmentList.setCellFactory(param -> new SectionCell());
         this.compartmentList.setItems(this.observedCompartments);
     }
 
 
-    public Compartment getSelectedCompartment() {
+    public CellSection getSelectedCellSection() {
         return this.compartmentList.getSelectionModel().getSelectedItem();
     }
 
     @Override
-    public void resize(double width,double height) {
+    public void resize(double width, double height) {
         super.resize(width, height);
         this.compartmentList.setPrefWidth(width);
         this.compartmentList.setPrefHeight(height);
     }
 
-    private void initializeData(Collection<Compartment> compartments) {
-        compartments.forEach((compartment) -> {
-            this.observedCompartments.add(compartment);
-            ColorManager.getInstance().setColor(compartment, ColorManager.generateRandomColor());
+    private void initializeData(Collection<CellSection> cellSections) {
+        cellSections.forEach((cellSection) -> {
+            this.observedCompartments.add(cellSection);
+            ColorManager.getInstance().setColor(cellSection, ColorManager.generateRandomColor());
+        });
+    }
+
+    public void updateData(Collection<CellSection> cellSections) {
+        cellSections.forEach((cellSection) -> {
+            if (!this.observedCompartments.contains(cellSection)) {
+                this.observedCompartments.add(cellSection);
+                ColorManager.getInstance().setColor(cellSection, ColorManager.generateRandomColor());
+            }
         });
     }
 

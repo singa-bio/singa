@@ -50,10 +50,10 @@ public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonG
                 break;
             }
             case COMPARTMENT_BASED: {
-                if (node.getCompartmentIdentifier().equals("default")) {
+                if (node.getCellSection().getIdentifier().equals("default")) {
                     getGraphicsContext().setFill(Color.LIGHTGRAY);
                 } else {
-                    getGraphicsContext().setFill(ColorManager.getInstance().getCompartmentColor(node.getCompartmentIdentifier()));
+                    getGraphicsContext().setFill(ColorManager.getInstance().getSectionColor(node.getCellSection().getIdentifier()));
                 }
                 break;
             }

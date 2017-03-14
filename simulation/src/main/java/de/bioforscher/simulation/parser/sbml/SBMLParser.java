@@ -10,7 +10,7 @@ import de.bioforscher.core.identifier.ChEBIIdentifier;
 import de.bioforscher.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.core.identifier.UniProtIdentifier;
 import de.bioforscher.core.identifier.model.Identifier;
-import de.bioforscher.simulation.model.compartments.Compartment;
+import de.bioforscher.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.simulation.model.rules.AssignmentRule;
 import de.bioforscher.simulation.modules.reactions.implementations.DynamicReaction;
@@ -44,7 +44,7 @@ public class SBMLParser {
     // the units
     private Map<String, Unit<?>> units;
     // the controlpanles mapped to their sizes
-    private Map<Compartment, Double> compartments;
+    private Map<EnclosedCompartment, Double> compartments;
     // the chemical entities
     private Map<String, ChemicalEntity> entities;
     // their starting concentrations
@@ -87,7 +87,7 @@ public class SBMLParser {
         return this.entities;
     }
 
-    public Map<Compartment, Double> getCompartments() {
+    public Map<EnclosedCompartment, Double> getCompartments() {
         return this.compartments;
     }
 
@@ -121,7 +121,7 @@ public class SBMLParser {
     private void parseCompartments() {
         logger.info("Parsing Compartments ...");
         this.document.getModel().getListOfCompartments().forEach(compartment -> {
-            Compartment singaCompartment = new Compartment(compartment.getId(), compartment.getName());
+            EnclosedCompartment singaCompartment = new EnclosedCompartment(compartment.getId(), compartment.getName());
             this.compartments.put(singaCompartment, compartment.getSize());
             this.globalParameters.put(singaCompartment.getIdentifier(),
                     new SimulationParameter<>(singaCompartment.getIdentifier(),
