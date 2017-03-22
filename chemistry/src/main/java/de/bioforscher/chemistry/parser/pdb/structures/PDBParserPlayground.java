@@ -6,7 +6,7 @@ import de.bioforscher.chemistry.physical.viewer.StructureViewer;
 import javafx.application.Application;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -38,12 +38,12 @@ public class PDBParserPlayground {
         // LeafIdentifiers.of("A-36", "B-67", "B-60", "B-204")).toStructure();
 
         // they all have the same ligand
-        List<Structure> structures = StructureParser.online()
-                .identifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
+        Structure structure = StructureParser.online()
+                .identifier("1pqs")
                 .parse();
 
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
-        StructureViewer.structure = structures.get(1);
+        StructureViewer.structure = structure;
         Application.launch(StructureViewer.class);
 
     }

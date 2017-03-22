@@ -60,11 +60,17 @@ public class StructureCollector {
     }
 
     private void reduceLines() {
-        logger.debug("Collecting content from {} PDB lines", this.pdbLines.size());
         String firstLine = this.pdbLines.get(0);
         // parse meta information
         if (TitleToken.RECORD_PATTERN.matcher(firstLine).matches()) {
             this.currentPDB = TitleToken.ID_CODE.extract(firstLine);
+        }
+        if (this.reducer.parseMapping) {
+            this.reducer.updatePDBIdentifer();
+            this.reducer.updateChain();
+            this.reduceToChain(this.reducer.chainIdentifier);
+            logger.info("Parsing structure {} chain {}", this.reducer.pdbIdentifier, this.reducer.chainIdentifier);
+            return;
         }
         if (!this.reducer.allModels) {
             // parse only specific model
@@ -126,7 +132,7 @@ public class StructureCollector {
     }
 
     private Structure collectStructure() {
-
+        logger.debug("Collecting content from {} PDB lines", this.pdbLines.size());
         collectAtomInformation();
         createContentTree();
 
@@ -218,7 +224,7 @@ public class StructureCollector {
     }
 
     private LeafSubstructure<?, ?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {
-        LeafSkeleton leafSkeleton = null;
+        LeafSkeleton leafSkeleton;
         if (!this.reducer.skeletons.containsKey(leafName)) {
             leafSkeleton = LigandParserService.parseLeafSkeleton(leafName);
             this.reducer.skeletons.put(leafName, leafSkeleton);

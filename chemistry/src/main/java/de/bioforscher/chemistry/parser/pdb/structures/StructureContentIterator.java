@@ -1,5 +1,6 @@
 package de.bioforscher.chemistry.parser.pdb.structures;
 
+import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +10,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -25,11 +23,28 @@ class StructureContentIterator implements Iterator<List<String>> {
 
     private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
     private static final String PDB_BASE_PATH = "data/structures/divided/pdb";
+
     private StructureParser.LocalPDB localPdb;
+
+    enum SourceLocation {
+        ONLINE, OFFLINE
+    }
+
     private List<URL> identifiers;
     private List<Path> paths;
+
+    private List<String> pdbIds;
+    private Iterator<String> pdbIdIterator;
+    private String currentPDBId;
+
+    private List<String> chains;
+    private Iterator<String> chainIterator;
+    private String currentChain;
+
     private Iterator<URL> currentURL;
     private Iterator<Path> currentPath;
+
+
     private SourceLocation location;
 
     public StructureContentIterator(String identifier) {
@@ -47,19 +62,45 @@ class StructureContentIterator implements Iterator<List<String>> {
     public StructureContentIterator(StructureParser.LocalPDB localPdb, String identifier) {
         this.localPdb = localPdb;
         this.paths = new ArrayList<>();
-        prepareIdentifiers(Collections.singletonList(identifier));
+        this.pdbIds = new ArrayList<>();
+        prepareLocalPDB(Collections.singletonList(identifier));
     }
 
     public StructureContentIterator(StructureParser.LocalPDB localPdb, List<String> identifiers) {
         this.localPdb = localPdb;
         this.paths = new ArrayList<>();
+        this.pdbIds = new ArrayList<>();
         prepareLocalPDB(identifiers);
     }
 
+    public StructureContentIterator(List<Pair<String>> mapping, StructureParser.LocalPDB localPDB) {
+        // sorry for the argument switch to work around erasure :(
+        this.localPdb = localPDB;
+        this.paths = new ArrayList<>();
+        this.pdbIds = new ArrayList<>();
+        this.chains = new ArrayList<>();
+        prepareMappedLocalPDB(mapping);
+    }
+
+    public StructureContentIterator(List<Pair<String>> mapping) {
+        this.paths = new ArrayList<>();
+        this.identifiers = new ArrayList<>();
+        this.pdbIds = new ArrayList<>();
+        this.chains = new ArrayList<>();
+        prepareMappedIdentifiers(mapping);
+    }
+
+    /**
+     * Creates a new Iterator based on the context of parsing.
+     *
+     * @param context The context.
+     * @param identifiers The identifier to parse
+     */
     @SuppressWarnings("unchecked")
     public StructureContentIterator(Class<?> context, List<?> identifiers) {
         this.paths = new ArrayList<>();
-        this.identifiers = new ArrayList<>();
+        this.identifiers = new ArrayList<>();this.pdbIds = new ArrayList<>();
+
         if (context.equals(String.class)) {
             // identifiers for pdb online
             prepareIdentifiers((List<String>) identifiers);
@@ -76,11 +117,13 @@ class StructureContentIterator implements Iterator<List<String>> {
         for (String identifier : identifiers) {
             try {
                 this.identifiers.add(new URL(String.format(PDB_FETCH_URL, identifier)));
+                this.pdbIds.add(identifier);
             } catch (MalformedURLException e) {
                 throw new UncheckedIOException("Malformed URL to PDB", e);
             }
         }
         this.currentURL = this.identifiers.iterator();
+        this.pdbIdIterator = this.pdbIds.iterator();
         this.location = SourceLocation.ONLINE;
     }
 
@@ -101,9 +144,39 @@ class StructureContentIterator implements Iterator<List<String>> {
     private void prepareLocalPDB(List<String> identifiers) {
         for (String identifier : identifiers) {
             this.paths.add(assemblePath(identifier));
+            this.pdbIds.add(identifier);
         }
         this.currentPath = this.paths.iterator();
+        this.pdbIdIterator = this.pdbIds.iterator();
         this.location = SourceLocation.OFFLINE;
+    }
+
+    private void prepareMappedLocalPDB(List<Pair<String>> mapping) {
+        for (Pair<String> pair : mapping) {
+            this.paths.add(assemblePath(pair.getFirst()));
+            this.pdbIds.add(pair.getFirst());
+            this.chains.add(pair.getSecond());
+        }
+        this.currentPath = this.paths.iterator();
+        this.pdbIdIterator = this.pdbIds.iterator();
+        this.chainIterator = this.chains.iterator();
+        this.location = SourceLocation.OFFLINE;
+    }
+
+    private void prepareMappedIdentifiers(List<Pair<String>> mapping) {
+        for (Pair<String> pair : mapping) {
+            try {
+                this.identifiers.add(new URL(String.format(PDB_FETCH_URL, pair.getFirst())));
+                this.pdbIds.add(pair.getFirst());
+                this.chains.add(pair.getSecond());
+            } catch (MalformedURLException e) {
+                throw new UncheckedIOException("Malformed URL to PDB", e);
+            }
+        }
+        this.currentURL = this.identifiers.iterator();
+        this.pdbIdIterator = this.pdbIds.iterator();
+        this.chainIterator = this.chains.iterator();
+        this.location = SourceLocation.ONLINE;
     }
 
     private Path assemblePath(String identifier) {
@@ -129,6 +202,23 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
     }
 
+    public String getCurrentPDBId() {
+        if (this.currentPDBId != null) {
+            return this.currentPDBId;
+        } else {
+            throw new IllegalStateException("Unable to retrieve the PDB Identifier in the current state.");
+        }
+    }
+
+    public String getCurrentChain() {
+        if (this.currentChain != null) {
+            return this.currentChain;
+        } else {
+            throw new IllegalStateException("Unable to retrieve chain Identifier in the current state.");
+        }
+
+    }
+
     @Override
     public boolean hasNext() {
         if (this.location == SourceLocation.ONLINE) {
@@ -140,6 +230,13 @@ class StructureContentIterator implements Iterator<List<String>> {
 
     @Override
     public List<String> next() {
+        if (this.pdbIds != null && !this.pdbIds.isEmpty()) {
+            // TODO speed this up by not parsing the same id twice but using previous information
+            this.currentPDBId = this.pdbIdIterator.next();
+            if (this.chains != null) {
+                this.currentChain = this.chainIterator.next();
+            }
+        }
         if (this.location == SourceLocation.OFFLINE) {
             try {
                 Path path = this.currentPath.next();
@@ -158,6 +255,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                 throw new UncheckedIOException("Could not open input stream for URL.", e);
             }
         }
+
     }
 
     private List<String> fetchLines(InputStream inputStream) throws IOException {
@@ -166,10 +264,6 @@ class StructureContentIterator implements Iterator<List<String>> {
                 return bufferedReader.lines().collect(Collectors.toList());
             }
         }
-    }
-
-    enum SourceLocation {
-        ONLINE, OFFLINE
     }
 
 }

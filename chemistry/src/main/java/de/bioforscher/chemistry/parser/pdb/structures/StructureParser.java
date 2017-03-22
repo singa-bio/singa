@@ -2,11 +2,12 @@ package de.bioforscher.chemistry.parser.pdb.structures;
 
 import de.bioforscher.chemistry.parser.pdb.structures.tokens.LeafSkeleton;
 import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.core.utility.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.UncheckedIOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -19,15 +20,25 @@ public class StructureParser {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureParser.class);
 
+    /**
+     * Structures will be retrieved from a local source.
+     *
+     * @return Source selection
+     */
     public static LocalSourceStep local() {
         return new SourceSelector();
     }
 
+    /**
+     * Structures will be pulled online.
+     *
+     * @return Source selection
+     */
     public static IdentifierStep online() {
         return new SourceSelector();
     }
 
-    public interface IdentifierStep {
+    public interface IdentifierStep extends AdditionalLocalSourceStep{
 
         /**
          * The identifier of the PDB structure.
@@ -81,13 +92,72 @@ public class StructureParser {
          */
         MultiBranchStep paths(List<Path> paths);
 
+        /**
+         * The location of a local PDB installation. This requires the input of a chin list in the following step.
+         *
+         * @param localPDB The local pdb.
+         * @return Additional local list file selection.
+         */
+        AdditionalLocalSourceStep localPDB(LocalPDB localPDB);
+
+        /**
+         * The location of a local PDB installation in addition to the structure, that is to be parsed.
+         *
+         * @param localPDB   The local pdb.
+         * @param identifier The identifier.
+         * @return Branch selection
+         */
         SingleBranchStep localPDB(LocalPDB localPDB, String identifier);
 
+        /**
+         * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
+         *
+         * @param localPDB    The local pdb.
+         * @param identifiers The identifiers.
+         * @return Branch selection
+         */
         MultiBranchStep localPDB(LocalPDB localPDB, List<String> identifiers);
 
+        /**
+         * The location of a file as a sting.
+         *
+         * @param location The location.
+         * @return Branch selection
+         */
         SingleBranchStep fileLocation(String location);
 
+        /**
+         * The location of files as strings.
+         *
+         * @param targetStructures The locations
+         * @return Branch selection
+         */
         MultiBranchStep fileLocations(List<String> targetStructures);
+
+    }
+
+    public interface AdditionalLocalSourceStep {
+
+        /**
+         * Reads the provided chain list from a file. Each line in the file should have the format:
+         * <pre>[PDBId][separator][ChainId] </pre>
+         * The default separator is tab (\t).
+         *
+         * @param path The path of the chain list file
+         * @return The MultiParser.
+         */
+        MultiParser chainList(Path path);
+
+        /**
+         * Reads the provided chain list from a file. Each line in the file should have the format:
+         * <pre>[PDBId][separator][ChainId] </pre>
+         *
+         * @param path      The path of the chain list file
+         * @param separator The separator between the PDBId and the ChainId
+         * @return The MultiParser.
+         */
+        MultiParser chainList(Path path, String separator);
+
     }
 
 
@@ -219,6 +289,11 @@ public class StructureParser {
             return new MultiParser(this);
         }
 
+        private MultiParser mapping() {
+            this.parseMapping = true;
+            return new MultiParser(this);
+        }
+
         @Override
         public MultiParser chain(String chainIdentifier) {
             setChain(chainIdentifier);
@@ -288,10 +363,13 @@ public class StructureParser {
 
         Map<String, LeafSkeleton> skeletons;
 
+        String pdbIdentifier;
         int modelIdentifier;
         String chainIdentifier;
+
         boolean allModels;
         boolean allChains;
+        boolean parseMapping = false;
 
         /**
          * signifies that models should be reduced in any way
@@ -315,6 +393,14 @@ public class StructureParser {
             this.allChains = true;
         }
 
+        public void updatePDBIdentifer() {
+            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPDBId();
+        }
+
+        public void updateChain() {
+            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChain();
+        }
+
         public void setChain(String chainIdentifier) {
             Objects.requireNonNull(chainIdentifier);
             this.chainIdentifier = chainIdentifier;
@@ -329,9 +415,11 @@ public class StructureParser {
 
     }
 
-    public static class SourceSelector implements LocalSourceStep, IdentifierStep {
+    public static class SourceSelector implements LocalSourceStep, IdentifierStep, AdditionalLocalSourceStep {
 
         StructureContentIterator contentIterator;
+
+        private LocalPDB localPDB;
 
         @Override
         public SingleBranchStep identifier(String identifier) {
@@ -370,14 +458,20 @@ public class StructureParser {
         }
 
         @Override
+        public AdditionalLocalSourceStep localPDB(LocalPDB localPDB) {
+            this.localPDB = localPDB;
+            return this;
+        }
+
+        @Override
         public MultiBranchStep localPDB(LocalPDB localPDB, List<String> identifiers) {
             this.contentIterator = new StructureContentIterator(localPDB, identifiers);
             return new MultiReducingSelector(this);
         }
 
         @Override
-        public SingleBranchStep localPDB(LocalPDB localPDB, String identifiers) {
-            this.contentIterator = new StructureContentIterator(localPDB, identifiers);
+        public SingleBranchStep localPDB(LocalPDB localPDB, String identifier) {
+            this.contentIterator = new StructureContentIterator(localPDB, identifier);
             return new SingleReducingSelector(this);
         }
 
@@ -395,6 +489,46 @@ public class StructureParser {
             this.contentIterator = new StructureContentIterator(Path.class, paths);
             return new MultiReducingSelector(this);
         }
+
+        @Override
+        public MultiParser chainList(Path path, String separator) {
+            try {
+                if (this.localPDB != null) {
+                    this.contentIterator = new StructureContentIterator(readMappingFile(path, separator), this.localPDB);
+                } else {
+                    this.contentIterator = new StructureContentIterator(readMappingFile(path, separator));
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException("Could not open input stream for mapping file.", e);
+            }
+            return new MultiReducingSelector(this).mapping();
+        }
+
+        @Override
+        public MultiParser chainList(Path path) {
+            return chainList(path, "\t");
+        }
+
+        private List<Pair<String>> readMappingFile(Path mappingPath, String separator) throws IOException {
+            InputStream inputStream = Files.newInputStream(mappingPath);
+            try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+                try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                    return composePairsForChainList(bufferedReader.lines().collect(Collectors.toList()), separator);
+                }
+            }
+        }
+
+        private List<Pair<String>> composePairsForChainList(List<String> lines, String separator) {
+            ArrayList<Pair<String>> pairs = new ArrayList<>();
+            for (String line : lines) {
+                String[] split = line.split(separator);
+                // first contains pdbid and second contains chain
+                pairs.add(new Pair<>(split[0], split[1]));
+            }
+            return pairs;
+        }
+
+
     }
 
     /**
