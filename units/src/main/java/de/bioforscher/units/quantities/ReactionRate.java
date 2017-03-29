@@ -3,8 +3,7 @@ package de.bioforscher.units.quantities;
 import javax.measure.Quantity;
 
 /**
- * A first-order reaction is a reaction that proceeds at a rate that depends
- * linearly on only one reactant concentration.
+ * The reaction rate defines hof often a reaction occurs in a given time regime.
  *
  * @author cl
  */

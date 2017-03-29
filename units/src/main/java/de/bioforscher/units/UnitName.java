@@ -1,5 +1,8 @@
 package de.bioforscher.units;
 
+/**
+ * The unit names required for SBML. This class provides a mapping between SBML and units of measurement.
+ */
 public enum UnitName {
 
     METRE("m"),

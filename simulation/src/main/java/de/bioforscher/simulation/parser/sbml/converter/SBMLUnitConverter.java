@@ -1,6 +1,6 @@
 package de.bioforscher.simulation.parser.sbml.converter;
 
-import de.bioforscher.units.UnitUtilities;
+import de.bioforscher.units.UnitPrefixes;
 import org.sbml.jsbml.ListOf;
 import org.sbml.jsbml.UnitDefinition;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class SBMLUnitConverter {
         for (org.sbml.jsbml.Unit sbmlUnit : unitDefinition.getListOfUnits()) {
             Unit unitComponent = getUnitForKind(sbmlUnit.getKind());
             unitComponent = unitComponent.transform(
-                    UnitUtilities.getUnitPrefixFromScale(sbmlUnit.getScale()).getCorrespondingConverter());
+                    UnitPrefixes.getUnitPrefixFromScale(sbmlUnit.getScale()).getCorrespondingConverter());
             unitComponent = unitComponent.pow((int) sbmlUnit.getExponent());
             unitComponent = unitComponent.multiply(sbmlUnit.getMultiplier());
             resultUnit = resultUnit.multiply(unitComponent);

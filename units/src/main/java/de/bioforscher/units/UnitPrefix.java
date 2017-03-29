@@ -6,6 +6,9 @@ import tec.units.ri.unit.MetricPrefix;
 import javax.measure.UnitConverter;
 import java.util.EnumSet;
 
+/**
+ * The unit prefixes required for SBML. This class provides a mapping between SBML and units of measurement.
+ */
 public enum UnitPrefix {
 
     TERA(12, "T", MetricPrefix.TERA.getConverter()),

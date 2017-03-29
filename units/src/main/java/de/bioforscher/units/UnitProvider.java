@@ -15,8 +15,7 @@ import static tec.units.ri.unit.Units.*;
 import static tec.units.ri.AbstractUnit.ONE;
 
 /**
- * This class defines some units commonly used in systems biology. I'll add
- * units and their interfaces as I need them.
+ * This class defines some units commonly used in systems biology.
  *
  * @author cl
  */
@@ -31,9 +30,6 @@ public final class UnitProvider extends AbstractSystemOfUnits {
      * Holds the mapping quantity to unit.
      */
     private final Map<Class<? extends Quantity>, AbstractUnit> quantityToUnit = new HashMap<>();
-
-    public static final Unit<Permeability> CENTIMETER_PER_SECOND = addUnit(
-            new ProductUnit<>(METRE.divide(100).divide(SECOND)), Permeability.class);
 
     /**
      * Diffusivity or diffusion coefficient is a proportionality constant
@@ -63,18 +59,19 @@ public final class UnitProvider extends AbstractSystemOfUnits {
             new ProductUnit<>(MOLE.divide(LITRE)), MolarConcentration.class);
 
     /**
-     * A first-order reaction is a reaction that proceeds at a rate that depends
-     * linearly on only one reactant concentration.
+     * For Reaction that are occurring secondly.
      */
     public static final Unit<ReactionRate> PER_SECOND = addUnit(new ProductUnit<>(ONE.divide(SECOND)),
             ReactionRate.class);
 
+    /**
+     * For Reaction that are occurring minutely.
+     */
     public static final Unit<ReactionRate> PER_MINUTE = addUnit(new ProductUnit<>(ONE.divide(MINUTE)),
             ReactionRate.class);
 
     /**
-     * The SI unit for dynamic viscosity quantities (standard name
-     * <code>Pa.s</code>).
+     * The SI unit for dynamic viscosity quantities.
      */
     public static final Unit<DynamicViscosity> PASCAL_SECOND = addUnit(
             new ProductUnit<>(PASCAL.multiply(SECOND)), DynamicViscosity.class);

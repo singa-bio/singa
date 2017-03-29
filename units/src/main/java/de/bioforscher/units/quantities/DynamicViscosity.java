@@ -3,12 +3,10 @@ package de.bioforscher.units.quantities;
 import javax.measure.Quantity;
 
 /**
- * Dynamic viscosity.
- * The system unit for this quantity is "Pa.s" (Pascal-Second).
+ * The dynamic (shear) viscosity of a fluid expresses its resistance to shearing flows, where adjacent layers move
+ * parallel to each other with different speeds.
  *
- * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
- * @version 3.1
- * @see <a href="http://en.wikipedia.org/wiki/Viscosity">Wikipedia: Viscosity</a>
+ * @author cl
  */
 public interface DynamicViscosity extends Quantity<DynamicViscosity> {
 

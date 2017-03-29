@@ -6,7 +6,7 @@ import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.simulation.modules.model.Simulation;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
-import de.bioforscher.units.UnitUtilities;
+import de.bioforscher.units.UnitPrefixes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -81,8 +81,8 @@ public class SBMLModelExportService {
     }
 
     private Element createOneDimensionalUnitDefinition(Quantity<?> quantity) {
-        UnitName distanceUnitName = UnitUtilities.getUnitNameFromUnit(quantity.getUnit());
-        UnitPrefix distancePrefix = UnitUtilities.getUnitPrefixFromUnit(quantity.getUnit());
+        UnitName distanceUnitName = UnitPrefixes.getUnitNameFromUnit(quantity.getUnit());
+        UnitPrefix distancePrefix = UnitPrefixes.getUnitPrefixFromUnit(quantity.getUnit());
 
         Element nodeDistanceUnitDefinition = this.document.createElement("unitDefinition");
         nodeDistanceUnitDefinition.setAttribute("id", quantity.getUnit().toString());
@@ -105,17 +105,17 @@ public class SBMLModelExportService {
 
         Element nodeDistanceUnitDefinition = this.document.createElement("unitDefinition");
         nodeDistanceUnitDefinition.setAttribute("id",
-                UnitUtilities.formatMultidimensionalUnit(quantity.getUnit()));
+                UnitPrefixes.formatMultidimensionalUnit(quantity.getUnit()));
 
         Element units = this.document.createElement("listOfUnits");
 
-        UnitPrefix globalPrefix = UnitUtilities.getUnitPrefixFromDivisor(quantity.getUnit());
+        UnitPrefix globalPrefix = UnitPrefixes.getUnitPrefixFromDivisor(quantity.getUnit());
         boolean usedGlaobalPrefix = false;
 
         Map<? extends Unit<?>, Integer> unitsMap = quantity.getUnit().getBaseUnits();
         for (Unit<?> unit : unitsMap.keySet()) {
-            UnitName unitName = UnitUtilities.getUnitNameFromUnit(unit);
-            UnitPrefix prefix = UnitUtilities.getUnitPrefixFromUnit(unit);
+            UnitName unitName = UnitPrefixes.getUnitNameFromUnit(unit);
+            UnitPrefix prefix = UnitPrefixes.getUnitPrefixFromUnit(unit);
             Element componentUnit = this.document.createElement("unit");
             componentUnit.setAttribute("kind", unitName.toString().toLowerCase());
             if (prefix != UnitPrefix.NO_PREFIX) {
@@ -171,7 +171,7 @@ public class SBMLModelExportService {
         systemViscosityParameter.setAttribute("id", "SystemViscosity");
         systemViscosityParameter.setAttribute("value",
                 String.valueOf(EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()));
-        systemViscosityParameter.setAttribute("units", UnitUtilities.formatMultidimensionalUnit(
+        systemViscosityParameter.setAttribute("units", UnitPrefixes.formatMultidimensionalUnit(
                 EnvironmentalParameters.getInstance().getSystemViscosity().getUnit()));
 
         parameters.appendChild(systemViscosityParameter);

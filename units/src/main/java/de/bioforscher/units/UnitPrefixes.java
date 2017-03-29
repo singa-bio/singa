@@ -10,8 +10,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UnitUtilities {
+/**
+ * This class provides methods to handle unit prefixes, scales and names.
+ */
+public class UnitPrefixes {
 
+    /**
+     * recognizes if a string contains a divisor
+     */
     private static Pattern divisorPattern = Pattern.compile(".+/1(\\d+)");
 
     /**
@@ -101,7 +107,7 @@ public class UnitUtilities {
         sb.append(getUnitPrefixFromDivisor(multiDimensionalUnit).getSymbol());
         Map<? extends Unit<?>, Integer> unitsMap = multiDimensionalUnit.getBaseUnits();
         for (Unit<?> compoundUnit : unitsMap.keySet()) {
-            UnitName unitName = UnitUtilities.getUnitNameFromUnit(compoundUnit);
+            UnitName unitName = UnitPrefixes.getUnitNameFromUnit(compoundUnit);
             sb.append(unitName.getSymbol());
         }
         return sb.toString();
@@ -116,15 +122,25 @@ public class UnitUtilities {
      * @return A list of units with prefixes as string
      */
     public static List<String> generateUnitNamesForPrefixes(EnumSet<UnitPrefix> prefixes, UnitName unitName) {
-        return prefixes.stream().sorted(Comparator.comparingInt(UnitPrefix::getScale)).map(prefix ->
-                prefix.getSymbol() + unitName.getSymbol()).collect(Collectors.toList());
+        return prefixes.stream()
+                .sorted(Comparator.comparingInt(UnitPrefix::getScale))
+                .map(prefix -> prefix.getSymbol() + unitName.getSymbol())
+                .collect(Collectors.toList());
     }
 
-
+    /**
+     * Generates a list of units for the all supplied prefixes in combination with the supplied unit.
+     * @param prefixes A set of prefixes.
+     * @param unit The unit to be modified.
+     * @param <Q> The resulting unit type.
+     * @return a list of units for the all supplied prefixes.
+     */
     public static <Q extends Quantity<Q>> List<Unit<Q>> generateUnitsForPrefixes(EnumSet<UnitPrefix> prefixes, Unit<Q>
             unit) {
-        return prefixes.stream().sorted(Comparator.comparingInt(UnitPrefix::getScale)).map(p -> unit
-                .transform(p.getCorrespondingConverter())).collect(Collectors.toList());
+        return prefixes.stream()
+                .sorted(Comparator.comparingInt(UnitPrefix::getScale))
+                .map(p -> unit.transform(p.getCorrespondingConverter()))
+                .collect(Collectors.toList());
     }
 
 }

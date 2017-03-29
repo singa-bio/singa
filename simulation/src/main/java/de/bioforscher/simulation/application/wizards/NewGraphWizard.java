@@ -7,7 +7,7 @@ import de.bioforscher.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.units.UnitName;
 import de.bioforscher.units.UnitPrefix;
-import de.bioforscher.units.UnitUtilities;
+import de.bioforscher.units.UnitPrefixes;
 import de.bioforscher.units.quantities.DynamicViscosity;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -220,7 +220,7 @@ class EnvironmentalConfigurationPage extends WizardPage {
         content.add(this.spNodeDistance, 1, 0, 1, 1);
 
         this.cbNodeDistance = new ComboBox<>();
-        this.cbNodeDistance.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix
+        this.cbNodeDistance.getItems().addAll(UnitPrefixes.generateUnitsForPrefixes(UnitPrefix
                 .getDefaultSpacePrefixes(), METRE));
         this.cbNodeDistance.setValue(NANO(METRE));
 
@@ -234,7 +234,7 @@ class EnvironmentalConfigurationPage extends WizardPage {
         content.add(this.spTimeStep, 1, 1, 1, 1);
 
         this.cbTimeStep = new ComboBox<>();
-        this.cbTimeStep.getItems().addAll(UnitUtilities.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(),
+        this.cbTimeStep.getItems().addAll(UnitPrefixes.generateUnitsForPrefixes(UnitPrefix.getDefaultTimePrefixes(),
                 SECOND));
         this.cbTimeStep.setValue(MICRO(SECOND));
         content.add(this.cbTimeStep, 2, 1, 1, 1);
