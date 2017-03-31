@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_ONLINE;
 import static org.junit.Assert.*;
 
 /**
@@ -22,7 +21,7 @@ public class StructureSelectorTest {
     @Test
     public void shouldSelectModelFromStructure() throws IOException {
         Structure structure = StructureParser.online()
-                .identifier("4CHA")
+                .pdbIdentifier("4CHA")
                 .parse();
         StructuralModel structuralModel = StructureSelector.selectFrom(structure)
                 .model(0)
@@ -33,7 +32,7 @@ public class StructureSelectorTest {
     @Test
     public void shouldSelectChainFromStructure() throws IOException {
         Structure structure = StructureParser.online()
-                .identifier("4CHA")
+                .pdbIdentifier("4CHA")
                 .parse();
         Chain chain = StructureSelector.selectFrom(structure)
                 .model(0)
@@ -45,7 +44,7 @@ public class StructureSelectorTest {
     @Test
     public void shouldSelectAminoAcidFromStructure() throws IOException {
         Structure structure = StructureParser.online()
-                .identifier("4CHA")
+                .pdbIdentifier("4CHA")
                 .parse();
         AminoAcid aminoAcid = StructureSelector.selectFrom(structure)
                 .model(0)
@@ -58,7 +57,7 @@ public class StructureSelectorTest {
     @Test
     public void shouldSelectNucleotideFromStructure() throws IOException {
         Structure structure = StructureParser.online()
-                .identifier("1C0A")
+                .pdbIdentifier("1C0A")
                 .parse();
         Nucleotide nucleotide = StructureSelector.selectFrom(structure)
                 .model(0)
@@ -71,7 +70,7 @@ public class StructureSelectorTest {
     @Test
     public void shouldSelectAtomFromStructure() throws IOException {
         Structure structure = StructureParser.online()
-                .identifier("1C0A")
+                .pdbIdentifier("1C0A")
                 .parse();
         Atom atom = StructureSelector.selectFrom(structure)
                 .model(0)

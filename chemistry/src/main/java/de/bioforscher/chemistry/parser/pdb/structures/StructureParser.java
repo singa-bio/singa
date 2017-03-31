@@ -41,20 +41,20 @@ public class StructureParser {
     public interface IdentifierStep extends AdditionalLocalSourceStep{
 
         /**
-         * The identifier of the PDB structure.
+         * The pdbIdentifier of the PDB structure.
          *
-         * @param identifier The identifier.
+         * @param pdbIdentifier The pdbIdentifier.
          * @return Model selection
          */
-        SingleBranchStep identifier(String identifier);
+        SingleBranchStep pdbIdentifier(String pdbIdentifier);
 
         /**
-         * The identifiers of the PDB structures.
+         * The pdbIdentifiers of the PDB structures.
          *
-         * @param identifiers The identifiers.
+         * @param pdbIdentifiers The pdbIdentifiers.
          * @return Batch selection
          */
-        MultiBranchStep identifiers(List<String> identifiers);
+        MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers);
 
     }
 
@@ -104,19 +104,19 @@ public class StructureParser {
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
          *
          * @param localPDB   The local pdb.
-         * @param identifier The identifier.
+         * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
-        SingleBranchStep localPDB(LocalPDB localPDB, String identifier);
+        SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier);
 
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
          *
          * @param localPDB    The local pdb.
-         * @param identifiers The identifiers.
+         * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
-        MultiBranchStep localPDB(LocalPDB localPDB, List<String> identifiers);
+        MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers);
 
         /**
          * The location of a file as a sting.
@@ -164,9 +164,9 @@ public class StructureParser {
     public interface MultiBranchStep extends MultiChainStep {
 
         /**
-         * If only a single model should be parsed, give its identifier here.
+         * If only a single model should be parsed, give its pdbIdentifier here.
          *
-         * @param modelIdentifier The identifier of the model to parse.
+         * @param modelIdentifier The pdbIdentifier of the model to parse.
          * @return Chain selection
          */
         MultiChainStep model(int modelIdentifier);
@@ -183,9 +183,9 @@ public class StructureParser {
     public interface SingleBranchStep extends SingleChainStep {
 
         /**
-         * If only a single model should be parsed, give its identifier here.
+         * If only a single model should be parsed, give its pdbIdentifier here.
          *
-         * @param modelIdentifier The identifier of the model to parse.
+         * @param modelIdentifier The pdbIdentifier of the model to parse.
          * @return Chain selection
          */
         SingleChainStep model(int modelIdentifier);
@@ -296,7 +296,7 @@ public class StructureParser {
 
         @Override
         public MultiParser chain(String chainIdentifier) {
-            setChain(chainIdentifier);
+            setChainIdentifier(chainIdentifier);
             return new MultiParser(this);
         }
 
@@ -339,7 +339,7 @@ public class StructureParser {
 
         @Override
         public SingleParser chain(String chainIdentifier) {
-            setChain(chainIdentifier);
+            setChainIdentifier(chainIdentifier);
             return new SingleParser(this);
         }
 
@@ -393,15 +393,15 @@ public class StructureParser {
             this.allChains = true;
         }
 
-        public void updatePDBIdentifer() {
-            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPDBId();
+        public void updatePdbIdentifer() {
+            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPdbIdentifier();
         }
 
-        public void updateChain() {
-            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChain();
+        public void updateChainIdentifier() {
+            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChainIdentifier();
         }
 
-        public void setChain(String chainIdentifier) {
+        public void setChainIdentifier(String chainIdentifier) {
             Objects.requireNonNull(chainIdentifier);
             this.chainIdentifier = chainIdentifier;
             if (!this.modelsReduced) {
@@ -422,14 +422,14 @@ public class StructureParser {
         private LocalPDB localPDB;
 
         @Override
-        public SingleBranchStep identifier(String identifier) {
-            this.contentIterator = new StructureContentIterator(identifier);
+        public SingleBranchStep pdbIdentifier(String pdbIdentifier) {
+            this.contentIterator = new StructureContentIterator(pdbIdentifier);
             return new SingleReducingSelector(this);
         }
 
         @Override
-        public MultiBranchStep identifiers(List<String> identifiers) {
-            this.contentIterator = new StructureContentIterator(String.class, identifiers);
+        public MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers) {
+            this.contentIterator = new StructureContentIterator(String.class, pdbIdentifiers);
             return new MultiReducingSelector(this);
         }
 
@@ -464,14 +464,14 @@ public class StructureParser {
         }
 
         @Override
-        public MultiBranchStep localPDB(LocalPDB localPDB, List<String> identifiers) {
-            this.contentIterator = new StructureContentIterator(localPDB, identifiers);
+        public MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers) {
+            this.contentIterator = new StructureContentIterator(localPDB, pdbIdentifiers);
             return new MultiReducingSelector(this);
         }
 
         @Override
-        public SingleBranchStep localPDB(LocalPDB localPDB, String identifier) {
-            this.contentIterator = new StructureContentIterator(localPDB, identifier);
+        public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
+            this.contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
             return new SingleReducingSelector(this);
         }
 
@@ -522,7 +522,7 @@ public class StructureParser {
             ArrayList<Pair<String>> pairs = new ArrayList<>();
             for (String line : lines) {
                 String[] split = line.split(separator);
-                // first contains pdbid and second contains chain
+                // first contains PDB-ID and second contains chain-ID
                 pairs.add(new Pair<>(split[0], split[1]));
             }
             return pairs;

@@ -81,7 +81,7 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
     }
 
     @Override
-    public List<LabelType> getColumnsLabels() {
+    public List<LabelType> getColumnLabels() {
         return this.columnLabelMap.entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getValue))
                 .map(Map.Entry::getKey)

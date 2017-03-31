@@ -43,7 +43,7 @@ public class LibSBMLPLayground {
                 term.getResources().forEach(resource -> {
                     // if this species *is* a chemical component, we can potentially parse it
                     if (term.getQualifier() == CVTerm.Qualifier.BQB_IS) {
-                        // if the resources contain a ChEBI identifier we can definitely parse it
+                        // if the resources contain a ChEBI pdbIdentifier we can definitely parse it
                         Matcher matcherChEBI = ChEBIIdentifier.PATTERN.matcher(resource);
                         if (matcherChEBI.find()) {
                             System.out.println(" is " + matcherChEBI.group(0));

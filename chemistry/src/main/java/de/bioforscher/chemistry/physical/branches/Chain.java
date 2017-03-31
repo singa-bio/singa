@@ -18,7 +18,7 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 /**
  * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
  * molecule. This model is adopted from the classical PDB structure files. Since this also implements the nameable
- * interface, the name of a chin is its chain identifier (a single letter).
+ * interface, the name of a chin is its chain pdbIdentifier (a single letter).
  *
  * @author cl
  * @see AminoAcid
@@ -26,15 +26,15 @@ import static de.bioforscher.chemistry.physical.atoms.AtomName.*;
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
-     * The identifier of this chain.
+     * The pdbIdentifier of this chain.
      */
     private String chainIdentifier;
 
     /**
-     * Creates a new Chain with the given graph identifier. This is not the single letter chain identifier, but the
+     * Creates a new Chain with the given graph pdbIdentifier. This is not the single letter chain pdbIdentifier, but the
      * reference for the placement in the graph.
      *
-     * @param graphIdentifier The identifier in the graph.
+     * @param graphIdentifier The pdbIdentifier in the graph.
      */
     public Chain(int graphIdentifier) {
         super(graphIdentifier);
@@ -59,7 +59,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Creates a new Chain with the graph identifier 0. Use this method only if there is only one chain and nothing
+     * Creates a new Chain with the graph pdbIdentifier 0. Use this method only if there is only one chain and nothing
      * more on this level in a structure.
      */
     public Chain() {
@@ -67,18 +67,18 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Returns the chain identifier (the single letter identifier).
+     * Returns the chain pdbIdentifier (the single letter pdbIdentifier).
      *
-     * @return The chain identifier.
+     * @return The chain pdbIdentifier.
      */
     public String getChainIdentifier() {
         return this.chainIdentifier;
     }
 
     /**
-     * Sets the chain identifier (the single letter identifier).
+     * Sets the chain pdbIdentifier (the single letter pdbIdentifier).
      *
-     * @param chainIdentifier The chain identifier.
+     * @param chainIdentifier The chain pdbIdentifier.
      */
     public void setChainIdentifier(String chainIdentifier) {
         this.chainIdentifier = chainIdentifier;
@@ -126,7 +126,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Gets the name (i.e. the single letter chain identifier) of this chain.
+     * Gets the name (i.e. the single letter chain pdbIdentifier) of this chain.
      *
      * @return The name.
      */
@@ -159,7 +159,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     public String toString() {
         return getLeafSubstructures().stream()
                 .findAny()
-                .map(LeafSubstructure::getPdbId)
+                .map(LeafSubstructure::getPdbIdentifier)
                 .orElse("") + "|" + this.chainIdentifier;
     }
 

@@ -25,27 +25,18 @@ class StructureContentIterator implements Iterator<List<String>> {
     private static final String PDB_BASE_PATH = "data/structures/divided/pdb";
 
     private StructureParser.LocalPDB localPdb;
-
-    enum SourceLocation {
-        ONLINE, OFFLINE
-    }
-
     private List<URL> identifiers;
     private List<Path> paths;
-
     private List<String> pdbIds;
     private Iterator<String> pdbIdIterator;
-    private String currentPDBId;
-
+    private String currentPdbIdentifier;
     private List<String> chains;
     private Iterator<String> chainIterator;
     private String currentChain;
-
     private Iterator<URL> currentURL;
     private Iterator<Path> currentPath;
-
-
     private SourceLocation location;
+
 
     public StructureContentIterator(String identifier) {
         this(String.class, Collections.singletonList(identifier));
@@ -93,16 +84,17 @@ class StructureContentIterator implements Iterator<List<String>> {
     /**
      * Creates a new Iterator based on the context of parsing.
      *
-     * @param context The context.
-     * @param identifiers The identifier to parse
+     * @param context     The context.
+     * @param identifiers The pdbIdentifier to parse
      */
     @SuppressWarnings("unchecked")
     public StructureContentIterator(Class<?> context, List<?> identifiers) {
         this.paths = new ArrayList<>();
-        this.identifiers = new ArrayList<>();this.pdbIds = new ArrayList<>();
+        this.identifiers = new ArrayList<>();
+        this.pdbIds = new ArrayList<>();
 
         if (context.equals(String.class)) {
-            // identifiers for pdb online
+            // pdbIdentifiers for pdb online
             prepareIdentifiers((List<String>) identifiers);
         } else if (context.equals(Path.class)) {
             // paths
@@ -202,15 +194,15 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
     }
 
-    public String getCurrentPDBId() {
-        if (this.currentPDBId != null) {
-            return this.currentPDBId;
+    public String getCurrentPdbIdentifier() {
+        if (this.currentPdbIdentifier != null) {
+            return this.currentPdbIdentifier;
         } else {
             throw new IllegalStateException("Unable to retrieve the PDB Identifier in the current state.");
         }
     }
 
-    public String getCurrentChain() {
+    public String getCurrentChainIdentifier() {
         if (this.currentChain != null) {
             return this.currentChain;
         } else {
@@ -232,7 +224,7 @@ class StructureContentIterator implements Iterator<List<String>> {
     public List<String> next() {
         if (this.pdbIds != null && !this.pdbIds.isEmpty()) {
             // TODO speed this up by not parsing the same id twice but using previous information
-            this.currentPDBId = this.pdbIdIterator.next();
+            this.currentPdbIdentifier = this.pdbIdIterator.next();
             if (this.chains != null) {
                 this.currentChain = this.chainIterator.next();
             }
@@ -266,4 +258,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
     }
 
+    private enum SourceLocation {
+        ONLINE, OFFLINE
+    }
 }

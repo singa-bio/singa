@@ -11,8 +11,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public static final int DEFAULT_MODEL_IDENTIFIER = 0;
     public static final String DEFAULT_CHAIN_IDENTIFER = "X";
     private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
-            .comparing(LeafIdentifier::getPdbIdentifer)
-            .thenComparing(LeafIdentifier::getModelIdentifer)
+            .comparing(LeafIdentifier::getPdbIdentifier)
+            .thenComparing(LeafIdentifier::getModelIdentifier)
             .thenComparing(LeafIdentifier::getChainIdentifer)
             .thenComparing(LeafIdentifier::getIdentifier);
     private final String pdbIdentifer;
@@ -40,11 +40,11 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         return new LeafIdentifier(split[0], Integer.valueOf(split[1]));
     }
 
-    public String getPdbIdentifer() {
+    public String getPdbIdentifier() {
         return this.pdbIdentifer;
     }
 
-    public int getModelIdentifer() {
+    public int getModelIdentifier() {
         return this.modelIdentifer;
     }
 
@@ -63,12 +63,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     @Override
     public String toString() {
-        return "LeafIdentifier{" +
-                "pdbIdentifer='" + this.pdbIdentifer + '\'' +
-                ", modelIdentifer=" + this.modelIdentifer +
-                ", chainIdentifer='" + this.chainIdentifer + '\'' +
-                ", identifier=" + this.identifier +
-                '}';
+        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier;
     }
 
     @Override

@@ -6,8 +6,6 @@ import de.bioforscher.chemistry.physical.viewer.StructureViewer;
 import javafx.application.Application;
 
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * @author cl
@@ -39,7 +37,7 @@ public class PDBParserPlayground {
 
         // they all have the same ligand
         Structure structure = StructureParser.online()
-                .identifier("1pqs")
+                .pdbIdentifier("1pqs")
                 .parse();
 
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;

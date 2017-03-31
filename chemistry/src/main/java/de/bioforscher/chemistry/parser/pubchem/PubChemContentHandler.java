@@ -34,7 +34,7 @@ class PubChemContentHandler implements ContentHandler {
     private boolean inMolecularWeight;
     private boolean inMolecularWeightInformation;
 
-    // reading chebi identifier
+    // reading chebi pdbIdentifier
     private boolean inSynonyms;
     private boolean inSynonymsInformation;
 
@@ -63,7 +63,7 @@ class PubChemContentHandler implements ContentHandler {
 
         switch (this.currentTag) {
             case "RecordNumber": {
-                // set pubchem identifier
+                // set pubchem pdbIdentifier
                 this.pubChemIdentifier = new String(ch, start, length);
                 break;
             }
@@ -103,7 +103,7 @@ class PubChemContentHandler implements ContentHandler {
                 if (this.inSynonyms && this.inSynonymsInformation) {
                     String potentialChebiIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialChebiIdentifier).matches()) {
-                        // set chebi identifier
+                        // set chebi pdbIdentifier
                         this.chebiIdentifier = new ChEBIIdentifier(potentialChebiIdentifier);
                         this.inSynonyms = false;
                         this.inSynonymsInformation = false;

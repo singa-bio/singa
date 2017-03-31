@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_ONLINE;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -24,7 +23,7 @@ public class AtomFilterTest {
     public void shouldApplyAtomFilter() throws IOException {
         LeafFactory.setToOmitHydrogens(true);
         Structure structure = StructureParser.online()
-                .identifier("4HHB")
+                .pdbIdentifier("4HHB")
                 .parse();
 
         // valine

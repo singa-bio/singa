@@ -97,8 +97,8 @@ public class StructuralEntityFilter {
             return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
         }
 
-        public static Predicate<Atom> hasId(int id) {
-            return atom -> atom.getIdentifier() == id;
+        public static Predicate<Atom> hasIdentifier(int identifier) {
+            return atom -> atom.getIdentifier() == identifier;
         }
 
         public static Predicate<Atom> isAlphaCarbon() {

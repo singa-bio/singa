@@ -2,7 +2,6 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.families.NucleotideFamily;
@@ -38,7 +37,7 @@ public class Fit3DAlignmentTest {
     @Before
     public void setUp() throws IOException {
         this.target = StructureParser.online()
-                .identifier("1GL0")
+                .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
@@ -75,7 +74,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
-                .identifier("2EES")
+                .pdbIdentifier("2EES")
                 .chain("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
@@ -96,7 +95,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldFindInterMolecularMatches() throws IOException {
         Structure target =  StructureParser.online()
-                .identifier("4CHA")
+                .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
         StructuralMotif queryMotif = StructuralMotif.fromLeafs(1, target,
@@ -117,7 +116,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldAlignNucleotideMotif() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
-                .identifier("2EES")
+                .pdbIdentifier("2EES")
                 .chain("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeafs(1, nucleotideTarget,
@@ -135,7 +134,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldFindLigandContainingMotif() throws IOException {
         Structure queryStructure =  StructureParser.online()
-                .identifier("1ACJ")
+                .pdbIdentifier("1ACJ")
                 .everything()
                 .parse();
 

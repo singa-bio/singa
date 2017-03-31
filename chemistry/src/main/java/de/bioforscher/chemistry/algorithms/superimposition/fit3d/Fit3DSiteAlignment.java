@@ -3,7 +3,7 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
-import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureWriter;
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
@@ -409,19 +409,19 @@ public class Fit3DSiteAlignment implements Fit3D {
         SubstructureSuperimposition bestSuperimposition = this.matches.firstEntry().getValue();
         List<LeafSubstructure<?, ?>> mappedSite2 = bestSuperimposition.applyTo(this.site2.getCopy().getLeafSubstructures());
         try {
-            PDBWriterService.writeLeafSubstructures(this.site1.getLeafSubstructures(),
+            StructureWriter.writeLeafSubstructures(this.site1.getLeafSubstructures(),
                     outputDirectory.resolve(this.site1.getLeafSubstructures().stream()
                             .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                             .map(Object::toString)
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
-                                    + this.site1.getLeafSubstructures().get(0).getPdbId()
+                                    + this.site1.getLeafSubstructures().get(0).getPdbIdentifier()
                                     + "|", "")) + "_site1.pdb"));
-            PDBWriterService.writeLeafSubstructures(mappedSite2,
+            StructureWriter.writeLeafSubstructures(mappedSite2,
                     outputDirectory.resolve(this.site2.getLeafSubstructures().stream()
                             .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                             .map(Object::toString)
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
-                                    + this.site2.getLeafSubstructures().get(0).getPdbId()
+                                    + this.site2.getLeafSubstructures().get(0).getPdbIdentifier()
                                     + "|", "")) + "_site2.pdb"));
         } catch (IOException e) {
             logger.error("error writing Fit3DSite results", e);

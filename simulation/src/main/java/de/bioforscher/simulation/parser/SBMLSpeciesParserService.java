@@ -104,7 +104,7 @@ public class SBMLSpeciesParserService {
     /**
      * Parses and adds a component using the first parsable resource in the given CVTerm.
      *
-     * @param identifier The identifier as referenced in the model.
+     * @param identifier The pdbIdentifier as referenced in the model.
      * @param cvTerm     The CVTerm containing the resources.
      */
     private void parseAndAddSingularComponent(String identifier, CVTerm cvTerm) {
@@ -123,7 +123,7 @@ public class SBMLSpeciesParserService {
     /**
      * Parses and adds a complex component using a CVTerm with multiple resources.
      *
-     * @param identifier The identifier as referenced in the model.
+     * @param identifier The pdbIdentifier as referenced in the model.
      * @param cvTerm     The CVTerm containing the resources.
      */
     private void parseAndAddComplexComponent(String identifier, CVTerm cvTerm) {
@@ -146,7 +146,7 @@ public class SBMLSpeciesParserService {
     /**
      * Parses and adds a complex component using a List of CVTerms.
      *
-     * @param identifier The identifier as referenced in the model.
+     * @param identifier The pdbIdentifier as referenced in the model.
      * @param cvTerms    The CVTerms containing the resources.
      */
     private void parseAndAddAllComponents(String identifier, List<CVTerm> cvTerms) {
@@ -181,7 +181,7 @@ public class SBMLSpeciesParserService {
      * entities. If a complex has no associated parts it is replaced by {@link Species#UNKNOWN_SPECIES}. Else it is
      * just added to the map of entities.
      *
-     * @param identifier The identifier as referenced in the model.
+     * @param identifier The pdbIdentifier as referenced in the model.
      * @param complex The complex to add to the map of entities.
      */
     private void checkAndAddComplexedChemicalEntity(String identifier, ComplexedChemicalEntity complex) {
@@ -240,7 +240,7 @@ public class SBMLSpeciesParserService {
     private boolean resourcesHaveTheSameOrigin(CVTerm term) {
         Set<String> origins = new HashSet<>();
         term.getResources().forEach(resource -> {
-            // TODO: 06/11/2016 this can implemented better with some default method in the identifier package
+            // TODO: 06/11/2016 this can implemented better with some default method in the pdbIdentifier package
             if (ChEBIIdentifier.PATTERN.matcher(resource).find()) {
                 origins.add(ChEBIIdentifier.class.getName());
             } else if (UniProtIdentifier.PATTERN.matcher(resource).find()) {

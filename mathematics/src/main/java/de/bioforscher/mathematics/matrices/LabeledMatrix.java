@@ -10,7 +10,7 @@ import java.util.List;
  * Labels can be set for rows and columns and a value from the matrix can be retrieved by giving a combination
  * of row and column label.
  */
-public interface LabeledMatrix<LabelType> {
+public interface LabeledMatrix<LabelType> extends Matrix {
 
     String STRING_REPRESENTATION_DECIMAL_FORMAT = "0.000000";
 
@@ -83,7 +83,7 @@ public interface LabeledMatrix<LabelType> {
      * Returns all column labels as list.
      * @return The column labels as list.
      */
-    List<LabelType> getColumnsLabels();
+    List<LabelType> getColumnLabels();
 
     /**
      * Sets all column labels at once, using the index of the label in the list.

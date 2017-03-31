@@ -19,7 +19,7 @@ import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.Bra
  */
 public class Structure {
 
-    private String pdbID;
+    private String pdbIdentifier;
 
     /**
      * The branchSubstructures of the graph.
@@ -39,7 +39,7 @@ public class Structure {
 
     /**
      * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a unique
-     * identifier, with which it can be addressed.
+     * pdbIdentifier, with which it can be addressed.
      *
      * @param branchSubstructure The {@link BranchSubstructure} to add.
      */
@@ -91,11 +91,11 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public String getPdbID() {
-        return this.pdbID;
+    public String getPdbIdentifier() {
+        return this.pdbIdentifier;
     }
 
-    public void setPdbID(String pdbID) {
-        this.pdbID = pdbID;
+    public void setPdbIdentifier(String pdbID) {
+        this.pdbIdentifier = pdbID;
     }
 }

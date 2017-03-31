@@ -2,7 +2,7 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
-import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
+import de.bioforscher.chemistry.parser.pdb.structures.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public interface Fit3D {
     default void writeMatches(Path outputDirectory) {
         getMatches().values().forEach(substructureSuperimposition -> {
             try {
-                PDBWriterService.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
+                StructureWriter.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
                         outputDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
             } catch (IOException e) {
                 logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);

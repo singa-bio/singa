@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
-public class PDBWriterService {
+public class StructureWriter {
 
-    private static final Logger logger = LoggerFactory.getLogger(PDBWriterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(StructureWriter.class);
 
     /**
      * prevent instantiation
      */
-    private PDBWriterService() {
+    private StructureWriter() {
 
     }
 

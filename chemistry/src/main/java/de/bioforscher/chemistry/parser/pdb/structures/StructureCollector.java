@@ -66,8 +66,8 @@ public class StructureCollector {
             this.currentPDB = TitleToken.ID_CODE.extract(firstLine);
         }
         if (this.reducer.parseMapping) {
-            this.reducer.updatePDBIdentifer();
-            this.reducer.updateChain();
+            this.reducer.updatePdbIdentifer();
+            this.reducer.updateChainIdentifier();
             this.reduceToChain(this.reducer.chainIdentifier);
             logger.info("Parsing structure {} chain {}", this.reducer.pdbIdentifier, this.reducer.chainIdentifier);
             return;
@@ -137,7 +137,7 @@ public class StructureCollector {
         createContentTree();
 
         Structure structure = new Structure();
-        structure.setPdbID(this.contentTree.getIdentifier());
+        structure.setPdbIdentifier(this.contentTree.getIdentifier());
 
         logger.debug("creating structure");
         int chainGraphId = 0;
@@ -166,7 +166,7 @@ public class StructureCollector {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                this.leafNames.put(new LeafIdentifier(identifier.getPdbIdentifer(), identifier.getModelIdentifer(), identifier.getChainIdentifer(), identifier.getLeafIdentifer()), RESIDUE_NAME.extract(currentLine));
+                this.leafNames.put(new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer()), RESIDUE_NAME.extract(currentLine));
             } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 this.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
             }
@@ -187,7 +187,7 @@ public class StructureCollector {
     }
 
     private LeafSubstructure<?, ?> assignLeaf(ContentTreeNode leafNode, int modelIdentifier, String chainIdentifer) {
-        // generate leaf identifier
+        // generate leaf pdbIdentifier
         LeafIdentifier leafIdentifier = new LeafIdentifier(this.currentPDB, modelIdentifier, chainIdentifer, Integer.valueOf(leafNode.getIdentifier()));
         // get leaf name for leaf identifer
         String leafName = this.leafNames.get(leafIdentifier);

@@ -5,17 +5,20 @@ import de.bioforscher.chemistry.parser.pdb.structures.StructureSources;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -41,7 +44,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateLastHeavySidechainSuperimposition(){
+    public void shouldCalculateLastHeavySidechainSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN));
@@ -49,7 +52,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateSidechainCentroidSuperimposition(){
+    public void shouldCalculateSidechainCentroidSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
@@ -108,6 +111,19 @@ public class SubstructureSuperimposerTest {
                 .map(LeafSubstructure::getAllAtoms)
                 .mapToLong(Collection::size)
                 .sum());
+    }
+
+    @Test
+    public void shouldCorrectlyApplySubstructureSuperimposition() {
+        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+                .calculateIdealSubstructureSuperimposition(this.reference, this.candidate);
+        assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
+        List<LeafSubstructure<?, ?>> mappedCandidate = superimposition.applyTo(this.candidate.getLeafSubstructures());
+
+        List<AminoAcid> aminoAcids = this.candidate.getAminoAcids();
+        for (int i = 0; i < aminoAcids.size(); i++) {
+            assertArrayEquals(this.candidate.getAminoAcids().get(i).getPosition().getElements(), mappedCandidate.get(i).getPosition().getElements(), 1E-3);
+        }
     }
 
     @Test

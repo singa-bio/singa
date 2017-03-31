@@ -27,7 +27,7 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     /**
      * Creates a new AminoAcid.
      *
-     * @param leafIdentifier The identifier.
+     * @param leafIdentifier The pdbIdentifier.
      * @param family         The ResidueType.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
@@ -41,9 +41,9 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Creates a new modified AminoAcid with a identifier and ResidueType.
+     * Creates a new modified AminoAcid with a pdbIdentifier and ResidueType.
      *
-     * @param leafIdentifier The identifier.
+     * @param leafIdentifier The pdbIdentifier.
      * @param family         The ResidueType.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
@@ -137,7 +137,7 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
 
     /**
      * Return the name of this residue in the format
-     * [Chain identifier of the AminoAcid]-[One Letter Code of the AminoAcid][AminoAcid identifier]
+     * [Chain pdbIdentifier of the AminoAcid]-[One Letter Code of the AminoAcid][AminoAcid pdbIdentifier]
      * (e.g. A-D123 or A-M17).
      *
      * @return The String representation of this residue.

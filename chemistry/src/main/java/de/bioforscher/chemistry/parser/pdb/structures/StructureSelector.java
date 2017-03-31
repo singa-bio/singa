@@ -56,6 +56,8 @@ public class StructureSelector {
     public interface ChainStep {
         ResidueStep chain(int chainId);
 
+        ResidueStep chain(String chainIdentifier);
+
         StructuralModel selectModel();
     }
 
@@ -129,11 +131,11 @@ public class StructureSelector {
         }
 
         @Override
-        public ChainStep model(int structuralModelId) {
+        public ChainStep model(int identifier) {
             this.structuralModel = this.structure.getAllModels().stream()
-                    .filter(structuralModel -> structuralModel.getIdentifier() == structuralModelId)
+                    .filter(structuralModel -> structuralModel.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no structural model with ID " + structuralModelId));
+                    .orElseThrow(() -> new NoSuchElementException("no structural model with ID " + identifier));
             return this;
         }
 
@@ -143,11 +145,20 @@ public class StructureSelector {
         }
 
         @Override
-        public ResidueStep chain(int chainId) {
+        public ResidueStep chain(int identifier) {
             this.chain = this.structuralModel.getAllChains().stream()
-                    .filter(chain -> chain.getIdentifier() == chainId)
+                    .filter(chain -> chain.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chain with ID " + chainId));
+                    .orElseThrow(() -> new NoSuchElementException("no chain with index " + identifier));
+            return this;
+        }
+
+        @Override
+        public ResidueStep chain(String chainIdentifier) {
+            this.chain = this.structuralModel.getAllChains().stream()
+                    .filter(chain -> chain.getChainIdentifier().equals(chainIdentifier))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("no chain with ID " + chainIdentifier));
             return this;
         }
 
@@ -157,13 +168,13 @@ public class StructureSelector {
         }
 
         @Override
-        public AminoAcidAtomStep aminoAcid(int aminoAcidId) {
+        public AminoAcidAtomStep aminoAcid(int identifier) {
             this.aminoAcid = this.chain.getLeafSubstructures().stream()
                     .filter(AminoAcid.class::isInstance)
                     .map(AminoAcid.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == aminoAcidId)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no amino acid with ID " + aminoAcidId));
+                    .orElseThrow(() -> new NoSuchElementException("no amino acid with ID " + identifier));
             return this;
         }
 
@@ -173,13 +184,13 @@ public class StructureSelector {
         }
 
         @Override
-        public NucleotideAtomStep nucleotide(int nucleotideId) {
+        public NucleotideAtomStep nucleotide(int identifier) {
             this.nucleotide = this.chain.getLeafSubstructures().stream()
                     .filter(Nucleotide.class::isInstance)
                     .map(Nucleotide.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == nucleotideId)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no nucleotide with ID " + nucleotideId));
+                    .orElseThrow(() -> new NoSuchElementException("no nucleotide with ID " + identifier));
             return this;
         }
 
@@ -189,13 +200,13 @@ public class StructureSelector {
         }
 
         @Override
-        public AtomContainerAtomStep atomContainer(int atomContainerId) {
+        public AtomContainerAtomStep atomContainer(int identifier) {
             this.atomContainer = this.chain.getLeafSubstructures().stream()
                     .filter(AtomContainer.class::isInstance)
                     .map(AtomContainer.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == atomContainerId)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no atom container with ID " + atomContainerId));
+                    .orElseThrow(() -> new NoSuchElementException("no atom container with ID " + identifier));
             return this;
         }
 
@@ -205,15 +216,15 @@ public class StructureSelector {
         }
 
         @Override
-        public SelectStep atom(int atomId) {
+        public SelectStep atom(int identifier) {
             if (this.aminoAcid != null) {
-                this.atom = getAtomFromLeafSubstructure(this.aminoAcid, atomId);
+                this.atom = getAtomFromLeafSubstructure(this.aminoAcid, identifier);
             }
             if (this.nucleotide != null) {
-                this.atom = getAtomFromLeafSubstructure(this.nucleotide, atomId);
+                this.atom = getAtomFromLeafSubstructure(this.nucleotide, identifier);
             }
             if (this.atomContainer != null) {
-                this.atom = getAtomFromLeafSubstructure(this.atomContainer, atomId);
+                this.atom = getAtomFromLeafSubstructure(this.atomContainer, identifier);
             }
             return this;
         }

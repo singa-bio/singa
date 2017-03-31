@@ -20,6 +20,7 @@ import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 public class XieScore {
 
     private double score;
+    private double normalizedScore;
     private double significance;
     private SubstitutionMatrix substitutionMatrix;
     private SubstructureSuperimposition substructureSuperimposition;
@@ -27,11 +28,13 @@ public class XieScore {
     private XieScore(SubstitutionMatrix substitutionMatrix, SubstructureSuperimposition substructureSuperimposition) {
         this.substitutionMatrix = substitutionMatrix;
         this.substructureSuperimposition = substructureSuperimposition;
-        calculateRawScore(substructureSuperimposition);
+        this.score = calculateRawScore(substructureSuperimposition);
+        normalizeScore();
         determineSignificance();
     }
 
     public static XieScore of(SubstitutionMatrix substitutionMatrix, SubstructureSuperimposition substructureSuperimposition) {
+        // TODO fail with input of different size when manual constructed SubstructureSumperimposition is used
         return new XieScore(substitutionMatrix, substructureSuperimposition);
     }
 
@@ -39,14 +42,16 @@ public class XieScore {
     public String toString() {
         return "XieScore{" +
                 "score=" + this.score +
+                ", normalizedScore=" + this.normalizedScore +
                 ", significance=" + this.significance +
                 ", substitutionMatrix=" + this.substitutionMatrix +
                 '}';
     }
 
-    private void calculateRawScore(SubstructureSuperimposition substructureSuperimposition) {
+    private double calculateRawScore(SubstructureSuperimposition substructureSuperimposition) {
         RepresentationScheme xieRepresentationScheme = RepresentationSchemeFactory
                 .createRepresentationScheme(RepresentationSchemeType.CA);
+        double temporaryScore = 0.0;
         for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
             LeafSubstructure<?, ?> reference = substructureSuperimposition.getReference().get(i);
             LeafSubstructure<?, ?> candidate = substructureSuperimposition.getMappedCandidate().get(i);
@@ -74,8 +79,9 @@ public class XieScore {
             } else {
                 pd = Math.exp(-(distance - 2.0) * (distance - 2.0) / 2.0);
             }
-            this.score += m * pa * pd;
+            temporaryScore += m * pa * pd;
         }
+        return temporaryScore;
     }
 
     private void determineSignificance() {
@@ -108,11 +114,25 @@ public class XieScore {
         this.significance = 1 - Math.exp(-Math.exp(-z));
     }
 
+    private void normalizeScore() {
+        double upperBound = calculateRawScore(new SubstructureSuperimposition(0, null, null,
+                this.substructureSuperimposition.getReference(), null,
+                this.substructureSuperimposition.getReference(), null)) +
+                calculateRawScore(new SubstructureSuperimposition(0, null, null,
+                        this.substructureSuperimposition.getCandidate(), null,
+                        this.substructureSuperimposition.getCandidate(), null)) / 2;
+        this.normalizedScore = 1 - (this.score / upperBound);
+    }
+
     public double getScore() {
         return this.score;
     }
 
     public double getSignificance() {
         return this.significance;
+    }
+
+    public double getNormalizedScore() {
+        return this.normalizedScore;
     }
 }

@@ -29,7 +29,7 @@ public class Fit3DAlignmentBenchmark {
     @Setup
     public void setUp() throws IOException {
         this.target = StructureParser.online()
-                .identifier("1GL0")
+                .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())

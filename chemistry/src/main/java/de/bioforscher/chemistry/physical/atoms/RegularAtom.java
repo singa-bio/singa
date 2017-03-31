@@ -16,7 +16,7 @@ import java.util.List;
 public class RegularAtom implements Atom {
 
     /**
-     * The identifier.
+     * The pdbIdentifier.
      */
     private int identifier;
 
@@ -46,9 +46,9 @@ public class RegularAtom implements Atom {
     private List<Atom> neighbours;
 
     /**
-     * Creates a new atom with the given identifier, element, name and position.
+     * Creates a new atom with the given pdbIdentifier, element, name and position.
      *
-     * @param identifier     The identifier.
+     * @param identifier     The pdbIdentifier.
      * @param element        The element.
      * @param atomNameString The name as String.
      * @param position       The position.
@@ -104,9 +104,9 @@ public class RegularAtom implements Atom {
     }
 
     /**
-     * Sets the identifier.
+     * Sets the pdbIdentifier.
      *
-     * @param identifier The identifier.
+     * @param identifier The pdbIdentifier.
      */
     @Override
     public void setIdentifier(int identifier) {
@@ -161,7 +161,7 @@ public class RegularAtom implements Atom {
     @Override
     public String toString() {
         return "RegularAtom{" +
-                "identifier=" + this.identifier +
+                "pdbIdentifier=" + this.identifier +
                 ", element=" + this.element +
                 ", atomName=" + this.atomName +
                 ", atomNameString='" + this.atomNameString + '\'' +

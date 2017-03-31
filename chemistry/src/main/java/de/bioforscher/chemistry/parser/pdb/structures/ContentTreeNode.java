@@ -87,13 +87,13 @@ public class ContentTreeNode {
         if (this.children.isEmpty()) {
             switch (this.level) {
                 case STRUCTURE: {
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifer()), MODEL));
-                    // System.out.println(" Added Model: " + identifer.getModelIdentifer());
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifier()), MODEL));
+                    // System.out.println(" Added Model: " + identifer.getModelIdentifier());
                     break;
                 }
                 case MODEL: {
-                    iterator.add(new ContentTreeNode(identifer.getChainIdentifer(), CHAIN));
-                    // System.out.println("  Added Chain: " + identifer.getChainIdentifer());
+                    iterator.add(new ContentTreeNode(identifer.getChainIdentifier(), CHAIN));
+                    // System.out.println("  Added Chain: " + identifer.getChainIdentifier());
                     break;
                 }
                 case CHAIN: {
@@ -116,27 +116,27 @@ public class ContentTreeNode {
                 case STRUCTURE: {
                     while (iterator.hasNext()) {
                         ContentTreeNode model = iterator.next();
-                        if (model.identifier.equals(String.valueOf(identifer.getModelIdentifer()))) {
+                        if (model.identifier.equals(String.valueOf(identifer.getModelIdentifier()))) {
                             // System.out.println(" correct model going further");
                             model.appendAtom(atom, identifer);
                             return;
                         }
                     }
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifer()), MODEL));
-                    // System.out.println(" Added Model: " + identifer.getModelIdentifer());
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifier()), MODEL));
+                    // System.out.println(" Added Model: " + identifer.getModelIdentifier());
                     break;
                 }
                 case MODEL: {
                     while (iterator.hasNext()) {
                         ContentTreeNode chain = iterator.next();
-                        if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifer()))) {
+                        if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifier()))) {
                             // System.out.println("  correct chain going further");
                             chain.appendAtom(atom, identifer);
                             return;
                         }
                     }
-                    iterator.add(new ContentTreeNode(identifer.getChainIdentifer(), CHAIN));
-                    // System.out.println("  Added Chain: " + identifer.getChainIdentifer());
+                    iterator.add(new ContentTreeNode(identifer.getChainIdentifier(), CHAIN));
+                    // System.out.println("  Added Chain: " + identifer.getChainIdentifier());
                     break;
                 }
                 case CHAIN: {
