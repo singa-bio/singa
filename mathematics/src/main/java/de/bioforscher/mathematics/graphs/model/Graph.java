@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
+ * The graph contains nodes connected by edges of a certain type.
+ *
  * @param <NodeType>
  * @param <EdgeType>
  */

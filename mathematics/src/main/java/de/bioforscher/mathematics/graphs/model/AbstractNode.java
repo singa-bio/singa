@@ -5,22 +5,48 @@ import de.bioforscher.mathematics.vectors.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple implementation of the node interface. References to neighboring nodes are stored in a list. Every node is
+ * positioned using a vector.
+ *
+ * @param <NodeType>
+ * @param <VectorType>
+ */
 public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, VectorType extends Vector>
         implements Node<NodeType, VectorType> {
 
+    /**
+     * The identifier.
+     */
     private int identifier;
+
+    /**
+     * The neighbours.
+     */
     private List<NodeType> neighbours;
+
+    /**
+     * A positional representation.
+     */
     private VectorType position;
 
+    /**
+     * Creates a new node with the given identifier. The position in not initialized.
+     * @param identifier The identifier.
+     */
     public AbstractNode(int identifier) {
         this.identifier = identifier;
         this.neighbours = new ArrayList<>();
     }
 
+    /**
+     * Creates a new node with the given position.
+     * @param identifier
+     * @param position
+     */
     public AbstractNode(int identifier, VectorType position) {
-        this.identifier = identifier;
+        this(identifier);
         this.position = position;
-        this.neighbours = new ArrayList<>();
     }
 
     @Override
