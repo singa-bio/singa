@@ -1,13 +1,13 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.chemistry.parser.pdb.structures.PDBWriterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.TreeMap;
 
 /**
@@ -28,19 +28,42 @@ public interface Fit3D {
     TreeMap<Double, SubstructureSuperimposition> getMatches();
 
     /**
+     * Returns the fraction of residues that were aligned.
+     *
+     * @return The fractions of matches that were aligned.
+     */
+    double getFraction();
+
+    /**
+     * Returns the Xie-score of aligned residues.
+     *
+     * @return The Xie-score that were aligned.
+     */
+    XieScore getXieScore();
+
+    /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
      * the query motif.
      *
-     * @param outptutDirectory The directory where the matches should be written.
+     * @param outputDirectory The directory where the matches should be written.
      */
-    default void writeMatches(Path outptutDirectory) {
+    default void writeMatches(Path outputDirectory) {
         getMatches().values().forEach(substructureSuperimposition -> {
             try {
                 PDBWriterService.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
-                        outptutDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
+                        outputDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
             } catch (IOException e) {
                 logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);
             }
         });
+    }
+
+    /**
+     * Returns a string that represents the alignment. This is only available for the {@link Fit3DSiteAlignment}.
+     *
+     * @return The alignment in string representation.
+     */
+    default String getAlignmentString() {
+        throw new UnsupportedOperationException("unique alignment string can only be obtained with Fit3DSite algorithm");
     }
 }

@@ -5,15 +5,12 @@ import de.bioforscher.chemistry.physical.model.StructuralFamily;
 /**
  * Created by leberech on 08/12/16.
  */
-public enum LigandFamily implements StructuralFamily {
-
-    UNKNOWN("*", "HET");
-
+public class LigandFamily implements StructuralFamily {
 
     private String oneLetterCode;
     private String threeLetterCode;
 
-    LigandFamily(String oneLetterCode, String threeLetterCode) {
+    public LigandFamily(String oneLetterCode, String threeLetterCode) {
         this.oneLetterCode = oneLetterCode;
         this.threeLetterCode = threeLetterCode;
     }

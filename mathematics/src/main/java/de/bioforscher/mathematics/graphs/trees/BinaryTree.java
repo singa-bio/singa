@@ -28,18 +28,34 @@ public class BinaryTree<T> implements Serializable {
     /**
      * Traverses the tree in pre order and collects leave nodes.
      *
-     * @param node       the starting node
+     * @param startingNode       the starting node
      * @param leaveNodes the storage for the leave nodes
      */
-    private void collectLeavesPreOrder(BinaryTreeNode<T> node, List<BinaryTreeNode<T>> leaveNodes) {
-        if (node != null) {
-            BinaryTreeNode<T> left = node.getLeft();
-            BinaryTreeNode<T> right = node.getRight();
+    public void collectLeavesPreOrder(BinaryTreeNode<T> startingNode, List<BinaryTreeNode<T>> leaveNodes) {
+        if (startingNode != null) {
+            BinaryTreeNode<T> left = startingNode.getLeft();
+            BinaryTreeNode<T> right = startingNode.getRight();
             if (left == null && right == null) {
-                leaveNodes.add(node);
+                leaveNodes.add(startingNode);
             }
             collectLeavesPreOrder(left, leaveNodes);
             collectLeavesPreOrder(right, leaveNodes);
+        }
+    }
+
+    /**
+     * Traverses the tree in pre order and collects nodes.
+     *
+     * @param startingNode the starting node
+     * @param nodes        the storage for the nodes
+     */
+    public void collectNodesPreOrder(BinaryTreeNode<T> startingNode, List<BinaryTreeNode<T>> nodes) {
+        if (startingNode != null) {
+            BinaryTreeNode<T> left = startingNode.getLeft();
+            BinaryTreeNode<T> right = startingNode.getRight();
+            nodes.add(startingNode);
+            collectNodesPreOrder(left, nodes);
+            collectNodesPreOrder(right, nodes);
         }
     }
 

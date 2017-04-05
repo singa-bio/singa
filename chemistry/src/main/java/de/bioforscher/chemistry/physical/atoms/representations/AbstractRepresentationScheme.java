@@ -3,7 +3,6 @@ package de.bioforscher.chemistry.physical.atoms.representations;
 
 import de.bioforscher.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.mathematics.vectors.Vector3D;
@@ -12,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * This abstract implementation provide a fallback solution to compute the centroid of a {@link LeafSubstructure},

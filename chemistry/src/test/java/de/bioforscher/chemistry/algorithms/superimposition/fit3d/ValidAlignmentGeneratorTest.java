@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 import de.bioforscher.core.utility.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,23 +20,23 @@ public class ValidAlignmentGeneratorTest {
 
     private List<LeafSubstructure<?, ?>> motif1;
     private List<LeafSubstructure<?, ?>> motif2;
-    private List<List<Pair<Residue>>> correctAlignments;
+    private List<List<Pair<AminoAcid>>> correctAlignments;
 
     @Before
     public void setUp() {
 
         // compose residues 1
-        Residue motif1Lysine1 = new Residue(1, ResidueFamily.LYSINE);
-        Residue motif1AsparticAcid1 = new Residue(2, ResidueFamily.ASPARTIC_ACID);
-        Residue motif1GlutamicAcid1 = new Residue(3, ResidueFamily.GLUTAMIC_ACID);
-        Residue motif1GlutamicAcid2 = new Residue(4, ResidueFamily.GLUTAMIC_ACID);
-        Residue motif1Histidine1 = new Residue(5, ResidueFamily.HISTIDINE);
+        AminoAcid motif1Lysine1 = new AminoAcid(1, AminoAcidFamily.LYSINE);
+        AminoAcid motif1AsparticAcid1 = new AminoAcid(2, AminoAcidFamily.ASPARTIC_ACID);
+        AminoAcid motif1GlutamicAcid1 = new AminoAcid(3, AminoAcidFamily.GLUTAMIC_ACID);
+        AminoAcid motif1GlutamicAcid2 = new AminoAcid(4, AminoAcidFamily.GLUTAMIC_ACID);
+        AminoAcid motif1Histidine1 = new AminoAcid(5, AminoAcidFamily.HISTIDINE);
 
         // set exchanges 1
-        motif1Lysine1.addExchangeableType(ResidueFamily.HISTIDINE);
-        motif1GlutamicAcid2.addExchangeableType(ResidueFamily.ASPARTIC_ACID);
-        motif1GlutamicAcid2.addExchangeableType(ResidueFamily.ASPARAGINE);
-        motif1Histidine1.addExchangeableType(ResidueFamily.LYSINE);
+        motif1Lysine1.addExchangeableFamily(AminoAcidFamily.HISTIDINE);
+        motif1GlutamicAcid2.addExchangeableFamily(AminoAcidFamily.ASPARTIC_ACID);
+        motif1GlutamicAcid2.addExchangeableFamily(AminoAcidFamily.ASPARAGINE);
+        motif1Histidine1.addExchangeableFamily(AminoAcidFamily.LYSINE);
 
         // compose motif 1
         this.motif1 = new ArrayList<>();
@@ -47,11 +47,11 @@ public class ValidAlignmentGeneratorTest {
         this.motif1.add(motif1Histidine1);
 
         // compose residues 2
-        Residue motif2Histidine1 = new Residue(6, ResidueFamily.HISTIDINE);
-        Residue motif2GlutamicAcid1 = new Residue(7, ResidueFamily.GLUTAMIC_ACID);
-        Residue motif2Asparagine1 = new Residue(8, ResidueFamily.ASPARAGINE);
-        Residue motif2AsparticAcid1 = new Residue(9, ResidueFamily.ASPARTIC_ACID);
-        Residue motif2Histidine2 = new Residue(10, ResidueFamily.HISTIDINE);
+        AminoAcid motif2Histidine1 = new AminoAcid(6, AminoAcidFamily.HISTIDINE);
+        AminoAcid motif2GlutamicAcid1 = new AminoAcid(7, AminoAcidFamily.GLUTAMIC_ACID);
+        AminoAcid motif2Asparagine1 = new AminoAcid(8, AminoAcidFamily.ASPARAGINE);
+        AminoAcid motif2AsparticAcid1 = new AminoAcid(9, AminoAcidFamily.ASPARTIC_ACID);
+        AminoAcid motif2Histidine2 = new AminoAcid(10, AminoAcidFamily.HISTIDINE);
 
         // compose motif 2
         this.motif2 = new ArrayList<>();
@@ -62,13 +62,13 @@ public class ValidAlignmentGeneratorTest {
         this.motif2.add(motif2Histidine2);
 
         // store correct alignments
-        List<Pair<Residue>> correctAlignment1 = new ArrayList<>();
+        List<Pair<AminoAcid>> correctAlignment1 = new ArrayList<>();
         correctAlignment1.add(new Pair<>(motif1Lysine1, motif2Histidine2));
         correctAlignment1.add(new Pair<>(motif1AsparticAcid1, motif2AsparticAcid1));
         correctAlignment1.add(new Pair<>(motif1GlutamicAcid1, motif2GlutamicAcid1));
         correctAlignment1.add(new Pair<>(motif1Histidine1, motif2Histidine1));
         
-        List<Pair<Residue>> correctAlignment2 = new ArrayList<>();
+        List<Pair<AminoAcid>> correctAlignment2 = new ArrayList<>();
         correctAlignment2.add(new Pair<>(motif1Lysine1, motif2Histidine1));
         correctAlignment2.add(new Pair<>(motif1AsparticAcid1, motif2AsparticAcid1));
         correctAlignment2.add(new Pair<>(motif1GlutamicAcid1, motif2GlutamicAcid1));

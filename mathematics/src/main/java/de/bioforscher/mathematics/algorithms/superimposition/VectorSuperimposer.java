@@ -56,7 +56,8 @@ public class VectorSuperimposer {
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-        return new VectorSuperimposition(this.rmsd, this.translation, this.rotation, this.mappedCandidate);
+        return new VectorSuperimposition(this.rmsd, this.translation, this.rotation, this.reference, this.candidate,
+                this.mappedCandidate);
     }
 
     private void calculateRMSD() {

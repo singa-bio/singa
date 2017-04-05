@@ -7,34 +7,32 @@ import java.util.Comparator;
  */
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
+    public static final String DEFAULT_PDB_IDENTIFIER = "0000";
+    public static final int DEFAULT_MODEL_IDENTIFIER = 0;
+    public static final String DEFAULT_CHAIN_IDENTIFER = "X";
     private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
             .comparing(LeafIdentifier::getPdbIdentifer)
             .thenComparing(LeafIdentifier::getModelIdentifer)
             .thenComparing(LeafIdentifier::getChainIdentifer)
-            .thenComparing(LeafIdentifier::getLeafIdentifer);
-
-    public static final String DEFAULT_PDB_IDENTIFIER = "0000";
-    public static final int DEFAULT_MODEL_IDENTIFIER = 0;
-    public static final String DEFAULT_CHAIN_IDENTIFER = "X";
-
+            .thenComparing(LeafIdentifier::getIdentifier);
     private final String pdbIdentifer;
     private final int modelIdentifer;
     private final String chainIdentifer;
-    private final int leafIdentifer;
+    private final int identifier;
 
-    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int leafIdentifer) {
+    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int identifier) {
         this.pdbIdentifer = pdbIdentifer.toUpperCase();
         this.modelIdentifer = modelIdentifer;
         this.chainIdentifer = chainIdentifer.toUpperCase();
-        this.leafIdentifer = leafIdentifer;
+        this.identifier = identifier;
     }
 
-    public LeafIdentifier(String chainIdentifer, int leafIdentifer) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, leafIdentifer);
+    public LeafIdentifier(String chainIdentifer, int identifier) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, identifier);
     }
 
-    public LeafIdentifier(int leafIdentifer) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, leafIdentifer);
+    public LeafIdentifier(int identifier) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, identifier);
     }
 
     public static LeafIdentifier fromString(String identifier) {
@@ -54,8 +52,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         return this.chainIdentifer;
     }
 
-    public int getLeafIdentifer() {
-        return this.leafIdentifer;
+    public int getIdentifier() {
+        return this.identifier;
     }
 
     @Override
@@ -69,7 +67,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
                 "pdbIdentifer='" + this.pdbIdentifer + '\'' +
                 ", modelIdentifer=" + this.modelIdentifer +
                 ", chainIdentifer='" + this.chainIdentifer + '\'' +
-                ", leafIdentifer=" + this.leafIdentifer +
+                ", identifier=" + this.identifier +
                 '}';
     }
 
@@ -81,7 +79,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         LeafIdentifier that = (LeafIdentifier) o;
 
         if (this.modelIdentifer != that.modelIdentifer) return false;
-        if (this.leafIdentifer != that.leafIdentifer) return false;
+        if (this.identifier != that.identifier) return false;
         if (!this.pdbIdentifer.equals(that.pdbIdentifer)) return false;
         return this.chainIdentifer.equals(that.chainIdentifer);
     }
@@ -91,7 +89,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         int result = this.pdbIdentifer.hashCode();
         result = 31 * result + this.modelIdentifer;
         result = 31 * result + this.chainIdentifer.hashCode();
-        result = 31 * result + this.leafIdentifer;
+        result = 31 * result + this.identifier;
         return result;
     }
 }

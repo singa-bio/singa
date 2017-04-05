@@ -15,6 +15,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family) {
         super(leafIdentifier, family);
+        this.name = family.getThreeLetterCode();
     }
 
     public AtomContainer(LeafIdentifier leafIdentifier, StructuralFamilyType family, String name) {
@@ -22,7 +23,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
         this.name = name;
     }
 
-    public AtomContainer(AtomContainer atomContainer) {
+    public AtomContainer(AtomContainer<StructuralFamilyType> atomContainer) {
         super(atomContainer);
         this.name = atomContainer.name;
     }
@@ -34,7 +35,7 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
 
     @Override
     public String toString() {
-        return this.name + ":" + getIdentifier();
+        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
     }
 
     @Override

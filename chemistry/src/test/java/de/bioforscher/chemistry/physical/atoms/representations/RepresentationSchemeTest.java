@@ -1,8 +1,8 @@
 package de.bioforscher.chemistry.physical.atoms.representations;
 
 import de.bioforscher.chemistry.physical.atoms.AtomName;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
-import de.bioforscher.chemistry.physical.leafes.Residue;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentAsAlphaCarbon() throws IOException {
-        Residue alanine = ResidueFamily.ALANINE.getPrototype();
+        AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
         RepresentationScheme alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
         assertArrayEquals(alanine.getAlphaCarbon().getPosition().getElements(),
                 alphaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
@@ -26,7 +26,7 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentBetaCarbon() throws IOException {
-        Residue alanine = ResidueFamily.ALANINE.getPrototype();
+        AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
         RepresentationScheme betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
         assertArrayEquals(alanine.getBetaCarbon().getPosition().getElements(),
                 betaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
@@ -36,7 +36,7 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentCentroid() throws IOException {
-        Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
+        AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
         RepresentationScheme centroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CENTROID);
         assertArrayEquals(new double[]{0.032916666666666705, -0.1403333333333334, 0.04999999999999997},
                 centroidRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
@@ -45,7 +45,7 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentLastHeavySidechain() throws IOException {
-        Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
+        AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
         RepresentationScheme lastHavySidechainRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN);
         assertArrayEquals(tyrosine.getAtomByName(AtomName.OH).getPosition().getElements(),
                 lastHavySidechainRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
@@ -54,7 +54,7 @@ public class RepresentationSchemeTest {
 
     @Test
     public void shouldRepresentSidechaiCentroid() throws IOException {
-        Residue tyrosine = ResidueFamily.TYROSINE.getPrototype();
+        AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
         RepresentationScheme sidechainCentroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID);
         assertArrayEquals(new double[]{-0.22149999999999997, 1.09525, -0.906125},
                 sidechainCentroidRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),

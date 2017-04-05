@@ -2,8 +2,8 @@ package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.algorithms.superimposition.SubStructureSuperimposer;
 import de.bioforscher.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
@@ -28,10 +28,6 @@ import java.util.stream.Collectors;
  * @author fk
  */
 public class Fit3DAlignment implements Fit3D {
-
-    public static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
-    public static final double DEFAULT_RMSD_CUTOFF = 2.5;
-    private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
 
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
@@ -68,11 +64,14 @@ public class Fit3DAlignment implements Fit3D {
         this.matches = new TreeMap<>();
         this.candidates = new HashMap<>();
 
-        logger.info("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
+        logger.debug("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
 
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
         reduceTargetStructure();
-
+        if (this.queryMotif.size() > this.target.getLeafSubstructures().size()) {
+            logger.debug("reduced target structure smaller than query motif, no matches can be found");
+            return;
+        }
         // calculate squared motif extent
         calculateMotifExtent();
 
@@ -94,6 +93,19 @@ public class Fit3DAlignment implements Fit3D {
     @Override
     public TreeMap<Double, SubstructureSuperimposition> getMatches() {
         return this.matches;
+    }
+
+    /**
+     * Returns the fraction of aligned residues, which is always 1.0 for this kind of alignment.
+     */
+    @Override
+    public double getFraction() {
+        return 1.0;
+    }
+
+    @Override
+    public XieScore getXieScore() {
+        throw new UnsupportedOperationException("Xie score can only be calculate for Fit3DSiteAlignment");
     }
 
     /**
@@ -174,7 +186,7 @@ public class Fit3DAlignment implements Fit3D {
     private void reduceTargetStructure() {
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
         Set<StructuralFamily> containingTypes = this.queryMotif.getLeafSubstructures().stream()
-                .map(LeafSubstructure::getContainingTypes)
+                .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         List<LeafIdentifier> toBeRemoved = this.target.getLeafSubstructures().stream()
@@ -201,7 +213,7 @@ public class Fit3DAlignment implements Fit3D {
             }
             if (environment.size() >= this.queryMotif.size()) {
                 logger.debug("possible environment {} within {} around {} added", environment,
-                        this.squaredQueryExtent + DEFAULT_DISTANCE_TOLERANCE, currentSubstructure);
+                        Math.sqrt(this.squaredQueryExtent + this.squaredDistanceTolerance), currentSubstructure);
                 this.environments.add(environment);
             }
         }

@@ -4,11 +4,14 @@ import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.Chain;
 import de.bioforscher.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.chemistry.physical.leafes.Residue;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isModel;
 
 /**
  * Structure represents chemical objects in a three dimensional space. Substructures are used to partition a structure
@@ -46,21 +49,21 @@ public class Structure {
 
     public List<StructuralModel> getAllModels() {
         return this.getBranchSubstructures().stream()
-                .filter(StructureFilter.isModel())
+                .filter(isModel())
                 .map(StructuralModel.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Chain> getAllChains() {
         return this.getAllBranches().stream()
-                .filter(StructureFilter.isChain())
+                .filter(isChain())
                 .map(Chain.class::cast)
                 .collect(Collectors.toList());
     }
 
-    public List<Residue> getAllResidues() {
+    public List<AminoAcid> getAllResidues() {
         return this.branchSubstructures.values().stream()
-                .map(BranchSubstructure::getResidues)
+                .map(BranchSubstructure::getAminoAcids)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

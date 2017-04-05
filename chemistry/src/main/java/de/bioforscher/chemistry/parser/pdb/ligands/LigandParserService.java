@@ -1,14 +1,15 @@
 package de.bioforscher.chemistry.parser.pdb.ligands;
 
+import de.bioforscher.chemistry.parser.pdb.structures.tokens.LeafSkeleton;
+import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -17,30 +18,34 @@ import java.util.stream.Collectors;
 public class LigandParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(LigandParserService.class);
-    public static final String CIF_FETCH_URL = "https://files.rcsb.org/ligands/view/%s.cif";
+    private static final String CIF_FETCH_URL = "https://files.rcsb.org/ligands/view/%s.cif";
 
-    public static LeafSubstructure<?,?> parseLeafSubstructureById(String ligandId) throws IOException {
+    public static LeafSubstructure<?, ?> parseLeafSubstructureById(String ligandId) throws IOException {
         logger.info("parsing structure {}", ligandId);
-        return parseLeafSubstructureFromCifFile(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
+        return parseLeafSubstructure(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
     }
 
-    public static LeafSubstructure<?,?> parseLeafSubstructureFromCifFile(InputStream inputStream) throws IOException {
+    public static LeafSubstructure<?, ?> parseLeafSubstructure(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                return CifFileParser.parseLeafSubstructureFromCif(bufferedReader.lines().collect(Collectors.toList()));
+                return CifFileParser.parseLeafSubstructure(bufferedReader.lines().collect(Collectors.toList()));
             }
         }
     }
 
-    public static String parseLigandTypeById(String ligandId) throws IOException {
-        logger.info("getting information for {}", ligandId);
-        return parseLigandTypeFromCifFile(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
+    public static LeafSkeleton parseLeafSkeleton(String ligandId) {
+        logger.info("parsing structure {} using the supplied atoms", ligandId);
+        try {
+            return parseLeafSkeleton(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not parse cif file for ligand "+ligandId+".",e);
+        }
     }
 
-    public static String parseLigandTypeFromCifFile(InputStream inputStream) throws IOException {
+    public static LeafSkeleton parseLeafSkeleton(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-                return CifFileParser.getLeafType(bufferedReader.lines().collect(Collectors.toList()));
+                return CifFileParser.parseLeafSkeleton(bufferedReader.lines().collect(Collectors.toList()));
             }
         }
     }

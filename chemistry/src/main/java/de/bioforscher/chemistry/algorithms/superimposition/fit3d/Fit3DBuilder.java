@@ -1,16 +1,20 @@
 package de.bioforscher.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
-import de.bioforscher.chemistry.physical.atoms.AtomFilter;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
+import de.bioforscher.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
  * A builder that guides through the creation of a {@link Fit3D} alignment.
@@ -19,9 +23,18 @@ import java.util.function.Predicate;
  */
 public class Fit3DBuilder {
 
+    /**
+     * Default values for the Fit3D algorithm.
+     */
     private static final double DEFAULT_DISTANCE_TOLERANCE = 1.0;
     private static final double DEFAULT_RMSD_CUTOFF = 2.5;
     private static final Predicate<Atom> DEFAULT_ATOM_FILTER = AtomFilter.isArbitrary();
+
+    /**
+     * Default values for the Fit3DSite algorithm.
+     */
+    private static final double DEFAULT_CUTOFF_SCORE = 5.0;
+    private static final SubstitutionMatrix DEFAULT_SUBSTITUTION_MATRIX = SubstitutionMatrix.BLOSUM_45;
 
     /**
      * prevent instantiation
@@ -47,6 +60,65 @@ public class Fit3DBuilder {
          * @return The {@link TargetStep} to define one or several targets.
          */
         TargetStep query(StructuralMotif query);
+
+        /**
+         * Defines a site that should be aligned against another.
+         *
+         * @param site The first site to be aligned.
+         * @return The {@link SiteStep} to define the antagonist.
+         */
+        SiteStep site(StructuralMotif site);
+    }
+
+    public interface SiteStep {
+        /**
+         * Defines the second site for the pairwise site alignment.
+         *
+         * @param site The second site to be aligned.
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        SiteParameterConfigurationStep vs(StructuralMotif site);
+    }
+
+    public interface SiteConfigurationStep {
+
+        /**
+         * Restricts the site alignment to the specified exchanges of the input sites.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep restrictToSpecifiedExchanges();
+
+        /**
+         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type using
+         * a heuristic that does not necessarily yield the best alignment possible.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep ignoreSpecifiedExchanges();
+
+        /**
+         * Guarantees to find the ideal alignment of the input sites.
+         *
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep exhaustive();
+    }
+
+    public interface SiteParameterConfigurationStep extends SiteConfigurationStep {
+        /**
+         * The cutoff score that should be used when extending the site alignment.
+         *
+         * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
+         */
+        SiteParameterConfigurationStep cutoffScore(double cutoffScore);
+
+        /**
+         * The {@link SubstitutionMatrix} to be used to calculate the Xie score.
+         *
+         * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
+         */
+        SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix);
     }
 
     public interface TargetStep {
@@ -94,9 +166,10 @@ public class Fit3DBuilder {
         Fit3D run();
 
         /**
-         * Defines a {@link AtomFilter} to be used for the {@link Fit3D} alignment (e.g. only sidechain atoms).
+         * Defines a {@link de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g. only
+         * sidechain atoms).
          *
-         * @param atomFilter The {@link AtomFilter} to be used for the alignment.
+         * @param atomFilter The {@link de.bioforscher.chemistry.physical.model.StructuralEntityFilter.AtomFilter} filter to be used for the alignment.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
          */
         ParameterStep atomFilter(Predicate<Atom> atomFilter);
@@ -119,7 +192,8 @@ public class Fit3DBuilder {
         Fit3D run();
 
         /**
-         * Defines the RMSD cutoff up to which matches should be reported.
+         * Defines the RMSD cutoff up to which matches should be reported. If a {@link Fit3DSiteAlignment} is performed
+         * this is the cutoff that is used for the internal call of the Fit3D algorithm.
          *
          * @param rmsdCutoff The RMSD cutoff up to which alignments should be reported.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -127,7 +201,9 @@ public class Fit3DBuilder {
         ParameterStep rmsdCutoff(double rmsdCutoff);
 
         /**
-         * Defines the distance tolerance that is accepted when extracting local environments.
+         * Defines the distance tolerance that is accepted when extracting local environments. If a
+         * {@link Fit3DSiteAlignment} is performed this is the cutoff that is used for the internal call of the
+         * Fit3D algorithm.
          *
          * @param distanceTolerance The distance tolerance considered when extracting local environments.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -135,7 +211,7 @@ public class Fit3DBuilder {
         ParameterStep distanceTolerance(double distanceTolerance);
     }
 
-    public static class Builder implements QueryStep, TargetStep, ParallelStep, AtomStep, ParameterStep {
+    public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
 
         StructuralMotif queryMotif;
         BranchSubstructure<?> target;
@@ -145,11 +221,24 @@ public class Fit3DBuilder {
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
         Predicate<Atom> atomFilter = DEFAULT_ATOM_FILTER;
         RepresentationScheme representationScheme;
+        StructuralMotif site1;
+        StructuralMotif site2;
+        double cutoffScore = DEFAULT_CUTOFF_SCORE;
+        boolean exhaustive;
+        boolean restrictToExchanges;
+        SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
 
         @Override
         public TargetStep query(StructuralMotif query) {
             Objects.requireNonNull(query);
             this.queryMotif = query;
+            return this;
+        }
+
+        @Override
+        public SiteStep site(StructuralMotif site1) {
+            Objects.requireNonNull(site1);
+            this.site1 = site1;
             return this;
         }
 
@@ -164,7 +253,7 @@ public class Fit3DBuilder {
         public ParallelStep targets(List<String> targets) {
             Objects.requireNonNull(targets);
             if (targets.isEmpty()) {
-                throw new Fit3DException("targetStructures cannot be empty");
+                throw new Fit3DException("target structures cannot be empty");
             }
             this.targetStructures = targets;
             return this;
@@ -172,8 +261,12 @@ public class Fit3DBuilder {
 
         @Override
         public Fit3D run() {
+            // decide which implementation should be used
             if (this.targetStructures != null) {
                 return new Fit3DAlignmentBatch(this);
+            }
+            if (this.site1 != null && this.site2 != null) {
+                return new Fit3DSiteAlignment(this);
             }
             return new Fit3DAlignment(this);
         }
@@ -222,6 +315,43 @@ public class Fit3DBuilder {
         @Override
         public AtomStep maximalParallelism() {
             this.parallelism = Runtime.getRuntime().availableProcessors();
+            return this;
+        }
+
+        @Override
+        public SiteParameterConfigurationStep vs(StructuralMotif site2) {
+            Objects.requireNonNull(site2);
+            this.site2 = site2;
+            return this;
+        }
+
+        @Override
+        public SiteParameterConfigurationStep cutoffScore(double cutoffScore) {
+            this.cutoffScore = cutoffScore;
+            return this;
+        }
+
+        @Override
+        public SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix) {
+            this.substitutionMatrix = substitutionMatrix;
+            return this;
+        }
+
+        @Override
+        public AtomStep restrictToSpecifiedExchanges() {
+            this.restrictToExchanges = true;
+            return this;
+        }
+
+        @Override
+        public AtomStep ignoreSpecifiedExchanges() {
+            this.restrictToExchanges = false;
+            return this;
+        }
+
+        @Override
+        public AtomStep exhaustive() {
+            this.exhaustive = true;
             return this;
         }
     }

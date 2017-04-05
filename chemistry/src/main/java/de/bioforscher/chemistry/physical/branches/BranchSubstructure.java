@@ -1,10 +1,13 @@
 package de.bioforscher.chemistry.physical.branches;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
+import de.bioforscher.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.chemistry.physical.leafes.Nucleotide;
-import de.bioforscher.chemistry.physical.leafes.Residue;
-import de.bioforscher.chemistry.physical.model.*;
+import de.bioforscher.chemistry.physical.model.Bond;
+import de.bioforscher.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.chemistry.physical.model.Structure;
+import de.bioforscher.chemistry.physical.model.Substructure;
 import de.bioforscher.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.mathematics.metrics.model.VectorMetricProvider;
@@ -14,21 +17,25 @@ import de.bioforscher.mathematics.vectors.Vectors;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isAminoAcid;
+import static de.bioforscher.chemistry.physical.model.StructuralEntityFilter.LeafFilter.isNucleotide;
+
 /**
  * The BranchSubstructure is the central component in the three dimensional structure representation of macro molecules.
  * A BranchSubstructure can contain other substructures and/or atoms. Further implementations are used to infer more
  * information. <br/>
  * <p>
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
- * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain Atoms. Edges in a BranchSubstructure
- * are only able to connect Atoms, but this can be done across different substructures. For example, this makes it
- * possible to connect Residues in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
+ * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain AtomFilter. Edges in a BranchSubstructure
+ * are only able to connect AtomFilter, but this can be done across different substructures. For example, this makes it
+ * possible to connect AminoAcids in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
  * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
  * @author cl
  * @see Chain
- * @see Residue
+ * @see AminoAcid
  * @see Atom
  */
 public abstract class BranchSubstructure<SubstructureType extends Substructure<SubstructureType>>
@@ -262,7 +269,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * Adds all nodes in the collection to this BranchSubstructure.
      *
-     * @param atoms The Atoms to add.
+     * @param atoms The AtomFilter to add.
      */
     public void addAllNodes(Collection<Atom> atoms) {
         atoms.forEach(this::addNode);
@@ -325,15 +332,16 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
         atomsToBeRemoved.forEach(this::removeNode);
 
-        if (this instanceof Chain) {
-            this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier() == leafIdentifier.getLeafIdentifer());
+        if (this instanceof Chain || this instanceof StructuralMotif) {
+            this.substructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier()
+                    == leafIdentifier.getIdentifier());
         } else {
             getBranchSubstructures().stream()
-                    .filter(StructureFilter.isChain())
+                    .filter(isChain())
                     .map(Chain.class::cast)
                     .filter(chain -> chain.getChainIdentifier().equals(leafIdentifier.getChainIdentifer()))
                     .findFirst()
-                    .ifPresent(chain -> chain.removeSubstructure(leafIdentifier.getLeafIdentifer()));
+                    .ifPresent(chain -> chain.removeSubstructure(leafIdentifier.getIdentifier()));
         }
     }
 
@@ -442,20 +450,20 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all Residues that are present in this or subordinate SubStructures.
+     * Returns all AminoAcids that are present in this or subordinate SubStructures.
      *
      * @return All residues.
      */
-    public List<Residue> getResidues() {
+    public List<AminoAcid> getAminoAcids() {
         return getLeafSubstructures().stream()
-                .filter(StructureFilter.isResidue())
-                .map(Residue.class::cast)
+                .filter(isAminoAcid())
+                .map(AminoAcid.class::cast)
                 .collect(Collectors.toList());
     }
 
     public List<Nucleotide> getNucleotides() {
         return this.getLeafSubstructures().stream()
-                .filter(StructureFilter.isNucleotide())
+                .filter(isNucleotide())
                 .map(Nucleotide.class::cast)
                 .collect(Collectors.toList());
     }

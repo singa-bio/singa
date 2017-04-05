@@ -2,53 +2,70 @@ package de.bioforscher.chemistry.physical.leafes;
 
 import de.bioforscher.chemistry.physical.atoms.Atom;
 import de.bioforscher.chemistry.physical.atoms.AtomName;
+import de.bioforscher.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.chemistry.physical.families.LeafFactory;
-import de.bioforscher.chemistry.physical.families.ResidueFamily;
 import de.bioforscher.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.mathematics.vectors.Vector3D;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
- * that determines the amino acid (and the overarching features). Based on this ResidueType a Residue can be created
+ * that determines the amino acid (and the overarching features). Based on this ResidueType a AminoAcid can be created
  * of a set of atoms that belong to this residue using the
- * {@link LeafFactory#createResidueFromAtoms(LeafIdentifier, ResidueFamily, EnumMap)}  LeafFactory}. This establishes the bonds
+ * {@link LeafFactory#createAminoAcidFromAtoms(LeafIdentifier, AminoAcidFamily, Map)} LeafFactory}. This establishes the bonds
  * in the amino acid, where possible.
  *
  * @author cl
  */
-public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
+public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
+
+    private final boolean modified;
+    private final String modifiedName;
 
     /**
-     * Creates a new Residue with a identifier and ResidueType. Preferably the
-     * {@link LeafFactory#createResidueFromAtoms(LeafIdentifier, ResidueFamily, EnumMap)} LeafFactory} should be used to create
-     * Residues.
+     * Creates a new AminoAcid.
      *
      * @param leafIdentifier The identifier.
      * @param family         The ResidueType.
      */
-    public Residue(LeafIdentifier leafIdentifier, ResidueFamily family) {
+    public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
+        this.modified = false;
+        this.modifiedName = null;
     }
 
-    public Residue(int identifer, ResidueFamily family) {
-        super(new LeafIdentifier(identifer), family);
+    public AminoAcid(int identifer, AminoAcidFamily family) {
+        this(new LeafIdentifier(identifer), family);
     }
 
     /**
-     * This is a copy constructor. Creates a new residue with the same attributes as the given residue. This
+     * Creates a new modified AminoAcid with a identifier and ResidueType.
+     *
+     * @param leafIdentifier The identifier.
+     * @param family         The ResidueType.
+     */
+    public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
+        super(leafIdentifier, family);
+        this.modified = true;
+        this.modifiedName = modifiedName;
+    }
+
+    /**
+     * This is a copy constructor. Creates a new aminoAcid with the same attributes as the given aminoAcid. This
      * also recursively creates copies of all the underlying substructures and atoms. The neighbours of this
      * substructure are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations
      * to the lifecycle of the substructure to copy. If you want to keep the neighbouring substructures, copy the
      * superordinate substructure that contains this substructure and it will also traverse and copy the neighbouring
      * substructures.
      *
-     * @param residue The residue to copy
+     * @param aminoAcid The aminoAcid to copy
      */
-    public Residue(Residue residue) {
-        super(residue);
+    public AminoAcid(AminoAcid aminoAcid) {
+        super(aminoAcid);
+        this.modified = aminoAcid.modified;
+        this.modifiedName = aminoAcid.modifiedName;
     }
 
     /**
@@ -66,9 +83,12 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
      * @return The three letter code of this residue.
      */
     public String getThreeLetterCode() {
-        return getFamily().getThreeLetterCode();
+        return this.modified ? this.modifiedName : getFamily().getThreeLetterCode();
     }
 
+    public boolean isModified() {
+        return this.modified;
+    }
 
     /**
      * Returns the {@link AtomName#CA alpha carbon} (carbon with the side cain attached).
@@ -117,7 +137,7 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
 
     /**
      * Return the name of this residue in the format
-     * [Chain identifier of the Residue]-[One Letter Code of the Residue][Residue identifier]
+     * [Chain identifier of the AminoAcid]-[One Letter Code of the AminoAcid][AminoAcid identifier]
      * (e.g. A-D123 or A-M17).
      *
      * @return The String representation of this residue.
@@ -128,13 +148,13 @@ public class Residue extends LeafSubstructure<Residue, ResidueFamily> {
     }
 
     /**
-     * Returns a copy of this residue. See {@link this#Residue(Residue)}.
+     * Returns a copy of this residue. See {@link this#AminoAcid(AminoAcid)}.
      *
      * @return A copy of this residue.
      */
     @Override
-    public Residue getCopy() {
-        return new Residue(this);
+    public AminoAcid getCopy() {
+        return new AminoAcid(this);
     }
 
     /**

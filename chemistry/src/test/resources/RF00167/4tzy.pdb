@@ -341,39 +341,39 @@ REMARK 800
 REMARK 800 SITE                                                                 
 REMARK 800 SITE_IDENTIFIER: AC1                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue ADE X 101                 
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid ADE X 101
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC2                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 102                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 102
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC3                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 103                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 103
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC4                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 104                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 104
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC5                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 105                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 105
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC6                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 106                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 106
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC7                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue MG X 107                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid MG X 107
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC8                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue MG X 108                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid MG X 108
 REMARK 800                                                                      
 REMARK 800 SITE_IDENTIFIER: AC9                                                 
 REMARK 800 EVIDENCE_CODE: SOFTWARE                                              
-REMARK 800 SITE_DESCRIPTION: binding site for residue SR X 110                  
+REMARK 800 SITE_DESCRIPTION: binding site for aminoAcid SR X 110
 REMARK 900                                                                      
 REMARK 900 RELATED ENTRIES                                                      
 REMARK 900 RELATED ID: 4TZP   RELATED DB: PDB                                   
