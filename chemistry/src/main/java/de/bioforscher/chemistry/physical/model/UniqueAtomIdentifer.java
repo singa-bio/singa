@@ -21,15 +21,15 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
         this.atomSerial = atomSerial;
     }
 
-    public String getPdbIdentifer() {
+    public String getPdbIdentifier() {
         return this.pdbIdentifer;
     }
 
-    public int getModelIdentifer() {
+    public int getModelIdentifier() {
         return this.modelIdentifer;
     }
 
-    public String getChainIdentifer() {
+    public String getChainIdentifier() {
         return this.chainIdentifer;
     }
 
@@ -51,7 +51,8 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
         if (this.modelIdentifer != that.modelIdentifer) return false;
         if (this.leafIdentifer != that.leafIdentifer) return false;
         if (this.atomSerial != that.atomSerial) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
+        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+            return false;
         return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 
@@ -67,13 +68,13 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
 
     @Override
     public String toString() {
-        return this.pdbIdentifer +"-"+this.modelIdentifer+"-"+this.chainIdentifer+"-"+this.leafIdentifer+"-"+ this.atomSerial;
+        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.leafIdentifer + "-" + this.atomSerial;
     }
 
     @Override
     public int compareTo(UniqueAtomIdentifer o) {
-        return Comparator.comparing(UniqueAtomIdentifer::getPdbIdentifer).thenComparing(UniqueAtomIdentifer::getModelIdentifer)
-                .thenComparing(UniqueAtomIdentifer::getChainIdentifer).thenComparing(UniqueAtomIdentifer::getLeafIdentifer)
+        return Comparator.comparing(UniqueAtomIdentifer::getPdbIdentifier).thenComparing(UniqueAtomIdentifer::getModelIdentifier)
+                .thenComparing(UniqueAtomIdentifer::getChainIdentifier).thenComparing(UniqueAtomIdentifer::getLeafIdentifer)
                 .thenComparing(UniqueAtomIdentifer::getAtomSerial).compare(this, o);
     }
 }

@@ -344,6 +344,6 @@ public class RegularMatrixTest {
         columnLabelsToCheck.add("C1");
         columnLabelsToCheck.add("C2");
         assertTrue(lrm.getRowLabels().equals(rowLabelsToCheck));
-        assertTrue(lrm.getColumnsLabels().equals(columnLabelsToCheck));
+        assertTrue(lrm.getColumnLabels().equals(columnLabelsToCheck));
     }
 }

@@ -108,9 +108,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the integer part of the leaf identifier.
+     * Returns the integer part of the leaf pdbIdentifier.
      *
-     * @return The integer part of the leaf identifier.
+     * @return The integer part of the leaf pdbIdentifier.
      */
     @Override
     public int getIdentifier() {
@@ -118,9 +118,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returnt the complete leaf identifier.
+     * Returnt the complete leaf pdbIdentifier.
      *
-     * @return The complete identifier.
+     * @return The complete pdbIdentifier.
      */
     public LeafIdentifier getLeafIdentifier() {
         return this.leafIdentifier;
@@ -129,7 +129,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     /**
      * Returns the next free node identifer. This method returns the value of a counting variable that is used to add
      * all internal nodes. Every time this method is called a new identifer is given. You should only need to use this
-     * method if you really need to add a atom form outside and cannot use predefined identifiers.
+     * method if you really need to add a atom form outside and cannot use predefined pdbIdentifiers.
      *
      * @return The next free node identifer.
      */
@@ -150,7 +150,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the atom with the specified identifer or {@code null} if this identifier is not assigned.
+     * Returns the atom with the specified identifer or {@code null} if this pdbIdentifier is not assigned.
      *
      * @param identifier The identifer.
      * @return The atom with the specified identifer.
@@ -227,7 +227,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the bonds with the specified identifer or {@code null} if this identifier is not assigned.
+     * Returns the bonds with the specified identifer or {@code null} if this pdbIdentifier is not assigned.
      *
      * @param identifier The identifer.
      * @return The bonds with the specified identifer.
@@ -253,7 +253,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     /**
      * Adds a bond connecting the the given atoms. The order of the given atoms does not matter, but is retained. The
-     * bond type can be specified beforehand and the identifier of the edge is used as the identifer in the leaf.
+     * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifer in the leaf.
      *
      * @param edge   The edge to be added.
      * @param source The source atom.
@@ -382,11 +382,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the chain this leaf belongs to.
+     * Returns the chain pdbIdentifier this leaf belongs to.
      *
-     * @return The chain this leaf belongs to.
+     * @return The chain pdbIdentifier this leaf belongs to.
      */
-    public String getChain() {
+    public String getChainIdentifier() {
         return this.leafIdentifier.getChainIdentifer();
     }
 
@@ -395,8 +395,8 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      *
      * @return The original PDB-ID this leaf belongs to.
      */
-    public String getPdbId() {
-        return this.leafIdentifier.getPdbIdentifer();
+    public String getPdbIdentifier() {
+        return this.leafIdentifier.getPdbIdentifier();
     }
 
     /**

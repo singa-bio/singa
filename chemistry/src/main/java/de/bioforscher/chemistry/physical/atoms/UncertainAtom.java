@@ -9,9 +9,9 @@ import de.bioforscher.mathematics.vectors.Vector3D;
 public class UncertainAtom extends RegularAtom {
 
     /**
-     * Creates a new atom with the given identifier, element, name and position.
+     * Creates a new atom with the given pdbIdentifier, element, name and position.
      *
-     * @param identifier The identifier.
+     * @param identifier The pdbIdentifier.
      * @param element The element.
      * @param atomNameString The name.
      * @param position The position.

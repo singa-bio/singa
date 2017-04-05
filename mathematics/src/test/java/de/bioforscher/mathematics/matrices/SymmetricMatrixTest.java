@@ -119,7 +119,7 @@ public class SymmetricMatrixTest {
         labelsToCheck.add("L2");
         labelsToCheck.add("L3");
         assertTrue(lsm.getRowLabels().equals(labelsToCheck));
-        assertTrue(lsm.getColumnsLabels().equals(labelsToCheck));
+        assertTrue(lsm.getColumnLabels().equals(labelsToCheck));
     }
 
     @Test

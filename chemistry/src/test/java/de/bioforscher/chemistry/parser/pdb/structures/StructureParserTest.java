@@ -2,15 +2,10 @@ package de.bioforscher.chemistry.parser.pdb.structures;
 
 import de.bioforscher.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
 import de.bioforscher.chemistry.physical.model.Structure;
-import de.bioforscher.chemistry.physical.viewer.StructureViewer;
-import javafx.application.Application;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import static de.bioforscher.chemistry.parser.pdb.structures.StructureSources.PDB_ONLINE;
 
 public class StructureParserTest {
 
@@ -18,7 +13,7 @@ public class StructureParserTest {
     public void shouldParseUncomplicatedStructure() {
         // "normal" structure
         Structure structure = StructureParser.online()
-                .identifier("1BUW")
+                .pdbIdentifier("1BUW")
                 .parse();
     }
 
@@ -26,7 +21,7 @@ public class StructureParserTest {
     public void shouldParseModel() {
         // parse one model of multi model structure
         Structure structure = StructureParser.online()
-                .identifier("1PQS")
+                .pdbIdentifier("1PQS")
                 .model(2)
                 .allChains()
                 .parse();
@@ -36,7 +31,7 @@ public class StructureParserTest {
     public void shouldParseChain() {
         // parse one chain of multi chain structure
         Structure structure = StructureParser.online()
-                .identifier("1BRR")
+                .pdbIdentifier("1BRR")
                 .chain("A")
                 .parse();
     }
@@ -45,7 +40,7 @@ public class StructureParserTest {
     public void shouldParseModelAndChain() {
         // parse one model of multi model structure and only a specific chain
         Structure structure = StructureParser.online()
-                .identifier("2N5E")
+                .pdbIdentifier("2N5E")
                 .model(3)
                 .chain("B")
                 .parse();
@@ -55,7 +50,7 @@ public class StructureParserTest {
     public void shouldParseChainOfMultiModel() {
         // parse only a specific chain of all models in a structure
         Structure structure = StructureParser.online()
-                .identifier("2N5E")
+                .pdbIdentifier("2N5E")
                 .chain("B")
                 .parse();
     }
@@ -65,7 +60,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseResiduesWithModifiedAminoAcids() {
         Structure structure = StructureParser.online()
-                .identifier("1DW9")
+                .pdbIdentifier("1DW9")
                 .everything()
                 .parse();
     }
@@ -74,7 +69,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseStructureWithNucleotides() {
         Structure structure = StructureParser.online()
-                .identifier("5T3L")
+                .pdbIdentifier("5T3L")
                 .everything()
                 .parse();
     }
@@ -84,7 +79,7 @@ public class StructureParserTest {
     public void shouldParseResiduesWithModifiedNucleotides() {
         // TODO some strange bonds between 620 and 621 issue #41
         Structure structure = StructureParser.online()
-                .identifier("1C0A")
+                .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
     }
@@ -107,7 +102,7 @@ public class StructureParserTest {
     public void shouldParseMultipleStructures() {
         // all have the ligand SO4
         List<Structure> structures = StructureParser.online()
-                .identifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
+                .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
     }
 

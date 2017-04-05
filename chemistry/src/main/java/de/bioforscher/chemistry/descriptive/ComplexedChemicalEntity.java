@@ -14,9 +14,9 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
     private Map<ChemicalEntity, Integer> associatedParts;
 
     /**
-     * Creates a new Chemical Entity with the given identifier.
+     * Creates a new Chemical Entity with the given pdbIdentifier.
      *
-     * @param identifier The identifier.
+     * @param identifier The pdbIdentifier.
      */
     protected ComplexedChemicalEntity(SimpleStringIdentifier identifier) {
         super(identifier);

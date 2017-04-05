@@ -76,7 +76,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     }
 
     @Override
-    public List<LabelType> getColumnsLabels() {
+    public List<LabelType> getColumnLabels() {
         return getRowLabels();
     }
 

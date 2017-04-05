@@ -209,7 +209,7 @@ public class SimulationExamples {
      * phosphate and D-glyceraldehyde using fructose bisphosphate aldolase.
      * From: Callens, M. et al. (1991). Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei
      * compared to aldolase from rabbit muscle and Staphylococcus aureus.
-     * Sabio-RK identifier: 28851
+     * Sabio-RK pdbIdentifier: 28851
      *
      * @return The ready to go simulation.
      */

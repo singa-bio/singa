@@ -35,7 +35,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     /**
      * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
      *
-     * @param identifier      The internally-used identifier of the {@link StructuralMotif}.
+     * @param identifier      The internally-used pdbIdentifier of the {@link StructuralMotif}.
      * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
      * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
@@ -57,7 +57,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     /**
      * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
      *
-     * @param identifier        The internally-used identifier of the {@link StructuralMotif}.
+     * @param identifier        The internally-used pdbIdentifier of the {@link StructuralMotif}.
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
@@ -73,7 +73,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                 .map(Object::toString)
                 .collect(Collectors.joining("_", getLeafSubstructures().stream()
                         .findAny()
-                        .map(LeafSubstructure::getPdbId)
+                        .map(LeafSubstructure::getPdbIdentifier)
                         .orElse("") + "|", ""));
     }
 

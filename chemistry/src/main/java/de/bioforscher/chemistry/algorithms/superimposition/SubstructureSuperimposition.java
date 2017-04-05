@@ -65,7 +65,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(Object::toString)
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
-                        + this.mappedCandidate.get(0).getPdbId()
+                        + this.mappedCandidate.get(0).getPdbIdentifier()
                         + "|", ""));
     }
 

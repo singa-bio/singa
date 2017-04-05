@@ -225,7 +225,7 @@ public class UniProtContentHandler implements ContentHandler {
 
         switch (this.currentTag) {
             case "accession": {
-                // set identifier
+                // set pdbIdentifier
                 this.identifier = new UniProtIdentifier(new String(ch, start, length));
 
             }

@@ -6,7 +6,6 @@ import de.bioforscher.chemistry.physical.branches.StructuralMotifs;
 import de.bioforscher.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.chemistry.physical.model.Structure;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,8 +76,9 @@ public class Fit3DSiteAlignmentTest {
                 .exhaustive()
                 .atomFilter(AtomFilter.isBackbone())
                 .run();
-        assertEquals(2.7888003232092946, fit3d.getMatches().firstKey(),1E-6);
+        assertEquals(2.7888003232092946, fit3d.getMatches().firstKey(), 1E-6);
         assertEquals(8.95782257821579, fit3d.getXieScore().getScore(), 1E-6);
+        assertEquals(-0.06767849561570793, fit3d.getXieScore().getNormalizedScore(), 1E-6);
         assertEquals(0.0026668227445263426, fit3d.getXieScore().getSignificance(), 1E-6);
     }
 
