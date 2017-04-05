@@ -4,6 +4,16 @@ import de.bioforscher.mathematics.vectors.Vector;
 
 import java.util.*;
 
+/**
+ * This is a simple implementation of the graph interface, that handles the most common operations defined for adding
+ * and removing edges as well as nodes. Nodes and edge are referenced in a Hashmap with integer keys and can therefor
+ * quickly be retrieved and inserted.
+ *
+ * @param <NodeType>   The type of the nodes in the graph.
+ * @param <EdgeType>   The type of the edges in the graph.
+ * @param <VectorType> The vector that is used to define the position of this node.
+ * @author cl
+ */
 public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>, EdgeType extends
         Edge<NodeType>, VectorType extends Vector>
         implements Graph<NodeType, EdgeType> {
@@ -52,44 +62,22 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         return this.nextNodeIdentifier++;
     }
 
-    /**
-     * Gets all the nodes in the graph.
-     *
-     * @return All the nodes in the graph.
-     */
     @Override
     public Set<NodeType> getNodes() {
         return new HashSet<>(this.nodes.values());
     }
 
-    /**
-     * Gets a node by its identifier.
-     *
-     * @param identifier The identifier.
-     * @return The node.
-     */
     @Override
     public NodeType getNode(int identifier) {
         return this.nodes.get(identifier);
     }
 
-    /**
-     * Adds a single node.
-     *
-     * @param node The node.
-     */
     @Override
     public int addNode(NodeType node) {
         this.nodes.put(node.getIdentifier(), node);
         return node.getIdentifier();
     }
 
-    /**
-     * Removes the node with the given identifier from the Graph. Also removes
-     * all edges, that refer to this node.
-     *
-     * @param identifier The identifier of the node.
-     */
     @Override
     public void removeNode(int identifier) {
         this.nodes.entrySet().removeIf(node -> node.getValue().getIdentifier() == identifier);
@@ -101,27 +89,25 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         return this.nextEdgeIdentifier++;
     }
 
-    /**
-     * Gets all the edges in the graph.
-     *
-     * @return All the edges in the graph.
-     */
     @Override
     public Set<EdgeType> getEdges() {
         return new HashSet<>(this.edges.values());
     }
 
-    /**
-     * Gets a edge by its identifier.
-     *
-     * @param identifier The identifier.
-     * @return The node.
-     */
     @Override
     public EdgeType getEdge(int identifier) {
         return this.edges.get(identifier);
     }
 
+    /**
+     * Adds a new edge to the graph, connecting source and target nodes. This method also references source and target
+     * as neighbors to each other.
+     *
+     * @param edge   The edge to be added.
+     * @param source The source node.
+     * @param target The target node.
+     * @return The identifier of the added edge.
+     */
     public int addEdgeBetween(EdgeType edge, NodeType source, NodeType target) {
         edge.setSource(source);
         edge.setTarget(target);
@@ -131,33 +117,48 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         return edge.getIdentifier();
     }
 
+    /**
+     * Adds a new edge with the given identifier to the graph, connecting source and target nodes. This method also
+     * references source and target as neighbors to each other.
+     *
+     * @param identifier The edge identifier.
+     * @param source     The source node.
+     * @param target     The target node.
+     * @return The identifier of the added edge.
+     */
     public abstract int addEdgeBetween(int identifier, NodeType source, NodeType target);
 
+    /**
+     * Adds a new edge with the next free identifier to the graph, connecting source and target nodes. This method also
+     * references source and target as neighbors to each other.
+     *
+     * @param source The source node.
+     * @param target The target node.
+     * @return The identifier of the added edge.
+     */
     public abstract int addEdgeBetween(NodeType source, NodeType target);
 
-    /**
-     * @param node The node.
-     * @return {@code true} only if the node is in the graph.
-     */
     @Override
     public boolean containsNode(Object node) {
         return this.nodes.containsValue(node);
     }
 
-    /**
-     * @param edge The edge.
-     * @return {@code true} only if the edge is in the graph.
-     */
     @Override
     public boolean containsEdge(Object edge) {
         return this.edges.containsValue(edge);
     }
 
+    /**
+     * Returns the degree of the node with the highest degree in the graph. If no maximal degree exists, zero is
+     * returned.
+     *
+     * @return The maximal degree of the graph.
+     */
     public int getMaximumDegree() {
         return this.nodes.values().stream()
-                         .mapToInt(Node::getDegree)
-                         .max()
-                         .orElse(0);
+                .mapToInt(Node::getDegree)
+                .max()
+                .orElse(0);
     }
 
     @Override

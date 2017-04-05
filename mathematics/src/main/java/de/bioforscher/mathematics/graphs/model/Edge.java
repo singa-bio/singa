@@ -3,7 +3,8 @@ package de.bioforscher.mathematics.graphs.model;
 /**
  * The edge object connects two nodes of the same type.
  *
- * @param <NodeType>
+ * @param <NodeType> The type of the node to connect with this edge.
+ * @author cl
  */
 public interface Edge<NodeType extends Node<NodeType, ?>> {
 

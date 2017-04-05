@@ -6,8 +6,9 @@ import java.util.Set;
 /**
  * The graph contains nodes connected by edges of a certain type.
  *
- * @param <NodeType>
- * @param <EdgeType>
+ * @param <NodeType> The type of the nodes in the graph.
+ * @param <EdgeType> The type of the edges in the graph.
+ * @author cl
  */
 public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge<NodeType>> {
 

@@ -1,24 +1,15 @@
 package de.bioforscher.mathematics.graphs.util;
 
-import de.bioforscher.core.utility.Pair;
 import de.bioforscher.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.mathematics.graphs.model.GenericGraph;
-import de.bioforscher.mathematics.graphs.model.GenericNode;
-import de.bioforscher.mathematics.graphs.model.RegularNode;
-import de.bioforscher.mathematics.graphs.model.UndirectedGraph;
+import de.bioforscher.mathematics.graphs.model.*;
 import de.bioforscher.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.mathematics.graphs.trees.BinaryTreeNode;
-import de.bioforscher.mathematics.sequences.Sequences;
 import de.bioforscher.mathematics.vectors.Vector2D;
+import de.bioforscher.mathematics.vectors.Vectors;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * A factory class used to create some Graphs.
+ * A factory class used to create graphs and convert other things to graphs.
  *
  * @author cl
  */
@@ -30,7 +21,7 @@ public class GraphFactory {
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
      *
      * @param numberOfNodes The number of nodes the graph should contain.
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param boundingBox   A bounding box where the nodes should be positioned.
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -49,7 +40,7 @@ public class GraphFactory {
      * successor.
      *
      * @param numberOfNodes The number of nodes the circle should contain.
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param boundingBox   A bounding box where the nodes should be positioned.
      * @return A circular graph.
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -62,7 +53,7 @@ public class GraphFactory {
      * Generates a graph with a tree-like structure, where every node is connected to one predecessor and two
      * successors, thus forming a fractal structure.
      *
-     * @param depth The depth of the tree.
+     * @param depth       The depth of the tree.
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A tree-like graph.
      */
@@ -80,8 +71,8 @@ public class GraphFactory {
     /**
      * A private method used to grow the tree-like graph structure. The given graph will be modified!
      *
-     * @param depth The current depth.
-     * @param graph The graph to add the new node.
+     * @param depth       The current depth.
+     * @param graph       The graph to add the new node.
      * @param predecessor The previously added node.
      * @param boundingBox A bounding box where the nodes should be positioned.
      */
@@ -98,9 +89,9 @@ public class GraphFactory {
     /**
      * Generates a randomised graph based on the Erdös - Renyi model.
      *
-     * @param numberOfNodes The number of nodes the graph should contain.
+     * @param numberOfNodes   The number of nodes the graph should contain.
      * @param edgeProbability The probability, that two nodes will be connected.
-     * @param boundingBox A bounding box where the nodes should be positioned.
+     * @param boundingBox     A bounding box where the nodes should be positioned.
      * @return A randomized graph.
      */
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
@@ -126,9 +117,9 @@ public class GraphFactory {
      * Generates a grid graph with columns and rows.
      *
      * @param boundingBox Rectangle where the Graph is positioned.
-     * @param columns The Number of columns
-     * @param rows The Number of rows
-     * @param periodic Applies periodic boundary condition, if {@code true}.
+     * @param columns     The Number of columns
+     * @param rows        The Number of rows
+     * @param periodic    Applies periodic boundary condition, if {@code true}.
      * @return A rectangular grid graph.
      */
     public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
@@ -198,33 +189,60 @@ public class GraphFactory {
         return graph;
     }
 
-
+    /**
+     * Converts a {@link BinaryTree} to a {@link GenericGraph}.
+     *
+     * @param tree          The tree.
+     * @param <ContentType> The content of the resulting generic graph.
+     * @return The generic graph.
+     */
     public static <ContentType> GenericGraph<ContentType> convertTreeToGraph(BinaryTree<ContentType> tree) {
-
         GenericGraph<ContentType> graph = new GenericGraph<>();
+        BinaryTreeNode<ContentType> root = tree.getRoot();
+        GenericNode<ContentType> rootNode = convertNode(root, graph);
+        graph.addNode(rootNode);
+        traverseNode(graph, rootNode, root.getLeft());
+        traverseNode(graph, rootNode, root.getRight());
+        return graph;
+    }
 
-        List<BinaryTreeNode<ContentType>> leafNodes = tree.getLeafNodes();
-
-        List<Pair<Integer>> edges = new ArrayList<>();
-        // Map<Integer, BinaryTreeNode<ContentType>> nodes = new HashMap<>();
-
-        // collect nodes and assign them to identifer
-
-
-        for(BinaryTreeNode<ContentType> treeNode: leafNodes) {
-            GenericNode<ContentType> graphNode = new GenericNode<ContentType>(graph.nextNodeIdentifier(), treeNode.getData());
-            graph.addNode(graphNode);
-            if (!graph.getNodes().isEmpty()) {
-                BinaryTreeNode<ContentType> left = treeNode.getLeft();
-                if (left != null) {
-
-                }
-            }
+    /**
+     * Converts a {@link BinaryTreeNode} to a {@link GenericNode} and connects it in the given graph to the source node.
+     * Recursively traverses all child nodes.
+     *
+     * @param graph The graph where the node is added.
+     * @param source The node to connect to.
+     * @param treeNode The node to convert.
+     * @param <ContentType> The content type of the node.
+     */
+    private static <ContentType> void traverseNode(GenericGraph<ContentType> graph,
+                                                   GenericNode<ContentType> source, BinaryTreeNode<ContentType> treeNode) {
+        // add current tree to the graph and connect it
+        GenericNode<ContentType> graphNode = convertNode(treeNode, graph);
+        graph.addNode(graphNode);
+        graph.addEdgeBetween(source, graphNode);
+        // traverse the children
+        if (treeNode.getLeft() != null) {
+            traverseNode(graph, graphNode, treeNode.getLeft());
         }
+        if (treeNode.getRight() != null) {
+            traverseNode(graph, graphNode, treeNode.getRight());
+        }
+    }
 
-
-
-        return null;
+    /**
+     * Converts a {@link BinaryTreeNode} to a {@link GenericNode} with the next free node identifer from the graph.
+     * Places the node randomly in a 200 x 200 rectangle.
+     * @param treeNode The node to convert.
+     * @param graph The graph to take the index from.
+     * @param <ContentType> The content type of the node.
+     * @return The converted {@link GenericNode}.
+     */
+    private static <ContentType> GenericNode<ContentType> convertNode(BinaryTreeNode<ContentType> treeNode,
+                                                                      GenericGraph<ContentType> graph) {
+        GenericNode<ContentType> result = new GenericNode<>(graph.nextNodeIdentifier(), treeNode.getData());
+        result.setPosition(Vectors.generateRandomVectorInRectangle(new Rectangle(200, 200)));
+        return result;
     }
 
 }

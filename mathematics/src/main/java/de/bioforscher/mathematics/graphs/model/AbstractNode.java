@@ -9,8 +9,9 @@ import java.util.List;
  * A simple implementation of the node interface. References to neighboring nodes are stored in a list. Every node is
  * positioned using a vector.
  *
- * @param <NodeType>
- * @param <VectorType>
+ * @param <NodeType>   The node type that is defined for neighbors of this node.
+ * @param <VectorType> The vector that is used to define the position of this node.
+ * @author cl
  */
 public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, VectorType extends Vector>
         implements Node<NodeType, VectorType> {
@@ -32,6 +33,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
 
     /**
      * Creates a new node with the given identifier. The position in not initialized.
+     *
      * @param identifier The identifier.
      */
     public AbstractNode(int identifier) {
@@ -41,6 +43,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
 
     /**
      * Creates a new node with the given position.
+     *
      * @param identifier
      * @param position
      */
@@ -54,6 +57,11 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         return this.identifier;
     }
 
+    /**
+     * Sets the identifier.
+     *
+     * @param identifier The identifier.
+     */
     public void setIdentifier(int identifier) {
         this.identifier = identifier;
     }
@@ -63,6 +71,11 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         return this.neighbours;
     }
 
+    /**
+     * Sets the list of neighbours.
+     *
+     * @param neighbours The neighbours.
+     */
     public void setNeighbours(List<NodeType> neighbours) {
         this.neighbours = neighbours;
     }
@@ -72,10 +85,21 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         this.neighbours.add(node);
     }
 
+    /**
+     * Removes a neighbouring node.
+     *
+     * @param node The node to remove.
+     */
     public void removeNeighbour(RegularNode node) {
         this.neighbours.remove(node);
     }
 
+    /**
+     * Returns true if the list of neighbors contains the given node.
+     *
+     * @param node The node.
+     * @return true if the list of neighbors contains the given node.
+     */
     public boolean hasNeighbour(RegularNode node) {
         return this.neighbours.contains(node);
     }
@@ -85,10 +109,12 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         return this.position;
     }
 
+    @Override
     public void setPosition(VectorType position) {
         this.position = position;
     }
 
+    @Override
     public int getDegree() {
         return this.neighbours.size();
     }
@@ -112,7 +138,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         if (getClass() != obj.getClass()) {
             return false;
         }
-        // TODO maybe (surely) this should not happen here
+
         NodeType other = (NodeType) obj;
         return this.identifier == other.getIdentifier();
     }

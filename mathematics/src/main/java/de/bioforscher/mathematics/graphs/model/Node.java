@@ -7,8 +7,9 @@ import java.util.List;
 /**
  * The node is the elementary object contained in graphs.
  *
- * @param <NodeType>
- * @param <VectorType>
+ * @param <NodeType>   The node type that is defined for neighbors of this node.
+ * @param <VectorType> The vector that is used to define the position of this node.
+ * @author cl
  */
 public interface Node<NodeType extends Node<NodeType, VectorType>, VectorType extends Vector> {
 
@@ -43,12 +44,14 @@ public interface Node<NodeType extends Node<NodeType, VectorType>, VectorType ex
 
     /**
      * Returns all neighbors of this node.
+     *
      * @return The neighbours.
      */
     List<NodeType> getNeighbours();
 
     /**
      * Returns the degree (the number of neighbours) of the node.
+     *
      * @return The degree of this node.
      */
     int getDegree();
