@@ -52,7 +52,7 @@ public class ShortestPathMetricTest {
     public void testTreeGraph() {
         Metric<Node<?, ?>> shortestPath = new ShortestPathMetric(this.treeGraph);
         double distance = shortestPath.calculateDistance(this.treeGraph.getNode(0), this.treeGraph.getNode(7));
-        assertEquals(4.0, distance, 0.0);
+        assertEquals(3.0, distance, 0.0);
     }
 
     // TODO degenerate case

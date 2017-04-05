@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.metrics.implementations;
 
+import de.bioforscher.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.mathematics.metrics.model.Metric;
 import de.bioforscher.mathematics.metrics.model.Metrizable;
 import de.bioforscher.mathematics.vectors.Vector;
@@ -31,10 +32,14 @@ public class MinkowskiMetric<VectorType extends Vector> implements Metric<Vector
 
     @Override
     public double calculateDistance(VectorType first, VectorType second) {
-        if (this.p == Double.POSITIVE_INFINITY) {
-            return getMaximalDifference(first, second);
+        if (first.hasSameDimensions(second)) {
+            if (this.p == Double.POSITIVE_INFINITY) {
+                return getMaximalDifference(first, second);
+            }
+            return getRegularMinkowskiDifference(first, second);
+        } else {
+            throw new IncompatibleDimensionsException(first, second);
         }
-        return getRegularMinkowskiDifference(first, second);
 
     }
 

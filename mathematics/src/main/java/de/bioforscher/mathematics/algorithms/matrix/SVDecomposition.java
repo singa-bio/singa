@@ -1,5 +1,6 @@
 package de.bioforscher.mathematics.algorithms.matrix;
 
+import de.bioforscher.mathematics.matrices.FastMatrices;
 import de.bioforscher.mathematics.matrices.Matrix;
 import de.bioforscher.mathematics.matrices.RegularMatrix;
 
@@ -441,8 +442,8 @@ public class SVDecomposition {
             }
         }
 
-        this.matrixU = new RegularMatrix(this.arrayU);
-        this.matrixV = new RegularMatrix(this.arrayV);
+        this.matrixU = FastMatrices.createRegularMatrix(this.arrayU);
+        this.matrixV = FastMatrices.createRegularMatrix(this.arrayV);
     }
 
     private static double hypot(double a, double b) {
@@ -502,59 +503,4 @@ public class SVDecomposition {
         return this.singularValues;
     }
 
-//    /**
-//     * Return the diagonal matrix of singular values
-//     *
-//     * @return S
-//     */
-//
-//    public Matrix getS() {
-//        Matrix X = new Matrix(columnDimension, columnDimension);
-//        double[][] S = X.getArray();
-//        for (int i = 0; i < columnDimension; i++) {
-//            for (int j = 0; j < columnDimension; j++) {
-//                S[i][j] = 0.0;
-//            }
-//            S[i][i] = this.singularValues[i];
-//        }
-//        return X;
-//    }
-//
-//    /**
-//     * Two norm
-//     *
-//     * @return max(S)
-//     */
-//
-//    public double norm2() {
-//        return this.singularValues[0];
-//    }
-//
-//    /**
-//     * Two norm condition number
-//     *
-//     * @return max(S)/min(S)
-//     */
-//
-//    public double cond() {
-//        return this.singularValues[0] / this.singularValues[Math.min(this.rowDimension, this.columnDimension) - 1];
-//    }
-//
-//    /**
-//     * Effective numerical matrix rank
-//     *
-//     * @return Number of nonnegligible singular values.
-//     */
-//
-//    public int rank() {
-//        double eps = Math.pow(2.0, -52.0);
-//        double tol = Math.max(this.rowDimension, this.columnDimension) * this.singularValues[0] * eps;
-//        int r = 0;
-//        for (int i = 0; i < this.singularValues.length; i++) {
-//            if (this.singularValues[i] > tol) {
-//                r++;
-//            }
-//        }
-//        return r;
-//    }
 }

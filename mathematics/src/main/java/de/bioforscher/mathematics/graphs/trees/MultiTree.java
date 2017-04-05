@@ -24,7 +24,7 @@ public class MultiTree<T> {
         if (node == null) {
             return;
         }
-        System.out.println(node.getData().toString()); // visit() here
+        // visit() here
         node.getChildren().forEach(this::traversePreOrder);
     }
 
@@ -34,7 +34,7 @@ public class MultiTree<T> {
         }
         for (MultiTreeNode<T> n : node.getChildren()) {
             traverseInOrder(n);
-            System.out.println(node.getData().toString()); // visit() here
+            // visit() here
         }
     }
 

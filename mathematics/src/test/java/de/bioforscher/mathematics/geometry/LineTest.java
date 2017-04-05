@@ -129,7 +129,7 @@ public class LineTest {
     @Test
     public void shouldAngleToXAxis() {
         Line line = new Line(new Vector2D(23.0 ,9.0), new Vector2D(57.0, 2.0));
-        System.out.println(Math.toDegrees(line.getAngleToXAxis()));
+        assertEquals(-11.633633998940436, Math.toDegrees(line.getAngleToXAxis()), 0.0);
     }
 
 
