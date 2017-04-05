@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <packaging>pom</packaging>
-    <groupId>de.bioforscher</groupId>
+    <groupId>de.bioforscher.singa</groupId>
     <artifactId>singa-all</artifactId>
     <version>1.0-SNAPSHOT</version>
     <description>
@@ -39,6 +39,11 @@
         </developer>
     </developers>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -68,17 +73,18 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+                <version>3.6.1</version>
             </plugin>
         </plugins>
     </build>
 
     <modules>
-        <module>../core</module>
-        <module>../mathematics</module>
-        <module>../units</module>
-        <module>../chemistry</module>
-        <module>../simulation</module>
-        <module>../javafx</module>
+        <module>../singa-core</module>
+        <module>../singa-mathematics</module>
+        <module>../singa-units</module>
+        <module>../singa-chemistry</module>
+        <module>../singa-simulation</module>
+        <module>../singa-javafx</module>
     </modules>
 
 </project>

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/benchmark" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-benchmark" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-chemistry" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-core" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-javafx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-mathematics" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-simulation" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-units" charset="UTF-8" />
   </component>
 </project>

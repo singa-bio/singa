@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/benchmark/benchmark.iml" filepath="$PROJECT_DIR$/benchmark/benchmark.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chemistry/chemistry.iml" filepath="$PROJECT_DIR$/chemistry/chemistry.iml" />
-      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/javafx/javafx.iml" filepath="$PROJECT_DIR$/javafx/javafx.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mathematics/mathematics.iml" filepath="$PROJECT_DIR$/mathematics/mathematics.iml" />
-      <module fileurl="file://$PROJECT_DIR$/simulation/simulation.iml" filepath="$PROJECT_DIR$/simulation/simulation.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-all/singa-all.iml" filepath="$PROJECT_DIR$/singa-all/singa-all.iml" />
-      <module fileurl="file://$PROJECT_DIR$/units/units.iml" filepath="$PROJECT_DIR$/units/units.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-benchmark/singa-benchmark.iml" filepath="$PROJECT_DIR$/singa-all/singa-benchmark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-chemistry/singa-chemistry.iml" filepath="$PROJECT_DIR$/singa-chemistry/singa-chemistry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-core/singa-core.iml" filepath="$PROJECT_DIR$/singa-core/singa-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-javafx/singa-javafx.iml" filepath="$PROJECT_DIR$/singa-javafx/singa-javafx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" filepath="$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-simulation/singa-simulation.iml" filepath="$PROJECT_DIR$/singa-simulation/singa-simulation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-units/singa-units.iml" filepath="$PROJECT_DIR$/singa-units/singa-units.iml" />
     </modules>
   </component>
 </project>
