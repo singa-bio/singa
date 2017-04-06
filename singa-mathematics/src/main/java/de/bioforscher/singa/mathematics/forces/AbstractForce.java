@@ -9,7 +9,7 @@ public abstract class AbstractForce {
     }
 
     public double getForceConstant() {
-        return forceConstant;
+        return this.forceConstant;
     }
 
     public void setForceConstant(double forceConstant) {

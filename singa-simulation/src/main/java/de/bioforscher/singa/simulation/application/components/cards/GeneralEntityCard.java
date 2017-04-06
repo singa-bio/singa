@@ -20,7 +20,7 @@ import javax.measure.Quantity;
 import java.util.List;
 
 /**
- * Created by Christoph on 11/11/2016.
+ * @author cl
  */
 public class GeneralEntityCard<EntityType extends ChemicalEntity<?>> extends GridPane {
 

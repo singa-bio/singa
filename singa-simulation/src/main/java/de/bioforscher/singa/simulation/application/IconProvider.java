@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import java.io.InputStream;
 
 /**
- * @autor cl
+ * @author cl
  */
 public class IconProvider {
 

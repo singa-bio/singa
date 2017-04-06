@@ -16,16 +16,14 @@ import java.util.LinkedList;
 public class ShortestPathFinderTest {
 
     private UndirectedGraph linearGraph;
-    private UndirectedGraph circularGraph;
-    private UndirectedGraph treeGraph;
 
     private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
 
     @Before
     public void initObjects() {
         this.linearGraph = GraphFactory.buildLinearGraph(10, this.boundingBox);
-        this.circularGraph = GraphFactory.buildCircularGraph(10, this.boundingBox);
-        this.treeGraph = GraphFactory.buildTreeGraph(4, this.boundingBox);
+        UndirectedGraph circularGraph = GraphFactory.buildCircularGraph(10, this.boundingBox);
+        UndirectedGraph treeGraph = GraphFactory.buildTreeGraph(4, this.boundingBox);
     }
 
     @Test

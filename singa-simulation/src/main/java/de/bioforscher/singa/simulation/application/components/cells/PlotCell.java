@@ -10,7 +10,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Created by Christoph on 27.07.2016.
+ * @author cl
  */
 public class PlotCell extends ListCell<PlotCard> {
 
@@ -30,9 +30,7 @@ public class PlotCell extends ListCell<PlotCard> {
         configureName();
         configureContextMenu();
         addControlsToGrid();
-        this.setOnMouseClicked(event -> {
-            this.plotControlPanel.setSelectedPlot(this.getItem());
-        });
+        this.setOnMouseClicked(event -> this.plotControlPanel.setSelectedPlot(this.getItem()));
     }
 
     private void configureGrid() {

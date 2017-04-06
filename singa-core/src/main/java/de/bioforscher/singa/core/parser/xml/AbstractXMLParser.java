@@ -20,7 +20,7 @@ public abstract class AbstractXMLParser extends AbstractParser<String> implement
     }
 
     public XMLReader getXmlReader() {
-        return xmlReader;
+        return this.xmlReader;
     }
 
     public void setXmlReader(XMLReader xmlReader) {

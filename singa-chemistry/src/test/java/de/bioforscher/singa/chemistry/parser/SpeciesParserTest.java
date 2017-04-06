@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Christoph on 19.04.2016.
+ * @author cl
  */
 public class SpeciesParserTest {
 

@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * This is a simple implementation of the graph interface, that handles the most common operations defined for adding
- * and removing edges as well as nodes. Nodes and edge are referenced in a Hashmap with integer keys and can therefor
+ * and removing edges as well as nodes. Nodes and edge are referenced in a HashMap with integer keys and can therefor
  * quickly be retrieved and inserted.
  *
  * @param <NodeType>   The type of the nodes in the graph.

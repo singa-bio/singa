@@ -4,6 +4,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
 
 /**
  * A simple implementation of th edge interface. References target and source nodes by source an target attributes.
+ *
  * @param <NodeType> The type of nodes this edge connects.
  */
 public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vector>> implements Edge<NodeType> {
@@ -24,14 +25,15 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
     protected NodeType target;
 
     /**
-     * Creates a new empy edge.
+     * Creates a new empty edge.
      */
     protected AbstractEdge() {
     }
 
     /**
      * Creates a new edge with the given identifier.
-     * @param identifier
+     *
+     * @param identifier The identifer.
      */
     public AbstractEdge(int identifier) {
         this.identifier = identifier;
@@ -39,6 +41,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
 
     /**
      * Creates a new edge without an identifer, but with source and target nodes defined.
+     *
      * @param source The source.
      * @param target The target.
      */

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -80,8 +81,7 @@ public class ValidAlignmentGenerator {
                     // evaluate paths:
                     // - they are invalid, when they contain the same residue multiple times
                     // - thus, when their distinct size is smaller than the currentPathLength
-                    .filter(path -> path.stream()
-                            .collect(Collectors.toSet()).size() == expectedLength)
+                    .filter(path -> new HashSet<>(path).size() == expectedLength)
                     // - other criteria: the last residue can be paired to the currentReferenceResidue
                     .filter(path -> {
                         LeafSubstructure<?, ?> recentlyAddedResidue = path.get(path.size() - 1);

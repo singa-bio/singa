@@ -4,7 +4,7 @@ package de.bioforscher.singa.chemistry.parser.smiles;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
 
 /**
- * Created by leberech on 02/12/16.
+ * @author cl
  */
 public class SimilesParserPlayground {
 

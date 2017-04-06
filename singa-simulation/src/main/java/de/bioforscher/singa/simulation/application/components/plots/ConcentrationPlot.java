@@ -2,13 +2,12 @@ package de.bioforscher.singa.simulation.application.components.plots;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
-import de.bioforscher.singa.simulation.application.renderer.ColorManager;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.application.SingaPreferences;
+import de.bioforscher.singa.simulation.application.renderer.ColorManager;
+import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
+import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdates;
 import de.bioforscher.singa.units.UnitProvider;
 import de.bioforscher.singa.units.quantities.MolarConcentration;
@@ -40,7 +39,6 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationPlot.class);
 
     private ObservableList<ChemicalEntity<?>> observedEntities = FXCollections.observableArrayList();
-    private Simulation simulation;
     // mirrors the data received from events
     private Map<Integer, Set<PotentialUpdate>> mirroredData;
     private BioNode referencedNode;
@@ -49,10 +47,9 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     private int tickSpacing;
     private boolean scaleXAxis = false;
 
-    public ConcentrationPlot(Set<ChemicalEntity<?>> observedEntities, BioNode referencedNode, Simulation simulation) {
+    public ConcentrationPlot(Set<ChemicalEntity<?>> observedEntities, BioNode referencedNode) {
         super(new NumberAxis(), new NumberAxis());
         logger.debug("Initializing {} for node {} ...", this.getClass().getSimpleName(), referencedNode.getIdentifier());
-        this.simulation = simulation;
         this.referencedNode = referencedNode;
         this.mirroredData = new HashMap<>();
         setObservedSpecies(observedEntities);
@@ -124,7 +121,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     public void setObservedSpecies(Set<ChemicalEntity<?>> observedSpecies) {
-        observedSpecies.forEach(this.observedEntities::add);
+        this.observedEntities.addAll(observedSpecies);
     }
 
     public void addSpecies(ChemicalEntity entity) {

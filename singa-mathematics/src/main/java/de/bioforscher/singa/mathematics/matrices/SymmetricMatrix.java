@@ -92,8 +92,8 @@ public class SymmetricMatrix extends SquareMatrix {
      */
     public static boolean isCompact(double[][] potentialValues) {
         int rowLength = 1;
-        for (int rowIndex = 0; rowIndex < potentialValues.length; rowIndex++) {
-            if (potentialValues[rowIndex].length != rowLength) {
+        for (double[] potentialValue : potentialValues) {
+            if (potentialValue.length != rowLength) {
                 return false;
             }
             rowLength++;
@@ -117,8 +117,8 @@ public class SymmetricMatrix extends SquareMatrix {
      * 2.0  5.0
      * 3.0  6.0  9.0 </pre>
      *
-     * @param potentialValues
-     * @return
+     * @param potentialValues The potentially compact values to be converted
+     * @return The compacted values.
      */
     public static double[][] compactToSymmetricMatrix(double[][] potentialValues) {
         assertThatValuesAreSymmetric(potentialValues);

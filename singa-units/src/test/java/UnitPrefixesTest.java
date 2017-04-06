@@ -4,7 +4,7 @@ import de.bioforscher.singa.units.UnitPrefixes;
 import org.junit.Test;
 
 /**
- * Created by Christoph on 12.05.2016.
+ * @author cl
  */
 public class UnitPrefixesTest {
 

@@ -70,7 +70,7 @@ public interface Metric<MetrizableType> {
      * @param list The list of targets.
      * @param reference The reference vector.
      * @param <SubType> The Type or Subtype of the Metrizable.
-     * @returnA A Entry with the closest element and its distance.
+     * @return A Entry with the closest element and its distance.
      */
     default <SubType extends MetrizableType> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list,
                                                                                                  SubType reference) {

@@ -20,7 +20,7 @@ public class MixedParameterList {
     }
 
     public List<ParameterValue<?>> getValues() {
-        return parameterValues;
+        return this.parameterValues;
     }
 
     @SuppressWarnings("unchecked")
@@ -34,13 +34,13 @@ public class MixedParameterList {
 
     @Override
     public String toString() {
-        return parameterValues.toString().replace("[", "").replace("]", "");
+        return this.parameterValues.toString().replace("[", "").replace("]", "");
     }
 
     @Override
     public MixedParameterList clone() {
         MixedParameterList newSet = new MixedParameterList();
-        parameterValues.forEach(newSet::add);
+        this.parameterValues.forEach(newSet::add);
         return newSet;
     }
 

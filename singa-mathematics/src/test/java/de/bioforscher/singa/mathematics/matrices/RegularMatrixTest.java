@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class RegularMatrixTest {

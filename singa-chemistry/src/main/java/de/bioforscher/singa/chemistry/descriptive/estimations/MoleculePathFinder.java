@@ -7,7 +7,6 @@ import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph.isElement;
@@ -172,14 +171,8 @@ public class MoleculePathFinder {
     }
 
     private void cleanIteration(int iteration) {
-        // renew iterator
-        ListIterator<LinkedList<MoleculeAtom>> candidateIterator = this.candidates.listIterator();
         // kick all elements from the previous iteration
-        while (candidateIterator.hasNext()) {
-            if (candidateIterator.next().size() != iteration) {
-                candidateIterator.remove();
-            }
-        }
+        this.candidates.removeIf(moleculeAtoms -> moleculeAtoms.size() != iteration);
     }
 
     private void cleanCandidates() {
@@ -203,7 +196,7 @@ public class MoleculePathFinder {
             }
         }
         // remove all flagged lists
-        listsToRemove.forEach(this.candidates::remove);
+        this.candidates.removeAll(listsToRemove);
     }
 
 }

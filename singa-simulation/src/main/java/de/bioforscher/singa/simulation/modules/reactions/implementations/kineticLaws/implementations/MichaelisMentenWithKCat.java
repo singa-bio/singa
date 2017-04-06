@@ -20,7 +20,7 @@ import java.util.List;
 import static de.bioforscher.singa.units.UnitProvider.PER_SECOND;
 
 /**
- * Created by Christoph on 18.07.2016.
+ * @author cl
  */
 public class MichaelisMentenWithKCat implements KineticLaw {
 

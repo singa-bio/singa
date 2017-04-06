@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 /**
- * Created by Christoph on 02.05.2016.
+ * @author cl
  */
 public class EnzymeAnnotationTest {
 

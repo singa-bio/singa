@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.physical.model;
 import java.util.Comparator;
 
 /**
- * Created by leberech on 16/12/16.
+ * @author cl
  */
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
 

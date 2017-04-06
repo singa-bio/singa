@@ -36,7 +36,7 @@ import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
 
 /**
- * Created by Christoph on 04.08.2016.
+ * @author cl
  */
 public class DiffusionGridSearch extends AbstractGridSearch {
 

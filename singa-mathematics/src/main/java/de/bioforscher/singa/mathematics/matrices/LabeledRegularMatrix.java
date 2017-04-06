@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by fkaiser on 04.10.16.
+ * @author cl
  */
 public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements LabeledMatrix<LabelType> {
 

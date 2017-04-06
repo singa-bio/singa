@@ -2,9 +2,6 @@ package de.bioforscher.singa.chemistry.descriptive.molecules;
 
 import java.util.stream.Stream;
 
-/**
- * Created by Christoph on 21/11/2016.
- */
 public enum MoleculeBondType {
 
     SINGLE_BOND('-'),
@@ -17,6 +14,9 @@ public enum MoleculeBondType {
     UNCONNECTED('.');
     // '.' is a "non bond"
 
+    /**
+     * @author cl
+     */
     private char smilesRepresentation;
 
     MoleculeBondType(char smilesRepresentation) {

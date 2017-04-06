@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.application.components.panes;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * Created by Christoph on 03.08.2016.
+ * @author cl
  */
 public class ResizablePane extends AnchorPane {
 

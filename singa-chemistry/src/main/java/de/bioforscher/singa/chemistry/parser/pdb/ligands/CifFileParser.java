@@ -21,7 +21,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import java.util.*;
 
 /**
- * Created by leberech on 19/12/16.
+ * @author cl
  */
 public class CifFileParser {
 
@@ -132,7 +132,7 @@ public class CifFileParser {
 
     /**
      * Extracts information about the ligand.
-     * @param line
+     * @param line The line.
      */
     private void extractInformation(String line) {
         // extract compound name
@@ -159,7 +159,7 @@ public class CifFileParser {
 
     /**
      * Parses a leaf from scratch using only information provided in the cif file.
-     * @return
+     * @return A leaf.
      */
     private LeafSubstructure<?, ?> parseCompleteLeaf() {
         collectLines(false);
@@ -170,31 +170,29 @@ public class CifFileParser {
 
     /**
      * Creates a complete leaf using the information collected until the call of this method.
-     * @param leafIdentifier
-     * @return
+     * @param leafIdentifier The identifier this leaf should have.
+     * @return A complete leaf using the information collected until the call of this method.
      */
     private LeafSubstructure<?, ?> createLeaf(LeafIdentifier leafIdentifier) {
         LeafSubstructure<?, ?> leafSubstructure = null;
         if (isNucleotide()) {
             // check for nucleotides
                 Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);
-            if(nucleotideFamily.isPresent()) {
-                leafSubstructure = new Nucleotide(leafIdentifier, nucleotideFamily.get(), this.threeLetterCode);
-            } else {
-                leafSubstructure = new Nucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(this.threeLetterCode).get());
-            }
+            leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new Nucleotide(leafIdentifier, nucleotideFamily1, this.threeLetterCode))
+                    .orElseGet(() -> new Nucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(this.threeLetterCode).orElseThrow(() ->
+                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + this.threeLetterCode))));
 
         } else if (isAminoAcid()) {
             // check for amino acids
             Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent);
-            if(aminoAcidFamily.isPresent()) {
-                leafSubstructure = new AminoAcid(leafIdentifier, aminoAcidFamily.get(), this.threeLetterCode);
-            } else {
-                leafSubstructure = new AminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.threeLetterCode).get());
-            }
+            leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new AminoAcid(leafIdentifier, aminoAcidFamily1, this.threeLetterCode))
+                    .orElseGet(() -> new AminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.threeLetterCode).orElseThrow(() ->
+                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + this.threeLetterCode))));
         } else {
             // else this is a ligand
-            leafSubstructure = new AtomContainer<>(leafIdentifier, new LigandFamily(this.oneLetterCode, this.threeLetterCode));
+            AtomContainer<LigandFamily> atomContainer = new AtomContainer<>(leafIdentifier, new LigandFamily(this.oneLetterCode, this.threeLetterCode));
+            atomContainer.setName(this.name);
+            leafSubstructure = atomContainer;
         }
         this.atoms.values().forEach(leafSubstructure::addNode);
         connectAtoms(leafSubstructure);
@@ -203,7 +201,7 @@ public class CifFileParser {
 
     /**
      * Creates a leaf skeleton to be used to create complete leafs from.
-     * @return
+     * @return A leaf skeleton.
      */
     private LeafSkeleton parseLeafSkeleton() {
         collectLines(true);
@@ -213,7 +211,7 @@ public class CifFileParser {
 
     /**
      * Creates a leaf skeleton only containing the information required to build a new leaf.
-     * @return
+     * @return A leaf skeleton.
      */
     private LeafSkeleton createLeafSkeleton() {
         LeafSkeleton.AssignedFamily assignedFamily = null;

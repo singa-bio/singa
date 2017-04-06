@@ -28,20 +28,14 @@ public class SBMLReactionConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLReactionConverter.class);
 
-    private Map<String, Unit<?>> units;
     private Map<String, ChemicalEntity> entities;
-    private Map<String, FunctionReference> functions;
-    private Map<String, SimulationParameter<?>> globalParameters;
 
     private SBMLKineticLawConverter kineticLawConverter;
     private DynamicReaction currentReaction;
 
     public SBMLReactionConverter(Map<String, Unit<?>> units, Map<String, ChemicalEntity> entities, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
-        this.units = units;
         this.entities = entities;
-        this.functions = functions;
-        this.globalParameters = globalParameters;
-        this.kineticLawConverter = new SBMLKineticLawConverter(this.units, this.functions, this.globalParameters);
+        this.kineticLawConverter = new SBMLKineticLawConverter(units, functions, globalParameters);
     }
 
     public List<DynamicReaction> convertReactions(ListOf<Reaction> sbmlReactions) {

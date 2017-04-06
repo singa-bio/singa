@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.ChainFilter;
 
 /**
- * Created by Christoph on 27.09.2016.
+ * @author cl
  */
 public class StructureViewer extends Application {
 

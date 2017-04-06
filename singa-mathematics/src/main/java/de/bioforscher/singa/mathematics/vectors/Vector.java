@@ -46,7 +46,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
     /**
      * Returns a stream of all elements in the vector.
      *
-     * @return
+     * @return A stream of all elements in the vector.
      */
     default DoubleStream streamElements() {
         return DoubleStream.of(this.getElements());
@@ -55,7 +55,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
     /**
      * Returns a stream of all positions and the respective elements.
      *
-     * @param action
+     * @param action A stream of all positions and the respective elements.
      */
     default void forEach(BiConsumer<Integer, Double> action) {
         for (int i = 0; i < this.getDimension(); i++) {

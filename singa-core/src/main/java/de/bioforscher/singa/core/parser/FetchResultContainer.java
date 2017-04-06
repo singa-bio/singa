@@ -10,7 +10,7 @@ public class FetchResultContainer<ResultType> {
     }
 
     public ResultType getContent() {
-        return content;
+        return this.content;
     }
 
     public void setContent(ResultType content) {

@@ -189,7 +189,7 @@ public final class Matrices {
         return QRDecomposition.calculateQRDecomposition(matrix);
     }
 
-    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Stream<String> csvLines) throws IOException {
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Stream<String> csvLines) {
         List<String[]> rawRows = csvLines
                 .map(line -> line.split(","))
                 .map(splittedLine -> Arrays.stream(splittedLine)
@@ -236,7 +236,7 @@ public final class Matrices {
         }
     }
 
-    public static Matrix readUnlabeledMatrixFromCSV(Stream<String> csvLines) throws IOException {
+    public static Matrix readUnlabeledMatrixFromCSV(Stream<String> csvLines) {
         List<String[]> rawRows = csvLines.map(line -> line.split(","))
                 .map(splittedLine -> Arrays.stream(splittedLine)
                         .filter(cell -> !cell.isEmpty())

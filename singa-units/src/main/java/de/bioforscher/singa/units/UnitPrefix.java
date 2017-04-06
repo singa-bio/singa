@@ -46,7 +46,7 @@ public enum UnitPrefix {
     }
 
     public UnitConverter getCorrespondingConverter() {
-        return correspondingConverter;
+        return this.correspondingConverter;
     }
 
     public static EnumSet<UnitPrefix> getDefaultSpacePrefixes() {

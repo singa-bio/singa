@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.physical.families;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 
 /**
- * Created by leberech on 08/12/16.
+ * @author cl
  */
 public class LigandFamily implements StructuralFamily {
 

@@ -32,7 +32,7 @@ public class AtomFilterTest {
         List<Atom> backboneAtoms = branchSubstructure.getAllAtoms().stream()
                                                .filter(StructuralEntityFilter.AtomFilter.isBackbone())
                                                .collect(Collectors.toList());
-        List<Atom> sidechainAtoms = branchSubstructure.getAllAtoms().stream()
+        List<Atom> sideChainAtoms = branchSubstructure.getAllAtoms().stream()
                                                 .filter(StructuralEntityFilter.AtomFilter.isSidechain())
                                                 .collect(Collectors.toList());
 
@@ -44,9 +44,9 @@ public class AtomFilterTest {
         assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.O.getName())).count() == 1);
 
         // check sidechain atoms
-        assertTrue(sidechainAtoms.size() == 3);
-        assertTrue(sidechainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CB.getName())).count() == 1);
-        assertTrue(sidechainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG1.getName())).count() == 1);
-        assertTrue(sidechainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG2.getName())).count() == 1);
+        assertTrue(sideChainAtoms.size() == 3);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CB.getName())).count() == 1);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG1.getName())).count() == 1);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG2.getName())).count() == 1);
     }
 }

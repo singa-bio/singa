@@ -67,13 +67,13 @@ public class DynamicKineticLaw implements KineticLaw {
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        // FIXME scale depending on timestep
+        // FIXME scale depending on time step
         return Quantities.getQuantity(this.expression.evaluate().getValue().doubleValue() / this.appliedScale, UnitProvider.PER_SECOND);
     }
 
     @Override
     public void prepareAppliedRateConstants() {
-        // FIXME scale depending on timestep
+        // FIXME scale depending on time step
     }
 
     @Override

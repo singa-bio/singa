@@ -25,7 +25,7 @@ public class OctanolWaterPartition {
 
         MLOGP_1,
         MLOGP_2,
-        NC_NHET;
+        NC_NHET
 
     }
 
@@ -130,7 +130,7 @@ public class OctanolWaterPartition {
      * Molecular Lipophilicity: State-of-the-Art and Comparison of Log P Methods on More Than 96,000 Compounds" by
      * Mannhold et al. 2008
      *
-     * @return
+     * @return The octanol water partition coefficient.
      */
     private double calculateCoefficientUsingNCAndNHET() {
         final double carbons = calculateNumberOfCarbonAtoms();

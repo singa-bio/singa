@@ -18,7 +18,7 @@ public abstract class AbstractGridSearch {
     }
 
     public List<UniqueParameterList<?>> getInputParameterList() {
-        return inputParameterList;
+        return this.inputParameterList;
     }
 
     public void setInputParameterList(List<UniqueParameterList<?>> inputParameterList) {
@@ -26,7 +26,7 @@ public abstract class AbstractGridSearch {
     }
 
     public Map<MixedParameterList, Double> getResultingValues() {
-        return resultingValues;
+        return this.resultingValues;
     }
 
     abstract public void search();

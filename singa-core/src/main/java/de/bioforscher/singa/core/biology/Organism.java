@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author cl
  */
 public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> {
 

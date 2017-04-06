@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
- * Created by Christoph on 28.08.2016.
+ * @author cl
  */
 public class RendererExamples extends Application implements Renderer {
 

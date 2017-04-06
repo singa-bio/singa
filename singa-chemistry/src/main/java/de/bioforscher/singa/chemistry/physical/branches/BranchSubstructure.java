@@ -204,7 +204,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all neighbouring SubStructures of this BranchSubstructure. Usually those SubStructures are coneccted via edges
+     * Returns all neighbouring SubStructures of this BranchSubstructure. Usually those SubStructures are connected via edges
      * in the superordinate BranchSubstructure.
      *
      * @return The neighbouring SubStructures.
@@ -233,7 +233,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * SubStructures. For example a chain could not contain any atoms, but only residues, that themselves contain the
      * actual atoms. To get all atoms use the {@link BranchSubstructure#getAllAtoms()} method.
      *
-     * @return
+     * @return All atoms that are contained in this substructure.
      */
     @Override
     public List<Atom> getNodes() {

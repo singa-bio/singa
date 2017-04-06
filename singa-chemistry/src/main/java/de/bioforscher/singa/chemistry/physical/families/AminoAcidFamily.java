@@ -6,7 +6,6 @@ import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public enum AminoAcidFamily implements StructuralFamily {
     VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES),
     UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
 
-    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "physical/leafes/prototypes/";
+    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "physical/leafs/prototypes/";
     private String name;
     private String oneLetterCode;
     private String threeLetterCode;
@@ -105,9 +104,8 @@ public enum AminoAcidFamily implements StructuralFamily {
      * Returns a prototype of the {@link AminoAcid} that are deposited in the project resources.
      *
      * @return A {@link AminoAcid} prototype.
-     * @throws IOException
      */
-    public AminoAcid getPrototype() throws IOException {
+    public AminoAcid getPrototype() {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())

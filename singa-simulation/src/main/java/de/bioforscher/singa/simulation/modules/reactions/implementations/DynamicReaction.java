@@ -37,7 +37,7 @@ public class DynamicReaction extends Reaction {
     }
 
     public List<CatalyticReactant> getCatalyticReactants() {
-        return catalyticReactants;
+        return this.catalyticReactants;
     }
 
     public void setCatalyticReactants(List<CatalyticReactant> catalyticReactants) {

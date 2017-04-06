@@ -182,15 +182,11 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
     }
 
     public void setStateOfAllCellsWithRValue(int r, CellState state) {
-        this.keySet().stream().filter(hexagon -> hexagon.getR() == r).forEach(hexagon -> {
-            this.get(hexagon).setState(state);
-        });
+        this.keySet().stream().filter(hexagon -> hexagon.getR() == r).forEach(hexagon -> this.get(hexagon).setState(state));
     }
 
     public void setStateOfAllCellsWithQValue(int q, CellState state) {
-        this.keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> {
-            this.get(hexagon).setState(state);
-        });
+        this.keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> this.get(hexagon).setState(state));
     }
 
     public static HexagonGrid fillRadom() {

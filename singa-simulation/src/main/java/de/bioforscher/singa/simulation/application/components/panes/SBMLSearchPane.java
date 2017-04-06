@@ -26,10 +26,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Created by leberech on 31/01/17.
+ * @author cl
  */
 public class SBMLSearchPane extends GridPane {
 
@@ -111,8 +110,7 @@ public class SBMLSearchPane extends GridPane {
         fileChooser.getExtensionFilters().add(extFilter);
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            this.handleResults(BioModelsParserService.parseModelFromFile(file.getPath()).getChemicalEntities().values().stream()
-                    .collect(Collectors.toList()));
+            this.handleResults(new ArrayList<>(BioModelsParserService.parseModelFromFile(file.getPath()).getChemicalEntities().values()));
             this.searchField.setText(file.getName());
         }
         this.progressIndicator.setVisible(false);
@@ -135,7 +133,7 @@ public class SBMLSearchPane extends GridPane {
             @Override
             protected List<ChemicalEntity> call() throws Exception {
                 String searchTerm = SBMLSearchPane.this.searchField.getText();
-                return BioModelsParserService.parseModelById(searchTerm).getChemicalEntities().values().stream().collect(Collectors.toList());
+                return new ArrayList<>(BioModelsParserService.parseModelById(searchTerm).getChemicalEntities().values());
             }
         };
 

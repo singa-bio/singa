@@ -10,14 +10,14 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static de.bioforscher.singa.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
@@ -45,7 +45,7 @@ public class DiffusionResearch {
         // Species ethaneDiol = ChEBIParserService.parse("CHEBI:30742");
 
         // bundle species
-        List<Species> speciesList = Arrays.asList(ammonia); //, ammonia, benzene, methanol, succinicAcid, ethaneDiol);
+        List<Species> speciesList = Collections.singletonList(ammonia); //, ammonia, benzene, methanol, succinicAcid, ethaneDiol);
 
         System.out.println("Initializing Graph ...");
 

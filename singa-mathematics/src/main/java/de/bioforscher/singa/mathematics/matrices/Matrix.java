@@ -95,7 +95,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * Returns a stream of all positions in the form of pairs and the respective elements. In the pairs, the first
      * element represents the row index and the second element the column index.
      *
-     * @param action
+     * @param action The action.
      */
     default void forEach(BiConsumer<Pair<Integer>, Double> action) {
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {

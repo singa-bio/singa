@@ -10,7 +10,7 @@ public class Circle {
     private double radius;
 
     public Vector2D getMidpoint() {
-        return midpoint;
+        return this.midpoint;
     }
 
     public void setMidpoint(Vector2D midpoint) {
@@ -18,7 +18,7 @@ public class Circle {
     }
 
     public double getRadius() {
-        return radius;
+        return this.radius;
     }
 
     public void setRadius(double radius) {
@@ -28,21 +28,21 @@ public class Circle {
     /**
      * Circumscribed circle from 3 points (e.g. triangle)
      *
-     * @param a
-     * @param b
-     * @param c
+     * @param firstPoint The first point of the triangle.
+     * @param secondPoint The second point of the triangle.
+     * @param thirdPoint The third point of the triangle.
      */
-    public Circle(Vector2D a, Vector2D b, Vector2D c) {
+    public Circle(Vector2D firstPoint, Vector2D secondPoint, Vector2D thirdPoint) {
 
-        LineSegment abLine = new LineSegment(a, b);
+        LineSegment abLine = new LineSegment(firstPoint, secondPoint);
         Line abBisect = abLine.calculatePerpendicularBisector();
 
-        LineSegment acLine = new LineSegment(a, c);
+        LineSegment acLine = new LineSegment(firstPoint, thirdPoint);
         Line acBisect = acLine.calculatePerpendicularBisector();
 
         this.midpoint = abBisect.getInterceptWithLine(acBisect);
 
-        this.radius = this.midpoint.distanceTo(a);
+        this.radius = this.midpoint.distanceTo(firstPoint);
 
     }
 

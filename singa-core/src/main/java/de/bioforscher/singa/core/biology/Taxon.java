@@ -3,7 +3,7 @@ package de.bioforscher.singa.core.biology;
 import de.bioforscher.singa.core.utility.Nameable;
 
 /**
- * Created by Christoph on 14.07.2016.
+ * @author cl
  */
 public class Taxon implements Nameable {
 

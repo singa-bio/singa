@@ -15,7 +15,7 @@ import de.bioforscher.singa.core.utility.Pair;
 import java.util.Map;
 
 /**
- * Created by leberech on 30/01/17.
+ * @author cl
  */
 public class LeafSkeleton {
 

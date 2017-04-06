@@ -50,8 +50,8 @@ public class Permutations {
      * Combinations: [A, D, A] [A, D, E] [A, E, A] [A, E, E] [B, D, A] [B, D, E]
      * [B, E, A] [B, E, E] [C, D, A] [C, D, E] [C, E, A] [C, E, E]
      *
-     * @param lists
-     * @return
+     * @param lists The lists.
+     * @return The combinations of the lists.
      */
     public static List<MixedParameterList> generateAllCombinations(List<UniqueParameterList<?>> lists) {
         List<MixedParameterList> result = new ArrayList<>();

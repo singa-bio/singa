@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
 
 /**
- * An implementation to represent a given {@link LeafSubstructure} by its centroid <b>EXCLUDING</b> hydrogens.
+ * An implementation to represent a given {@link LeafSubstructure} by its centroid <b>EXCLUDING</b> hydrogen.
  * This is the same as {@link AbstractRepresentationScheme#determineCentroid(LeafSubstructure)}.
  *
  * @author fk

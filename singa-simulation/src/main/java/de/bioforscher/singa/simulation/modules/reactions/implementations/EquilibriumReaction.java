@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 11.07.2016.
+ * @author cl
  */
 public class EquilibriumReaction extends Reaction {
 

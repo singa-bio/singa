@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 
 /**
- * Created by Christoph on 05/12/2016.
+ * @author cl
  */
 public class MaterialProvider {
 

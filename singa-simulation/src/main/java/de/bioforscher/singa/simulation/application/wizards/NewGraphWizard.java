@@ -280,8 +280,4 @@ class EnvironmentalConfigurationPage extends WizardPage {
 
     }
 
-    @Override
-    public void navigateToNextPage() {
-        super.navigateToNextPage();
-    }
 }

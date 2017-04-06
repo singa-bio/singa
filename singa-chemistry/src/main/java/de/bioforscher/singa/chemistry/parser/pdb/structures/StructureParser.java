@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by leberech on 25/01/17.
+ * @author cl
  */
 public class StructureParser {
 

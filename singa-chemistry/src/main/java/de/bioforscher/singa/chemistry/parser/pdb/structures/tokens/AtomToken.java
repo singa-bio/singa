@@ -19,9 +19,6 @@ import java.util.regex.Pattern;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.LEFT;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.RIGHT;
 
-/**
- * Created by Christoph on 23.06.2016.
- */
 public enum AtomToken implements PDBToken {
 
     RECORD_TYPE(Range.of(1, 6), LEFT),
@@ -40,6 +37,9 @@ public enum AtomToken implements PDBToken {
     ELEMENT_SYMBOL(Range.of(77, 78), RIGHT),
     ELEMENT_CHARGE(Range.of(79, 80), LEFT);
 
+    /**
+     * @author cl
+     */
     /**
      * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
      * parsable with this token.
@@ -153,9 +153,9 @@ public enum AtomToken implements PDBToken {
 
     private String createTokenString(String content) {
         int totalLength = this.columns.getUpperBound() - this.columns.getLowerBound() - content.length();
-        String filler = "";
+        StringBuilder filler = new StringBuilder();
         for (int i = 0; i < totalLength + 1; i++) {
-            filler += " ";
+            filler.append(" ");
         }
         if (this.justification == LEFT) {
             return content + filler;

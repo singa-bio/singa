@@ -3,7 +3,7 @@ package de.bioforscher.singa.mathematics.graphs.util;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
- * Created by Christoph on 23.05.2016.
+ * @author cl
  */
 public class RectangularGridCoordinateConverter {
 

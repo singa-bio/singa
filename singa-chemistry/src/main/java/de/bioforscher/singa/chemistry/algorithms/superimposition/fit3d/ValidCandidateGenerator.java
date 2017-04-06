@@ -82,8 +82,7 @@ public class ValidCandidateGenerator {
                                 return newCandidate;
                             })
                     )
-                    .filter(candidate -> candidate.stream()
-                            .collect(Collectors.toSet()).size() == currentPosition + 1)
+                    .filter(candidate -> new HashSet<>(candidate).size() == currentPosition + 1)
                     .collect(Collectors.toSet());
         }
 

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class ChEBISearchService {
 
     private static final Logger log = Logger.getLogger(ChEBIParserService.class.getName());
-    private static int defaultMaximalNumberOfResults = 20;
 
     private int maximalNumberOfResults;
     private ChebiWebServiceClient client;
@@ -21,7 +20,7 @@ public class ChEBISearchService {
 
     public ChEBISearchService() {
         this.client = new ChebiWebServiceClient();
-        this.maximalNumberOfResults = defaultMaximalNumberOfResults;
+        this.maximalNumberOfResults = 20;
     }
 
     public ChEBISearchService(String searchTerm) {
@@ -58,7 +57,7 @@ public class ChEBISearchService {
     }
 
     public int getMaximalNumberOfResults() {
-        return maximalNumberOfResults;
+        return this.maximalNumberOfResults;
     }
 
     public void setMaximalNumberOfResults(int maximalNumberOfResults) {
@@ -66,7 +65,7 @@ public class ChEBISearchService {
     }
 
     public String getSearchTerm() {
-        return searchTerm;
+        return this.searchTerm;
     }
 
     public void setSearchTerm(String searchTerm) {

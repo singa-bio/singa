@@ -68,7 +68,7 @@ public class SmilesParser {
     /**
      * The bond type to connect the next atom with
      */
-    private Optional<MoleculeBondType> currentBondType;
+    private MoleculeBondType currentBondType;
 
     /**
      * Maps the consecutive connections between atoms (as a pair of pdbIdentifiers) to the bond type
@@ -112,7 +112,7 @@ public class SmilesParser {
         this.branches = new ArrayDeque<>();
         this.hydrogens = new ArrayList<>();
         this.currentToken = "";
-        this.currentBondType = Optional.empty();
+        this.currentBondType = null;
     }
 
     /**
@@ -381,7 +381,7 @@ public class SmilesParser {
             case 'p':
             case 's': {
                 handleAtom(addLater);
-                this.currentBondType = Optional.of(MoleculeBondType.AROMATIC_BOND);
+                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -478,7 +478,7 @@ public class SmilesParser {
                 // parse selenium
                 dispose();
                 this.currentElement = ElementProvider.SELENIUM;
-                this.currentBondType = Optional.of(MoleculeBondType.AROMATIC_BOND);
+                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -488,7 +488,7 @@ public class SmilesParser {
                 // parse arsenic
                 dispose();
                 this.currentElement = ElementProvider.ARSENIC;
-                this.currentBondType = Optional.of(MoleculeBondType.AROMATIC_BOND);
+                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -743,23 +743,23 @@ public class SmilesParser {
     }
 
     private void setNextBond() {
-        this.currentBondType = Optional.of(MoleculeBondType.getBondForSMILESSymbol(this.currentSymbol));
+        this.currentBondType = MoleculeBondType.getBondForSMILESSymbol(this.currentSymbol);
     }
 
     private void connectConsecutiveAtoms() {
         if (this.molecule.getNodes().size() > 1) {
             if (this.firstAtomInBranch) {
                 if (this.sameChainReference) {
-                    this.connectors.put(new Pair<>(this.branches.peekLast(), this.currentIdentifer), this.currentBondType.orElse(MoleculeBondType.SINGLE_BOND));
+                    this.connectors.put(new Pair<>(this.branches.peekLast(), this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
                     this.sameChainReference = false;
                 } else {
-                    this.connectors.put(new Pair<>(this.branches.pollLast(), this.currentIdentifer), this.currentBondType.orElse(MoleculeBondType.SINGLE_BOND));
+                    this.connectors.put(new Pair<>(this.branches.pollLast(), this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
                 }
-                this.currentBondType = Optional.empty();
+                this.currentBondType = null;
                 this.firstAtomInBranch = false;
             } else {
-                this.connectors.put(new Pair<>(this.currentIdentifer - 1, this.currentIdentifer), this.currentBondType.orElse(MoleculeBondType.SINGLE_BOND));
-                this.currentBondType = Optional.empty();
+                this.connectors.put(new Pair<>(this.currentIdentifer - 1, this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
+                this.currentBondType = null;
             }
         }
     }

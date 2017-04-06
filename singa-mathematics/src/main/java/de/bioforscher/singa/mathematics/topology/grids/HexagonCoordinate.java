@@ -23,17 +23,18 @@ public class HexagonCoordinate {
     }
 
     /**
-     * TODO: redesign to metric implementation
+     * Returns the distance between two coordinates.
      *
-     * @param h1
-     * @param h2
-     * @return
+     * @param firstCoordinate The first coordinate
+     * @param secondCoordinate The second coordinate.
+     * @return The distance between two coordinates.
      */
-    public static int getDistance(HexagonCoordinate h1, HexagonCoordinate h2) {
-        int x1 = h1.getQ();
-        int z1 = h1.getR();
-        int x2 = h2.getQ();
-        int z2 = h2.getR();
+    public static int getDistance(HexagonCoordinate firstCoordinate, HexagonCoordinate secondCoordinate) {
+        // TODO: redesign to metric implementation
+        int x1 = firstCoordinate.getQ();
+        int z1 = firstCoordinate.getR();
+        int x2 = secondCoordinate.getQ();
+        int z2 = secondCoordinate.getR();
         int y1 = -(x1 + z1);
         int y2 = -(x2 + z2);
         return (Math.abs(x1 - x2) + Math.abs(y1 - y2) + Math.abs(z1 - z2)) / 2;

@@ -30,11 +30,11 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     private Map<BioNode, BufferedWriter> registeredWriters;
     private List<ChemicalEntity<?>> observedEntities;
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) throws IOException {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) {
         this(workspacePath, folder, entitiesToObserve, true);
     }
 
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, boolean printEntityInformation) throws IOException {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, boolean printEntityInformation) {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();

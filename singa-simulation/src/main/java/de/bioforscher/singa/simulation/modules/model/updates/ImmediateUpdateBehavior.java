@@ -18,7 +18,7 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
     /**
      * Updates every node in the graph at once.
      *
-     * @param graph
+     * @param graph The graph.
      */
     @Override
     default void updateGraph(AutomatonGraph graph) {
@@ -28,7 +28,7 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
     /**
      * Updates every chemical entity in the given node at once.
      *
-     * @param node
+     * @param node The node.
      */
     default void updateNode(BioNode node) {
         node.getAllReferencedEntities().forEach(entity -> updateSpecies(node, entity));
@@ -38,8 +38,8 @@ public interface ImmediateUpdateBehavior extends UpdateBehavior {
      * Updates the concentration of a species in a node with the value calculated by the {@link
      * #calculateUpdate(BioNode, ChemicalEntity)} method.
      *
-     * @param node
-     * @param entity
+     * @param node The node.
+     * @param entity The entity.
      */
     default void updateSpecies(BioNode node, ChemicalEntity entity) {
         node.setConcentration(entity, calculateUpdate(node, entity).getQuantity());

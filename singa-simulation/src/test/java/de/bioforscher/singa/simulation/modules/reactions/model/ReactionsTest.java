@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.units.UnitProvider.*;
 
 /**
- * Created by Christoph on 09.07.2016.
+ * @author cl
  */
 public class ReactionsTest {
 

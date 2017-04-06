@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures.tokens;
 import java.util.regex.Pattern;
 
 /**
- * Created by Christoph on 09/11/2016.
+ * @author cl
  */
 public class TerminatorTokens {
 

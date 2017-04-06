@@ -14,7 +14,7 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Created by Christoph on 24/11/2016.
+ * @author cl
  */
 public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
         GraphType extends Graph<NodeType, EdgeType>> extends AnimationTimer implements Renderer {

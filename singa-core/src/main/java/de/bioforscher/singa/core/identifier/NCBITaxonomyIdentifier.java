@@ -5,7 +5,7 @@ import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
 import java.util.regex.Pattern;
 
 /**
- * Created by Christoph on 12.09.2016.
+ * @author cl
  */
 public class NCBITaxonomyIdentifier extends AbstractIdentifier {
 

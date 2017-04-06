@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Christoph on 04/11/2016.
+ * @author cl
  */
 public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifier> {
 
@@ -48,7 +48,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
     @Override
     public String toString() {
         return "ComplexedChemicalEntity "+super.getIdentifier()+" {" +
-                "associatedParts=" + associatedParts +
+                "associatedParts=" + this.associatedParts +
                 '}';
     }
 

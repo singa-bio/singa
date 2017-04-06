@@ -44,8 +44,8 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
     /**
      * Creates a new node with the given position.
      *
-     * @param identifier
-     * @param position
+     * @param identifier The identifier
+     * @param position The position
      */
     public AbstractNode(int identifier, VectorType position) {
         this(identifier);

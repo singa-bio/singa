@@ -52,7 +52,7 @@ public class Annotation<ContentType> {
      * Creates a new Annotation with the given {@link AnnotationType}, description, and content.
      *
      * @param annotationType The {@link AnnotationType}.
-     * @param description A description for this annotation. (e.g. "funtion", "is inhibited by", etc.)
+     * @param description A description for this annotation. (e.g. "function", "is inhibited by", etc.)
      * @param content The content.
      */
     public Annotation(AnnotationType annotationType, String description, ContentType content) {
@@ -89,7 +89,7 @@ public class Annotation<ContentType> {
     }
 
     /**
-     * Sets the decription.
+     * Sets the description.
      *
      * @param description The description.
      */

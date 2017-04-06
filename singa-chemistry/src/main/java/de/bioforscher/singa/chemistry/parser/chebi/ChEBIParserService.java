@@ -41,7 +41,7 @@ public class ChEBIParserService extends AbstractParser<Entity> {
     @Override
     public void fetchResource() {
         ChebiWebServiceClient client = new ChebiWebServiceClient();
-        logger.debug("Fetching information {} from ChEBI using the ChebiWebServiceClient.", this.getResource());
+        logger.debug("Fetching information {} from ChEBI using the ChEBIWebServiceClient.", this.getResource());
         try {
             Entity entity = client.getCompleteEntity(getResource());
             setFetchResult(new FetchResultContainer<>(entity));

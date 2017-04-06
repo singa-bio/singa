@@ -30,7 +30,7 @@ public class BioModelsParserService {
         }
     }
 
-    public  static SBMLParser parseModelFromStream(InputStream inputStream) throws IOException {
+    public static SBMLParser parseModelFromStream(InputStream inputStream) {
         SBMLParser parser = new SBMLParser(inputStream);
         parser.parse();
         return parser;

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.core.utility;
 
 /**
- * Created by Christoph on 23.06.2016.
+ * @author cl
  */
 public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
 
@@ -21,12 +21,12 @@ public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
 
     @Override
     public Type getLowerBound() {
-        return values.getFirst();
+        return this.values.getFirst();
     }
 
     @Override
     public Type getUpperBound() {
-        return values.getSecond();
+        return this.values.getSecond();
     }
 
 }

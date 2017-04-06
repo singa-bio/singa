@@ -34,7 +34,7 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
      * @return The dimension of this space.
      */
     public int getDimension() {
-        return dimension;
+        return this.dimension;
     }
 
     /**
@@ -43,7 +43,7 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
      * @return The coordinate system.
      */
     public CoordinateSystem getCoordinateSystem() {
-        return coordinateSystem;
+        return this.coordinateSystem;
     }
 
     /**

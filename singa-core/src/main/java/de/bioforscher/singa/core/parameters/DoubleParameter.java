@@ -31,7 +31,7 @@ public final class DoubleParameter implements Parameter<Double> {
 
     @Override
     public String toString() {
-        return "Parameter (Double) " + name + " [" + minimalValue + " ... " + maximalValue + "]";
+        return "Parameter (Double) " + this.name + " [" + this.minimalValue + " ... " + this.maximalValue + "]";
     }
 
 }

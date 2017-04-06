@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.stream.Collectors;
 
 /**
- * Created by leberech on 19/12/16.
+ * @author cl
  */
 public class LigandParserService {
 

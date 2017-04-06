@@ -5,7 +5,7 @@ import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
 import java.util.regex.Pattern;
 
 /**
- * Created by Christoph on 04/11/2016.
+ * @author cl
  */
 public class SimpleStringIdentifier extends AbstractIdentifier {
 

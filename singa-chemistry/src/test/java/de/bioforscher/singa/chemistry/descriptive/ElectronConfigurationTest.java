@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by leberech on 04/01/17.
+ * @author cl
  */
 public class ElectronConfigurationTest {
 

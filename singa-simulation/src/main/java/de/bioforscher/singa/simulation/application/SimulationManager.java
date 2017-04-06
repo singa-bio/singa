@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Created by Christoph on 01.08.2016.
+ * @author cl
  */
 public class SimulationManager extends Task<Simulation> implements UpdateEventEmitter<GraphUpdatedEvent> {
 

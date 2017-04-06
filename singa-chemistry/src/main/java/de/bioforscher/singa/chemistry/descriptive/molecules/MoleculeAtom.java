@@ -6,7 +6,7 @@ import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
- * Created by Christoph on 21/11/2016.
+ * @author cl
  */
 public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D> {
 

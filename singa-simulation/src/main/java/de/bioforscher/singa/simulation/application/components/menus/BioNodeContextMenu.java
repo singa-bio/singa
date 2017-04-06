@@ -83,7 +83,7 @@ public class BioNodeContextMenu extends ContextMenu {
     private void observeNode(ActionEvent event) {
         this.node.setObserved(true);
         Simulation simulation = this.owner.getSimulation();
-        ConcentrationPlot plot = new ConcentrationPlot(simulation.getChemicalEntities(), this.node, simulation);
+        ConcentrationPlot plot = new ConcentrationPlot(simulation.getChemicalEntities(), this.node);
         simulation.getListeners().add(plot);
         this.owner.getPlotControlPanel().getPlotCards().add(new PlotCard(this.owner.getSimulation(), plot));
         this.owner.redrawGraph();

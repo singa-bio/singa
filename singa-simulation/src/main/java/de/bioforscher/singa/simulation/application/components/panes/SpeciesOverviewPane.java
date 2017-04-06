@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 
 /**
- * Created by Christoph on 30.06.2016.
+ * @author cl
  */
 public class SpeciesOverviewPane extends BorderPane {
 
@@ -51,9 +51,7 @@ public class SpeciesOverviewPane extends BorderPane {
 
     private void initializeCards() {
         this.cardMapping = new HashMap<>();
-        this.entityMapping.forEach((key, value) -> {
-            this.cardMapping.put(key, new GeneralEntityCard<>(value));
-        });
+        this.entityMapping.forEach((key, value) -> this.cardMapping.put(key, new GeneralEntityCard<>(value)));
     }
 
     private void initializeInterface() {

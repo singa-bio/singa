@@ -74,9 +74,7 @@ class ChooseMethodPage extends WizardPage {
         this.rbManual.setToggleGroup(this.tgMethods);
 
         this.tgMethods.selectedToggleProperty().addListener(
-                (observableValue, oldToggle, newToggle) -> {
-                    this.nextButton.setDisable(false);
-                });
+                (observableValue, oldToggle, newToggle) -> this.nextButton.setDisable(false));
 
     }
 

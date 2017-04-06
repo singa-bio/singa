@@ -102,9 +102,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
             addEdgeBetween(edgeCopy, sourceCopy, targetCopy);
         }
         // add exchangeable types
-        for (FamilyType type : leafSubstructure.getExchangeableFamilies()) {
-            this.exchangeableFamilies.add(type);
-        }
+        this.exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
     }
 
     /**

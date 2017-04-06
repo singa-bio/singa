@@ -14,11 +14,11 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
- * Created by Christoph on 05.07.2016.
+ * @author cl
  */
 public class AddSpeciesWizard extends Wizard {
 
@@ -141,7 +141,7 @@ class SpeciesFromChEBI extends WizardPage {
     }
 
     public Set<ChemicalEntity> prepareSelectedSpecies() {
-        return this.searchPane.getSelectedSpecies().stream().collect(Collectors.toSet());
+        return new HashSet<>(this.searchPane.getSelectedSpecies());
     }
 
 }
@@ -152,7 +152,7 @@ class SpeciesFromSBML extends WizardPage {
 
     public SpeciesFromSBML() {
         super("Species from SBML");
-        setDescription("Choose whether to parse the species from an local SBML file or using a file from the Biomodels" +
+        setDescription("Choose whether to parse the species from an local SBML file or using a file from the BioModels" +
                 "database");
     }
 
@@ -172,7 +172,7 @@ class SpeciesFromSBML extends WizardPage {
     }
 
     public Set<ChemicalEntity> prepareSelectedSpecies() {
-        return this.searchPane.getSelectedSpecies().stream().collect(Collectors.toSet());
+        return new HashSet<>(this.searchPane.getSelectedSpecies());
     }
 
 }

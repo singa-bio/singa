@@ -6,7 +6,7 @@ import de.bioforscher.singa.mathematics.graphs.model.Node;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
- * Created by Christoph on 24/11/2016.
+ * @author cl
  */
 public class GraphProducer<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
         GraphType extends Graph<NodeType, EdgeType>> implements Runnable {

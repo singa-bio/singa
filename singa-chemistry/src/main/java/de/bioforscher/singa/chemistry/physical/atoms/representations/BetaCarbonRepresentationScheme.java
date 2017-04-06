@@ -10,7 +10,6 @@ import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,24 +34,20 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
         if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
             // superimpose alanine based on backbone
             // TODO add convenience functionality to superimpose single LeafSubstructures
-            try {
-                AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
-                SubstructureSuperimposition superimposition = SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                        Stream.of(leafSubstructure).collect(Collectors.toList()),
-                        Stream.of(alanine).collect(Collectors.toList()),
-                        AtomFilter.isBackbone());
-                // obtain virtual beta carbon
-                Optional<Atom> optionalBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
-                        .filter(AtomFilter.isBetaCarbon())
-                        .findAny();
-                if (optionalBetaCarbon.isPresent()) {
-                    return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
-                            ElementProvider.CARBON,
-                            RepresentationSchemeType.CB.getAtomNameString(),
-                            optionalBetaCarbon.get().getPosition().getCopy());
-                }
-            } catch (IOException e) {
-                logger.warn("failed to load alanine prototype for creating virtual beta carbon", e);
+            AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
+            SubstructureSuperimposition superimposition = SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                    Stream.of(leafSubstructure).collect(Collectors.toList()),
+                    Stream.of(alanine).collect(Collectors.toList()),
+                    AtomFilter.isBackbone());
+            // obtain virtual beta carbon
+            Optional<Atom> optionalBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
+                    .filter(AtomFilter.isBetaCarbon())
+                    .findAny();
+            if (optionalBetaCarbon.isPresent()) {
+                return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
+                        ElementProvider.CARBON,
+                        RepresentationSchemeType.CB.getAtomNameString(),
+                        optionalBetaCarbon.get().getPosition().getCopy());
             }
         }
         return leafSubstructure.getAllAtoms().stream()

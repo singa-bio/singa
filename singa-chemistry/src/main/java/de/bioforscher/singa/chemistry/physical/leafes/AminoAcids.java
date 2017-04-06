@@ -5,8 +5,6 @@ import de.bioforscher.singa.chemistry.physical.atoms.representations.Representat
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 
-import java.io.IOException;
-
 /**
  * Utility methods for {@link AminoAcid}s.
  *
@@ -25,7 +23,6 @@ public class AminoAcids {
      *
      * @param aminoAcid The glycine {@link AminoAcid} for which the virtual beta carbon should be calculated.
      * @return The virtual beta carbon of glycine.
-     * @throws IOException If prototype alanine aminoAcid could not be read.
      */
     public static Atom createVirtualCBAtom(AminoAcid aminoAcid) {
         if (aminoAcid.getFamily() != AminoAcidFamily.GLYCINE) {

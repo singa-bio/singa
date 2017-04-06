@@ -31,11 +31,9 @@ public class CommutablePair<ValueType> extends Pair<ValueType> {
             // this second equals other second
             return getSecond().equals(other.getSecond());
             // this first equals other second
-        } else if (getFirst().equals(other.getSecond())) {
-            // this second equals other first
-            return getSecond().equals(other.getFirst());
         } else {
-            return false;
+            // this second equals other first
+            return getFirst().equals(other.getSecond()) && getSecond().equals(other.getFirst());
         }
 
     }

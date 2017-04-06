@@ -4,13 +4,13 @@ import de.bioforscher.singa.core.utility.Range;
 
 import java.util.regex.Pattern;
 
-/**
- * Created by Christoph on 09/11/2016.
- */
 public enum ModelToken implements PDBToken {
 
     MODEL_SERIAL(Range.of(11, 14));
 
+    /**
+     * @author cl
+     */
     /**
      * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
      * parsable with this token.

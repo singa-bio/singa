@@ -140,7 +140,7 @@ public class ConsensusAlignment {
      * Writes the created clusters to the specified {@link Path}.
      *
      * @param outputPath the desired output {@link Path}
-     * @throws IOException
+     * @throws IOException If the path cannot be written to.
      */
     public void writeClusters(Path outputPath) throws IOException {
         logger.info("writing {} clusters to {}", this.clusters.size(), outputPath);

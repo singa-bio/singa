@@ -35,7 +35,7 @@ public class AutomatonGraphs {
     }
 
     /**
-     * Copys the structure (nodes and edges) of an {@link UndirectedGraph} to a {@link AutomatonGraph}. No new data is
+     * Copies the structure (nodes and edges) of an {@link UndirectedGraph} to a {@link AutomatonGraph}. No new data is
      * generated. Indices are persistent. Both Graphs are independently modifiable.
      *
      * @param undirectedGraph The graph to be cast

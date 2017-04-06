@@ -4,7 +4,7 @@ package de.bioforscher.singa.javafx.renderer.molecules;
 import javafx.scene.paint.Color;
 
 /**
- * Created by Christoph on 24/11/2016.
+ * @author cl
  */
 public class MoleculeRendererOptions {
 

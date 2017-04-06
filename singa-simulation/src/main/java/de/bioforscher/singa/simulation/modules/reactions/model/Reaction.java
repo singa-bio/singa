@@ -98,7 +98,7 @@ public abstract class Reaction {
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      *
-     * @return
+     * @return {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      */
     public boolean isElementary() {
         return this.elementary;

@@ -29,7 +29,7 @@ public final class IntegerParameter implements Parameter<Integer> {
 
     @Override
     public String toString() {
-        return "Parameter (Integer) " + name + " [" + minimalValue + " ... " + maximalValue + "]";
+        return "Parameter (Integer) " + this.name + " [" + this.minimalValue + " ... " + this.maximalValue + "]";
     }
 
 }

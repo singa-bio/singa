@@ -58,9 +58,8 @@ public class Reactions implements Module, ImmediateUpdateBehavior {
     public void updateNode(BioNode node) {
         // calculate acceleration for each reaction
         Map<Reaction, Quantity<ReactionRate>> reactionRates = new HashMap<>();
-        this.reactions.forEach(reaction -> {
-            reactionRates.put(reaction, reaction.calculateAcceleration(node));
-        });
+        // assign reaction rates
+        this.reactions.forEach(reaction -> reactionRates.put(reaction, reaction.calculateAcceleration(node)));
         // apply acceleration to the reactants of each reaction resulting in the velocity of the concentration change
         this.reactions.forEach(reaction ->
                 reaction.getStoichiometricReactants().forEach(reactant -> {

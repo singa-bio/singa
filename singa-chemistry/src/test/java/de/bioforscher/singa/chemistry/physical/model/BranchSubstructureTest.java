@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by fkaiser on 13.11.16.
+ * @author cl
  */
 public class BranchSubstructureTest {
 

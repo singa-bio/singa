@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Christoph on 19.04.2016.
+ * @author cl
  */
 public class PubChemIdentifier extends AbstractIdentifier {
 

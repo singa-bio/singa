@@ -163,7 +163,7 @@ public class LineSegment extends Line {
 
     /**
      * Returns the length of this segment (i.e. the euclidean distance between start and endpoint).
-     * @return
+     * @return The length.
      */
     public double getLength() {
         return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(this.startingPoint, this.endingPoint);

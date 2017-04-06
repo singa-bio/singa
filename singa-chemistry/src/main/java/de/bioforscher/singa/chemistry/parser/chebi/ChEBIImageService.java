@@ -21,15 +21,15 @@ import java.util.Map;
 
 public class ChEBIImageService extends AbstractRESTParser {
 
-    private static final int dafaultImageWidth = 75;
+    private static final int defaultImageWidth = 75;
     private InputStream imageStream;
 
     public ChEBIImageService(String chEBIIdentifier) {
-        this(dafaultImageWidth, new ChEBIIdentifier(chEBIIdentifier));
+        this(defaultImageWidth, new ChEBIIdentifier(chEBIIdentifier));
     }
 
     public ChEBIImageService(ChEBIIdentifier chEBIIdentifier) {
-        this(dafaultImageWidth, chEBIIdentifier);
+        this(defaultImageWidth, chEBIIdentifier);
     }
 
     public ChEBIImageService(int imageWidth, ChEBIIdentifier chEBIIdentifier) {

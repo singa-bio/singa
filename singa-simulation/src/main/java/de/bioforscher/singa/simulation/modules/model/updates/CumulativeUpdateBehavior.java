@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public interface CumulativeUpdateBehavior extends UpdateBehavior {
 
     /**
-     * Calculates all Updates and applies them afterwards.
+     * Calculates all updates and applies them afterwards.
      *
-     * @param graph
+     * @param graph The graph.
      */
     @Override
     default void updateGraph(AutomatonGraph graph) {
@@ -35,8 +35,8 @@ public interface CumulativeUpdateBehavior extends UpdateBehavior {
     /**
      * Calculates the {@link PotentialUpdate}s for all species in the given node and returns them.
      *
-     * @param node
-     * @return
+     * @param node The node.
+     * @return A set of potential updates.
      */
     default Set<PotentialUpdate> calculateNode(BioNode node) {
         return node.getAllReferencedEntities().stream()

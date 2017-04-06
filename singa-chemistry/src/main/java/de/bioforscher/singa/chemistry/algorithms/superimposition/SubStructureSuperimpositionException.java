@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition;
 
 /**
- * Created by fkaiser on 22.11.16.
+ * @author cl
  */
 public class SubStructureSuperimpositionException extends Throwable {
     public SubStructureSuperimpositionException() {

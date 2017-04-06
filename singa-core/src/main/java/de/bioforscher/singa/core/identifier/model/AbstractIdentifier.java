@@ -17,12 +17,12 @@ public class AbstractIdentifier implements Identifier {
 
     @Override
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
     @Override
     public String toString() {
-        return identifier;
+        return this.identifier;
     }
 
     @Override

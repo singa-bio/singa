@@ -88,9 +88,9 @@ public class BinaryTree<T> implements Serializable {
     }
 
     /**
-     * Returns a formatted String that contains only leaves.
+     * Returns a formatted String formatted in Newick that contains the leaves.
      *
-     * @return
+     * @return a formatted String formatted in Newick that contains the leaves.
      */
     public String toNewickString() {
         return this.root.toNewickString() + ";";

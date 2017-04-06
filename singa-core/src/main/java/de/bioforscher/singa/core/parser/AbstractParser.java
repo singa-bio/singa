@@ -18,7 +18,7 @@ public abstract class AbstractParser<ContainerType> implements Parser {
     private FetchResultContainer<ContainerType> fetchResult;
 
     public String getResource() {
-        return resource;
+        return this.resource;
     }
 
     public void setResource(String resource) {
@@ -26,7 +26,7 @@ public abstract class AbstractParser<ContainerType> implements Parser {
     }
 
     public FetchResultContainer<ContainerType> getFetchResult() {
-        return fetchResult;
+        return this.fetchResult;
     }
 
     public void setFetchResult(FetchResultContainer<ContainerType> fetchResult) {

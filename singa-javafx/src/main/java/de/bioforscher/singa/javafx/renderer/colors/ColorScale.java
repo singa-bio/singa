@@ -13,7 +13,7 @@ public class ColorScale {
     // from red to green over yellow
     private static final double defaultMinimalHue = 0.0;
     private static final double defaultMaximalHue = 120.0;
-    // somewhat pastell colors
+    // somewhat pastel colors
     private static final double defaultSaturation = 0.6;
     private static final double defaultBrightness = 0.9;
 
@@ -110,11 +110,10 @@ public class ColorScale {
     }
 
     /**
-     * Gets the color as specified by this gradient for this value between the
-     * minimal and maximal value.
+     * Gets the color as specified by this gradient for this value between the minimal and maximal value.
      *
-     * @param value
-     * @return
+     * @param value The value to be converted to a color.
+     * @return The resulting color.
      */
     public Color getColor(double value) {
         if (value < this.minimalValue || value > this.maximalValue) {

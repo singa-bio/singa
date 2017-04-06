@@ -18,7 +18,7 @@ import static de.bioforscher.singa.units.UnitProvider.PER_SECOND;
 
 /**
  * An Enzyme is a Protein, that is associated with a catalytic function. For the usage in reactions this chemical
- * entity can be supplied with a Michaelis constant (usually abbreviated with km), an turnover number (abbriviated
+ * entity can be supplied with a Michaelis constant (usually abbreviated with km), an turnover number (abbreviated
  * with kcat), a List of possible substrates and a critical substrate that is rate determining. Additionally multiple
  * predefined Annotations can be set (additional names, organisms, amino acid sequences, ...). Enzymes may be parsed
  * from the UniProt Database using the

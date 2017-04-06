@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Created by Christoph on 03.08.2016.
+ * @author cl
  */
 public class ModuleCell extends ListCell<AvailableModules> {
 

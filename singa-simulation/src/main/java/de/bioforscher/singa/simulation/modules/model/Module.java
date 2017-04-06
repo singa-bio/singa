@@ -6,7 +6,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import java.util.Set;
 
 /**
- * Created by Christoph on 06.07.2016.
+ * @author cl
  */
 public interface Module {
 

@@ -30,7 +30,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Paths;
 
 /**
- * Created by Christoph on 20.07.2016.
+ * @author cl
  */
 public class PlotCard extends GridPane {
 

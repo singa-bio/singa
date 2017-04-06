@@ -36,7 +36,7 @@ public class StructureWriter {
      *
      * @param branchSubstructure The {@link BranchSubstructure} to be written.
      * @param outputPath         The output {@link Path}.
-     * @throws IOException
+     * @throws IOException If the path cannot be written.
      */
     public static void writeBranchSubstructures(BranchSubstructure<?> branchSubstructure, Path outputPath) throws IOException {
         logger.info("writing {} to {}", branchSubstructure, outputPath);
@@ -48,7 +48,7 @@ public class StructureWriter {
      *
      * @param leafSubstructures The list of {@link LeafSubstructure}s to be written.
      * @param outputPath        The output {@link Path}.
-     * @throws IOException
+     * @throws IOException If the path cannot be written.
      */
     public static void writeLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures, Path outputPath) throws IOException {
         logger.info("writing {} LeafSubstructures to {}", leafSubstructures.size(), outputPath);

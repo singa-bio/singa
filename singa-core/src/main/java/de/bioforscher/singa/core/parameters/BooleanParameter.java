@@ -10,12 +10,12 @@ public final class BooleanParameter implements Parameter<Boolean> {
 
     @Override
     public String getName() {
-        return this.getName();
+        return name;
     }
 
     @Override
     public String toString() {
-        return "Parameter (Boolean) " + name + " [true|false]";
+        return "Parameter (Boolean) " + this.name + " [true|false]";
     }
 
     @Override

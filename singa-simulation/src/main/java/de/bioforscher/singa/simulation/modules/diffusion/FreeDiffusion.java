@@ -100,7 +100,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
      * Determines the diffusion coefficient if it is not already cached.
      *
      * @param entity The entity.
-     * @return
+     * @return The Diffusion coefficient.
      */
     private Quantity<Diffusivity> getDiffusionCoefficient(ChemicalEntity entity) {
         if (this.diffusionCoefficients.containsKey(entity)) {
@@ -116,7 +116,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
      * Determines the diffusion coefficient if it is not already cached.
      *
      * @param entity The entity.
-     * @return
+     * @return The Octanol-Water Coefficient
      */
     private double getOctanolWaterCoefficient(ChemicalEntity entity) {
         if (this.octanolWaterCoefficients.containsKey(entity)) {

@@ -83,12 +83,11 @@ public class ValidAlignmentGeneratorTest {
         List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = new ValidAlignmentGenerator(this.motif1,
                 this.motif2).getValidAlignments();
         assertEquals(validAlignments.size(),this.correctAlignments.size());
-        for (int i = 0; i < validAlignments.size(); i++) {
-            List<Pair<LeafSubstructure<?,?>>> validAlignment = validAlignments.get(i);
+        for (List<Pair<LeafSubstructure<?, ?>>> validAlignment : validAlignments) {
             for (int j = 0; j < validAlignment.size(); j++) {
                 Pair<LeafSubstructure<?, ?>> alignmentPair = validAlignment.get(j);
-                assertTrue(alignmentPair.getFirst().equals(validAlignments.get(i).get(j).getFirst()));
-                assertTrue(alignmentPair.getSecond().equals(validAlignments.get(i).get(j).getSecond()));
+                assertTrue(alignmentPair.getFirst().equals(validAlignment.get(j).getFirst()));
+                assertTrue(alignmentPair.getSecond().equals(validAlignment.get(j).getSecond()));
             }
         }
     }

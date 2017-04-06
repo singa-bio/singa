@@ -47,17 +47,20 @@ public class XForm extends Group {
     public Translate ip = new Translate();
 
     public Rotate rx = new Rotate();
-    { rx.setAxis(Rotate.X_AXIS); }
+    {
+        this.rx.setAxis(Rotate.X_AXIS); }
     public Rotate ry = new Rotate();
-    { ry.setAxis(Rotate.Y_AXIS); }
+    {
+        this.ry.setAxis(Rotate.Y_AXIS); }
     public Rotate rz = new Rotate();
-    { rz.setAxis(Rotate.Z_AXIS); }
+    {
+        this.rz.setAxis(Rotate.Z_AXIS); }
 
     public Scale s = new Scale();
 
     public XForm() {
         super();
-        getTransforms().addAll(translate, rz, ry, rx, s);
+        getTransforms().addAll(this.translate, this.rz, this.ry, this.rx, this.s);
     }
 
     public XForm(RotateOrder rotateOrder) {
@@ -65,32 +68,32 @@ public class XForm extends Group {
         // choose the order of rotations based on the rotateOrder
         switch (rotateOrder) {
             case XYZ:
-                getTransforms().addAll(translate, p, rz, ry, rx, s, ip);
+                getTransforms().addAll(this.translate, this.p, this.rz, this.ry, this.rx, this.s, this.ip);
                 break;
             case YXZ:
-                getTransforms().addAll(translate, p, rz, rx, ry, s, ip);
+                getTransforms().addAll(this.translate, this.p, this.rz, this.rx, this.ry, this.s, this.ip);
                 break;
             case YZX:
-                getTransforms().addAll(translate, p, rx, rz, ry, s, ip);  // For Camera
+                getTransforms().addAll(this.translate, this.p, this.rx, this.rz, this.ry, this.s, this.ip);  // For Camera
                 break;
             case ZXY:
-                getTransforms().addAll(translate, p, ry, rx, rz, s, ip);
+                getTransforms().addAll(this.translate, this.p, this.ry, this.rx, this.rz, this.s, this.ip);
                 break;
             case ZYX:
-                getTransforms().addAll(translate, p, rx, ry, rz, s, ip);
+                getTransforms().addAll(this.translate, this.p, this.rx, this.ry, this.rz, this.s, this.ip);
                 break;
         }
     }
 
     public void setTranslate(double x, double y, double z) {
-        translate.setX(x);
-        translate.setY(y);
-        translate.setZ(z);
+        this.translate.setX(x);
+        this.translate.setY(y);
+        this.translate.setZ(z);
     }
 
     public void setTranslate(double x, double y) {
-        translate.setX(x);
-        translate.setY(y);
+        this.translate.setX(x);
+        this.translate.setY(y);
     }
 
     // Cannot override these methods as they are final:
@@ -98,26 +101,34 @@ public class XForm extends Group {
     // public void setTranslateY(double y) { translate.setY(y); }
     // public void setTranslateZ(double z) { translate.setZ(z); }
     // Use these methods instead:
-    public void setTx(double x) { translate.setX(x); }
-    public void setTy(double y) { translate.setY(y); }
-    public void setTz(double z) { translate.setZ(z); }
+    public void setTx(double x) {
+        this.translate.setX(x); }
+    public void setTy(double y) {
+        this.translate.setY(y); }
+    public void setTz(double z) {
+        this.translate.setZ(z); }
 
     public void setRotate(double x, double y, double z) {
-        rx.setAngle(x);
-        ry.setAngle(y);
-        rz.setAngle(z);
+        this.rx.setAngle(x);
+        this.ry.setAngle(y);
+        this.rz.setAngle(z);
     }
 
-    public void setRotateX(double x) { rx.setAngle(x); }
-    public void setRotateY(double y) { ry.setAngle(y); }
-    public void setRotateZ(double z) { rz.setAngle(z); }
-    public void setRy(double y) { ry.setAngle(y); }
-    public void setRz(double z) { rz.setAngle(z); }
+    public void setRotateX(double x) {
+        this.rx.setAngle(x); }
+    public void setRotateY(double y) {
+        this.ry.setAngle(y); }
+    public void setRotateZ(double z) {
+        this.rz.setAngle(z); }
+    public void setRy(double y) {
+        this.ry.setAngle(y); }
+    public void setRz(double z) {
+        this.rz.setAngle(z); }
 
     public void setScale(double scaleFactor) {
-        s.setX(scaleFactor);
-        s.setY(scaleFactor);
-        s.setZ(scaleFactor);
+        this.s.setX(scaleFactor);
+        this.s.setY(scaleFactor);
+        this.s.setZ(scaleFactor);
     }
 
     // Cannot override these methods as they are final:
@@ -125,72 +136,75 @@ public class XForm extends Group {
     // public void setScaleY(double y) { s.setY(y); }
     // public void setScaleZ(double z) { s.setZ(z); }
     // Use these methods instead:
-    public void setSx(double x) { s.setX(x); }
-    public void setSy(double y) { s.setY(y); }
-    public void setSz(double z) { s.setZ(z); }
+    public void setSx(double x) {
+        this.s.setX(x); }
+    public void setSy(double y) {
+        this.s.setY(y); }
+    public void setSz(double z) {
+        this.s.setZ(z); }
 
     public void setPivot(double x, double y, double z) {
-        p.setX(x);
-        p.setY(y);
-        p.setZ(z);
-        ip.setX(-x);
-        ip.setY(-y);
-        ip.setZ(-z);
+        this.p.setX(x);
+        this.p.setY(y);
+        this.p.setZ(z);
+        this.ip.setX(-x);
+        this.ip.setY(-y);
+        this.ip.setZ(-z);
     }
 
     public void reset() {
-        translate.setX(0.0);
-        translate.setY(0.0);
-        translate.setZ(0.0);
-        rx.setAngle(0.0);
-        ry.setAngle(0.0);
-        rz.setAngle(0.0);
-        s.setX(1.0);
-        s.setY(1.0);
-        s.setZ(1.0);
-        p.setX(0.0);
-        p.setY(0.0);
-        p.setZ(0.0);
-        ip.setX(0.0);
-        ip.setY(0.0);
-        ip.setZ(0.0);
+        this.translate.setX(0.0);
+        this.translate.setY(0.0);
+        this.translate.setZ(0.0);
+        this.rx.setAngle(0.0);
+        this.ry.setAngle(0.0);
+        this.rz.setAngle(0.0);
+        this.s.setX(1.0);
+        this.s.setY(1.0);
+        this.s.setZ(1.0);
+        this.p.setX(0.0);
+        this.p.setY(0.0);
+        this.p.setZ(0.0);
+        this.ip.setX(0.0);
+        this.ip.setY(0.0);
+        this.ip.setZ(0.0);
     }
 
     public void resetTSP() {
-        translate.setX(0.0);
-        translate.setY(0.0);
-        translate.setZ(0.0);
-        s.setX(1.0);
-        s.setY(1.0);
-        s.setZ(1.0);
-        p.setX(0.0);
-        p.setY(0.0);
-        p.setZ(0.0);
-        ip.setX(0.0);
-        ip.setY(0.0);
-        ip.setZ(0.0);
+        this.translate.setX(0.0);
+        this.translate.setY(0.0);
+        this.translate.setZ(0.0);
+        this.s.setX(1.0);
+        this.s.setY(1.0);
+        this.s.setZ(1.0);
+        this.p.setX(0.0);
+        this.p.setY(0.0);
+        this.p.setZ(0.0);
+        this.ip.setX(0.0);
+        this.ip.setY(0.0);
+        this.ip.setZ(0.0);
     }
 
     public void debug() {
         System.out.println("translate = (" +
-                translate.getX() + ", " +
-                translate.getY() + ", " +
-                translate.getZ() + ")  " +
+                this.translate.getX() + ", " +
+                this.translate.getY() + ", " +
+                this.translate.getZ() + ")  " +
                 "r = (" +
-                rx.getAngle() + ", " +
-                ry.getAngle() + ", " +
-                rz.getAngle() + ")  " +
+                this.rx.getAngle() + ", " +
+                this.ry.getAngle() + ", " +
+                this.rz.getAngle() + ")  " +
                 "s = (" +
-                s.getX() + ", " +
-                s.getY() + ", " +
-                s.getZ() + ")  " +
+                this.s.getX() + ", " +
+                this.s.getY() + ", " +
+                this.s.getZ() + ")  " +
                 "p = (" +
-                p.getX() + ", " +
-                p.getY() + ", " +
-                p.getZ() + ")  " +
+                this.p.getX() + ", " +
+                this.p.getY() + ", " +
+                this.p.getZ() + ")  " +
                 "ip = (" +
-                ip.getX() + ", " +
-                ip.getY() + ", " +
-                ip.getZ() + ")");
+                this.ip.getX() + ", " +
+                this.ip.getY() + ", " +
+                this.ip.getZ() + ")");
     }
 }
