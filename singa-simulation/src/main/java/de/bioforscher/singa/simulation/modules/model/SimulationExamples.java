@@ -6,11 +6,13 @@ import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
@@ -435,11 +437,12 @@ public class SimulationExamples {
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        BioNode node = graph.getNode(0);
-        model.getStartingConcentrations().forEach((entity, value) -> {
-            logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
+        for (BioNode node : graph.getNodes()) {
+            model.getStartingConcentrations().forEach((entity, value) -> {
+                logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
                 node.setConcentration(entity, value);
-        });
+            });
+        }
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
@@ -498,23 +501,38 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
+        EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
+        EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
+        Membrane membrane = new Membrane("LC-M", "Left-Membrane", left);
+
         // initialize species in graph with desired concentration leaving the right "half" empty
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                node.setConcentration(urea, 1.0);
-                node.setConcentration(cobamamide, 1.0);
-                node.setState(NodeState.AQUEOUS);
+                if (node.getIdentifier() % numberOfNodes < 4) {
+                    node.setConcentration(urea, 1.0);
+                    node.setConcentration(cobamamide, 1.0);
+                }
+                node.setCellSection(left);
+                left.addNode(node);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
                 node.setConcentration(urea, 0.0);
                 node.setConcentration(cobamamide, 0.0);
+                // node.setCellSection(membrane);
                 node.setState(NodeState.MEMBRANE);
+                membrane.addNode(node);
             } else {
                 node.setConcentration(urea, 0.0);
                 node.setConcentration(cobamamide, 0.0);
-                node.setState(NodeState.AQUEOUS);
+                node.setCellSection(right);
+                right.addNode(node);
             }
         }
+
+        graph.addSection(left);
+        graph.addSection(right);
+        graph.addSection(membrane);
+        membrane.initializeNodes(graph);
 
         logger.debug("Adding default permeability to edges ... ");
         for (BioEdge edge : graph.getEdges()) {
@@ -524,8 +542,7 @@ public class SimulationExamples {
 
         // setup time step size as given
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(100,
-                NANO(SECOND)));
+        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
         EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(

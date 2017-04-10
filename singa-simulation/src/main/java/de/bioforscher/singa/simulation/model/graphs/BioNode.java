@@ -18,10 +18,10 @@ import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     private NodeState state;
+    private CellSection cellSection;
     private ConcentrationContainer concentrations;
     private boolean isObserved;
 
-    private CellSection cellSection;
 
     public BioNode(int identifier) {
         super(identifier);
@@ -50,6 +50,10 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
         return this.concentrations.getConcentration(entity);
+    }
+
+    public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
+        return this.concentrations.getAvailableConcentration(cellSection, entity);
     }
 
     public Set<ChemicalEntity> getAllReferencedEntities() {

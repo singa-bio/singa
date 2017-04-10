@@ -75,10 +75,12 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
                 node.setCellSection(enclosedCompartment);
             }
         });
-        this.sections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
-        Membrane membrane = enclosedCompartment.generateMembrane();
-        enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
-        this.sections.put(membrane.getIdentifier(), membrane);
+        if (!compartmentContent.isEmpty()) {
+            this.sections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
+            Membrane membrane = enclosedCompartment.generateMembrane();
+            enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
+            this.sections.put(membrane.getIdentifier(), membrane);
+        }
     }
 
 }

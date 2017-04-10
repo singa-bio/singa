@@ -44,6 +44,10 @@ public abstract class CellSection implements Nameable {
         this.content = content;
     }
 
+    public void addNode(BioNode node) {
+        this.content.add(node);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

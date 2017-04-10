@@ -22,7 +22,7 @@ public interface CumulativeUpdateBehavior extends UpdateBehavior {
     @Override
     default void updateGraph(AutomatonGraph graph) {
         Map<BioNode, Set<PotentialUpdate>> potentialUpdates = new HashMap<>();
-        // collect Updates
+        // collect Updatesd
         graph.getNodes().forEach(node -> potentialUpdates.put(node, calculateNode(node)));
         // applyTo updates
         for (BioNode node : graph.getNodes()) {
