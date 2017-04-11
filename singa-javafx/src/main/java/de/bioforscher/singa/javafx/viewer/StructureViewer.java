@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeafs().forEach(this::addLeaf);
+        this.displayStructure.getAllLeaves().forEach(this::addLeaf);
         // edges in chains (backbone connections)
         this.displayStructure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world

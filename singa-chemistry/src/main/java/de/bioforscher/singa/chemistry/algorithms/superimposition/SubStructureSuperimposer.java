@@ -110,37 +110,37 @@ public class SubStructureSuperimposer {
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
-                                                                                   List<LeafSubstructure<?, ?>> candidate) {
+                                                                                   List<LeafSubstructure<?, ?>> candidate) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate).calculateSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
                                                                                    List<LeafSubstructure<?, ?>> candidate,
-                                                                                   Predicate<Atom> atomFilter) {
+                                                                                   Predicate<Atom> atomFilter) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?, ?>> reference,
                                                                                    List<LeafSubstructure<?, ?>> candidate,
-                                                                                   RepresentationScheme representationScheme) {
+                                                                                   RepresentationScheme representationScheme) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate, representationScheme).calculateSuperimposition();
 
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
-                                                                                   BranchSubstructure candidate) {
+                                                                                   BranchSubstructure candidate) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate).calculateSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
                                                                                    BranchSubstructure candidate,
-                                                                                   Predicate<Atom> atomFilter) {
+                                                                                   Predicate<Atom> atomFilter) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate, atomFilter, null).calculateSuperimposition();
     }
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(BranchSubstructure reference,
                                                                                    BranchSubstructure candidate,
-                                                                                   RepresentationScheme representationScheme) {
+                                                                                   RepresentationScheme representationScheme) throws SubStructureSuperimpositionException {
         return new SubStructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateSuperimposition();
     }
 
@@ -179,17 +179,25 @@ public class SubStructureSuperimposer {
      *
      * @return the pseudo-ideal superimposition
      */
-    private SubstructureSuperimposition calculateIdealSuperimposition() {
+    private SubstructureSuperimposition calculateIdealSuperimposition() throws SubStructureSuperimpositionException {
         Optional<SubstructureSuperimposition> optionalSuperimposition = StreamPermutations.of(
                 this.candidate.toArray(new LeafSubstructure<?, ?>[this.candidate.size()]))
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
-                .map(permutedCandidates -> new SubStructureSuperimposer(this.reference,
-                        permutedCandidates, this.atomFilter, this.representationScheme)
-                        .calculateSuperimposition())
+                .map(permutedCandidates -> {
+                    try {
+                        return new SubStructureSuperimposer(this.reference,
+                                permutedCandidates, this.atomFilter, this.representationScheme)
+                                .calculateSuperimposition();
+                    } catch (SubStructureSuperimpositionException e) {
+                        logger.error("failed to calculate substructure superimposition", e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .reduce((SubstructureSuperimposition s1, SubstructureSuperimposition s2) ->
                         s1.getRmsd() < s2.getRmsd() ? s1 : s2);
-        return optionalSuperimposition.orElse(null);
+        return optionalSuperimposition.orElseThrow(() -> new SubStructureSuperimpositionException("no ideal superimposition found"));
     }
 
     /**
@@ -197,7 +205,7 @@ public class SubStructureSuperimposer {
      *
      * @return the superimposition according to their order
      */
-    private SubstructureSuperimposition calculateSuperimposition() {
+    private SubstructureSuperimposition calculateSuperimposition() throws SubStructureSuperimpositionException {
 
         Map<Pair<LeafSubstructure<?, ?>>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
 
@@ -237,6 +245,10 @@ public class SubStructureSuperimposer {
                     .map(pairSetEntry -> pairSetEntry.getKey().getSecond())
                     .map(this.representationScheme::determineRepresentingAtom)
                     .collect(Collectors.toList());
+        }
+
+        if (referenceAtoms.isEmpty() || candidateAtoms.isEmpty()) {
+            throw new SubStructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
         }
 
         // calculate superimposition

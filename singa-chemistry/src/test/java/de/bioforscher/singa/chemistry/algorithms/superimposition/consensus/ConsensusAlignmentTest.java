@@ -34,8 +34,8 @@ public class ConsensusAlignmentTest {
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .parse())
-                .map(Structure::getAllLeafs)
-                .map(leaves -> StructuralMotif.fromLeafs(0, leaves))
+                .map(Structure::getAllLeaves)
+                .map(leaves -> StructuralMotif.fromLeaves(0, leaves))
                 .collect(Collectors.toList());
     }
 

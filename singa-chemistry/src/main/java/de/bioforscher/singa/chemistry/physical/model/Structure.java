@@ -39,7 +39,7 @@ public class Structure {
 
     /**
      * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a unique
-     * pdbIdentifier, with which it can be addressed.
+     * identifier, with which it can be addressed.
      *
      * @param branchSubstructure The {@link BranchSubstructure} to add.
      */
@@ -48,14 +48,27 @@ public class Structure {
     }
 
     public List<StructuralModel> getAllModels() {
-        return this.getBranchSubstructures().stream()
+        return getBranchSubstructures().stream()
                 .filter(isModel())
                 .map(StructuralModel.class::cast)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns an {@link Optional} of the first model found in this structure. This should always be deterministic for
+     * Xtal structures. NMR structures contain several models.
+     *
+     * @return An {@link Optional} encapsulating the first {@link StructuralModel} found.
+     */
+    public Optional<StructuralModel> getFirstModel() {
+        return getBranchSubstructures().stream()
+                .filter(isModel())
+                .map(StructuralModel.class::cast)
+                .findFirst();
+    }
+
     public List<Chain> getAllChains() {
-        return this.getAllBranches().stream()
+        return getAllBranches().stream()
                 .filter(isChain())
                 .map(Chain.class::cast)
                 .collect(Collectors.toList());
@@ -68,7 +81,7 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public List<LeafSubstructure<?, ?>> getAllLeafs() {
+    public List<LeafSubstructure<?, ?>> getAllLeaves() {
         return this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(Collection::stream)

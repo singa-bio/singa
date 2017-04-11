@@ -51,13 +51,13 @@ public class StructureCollector {
         this.leafNames = new TreeMap<>();
     }
 
-    static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) {
+    static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
         StructureCollector collector = new StructureCollector(pdbLines, reducer);
         collector.reduceLines();
         return collector.collectStructure();
     }
 
-    private void reduceLines() {
+    private void reduceLines() throws StructureParserException {
         String firstLine = this.pdbLines.get(0);
         // parse meta information
         if (TitleToken.RECORD_PATTERN.matcher(firstLine).matches()) {
@@ -66,19 +66,19 @@ public class StructureCollector {
         if (this.reducer.parseMapping) {
             this.reducer.updatePdbIdentifer();
             this.reducer.updateChainIdentifier();
-            this.reduceToChain(this.reducer.chainIdentifier);
+            reduceToChain(this.reducer.chainIdentifier);
             logger.info("Parsing structure {} chain {}", this.reducer.pdbIdentifier, this.reducer.chainIdentifier);
-            return;
-        }
-        if (!this.reducer.allModels) {
-            // parse only specific model
-            // reduce lines to specific model
-            this.reduceToModel(this.reducer.modelIdentifier);
-        }
-        if (!this.reducer.allChains) {
-            // parse only specific chain
-            // reduce lines to specific chain
-            this.reduceToChain(this.reducer.chainIdentifier);
+        } else {
+            if (!this.reducer.allModels) {
+                // parse only specific model
+                // reduce lines to specific model
+                reduceToModel(this.reducer.modelIdentifier);
+            }
+            if (!this.reducer.allChains) {
+                // parse only specific chain
+                // reduce lines to specific chain
+                reduceToChain(this.reducer.chainIdentifier);
+            }
         }
     }
 
@@ -175,6 +175,9 @@ public class StructureCollector {
         logger.debug("creating content tree");
         this.contentTree = new ContentTreeNode(this.currentPDB, ContentTreeNode.StructureLevel.STRUCTURE);
         this.atoms.forEach((identifer, atom) -> this.contentTree.appendAtom(atom, identifer));
+        if (this.atoms.isEmpty()) {
+            throw new StructureParserException("could not reduce PDB-ID according to " + this.reducer);
+        }
     }
 
     private UniqueAtomIdentifer createUniqueAtomIdentifier(String atomLine) {

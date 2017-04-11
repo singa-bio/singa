@@ -2,11 +2,11 @@ package de.bioforscher.singa.chemistry.descriptive;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
-import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.units.UnitProvider;
 import de.bioforscher.singa.units.quantities.MolarMass;
 import tec.units.ri.quantity.Quantities;
@@ -52,9 +52,9 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     private List<Annotation> annotations;
 
     /**
-     * Creates a new Chemical Entity with the given pdbIdentifier.
+     * Creates a new Chemical Entity with the given identifier.
      *
-     * @param identifier The pdbIdentifier.
+     * @param identifier The identifier.
      */
     protected ChemicalEntity(IdentifierType identifier) {
         this.identifier = identifier;
@@ -90,21 +90,21 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     /**
-     * Sets The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
-     *
-     * @param molarMass The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
-     */
-    public void setMolarMass(double molarMass) {
-        this.molarMass = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
-    }
-
-    /**
      * Sets the {@link MolarMass}.
      *
      * @param molarMass The {@link MolarMass}.
      */
     public void setMolarMass(Quantity<MolarMass> molarMass) {
         this.molarMass = molarMass;
+    }
+
+    /**
+     * Sets The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     *
+     * @param molarMass The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     */
+    public void setMolarMass(double molarMass) {
+        this.molarMass = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
     }
 
     @Override

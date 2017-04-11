@@ -29,7 +29,7 @@ public class PDBParserPlayground {
          structure.addSubstructure(structuralModel);
         */
 
-        // Structure motif = StructuralMotif.fromLeafs(1, structure,
+        // Structure motif = StructuralMotif.fromLeaves(1, structure,
         // LeafIdentifiers.of("A-36", "B-67", "B-60", "B-204")).toStructure();
 
         // they all have the same ligand

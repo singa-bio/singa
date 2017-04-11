@@ -46,7 +46,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
-     * The pdbIdentifier of this entity.
+     * The identifier of this entity.
      */
     public int identifier;
 
@@ -83,9 +83,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     private Map<Integer, Bond> edges;
 
     /**
-     * Creates a new BranchSubstructure. The pdbIdentifier is considered in the superordinate BranchSubstructure.
+     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
      *
-     * @param identifier The pdbIdentifier of this BranchSubstructure.
+     * @param identifier The identifier of this BranchSubstructure.
      */
     public BranchSubstructure(int identifier) {
         this.identifier = identifier;
@@ -164,9 +164,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
-     * Returns the pdbIdentifier of this BranchSubstructure in the superordinate BranchSubstructure.
+     * Returns the identifier of this BranchSubstructure in the superordinate BranchSubstructure.
      *
-     * @return The pdbIdentifier.
+     * @return The identifier.
      */
     @Override
     public int getIdentifier() {
@@ -241,11 +241,11 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns a specific atom of this BranchSubstructure identified by its pdbIdentifier.
+     * Returns a specific atom of this BranchSubstructure identified by its identifier.
      *
-     * @param identifier The pdbIdentifier
-     * @return The atom associated with the pdbIdentifier.
-     * @throws IllegalArgumentException if the pdbIdentifier is not assigned in this substructure.
+     * @param identifier The identifier
+     * @return The atom associated with the identifier.
+     * @throws IllegalArgumentException if the identifier is not assigned in this substructure.
      */
     @Override
     public Atom getNode(int identifier) {
@@ -277,9 +277,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     /**
      * Considering the SubStructures that are contained in this BranchSubstructure, this method returns the next larger and
-     * unused pdbIdentifier.
+     * unused identifier.
      *
-     * @return The next free pdbIdentifier.
+     * @return The next free identfier.
      */
     public int getNextSubstructureIdentifier() {
         if (this.substructures.keySet().isEmpty()) {
@@ -298,12 +298,12 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Removes the substructure with the given pdbIdentifier from this {@link Substructure}. This removes all {@link Atom}s
+     * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
      * and {@link Bond}s as well
      * <p>
      * FIXME this may produce a NPE
      *
-     * @param identifier The pdbIdentifier of the atom to remove.
+     * @param identifier The identifier of the atom to remove.
      */
     public void removeSubstructure(int identifier) {
         List<Integer> atomsToBeRemoved = this.substructures.get(identifier).getAllAtoms().stream()
@@ -318,7 +318,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * <p>
      * FIXME this may produce a NPE
      *
-     * @param leafIdentifier The pdbIdentifier of the atom to remove.
+     * @param leafIdentifier The {@link LeafIdentifier} of the atom to remove.
      */
     public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         List<Integer> atomsToBeRemoved = new ArrayList<>();
@@ -355,10 +355,10 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns the {@link Substructure} with the given pdbIdentifier or {@link Optional#empty()} if no such substructure
+     * Returns the {@link Substructure} with the given identifier or {@link Optional#empty()} if no such substructure
      * exists.
      *
-     * @param identifier The pdbIdentifier that should be returned.
+     * @param identifier The identifier that should be returned.
      * @return The matching Substructure or {@link Optional#empty()}.
      */
     public Optional<Substructure> getSubstructure(int identifier) {
@@ -375,10 +375,10 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Removes the atom with the given pdbIdentifier from this BranchSubstructure. Also disbands all edges associated to this
+     * Removes the atom with the given identifier from this BranchSubstructure. Also disbands all edges associated to this
      * node.
      *
-     * @param identifier The pdbIdentifier of the atom to remove.
+     * @param identifier The identifier of the atom to remove.
      */
     @Override
     public void removeNode(int identifier) {
@@ -404,9 +404,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Gets a specific bond using its pdbIdentifier.
+     * Gets a specific bond using its identifier.
      *
-     * @param identifier The pdbIdentifier.
+     * @param identifier The identifier.
      * @return The Edge.
      */
     @Override

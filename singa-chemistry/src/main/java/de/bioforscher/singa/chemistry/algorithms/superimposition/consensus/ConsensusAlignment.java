@@ -410,7 +410,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafs(0, consensusLeaveSubstructures));
+        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(0, consensusLeaveSubstructures));
 
 
         // create tree node

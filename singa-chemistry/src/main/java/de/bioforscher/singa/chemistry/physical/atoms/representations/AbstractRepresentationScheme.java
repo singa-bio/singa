@@ -30,7 +30,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
      * @return The centroid as an {@link UncertainAtom}.
      */
     Atom determineCentroid(LeafSubstructure<?, ?> leafSubstructure) {
-        logger.warn("obtaining centroid representation for ", leafSubstructure);
+        logger.warn("obtaining centroid representation for {}", leafSubstructure);
         return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.CENTROID.getAtomNameString(),

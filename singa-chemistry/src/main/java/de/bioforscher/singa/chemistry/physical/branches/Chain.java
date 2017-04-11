@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
@@ -8,7 +9,6 @@ import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,15 +24,15 @@ import java.util.TreeMap;
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
     /**
-     * The pdbIdentifier of this chain.
+     * The chain identifier of this chain.
      */
     private String chainIdentifier;
 
     /**
-     * Creates a new Chain with the given graph pdbIdentifier. This is not the single letter chain pdbIdentifier, but the
+     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chain identifier, but the
      * reference for the placement in the graph.
      *
-     * @param graphIdentifier The pdbIdentifier in the graph.
+     * @param graphIdentifier The identifier in the graph.
      */
     public Chain(int graphIdentifier) {
         super(graphIdentifier);
@@ -57,26 +57,26 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Creates a new Chain with the graph pdbIdentifier 0. Use this method only if there is only one chain and nothing
-     * more on this level in a structure.
+     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chain and nothing
+     * more on this level in a structure.</b>
      */
     public Chain() {
         super(0);
     }
 
     /**
-     * Returns the chain pdbIdentifier (the single letter pdbIdentifier).
+     * Returns the chain identifier (the single character identifier).
      *
-     * @return The chain pdbIdentifier.
+     * @return The chain identifier.
      */
     public String getChainIdentifier() {
         return this.chainIdentifier;
     }
 
     /**
-     * Sets the chain pdbIdentifier (the single letter pdbIdentifier).
+     * Sets the chain identifier (the single letter identifier).
      *
-     * @param chainIdentifier The chain pdbIdentifier.
+     * @param chainIdentifier The chain identifier.
      */
     public void setChainIdentifier(String chainIdentifier) {
         this.chainIdentifier = chainIdentifier;
@@ -124,7 +124,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Gets the name (i.e. the single letter chain pdbIdentifier) of this chain.
+     * Gets the name (i.e. the single letter chain identifier) of this chain.
      *
      * @return The name.
      */

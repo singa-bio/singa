@@ -55,8 +55,8 @@ public class Fit3DAlignment implements Fit3D {
         this.representationScheme = builder.representationScheme;
 
         if (this.queryMotif.size() > this.target.getLeafSubstructures().size()) {
-            throw new Fit3DException("search target must contain at least as many atom-containing substructures " +
-                    "as the queryMotif");
+            throw new Fit3DException("search target " + this.target + " must contain at least as many atom-containing substructures " +
+                    "as the query motif");
         }
 
         // initialize

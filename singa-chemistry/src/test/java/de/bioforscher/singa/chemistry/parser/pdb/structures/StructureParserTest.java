@@ -5,9 +5,12 @@ import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Test;
 
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 public class StructureParserTest {
 
@@ -101,12 +104,27 @@ public class StructureParserTest {
     }
 
     @Test
+    public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
+        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        Path chainList = Paths.get(Thread.currentThread().getContextClassLoader().getResource("chain_list.txt").toURI());
+        List<Structure> structure = StructureParser.local()
+                .localPDB(localPdb)
+                .chainList(chainList, ":")
+                .parse();
+        assertTrue(structure.get(0).getAllLeaves().size() > 0);
+    }
+
+    @Test
+    public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
+        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
+    }
+
+    @Test
     public void shouldParseMultipleStructures() {
         // all have the ligand SO4
         List<Structure> structures = StructureParser.online()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
     }
-
-
 }

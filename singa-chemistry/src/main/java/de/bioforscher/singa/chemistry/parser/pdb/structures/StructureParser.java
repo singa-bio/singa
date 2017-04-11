@@ -38,7 +38,7 @@ public class StructureParser {
         return new SourceSelector();
     }
 
-    public interface IdentifierStep extends AdditionalLocalSourceStep{
+    public interface IdentifierStep extends AdditionalLocalSourceStep {
 
         /**
          * The pdbIdentifier of the PDB structure.
@@ -103,7 +103,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
          *
-         * @param localPDB   The local pdb.
+         * @param localPDB      The local pdb.
          * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
@@ -112,7 +112,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
          *
-         * @param localPDB    The local pdb.
+         * @param localPDB       The local pdb.
          * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
@@ -206,7 +206,7 @@ public class StructureParser {
 
         SingleParser everything();
 
-        Structure parse();
+        Structure parse() throws StructureParserException;
     }
 
     public interface MultiChainStep {
@@ -227,7 +227,7 @@ public class StructureParser {
             this.selector = selector;
         }
 
-        public Structure parse() {
+        public Structure parse() throws StructureParserException {
             return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
         }
     }
@@ -240,13 +240,29 @@ public class StructureParser {
             this.selector = selector;
         }
 
+        public int getNumberOfQueuedStructures() {
+            return this.selector.sourceSelector.contentIterator.getNumberOfQueuedStructures();
+        }
+
+        public int getNumberOfRemainingStructures() {
+            return this.selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
+        }
+
+        public String getCurrentPdbIdentifier() {
+            return this.selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
+        }
+
+        public String getCurrentChainIdentifier() {
+            return this.selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+        }
+
         public List<Structure> parse() {
-            logger.info("parsing {} structures ", this.selector.sourceSelector.contentIterator.getNumberOfQueuedStructures());
+            logger.info("parsing {} structures ", getNumberOfQueuedStructures());
             List<Structure> structures = new ArrayList<>();
             this.selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
                 try {
                     structures.add(StructureCollector.parse(lines, this.selector));
-                } catch (UncheckedIOException e) {
+                } catch (StructureParserException | UncheckedIOException e) {
                     logger.warn("failed to parse structure", e);
                 }
             });
@@ -350,7 +366,7 @@ public class StructureParser {
         }
 
         @Override
-        public Structure parse() {
+        public Structure parse() throws StructureParserException {
             setEverything();
             return new SingleParser(this).parse();
         }
@@ -413,6 +429,15 @@ public class StructureParser {
             this.allChains = true;
         }
 
+        @Override
+        public String toString() {
+            return "Reducer{pdbIdentifier='" + this.pdbIdentifier + '\'' +
+                    ", modelIdentifier=" + this.modelIdentifier +
+                    ", chainIdentifier='" + this.chainIdentifier + '\'' +
+                    ", allModels=" + this.allModels +
+                    ", allChains=" + this.allChains +
+                    '}';
+        }
     }
 
     public static class SourceSelector implements LocalSourceStep, IdentifierStep, AdditionalLocalSourceStep {
@@ -536,6 +561,8 @@ public class StructureParser {
      */
     public static class LocalPDB {
 
+        private static final Path BASE_PATH = Paths.get("data/structures/divided/pdb");
+
         private Path localPdbPath;
 
         public LocalPDB(String localPdbLocation) {
@@ -545,6 +572,17 @@ public class StructureParser {
         public Path getLocalPdbPath() {
             return this.localPdbPath;
         }
-    }
 
+        /**
+         * Returns the full path of a given PDB-ID in respect to the local PDB copy.
+         *
+         * @param pdbIdentifier The PDB-ID for which the full path should be retrieved.
+         * @return The full path of the given PDB-ID.
+         */
+        public Path getPathForPdbIdentifier(String pdbIdentifier) {
+            pdbIdentifier = pdbIdentifier.toLowerCase();
+            return this.localPdbPath.resolve(BASE_PATH).resolve(pdbIdentifier.substring(1, 3))
+                    .resolve(pdbIdentifier).resolve("pdb" + pdbIdentifier + ".ent.gz");
+        }
+    }
 }

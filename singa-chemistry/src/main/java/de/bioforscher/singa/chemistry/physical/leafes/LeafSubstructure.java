@@ -106,9 +106,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the integer part of the leaf pdbIdentifier.
+     * Returns the integer part of the leaf identifier.
      *
-     * @return The integer part of the leaf pdbIdentifier.
+     * @return The integer part of the leaf identifier.
      */
     @Override
     public int getIdentifier() {

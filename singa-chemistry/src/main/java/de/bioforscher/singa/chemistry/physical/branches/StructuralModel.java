@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 public class StructuralModel extends BranchSubstructure<StructuralModel> {
 
     /**
-     * Creates a new BranchSubstructure. The pdbIdentifier is considered in the superordinate BranchSubstructure.
+     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
      *
-     * @param identifier The pdbIdentifier of this BranchSubstructure.
+     * @param identifier The identifier of this BranchSubstructure.
      */
     public StructuralModel(int identifier) {
         super(identifier);

@@ -37,7 +37,7 @@ public final class EnvironmentalParameterDefaults {
     public static final Quantity<DynamicViscosity> SYSTEM_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
 
     /**
-     * Water as species with ChEBI pdbIdentifier.
+     * Water as species with ChEBI identifier.
      */
     public static final Species WATER = new Species.Builder("CHEBI:15377").name("Water").molarMass(18.0153).build();
 

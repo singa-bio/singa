@@ -24,7 +24,7 @@ public class StructuralMotifsTest {
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
+        this.structuralMotif = StructuralMotif.fromLeaves(1, bindingSiteStructure1.getAllLeaves());
     }
 
     @Test

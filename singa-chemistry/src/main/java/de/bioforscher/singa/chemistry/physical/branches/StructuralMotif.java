@@ -24,6 +24,8 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  */
 public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
 
+    private static final int DEFAULT_IDENTIFIER = 0;
+
     public StructuralMotif(int identifier) {
         super(identifier);
     }
@@ -35,12 +37,12 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     /**
      * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
      *
-     * @param identifier      The internally-used pdbIdentifier of the {@link StructuralMotif}.
+     * @param identifier      The internally-used identifier of the {@link StructuralMotif}.
      * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
      * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafs(int identifier, Structure structure, List<LeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeaves(int identifier, Structure structure, List<LeafIdentifier> leafIdentifiers) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafIdentifiers.forEach(leafIdentifer -> {
             Substructure subStructure = structure.getAllChains().stream()
@@ -55,17 +57,45 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     }
 
     /**
+     * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
+     * <b>The resulting structural motif has the internal default identifier. This method is only save to use if you
+     * do not intent to bundle the resulting {@link StructuralMotif} in a superordinate
+     * {@link BranchSubstructure}.</b>
+     *
+     * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
+     * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
+    public static StructuralMotif fromLeaves(Structure structure, List<LeafIdentifier> leafIdentifiers) {
+        return fromLeaves(DEFAULT_IDENTIFIER, structure, leafIdentifiers);
+    }
+
+    /**
      * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
      *
-     * @param identifier        The internally-used pdbIdentifier of the {@link StructuralMotif}.
+     * @param identifier        The internally-used identifier of the {@link StructuralMotif}.
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafs(int identifier, List<LeafSubstructure<?, ?>> leafSubstructures) {
+    public static StructuralMotif fromLeaves(int identifier, List<LeafSubstructure<?, ?>> leafSubstructures) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafSubstructures.forEach(motif::addSubstructure);
         return motif;
     }
+
+    /**
+     * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
+     * <b>The resulting structural motif has the internal default identifier. This method is only save to use if you
+     * do not intent to bundle the resulting {@link StructuralMotif} in a superordinate
+     * {@link BranchSubstructure}.</b>
+     *
+     * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
+    public static StructuralMotif fromLeaves(List<LeafSubstructure<?, ?>> leafSubstructures) {
+        return fromLeaves(DEFAULT_IDENTIFIER, leafSubstructures);
+    }
+
 
     @Override
     public String toString() {
@@ -78,8 +108,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     }
 
     /**
-     * Returns the size of the structural motif (the number of contained
-     * {@link LeafSubstructure}s.
+     * Returns the size of the structural motif (the number of contained     * {@link LeafSubstructure}s.
      *
      * @return The size of the motif.
      */

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
@@ -62,7 +63,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private boolean cutoffScoreReached;
     private XieScore xieScore;
 
-    public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) {
+    public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubStructureSuperimpositionException {
         this.site1 = builder.site1.getCopy();
         this.site2 = builder.site2.getCopy();
         this.exhaustive = builder.exhaustive;
@@ -240,7 +241,7 @@ public class Fit3DSiteAlignment implements Fit3D {
      * Calculates the similarity scores of the current round, either by naive superimposition or with a
      * {@link Fit3DAlignment} if exchanges are defined.
      */
-    private void calculateSimilarities() {
+    private void calculateSimilarities() throws SubStructureSuperimpositionException {
 
         // reset best score for new iteration
         double localBestScore = Double.MAX_VALUE;

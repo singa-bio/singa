@@ -46,7 +46,7 @@ public class SmilesParser {
     private MoleculeGraph molecule;
 
     /**
-     * The pdbIdentifier of the last atom, that has been added to the graph
+     * The identifier of the last atom, that has been added to the graph
      */
     private int currentIdentifer = Integer.MIN_VALUE;
 
@@ -71,12 +71,12 @@ public class SmilesParser {
     private MoleculeBondType currentBondType;
 
     /**
-     * Maps the consecutive connections between atoms (as a pair of pdbIdentifiers) to the bond type
+     * Maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
      */
     private HashMap<Pair<Integer>, MoleculeBondType> connectors;
 
     /**
-     * Maps the ring closure pdbIdentifier to atom pdbIdentifier that is to be connected
+     * Maps the ring closure identifier to atom identifier that is to be connected
      */
     private HashMap<Integer, Integer> ringClosures;
 
