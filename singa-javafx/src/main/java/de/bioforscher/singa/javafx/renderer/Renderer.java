@@ -10,10 +10,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * The renderer interface supplies default methods to draw in a {@link GraphicsContext} method.
@@ -91,7 +88,7 @@ public interface Renderer {
      *
      * @param vectors The points to be connected with a line.
      */
-    default void connectPoints(List<Vector2D> vectors) {
+    default void connectPoints(Collection<Vector2D> vectors) {
         getGraphicsContext().strokePolyline(
                 vectors.stream().mapToDouble(Vector2D::getX).toArray(),
                 vectors.stream().mapToDouble(Vector2D::getY).toArray(),

@@ -244,7 +244,7 @@ public class GraphFactory {
     private static <ContentType> GenericNode<ContentType> convertNode(BinaryTreeNode<ContentType> treeNode,
                                                                       GenericGraph<ContentType> graph) {
         GenericNode<ContentType> result = new GenericNode<>(graph.nextNodeIdentifier(), treeNode.getData());
-        result.setPosition(Vectors.generateRandomVectorInRectangle(new Rectangle(200, 200)));
+        result.setPosition(Vectors.generateRandom2DVector(new Rectangle(200, 200)));
         return result;
     }
 

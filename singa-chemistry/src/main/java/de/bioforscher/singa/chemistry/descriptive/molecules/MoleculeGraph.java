@@ -1,15 +1,16 @@
 package de.bioforscher.singa.chemistry.descriptive.molecules;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.descriptive.estimations.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 
-
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -37,7 +38,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
 
     public int addNextAtom(Element element) {
         MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
-                Vectors.generateRandomVectorInRectangle(new Rectangle(100, 100)), element);
+                Vectors.generateRandom2DVector(new Rectangle(100, 100)), element);
         addNode(atom);
         return atom.getIdentifier();
     }
