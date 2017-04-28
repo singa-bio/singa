@@ -505,34 +505,38 @@ public class SimulationExamples {
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
         Membrane membrane = new Membrane("LC-M", "Left-Membrane", left);
 
-        // initialize species in graph with desired concentration leaving the right "half" empty
+        // compartments have to be set before concentrations can be set
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                if (node.getIdentifier() % numberOfNodes < 4) {
-                    node.setConcentration(urea, 1.0);
-                    node.setConcentration(cobamamide, 1.0);
-                }
                 node.setCellSection(left);
                 left.addNode(node);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
-                node.setConcentration(urea, 0.0);
-                node.setConcentration(cobamamide, 0.0);
-                // node.setCellSection(membrane);
                 node.setState(NodeState.MEMBRANE);
                 membrane.addNode(node);
             } else {
-                node.setConcentration(urea, 0.0);
-                node.setConcentration(cobamamide, 0.0);
                 node.setCellSection(right);
                 right.addNode(node);
             }
         }
 
+        // setup compartments
         graph.addSection(left);
         graph.addSection(right);
         graph.addSection(membrane);
         membrane.initializeNodes(graph);
+
+        // set concentrations
+        for (BioNode node : graph.getNodes()) {
+            if (node.getIdentifier() % numberOfNodes < 4) {
+                node.setConcentration(urea, 1.0);
+                node.setConcentration(cobamamide, 1.0);
+            } else {
+                node.setConcentration(urea, 0.0);
+                node.setConcentration(cobamamide, 0.0);
+            }
+        }
+
 
         logger.debug("Adding default permeability to edges ... ");
         for (BioEdge edge : graph.getEdges()) {

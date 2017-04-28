@@ -7,6 +7,7 @@ import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,12 +21,13 @@ public class ActiveMembraneTransport implements Module, CumulativeUpdateBehavior
     }
 
     @Override
-    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
         return null;
     }
 
     @Override
-    public PotentialUpdate calculateUpdate(BioNode node, ChemicalEntity entity) {
+    public List<PotentialUpdate> calculateUpdates(BioNode node) {
         return null;
     }
+
 }

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
@@ -60,10 +61,10 @@ public class DynamicKineticLaw implements KineticLaw {
     }
 
     @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
+    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = node.getConcentration(entry.getKey());
+            final Quantity<MolarConcentration> concentration = node.getAvailableConcentration(entry.getKey(), section);
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }

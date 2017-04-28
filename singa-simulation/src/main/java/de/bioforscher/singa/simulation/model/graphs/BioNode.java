@@ -41,6 +41,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     }
 
     public void setConcentration(ChemicalEntity entity, double value) {
+        // FIXME This is ignored if no compartment is set
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
     }
 
@@ -52,8 +53,16 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.concentrations.getConcentration(entity);
     }
 
+    public void setAvailableConcentration(ChemicalEntity entity, CellSection cellSection, Quantity<MolarConcentration> quantity) {
+        this.concentrations.setAvailableConcentration(cellSection, entity, quantity);
+    }
+
     public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
         return this.concentrations.getAvailableConcentration(cellSection, entity);
+    }
+
+    public Set<CellSection> getAllReferencedSections() {
+        return this.concentrations.getAllReferencedSections();
     }
 
     public Set<ChemicalEntity> getAllReferencedEntities() {

@@ -1,17 +1,12 @@
 package de.bioforscher.singa.simulation.modules.diffusion;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.descriptive.estimations.OctanolWaterPartition;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
-import de.bioforscher.singa.chemistry.parser.smiles.SmilesParser;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.Module;
+import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.units.UnitScaler;
 import de.bioforscher.singa.units.quantities.Diffusivity;
@@ -33,11 +28,11 @@ import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
 public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     private Map<ChemicalEntity<?>, Quantity<Diffusivity>> diffusionCoefficients;
-    private Map<ChemicalEntity<?>, Double> octanolWaterCoefficients;
+
 
     public FreeDiffusion() {
         this.diffusionCoefficients = new HashMap<>();
-        this.octanolWaterCoefficients = new HashMap<>();
+
     }
 
     public void prepareDiffusionCoefficients(Set<ChemicalEntity<?>> entities) {
@@ -45,10 +40,6 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
             // determine diffusion coefficients
             Quantity<Diffusivity> diffusionCoefficient = determineDiffusionCoefficient(entity);
             this.diffusionCoefficients.put(entity, diffusionCoefficient);
-            // determine octanol water partition coefficient
-            MoleculeGraph moleculeGraph = SmilesParser.parse(((Species) entity).getSmilesRepresentation());
-            double octanolWaterCoefficient = OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(moleculeGraph, OctanolWaterPartition.Method.NC_NHET);
-            this.octanolWaterCoefficients.put(entity, octanolWaterCoefficient);
         }
     }
 
@@ -58,25 +49,26 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     }
 
     @Override
-    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
-        return this.diffusionCoefficients.keySet();
+    public List<PotentialUpdate> calculateUpdates(BioNode node) {
+        List<PotentialUpdate> updates = new ArrayList<>();
+        for (CellSection section: node.getAllReferencedSections()) {
+            for (ChemicalEntity entity: node.getAllReferencedEntities()) {
+                updates.add(calculateCompartmentSpecificUpdate(node, section, entity));
+            }
+        }
+        return updates;
     }
 
-    @Override
-    public PotentialUpdate calculateUpdate(BioNode node, final ChemicalEntity entity) {
-
-    }
-
-    private PotentialUpdate calculateCompartmentSpecificUpdate(CellSection cellSection, BioNode node, ChemicalEntity entity) {
+    private PotentialUpdate calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity entity) {
         final double currentConcentration = node.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
         // calculate entering term
         int numberOfNeighbors = 0;
-        int concentration = 0;
+        double concentration = 0;
         // traverse each neighbouring cell
         for (BioNode neighbour : node.getNeighbours()) {
             numberOfNeighbors++;
             // if the node is from an different compartment
-            concentration += neighbour.getAvailableConcentration(entity, node.getCellSection()).getValue().doubleValue();
+            concentration += neighbour.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
         }
         // entering amount
         final double enteringConcentration = concentration * getDiffusionCoefficient(entity).getValue().doubleValue();
@@ -84,7 +76,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         final double leavingConcentration = numberOfNeighbors * getDiffusionCoefficient(entity).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
         final double nextConcentration = enteringConcentration - leavingConcentration + currentConcentration;
-        return new PotentialUpdate(cellSection, entity, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
+        return new PotentialUpdate(node, cellSection, entity, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
     }
 
 
@@ -104,21 +96,9 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         }
     }
 
-    /**
-     * Determines the diffusion coefficient if it is not already cached.
-     *
-     * @param entity The entity.
-     * @return The Octanol-Water Coefficient
-     */
-    private double getOctanolWaterCoefficient(ChemicalEntity entity) {
-        if (this.octanolWaterCoefficients.containsKey(entity)) {
-            return this.octanolWaterCoefficients.get(entity);
-        } else {
-            MoleculeGraph moleculeGraph = SmilesParser.parse(((Species) entity).getSmilesRepresentation());
-            double octanolWaterCoefficient = OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(moleculeGraph, OctanolWaterPartition.Method.NC_NHET);
-            this.octanolWaterCoefficients.put(entity, octanolWaterCoefficient);
-            return octanolWaterCoefficient;
-        }
+    @Override
+    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
+        return this.diffusionCoefficients.keySet();
     }
 
     /**

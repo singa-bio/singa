@@ -2,21 +2,17 @@ package de.bioforscher.singa.simulation.application;
 
 import de.bioforscher.singa.simulation.application.components.controlpanles.CompartmentControlPanel;
 import de.bioforscher.singa.simulation.application.components.controlpanles.EnvironmentalParameterControlPanel;
-import de.bioforscher.singa.simulation.application.components.panes.ResizablePane;
-import de.bioforscher.singa.simulation.application.components.panes.SimulationCanvas;
-import de.bioforscher.singa.simulation.application.components.panes.SpeciesOverviewPane;
-import de.bioforscher.singa.simulation.application.components.panes.ModuleOverviewPane;
 import de.bioforscher.singa.simulation.application.components.controlpanles.PlotControlPanel;
-import de.bioforscher.singa.simulation.application.components.panes.PlotPreferencesPane;
+import de.bioforscher.singa.simulation.application.components.panes.*;
 import de.bioforscher.singa.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.singa.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.singa.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLExportService;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLParserService;
-import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -35,8 +31,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
+
+import static tec.units.ri.unit.MetricPrefix.NANO;
+import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
@@ -62,7 +62,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExamples.createPassiveMembraneTransportExample();
+        this.simulation = SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(100, NANO(SECOND)));
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;

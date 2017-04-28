@@ -1,12 +1,11 @@
 package de.bioforscher.singa.simulation.modules.model.updates;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.graphs.BioNode;
 
-import javax.measure.Quantity;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author cl
@@ -17,17 +16,14 @@ public final class PotentialUpdates {
 
     }
 
-    /**
-     * Converts a Map with {@link ChemicalEntity}, concentration pairs to a set of {@link PotentialUpdates}.
-     *
-     * @param concentrations The Map to convert
-     * @return The resulting set.
-     */
-    public static Set<PotentialUpdate> collectAsPotentialUpdates(Map<ChemicalEntity, Quantity<MolarConcentration>>
-                                                                         concentrations) {
-        return concentrations.entrySet().stream()
-                .map(mapEntity -> new PotentialUpdate(mapEntity.getKey(), mapEntity.getValue()))
-                .collect(Collectors.toSet());
+    public static List<PotentialUpdate> collectChanges(BioNode node) {
+        List<PotentialUpdate> updates = new ArrayList<>();
+        for (CellSection section: node.getAllReferencedSections()) {
+            for (ChemicalEntity entity: node.getAllReferencedEntities()) {
+                updates.add(new PotentialUpdate(node, section, entity, node.getAvailableConcentration(entity, section)));
+            }
+        }
+        return updates;
     }
 
 }

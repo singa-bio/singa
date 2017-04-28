@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.units.quantities.MolarConcentration;
 import de.bioforscher.singa.units.quantities.ReactionRate;
@@ -69,14 +70,14 @@ public abstract class Reaction {
      *             ReactantRole#DECREASING} for Substrates).
      * @return The total concentration.
      */
-    protected Quantity<MolarConcentration> determineConcentration(BioNode node, ReactantRole role) {
+    protected Quantity<MolarConcentration> determineConcentration(BioNode node, CellSection section, ReactantRole role) {
         double product = 1.0;
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
                 if (isElementary()) {
-                    product *= node.getConcentration(reactant.getEntity()).getValue().doubleValue();
+                    product *= node.getAvailableConcentration(reactant.getEntity(), section).getValue().doubleValue();
                 } else {
-                    product *= Math.pow(node.getConcentration(reactant.getEntity()).getValue().doubleValue(),
+                    product *= Math.pow(node.getAvailableConcentration(reactant.getEntity(), section).getValue().doubleValue(),
                             reactant.getReactionOrder());
                 }
             }
@@ -91,7 +92,7 @@ public abstract class Reaction {
      * @param node The node containing the concentrations of species subject to this reaction.
      * @return The acceleration of concentration (change in reaction rate for the species of this reaction)
      */
-    public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
+    public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section);
 
     public abstract Set<ChemicalEntity<?>> collectAllReferencedEntities();
 
