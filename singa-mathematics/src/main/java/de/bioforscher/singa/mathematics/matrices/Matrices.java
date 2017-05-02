@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 public final class Matrices {
 
+    private static final String DEFAULT_CSV_DELIMITER = ",";
+
     /**
      * prevent instantiation
      */
@@ -175,8 +177,8 @@ public final class Matrices {
     }
 
     /**
-     * returns an {@link Optional} of a {@link Pair} that represents the position of the unique maximal element,
-     * or an empty {@link Optional} if the maximal element is ambiguous
+     * Returns an {@link Optional} of a {@link Pair} that represents the position of the unique maximal element,
+     * or an empty {@link Optional} if the maximal element is ambiguous.
      *
      * @return position of the maximal element represented as a {@link Pair} (i,j) of {@link Integer} values
      */
@@ -189,20 +191,39 @@ public final class Matrices {
         return QRDecomposition.calculateQRDecomposition(matrix);
     }
 
-    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Stream<String> csvLines) {
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Stream<String> csvLines, String delimiter) {
         List<String[]> rawRows = csvLines
-                .map(line -> line.split(","))
+                .map(line -> line.split(delimiter))
                 .map(splittedLine -> Arrays.stream(splittedLine)
                         .filter(cell -> !cell.isEmpty())
                         .collect(Collectors.toList()).toArray(new String[0]))
                 .collect(Collectors.toList());
         // check if columns are potentially labeled
-        List<Integer> rowLengths = rawRows.stream()
+        List<Integer> distinctRowLengths = rawRows.stream()
                 .map(rawRow -> rawRow.length)
                 .distinct()
                 .collect(Collectors.toList());
+
+        // keep all row lengths for triangular check
+        List<Integer> rowLengths = rawRows.stream()
+                .map(rawRow -> rawRow.length)
+                .collect(Collectors.toList());
+
+        // check for triangular form of symmetric matrix
+        boolean triangularUpper = true;
+        boolean triangularLower = true;
+        for (int i = 1; i < rowLengths.size() - 1; i++) {
+            if (rowLengths.get(i + 1) != rowLengths.get(i) + 1) {
+                triangularLower = false;
+            }
+            if (rowLengths.get(i + 1) != rowLengths.get(i) - 1) {
+                triangularUpper = false;
+            }
+        }
+
         List<String[]> rawColumns = new ArrayList<>();
-        if (rowLengths.size() == 2 && (rowLengths.get(0) == rowLengths.get(1) - 1)) {
+        if (distinctRowLengths.size() == 2 && (distinctRowLengths.get(0) == distinctRowLengths.get(1) - 1)) {
+
             List<String> columnLabels = Arrays.asList(rawRows.get(0));
             int rowLength = rawRows.get(1).length;
             for (int i = 0; i < rowLength; i++) {
@@ -231,13 +252,41 @@ public final class Matrices {
                 labeledRegularMatrix.setRowLabels(rowLabels);
                 return labeledRegularMatrix;
             }
+        } else if (triangularLower || triangularUpper) {
+            // labels have to be symmetric if triangular matrix
+            List<String> columnLabels = Arrays.asList(rawRows.get(0));
+            double[][] values = new double[rawRows.size() - 1][rawRows.size() - 1];
+            if (triangularLower) {
+                for (int i = rawRows.size() - 1; i > 0; i--) {
+                    for (int j = 1; j < i + 1; j++) {
+                        double value = Double.valueOf(rawRows.get(i)[j]);
+                        values[i - 1][j - 1] = value;
+                        values[j - 1][i - 1] = value;
+                    }
+                }
+            } else {
+                for (int i = 1; i < rawRows.size(); i++) {
+                    for (int j = 1; j < rawRows.size() - i + 1; j++) {
+                        double value = Double.valueOf(rawRows.get(i)[j]);
+                        values[i - 1][j + i - 2] = value;
+                        values[j + i - 2][i - 1] = value;
+                    }
+                }
+            }
+            if (SymmetricMatrix.isSymmetric(values)) {
+                LabeledSymmetricMatrix<String> labeledSymmetricMatrix = new LabeledSymmetricMatrix<>(values);
+                labeledSymmetricMatrix.setColumnLabels(columnLabels);
+                return labeledSymmetricMatrix;
+            } else {
+                throw new IllegalArgumentException("triangular matrix has to be symmetric");
+            }
         } else {
             throw new IllegalArgumentException("labeling seems to be incorrect");
         }
     }
 
-    public static Matrix readUnlabeledMatrixFromCSV(Stream<String> csvLines) {
-        List<String[]> rawRows = csvLines.map(line -> line.split(","))
+    public static Matrix readUnlabeledMatrixFromCSV(Stream<String> csvLines, String delimiter) {
+        List<String[]> rawRows = csvLines.map(line -> line.split(delimiter))
                 .map(splittedLine -> Arrays.stream(splittedLine)
                         .filter(cell -> !cell.isEmpty())
                         .toArray(String[]::new))
@@ -287,11 +336,15 @@ public final class Matrices {
     }
 
     public static LabeledMatrix<String> readLabeledMatrixFromCSV(Path path) throws IOException {
-        return readLabeledMatrixFromCSV(Files.lines(path));
+        return readLabeledMatrixFromCSV(Files.lines(path), DEFAULT_CSV_DELIMITER);
     }
 
-    public static Matrix readUnlabeledMatrixFromCSV(Path path) throws IOException {
-        return readUnlabeledMatrixFromCSV(Files.lines(path));
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(Path path, String delimiter) throws IOException {
+        return readLabeledMatrixFromCSV(Files.lines(path), delimiter);
+    }
+
+    public static Matrix readUnlabeledMatrixFromCSV(Path path, String delimiter) throws IOException {
+        return readUnlabeledMatrixFromCSV(Files.lines(path), delimiter);
     }
 
     /**
