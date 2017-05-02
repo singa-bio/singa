@@ -1,97 +1,47 @@
 package de.bioforscher.singa.chemistry.parser.chebi;
 
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.parser.rest.AbstractRESTParser;
+import de.bioforscher.singa.core.parser.rest.AbstractHTMLParser;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class ChEBIImageService extends AbstractRESTParser {
+public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
 
     private static final int defaultImageWidth = 75;
-    private InputStream imageStream;
+    private Map<String, String> queryMap;
 
     public ChEBIImageService(String chEBIIdentifier) {
-        this(defaultImageWidth, new ChEBIIdentifier(chEBIIdentifier));
+        this(new ChEBIIdentifier(chEBIIdentifier), defaultImageWidth);
     }
 
-    public ChEBIImageService(ChEBIIdentifier chEBIIdentifier) {
-        this(defaultImageWidth, chEBIIdentifier);
-    }
-
-    public ChEBIImageService(int imageWidth, ChEBIIdentifier chEBIIdentifier) {
+    private ChEBIImageService(ChEBIIdentifier chEBIIdentifier, int imageWidth) {
         setResource("http://www.ebi.ac.uk/chebi/displayImage.do;jsessionid=test");
-        Map<String, String> queryMap = new HashMap<>();
-        queryMap.put("defaultImage", "true");
-        queryMap.put("imageIndex", "0");
-        queryMap.put("chebiId", String.valueOf(chEBIIdentifier.getConsecutiveNumber()));
-        queryMap.put("dimensions", String.valueOf(imageWidth));
-        setQueryMap(queryMap);
-    }
-
-    @Override
-    public void fetchResource() {
-        // create client
-        Client client = ClientBuilder.newClient();
-        WebTarget targetResource = client.target(getResource());
-
-        // build query
-        Map<String, String> queryMap = getQueryMap();
-        WebTarget query = null;
-        for (String target : queryMap.keySet()) {
-            if (query == null) {
-                query = targetResource.queryParam(target, queryMap.get(target));
-            } else {
-                query = query.queryParam(target, queryMap.get(target));
-            }
-        }
-
-        assert query != null;
-        Invocation.Builder invocationBuilder = query.request(MediaType.WILDCARD);
-
-        // get response
-        Response response = invocationBuilder.get();
-
-        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-            this.imageStream = response.readEntity(InputStream.class);
-        } else {
-            throw new WebApplicationException("Http call failed. response code is" + response.getStatus()
-                    + ". Error reported is " + response.getStatusInfo());
-        }
+        this.queryMap = new HashMap<>();
+        this.queryMap.put("defaultImage", "true");
+        this.queryMap.put("imageIndex", "0");
+        this.queryMap.put("chebiId", String.valueOf(chEBIIdentifier.getConsecutiveNumber()));
+        this.queryMap.put("dimensions", String.valueOf(imageWidth));
     }
 
     public void saveImageToFile(String filePath) {
-        File downloadedFile = new File(filePath);
+        File file = new File(filePath);
         try {
-            Files.copy(this.imageStream, downloadedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(this.getFetchResult(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UncheckedIOException("The image could not be written to \""+ filePath +"\"", e);
         }
-        System.out.println("the file details after call: " + downloadedFile.getAbsolutePath() + ", size is "
-                + downloadedFile.length());
-    }
-
-    public InputStream getImageStream() {
-        return this.imageStream;
     }
 
     @Override
-    public List<Object> parseObjects() {
-        return null;
+    public InputStream parse() {
+        this.fetchWithQuery(this.queryMap);
+        return this.getFetchResult();
     }
-
-
 }

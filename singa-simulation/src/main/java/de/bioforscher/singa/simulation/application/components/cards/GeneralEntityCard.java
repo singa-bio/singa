@@ -81,8 +81,7 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity<?>> extends Gri
 
     private Image retrieveImage(Identifier identifier) {
         ChEBIImageService imageService = new ChEBIImageService(identifier.toString());
-        imageService.fetchResource();
-        return new Image(imageService.getImageStream());
+        return new Image(imageService.parse());
     }
 
     private void configurePrimaryName(String primaryName) {

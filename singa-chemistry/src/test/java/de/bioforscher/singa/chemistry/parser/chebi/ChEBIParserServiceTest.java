@@ -1,9 +1,6 @@
-package de.bioforscher.singa.chemistry.parser;
+package de.bioforscher.singa.chemistry.parser.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIImageService;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBISearchService;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author cl
  */
-public class SpeciesParserTest {
+public class ChEBIParserServiceTest {
 
     @Test
     public void shouldParseMethanolFromChEBIOnline() {
@@ -39,7 +36,8 @@ public class SpeciesParserTest {
     @Test
     public void shouldFetchImageForMethanolFromChEBIDatabase() throws IOException {
         ChEBIImageService service = new ChEBIImageService("CHEBI:17790");
-        service.fetchResource();
-        assertTrue(service.getImageStream() != null);
+        assertTrue(service.parse() != null);
+        
     }
+
 }

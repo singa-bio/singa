@@ -51,8 +51,7 @@ public class ChEBISearchService {
     }
 
     private Species convertLiteEntityToSpecies(LiteEntity lightEntity) {
-        ChEBIParserService chebiService = new ChEBIParserService();
-        chebiService.setResource(lightEntity.getChebiId());
+        ChEBIParserService chebiService = new ChEBIParserService(lightEntity.getChebiId());
         return chebiService.fetchSpecies();
     }
 

@@ -1,12 +1,11 @@
 package de.bioforscher.singa.core.parser.xml;
 
-import de.bioforscher.singa.core.parser.AbstractParser;
-import de.bioforscher.singa.core.parser.Parser;
+import de.bioforscher.singa.core.parser.rest.AbstractHTMLParser;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public abstract class AbstractXMLParser extends AbstractParser<String> implements Parser {
+public abstract class AbstractXMLParser<ResultType> extends AbstractHTMLParser<ResultType> {
 
     private XMLReader xmlReader;
 

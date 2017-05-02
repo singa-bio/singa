@@ -43,8 +43,7 @@ public class ChemicalEntityCard extends GridPane {
     private void configureImageView() {
         if (this.chemicalEntity.getIdentifier() instanceof ChEBIIdentifier) {
             ChEBIImageService imageService = new ChEBIImageService(this.chemicalEntity.getIdentifier().toString());
-            imageService.fetchResource();
-            Image imageRepresentation = new Image(imageService.getImageStream());
+            Image imageRepresentation = new Image(imageService.parse());
             this.speciesImage = new ImageView(imageRepresentation);
         } else {
             this.speciesImage = new ImageView();

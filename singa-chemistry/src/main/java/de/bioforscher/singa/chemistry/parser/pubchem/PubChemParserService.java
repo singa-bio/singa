@@ -5,11 +5,8 @@ import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class PubChemParserService extends AbstractXMLParser {
-
+public class PubChemParserService extends AbstractXMLParser<Species> {
 
     public PubChemParserService(String filePath) {
         getXmlReader().setContentHandler(new PubChemContentHandler());
@@ -17,28 +14,12 @@ public class PubChemParserService extends AbstractXMLParser {
     }
 
     @Override
-    public void fetchResource() {
+    public Species parse() {
         try {
             this.getXmlReader().parse(getResource());
         } catch (IOException | SAXException e) {
             e.printStackTrace();
         }
+        return ((PubChemContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
     }
-
-    @Override
-    public List<Object> parseObjects() {
-
-        List<Object> list = new ArrayList<>();
-        Species species = ((PubChemContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
-        list.add(species);
-
-        return list;
-    }
-
-    public Species fetchSpecies() {
-        fetchResource();
-        List<Object> list = parseObjects();
-        return (Species) list.get(0);
-    }
-
 }

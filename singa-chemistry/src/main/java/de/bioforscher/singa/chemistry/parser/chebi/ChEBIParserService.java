@@ -2,29 +2,26 @@ package de.bioforscher.singa.chemistry.parser.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.Species;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.parser.AbstractParser;
-import de.bioforscher.singa.core.parser.FetchResultContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.chebi.webapps.chebiWS.client.ChebiWebServiceClient;
 import uk.ac.ebi.chebi.webapps.chebiWS.model.Entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-public class ChEBIParserService extends AbstractParser<Entity> {
+public class ChEBIParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChEBIParserService.class);
 
     private String primaryIdentifier;
+    private String chebiIdentifier;
 
-    public ChEBIParserService(String chebiIdentifier) {
-        setResource(chebiIdentifier);
-    }
+    private Entity entity;
 
     public ChEBIParserService() {
 
+    }
+
+    public ChEBIParserService(String chebiIdentifier) {
+        this.chebiIdentifier = chebiIdentifier;
     }
 
     public static Species parse(String chebiIdentifier) {
@@ -38,42 +35,35 @@ public class ChEBIParserService extends AbstractParser<Entity> {
         return parser.fetchSpecies();
     }
 
-    @Override
-    public void fetchResource() {
+    public void fetch() {
         ChebiWebServiceClient client = new ChebiWebServiceClient();
-        logger.debug("Fetching information {} from ChEBI using the ChEBIWebServiceClient.", this.getResource());
+        logger.debug("Fetching information {} from ChEBI using the ChEBIWebServiceClient.", this.chebiIdentifier);
         try {
-            Entity entity = client.getCompleteEntity(getResource());
-            setFetchResult(new FetchResultContainer<>(entity));
+            this.entity = client.getCompleteEntity(this.chebiIdentifier);
         } catch (Exception e) {
-            logger.warn("Can not reach Chemical Entities of Biological Interest (ChEBI) Database. Species {} can not be fetched.", this.getResource());
+            logger.warn("Can not reach Chemical Entities of Biological Interest (ChEBI) Database. Species {} can not be fetched.", this.chebiIdentifier);
             e.printStackTrace();
         }
     }
 
-    @Override
-    public List<Object> parseObjects() {
-        List<Object> list = new ArrayList<>();
-        Entity entity = getFetchResult().getContent();
-        logger.debug("Creating {} from retrieved information ... ", entity.getChebiAsciiName());
+    public Species parse() {
+        logger.debug("Creating {} from retrieved information ... ", this.entity.getChebiAsciiName());
         Species species;
         if (this.primaryIdentifier == null) {
-            species = new Species.Builder(entity.getChebiId())
-                    .name(entity.getChebiAsciiName())
-                    .molarMass(handleWeight(entity.getMass()))
-                    .smilesRepresentation(entity.getSmiles())
+            species = new Species.Builder(this.entity.getChebiId())
+                    .name(this.entity.getChebiAsciiName())
+                    .molarMass(handleWeight(this.entity.getMass()))
+                    .smilesRepresentation(this.entity.getSmiles())
                     .build();
         } else {
             species = new Species.Builder(this.primaryIdentifier)
-                    .additionalIdentifier(new ChEBIIdentifier(entity.getChebiId()))
-                    .name(entity.getChebiAsciiName())
-                    .molarMass(handleWeight(entity.getMass()))
-                    .smilesRepresentation(entity.getSmiles())
+                    .additionalIdentifier(new ChEBIIdentifier(this.entity.getChebiId()))
+                    .name(this.entity.getChebiAsciiName())
+                    .molarMass(handleWeight(this.entity.getMass()))
+                    .smilesRepresentation(this.entity.getSmiles())
                     .build();
-
         }
-        list.add(species);
-        return list;
+        return species;
     }
 
     private double handleWeight(String massAsString) {
@@ -84,8 +74,8 @@ public class ChEBIParserService extends AbstractParser<Entity> {
     }
 
     public Species fetchSpecies() {
-        fetchResource();
-        return (Species) parseObjects().get(0);
+        fetch();
+        return parse();
     }
 
 }

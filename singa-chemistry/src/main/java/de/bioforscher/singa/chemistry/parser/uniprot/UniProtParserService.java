@@ -2,27 +2,19 @@ package de.bioforscher.singa.chemistry.parser.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.Protein;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
-import de.bioforscher.singa.core.parser.FetchResultContainer;
 import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.io.UncheckedIOException;
 
 /**
  * @author cl
  */
-public class UniProtParserService extends AbstractXMLParser {
+public class UniProtParserService extends AbstractXMLParser<Protein> {
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
 
@@ -42,12 +34,12 @@ public class UniProtParserService extends AbstractXMLParser {
 
     public static Protein parse(String uniProtIdentifier) {
         UniProtParserService parser = new UniProtParserService(uniProtIdentifier);
-        return parser.fetchProtein();
+        return parser.parse();
     }
 
     public static Protein parse(String uniProtIdentifier, String primaryIdentifier) {
         UniProtParserService parser = new UniProtParserService(uniProtIdentifier, primaryIdentifier);
-        return parser.fetchProtein();
+        return parser.parse();
     }
 
     public void setIdentifier(UniProtIdentifier identifier) {
@@ -55,35 +47,19 @@ public class UniProtParserService extends AbstractXMLParser {
     }
 
     @Override
-    public void fetchResource() {
+    public Protein parse() {
         // create client and target
-        Client client = ClientBuilder.newClient();
-        WebTarget targetResource = client.target(getResource());
-        WebTarget query = targetResource.path(this.identifier.toString() + ".xml");
-        // build request
-        Invocation.Builder invocationBuilder = query.request(MediaType.TEXT_PLAIN);
-        logger.info("Waiting for response.");
-        // get response
-        Response response = invocationBuilder.get();
-        // set result
-        setFetchResult(new FetchResultContainer<>(response.readEntity(String.class)));
+        fetchResource(this.identifier.toString() + ".xml");
         // parse xml
         try {
-            this.getXmlReader()
-                .parse(new InputSource(new ByteArrayInputStream(getFetchResult().getContent().getBytes("utf-8"))));
-        } catch (IOException | SAXException e) {
+            this.getXmlReader().parse(new InputSource(getFetchResult()));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
+        } catch (SAXException e) {
             e.printStackTrace();
         }
-    }
-
-    public Protein fetchProtein() {
-        fetchResource();
+        // return parsing result
         return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getChemicalSpecies();
-    }
-
-    @Override
-    public List<Object> parseObjects() {
-        return null;
     }
 
 }

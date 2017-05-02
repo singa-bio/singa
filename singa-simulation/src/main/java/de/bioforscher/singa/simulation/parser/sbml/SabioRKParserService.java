@@ -1,35 +1,31 @@
 package de.bioforscher.singa.simulation.parser.sbml;
 
-import de.bioforscher.singa.core.parser.rest.AbstractRESTParser;
+import de.bioforscher.singa.core.parser.rest.AbstractHTMLParser;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class SabioRKParserService extends AbstractRESTParser {
+public class SabioRKParserService extends AbstractHTMLParser<List<DynamicReaction>> {
+
+    private Map<String, String> queryMap;
 
     public SabioRKParserService(String entryID) {
         setResource("http://sabiork.h-its.org/sabioRestWebServices/searchKineticLaws/sbml");
-        HashMap<String, String> queryMap = new HashMap<>();
-        queryMap.put("q", entryID);
-        setQueryMap(queryMap);
+        this.queryMap = new HashMap<>();
+        this.queryMap.put("q", entryID);
     }
-
 
     @Override
-    public List<Object> parseObjects() {
-        return null;
-    }
-
-    public List<DynamicReaction> fetchReaction() {
-        fetchResource();
-        InputStream inputStream = new ByteArrayInputStream(getFetchResult().getContent().getBytes(StandardCharsets.UTF_8));
-        SBMLParser parser = new SBMLParser(inputStream);
+    public List<DynamicReaction> parse() {
+        this.fetchWithQuery(this.queryMap);
+        SBMLParser parser = new SBMLParser(getFetchResult());
         parser.parse();
         return parser.getReactions();
     }
+
+
+
 
 }

@@ -11,10 +11,10 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameterExamples;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameterExamples;
 import de.bioforscher.singa.units.UnitProvider;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
@@ -45,16 +45,9 @@ public class ReactionsTest {
         AutomatonGraph graph = prepareGraph();
 
         // Species
-        ChEBIParserService service = new ChEBIParserService();
-
-        service.setResource("CHEBI:18105");
-        Species fp = service.fetchSpecies();
-
-        service.setResource("CHEBI:16108");
-        Species gp = service.fetchSpecies();
-
-        service.setResource("CHEBI:17378");
-        Species ga = service.fetchSpecies();
+        Species fp = ChEBIParserService.parse("CHEBI:18105");
+        Species gp = ChEBIParserService.parse("CHEBI:16108");
+        Species ga = ChEBIParserService.parse("CHEBI:17378");
 
         // Enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
@@ -174,16 +167,11 @@ public class ReactionsTest {
         ChEBIParserService chebiService = new ChEBIParserService();
 
         // dinitrogen pentaoxide
-        chebiService.setResource("CHEBI:29802");
-        Species dpo = chebiService.fetchSpecies();
-
+        Species dpo = ChEBIParserService.parse("CHEBI:29802");
         // nitrogen dioxide
-        chebiService.setResource("CHEBI:33101");
-        Species ndo = chebiService.fetchSpecies();
-
+        Species ndo = ChEBIParserService.parse("CHEBI:33101");
         // dioxigen
-        chebiService.setResource("CHEBI:15379");
-        Species oxygen = chebiService.fetchSpecies();
+        Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (BioNode node : graph.getNodes()) {
             node.setConcentration(dpo, 0.020);

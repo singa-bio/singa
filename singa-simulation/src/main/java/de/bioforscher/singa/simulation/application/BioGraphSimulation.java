@@ -347,7 +347,7 @@ public class BioGraphSimulation extends Application {
         File file = fileChooser.showOpenDialog(this.stage);
         if (file != null) {
             GraphMLParserService parserService = new GraphMLParserService(file.getPath());
-            AutomatonGraph graph = parserService.fetchGraph();
+            AutomatonGraph graph = parserService.parse();
             resetGraph(graph);
         }
     }
