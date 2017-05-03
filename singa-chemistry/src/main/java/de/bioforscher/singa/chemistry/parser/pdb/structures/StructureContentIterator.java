@@ -247,7 +247,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                 this.currentChain = this.chainIterator.next();
                 logger.debug("parsing structure {}/{}", this.currentPdbIdentifier, this.currentChain);
             } else {
-                logger.debug("parsing structure {}");
+                logger.debug("parsing structure {}", this.currentPdbIdentifier);
             }
         }
         if (this.location == SourceLocation.OFFLINE) {

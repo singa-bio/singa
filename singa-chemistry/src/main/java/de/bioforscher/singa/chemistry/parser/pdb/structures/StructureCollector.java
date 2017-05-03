@@ -7,8 +7,10 @@ import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
+import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leafes.AtomContainer;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
@@ -130,7 +132,6 @@ public class StructureCollector {
     }
 
     private Structure collectStructure() {
-        logger.debug("Collecting content from {} PDB lines", this.pdbLines.size());
         collectAtomInformation();
         createContentTree();
 
@@ -154,12 +155,14 @@ public class StructureCollector {
             }
             structure.addSubstructure(model);
         }
-        structure.getAllChains().forEach(Chain::connectChainBackbone);
+        if (this.reducer.options.isCreatingEdges()) {
+            structure.getAllChains().forEach(Chain::connectChainBackbone);
+        }
         return structure;
     }
 
     private void collectAtomInformation() {
-        logger.debug("collecting information about atoms from {} PDB lines", this.pdbLines.size());
+        logger.debug("collecting information from {} PDB lines", this.pdbLines.size());
         for (String currentLine : this.pdbLines) {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
@@ -205,7 +208,11 @@ public class StructureCollector {
             NucleotideFamily family = NucleotideFamily.getNucleotideByThreeLetterCode(leafName).get();
             return createNucleotide(leafIdentifier, family, atoms);
         }
-        return createLeafWithAdditionalInformation(leafIdentifier, leafName, atoms);
+        if (this.reducer.options.isRetrievingLigandInformation()) {
+            return createLeafWithAdditionalInformation(leafIdentifier, leafName, atoms);
+        } else {
+            return createLeafWithoutAdditionalInformation(leafIdentifier, leafName, atoms);
+        }
     }
 
     private boolean isPlainAminoAcid(String leafName) {
@@ -217,11 +224,17 @@ public class StructureCollector {
     }
 
     private AminoAcid createAminoAcid(LeafIdentifier identifier, AminoAcidFamily family, Map<String, Atom> atoms) {
-        return LeafFactory.createAminoAcidFromAtoms(identifier, family, atoms);
+        return LeafFactory.createAminoAcidFromAtoms(identifier, family, atoms, this.reducer.options);
     }
 
     private Nucleotide createNucleotide(LeafIdentifier identifier, NucleotideFamily family, Map<String, Atom> atoms) {
-        return LeafFactory.createNucleotideFromAtoms(identifier, family, atoms);
+        return LeafFactory.createNucleotideFromAtoms(identifier, family, atoms, this.reducer.options);
+    }
+
+    private LeafSubstructure<?, ?> createLeafWithoutAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {
+        LeafSubstructure<?, ?> substructure = new AtomContainer<>(identifier, new LigandFamily("?", leafName));
+        atoms.values().forEach(substructure::addNode);
+        return substructure;
     }
 
     private LeafSubstructure<?, ?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {

@@ -227,6 +227,11 @@ public class StructureParser {
             this.selector = selector;
         }
 
+        public SingleParser setOptions(StructureParserOptions options) {
+            this.selector.options = options;
+            return this;
+        }
+
         public Structure parse() throws StructureParserException {
             return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
         }
@@ -254,6 +259,11 @@ public class StructureParser {
 
         public String getCurrentChainIdentifier() {
             return this.selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+        }
+
+        public MultiParser setOptions(StructureParserOptions options) {
+            this.selector.options = options;
+            return this;
         }
 
         public List<Structure> parse() {
@@ -386,6 +396,8 @@ public class StructureParser {
         boolean allModels;
         boolean allChains;
         boolean parseMapping = false;
+
+        StructureParserOptions options = new StructureParserOptions();
 
         /**
          * signifies that models should be reduced in any way
