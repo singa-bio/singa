@@ -37,7 +37,6 @@ public class ChEBIParserServiceTest {
     public void shouldFetchImageForMethanolFromChEBIDatabase() throws IOException {
         ChEBIImageService service = new ChEBIImageService("CHEBI:17790");
         assertTrue(service.parse() != null);
-        
     }
 
 }

@@ -22,7 +22,7 @@ public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
     }
 
     private ChEBIImageService(ChEBIIdentifier chEBIIdentifier, int imageWidth) {
-        setResource("http://www.ebi.ac.uk/chebi/displayImage.do;jsessionid=test");
+        setResource("http://www.ebi.ac.uk/chebi/displayImage.do?");
         this.queryMap = new HashMap<>();
         this.queryMap.put("defaultImage", "true");
         this.queryMap.put("imageIndex", "0");
@@ -44,4 +44,5 @@ public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
         this.fetchWithQuery(this.queryMap);
         return this.getFetchResult();
     }
+
 }

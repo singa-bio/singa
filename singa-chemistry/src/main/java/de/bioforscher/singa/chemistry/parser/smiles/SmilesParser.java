@@ -465,7 +465,6 @@ public class SmilesParser {
             return true;
         }
         return false;
-
     }
 
     private boolean parseAromaticSeleniumAndArsenic() {

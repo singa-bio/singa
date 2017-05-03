@@ -11,7 +11,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-core" />
-    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="module" module-name="singa-chemistry" />
     <orderEntry type="module" module-name="singa-units" />
     <orderEntry type="library" name="Maven: tec.units:unit-ri:1.0" level="project" />

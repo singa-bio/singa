@@ -65,12 +65,12 @@ public class GeneralEntityCard<EntityType extends ChemicalEntity<?>> extends Gri
     }
 
     private void configureImageView() {
-        if (this.chemicalEntity.getIdentifier() instanceof ChEBIIdentifier) {
+        if (ChEBIIdentifier.PATTERN.matcher(this.chemicalEntity.getIdentifier().toString()).matches()) {
             this.imageView = new ImageView(retrieveImage(this.chemicalEntity.getIdentifier()));
             return;
         } else {
             for (Identifier identifier : this.chemicalEntity.getAdditionalIdentifiers()) {
-                if (identifier instanceof ChEBIIdentifier) {
+                if (ChEBIIdentifier.PATTERN.matcher(identifier.toString()).matches()) {
                     this.imageView = new ImageView(retrieveImage(identifier));
                     return;
                 }

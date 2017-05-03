@@ -4,10 +4,8 @@ import de.bioforscher.singa.core.parser.AbstractParser;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,12 +18,7 @@ public abstract class AbstractHTMLParser<ResultType> extends AbstractParser<Resu
 
     public void fetchResource(String resource) {
         // encode string to utf and connect to resource
-        String urlString;
-        try {
-            urlString = getResource() + URLEncoder.encode(resource, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException("Could not encode query \""+ resource+"\"", e);
-        }
+        String urlString = getResource() + resource;
         // open url and fetch result
         try {
             URL url = new URL(urlString);
