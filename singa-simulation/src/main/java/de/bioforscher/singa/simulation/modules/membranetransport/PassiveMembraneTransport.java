@@ -85,6 +85,8 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         // this method is only called for membrane nodes
         // determine scaling factor for membrane association
         final double membraneFactor = 1.0/Math.pow(10, getOctanolWaterCoefficient(entity));
+        // TODO split membrane compartment in two compartments (outer and inner)
+
         // (l)-(c)-(r)
         // D*sum(c(Neighbour)) - D*#neighbours*c(this)
         // M*sum(c(NM-Neighbor))
