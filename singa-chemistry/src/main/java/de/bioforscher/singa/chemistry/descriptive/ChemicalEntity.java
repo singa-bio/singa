@@ -2,18 +2,23 @@ package de.bioforscher.singa.chemistry.descriptive;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
+import de.bioforscher.singa.chemistry.descriptive.features.Feature;
+import de.bioforscher.singa.chemistry.descriptive.features.FeatureKind;
+import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
-import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.units.UnitProvider;
 import de.bioforscher.singa.units.quantities.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
 
@@ -29,7 +34,7 @@ import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
  * SMILES</a>
  */
 public abstract class ChemicalEntity<IdentifierType extends Identifier> implements Identifiable<IdentifierType>,
-        Nameable, Annotatable {
+        Nameable, Annotatable, Featureable {
 
     /**
      * The distinct {@link Identifier} by which this entity is identified.
@@ -51,6 +56,8 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
      */
     private List<Annotation> annotations;
 
+    private Map<FeatureKind, Feature<?>> features;
+
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
      *
@@ -59,6 +66,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     protected ChemicalEntity(IdentifierType identifier) {
         this.identifier = identifier;
         this.annotations = new ArrayList<>();
+        this.features = new HashMap<>();
     }
 
     @Override
@@ -139,6 +147,26 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     @Override
+    public Feature<?> getFeature(FeatureKind kind) {
+        return this.features.get(kind);
+    }
+
+    @Override
+    public void assignFeature(Feature<?> feature) {
+        this.features.put(feature.getKind(), feature);
+    }
+
+    @Override
+    public void assignFeature(FeatureKind featureKind) {
+        featureKind.getProvider().annotate(this);
+    }
+
+    @Override
+    public boolean hasFeature(FeatureKind kind) {
+        return this.features.containsKey(kind);
+    }
+
+    @Override
     public String toString() {
         return "ChemicalEntity{" +
                 "identifier=" + this.identifier +
@@ -159,7 +187,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return this.identifier != null ? this.identifier.hashCode() : 0;
     }
 
-    public static abstract class Builder<TopLevelType extends ChemicalEntity, BuilderType extends Builder, IdentifierType extends Identifier> {
+    public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {
 
         TopLevelType topLevelObject;
         BuilderType builderObject;
@@ -180,11 +208,14 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
         public BuilderType molarMass(Quantity<MolarMass> molarMass) {
             this.topLevelObject.setMolarMass(molarMass);
+            this.topLevelObject.assignFeature(new Feature<>(FeatureKind.MOLAR_MASS, molarMass));
             return this.builderObject;
         }
 
         public BuilderType molarMass(double molarMass) {
-            this.topLevelObject.setMolarMass(molarMass);
+            final Quantity<MolarMass> quantity = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
+            this.topLevelObject.setMolarMass(quantity);
+            this.topLevelObject.assignFeature(new Feature<>(FeatureKind.MOLAR_MASS, quantity));
             return this.builderObject;
         }
 
