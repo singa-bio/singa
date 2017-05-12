@@ -519,6 +519,7 @@ public class ConsensusAlignment {
         // initially append first label
         distanceMatrixLabels.add(this.inputStructures.get(0));
 
+        int alignmentCounter = 0;
         for (int i = 0; i < this.inputStructures.size() - 1; i++) {
 
             for (int j = i + 1; j < this.inputStructures.size(); j++) {
@@ -540,6 +541,11 @@ public class ConsensusAlignment {
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();
                 temporaryDistanceMatrix[j][i] = superimposition.getRmsd();
 
+                alignmentCounter++;
+                if (alignmentCounter % 1000 == 0) {
+                    logger.info("computed {} of {} initial alignments ", alignmentCounter, this.inputStructures.size() *
+                            ((this.inputStructures.size() - 1) / 2));
+                }
             }
             // store label
             distanceMatrixLabels.add(this.inputStructures.get(i + 1));
