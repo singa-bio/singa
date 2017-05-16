@@ -20,6 +20,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 public class Structure {
 
     private String pdbIdentifier;
+    private String title;
 
     /**
      * The branchSubstructures of the graph.
@@ -110,5 +111,13 @@ public class Structure {
 
     public void setPdbIdentifier(String pdbID) {
         this.pdbIdentifier = pdbID;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

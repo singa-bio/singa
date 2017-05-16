@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.Loca
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Test;
 
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -127,4 +128,14 @@ public class StructureParserTest {
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
     }
+
+    @Test(expected = UncheckedIOException.class)
+    public void shouldThrowErrorWhenFileDoesNotExist() {
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("schalalala")
+                .everything()
+                .parse();
+    }
+
+
 }

@@ -27,9 +27,9 @@ import java.util.*;
 public class StructureCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureCollector.class);
-    private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
 
     private String currentPDB = "0000";
+    private StringBuilder titleBuilder = new StringBuilder();
     private int currentModel = 0;
 
     private Map<UniqueAtomIdentifer, Atom> atoms;
@@ -62,9 +62,10 @@ public class StructureCollector {
     private void reduceLines() throws StructureParserException {
         String firstLine = this.pdbLines.get(0);
         // parse meta information
-        if (TitleToken.RECORD_PATTERN.matcher(firstLine).matches()) {
-            this.currentPDB = TitleToken.ID_CODE.extract(firstLine);
+        if (HeaderToken.RECORD_PATTERN.matcher(firstLine).matches()) {
+            this.currentPDB = HeaderToken.ID_CODE.extract(firstLine);
         }
+        getTitle();
         if (this.reducer.parseMapping) {
             this.reducer.updatePdbIdentifer();
             this.reducer.updateChainIdentifier();
@@ -80,6 +81,27 @@ public class StructureCollector {
                 // parse only specific chain
                 // reduce lines to specific chain
                 reduceToChain(this.reducer.chainIdentifier);
+            }
+        }
+    }
+
+    private void getTitle() {
+        boolean titleFound = false;
+        for (String currentLine : this.pdbLines) {
+            // check if title line
+            if (TitleToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                // if this is the first time such a line occurs, the title was found
+                if (!titleFound) {
+                    titleFound = true;
+                }
+                // append title
+                this.titleBuilder.append(TitleToken.TEXT.extract(currentLine));
+            } else {
+                // if title has been found and a line with another content is found
+                if (titleFound) {
+                    // quit parsing title
+                    return;
+                }
             }
         }
     }
@@ -137,6 +159,7 @@ public class StructureCollector {
 
         Structure structure = new Structure();
         structure.setPdbIdentifier(this.contentTree.getIdentifier());
+        structure.setTitle(this.titleBuilder.toString());
 
         logger.debug("creating structure");
         int chainGraphId = 0;

@@ -267,7 +267,8 @@ class StructureContentIterator implements Iterator<List<String>> {
             try {
                 return fetchLines(this.currentURL.next().openStream());
             } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for URL.", e);
+                throw new UncheckedIOException("Could not open input stream for URL. The PDBID \""
+                        + this.currentPdbIdentifier + "\" does not seem to exist", e);
             } finally {
                 this.progressCounter++;
             }

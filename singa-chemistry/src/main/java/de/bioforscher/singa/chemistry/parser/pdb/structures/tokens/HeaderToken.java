@@ -7,15 +7,16 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public enum TitleToken implements PDBToken {
+public enum HeaderToken implements PDBToken {
 
-    CONTINUATION(Range.of(9, 10)),
-    TEXT(Range.of(11, 80));
+    CLASSIFICATION(Range.of(11,50)),
+    DEPOSITION_DATE(Range.of(51, 59)),
+    ID_CODE(Range.of(63,66));
 
-    public static final Pattern RECORD_PATTERN = Pattern.compile("^TITLE.*");
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^HEADER.*");
     private final Range<Integer> columns;
 
-    TitleToken(Range<Integer> columns) {
+    HeaderToken(Range<Integer> columns) {
         this.columns = columns;
     }
 
@@ -28,6 +29,4 @@ public enum TitleToken implements PDBToken {
     public Range<Integer> getColumns() {
         return this.columns;
     }
-
-
 }
