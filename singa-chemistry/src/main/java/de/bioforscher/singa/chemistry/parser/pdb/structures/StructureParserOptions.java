@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 /**
  * Options for faster or more detailed parsing.
+ *
  * @author cl
  */
 public class StructureParserOptions {
@@ -25,6 +26,16 @@ public class StructureParserOptions {
      * Omits all hydrogen (and eventually deuterium) atoms. Those atoms are not added to the resulting residue.
      */
     private boolean omitHydrogens = false;
+
+    /**
+     * Uses the filename as the title of the parsed structure.
+     */
+    private boolean inferTitleFromFileName = false;
+
+    /**
+     * Tries to find a pdbid in the file name and uses it as the identifier of the structure.
+     */
+    private boolean inferIdentifierFromFileName = false;
 
     /**
      * Setting this option true will connect the molecule with bonds. Turning the option {@code false} will result in
@@ -110,9 +121,49 @@ public class StructureParserOptions {
      * nucleotides.
      * Default value: {@code false}
      *
-     * @param omitHydrogens
+     * @param omitHydrogens {@code true} to turn this option on, {@code false} to turn it off.
      */
     public void omitHydrogens(boolean omitHydrogens) {
         this.omitHydrogens = omitHydrogens;
+    }
+
+    /**
+     * Setting this option to {@code true} will set the title of the structure to the file name.
+     * Default value: {@code false}
+     *
+     * @return {@code true} to turn this option on, {@code false} to turn it off.
+     */
+    public boolean isInferringTitleFromFileName() {
+        return this.inferTitleFromFileName;
+    }
+
+    /**
+     * Setting this option to {@code true} will set the title of the structure to the file name.
+     * Default value: {@code false}
+     *
+     * @param inferTitleFromFileName {@code true} to turn this option on, {@code false} to turn it off.
+     */
+    public void inferTitleFromFileName(boolean inferTitleFromFileName) {
+        this.inferTitleFromFileName = inferTitleFromFileName;
+    }
+
+    /**
+     * Setting this option to {@code true} will try parse any pdb identifier from the file name.
+     * Default value: {@code false}
+     *
+     * @return {@code true} to turn this option on, {@code false} to turn it off.
+     */
+    public boolean isInferringIdentifierFromFileName() {
+        return this.inferIdentifierFromFileName;
+    }
+
+    /**
+     * Setting this option to {@code true} will try parse any pdb identifier from the file name.
+     * Default value: {@code false}
+     *
+     * @param inferIdentifierFromFileName {@code true} to turn this option on, {@code false} to turn it off.
+     */
+    public void inferIdentifierFromFileName(boolean inferIdentifierFromFileName) {
+        this.inferIdentifierFromFileName = inferIdentifierFromFileName;
     }
 }

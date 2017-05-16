@@ -16,6 +16,7 @@ import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.chemistry.physical.model.UniqueAtomIdentifer;
+import de.bioforscher.singa.core.identifier.PDBIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +63,16 @@ public class StructureCollector {
     private void reduceLines() throws StructureParserException {
         String firstLine = this.pdbLines.get(0);
         // parse meta information
-        if (HeaderToken.RECORD_PATTERN.matcher(firstLine).matches()) {
-            this.currentPDB = HeaderToken.ID_CODE.extract(firstLine);
+        if (this.reducer.options.isInferringIdentifierFromFileName()) {
+            String currentSource = this.reducer.sourceSelector.contentIterator.getCurrentSource();
+            String identifier = PDBIdentifier.extractFirst(currentSource);
+            if (identifier != null) {
+                this.currentPDB = identifier;
+            }
+        } else {
+            if (HeaderToken.RECORD_PATTERN.matcher(firstLine).matches()) {
+                this.currentPDB = HeaderToken.ID_CODE.extract(firstLine);
+            }
         }
         getTitle();
         if (this.reducer.parseMapping) {
@@ -86,21 +95,25 @@ public class StructureCollector {
     }
 
     private void getTitle() {
-        boolean titleFound = false;
-        for (String currentLine : this.pdbLines) {
-            // check if title line
-            if (TitleToken.RECORD_PATTERN.matcher(currentLine).matches()) {
-                // if this is the first time such a line occurs, the title was found
-                if (!titleFound) {
-                    titleFound = true;
-                }
-                // append title
-                this.titleBuilder.append(TitleToken.TEXT.extract(currentLine));
-            } else {
-                // if title has been found and a line with another content is found
-                if (titleFound) {
-                    // quit parsing title
-                    return;
+        if (this.reducer.options.isInferringTitleFromFileName()) {
+            this.titleBuilder.append(this.reducer.sourceSelector.contentIterator.getCurrentSource());
+        } else {
+            boolean titleFound = false;
+            for (String currentLine : this.pdbLines) {
+                // check if title line
+                if (TitleToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                    // if this is the first time such a line occurs, the title was found
+                    if (!titleFound) {
+                        titleFound = true;
+                    }
+                    // append title
+                    this.titleBuilder.append(TitleToken.TEXT.extract(currentLine));
+                } else {
+                    // if title has been found and a line with another content is found
+                    if (titleFound) {
+                        // quit parsing title
+                        return;
+                    }
                 }
             }
         }

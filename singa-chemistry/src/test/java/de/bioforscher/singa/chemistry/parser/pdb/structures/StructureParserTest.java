@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class StructureParserTest {
@@ -119,6 +120,21 @@ public class StructureParserTest {
     public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
         LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
+    }
+
+    @Test
+    public void shouldAssignInformationFromFileName() {
+        StructureParserOptions options = new StructureParserOptions();
+        options.inferTitleFromFileName(true);
+        options.inferIdentifierFromFileName(true);
+        Structure structure = StructureParser.local()
+                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
+                .everything()
+                .setOptions(options)
+                .parse();
+
+        assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
+        assertEquals("1GL0", structure.getPdbIdentifier());
     }
 
     @Test
