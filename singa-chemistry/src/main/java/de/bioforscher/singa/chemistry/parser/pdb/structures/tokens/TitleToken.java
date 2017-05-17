@@ -29,5 +29,15 @@ public enum TitleToken implements PDBToken {
         return this.columns;
     }
 
+    @Override
+    public String extract(String line) {
+        if (line.length() >= this.getColumns().getUpperBound()) {
+            return line.substring(
+                    this.getColumns().getLowerBound() - 1, this.getColumns().getUpperBound());
+        } else {
+            return "";
+        }
+    }
+
 
 }
