@@ -110,12 +110,13 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern(STRING_REPRESENTATION_DECIMAL_FORMAT);
-        for (int i = 0; i < getElements().length; i++) {
+        double[][] elements = getElements();
+        for (int i = 0; i < elements.length; i++) {
             StringJoiner columnJoiner = new StringJoiner(",");
             if (!this.rowLabelMap.isEmpty())
                 columnJoiner.add(String.valueOf(getRowLabel(i)));
-            for (int j = 0; j < getElements()[i].length; j++) {
-                columnJoiner.add(df.format(getElements()[i][j]));
+            for (int j = 0; j < elements[i].length; j++) {
+                columnJoiner.add(df.format(elements[i][j]));
             }
             rowJoiner.add(columnJoiner.toString());
         }
