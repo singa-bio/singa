@@ -109,7 +109,7 @@ public class SymmetricMatrixTest {
     }
 
     @Test
-    public void shouldRetrieveLabelsOfSymmetricMatrix(){
+    public void shouldRetrieveLabelsOfSymmetricMatrix() {
         LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
