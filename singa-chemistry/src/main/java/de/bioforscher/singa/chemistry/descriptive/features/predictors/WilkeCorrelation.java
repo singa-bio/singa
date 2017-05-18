@@ -37,8 +37,8 @@ public class WilkeCorrelation extends PredictionDescriptor<Diffusivity> {
     private static final double MOLAR_MASS_OF_WATER = 18.0153;
 
     private WilkeCorrelation() {
-        setMethodName("Wilke Correlation");
-        setMethodPublication("Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
+        setSourceName("Wilke Correlation");
+        setSourcePublication("Wilke, C. R., and Pin Chang. \"Correlation of diffusion coefficients in dilute " +
                 "solutions.\" AIChE Journal 1.2 (1955): 264-270.");
     }
 

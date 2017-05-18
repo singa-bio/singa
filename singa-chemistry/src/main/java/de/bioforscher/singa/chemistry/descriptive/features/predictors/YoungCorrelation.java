@@ -27,8 +27,8 @@ public class YoungCorrelation extends PredictionDescriptor<Diffusivity> {
     private static final Quantity<Dimensionless> YOUNG_COEFFICIENT = Quantities.getQuantity(8.34e-8, ONE);
 
     private YoungCorrelation() {
-        this.setMethodName("Young Correlation");
-        this.setMethodPublication("Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
+        this.setSourceName("Young Correlation");
+        this.setSourcePublication("Young, M. E., P. A. Carroad, and R. L. Bell. \"Estimation of diffusion coefficients " +
                 "of proteins.\" Biotechnology and Bioengineering 22.5 (1980): 947-955.");
     }
 

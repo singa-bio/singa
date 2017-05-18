@@ -166,6 +166,12 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return this.features.containsKey(kind);
     }
 
+    public List<Identifier> getAllIdentifiers() {
+        List<Identifier> identifiers = getAdditionalIdentifiers();
+        identifiers.add(this.identifier);
+        return identifiers;
+    }
+
     @Override
     public String toString() {
         return "ChemicalEntity{" +

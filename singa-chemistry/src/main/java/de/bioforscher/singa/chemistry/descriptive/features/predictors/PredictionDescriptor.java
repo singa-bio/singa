@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.predictors;
 
+import de.bioforscher.singa.chemistry.descriptive.features.FeatureDescriptor;
 import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
-import de.bioforscher.singa.chemistry.descriptive.features.descriptor.FeatureDescriptor;
 import de.bioforscher.singa.units.quantities.DynamicViscosity;
 import tec.units.ri.quantity.Quantities;
 
@@ -17,9 +17,6 @@ import static tec.units.ri.unit.Units.KELVIN;
  */
 public abstract class PredictionDescriptor<FeatureType extends Quantity<FeatureType>> implements FeatureDescriptor {
 
-    protected String methodName;
-    protected String methodPublication;
-
     /**
      * Standard system temperature [temperature] (293 K = 20 C)
      */
@@ -30,22 +27,25 @@ public abstract class PredictionDescriptor<FeatureType extends Quantity<FeatureT
      */
     protected static final Quantity<DynamicViscosity> VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
 
-    protected void setMethodName(String methodName) {
-        this.methodName = methodName;
+    protected String sourceName;
+    protected String sourcePublication;
+
+    protected void setSourceName(String methodName) {
+        this.sourceName = methodName;
     }
 
-    protected void setMethodPublication(String methodPublication) {
-        this.methodPublication = methodPublication;
+    protected void setSourcePublication(String methodPublication) {
+        this.sourcePublication = methodPublication;
     }
 
     @Override
-    public String getMethodName() {
-        return this.methodName;
+    public String getSourceName() {
+        return this.sourceName;
     }
 
     @Override
-    public String getMethodPublication() {
-        return this.methodPublication;
+    public String getSourcePublication() {
+        return this.sourcePublication;
     }
 
     public abstract <FeaturableType extends Featureable> Quantity<FeatureType> calculate(FeaturableType featureable);

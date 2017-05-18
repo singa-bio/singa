@@ -14,8 +14,7 @@ import javax.measure.quantity.Dimensionless;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.FeatureAvailability.ENZYME;
-import static de.bioforscher.singa.chemistry.descriptive.features.FeatureAvailability.SPECIES;
+import static de.bioforscher.singa.chemistry.descriptive.features.FeatureAvailability.*;
 import static de.bioforscher.singa.chemistry.descriptive.features.FeatureKind.DIFFUSIVITY;
 import static de.bioforscher.singa.chemistry.descriptive.features.FeatureKind.MOLAR_MASS;
 import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
@@ -44,8 +43,9 @@ public class DiffusivityFeature extends FeatureProvider<Diffusivity> {
     public static final Quantity<Dimensionless> STDF_CELL_WATER = Quantities.getQuantity(0.27, ONE);
 
     private DiffusivityFeature() {
-        this.setAvailabilities(EnumSet.of(SPECIES, ENZYME));
-        this.setRequirements(Collections.singleton(MOLAR_MASS));
+        setProvidedFeature(DIFFUSIVITY);
+        setRequirements(Collections.singleton(MOLAR_MASS));
+        setAvailabilities(EnumSet.of(SPECIES, PROTEIN, ENZYME));
     }
 
     public static DiffusivityFeature getInstance() {

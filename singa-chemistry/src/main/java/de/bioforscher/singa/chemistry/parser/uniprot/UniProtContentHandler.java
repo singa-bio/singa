@@ -67,29 +67,29 @@ public class UniProtContentHandler implements ContentHandler {
 
     Protein getChemicalSpecies() {
         // create base enzyme
-        Protein enzyme;
+        Protein protein;
         if (this.primaryIdentifier == null) {
-            enzyme = new Protein.Builder(this.identifier.toString())
+            protein = new Protein.Builder(this.identifier.toString())
                     .name(this.recommendedName)
                     .molarMass(this.molarMass)
                     .build();
         } else {
-            enzyme = new Enzyme.Builder(this.primaryIdentifier)
+            protein = new Enzyme.Builder(this.primaryIdentifier)
                     .additionalIdentifier(this.identifier)
                     .name(this.recommendedName)
                     .molarMass(this.molarMass)
                     .build();
         }
         // add organism
-        enzyme.addOrganism(this.sourceOrganism);
+        protein.addOrganism(this.sourceOrganism);
         // add sequence without white spaces
-        enzyme.addAminoAcidSequence(this.aminoAcidSequence.replaceAll("\\s", ""));
+        protein.addAminoAcidSequence(this.aminoAcidSequence.replaceAll("\\s", ""));
         // add additional names
-        this.additionalNames.forEach(enzyme::addAdditionalName);
+        this.additionalNames.forEach(protein::addAdditionalName);
         // add textComments
-        this.textComments.forEach(enzyme::addAnnotation);
+        this.textComments.forEach(protein::addAnnotation);
 
-        return enzyme;
+        return protein;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package de.bioforscher.singa.chemistry.descriptive.features;
 
-import de.bioforscher.singa.chemistry.descriptive.features.descriptor.FeatureDescriptor;
-
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
@@ -113,7 +111,7 @@ public class Feature<QuantityType extends Quantity<QuantityType>> {
         return "Feature{" +
                 "kind=" + this.kind +
                 ", quantity=" + this.quantity +
-                ", method=" + this.descriptor.getMethodName() +
+                ", method=" + this.descriptor.getSourceName() +
                 '}';
     }
 }

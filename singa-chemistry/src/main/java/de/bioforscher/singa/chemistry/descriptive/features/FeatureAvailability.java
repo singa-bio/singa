@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.Protein;
 import de.bioforscher.singa.chemistry.descriptive.Species;
 
 /**
@@ -21,7 +22,13 @@ public enum FeatureAvailability {
     /**
      * {@link Enzyme} as implementation of {@link ChemicalEntity}.
      */
-    ENZYME(Enzyme.class);
+    ENZYME(Enzyme.class),
+
+    /**
+     * {@link Protein} as implementation of {@link ChemicalEntity}.
+     */
+    PROTEIN(Protein.class);
+
     // MEMBRANE,
     // MEMBRANE_PROTEIN();
 

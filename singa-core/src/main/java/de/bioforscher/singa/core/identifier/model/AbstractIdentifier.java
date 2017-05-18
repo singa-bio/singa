@@ -5,10 +5,8 @@ import java.util.regex.Pattern;
 public class AbstractIdentifier implements Identifier {
 
     private final String identifier;
-    private final Pattern pattern;
 
     public AbstractIdentifier(String identifier, Pattern pattern) throws IllegalArgumentException {
-        this.pattern = pattern;
         if (pattern.matcher(identifier).matches()) {
             this.identifier = identifier;
         } else {
@@ -20,11 +18,6 @@ public class AbstractIdentifier implements Identifier {
     @Override
     public String getIdentifier() {
         return this.identifier;
-    }
-
-    @Override
-    public Pattern getPattern() {
-        return this.pattern;
     }
 
     @Override
