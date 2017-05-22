@@ -25,6 +25,72 @@ import java.util.function.Predicate;
  */
 public class StructuralEntityFilter {
 
+    public enum BranchFilterType {
+
+        CHAIN(BranchFilter.isChain()),
+        MODEL(BranchFilter.isModel()),
+        STRUCTURAL_MOTIF(BranchFilter.isStructuralMotif());
+
+        private final Predicate<BranchSubstructure<?>> filter;
+
+        BranchFilterType(Predicate<BranchSubstructure<?>> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<BranchSubstructure<?>> getFilter() {
+            return this.filter;
+        }
+    }
+
+    /**
+     * Simple {@link LeafFilter} representation as functional Enum class.
+     */
+    public enum LeafFilterType {
+
+        AMINO_ACID(LeafFilter.isAminoAcid()),
+        ATOM_CONTAINER(LeafFilter.isAtomContainer()),
+        NUCLEOTIDE(LeafFilter.isNucleotide());
+
+        private final Predicate<LeafSubstructure<?, ?>> filter;
+
+        LeafFilterType(Predicate<LeafSubstructure<?, ?>> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<LeafSubstructure<?, ?>> getFilter() {
+            return this.filter;
+        }
+    }
+
+    /**
+     * Simple {@link AtomFilter} representation as functional Enum class.
+     */
+    public enum AtomFilterType {
+        ALPHA_CARBON(AtomFilter.isAlphaCarbon()),
+        ARBITRARY(AtomFilter.isArbitrary()),
+        BACKBONE(AtomFilter.isBackbone()),
+        BACKBONE_CARBON(AtomFilter.isBackboneCarbon()),
+        BACKBONE_NITROGEN(AtomFilter.isBackboneNitrogen()),
+        BACKBONE_OXYGEN(AtomFilter.isBackboneOxygen()),
+        BETA_CARBON(AtomFilter.isBetaCarbon()),
+        CARBON(AtomFilter.isCarbon()),
+        HYDROGEN(AtomFilter.isHydrogen()),
+        NITROGEN(AtomFilter.isNitrogen()),
+        OXYGEN(AtomFilter.isOxygen()),
+        PHOSPHORUS(AtomFilter.isPhosphorus()),
+        SIDE_CHAIN(AtomFilter.isSideChain());
+
+        private final Predicate<Atom> filter;
+
+        AtomFilterType(Predicate<Atom> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<Atom> getFilter() {
+            return this.filter;
+        }
+    }
+
     /**
      * Filters for {@link BranchSubstructure}s.
      */
@@ -45,7 +111,6 @@ public class StructuralEntityFilter {
         public static Predicate<BranchSubstructure<?>> isStructuralMotif() {
             return branch -> branch instanceof StructuralMotif;
         }
-
     }
 
     /**
@@ -152,7 +217,7 @@ public class StructuralEntityFilter {
             return atom -> Objects.equals(atom.getAtomNameString(), AtomName.P.getName());
         }
 
-        public static Predicate<Atom> isSidechain() {
+        public static Predicate<Atom> isSideChain() {
             return isBackbone().negate();
         }
 

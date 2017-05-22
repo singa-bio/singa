@@ -33,14 +33,14 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         }
         // fallback if no sidechain atoms exist or no alpha carbon is present
         if (leafSubstructure.getAllAtoms().stream()
-                .filter(AtomFilter.isSidechain())
+                .filter(AtomFilter.isSideChain())
                 .count() == 0 || leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isAlphaCarbon())
                 .count() == 0) {
             return determineCentroid(leafSubstructure);
         }
         LabeledSymmetricMatrix<Atom> atomDistanceMatrix = Structures.calculateDistanceMatrix(leafSubstructure.getAllAtoms().stream()
-                .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen()
+                .filter(AtomFilter.isSideChain().and(AtomFilter.isHydrogen()
                         .negate()).or(AtomFilter.isAlphaCarbon()))
                 .collect(Collectors.toList()));
         if (atomDistanceMatrix.getRowDimension() == 1) {
