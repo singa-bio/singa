@@ -75,7 +75,7 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public List<AminoAcid> getAllResidues() {
+    public List<AminoAcid> getAllAminoAcids() {
         return this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getAminoAcids)
                 .flatMap(Collection::stream)

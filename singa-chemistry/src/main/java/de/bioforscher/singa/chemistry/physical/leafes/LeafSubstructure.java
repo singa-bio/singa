@@ -432,6 +432,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     @Override
+    public String toString() {
+        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getThreeLetterCode() + "-" + getIdentifier();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

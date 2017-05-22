@@ -10,8 +10,8 @@ import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
@@ -22,6 +22,8 @@ import java.util.TreeMap;
  * @see AminoAcid
  */
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
+
+    private Set<Integer> consecutiveIdentifier;
 
     /**
      * The chain identifier of this chain.
@@ -36,6 +38,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      */
     public Chain(int graphIdentifier) {
         super(graphIdentifier);
+        this.consecutiveIdentifier = new HashSet<>();
     }
 
     public Chain(Chain chain) {
@@ -121,6 +124,34 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         if (source.containsAtomWithName(AtomName.O3Pr) && target.containsAtomWithName(AtomName.P)) {
             addEdgeBetween(bond, source.getAtomByName(AtomName.O3Pr), target.getAtomByName(AtomName.P));
         }
+    }
+
+    public void addToConsecutivePart(LeafSubstructure<?, ?> leafSubstructure) {
+        this.consecutiveIdentifier.add(leafSubstructure.getIdentifier());
+        this.addSubstructure(leafSubstructure);
+    }
+
+    public List<LeafSubstructure<?, ?>> getConsecutivePart() {
+        return this.consecutiveIdentifier.stream()
+                .map(this::getLeafSubstructure)
+                .collect(Collectors.toList());
+    }
+
+    public List<LeafSubstructure<?, ?>> getNonConsecutivePart() {
+        return this.getLeafSubstructures().stream()
+                .filter(leafSubstructure -> !this.consecutiveIdentifier.contains(leafSubstructure.getIdentifier()))
+                .map(substructure -> (LeafSubstructure<?, ?>) substructure)
+                .collect(Collectors.toList());
+    }
+
+    public List<LeafSubstructure<?, ?>> getLeafSubstructures() {
+        return this.substructures.values().stream()
+                .map(substructure -> (LeafSubstructure<?, ?>) substructure)
+                .collect(Collectors.toList());
+    }
+
+    public LeafSubstructure<?, ?> getLeafSubstructure(int identifier) {
+        return (LeafSubstructure<?, ?>) this.substructures.get(identifier);
     }
 
     /**

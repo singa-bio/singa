@@ -135,18 +135,6 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Return the name of this residue in the format
-     * [Chain pdbIdentifier of the AminoAcid]-[One Letter Code of the AminoAcid][AminoAcid pdbIdentifier]
-     * (e.g. A-D123 or A-M17).
-     *
-     * @return The String representation of this residue.
-     */
-    @Override
-    public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
-    }
-
-    /**
      * Returns a copy of this residue. See {@link this#AminoAcid(AminoAcid)}.
      *
      * @return A copy of this residue.

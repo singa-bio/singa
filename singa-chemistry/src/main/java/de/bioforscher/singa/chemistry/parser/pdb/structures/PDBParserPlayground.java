@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
+import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 
 import java.io.IOException;
@@ -34,8 +35,14 @@ public class PDBParserPlayground {
 
         // they all have the same ligand
         Structure structure = StructureParser.online()
-                .pdbIdentifier("1pqs")
+                .pdbIdentifier("1c0a")
                 .parse();
+
+        Chain first = structure.getAllChains().iterator().next();
+        first.getConsecutivePart().forEach(System.out::println);
+        System.out.println();
+        first.getNonConsecutivePart().forEach(System.out::println);
+
 
     }
 

@@ -35,19 +35,20 @@ public class StructureCollector {
 
     private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<LeafIdentifier, String> leafNames;
+
+    // stuff we need to remember while parsing for further processing
+    // hetatoms need to be distinguishable
     private Set<LeafIdentifier> hetAtoms;
+    // leafes that are not part of the consecutive chain have to be noted
+    private Set<LeafIdentifier> notInConsecutiveChain;
+    private String currentChain;
+    private Set<String> closedChains;
+
 
     private ContentTreeNode contentTree;
 
     private StructureParser.Reducer reducer;
     private List<String> pdbLines;
-
-
-    public StructureCollector() {
-        this.atoms = new HashMap<>();
-        this.leafNames = new TreeMap<>();
-        this.hetAtoms = new HashSet<>();
-    }
 
     public StructureCollector(List<String> pdbLines, StructureParser.Reducer reducer) {
         this.reducer = reducer;
@@ -55,6 +56,8 @@ public class StructureCollector {
         this.atoms = new HashMap<>();
         this.leafNames = new TreeMap<>();
         this.hetAtoms = new HashSet<>();
+        this.notInConsecutiveChain = new HashSet<>();
+        this.closedChains = new HashSet<>();
     }
 
     static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
@@ -165,6 +168,7 @@ public class StructureCollector {
                 // keel lines that indicate models
                 reducedList.add(currentLine);
             }
+            // TODO include chain terminator tokens
         }
         this.pdbLines = reducedList;
     }
@@ -191,7 +195,11 @@ public class StructureCollector {
                     if (this.hetAtoms.contains(leafSubstructure.getLeafIdentifier())) {
                         leafSubstructure.setAnnotatedAsHetAtom(true);
                     }
-                    chain.addSubstructure(leafSubstructure);
+                    if (this.notInConsecutiveChain.contains(leafSubstructure.getLeafIdentifier())) {
+                        chain.addSubstructure(leafSubstructure);
+                    } else {
+                        chain.addToConsecutivePart(leafSubstructure);
+                    }
                 }
                 model.addSubstructure(chain);
             }
@@ -206,16 +214,24 @@ public class StructureCollector {
     private void collectAtomInformation() {
         logger.debug("collecting information from {} PDB lines", this.pdbLines.size());
         for (String currentLine : this.pdbLines) {
-            if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+            String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
+            if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer());
-                if (AtomToken.RECORD_TYPE.extract(currentLine).equals("HETATM")) {
+                this.currentChain = leafIdentifier.getChainIdentifer();
+                if (currentRecordType.equals("HETATM")) {
                     this.hetAtoms.add(leafIdentifier);
                 }
+                // add everything before termination record to consecutive chain
+                if (this.closedChains.contains(this.currentModel + "-" + this.currentChain)) {
+                    this.notInConsecutiveChain.add(leafIdentifier);
+                }
                 this.leafNames.put(leafIdentifier, AtomToken.RESIDUE_NAME.extract(currentLine));
-            } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+            } else if (currentRecordType.equals("MODEL")) {
                 this.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
+            } else if (currentRecordType.equals("TER")) {
+                this.closedChains.add(this.currentModel + "-" + this.currentChain);
             }
         }
     }

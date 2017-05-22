@@ -32,7 +32,7 @@ public class AtomFilterTest {
                 .parse();
 
         // valine
-        AminoAcid branchSubstructure = structure.getAllResidues().get(0);
+        AminoAcid branchSubstructure = structure.getAllAminoAcids().get(0);
 
         List<Atom> backboneAtoms = branchSubstructure.getAllAtoms().stream()
                                                .filter(StructuralEntityFilter.AtomFilter.isBackbone())

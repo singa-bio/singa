@@ -33,11 +33,6 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
     }
 
     @Override
-    public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
-    }
-
-    @Override
     public String getName() {
         return this.name;
     }

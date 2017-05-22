@@ -67,7 +67,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * The substructures of this substructure.
      */
-    private Map<Integer, Substructure<?>> substructures;
+    protected Map<Integer, Substructure<?>> substructures;
 
     /*
      * GRAPH VARIABLES

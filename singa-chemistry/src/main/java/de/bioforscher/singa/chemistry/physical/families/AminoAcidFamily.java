@@ -110,7 +110,7 @@ public enum AminoAcidFamily implements StructuralFamily {
         return StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
                 .parse()
-                .getAllResidues()
+                .getAllAminoAcids()
                 .get(0);
     }
 }
