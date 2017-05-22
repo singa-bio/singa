@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.predictors;
 
 import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
-import de.bioforscher.singa.units.quantities.Diffusivity;
+import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

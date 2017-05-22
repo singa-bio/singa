@@ -5,8 +5,8 @@ import de.bioforscher.singa.chemistry.descriptive.features.FeatureProvider;
 import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
 import de.bioforscher.singa.chemistry.descriptive.features.predictors.WilkeCorrelation;
 import de.bioforscher.singa.chemistry.descriptive.features.predictors.YoungCorrelation;
-import de.bioforscher.singa.units.quantities.Diffusivity;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -23,14 +23,13 @@ import static tec.units.ri.AbstractUnit.ONE;
 /**
  * @author cl
  */
-public class DiffusivityFeature extends FeatureProvider<Diffusivity> {
+public class DiffusivityFeatureProvider extends FeatureProvider {
 
-    private static DiffusivityFeature instance = new DiffusivityFeature();
+    private static DiffusivityFeatureProvider instance = new DiffusivityFeatureProvider();
 
     /**
-     * The correlation threshold determines, whether to use Wikle correlation
-     * (lighter than the threshold) or Young correlation (heavier than the
-     * threshold).
+     * The correlation threshold determines, whether to use Wikle correlation (lighter than the threshold) or Young
+     * correlation (heavier than the threshold).
      */
     private static final Quantity<MolarMass> CORRELATION_THRESHOLD = Quantities.getQuantity(10000, GRAM_PER_MOLE);
 
@@ -42,16 +41,16 @@ public class DiffusivityFeature extends FeatureProvider<Diffusivity> {
      */
     public static final Quantity<Dimensionless> STDF_CELL_WATER = Quantities.getQuantity(0.27, ONE);
 
-    private DiffusivityFeature() {
+    private DiffusivityFeatureProvider() {
         setProvidedFeature(DIFFUSIVITY);
         setRequirements(Collections.singleton(MOLAR_MASS));
         setAvailabilities(EnumSet.of(SPECIES, PROTEIN, ENZYME));
     }
 
-    public static DiffusivityFeature getInstance() {
+    public static DiffusivityFeatureProvider getInstance() {
         if (instance == null) {
-            synchronized (MolarMassFeature.class) {
-                instance = new DiffusivityFeature();
+            synchronized (MolarMassFeatureProvider.class) {
+                instance = new DiffusivityFeatureProvider();
             }
         }
         return instance;

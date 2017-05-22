@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
 import de.bioforscher.singa.chemistry.parser.uniprot.UniProtParserService;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

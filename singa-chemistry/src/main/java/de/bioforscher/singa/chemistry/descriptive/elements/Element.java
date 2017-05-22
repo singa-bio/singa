@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
 import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

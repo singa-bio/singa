@@ -1,6 +1,5 @@
 package de.bioforscher.singa.chemistry.descriptive.features;
 
-import javax.measure.Quantity;
 import java.util.Set;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Set;
  *
  * @author cl
  */
-public abstract class FeatureProvider<FeatureType extends Quantity<FeatureType>> {
+public abstract class FeatureProvider {
 
     /**
      * Contains the entities that might be assigned with this feature.
@@ -43,6 +42,7 @@ public abstract class FeatureProvider<FeatureType extends Quantity<FeatureType>>
             }
         }
     }
+
 
     /**
      * Returns {@code true} if this FeatureProvider is able to assign this feature.

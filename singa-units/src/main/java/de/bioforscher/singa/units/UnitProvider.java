@@ -1,6 +1,10 @@
 package de.bioforscher.singa.units;
 
-import de.bioforscher.singa.units.quantities.*;
+import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
+import de.bioforscher.singa.units.quantities.DynamicViscosity;
+import de.bioforscher.singa.units.quantities.MolarConcentration;
+import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.AbstractSystemOfUnits;
 import tec.units.ri.AbstractUnit;
 import tec.units.ri.unit.ProductUnit;
@@ -10,9 +14,8 @@ import javax.measure.Unit;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tec.units.ri.unit.Units.*;
-
 import static tec.units.ri.AbstractUnit.ONE;
+import static tec.units.ri.unit.Units.*;
 
 /**
  * This class defines some units commonly used in systems biology.

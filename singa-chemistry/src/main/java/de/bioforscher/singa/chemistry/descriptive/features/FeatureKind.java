@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features;
 
-import de.bioforscher.singa.chemistry.descriptive.features.implementations.DiffusivityFeature;
-import de.bioforscher.singa.chemistry.descriptive.features.implementations.MolarMassFeature;
+import de.bioforscher.singa.chemistry.descriptive.features.implementations.DiffusivityFeatureProvider;
+import de.bioforscher.singa.chemistry.descriptive.features.implementations.MolarMassFeatureProvider;
 
 /**
  * The FeatureKind enumerates all features that can be explicitly annotated. This enum also provides the
@@ -16,7 +16,7 @@ public enum FeatureKind {
      *
      * The base SI unit for molar mass is kg/mol (mass/amount).
      */
-    MOLAR_MASS(MolarMassFeature.getInstance()),
+    MOLAR_MASS(MolarMassFeatureProvider.getInstance()),
 
     /**
      * Diffusivity is a proportionality constant between the molar flux due to molecular
@@ -24,7 +24,8 @@ public enum FeatureKind {
      *
      * The base SI unit for molar mass is m^2/s (length^2/time).
      */
-    DIFFUSIVITY(DiffusivityFeature.getInstance());
+    DIFFUSIVITY(DiffusivityFeatureProvider.getInstance());
+
     // SIMILES_STRING,
     // MEMBRANE_PERMEABILITY;
 

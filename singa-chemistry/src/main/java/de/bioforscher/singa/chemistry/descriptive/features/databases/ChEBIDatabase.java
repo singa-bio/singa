@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;

@@ -11,7 +11,7 @@ import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

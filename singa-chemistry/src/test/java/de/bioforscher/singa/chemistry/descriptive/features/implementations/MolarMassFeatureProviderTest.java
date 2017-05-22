@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author cl
  */
-public class MolarMassFeatureTest {
+public class MolarMassFeatureProviderTest {
 
     @Test
     public void shouldUseChEBIToFetchMolarMass() {

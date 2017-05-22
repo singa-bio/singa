@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.FeatureProvider;
 import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.ChEBIDatabase;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.UniProtDatabase;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.units.features.molarmass.MolarMass;
 
 import java.util.EnumSet;
 
@@ -15,19 +15,19 @@ import static de.bioforscher.singa.chemistry.descriptive.features.FeatureKind.MO
 /**
  * @author cl
  */
-public class MolarMassFeature extends FeatureProvider<MolarMass> {
+public class MolarMassFeatureProvider extends FeatureProvider {
 
-    private static MolarMassFeature instance = new MolarMassFeature();
+    private static MolarMassFeatureProvider instance = new MolarMassFeatureProvider();
 
-    private MolarMassFeature() {
+    private MolarMassFeatureProvider() {
         setAvailabilities(EnumSet.of(SPECIES, PROTEIN, ENZYME));
         setProvidedFeature(MOLAR_MASS);
     }
 
-    public static MolarMassFeature getInstance() {
+    public static MolarMassFeatureProvider getInstance() {
         if (instance == null) {
-            synchronized (MolarMassFeature.class) {
-                instance = new MolarMassFeature();
+            synchronized (MolarMassFeatureProvider.class) {
+                instance = new MolarMassFeatureProvider();
             }
         }
         return instance;

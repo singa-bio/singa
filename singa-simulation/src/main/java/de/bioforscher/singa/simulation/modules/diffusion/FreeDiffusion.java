@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.units.UnitScaler;
-import de.bioforscher.singa.units.quantities.Diffusivity;
+import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

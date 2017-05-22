@@ -1,7 +1,7 @@
 package de.bioforscher.singa.units;
 
+import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.units.quantities.ReactionRate;
-import de.bioforscher.singa.units.quantities.Diffusivity;
 import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;

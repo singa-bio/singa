@@ -4,9 +4,9 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 
 /**
- * A Feature is a kind of Annotation that represents a {@link Quantity} required by any algorithm. The {@link FeatureKind}
- * represents its identity - each feature type can only ba annotated once. The Quantity contains the {@link Unit} as
- * well as the value of the feature.
+ * A Feature is a kind of annotation that represents a {@link Quantity} required by any algorithm. The {@link FeatureKind}
+ * represents its identity - each feature type can only ba annotated once. The quantity contains the {@link Unit} as
+ * well as the value of the feature. The origin of the feature is annotated in the as a {@link FeatureDescriptor}.
  *
  * @author cl
  */
