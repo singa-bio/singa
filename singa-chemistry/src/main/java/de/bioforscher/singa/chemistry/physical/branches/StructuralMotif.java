@@ -96,7 +96,6 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         return fromLeaves(DEFAULT_IDENTIFIER, leafSubstructures);
     }
 
-
     @Override
     public String toString() {
         return getSubstructures().stream()

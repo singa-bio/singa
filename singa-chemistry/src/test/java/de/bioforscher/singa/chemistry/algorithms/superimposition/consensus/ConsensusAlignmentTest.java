@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.consensus;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
@@ -30,9 +31,13 @@ public class ConsensusAlignmentTest {
 
     @Before
     public void setUp() throws Exception {
+        StructureParserOptions structureParserOptions = new StructureParserOptions();
+        structureParserOptions.inferIdentifierFromFileName(true);
         this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
+                        .everything()
+                        .setOptions(structureParserOptions)
                         .parse())
                 .map(Structure::getAllLeaves)
                 .map(leaves -> StructuralMotif.fromLeaves(0, leaves))

@@ -15,11 +15,11 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 public class AlphaCarbonRepresentationScheme extends AbstractRepresentationScheme {
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
-        if(!(leafSubstructure instanceof AminoAcid)){
-            logger.warn("fallback for ", leafSubstructure);
+        if (!(leafSubstructure instanceof AminoAcid)) {
+            logger.warn("fallback for {}", leafSubstructure);
             return determineCentroid(leafSubstructure);
         }
-       return leafSubstructure.getAllAtoms().stream()
+        return leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isAlphaCarbon())
                 .findAny()
                 .orElseGet(() -> determineCentroid(leafSubstructure));
