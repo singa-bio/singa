@@ -38,7 +38,7 @@ public class AtomFilterTest {
                                                .filter(StructuralEntityFilter.AtomFilter.isBackbone())
                                                .collect(Collectors.toList());
         List<Atom> sideChainAtoms = branchSubstructure.getAllAtoms().stream()
-                                                .filter(StructuralEntityFilter.AtomFilter.isSidechain())
+                                                .filter(StructuralEntityFilter.AtomFilter.isSideChain())
                                                 .collect(Collectors.toList());
 
         // check backbone atoms

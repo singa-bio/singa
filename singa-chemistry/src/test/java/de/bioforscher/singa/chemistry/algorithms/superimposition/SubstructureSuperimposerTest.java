@@ -84,7 +84,7 @@ public class SubstructureSuperimposerTest {
     @Test
     public void shouldCalculateSidechainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                .calculateSubstructureSuperimposition(this.reference, this.candidate, isSidechain());
+                .calculateSubstructureSuperimposition(this.reference, this.candidate, isSideChain());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()

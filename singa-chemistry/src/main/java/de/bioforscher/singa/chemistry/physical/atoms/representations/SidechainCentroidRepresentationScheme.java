@@ -32,12 +32,12 @@ public class SidechainCentroidRepresentationScheme extends AbstractRepresentatio
         }
         // fallback if no sidechain atoms exist
         if (leafSubstructure.getAllAtoms().stream()
-                .filter(AtomFilter.isSidechain())
+                .filter(AtomFilter.isSideChain())
                 .count() == 0) {
             return determineCentroid(leafSubstructure);
         }
         List<Vector> atomPositions = leafSubstructure.getAllAtoms().stream()
-                .filter(AtomFilter.isSidechain().and(AtomFilter.isHydrogen()
+                .filter(AtomFilter.isSideChain().and(AtomFilter.isHydrogen()
                         .negate()))
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
