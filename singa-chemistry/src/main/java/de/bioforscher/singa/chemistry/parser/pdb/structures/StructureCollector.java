@@ -35,6 +35,7 @@ public class StructureCollector {
 
     private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<LeafIdentifier, String> leafNames;
+    private Set<LeafIdentifier> hetAtoms;
 
     private ContentTreeNode contentTree;
 
@@ -45,6 +46,7 @@ public class StructureCollector {
     public StructureCollector() {
         this.atoms = new HashMap<>();
         this.leafNames = new TreeMap<>();
+        this.hetAtoms = new HashSet<>();
     }
 
     public StructureCollector(List<String> pdbLines, StructureParser.Reducer reducer) {
@@ -52,6 +54,7 @@ public class StructureCollector {
         this.pdbLines = pdbLines;
         this.atoms = new HashMap<>();
         this.leafNames = new TreeMap<>();
+        this.hetAtoms = new HashSet<>();
     }
 
     static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
@@ -185,6 +188,9 @@ public class StructureCollector {
                 chain.setChainIdentifier(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
                     LeafSubstructure<?, ?> leafSubstructure = assignLeaf(leafNode, Integer.valueOf(modelNode.getIdentifier()), chainNode.getIdentifier());
+                    if (this.hetAtoms.contains(leafSubstructure.getLeafIdentifier())) {
+                        leafSubstructure.setAnnotatedAsHetAtom(true);
+                    }
                     chain.addSubstructure(leafSubstructure);
                 }
                 model.addSubstructure(chain);
@@ -203,7 +209,11 @@ public class StructureCollector {
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                this.leafNames.put(new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer()), AtomToken.RESIDUE_NAME.extract(currentLine));
+                LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer());
+                if (AtomToken.RECORD_TYPE.extract(currentLine).equals("HETATM")) {
+                    this.hetAtoms.add(leafIdentifier);
+                }
+                this.leafNames.put(leafIdentifier, AtomToken.RESIDUE_NAME.extract(currentLine));
             } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 this.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
             }

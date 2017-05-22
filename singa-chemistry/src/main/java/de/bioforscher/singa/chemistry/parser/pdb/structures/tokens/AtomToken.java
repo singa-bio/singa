@@ -4,7 +4,6 @@ import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
 import de.bioforscher.singa.core.utility.Range;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
@@ -78,10 +77,10 @@ public enum AtomToken implements PDBToken {
         List<String> lines = new ArrayList<>();
         for (Atom atom : leaf.getNodes()) {
             StringBuilder currentLine = new StringBuilder();
-            if (leaf instanceof AminoAcid) {
+            if (!leaf.isAnnotatedAsHetAtom()) {
                 currentLine.append(RECORD_TYPE.createTokenString("ATOM"));
             } else {
-                currentLine.append("HETATM");
+                currentLine.append(RECORD_TYPE.createTokenString("HETATM"));
             }
             currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getIdentifier())))
                     .append(" ")

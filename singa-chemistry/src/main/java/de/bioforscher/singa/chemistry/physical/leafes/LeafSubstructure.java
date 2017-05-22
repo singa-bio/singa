@@ -68,6 +68,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     private Map<Integer, Bond> bonds;
 
+    /**
+     * Remembers if this Leaf was an HETATOM entry
+     */
+    private boolean annotatedAsHetAtom;
+
     public LeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
         this.family = family;
@@ -103,6 +108,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         }
         // add exchangeable types
         this.exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
+        this.annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
     /**
@@ -404,6 +410,15 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     public List<String> getPdbLines() {
         return AtomToken.assemblePDBLine(this);
+    }
+
+
+    public boolean isAnnotatedAsHetAtom() {
+        return this.annotatedAsHetAtom;
+    }
+
+    public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
+        this.annotatedAsHetAtom = annotatedAsHetAtom;
     }
 
     @Override
