@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import org.junit.Test;
 
 import java.io.IOException;

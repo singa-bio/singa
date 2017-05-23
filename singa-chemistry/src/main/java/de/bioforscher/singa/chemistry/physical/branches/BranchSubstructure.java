@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
@@ -49,30 +49,26 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * The identifier of this entity.
      */
     public int identifier;
-
-    /**
-     * A iterating variable to add a new node.
-     */
-    private int nextNodeIdentifier;
-
-    /**
-     * A iterating variable to add a new edge.
-     */
-    private int nextEdgeIdentifier;
-
-    /**
-     * The neighboring substructures.
-     */
-    private List<SubstructureType> neighbours;
     /**
      * The substructures of this substructure.
      */
     protected Map<Integer, Substructure<?>> substructures;
+    /**
+     * A iterating variable to add a new node.
+     */
+    private int nextNodeIdentifier;
+    /**
+     * A iterating variable to add a new edge.
+     */
+    private int nextEdgeIdentifier;
+    /**
+     * The neighboring substructures.
+     */
+    private List<SubstructureType> neighbours;
 
     /*
      * GRAPH VARIABLES
      */
-
     /**
      * The actual nodes
      */

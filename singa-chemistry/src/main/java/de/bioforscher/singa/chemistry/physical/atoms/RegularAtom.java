@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.atoms;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;

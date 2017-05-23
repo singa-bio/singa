@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 
 /**
  * This represents a representation scheme of a {@link LeafSubstructure}. When applied to a {@link LeafSubstructure}

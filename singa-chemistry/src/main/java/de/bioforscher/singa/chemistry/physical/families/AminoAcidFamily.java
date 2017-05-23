@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.physical.families;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 
 import java.util.*;

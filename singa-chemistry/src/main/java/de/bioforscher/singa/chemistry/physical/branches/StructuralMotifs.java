@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSup
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 

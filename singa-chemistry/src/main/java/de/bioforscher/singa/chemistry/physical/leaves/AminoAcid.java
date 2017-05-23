@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;

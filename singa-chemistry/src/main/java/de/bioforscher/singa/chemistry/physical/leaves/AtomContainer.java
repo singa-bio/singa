@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;

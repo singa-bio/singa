@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 

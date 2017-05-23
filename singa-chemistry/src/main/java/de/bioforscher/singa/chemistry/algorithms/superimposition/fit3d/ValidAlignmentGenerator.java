@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.core.utility.Pair;
 import org.slf4j.Logger;

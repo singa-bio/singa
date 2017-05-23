@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.pdb.ligands;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.LeafSkeleton;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

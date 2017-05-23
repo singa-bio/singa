@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.physical.atoms;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Test;

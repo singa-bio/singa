@@ -2,9 +2,9 @@ package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Nameable;
@@ -189,7 +189,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         return getLeafSubstructures().stream()
                 .findAny()
                 .map(LeafSubstructure::getPdbIdentifier)
-                .orElse("") + "|" + this.chainIdentifier;
+                .orElse("") + "_" + this.chainIdentifier;
     }
 
     @Override

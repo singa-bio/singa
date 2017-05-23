@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;

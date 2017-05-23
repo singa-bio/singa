@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class StructureWriter {
      * @param outputPath         The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
-    public static void writeBranchSubstructures(BranchSubstructure<?> branchSubstructure, Path outputPath) throws IOException {
+    public static void writeBranchSubstructure(BranchSubstructure<?> branchSubstructure, Path outputPath) throws IOException {
         logger.info("writing {} to {}", branchSubstructure, outputPath);
         writeLeafSubstructures(branchSubstructure.getLeafSubstructures(), outputPath);
     }

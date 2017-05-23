@@ -3,9 +3,9 @@ package de.bioforscher.singa.chemistry.physical.branches;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
@@ -103,7 +103,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                 .collect(Collectors.joining("_", getLeafSubstructures().stream()
                         .findAny()
                         .map(LeafSubstructure::getPdbIdentifier)
-                        .orElse("") + "|", ""));
+                        .orElse("") + "_", ""));
     }
 
     /**

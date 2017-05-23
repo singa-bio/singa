@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorSuperimposer;

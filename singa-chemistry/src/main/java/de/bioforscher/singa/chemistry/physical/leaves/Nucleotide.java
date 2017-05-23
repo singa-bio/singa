@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;

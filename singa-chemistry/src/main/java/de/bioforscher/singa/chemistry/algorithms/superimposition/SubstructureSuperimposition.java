@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition;
 
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.Superimposition;
 import de.bioforscher.singa.mathematics.matrices.Matrix;

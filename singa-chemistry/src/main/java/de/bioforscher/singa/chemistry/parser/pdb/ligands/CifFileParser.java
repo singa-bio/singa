@@ -8,10 +8,10 @@ import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.AtomContainer;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.BondType;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
@@ -57,6 +57,16 @@ public class CifFileParser {
     public static LeafSkeleton parseLeafSkeleton(List<String> lines) {
         CifFileParser parser = new CifFileParser(lines);
         return parser.parseLeafSkeleton();
+    }
+
+    /**
+     * Extracts a value from a one line entry from a cif file. Trimming white spaces and removing double quotes.
+     *
+     * @param line the line to extract
+     * @return The extracted value.
+     */
+    private static String extractValue(String line) {
+        return line.substring(DEFAULT_VALUE_SPACING).replace("\"", "").trim();
     }
 
     /**
@@ -264,16 +274,6 @@ public class CifFileParser {
             leafWithAtoms.addEdgeBetween(this.atoms.get(bond.getKey().getFirst()),
                     this.atoms.get(bond.getKey().getSecond()),bond.getValue());
         }
-    }
-
-    /**
-     * Extracts a value from a one line entry from a cif file. Trimming white spaces and removing double quotes.
-     *
-     * @param line the line to extract
-     * @return The extracted value.
-     */
-    private static String extractValue(String line) {
-        return line.substring(DEFAULT_VALUE_SPACING).replace("\"", "").trim();
     }
 
 }
