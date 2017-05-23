@@ -37,8 +37,8 @@ public class PDBParserPlayground {
 
         // they all have the same ligand
         Structure structure = StructureParser.online()
-                .pdbIdentifier("1f7v")
-                .chainIdentifier("A")
+                .pdbIdentifier("2odr")
+                .chainIdentifier("")
                 .parse();
 
         Chain first = structure.getAllChains().iterator().next();

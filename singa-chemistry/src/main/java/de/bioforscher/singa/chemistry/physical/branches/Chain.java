@@ -38,7 +38,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      */
     public Chain(int graphIdentifier) {
         super(graphIdentifier);
-        this.consecutiveIdentifier = new HashSet<>();
+        this.consecutiveIdentifier = new TreeSet<>();
     }
 
     public Chain(Chain chain) {
