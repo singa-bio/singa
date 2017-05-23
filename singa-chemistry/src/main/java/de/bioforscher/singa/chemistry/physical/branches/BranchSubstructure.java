@@ -29,7 +29,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain AtomFilter. Edges in a BranchSubstructure
  * are only able to connect AtomFilter, but this can be done across different substructures. For example, this makes it
- * possible to connect AminoAcids in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
+ * possible to connect AminoAcids in a chainIdentifier with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
  * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
@@ -226,7 +226,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     /**
      * Returns all atoms that are contained in this substructure. This does not imply all atoms of the contained
-     * SubStructures. For example a chain could not contain any atoms, but only residues, that themselves contain the
+     * SubStructures. For example a chainIdentifier could not contain any atoms, but only residues, that themselves contain the
      * actual atoms. To get all atoms use the {@link BranchSubstructure#getAllAtoms()} method.
      *
      * @return All atoms that are contained in this substructure.

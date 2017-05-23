@@ -228,7 +228,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         if (this.currentChain != null) {
             return this.currentChain;
         } else {
-            throw new IllegalStateException("Unable to retrieve chain Identifier in the current state.");
+            throw new IllegalStateException("Unable to retrieve chainIdentifier Identifier in the current state.");
         }
     }
 

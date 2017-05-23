@@ -386,9 +386,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the chain pdbIdentifier this leaf belongs to.
+     * Returns the chainIdentifier pdbIdentifier this leaf belongs to.
      *
-     * @return The chain pdbIdentifier this leaf belongs to.
+     * @return The chainIdentifier pdbIdentifier this leaf belongs to.
      */
     public String getChainIdentifier() {
         return this.leafIdentifier.getChainIdentifer();

@@ -39,7 +39,7 @@ public class StructureCollector {
     // stuff we need to remember while parsing for further processing
     // hetatoms need to be distinguishable
     private Set<LeafIdentifier> hetAtoms;
-    // leafes that are not part of the consecutive chain have to be noted
+    // leafes that are not part of the consecutive chainIdentifier have to be noted
     private Set<LeafIdentifier> notInConsecutiveChain;
     private String currentChain;
     private Set<String> closedChains;
@@ -85,7 +85,7 @@ public class StructureCollector {
             this.reducer.updatePdbIdentifer();
             this.reducer.updateChainIdentifier();
             reduceToChain(this.reducer.chainIdentifier);
-            logger.info("Parsing structure {} chain {}", this.reducer.pdbIdentifier, this.reducer.chainIdentifier);
+            logger.info("Parsing structure {} chainIdentifier {}", this.reducer.pdbIdentifier, this.reducer.chainIdentifier);
         } else {
             if (!this.reducer.allModels) {
                 // parse only specific model
@@ -93,8 +93,8 @@ public class StructureCollector {
                 reduceToModel(this.reducer.modelIdentifier);
             }
             if (!this.reducer.allChains) {
-                // parse only specific chain
-                // reduce lines to specific chain
+                // parse only specific chainIdentifier
+                // reduce lines to specific chainIdentifier
                 reduceToChain(this.reducer.chainIdentifier);
             }
         }
@@ -159,16 +159,17 @@ public class StructureCollector {
             // check if this is a atom line
             if (AtomToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 String currentChain = AtomToken.CHAIN_IDENTIFIER.extract(currentLine);
-                // collect line if it has the correct chain
+                // collect line if it has the correct chainIdentifier
                 if (currentChain.equals(chainIdentifier)) {
                     reducedList.add(currentLine);
                 }
-            }
-            if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+            } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
+                // keel lines that indicate models
+                reducedList.add(currentLine);
+            } else if (ChainTerminatorToken.RECORD_PATTERN.matcher(currentLine).matches()) {
                 // keel lines that indicate models
                 reducedList.add(currentLine);
             }
-            // TODO include chain terminator tokens
         }
         this.pdbLines = reducedList;
     }
@@ -187,7 +188,7 @@ public class StructureCollector {
             logger.debug("collecting chains for model {}", modelNode.getIdentifier());
             StructuralModel model = new StructuralModel(Integer.valueOf(modelNode.getIdentifier()));
             for (ContentTreeNode chainNode : modelNode.getNodesFromLevel(ContentTreeNode.StructureLevel.CHAIN)) {
-                logger.trace("collecting leafs for chain {}", chainNode.getIdentifier());
+                logger.trace("collecting leafs for chainIdentifier {}", chainNode.getIdentifier());
                 Chain chain = new Chain(chainGraphId++);
                 chain.setChainIdentifier(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
@@ -223,7 +224,7 @@ public class StructureCollector {
                 if (currentRecordType.equals("HETATM")) {
                     this.hetAtoms.add(leafIdentifier);
                 }
-                // add everything before termination record to consecutive chain
+                // add everything before termination record to consecutive chainIdentifier
                 if (this.closedChains.contains(this.currentModel + "-" + this.currentChain)) {
                     this.notInConsecutiveChain.add(leafIdentifier);
                 }
@@ -260,7 +261,7 @@ public class StructureCollector {
         // get atoms of this leaf
         Map<String, Atom> atoms = leafNode.getAtomMap();
         // log it
-        logger.trace("creating leaf {}:{} for chain {}", leafNode.getIdentifier(), leafName, chainIdentifer);
+        logger.trace("creating leaf {}:{} for chainIdentifier {}", leafNode.getIdentifier(), leafName, chainIdentifer);
         // find most suitable implementation
         if (isPlainAminoAcid(leafName)) {
             AminoAcidFamily family = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName).get();

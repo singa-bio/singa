@@ -4,6 +4,8 @@ import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * @author cl
@@ -23,10 +25,10 @@ public class PDBParserPlayground {
          LeafSubstructure<?,?> leaf = AminoAcidFamily.ARGININE.getPrototype();
          Structure structure = new Structure();
          StructuralModel structuralModel = new StructuralModel(0);
-         Chain chain = new Chain(1);
-         chain.setChainIdentifier("A");
-         chain.addSubstructure(leaf);
-         structuralModel.addSubstructure(chain);
+         Chain chainIdentifier = new Chain(1);
+         chainIdentifier.setChainIdentifier("A");
+         chainIdentifier.addSubstructure(leaf);
+         structuralModel.addSubstructure(chainIdentifier);
          structure.addSubstructure(structuralModel);
         */
 
@@ -35,10 +37,14 @@ public class PDBParserPlayground {
 
         // they all have the same ligand
         Structure structure = StructureParser.online()
-                .pdbIdentifier("1c0a")
+                .pdbIdentifier("1f7v")
+                .chainIdentifier("A")
                 .parse();
 
         Chain first = structure.getAllChains().iterator().next();
+
+        StructureWriter.writeLeafSubstructures(new ArrayList<>(first.getConsecutivePart()), Paths.get("/home/leberech/test.pdb"));
+
         first.getConsecutivePart().forEach(System.out::println);
         System.out.println();
         first.getNonConsecutivePart().forEach(System.out::println);

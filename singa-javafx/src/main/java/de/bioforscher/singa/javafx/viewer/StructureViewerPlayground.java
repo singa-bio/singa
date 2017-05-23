@@ -15,7 +15,7 @@ public class StructureViewerPlayground {
 
         StructureViewer.structure = StructureParser.online()
                 .pdbIdentifier("1pqs")
-                .chain("A")
+                .chainIdentifier("A")
                 .setOptions(options)
                 .parse();
 

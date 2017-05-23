@@ -51,7 +51,7 @@ public class BranchSubstructureTest {
         assertTrue(chain.getClass() == chainCopy.getClass());
         // the chains are NOT identical
         assertFalse(chain == chainCopy);
-        // but equal (all attributes that are crucial to the identification of the chain are equal)
+        // but equal (all attributes that are crucial to the identification of the chainIdentifier are equal)
         assertTrue(chain.equals(chainCopy));
 
     }

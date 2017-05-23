@@ -96,7 +96,7 @@ public class SmilesParser {
     private boolean firstAtomInBranch = false;
 
     /**
-     * When two branches are following immediately after each other the same chain reference is used again
+     * When two branches are following immediately after each other the same chainIdentifier reference is used again
      */
     private boolean sameChainReference;
 

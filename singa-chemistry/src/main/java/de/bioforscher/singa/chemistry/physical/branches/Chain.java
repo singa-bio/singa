@@ -14,9 +14,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
+ * The chainIdentifier is one of the grouping elements that should contain primarily residues and are connected to form a single
  * molecule. This model is adopted from the classical PDB structure files. Since this also implements the nameable
- * interface, the name of a chin is its chain pdbIdentifier (a single letter).
+ * interface, the name of a chin is its chainIdentifier pdbIdentifier (a single letter).
  *
  * @author cl
  * @see AminoAcid
@@ -26,12 +26,12 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     private Set<Integer> consecutiveIdentifier;
 
     /**
-     * The chain identifier of this chain.
+     * The chainIdentifier identifier of this chainIdentifier.
      */
     private String chainIdentifier;
 
     /**
-     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chain identifier, but the
+     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chainIdentifier identifier, but the
      * reference for the placement in the graph.
      *
      * @param graphIdentifier The identifier in the graph.
@@ -60,7 +60,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chain and nothing
+     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chainIdentifier and nothing
      * more on this level in a structure.</b>
      */
     public Chain() {
@@ -68,25 +68,25 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Returns the chain identifier (the single character identifier).
+     * Returns the chainIdentifier identifier (the single character identifier).
      *
-     * @return The chain identifier.
+     * @return The chainIdentifier identifier.
      */
     public String getChainIdentifier() {
         return this.chainIdentifier;
     }
 
     /**
-     * Sets the chain identifier (the single letter identifier).
+     * Sets the chainIdentifier identifier (the single letter identifier).
      *
-     * @param chainIdentifier The chain identifier.
+     * @param chainIdentifier The chainIdentifier identifier.
      */
     public void setChainIdentifier(String chainIdentifier) {
         this.chainIdentifier = chainIdentifier;
     }
 
     /**
-     * Connects the all residues, that are currently in the chain, in order of their appearance in the
+     * Connects the all residues, that are currently in the chainIdentifier, in order of their appearance in the
      * List of AminoAcids ({@link BranchSubstructure#getAminoAcids()}).
      */
     public void connectChainBackbone() {
@@ -155,7 +155,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Gets the name (i.e. the single letter chain identifier) of this chain.
+     * Gets the name (i.e. the single letter chainIdentifier identifier) of this chainIdentifier.
      *
      * @return The name.
      */

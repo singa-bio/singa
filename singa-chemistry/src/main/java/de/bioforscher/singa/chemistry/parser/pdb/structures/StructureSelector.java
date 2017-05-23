@@ -149,7 +149,7 @@ public class StructureSelector {
             this.chain = this.structuralModel.getAllChains().stream()
                     .filter(chain -> chain.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chain with index " + identifier));
+                    .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
             return this;
         }
 
@@ -158,7 +158,7 @@ public class StructureSelector {
             this.chain = this.structuralModel.getAllChains().stream()
                     .filter(chain -> chain.getChainIdentifier().equals(chainIdentifier))
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chain with ID " + chainIdentifier));
+                    .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with ID " + chainIdentifier));
             return this;
         }
 

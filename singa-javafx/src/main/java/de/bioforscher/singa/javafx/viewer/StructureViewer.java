@@ -218,7 +218,7 @@ public class StructureViewer extends Application {
         Chain chain = structure.getAllChains().stream()
                 .filter(ChainFilter.isInChain(identifier.replace("Chain: ", "")))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Chould not retrieve chain " + identifier.replace("Chain: ", "")));
+                .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
         this.displayStructure.addSubstructure(chain);
         buildDisplayedStructure();
         this.displayGroup.getChildren().retainAll();

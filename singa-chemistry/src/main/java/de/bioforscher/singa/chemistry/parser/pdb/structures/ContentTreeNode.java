@@ -130,7 +130,7 @@ public class ContentTreeNode {
                     while (iterator.hasNext()) {
                         ContentTreeNode chain = iterator.next();
                         if (chain.identifier.equals(String.valueOf(identifer.getChainIdentifier()))) {
-                            // System.out.println("  correct chain going further");
+                            // System.out.println("  correct chainIdentifier going further");
                             chain.appendAtom(atom, identifer);
                             return;
                         }

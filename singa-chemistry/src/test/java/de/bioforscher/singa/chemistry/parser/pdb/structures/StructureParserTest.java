@@ -36,29 +36,29 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseChain() {
-        // parse one chain of multi chain structure
+        // parse one chainIdentifier of multi chainIdentifier structure
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1BRR")
-                .chain("A")
+                .chainIdentifier("A")
                 .parse();
     }
 
     @Test
     public void shouldParseModelAndChain() {
-        // parse one model of multi model structure and only a specific chain
+        // parse one model of multi model structure and only a specific chainIdentifier
         Structure structure = StructureParser.online()
                 .pdbIdentifier("2N5E")
                 .model(3)
-                .chain("B")
+                .chainIdentifier("B")
                 .parse();
     }
 
     @Test
     public void shouldParseChainOfMultiModel() {
-        // parse only a specific chain of all models in a structure
+        // parse only a specific chainIdentifier of all models in a structure
         Structure structure = StructureParser.online()
                 .pdbIdentifier("2N5E")
-                .chain("B")
+                .chainIdentifier("B")
                 .parse();
     }
 

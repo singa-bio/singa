@@ -75,7 +75,7 @@ public class Fit3DAlignmentTest {
     public void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
                 .pdbIdentifier("2EES")
-                .chain("A")
+                .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
@@ -119,7 +119,7 @@ public class Fit3DAlignmentTest {
     public void shouldAlignNucleotideMotif() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
                 .pdbIdentifier("2EES")
-                .chain("A")
+                .chainIdentifier("A")
                 .parse();
         StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));

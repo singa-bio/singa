@@ -139,20 +139,20 @@ public class StructureParser {
     public interface AdditionalLocalSourceStep {
 
         /**
-         * Reads the provided chain list from a file. Each line in the file should have the format:
+         * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
          * <pre>[PDBId][separator][ChainId] </pre>
          * The default separator is tab (\t).
          *
-         * @param path The path of the chain list file
+         * @param path The path of the chainIdentifier list file
          * @return The MultiParser.
          */
         MultiParser chainList(Path path);
 
         /**
-         * Reads the provided chain list from a file. Each line in the file should have the format:
+         * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
          * <pre>[PDBId][separator][ChainId] </pre>
          *
-         * @param path      The path of the chain list file
+         * @param path      The path of the chainIdentifier list file
          * @param separator The separator between the PDBId and the ChainId
          * @return The MultiParser.
          */
@@ -200,7 +200,7 @@ public class StructureParser {
     }
 
     public interface SingleChainStep {
-        SingleParser chain(String chainIdentifier);
+        SingleParser chainIdentifier(String chainIdentifier);
 
         SingleParser allChains();
 
@@ -364,7 +364,7 @@ public class StructureParser {
         }
 
         @Override
-        public SingleParser chain(String chainIdentifier) {
+        public SingleParser chainIdentifier(String chainIdentifier) {
             setChainIdentifier(chainIdentifier);
             return new SingleParser(this);
         }
@@ -559,7 +559,7 @@ public class StructureParser {
             ArrayList<Pair<String>> pairs = new ArrayList<>();
             for (String line : lines) {
                 String[] split = line.split(separator);
-                // first contains PDB-ID and second contains chain-ID
+                // first contains PDB-ID and second contains chainIdentifier-ID
                 pairs.add(new Pair<>(split[0], split[1]));
             }
             return pairs;
