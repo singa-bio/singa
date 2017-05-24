@@ -16,7 +16,7 @@ import static de.bioforscher.singa.chemistry.physical.atoms.AtomName.*;
  *
  * @author cl
  */
-public enum AminoAcidFamily implements StructuralFamily {
+public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),

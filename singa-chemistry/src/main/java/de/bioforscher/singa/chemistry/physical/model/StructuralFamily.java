@@ -6,10 +6,11 @@ package de.bioforscher.singa.chemistry.physical.model;
  *
  * @author fk
  */
-public interface StructuralFamily {
+public interface StructuralFamily<G extends Comparable<G>> extends Comparable<G> {
 
     String getOneLetterCode();
 
     String getThreeLetterCode();
+
 
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * @author cl
  */
-public enum NucleotideFamily implements StructuralFamily {
+public enum NucleotideFamily implements StructuralFamily<NucleotideFamily> {
 
     ADENOSINE("A","A"),
     DESOXYADENOSINE("A", "dA"),
@@ -30,6 +30,12 @@ public enum NucleotideFamily implements StructuralFamily {
         this.threeLetterCode = threeLetterCode;
     }
 
+    public static Optional<NucleotideFamily> getNucleotideByThreeLetterCode(String threeLetterCode) {
+        return Arrays.stream(values())
+                .filter(type -> threeLetterCode.trim().equalsIgnoreCase(type.getThreeLetterCode()))
+                .findAny();
+    }
+
     @Override
     public String getOneLetterCode() {
         return this.oneLetterCode;
@@ -38,12 +44,6 @@ public enum NucleotideFamily implements StructuralFamily {
     @Override
     public String getThreeLetterCode() {
         return this.threeLetterCode;
-    }
-
-    public static Optional<NucleotideFamily> getNucleotideByThreeLetterCode(String threeLetterCode) {
-        return Arrays.stream(values())
-                .filter(type -> threeLetterCode.trim().equalsIgnoreCase(type.getThreeLetterCode()))
-                .findAny();
     }
 
 }

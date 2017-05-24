@@ -20,8 +20,8 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     public LabeledRegularMatrix(double[][] values) {
         super(values);
-        this.rowLabelMap = new HashMap<>();
-        this.columnLabelMap = new HashMap<>();
+        this.rowLabelMap = new IdentityHashMap<>();
+        this.columnLabelMap = new IdentityHashMap<>();
     }
 
     @Override

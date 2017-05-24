@@ -10,7 +10,7 @@ import java.util.EnumSet;
  *
  * @author fk
  */
-public enum MatcherFamily implements StructuralFamily {
+public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
 
     ALL(EnumSet.allOf(AminoAcidFamily.class), "*", "ALL"),
 

@@ -34,7 +34,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
      */
     public LabeledSymmetricMatrix(double[][] values) {
         super(values);
-        this.labelMap = new HashMap<>();
+        this.labelMap = new IdentityHashMap<>();
     }
 
     @Override
