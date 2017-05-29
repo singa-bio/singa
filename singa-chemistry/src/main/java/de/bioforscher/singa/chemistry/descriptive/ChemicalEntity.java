@@ -3,24 +3,25 @@ package de.bioforscher.singa.chemistry.descriptive;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
-import de.bioforscher.singa.chemistry.descriptive.features.Feature;
-import de.bioforscher.singa.chemistry.descriptive.features.FeatureKind;
-import de.bioforscher.singa.chemistry.descriptive.features.Featureable;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.features.molarmass.MolarMass;
+import de.bioforscher.singa.units.features.model.Feature;
+import de.bioforscher.singa.units.features.model.FeatureContainer;
+import de.bioforscher.singa.units.features.model.FeatureOrigin;
+import de.bioforscher.singa.units.features.model.Featureable;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 
 /**
  * Chemical Entity is an abstract class that provides the common features of all chemical substances on a descriptive
@@ -56,7 +57,9 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
      */
     private List<Annotation> annotations;
 
-    private Map<FeatureKind, Feature<?>> features;
+    private FeatureContainer container;
+
+    private final Set<Class<? extends Feature>> availableFeatures;
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -66,7 +69,10 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     protected ChemicalEntity(IdentifierType identifier) {
         this.identifier = identifier;
         this.annotations = new ArrayList<>();
-        this.features = new HashMap<>();
+        this.container = new FeatureContainer();
+        this.availableFeatures = new HashSet<>();
+        this.availableFeatures.add(MolarMass.class);
+        this.availableFeatures.add(Diffusivity.class);
     }
 
     @Override
@@ -98,9 +104,9 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     /**
-     * Sets The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     * Sets The {@link MolarMass} in {@link MolarMass#GRAM_PER_MOLE g/mol}.
      *
-     * @param molarMass The {@link MolarMass} in {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     * @param molarMass The {@link MolarMass} in {@link MolarMass#GRAM_PER_MOLE g/mol}.
      */
     public void setMolarMass(double molarMass) {
         this.molarMass = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
@@ -147,23 +153,28 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     @Override
-    public Feature<?> getFeature(FeatureKind kind) {
-        return this.features.get(kind);
+    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        return this.container.getFeature(featureTypeClass);
     }
 
     @Override
-    public void assignFeature(Feature<?> feature) {
-        this.features.put(feature.getKind(), feature);
+    public <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass) {
+        this.container.setFeature(featureTypeClass, this);
     }
 
     @Override
-    public void assignFeature(FeatureKind featureKind) {
-        featureKind.getProvider().annotate(this);
+    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+        this.container.setFeature(feature);
     }
 
     @Override
-    public boolean hasFeature(FeatureKind kind) {
-        return this.features.containsKey(kind);
+    public <FeatureType extends Feature> boolean hasFeature(Class<FeatureType> featureTypeClass) {
+        return this.container.hasFeature(featureTypeClass);
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
     }
 
     public List<Identifier> getAllIdentifiers() {
@@ -214,14 +225,14 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
         public BuilderType molarMass(Quantity<MolarMass> molarMass) {
             this.topLevelObject.setMolarMass(molarMass);
-            this.topLevelObject.assignFeature(new Feature<>(FeatureKind.MOLAR_MASS, molarMass));
+            this.topLevelObject.setFeature(new MolarMass(molarMass, FeatureOrigin.MANUALLY_ANNOTATED));
             return this.builderObject;
         }
 
         public BuilderType molarMass(double molarMass) {
             final Quantity<MolarMass> quantity = Quantities.getQuantity(molarMass, GRAM_PER_MOLE);
             this.topLevelObject.setMolarMass(quantity);
-            this.topLevelObject.assignFeature(new Feature<>(FeatureKind.MOLAR_MASS, quantity));
+            this.topLevelObject.setFeature(new MolarMass(quantity, FeatureOrigin.MANUALLY_ANNOTATED));
             return this.builderObject;
         }
 

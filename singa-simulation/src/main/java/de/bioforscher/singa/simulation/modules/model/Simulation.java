@@ -7,11 +7,11 @@ import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

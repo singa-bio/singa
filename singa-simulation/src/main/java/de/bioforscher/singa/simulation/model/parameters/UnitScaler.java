@@ -1,6 +1,7 @@
-package de.bioforscher.singa.units;
+package de.bioforscher.singa.simulation.model.parameters;
 
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.unit.ProductUnit;
 

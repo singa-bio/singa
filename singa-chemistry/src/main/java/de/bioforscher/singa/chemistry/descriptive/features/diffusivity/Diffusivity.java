@@ -1,11 +1,15 @@
-package de.bioforscher.singa.units.features.diffusivity;
+package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
 import de.bioforscher.singa.units.features.model.AbstractFeature;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.features.model.FeatureRegistry;
+import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+
+import static tec.units.ri.unit.Units.METRE;
+import static tec.units.ri.unit.Units.SECOND;
 
 /**
  * Diffusivity or diffusion coefficient is a proportionality constant between the molar flux due to molecular diffusion
@@ -15,6 +19,8 @@ import javax.measure.Unit;
  * @author cl
  */
 public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity> {
+
+    public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
 
     /**
      * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested

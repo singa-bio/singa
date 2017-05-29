@@ -1,11 +1,15 @@
-package de.bioforscher.singa.units.features.molarmass;
+package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 
 import de.bioforscher.singa.units.features.model.AbstractFeature;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.features.model.FeatureRegistry;
+import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+
+import static tec.units.ri.unit.Units.GRAM;
+import static tec.units.ri.unit.Units.MOLE;
 
 /**
  * In chemistry, the molar mass is a physical property. It is defined as the
@@ -15,6 +19,8 @@ import javax.measure.Unit;
  * @author cl
  */
 public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
+
+    public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
 
     public static void register() {
         FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);

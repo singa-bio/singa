@@ -1,6 +1,5 @@
-package de.bioforscher.singa.simulation.model.parameters;
+package de.bioforscher.singa.units.parameters;
 
-import de.bioforscher.singa.chemistry.descriptive.Species;
 import de.bioforscher.singa.units.quantities.DynamicViscosity;
 import tec.units.ri.quantity.Quantities;
 
@@ -37,9 +36,9 @@ public final class EnvironmentalParameterDefaults {
     public static final Quantity<DynamicViscosity> SYSTEM_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
 
     /**
-     * Water as species with ChEBI pdbIdentifier.
+     * The molar mass of water.
      */
-    public static final Species WATER = new Species.Builder("CHEBI:15377").name("Water").molarMass(18.0153).build();
+    public static final double MOLAR_MASS_OF_WATER = 18.0153;
 
 
 

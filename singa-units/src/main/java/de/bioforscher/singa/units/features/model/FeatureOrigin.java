@@ -7,6 +7,8 @@ import static de.bioforscher.singa.units.features.model.FeatureOrigin.OriginType
  */
 public class FeatureOrigin {
 
+    public static FeatureOrigin MANUALLY_ANNOTATED = new FeatureOrigin(MANUAL_ANNOTATION);
+
     public enum OriginType {
         PREDICTION, DATABASE, MANUAL_ANNOTATION
     }

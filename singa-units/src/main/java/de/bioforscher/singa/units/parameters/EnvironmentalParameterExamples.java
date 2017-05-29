@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.parameters;
+package de.bioforscher.singa.units.parameters;
 
 import tec.units.ri.quantity.Quantities;
 

@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.research;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.singa.core.parameters.*;
 import de.bioforscher.singa.mathematics.algorithms.optimization.AbstractGridSearch;
@@ -14,10 +15,9 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

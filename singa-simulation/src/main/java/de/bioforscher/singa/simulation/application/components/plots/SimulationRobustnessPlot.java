@@ -4,7 +4,7 @@ import com.sun.javafx.geom.Point2D;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.application.components.panes.ModuleOverviewPane;
 import de.bioforscher.singa.simulation.modules.diffusion.DiffusionUtilities;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;

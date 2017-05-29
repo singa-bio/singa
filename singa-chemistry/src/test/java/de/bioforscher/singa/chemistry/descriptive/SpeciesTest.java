@@ -4,7 +4,7 @@ import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
-import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

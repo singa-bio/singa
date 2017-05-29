@@ -11,11 +11,11 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameterExamples;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.units.UnitProvider;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameterExamples;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 

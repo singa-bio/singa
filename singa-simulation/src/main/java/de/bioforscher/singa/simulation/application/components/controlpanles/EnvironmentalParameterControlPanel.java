@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.application.components.controlpanles;
 
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.units.UnitName;
 import de.bioforscher.singa.units.UnitPrefix;
 import de.bioforscher.singa.units.UnitPrefixes;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.units.quantities.DynamicViscosity;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -26,7 +26,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static de.bioforscher.singa.units.UnitProvider.PASCAL_SECOND;
-import static tec.units.ri.unit.MetricPrefix.*;
+import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.*;
 
 public class EnvironmentalParameterControlPanel extends GridPane implements Observer {

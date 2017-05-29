@@ -13,7 +13,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
@@ -24,6 +23,7 @@ import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricRea
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.units.UnitProvider;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;

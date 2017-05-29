@@ -1,12 +1,11 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 
-import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 
 /**
  * A chemical element or element is a species of atoms having the same number of protons. Generally no elements need
@@ -72,7 +71,7 @@ public class Element {
 
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight in
-     * {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     * {@link MolarMass#GRAM_PER_MOLE g/mol}.
      *
      * @param name         The name.
      * @param symbol       The symbol.

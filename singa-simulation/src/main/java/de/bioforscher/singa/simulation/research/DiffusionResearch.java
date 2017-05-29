@@ -10,9 +10,9 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

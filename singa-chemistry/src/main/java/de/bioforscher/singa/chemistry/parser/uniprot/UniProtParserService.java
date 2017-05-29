@@ -1,13 +1,16 @@
 package de.bioforscher.singa.chemistry.parser.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.Protein;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.measure.Quantity;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
@@ -42,12 +45,24 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
         return parser.parse();
     }
 
+    public static Quantity<MolarMass> fetchMolarMass(Identifier uniProtIdentifier) {
+        UniProtParserService parser = new UniProtParserService(uniProtIdentifier.toString());
+        parser.parseXML();
+        return ((UniProtContentHandler) parser.getXmlReader().getContentHandler()).getMass();
+    }
+
     public void setIdentifier(UniProtIdentifier identifier) {
         this.identifier = identifier;
     }
 
     @Override
     public Protein parse() {
+        parseXML();
+        // return parsing result
+        return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getProtein();
+    }
+
+    private void parseXML() {
         // create client and target
         fetchResource(this.identifier.toString() + ".xml");
         // parse xml
@@ -58,8 +73,8 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        // return parsing result
-        return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getChemicalSpecies();
     }
+
+
 
 }

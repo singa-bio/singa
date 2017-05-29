@@ -1,13 +1,10 @@
 package de.bioforscher.singa.chemistry.descriptive.features.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.descriptive.features.Feature;
-import de.bioforscher.singa.chemistry.descriptive.features.predictors.WilkeCorrelation;
-import de.bioforscher.singa.chemistry.descriptive.features.predictors.YoungCorrelation;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import org.junit.Test;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.FeatureKind.DIFFUSIVITY;
-import static de.bioforscher.singa.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -21,14 +18,13 @@ public class DiffusivityFeatureTest {
                 .molarMass(100)
                 .build();
         // assign feature
-        testSpecies.assignFeature(DIFFUSIVITY);
+        testSpecies.setFeature(Diffusivity.class);
         // get feature
-        Feature<?> feature = testSpecies.getFeature(DIFFUSIVITY);
+        Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
-        assertEquals(DIFFUSIVITY,feature.getKind());
-        assertEquals(WilkeCorrelation.getInstance().getSourceName(),feature.getDescriptor().getSourceName());
-        assertEquals(8.217150338823197E-6, feature.getValue(),0.0);
-        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getQuantity().getUnit());
+        assertEquals("Wilke Correlation", feature.getFeatureOrigin().getName());
+        assertEquals(8.217150338823197E-6, feature.getValue().doubleValue(),0.0);
+        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getUnit());
     }
 
     @Test
@@ -37,14 +33,13 @@ public class DiffusivityFeatureTest {
                 .molarMass(10000)
                 .build();
         // assign feature
-        testSpecies.assignFeature(DIFFUSIVITY);
+        testSpecies.setFeature(Diffusivity.class);
         // get feature
-        Feature<?> feature = testSpecies.getFeature(DIFFUSIVITY);
+        Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
-        assertEquals(DIFFUSIVITY,feature.getKind());
-        assertEquals(YoungCorrelation.getInstance().getSourceName(),feature.getDescriptor().getSourceName());
-        assertEquals(1.134227930559286E-6, feature.getValue(),0.0);
-        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getQuantity().getUnit());
+        assertEquals("Young Correlation",feature.getFeatureOrigin().getName());
+        assertEquals(1.134227930559286E-6, feature.getValue().doubleValue(),0.0);
+        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getUnit());
     }
 
 

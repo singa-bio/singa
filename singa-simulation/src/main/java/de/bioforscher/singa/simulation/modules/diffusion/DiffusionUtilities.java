@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.diffusion;
 
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 

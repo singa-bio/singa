@@ -1,10 +1,8 @@
 package de.bioforscher.singa.units.features.playground;
 
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.units.features.model.Feature;
 import de.bioforscher.singa.units.features.model.FeatureContainer;
 import de.bioforscher.singa.units.features.model.Featureable;
-import de.bioforscher.singa.units.features.molarmass.MolarMass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +18,7 @@ public class SomethingFeatureable implements Featureable {
     public SomethingFeatureable() {
         this.container = new FeatureContainer();
         this.availableFeatures = new HashSet<>();
-        this.availableFeatures.add(MolarMass.class);
-        this.availableFeatures.add(Diffusivity.class);
+        // add available features
     }
 
     @Override

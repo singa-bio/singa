@@ -1,7 +1,6 @@
 package de.bioforscher.singa.units;
 
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.units.features.molarmass.MolarMass;
+
 import de.bioforscher.singa.units.quantities.DynamicViscosity;
 import de.bioforscher.singa.units.quantities.MolarConcentration;
 import de.bioforscher.singa.units.quantities.ReactionRate;
@@ -41,16 +40,16 @@ public final class UnitProvider extends AbstractSystemOfUnits {
      * higher the diffusivity (of one substance with respect to another), the
      * faster they diffuse into each other.
      */
-    public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = addUnit(
-            new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND)), Diffusivity.class);
+//    public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = addUnit(
+//            new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND)), Diffusivity.class);
 
     /**
      * In chemistry, the molar mass is a physical property. It is defined as the
      * mass of a given substance (chemical element or chemical compound) divided
      * by its amount of substance.
      */
-    public static final Unit<MolarMass> GRAM_PER_MOLE = addUnit(
-            new ProductUnit<>(GRAM.divide(MOLE)), MolarMass.class);
+//    public static final Unit<MolarMass> GRAM_PER_MOLE = addUnit(
+//            new ProductUnit<>(GRAM.divide(MOLE)), MolarMass.class);
 
     /**
      * Molar concentration, also called molarity, amount concentration or

@@ -1,15 +1,15 @@
 package de.bioforscher.singa.simulation.modules.diffusion;
 
 import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
-import de.bioforscher.singa.units.UnitScaler;
-import de.bioforscher.singa.units.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

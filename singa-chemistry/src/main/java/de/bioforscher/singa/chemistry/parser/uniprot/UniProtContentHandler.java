@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.Protein;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.biology.Organism;
 import de.bioforscher.singa.core.biology.Taxon;
 import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
@@ -12,7 +13,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import tec.units.ri.quantity.Quantities;
 
+import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +68,7 @@ public class UniProtContentHandler implements ContentHandler {
         this.textComments = new ArrayList<>();
     }
 
-    Protein getChemicalSpecies() {
+    Protein getProtein() {
         // create base enzyme
         Protein protein;
         if (this.primaryIdentifier == null) {
@@ -90,6 +93,10 @@ public class UniProtContentHandler implements ContentHandler {
         this.textComments.forEach(protein::addAnnotation);
 
         return protein;
+    }
+
+    Quantity<MolarMass> getMass() {
+        return Quantities.getQuantity(this.molarMass, MolarMass.GRAM_PER_MOLE);
     }
 
     @Override
