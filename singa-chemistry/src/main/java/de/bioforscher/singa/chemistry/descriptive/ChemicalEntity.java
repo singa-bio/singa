@@ -223,6 +223,11 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
             return this.builderObject;
         }
 
+        public BuilderType assignFeature(Feature feature) {
+            this.topLevelObject.setFeature(feature);
+            return this.builderObject;
+        }
+
         public BuilderType molarMass(Quantity<MolarMass> molarMass) {
             this.topLevelObject.setMolarMass(molarMass);
             this.topLevelObject.setFeature(new MolarMass(molarMass, FeatureOrigin.MANUALLY_ANNOTATED));
