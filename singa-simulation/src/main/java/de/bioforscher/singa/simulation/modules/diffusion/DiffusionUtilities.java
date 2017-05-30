@@ -16,9 +16,7 @@ public final class DiffusionUtilities {
 
     private DiffusionUtilities() {
     }
-
-
-
+    
     public static Quantity<Length> calculateThresholdForDistance(Quantity<Time> timeStep, int maximalDegree,
                                                                  Quantity<MolarConcentration> maximalConcentration,
                                                                  Quantity<Diffusivity> maximalDiffusivity) {

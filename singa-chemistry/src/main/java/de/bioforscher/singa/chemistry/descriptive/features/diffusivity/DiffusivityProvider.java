@@ -31,7 +31,7 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
      * From: Kao, H. P., Abney, J. R., and Verkman, A. (1993). Determinants of the translational mobility of a small
      * solute in cell cytoplasm. The Journal of cell biology, 120(1):175-184.
      */
-    private static final Quantity<Dimensionless> STDF_CELL_WATER = Quantities.getQuantity(0.27, ONE);
+    public static final Quantity<Dimensionless> STDF_CELL_WATER = Quantities.getQuantity(0.27, ONE);
 
     public DiffusivityProvider() {
         setProvidedFeature(Diffusivity.class);

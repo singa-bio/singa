@@ -20,7 +20,8 @@ import javax.measure.quantity.Time;
 import java.util.Collections;
 import java.util.List;
 
-import static de.bioforscher.singa.units.UnitProvider.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static tec.units.ri.unit.MetricPrefix.MICRO;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
@@ -45,7 +46,7 @@ public class DiffusionResearch {
         // Species ethaneDiol = ChEBIParserService.parse("CHEBI:30742");
 
         // bundle species
-        List<Species> speciesList = Collections.singletonList(ammonia); //, ammonia, benzene, methanol, succinicAcid, ethaneDiol);
+        List<Species> speciesList = Collections.singletonList(ammonia);
 
         System.out.println("Initializing Graph ...");
 
@@ -111,7 +112,7 @@ public class DiffusionResearch {
         while (graph.getNode(observedNodeIdentifier).getConcentration(ammonia).getValue().doubleValue() < 0.25) {
             simulation.nextEpoch();
             if (simulation.getEpoch() % 1000 == 0 && simulation.getEpoch() > 1) {
-                System.out.println("Currently at: "+simulation.getElapsedTime());
+                System.out.println("Currently at: "+simulation.getElapsedTime().to(MICRO(SECOND)));
             }
         }
 

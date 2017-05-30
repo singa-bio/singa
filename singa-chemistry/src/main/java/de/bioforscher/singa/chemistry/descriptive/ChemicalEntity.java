@@ -71,8 +71,8 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         this.annotations = new ArrayList<>();
         this.container = new FeatureContainer();
         this.availableFeatures = new HashSet<>();
-        this.availableFeatures.add(MolarMass.class);
         this.availableFeatures.add(Diffusivity.class);
+        this.availableFeatures.add(MolarMass.class);
     }
 
     @Override

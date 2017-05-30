@@ -5,10 +5,10 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
+import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
@@ -27,19 +27,17 @@ import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
-    private Map<ChemicalEntity<?>, Quantity<Diffusivity>> diffusionCoefficients;
-
+    private Set<ChemicalEntity<?>> chemicalEntities;
 
     public FreeDiffusion() {
-        this.diffusionCoefficients = new HashMap<>();
-
+        this.chemicalEntities = new HashSet<>();
     }
 
     public void prepareDiffusionCoefficients(Set<ChemicalEntity<?>> entities) {
+        this.chemicalEntities = entities;
         for (ChemicalEntity entity : entities) {
             // determine diffusion coefficients
-            Quantity<Diffusivity> diffusionCoefficient = determineDiffusionCoefficient(entity);
-            this.diffusionCoefficients.put(entity, diffusionCoefficient);
+            setUpDiffusivity(entity);
         }
     }
 
@@ -71,9 +69,9 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
             concentration += neighbour.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
         }
         // entering amount
-        final double enteringConcentration = concentration * getDiffusionCoefficient(entity).getValue().doubleValue();
+        final double enteringConcentration = concentration * getDiffusivity(entity).getValue().doubleValue();
         // calculate leaving amount
-        final double leavingConcentration = numberOfNeighbors * getDiffusionCoefficient(entity).getValue().doubleValue() * currentConcentration;
+        final double leavingConcentration = numberOfNeighbors * getDiffusivity(entity).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
         final double nextConcentration = enteringConcentration - leavingConcentration + currentConcentration;
         return new PotentialUpdate(node, cellSection, entity, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
@@ -86,19 +84,17 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
      * @param entity The entity.
      * @return The Diffusion coefficient.
      */
-    private Quantity<Diffusivity> getDiffusionCoefficient(ChemicalEntity entity) {
-        if (this.diffusionCoefficients.containsKey(entity)) {
-            return this.diffusionCoefficients.get(entity);
-        } else {
-            Quantity<Diffusivity> coefficient = determineDiffusionCoefficient(entity);
-            this.diffusionCoefficients.put(entity, coefficient);
-            return coefficient;
+    private Quantity<Diffusivity> getDiffusivity(ChemicalEntity<?> entity) {
+        if (!this.chemicalEntities.contains(entity)) {
+            this.chemicalEntities.add(entity);
+            setUpDiffusivity(entity);
         }
+        return entity.getFeature(Diffusivity.class).getScaledQuantity();
     }
 
     @Override
     public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        return this.diffusionCoefficients.keySet();
+        return this.chemicalEntities;
     }
 
     /**
@@ -107,48 +103,41 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
      * @param entity The entity.
      * @return The diffusivity of the entity.
      */
-    private Quantity<Diffusivity> determineDiffusionCoefficient(ChemicalEntity entity) {
-        Quantity<Diffusivity> diffusivityApproximation = DiffusionUtilities.estimateDiffusivity(entity);
-        return scaleDiffusivity(diffusivityApproximation);
-    }
-
-    /**
-     * Scales the given diffusivity to the dimensions and features of the system.
-     *
-     * @param diffusivity The diffusivity to be scaled.
-     * @return The scaled diffusivity.
-     */
-    private Quantity<Diffusivity> scaleDiffusivity(Quantity<Diffusivity> diffusivity) {
-        Quantity<Diffusivity> correlatedDiffusivity = UnitScaler.rescaleDiffusivity(diffusivity,
-                EnvironmentalParameters.getInstance().getTimeStep(),
+    private void setUpDiffusivity(ChemicalEntity<?> entity) {
+        entity.setFeature(Diffusivity.class);
+        Diffusivity feature = entity.getFeature(Diffusivity.class);
+        feature.scale(EnvironmentalParameters.getInstance().getTimeStep(),
                 EnvironmentalParameters.getInstance().getNodeDistance());
-        // artificially slow if this is a cellular environment
-        if (EnvironmentalParameters.getInstance().isCellularEnvironment()) {
-            correlatedDiffusivity = correlatedDiffusivity.multiply(DiffusionUtilities.STDF_CELL_WATER.getValue());
-        }
-        return correlatedDiffusivity;
-    }
-
-    public void fixDiffusionCoefficientForEntity(ChemicalEntity entity, Quantity<Diffusivity> diffusivity) {
-        this.diffusionCoefficients.put(entity, scaleDiffusivity(diffusivity));
     }
 
     public Quantity<Diffusivity> getMaximalDiffusivity() {
         // FIXME this is not good
-        return Quantities.getQuantity(this.diffusionCoefficients.values().stream()
-                .mapToDouble(diffusivity -> diffusivity.getValue().doubleValue())
-                .max().orElse(0.0), this.diffusionCoefficients.get(this.diffusionCoefficients.keySet().iterator().next
-                ()).getUnit());
+        return Quantities.getQuantity(this.chemicalEntities.stream()
+                .mapToDouble(entity -> entity.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue())
+                .max().orElse(0.0), Diffusivity.SQUARE_CENTIMETER_PER_SECOND);
     }
 
     public ChemicalEntity getEntityWithMaximalDiffusivity() {
         Quantity<Diffusivity> maximalDiffusivity = getMaximalDiffusivity();
-        return this.diffusionCoefficients.entrySet()
-                .stream()
-                .filter(entry -> Objects.equals(entry.getValue(), maximalDiffusivity))
-                .map(Map.Entry::getKey)
-                .findFirst().get();
+        return this.chemicalEntities.stream()
+                .filter(entity -> Objects.equals(entity.getFeature(Diffusivity.class).getScaledQuantity(), maximalDiffusivity))
+                .findFirst().orElse(null);
 
+    }
+
+    public void fixDiffusionCoefficientForEntity(ChemicalEntity entity, Quantity<Diffusivity> diffusivityQuantity) {
+        Diffusivity diffusivity = new Diffusivity(diffusivityQuantity, FeatureOrigin.MANUALLY_ANNOTATED);
+        diffusivity.scale(EnvironmentalParameters.getInstance().getTimeStep(),
+                EnvironmentalParameters.getInstance().getNodeDistance());
+        entity.setFeature(diffusivity);
+        this.chemicalEntities.add(entity);
+    }
+
+    public void rescale() {
+        for (ChemicalEntity<?> entity : this.chemicalEntities) {
+            entity.getFeature(Diffusivity.class).scale(EnvironmentalParameters.getInstance().getTimeStep(),
+                    EnvironmentalParameters.getInstance().getNodeDistance());
+        }
     }
 
 }

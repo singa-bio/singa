@@ -8,7 +8,6 @@ import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdates;
-import de.bioforscher.singa.units.UnitProvider;
 import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -26,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 
 /**
  * The chart is used for visualization of BioNode concentrations changes over
@@ -116,7 +117,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     private void configureYAxis() {
-        this.getYAxis().setLabel("Molar concentration in " + UnitProvider.GRAM_PER_MOLE.toString());
+        this.getYAxis().setLabel("Molar concentration in " + GRAM_PER_MOLE.toString());
     }
 
     public void setObservedSpecies(Set<ChemicalEntity<?>> observedSpecies) {

@@ -7,6 +7,8 @@ import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
 
 import static tec.units.ri.unit.Units.METRE;
 import static tec.units.ri.unit.Units.SECOND;
@@ -22,6 +24,8 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
 
+    private Quantity<Diffusivity> scaledQuantity;
+
     /**
      * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
      * for the first time.
@@ -32,6 +36,19 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
         super(diffusivityQuantity, origin);
+    }
+
+    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
+        // transform to specified unit
+        Quantity<Diffusivity> scaledQuantity = getFeatureContent()
+                .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+        // transform to specified amount
+        this.scaledQuantity = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue())
+                .multiply(targetTimeScale.getValue());
+    }
+
+    public Quantity<Diffusivity> getScaledQuantity() {
+        return this.scaledQuantity;
     }
 
     @Override

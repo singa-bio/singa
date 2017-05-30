@@ -11,6 +11,8 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+
 /**
  * A factory class used to create graphs and convert other things to graphs.
  *
@@ -143,6 +145,8 @@ public class GraphFactory {
             }
         }
 
+        Collection<RegularNode> nodes = graph.getNodes();
+
         // horizontal connections
         logger.debug("Adding horizontal connections ...");
         int horizontalCounter = 0;
@@ -150,7 +154,7 @@ public class GraphFactory {
             for (int column = 0; column < rows; column++) {
                 RegularNode source = graph.getNode(horizontalCounter);
                 RegularNode target = graph.getNode(horizontalCounter + 1);
-                if (horizontalCounter < graph.getNodes().size() - 1) {
+                if (horizontalCounter < nodes.size() - 1) {
                     if (horizontalCounter % rows != rows - 1) {
                         graph.addEdgeBetween(horizontalCounter, source, target);
                     }
@@ -166,7 +170,7 @@ public class GraphFactory {
             for (int column = 0; column < rows; column++) {
                 RegularNode source = graph.getNode(verticalCounter);
                 RegularNode target = graph.getNode(verticalCounter + rows);
-                if (verticalCounter + rows < graph.getNodes().size()) {
+                if (verticalCounter + rows < nodes.size()) {
                     graph.addEdgeBetween(horizontalCounter + verticalCounter + 1, source, target);
                 }
                 verticalCounter++;

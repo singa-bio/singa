@@ -62,7 +62,7 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(100, NANO(SECOND)));
+        this.simulation = SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
