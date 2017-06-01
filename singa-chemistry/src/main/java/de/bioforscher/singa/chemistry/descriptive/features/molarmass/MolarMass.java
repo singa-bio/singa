@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 import de.bioforscher.singa.units.features.model.AbstractFeature;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.features.model.FeatureRegistry;
+import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -26,8 +27,12 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);
     }
 
-    public MolarMass(Quantity<MolarMass> molarMassQuantity, FeatureOrigin featureOrigin) {
-        super(molarMassQuantity, featureOrigin);
+    public MolarMass(Quantity<MolarMass> quantity, FeatureOrigin featureOrigin) {
+        super(quantity, featureOrigin);
+    }
+
+    public MolarMass(double quantity, FeatureOrigin featureOrigin) {
+        super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), featureOrigin);
     }
 
     @Override

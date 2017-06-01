@@ -1,15 +1,16 @@
 package de.bioforscher.singa.chemistry.descriptive.molecules;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.descriptive.estimations.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 
-
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -74,6 +75,13 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
                 .filter(bond -> bond.containsNode(source) && bond.containsNode(target))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
+    }
+
+    public MoleculeBond getEdgeBetween(int sourceIdentifier, int targetIdentifier) {
+        return this.getEdges().stream()
+                .filter(bond -> bond.containsNode(sourceIdentifier) && bond.containsNode(targetIdentifier))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + sourceIdentifier + " and " + targetIdentifier + "."));
     }
 
     public int countAtomsOfElement(Element element) {

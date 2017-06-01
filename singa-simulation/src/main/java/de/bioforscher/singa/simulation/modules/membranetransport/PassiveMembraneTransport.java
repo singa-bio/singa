@@ -1,10 +1,10 @@
 package de.bioforscher.singa.simulation.modules.membranetransport;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.estimations.OctanolWaterPartition;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
-import de.bioforscher.singa.chemistry.parser.smiles.SmilesParser;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;

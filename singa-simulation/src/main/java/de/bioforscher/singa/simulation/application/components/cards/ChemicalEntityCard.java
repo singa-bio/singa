@@ -1,7 +1,8 @@
 package de.bioforscher.singa.simulation.application.components.cards;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIImageService;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIImageService;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -55,7 +56,7 @@ public class ChemicalEntityCard extends GridPane {
         nameText.setFont(Font.font(null, FontWeight.BOLD, 16));
         TextFlow nameFlow = new TextFlow(nameText);
         Text identifierText = new Text("Identifier: " + this.chemicalEntity.getIdentifier().toString());
-        Label speciesWeight = new Label("Weight: " + this.chemicalEntity.getMolarMass().toString());
+        Label speciesWeight = new Label("Weight: " + this.chemicalEntity.getFeature(MolarMass.class).toString());
         this.informationBox.setSpacing(10);
         this.informationBox.getChildren().addAll(nameFlow, identifierText, speciesWeight);
     }

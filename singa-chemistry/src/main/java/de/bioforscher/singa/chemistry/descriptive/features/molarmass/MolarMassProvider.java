@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 
-import de.bioforscher.singa.chemistry.descriptive.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.Protein;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.ChEBIDatabase;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.UniProtDatabase;
+import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIDatabase;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtDatabase;
 import de.bioforscher.singa.units.features.model.FeatureProvider;
 import de.bioforscher.singa.units.features.model.Featureable;
 

@@ -1,11 +1,12 @@
 package de.bioforscher.singa.simulation.parser.sbml;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Protein;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.parser.uniprot.UniProtParserService;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
@@ -18,6 +19,7 @@ import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLAssignmentRuleC
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLReactionConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLUnitConverter;
+import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import org.sbml.jsbml.CVTerm;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
@@ -38,6 +40,8 @@ import java.util.regex.Matcher;
 public class SBMLParser {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLParser.class);
+    private static final FeatureOrigin defaultOrigin = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION,
+                    "Defaulted during SBML Parsing, due to lack of information.", "none");
 
     private SBMLDocument document;
 
@@ -262,9 +266,10 @@ public class SBMLParser {
     }
 
     private ChemicalEntity createReferenceEntity(org.sbml.jsbml.Species species) {
-        species.getName();
-        species.getId();
-        return new Species.Builder(species.getId()).name(species.getName()).molarMass(1.0).build();
+        return new Species.Builder(species.getId())
+                .name(species.getName())
+                .assignFeature(new MolarMass(10, defaultOrigin))
+                .build();
     }
 
     private void parseAndAddAllComponents(String identifier, CVTerm cvTerm) {
@@ -322,7 +327,9 @@ public class SBMLParser {
             logger.debug("Parsed Chemical Entity as {}", parsedPart);
             this.entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
-            Species species = new Species.Builder(identifier).molarMass(10.0).build();
+            Species species = new Species.Builder(identifier)
+                    .assignFeature(new MolarMass(10, defaultOrigin))
+                    .build();
             logger.debug("Parsed Chemical Entity as {}", species);
             this.entities.put(identifier, species);
         } else {

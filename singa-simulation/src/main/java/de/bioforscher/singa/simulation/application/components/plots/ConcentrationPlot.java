@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.application.components.plots;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.simulation.application.SingaPreferences;
 import de.bioforscher.singa.simulation.application.renderer.ColorManager;

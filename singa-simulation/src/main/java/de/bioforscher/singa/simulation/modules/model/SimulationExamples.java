@@ -1,8 +1,9 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.chemistry.descriptive.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -23,6 +24,7 @@ import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricRea
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.units.UnitProvider;
+import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,12 +162,10 @@ public class SimulationExamples {
         // set up arbitrary species
         Species speciesA = new Species.Builder("CHEBI:00001")
                 .name("A")
-                .molarMass(10.0)
                 .build();
 
         Species speciesB = new Species.Builder("CHEBI:00002")
                 .name("B")
-                .molarMass(10.0)
                 .build();
 
         // setup graph with a single node
@@ -225,7 +225,7 @@ public class SimulationExamples {
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .molarMass(82142.0)
+                .assignFeature(new MolarMass(82142, FeatureOrigin.MANUALLY_ANNOTATED))
                 .addSubstrate(fructosePhosphate)
                 .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
                 .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))

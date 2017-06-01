@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedEdge;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;

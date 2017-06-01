@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 import de.bioforscher.singa.units.features.model.AbstractFeature;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.features.model.FeatureRegistry;
+import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -36,6 +37,10 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
         super(diffusivityQuantity, origin);
+    }
+
+    public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
+        super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETER_PER_SECOND), origin);
     }
 
     public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {

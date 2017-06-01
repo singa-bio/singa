@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.application.components.panes;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntities;
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntities;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.simulation.application.BioGraphSimulation;
 import de.bioforscher.singa.simulation.application.IconProvider;
 import de.bioforscher.singa.simulation.application.components.cards.GeneralEntityCard;

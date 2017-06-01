@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventEmitter;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.research;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
 import de.bioforscher.singa.core.parameters.*;
 import de.bioforscher.singa.mathematics.algorithms.optimization.AbstractGridSearch;
 import de.bioforscher.singa.mathematics.combinatorics.Permutations;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.diffusion;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -111,7 +111,6 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     }
 
     public Quantity<Diffusivity> getMaximalDiffusivity() {
-        // FIXME this is not good
         return Quantities.getQuantity(this.chemicalEntities.stream()
                 .mapToDouble(entity -> entity.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue())
                 .max().orElse(0.0), Diffusivity.SQUARE_CENTIMETER_PER_SECOND);
@@ -122,7 +121,6 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         return this.chemicalEntities.stream()
                 .filter(entity -> Objects.equals(entity.getFeature(Diffusivity.class).getScaledQuantity(), maximalDiffusivity))
                 .findFirst().orElse(null);
-
     }
 
     public void fixDiffusionCoefficientForEntity(ChemicalEntity entity, Quantity<Diffusivity> diffusivityQuantity) {
@@ -131,13 +129,6 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
                 EnvironmentalParameters.getInstance().getNodeDistance());
         entity.setFeature(diffusivity);
         this.chemicalEntities.add(entity);
-    }
-
-    public void rescale() {
-        for (ChemicalEntity<?> entity : this.chemicalEntities) {
-            entity.getFeature(Diffusivity.class).scale(EnvironmentalParameters.getInstance().getTimeStep(),
-                    EnvironmentalParameters.getInstance().getNodeDistance());
-        }
     }
 
 }

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -11,7 +11,6 @@ import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

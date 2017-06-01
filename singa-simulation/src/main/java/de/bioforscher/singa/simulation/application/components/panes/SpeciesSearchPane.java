@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.application.components.panes;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBISearchService;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBISearchService;
 import de.bioforscher.singa.simulation.application.components.cards.ChemicalEntityCard;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
