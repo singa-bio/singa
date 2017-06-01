@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
@@ -30,6 +31,10 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
      * @return The centroid as an {@link UncertainAtom}.
      */
     Atom determineCentroid(LeafSubstructure<?, ?> leafSubstructure) {
+        // immediately return atom if part of structure
+        if (leafSubstructure.containsAtomWithName(AtomName.CO)) {
+            return leafSubstructure.getAtomByName(AtomName.CO);
+        }
         logger.debug("obtaining centroid representation for {}", leafSubstructure);
         return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                 ElementProvider.UNKOWN,

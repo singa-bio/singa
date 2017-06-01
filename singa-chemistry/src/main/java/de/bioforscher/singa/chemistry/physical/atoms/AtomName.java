@@ -195,7 +195,7 @@ public enum AtomName {
     N7("N7", NITROGEN),
     N9("N9", NITROGEN),
     ND1("ND1", NITROGEN),
-    ND2("ND2",NITROGEN),
+    ND2("ND2", NITROGEN),
     NE("NE", NITROGEN),
     NE1("NE1", NITROGEN),
     NE2("NE2", NITROGEN),
@@ -240,7 +240,12 @@ public enum AtomName {
     SD("SD", SULFUR),
 
     // non standard
-    UNK("UNK", UNKOWN);
+    UNK("UNK", UNKOWN),
+
+    // artificial (representation types)
+    CO("CO", UNKOWN),
+    LH("LH", UNKOWN),
+    SC("SC", UNKOWN);
 
     public static EnumSet<AtomName> ALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, HA, HB1, HB2, HB3, HN, HXT, THREEHB,
             D, D1, D2, D3, DA, DB1, DB2, DB3, C, CA, CB, N, O, OXT);
@@ -252,7 +257,7 @@ public enum AtomName {
 
 
     public static EnumSet<AtomName> ASPARAGINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD21,
-            HD22, HDD1, HDD2, HN, HXT, TWOHG, D, D2, DA, DB2, DB3, DD21, DD22, DDD1, DDD2, C,  CA, CB, CG, N, ND2, O,
+            HD22, HDD1, HDD2, HN, HXT, TWOHG, D, D2, DA, DB2, DB3, DD21, DD22, DDD1, DDD2, C, CA, CB, CG, N, ND2, O,
             OD1, OXT);
 
     public static EnumSet<AtomName> ASPARTIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA2, HA3, HB1, HB2, HB3, HD2,
@@ -331,19 +336,19 @@ public enum AtomName {
         this.element = element;
     }
 
+    public static AtomName getAtomNameFromString(String atomName) {
+        // FIXME this can be sped up with a static hash map using the string atom name as key
+        return Arrays.stream(values()).filter(name -> atomName.trim().equals(name.getName()))
+                .findAny()
+                .orElse(UNK);
+    }
+
     public String getName() {
         return this.name;
     }
 
     public Element getElement() {
         return this.element;
-    }
-
-    public static AtomName getAtomNameFromString(String atomName) {
-        // FIXME this can be sped up with a static hash map using the string atom name as key
-        return Arrays.stream(values()).filter(name -> atomName.trim().equals(name.getName()))
-                .findAny()
-                .orElse(UNK);
     }
 
 }

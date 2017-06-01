@@ -33,7 +33,7 @@ public class StructureSelector {
         return new Selector(chain);
     }
 
-    public static ResidueStep selectFrom(StructuralMotif structuralMotif) {
+    public static StructuralModelStep selectFrom(StructuralMotif structuralMotif) {
         return new Selector(structuralMotif);
     }
 
@@ -126,6 +126,7 @@ public class StructureSelector {
             this.atomContainer = atomContainer;
         }
 
+        // FIXME the selector is currently malfunctioning for structural motifs
         public Selector(StructuralMotif structuralMotif) {
             this.structuralMotif = structuralMotif;
         }

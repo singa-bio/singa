@@ -4,6 +4,7 @@ package de.bioforscher.singa.chemistry.physical.branches;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,5 +58,19 @@ public class StructuralMotifsTest {
                 .map(leaves -> StructuralMotif.fromLeaves(0, leaves))
                 .collect(Collectors.toList());
         assertEquals(StructuralMotifs.calculateRmsdMatrix(input, false).getRowDimension(), input.size());
+    }
+
+    @Test
+    public void shouldRetainSubstructureOrdering() {
+        LeafSubstructure<?, ?> aminoAcid1 = this.structuralMotif.getLeafSubstructures().get(this.structuralMotif.getLeafSubstructures().size() - 1);
+        LeafSubstructure<?, ?> aminoAcid2 = this.structuralMotif.getLeafSubstructures().get(0);
+        List<LeafSubstructure<?, ?>> aminoAcids = new ArrayList<>();
+        aminoAcids.add(aminoAcid1);
+        aminoAcids.add(aminoAcid2);
+        StructuralMotif motif = StructuralMotif.fromLeaves(aminoAcids);
+        assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
+                > motif.getLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
+        assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
+                < motif.getOrderedLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
     }
 }

@@ -11,6 +11,8 @@ import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -26,8 +28,11 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
 
     private static final int DEFAULT_IDENTIFIER = 0;
 
+    public LinkedHashMap<Integer, Substructure<?>> orderedSubstructures;
+
     public StructuralMotif(int identifier) {
         super(identifier);
+        this.orderedSubstructures = new LinkedHashMap<>();
     }
 
     public StructuralMotif(StructuralMotif branchSubstructure) {
@@ -96,6 +101,24 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         return fromLeaves(DEFAULT_IDENTIFIER, leafSubstructures);
     }
 
+    public List<LeafSubstructure<?, ?>> getOrderedLeafSubstructures() {
+        List<LeafSubstructure<?, ?>> leafSubstructures = new ArrayList<>();
+        for (Substructure substructure : this.orderedSubstructures.values()) {
+            if (substructure instanceof LeafSubstructure) {
+                leafSubstructures.add((LeafSubstructure) substructure);
+            } else if (substructure instanceof BranchSubstructure) {
+                leafSubstructures.addAll(((BranchSubstructure<?>) substructure).getLeafSubstructures());
+            }
+        }
+        return leafSubstructures;
+    }
+
+    @Override
+    public void addSubstructure(Substructure substructure) {
+        this.substructures.put(substructure.getIdentifier(), substructure);
+        this.orderedSubstructures.put(substructure.getIdentifier(), substructure);
+    }
+
     @Override
     public String toString() {
         return getSubstructures().stream()
@@ -107,7 +130,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     }
 
     /**
-     * Returns the size of the structural motif (the number of contained     * {@link LeafSubstructure}s.
+     * Returns the size of the structural motif (the number of contained {@link LeafSubstructure}s).
      *
      * @return The size of the motif.
      */

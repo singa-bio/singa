@@ -45,7 +45,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateLastHeavySidechainSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
-                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN));
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN));
         assertEquals(0.5706912104847501, superimposition.getRmsd(), 0E-9);
     }
 
@@ -53,7 +53,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateSidechainCentroidSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
-                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID));
         assertEquals(0.05433403549113087, superimposition.getRmsd(), 0E-9);
     }
 
@@ -87,9 +87,9 @@ public class SubstructureSuperimposerTest {
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, isSideChain());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
-        assertEquals(superimposition.getMappedCandidate().stream()
+        assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
-                .sum(), 12);
+                .sum());
         assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 

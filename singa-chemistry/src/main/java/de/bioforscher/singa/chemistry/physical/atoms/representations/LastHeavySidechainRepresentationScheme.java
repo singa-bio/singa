@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
@@ -23,6 +24,10 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
 
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
+        // immediately return atom if part of structure
+        if (leafSubstructure.containsAtomWithName(AtomName.LH)) {
+            return leafSubstructure.getAtomByName(AtomName.LH);
+        }
         if (!(leafSubstructure instanceof AminoAcid) || leafSubstructure.getAllAtoms().stream().noneMatch(
                 AtomFilter.isAlphaCarbon())) {
             logger.warn("fallback for ", leafSubstructure);
@@ -52,6 +57,6 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
 
     @Override
     public RepresentationSchemeType getType() {
-        return RepresentationSchemeType.LAST_HEAVY_SIDECHAIN;
+        return RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN;
     }
 }

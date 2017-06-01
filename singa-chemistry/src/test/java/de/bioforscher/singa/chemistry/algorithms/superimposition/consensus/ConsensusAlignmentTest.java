@@ -2,10 +2,12 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.consensus;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,6 +55,14 @@ public class ConsensusAlignmentTest {
     @Test
     public void shouldCreateConsensusAlignment() throws IOException {
         ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.6);
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getStructuralMotif().getLeafSubstructures();
+        consensusAlignment.writeClusters(this.folder.getRoot().toPath());
+        assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
+    }
+
+    @Test
+    public void shouldCreateConsensusAlignmentWithRepresentationScheme() throws IOException {
+        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.2, true, StructuralEntityFilter.AtomFilter.isArbitrary(), RepresentationSchemeType.CB, true);
         List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getStructuralMotif().getLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
