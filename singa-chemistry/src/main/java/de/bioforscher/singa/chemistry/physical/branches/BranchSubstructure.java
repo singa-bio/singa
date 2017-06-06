@@ -103,7 +103,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     public BranchSubstructure(BranchSubstructure<SubstructureType> branchSubstructure) {
         this.identifier = branchSubstructure.getIdentifier();
-        this.substructures = new HashMap<>();
+        this.substructures = new TreeMap<>();
         for (Substructure structure : branchSubstructure.substructures.values()) {
             this.substructures.put(structure.getIdentifier(), structure.getCopy());
         }

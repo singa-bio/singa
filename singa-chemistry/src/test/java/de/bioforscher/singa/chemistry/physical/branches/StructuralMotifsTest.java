@@ -28,11 +28,11 @@ public class StructuralMotifsTest {
 
     @Before
     public void setUp() throws Exception {
-        Structure bindingSiteStructure1 = StructureParser.local()
+        Structure motifStructure = StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeaves(1, bindingSiteStructure1.getAllLeaves());
+        this.structuralMotif = StructuralMotif.fromLeaves(1, motifStructure.getAllLeaves());
     }
 
     @Test
@@ -58,19 +58,5 @@ public class StructuralMotifsTest {
                 .map(leaves -> StructuralMotif.fromLeaves(0, leaves))
                 .collect(Collectors.toList());
         assertEquals(StructuralMotifs.calculateRmsdMatrix(input, false).getRowDimension(), input.size());
-    }
-
-    @Test
-    public void shouldRetainSubstructureOrdering() {
-        LeafSubstructure<?, ?> aminoAcid1 = this.structuralMotif.getLeafSubstructures().get(this.structuralMotif.getLeafSubstructures().size() - 1);
-        LeafSubstructure<?, ?> aminoAcid2 = this.structuralMotif.getLeafSubstructures().get(0);
-        List<LeafSubstructure<?, ?>> aminoAcids = new ArrayList<>();
-        aminoAcids.add(aminoAcid1);
-        aminoAcids.add(aminoAcid2);
-        StructuralMotif motif = StructuralMotif.fromLeaves(aminoAcids);
-        assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                > motif.getLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
-        assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                < motif.getOrderedLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
     }
 }

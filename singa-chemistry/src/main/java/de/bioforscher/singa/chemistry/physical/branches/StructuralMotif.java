@@ -37,6 +37,11 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
 
     public StructuralMotif(StructuralMotif branchSubstructure) {
         super(branchSubstructure);
+        this.orderedSubstructures = new LinkedHashMap<>();
+        for (LeafSubstructure<?, ?> leafSubstructure : branchSubstructure.getOrderedLeafSubstructures()) {
+            this.orderedSubstructures.put(leafSubstructure.getIdentifier(),
+                    getSubstructures().get(getSubstructures().indexOf(leafSubstructure)));
+        }
     }
 
     /**
@@ -101,6 +106,22 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
         return fromLeaves(DEFAULT_IDENTIFIER, leafSubstructures);
     }
 
+    @Override
+    public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        super.removeLeafSubstructure(leafIdentifier);
+        // has to be done for structural motifs: remove desired leave substructure also from ordered storage
+        this.orderedSubstructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier()
+                == leafIdentifier.getIdentifier());
+    }
+
+    /**
+     * Returns the {@link LeafSubstructure}s of this {@link StructuralMotif} exactly in the order they were given
+     * upon creation. This is a special implementation of {@link StructuralMotif} and should be used if one wants to
+     * ensure a correct predefined order when working with the {@link LeafSubstructure}s independent of their sequence
+     * order.
+     *
+     * @return The ordered {@link LeafSubstructure}s of this {@link StructuralMotif}.
+     */
     public List<LeafSubstructure<?, ?>> getOrderedLeafSubstructures() {
         List<LeafSubstructure<?, ?>> leafSubstructures = new ArrayList<>();
         for (Substructure substructure : this.orderedSubstructures.values()) {

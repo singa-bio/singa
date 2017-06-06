@@ -46,24 +46,38 @@ public class ConsensusAlignmentTest {
                 .collect(Collectors.toList());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ConsensusException.class)
     public void shouldFailWithInputOfDifferentSize() {
         this.input.get(0).addSubstructure(new AminoAcid(0, AminoAcidFamily.ALANINE));
-        new ConsensusAlignment(this.input);
+        ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .run();
     }
 
     @Test
     public void shouldCreateConsensusAlignment() throws IOException {
-        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.6);
-        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getStructuralMotif().getLeafSubstructures();
+        ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
+                .clusterCutoff(0.6)
+                .run();
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }
 
     @Test
     public void shouldCreateConsensusAlignmentWithRepresentationScheme() throws IOException {
-        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.2, true, StructuralEntityFilter.AtomFilter.isArbitrary(), RepresentationSchemeType.CB, true);
-        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getStructuralMotif().getLeafSubstructures();
+        ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .representationSchemeType(RepresentationSchemeType.CB)
+                .clusterCutoff(0.2)
+                .alignWithinClusters(true)
+                .idealSuperimposition(true)
+                .run();
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }
