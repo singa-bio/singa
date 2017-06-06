@@ -3,10 +3,7 @@ package de.bioforscher.singa.mathematics.vectors;
 import de.bioforscher.singa.mathematics.concepts.Addable;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -59,6 +56,48 @@ public class Vectors {
         double y = ThreadLocalRandom.current().nextDouble();
         double z = ThreadLocalRandom.current().nextDouble();
         return new Vector3D(x, y, z);
+    }
+
+    /**
+     * Returns the average value of an {@link Vector}s elements or Double.NaN if not present.
+     *
+     * @param vector The {@link Vector} that holds the values.
+     * @return The average of all {@link Vector} elements.
+     */
+    public static double getAverage(Vector vector) {
+        OptionalDouble optionalAverage = vector.streamElements().average();
+        if (optionalAverage.isPresent()) {
+            return optionalAverage.getAsDouble();
+        } else {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * Returns the standard deviation of an {@link Vector}s elements.
+     *
+     * @param vector The {@link Vector} that holds the values.
+     * @return The standard deviation of all {@link Vector} elements.
+     */
+    public static double getStandardDeviation(Vector vector) {
+        double mean = getAverage(vector);
+        double dv = 0D;
+        for (double d : vector.getElements()) {
+            double dm = d - mean;
+            dv += dm * dm;
+        }
+        return Math.sqrt(dv / (vector.getDimension() - 1));
+    }
+
+    /**
+     * Returns the variance of an {@link Vector}s elements.
+     *
+     * @param vector The {@link Vector} that holds the values.
+     * @return The variance of all {@link Vector} elements.
+     */
+    public static double getVariance(Vector vector) {
+        double standardDeviation = getStandardDeviation(vector);
+        return standardDeviation * standardDeviation;
     }
 
     /**
