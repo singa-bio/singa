@@ -1,7 +1,10 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
+import de.bioforscher.singa.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
@@ -28,9 +31,8 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         if (leafSubstructure.containsAtomWithName(AtomName.LH)) {
             return leafSubstructure.getAtomByName(AtomName.LH);
         }
-        if (!(leafSubstructure instanceof AminoAcid) || leafSubstructure.getAllAtoms().stream().noneMatch(
-                AtomFilter.isAlphaCarbon())) {
-            logger.warn("fallback for ", leafSubstructure);
+        if (!(leafSubstructure instanceof AminoAcid) || leafSubstructure.getAllAtoms().stream()
+                .noneMatch(AtomFilter.isAlphaCarbon())) {
             return determineCentroid(leafSubstructure);
         }
         if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
@@ -52,7 +54,11 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
             return atomDistanceMatrix.getColumnLabel(0);
         }
         int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(((AminoAcid) leafSubstructure).getAlphaCarbon()));
-        return atomDistanceMatrix.getColumnLabel(maximalElementIndex);
+        Atom referenceAtom = atomDistanceMatrix.getColumnLabel(maximalElementIndex);
+        return new UncertainAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size()-1).getIdentifier(),
+                ElementProvider.UNKOWN,
+                RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
+                referenceAtom.getPosition());
     }
 
     @Override

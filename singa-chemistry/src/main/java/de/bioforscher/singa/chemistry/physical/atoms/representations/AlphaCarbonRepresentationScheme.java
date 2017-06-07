@@ -27,7 +27,7 @@ public class AlphaCarbonRepresentationScheme extends AbstractRepresentationSchem
         return leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isAlphaCarbon())
                 .findAny()
-                .orElseGet(() -> determineCentroid(leafSubstructure));
+                .orElseGet(() -> determineCentroid(leafSubstructure)).getCopy();
     }
 
     @Override

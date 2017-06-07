@@ -4,6 +4,7 @@ package de.bioforscher.singa.chemistry.physical.atoms.representations;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
@@ -27,6 +28,7 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
 
     /**
      * Determines the centroid (<b>EXCLUDING</b> hydrogen atoms) of the given {@link LeafSubstructure}.
+     *
      * @param leafSubstructure The {@link LeafSubstructure} for which the centroid should be computed.
      * @return The centroid as an {@link UncertainAtom}.
      */

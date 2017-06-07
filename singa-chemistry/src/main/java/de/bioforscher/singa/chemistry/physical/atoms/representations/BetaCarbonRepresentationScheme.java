@@ -58,7 +58,7 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
         return leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isBetaCarbon())
                 .findAny()
-                .orElseGet(() -> determineCentroid(leafSubstructure));
+                .orElseGet(() -> determineCentroid(leafSubstructure)).getCopy();
     }
 
     @Override

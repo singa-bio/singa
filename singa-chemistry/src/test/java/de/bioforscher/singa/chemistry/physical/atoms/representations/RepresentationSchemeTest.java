@@ -53,7 +53,7 @@ public class RepresentationSchemeTest {
     }
 
     @Test
-    public void shouldRepresentSidechaiCentroid() throws IOException {
+    public void shouldRepresentSideChainCentroid() throws IOException {
         AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
         RepresentationScheme sidechainCentroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID);
         assertArrayEquals(new double[]{-0.22149999999999997, 1.09525, -0.906125},
