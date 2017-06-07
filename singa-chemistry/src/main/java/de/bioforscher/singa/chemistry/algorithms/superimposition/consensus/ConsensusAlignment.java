@@ -127,7 +127,7 @@ public class ConsensusAlignment {
      */
     private static ConsensusContainer toContainer(StructuralMotif structuralMotif) {
         // use copy of given structural motif
-        return new ConsensusContainer(structuralMotif.getCopy());
+        return new ConsensusContainer(structuralMotif.getCopy(), false);
     }
 
     public List<BinaryTree<ConsensusContainer>> getClusters() {
@@ -295,13 +295,14 @@ public class ConsensusAlignment {
 
         Pair<ConsensusContainer> closestPair = this.alignments.firstEntry().getValue();
         SubstructureSuperimposition closestPairSuperimposition = this.alignments.firstKey();
-        this.alignmentTrace.add(closestPairSuperimposition.getRmsd());
+        double closestPairRmsd = closestPairSuperimposition.getRmsd();
+        this.alignmentTrace.add(closestPairRmsd);
         this.alignmentCounts.add(this.input.size());
 
-        logger.debug("closest pair for iteration {} is {}", this.iterationCounter, closestPair);
+        logger.debug("closest pair for iteration {} is {} with RMSD {}", this.iterationCounter, closestPair, closestPairRmsd);
 
         // sum up closest pair RMSD
-        this.consensusScore += closestPairSuperimposition.getRmsd();
+        this.consensusScore += closestPairRmsd;
 
         createConsensus(this.alignments.firstEntry());
         updateAlignments(this.alignments.firstEntry());
@@ -366,7 +367,6 @@ public class ConsensusAlignment {
             // store alignment
             Pair<ConsensusContainer> alignmentPair = new Pair<>(this.currentConsensus, inputStructure);
             this.alignments.put(superimposition, alignmentPair);
-            this.alignments.put(superimposition, alignmentPair);
         }
 
         // add consensusObservation to itemsetObservations
@@ -379,11 +379,10 @@ public class ConsensusAlignment {
      *
      * @param substructurePair the pair to be merged
      */
-    private void createConsensus(Map.Entry<SubstructureSuperimposition,
-            Pair<ConsensusContainer>> substructurePair) {
+    private void createConsensus(Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>> substructurePair) {
 
-        List<LeafSubstructure<?, ?>> reference = substructurePair.getValue().getFirst().getStructuralMotif().getLeafSubstructures();
-        List<LeafSubstructure<?, ?>> candidate = substructurePair.getValue().getSecond().getStructuralMotif().getLeafSubstructures();
+        List<LeafSubstructure<?, ?>> reference = substructurePair.getValue().getFirst().getStructuralMotif().getOrderedLeafSubstructures();
+        List<LeafSubstructure<?, ?>> candidate = substructurePair.getKey().getMappedFullCandidate();
 
 //        Chain chainReference = new Chain(0);
 //        reference.forEach(chainReference::addSubstructure);
@@ -409,7 +408,7 @@ public class ConsensusAlignment {
         // collect intersecting, filtered and sorted atoms
         List<List<Atom>> referenceAtoms;
         List<List<Atom>> candidateAtoms;
-        if (representationScheme == null) {
+        if (this.representationScheme == null) {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
                             .filter(this.atomFilter)
@@ -428,13 +427,13 @@ public class ConsensusAlignment {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> {
                         List<Atom> atomList = new ArrayList<>();
-                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getFirst()));
+                        atomList.add(this.representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getFirst()));
                         return atomList;
                     }).collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> {
                         List<Atom> atomList = new ArrayList<>();
-                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getSecond()));
+                        atomList.add(this.representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getSecond()));
                         return atomList;
                     })
                     .collect(Collectors.toList());
@@ -467,7 +466,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(0, consensusLeaveSubstructures));
+        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(0, consensusLeaveSubstructures), true);
 
         // create tree node
         BinaryTreeNode<ConsensusContainer> leftNode;
@@ -610,8 +609,8 @@ public class ConsensusAlignment {
                 }
 
                 // store alignment
-                Pair<ConsensusContainer> alignmentPair = new Pair<>(new ConsensusContainer(reference),
-                        new ConsensusContainer(candidate));
+                Pair<ConsensusContainer> alignmentPair = new Pair<>(new ConsensusContainer(reference, false),
+                        new ConsensusContainer(candidate, false));
                 this.alignments.put(superimposition, alignmentPair);
 
                 // store distance matrix

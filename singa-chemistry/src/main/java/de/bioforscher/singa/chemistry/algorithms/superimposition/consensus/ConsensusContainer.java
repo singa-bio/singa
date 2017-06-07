@@ -16,10 +16,21 @@ public class ConsensusContainer {
     private double consensusDistance;
     private BinaryTree<ConsensusContainer> consensusTree;
     private SubstructureSuperimposition superimposition;
+    private boolean consensus;
 
-    public ConsensusContainer(StructuralMotif structuralMotif) {
+    public ConsensusContainer(StructuralMotif structuralMotif, boolean consensus) {
         this.structuralMotif = structuralMotif;
+        this.consensus = consensus;
         this.consensusDistance = 0.0;
+    }
+
+    /**
+     * Returns true if the associated {@link StructuralMotif} is an artificial consensus.
+     *
+     * @return True if consensus.
+     */
+    public boolean isConsensus() {
+        return this.consensus;
     }
 
     public SubstructureSuperimposition getSuperimposition() {
