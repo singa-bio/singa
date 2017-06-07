@@ -22,7 +22,7 @@ public class EnzymeAnnotationTest {
                 " of " +
                 "the subpathway that synthesizes D-glyceraldehyde 3-phosphate and glycerone phosphate of D-glucose.");
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType
-                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier("CID 1234"));
+                .ADDITIONAL_IDENTIFIER, new PubChemIdentifier("CID:1234"));
 
         List<Annotation> annotationsOfType = enzyme.getAnnotationsOfType(AnnotationType.ADDITIONAL_IDENTIFIER);
         annotationsOfType.forEach(System.out::println);

@@ -229,12 +229,13 @@ public class Element {
     /**
      * Converts this element into an isotope by adjusting its neutron count.
      *
-     * @param numberOfNeutrons The number of neutrons of the isotope.
+     * @param massNumber The mass number (number of protons + neutrons).
      * @return An isotope of this element.
      */
-    public Element asIsotope(int numberOfNeutrons) {
-        if (numberOfNeutrons != this.neutronNumber) {
-            return new Element(this, this.electronNumber, numberOfNeutrons);
+    public Element asIsotope(int massNumber) {
+        int neutronNumber = massNumber - this.protonNumber;
+        if (neutronNumber != this.neutronNumber) {
+            return new Element(this, this.electronNumber, neutronNumber);
         }
         return this;
     }
@@ -275,6 +276,10 @@ public class Element {
         return this.electronNumber - this.protonNumber;
     }
 
+    public int getMassNumber() {
+        return this.neutronNumber + this.protonNumber;
+    }
+
     /**
      * Returns {@code true} if this Element is an isotope and {@code false} otherwise.
      *
@@ -286,7 +291,7 @@ public class Element {
 
     @Override
     public String toString() {
-        return (this.neutronNumber != this.protonNumber ? this.neutronNumber : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
+        return (this.neutronNumber != this.protonNumber ? getMassNumber() : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
     }
 
     @Override

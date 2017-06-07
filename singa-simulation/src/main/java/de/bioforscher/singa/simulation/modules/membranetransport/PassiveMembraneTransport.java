@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.modules.membranetransport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.estimations.OctanolWaterPartition;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -34,9 +34,9 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
     }
 
     private void prepareOctanolWaterCoefficients(Set<ChemicalEntity<?>> entities) {
-        for (ChemicalEntity entity : entities) {
+        for (ChemicalEntity<?> entity : entities) {
             // determine octanol water partition coefficient
-            MoleculeGraph moleculeGraph = SmilesParser.parse(((Species) entity).getSmilesRepresentation());
+            MoleculeGraph moleculeGraph = SmilesParser.parse(entity.getFeature(Smiles.class).getFeatureContent());
             double octanolWaterCoefficient = OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(moleculeGraph, OctanolWaterPartition.Method.NC_NHET);
             this.octanolWaterCoefficients.put(entity, octanolWaterCoefficient);
         }
@@ -64,11 +64,11 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
      * @param entity The entity.
      * @return The Octanol-Water Coefficient
      */
-    private double getOctanolWaterCoefficient(ChemicalEntity entity) {
+    private double getOctanolWaterCoefficient(ChemicalEntity<?> entity) {
         if (this.octanolWaterCoefficients.containsKey(entity)) {
             return this.octanolWaterCoefficients.get(entity);
         } else {
-            MoleculeGraph moleculeGraph = SmilesParser.parse(((Species) entity).getSmilesRepresentation());
+            MoleculeGraph moleculeGraph = SmilesParser.parse(entity.getFeature(Smiles.class).getFeatureContent());
             double octanolWaterCoefficient = OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(moleculeGraph, OctanolWaterPartition.Method.NC_NHET);
             this.octanolWaterCoefficients.put(entity, octanolWaterCoefficient);
             return octanolWaterCoefficient;

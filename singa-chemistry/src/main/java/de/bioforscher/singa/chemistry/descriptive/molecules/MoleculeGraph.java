@@ -37,21 +37,20 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addNextAtom(Element element) {
-        MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
+        final MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
                 Vectors.generateRandomVectorInRectangle(new Rectangle(100, 100)), element);
         addNode(atom);
         return atom.getIdentifier();
     }
 
     public int addNextAtom(Element element, int charge) {
-        Element ion = element.asIon(charge);
+        final Element ion = element.asIon(charge);
         return addNextAtom(ion);
     }
 
-    public int addNextAtom(Element element, int charge, int numberOfNeutrons) {
-        Element ion = element.asIon(charge);
-        ion.asIsotope(numberOfNeutrons);
-        return addNextAtom(ion);
+    public int addNextAtom(Element element, int charge, int massNumber) {
+        final Element modifiedElement = element.asIon(charge).asIsotope(massNumber);
+        return addNextAtom(modifiedElement);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addEdgeBetween(MoleculeAtom source, MoleculeAtom target, MoleculeBondType bondType) {
-        MoleculeBond bond = new MoleculeBond(nextEdgeIdentifier());
+        final MoleculeBond bond = new MoleculeBond(nextEdgeIdentifier());
         bond.setType(bondType);
         return addEdgeBetween(bond, source, target);
     }

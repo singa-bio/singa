@@ -53,7 +53,7 @@ public class SmilesParser {
     /**
      * The current number of neutrons
      */
-    private int currentNeutronCount;
+    private int currentMassNumber;
 
     /**
      * The current charge
@@ -461,7 +461,7 @@ public class SmilesParser {
                 }
             }
             this.currentToken += isotopeCount;
-            this.currentNeutronCount = Integer.valueOf(isotopeCount);
+            this.currentMassNumber = Integer.valueOf(isotopeCount);
             return true;
         }
         return false;
@@ -883,9 +883,9 @@ public class SmilesParser {
     }
 
     private void addAtom() {
-        if (this.currentNeutronCount != 0) {
-            this.currentIdentifer = this.molecule.addNextAtom(this.currentElement, this.currentCharge, this.currentNeutronCount);
-            this.currentNeutronCount = 0;
+        if (this.currentMassNumber != 0) {
+            this.currentIdentifer = this.molecule.addNextAtom(this.currentElement, this.currentCharge, this.currentMassNumber);
+            this.currentMassNumber = 0;
         } else {
             this.currentIdentifer = this.molecule.addNextAtom(this.currentElement, this.currentCharge);
         }

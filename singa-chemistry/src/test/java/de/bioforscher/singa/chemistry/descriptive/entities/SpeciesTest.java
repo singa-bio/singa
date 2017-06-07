@@ -24,12 +24,6 @@ public class SpeciesTest {
     }
 
     @Test
-    public void shouldCreateSpeciesWithSMILES() {
-        Species methanol = new Species.Builder("CHEBI:123").smilesRepresentation("CCSCC").build();
-        assertEquals(methanol.getSmilesRepresentation(), "CCSCC");
-    }
-
-    @Test
     public void shouldBeIdenticalEnzymes() {
         Enzyme gtpAse1 = new Enzyme.Builder("A2BC19").build();
         Enzyme gtpAse2 = new Enzyme.Builder("A2BC19").build();

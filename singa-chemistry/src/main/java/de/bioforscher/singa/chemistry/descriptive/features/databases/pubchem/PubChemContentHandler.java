@@ -3,7 +3,9 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.PubChemIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
@@ -20,6 +22,7 @@ class PubChemContentHandler implements ContentHandler {
     private String name;
     private String smilesRepresentation;
     private double molarMass;
+    private double logP;
 
     // parser attributes
     private String currentTag;
@@ -33,12 +36,16 @@ class PubChemContentHandler implements ContentHandler {
     private boolean inCanonicalSMILESInformation;
 
     // reading molar mass
-    private boolean inMolecularWeight;
+    private boolean inComputedProperties;
     private boolean inMolecularWeightInformation;
 
     // reading chebi identifier
     private boolean inSynonyms;
     private boolean inSynonymsInformation;
+
+    // reading logP value
+    private boolean inLogP;
+    private boolean inLogPInformation;
 
     PubChemContentHandler() {
         this.currentTag = "";
@@ -49,11 +56,12 @@ class PubChemContentHandler implements ContentHandler {
         Species result = new Species.Builder(this.chebiIdentifier)
                 .name(this.name)
                 .assignFeature(new MolarMass(this.molarMass, PubChemDatabase.origin))
-                .smilesRepresentation(this.smilesRepresentation)
+                .assignFeature(new Smiles(this.smilesRepresentation, PubChemDatabase.origin))
+                .assignFeature(new LogP(this.logP, PubChemDatabase.origin))
                 .build();
 
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType.ADDITIONAL_IDENTIFIER,
-                new PubChemIdentifier(this.pubChemIdentifier));
+                new PubChemIdentifier("CID:"+this.pubChemIdentifier));
         result.addAnnotation(pubChemIdentifierAnnotation);
 
         return result;
@@ -78,11 +86,14 @@ class PubChemContentHandler implements ContentHandler {
                     case "Canonical SMILES":
                         this.inCanonicalSMILES = true;
                         break;
-                    case "Molecular Weight":
-                        this.inMolecularWeight = true;
+                    case "Computed Properties":
+                        this.inComputedProperties = true;
                         break;
                     case "Depositor-Supplied Synonyms":
                         this.inSynonyms = true;
+                        break;
+                    case "LogP":
+                        this.inLogP = true;
                         break;
                 }
                 break;
@@ -98,6 +109,16 @@ class PubChemContentHandler implements ContentHandler {
                     this.smilesRepresentation = new String(ch, start, length);
                     this.inCanonicalSMILES = false;
                     this.inCanonicalSMILESInformation = false;
+                } else if (this.inComputedProperties) {
+                    // set logP
+                    if ("Molecular Weight".equals(new String(ch, start, length))) {
+                        this.inMolecularWeightInformation = true;
+                    }
+                } else if (this.inLogP && this.inLogPInformation) {
+                    // set logP
+                    this.logP = Double.parseDouble(new String(ch, start, length));
+                    this.inLogP = false;
+                    this.inLogPInformation = false;
                 }
                 break;
             }
@@ -114,11 +135,11 @@ class PubChemContentHandler implements ContentHandler {
                 break;
             }
             case "NumValue": {
-                if (this.inMolecularWeight && this.inMolecularWeightInformation) {
+                if (this.inComputedProperties && this.inMolecularWeightInformation) {
                     // set molecular weight
                     this.molarMass = Double.parseDouble(new String(ch, start, length));
-                    this.inMolecularWeight = false;
                     this.inMolecularWeightInformation = false;
+                    this.inComputedProperties = false;
                 }
                 break;
             }
@@ -187,15 +208,15 @@ class PubChemContentHandler implements ContentHandler {
             case "Information":
                 if (this.inRecordTitle) {
                     this.inRecordTitleInformation = true;
-                }
-                if (this.inMolecularWeight) {
-                    this.inMolecularWeightInformation = true;
-                }
+                } else
                 if (this.inCanonicalSMILES) {
                     this.inCanonicalSMILESInformation = true;
                 }
                 if (this.inSynonyms) {
                     this.inSynonymsInformation = true;
+                }
+                if (this.inLogP) {
+                    this.inLogPInformation = true;
                 }
                 break;
         }

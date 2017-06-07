@@ -3,11 +3,11 @@ package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 
+import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
 import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.OXYGEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -62,20 +62,61 @@ public class SmilesParserTest {
 
 
     @Test
-    public void shhouldParseIon() {
+    public void shouldParseIon() {
         // [H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)COS([O-])(=O)=O
-        Assert.fail();
+        String smilesString = "[H]C(=O)[C@H](O)[C@@H](O)[C@H](O)[C@H](O)COS([O-])(=O)=O";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+        // O:14 has charge -1
+        assertEquals(moleculeGraph.getNode(14).getElement().getCharge(), -1);
     }
 
+    @Test
+    public void shouldParseIsotpes() {
+        // O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]
+        String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+        // C:1 has 7 neutrons
+        assertEquals(moleculeGraph.getNode(1).getElement().getNeutronNumber(), 7);
+        // N:4 has 8 neutrons
+        assertEquals(moleculeGraph.getNode(4).getElement().getNeutronNumber(), 8);
+    }
+
+    @Test
+    public void shouldParseUnconnectedMolecule() {
+        // O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O
+        String smilesString = "O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+        // O:0 has no neighbours
+        assertEquals(moleculeGraph.getNode(0).getNeighbours().size(), 0);
+        // Al:12 has no neighbours
+        assertEquals(moleculeGraph.getNode(12).getNeighbours().size(), 0);
+        // S:15 has 4 neighbours
+        assertEquals(moleculeGraph.getNode(15).getNeighbours().size(), 4);
+    }
+
+    @Test
+    public void shouldSaturateCorrectlyWithHydrogens() {
+        // O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]
+        String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
+        MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
+        // C:3 with 1 Hydrogen
+        List<MoleculeAtom> neighboursOfC3 = moleculeGraph.getNode(3).getNeighbours();
+        assertEquals(1, neighboursOfC3.stream()
+                .filter(atom -> atom.getElement().equals(HYDROGEN))
+                .count());
+        // N:4 with 2 Hydrogen
+        List<MoleculeAtom> neighboursOfN4 = moleculeGraph.getNode(4).getNeighbours();
+        assertEquals(2, neighboursOfN4.stream()
+                .filter(atom -> atom.getElement().equals(HYDROGEN))
+                .count());
+        // C:6 with 3 Hydrogen
+        List<MoleculeAtom> neighboursOfC6 = moleculeGraph.getNode(6).getNeighbours();
+        assertEquals(3, neighboursOfC6.stream()
+                .filter(atom -> atom.getElement().equals(HYDROGEN))
+                .count());
+    }
 
     // with nested branches
     // Clc(c(Cl)c(Cl)c1C(=O)O)c(Cl)c1Cl
-
-    // with isotopes
-    // String smilesString = "O=[13C](O)[13C@@H]([15NH2])[13CH]([13CH3])[13CH3]";
-
-    // unconnected molecules
-    // String smilesString = "O.O.O.O.O.O.O.O.O.O.O.O.[Al+3].[K+].[O-]S([O-])(=O)=O.[O-]S([O-])(=O)=O";
-
 
 }

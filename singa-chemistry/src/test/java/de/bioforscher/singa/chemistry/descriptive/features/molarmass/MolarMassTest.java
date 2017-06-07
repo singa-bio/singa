@@ -20,7 +20,6 @@ public class MolarMassTest {
         // get feature
         MolarMass feature = testSpecies.getFeature(MolarMass.class);
         // assert attributes and values
-        System.out.println(feature);
         assertEquals("ChEBI Database", feature.getFeatureOrigin().getName());
         assertEquals(108.0104, feature.getValue().doubleValue(), 0.0);
         assertEquals(GRAM_PER_MOLE, feature.getUnit());
@@ -34,7 +33,6 @@ public class MolarMassTest {
         // get feature
         MolarMass feature = testProtein.getFeature(MolarMass.class);
         // assert attributes and values
-        System.out.println(feature);
         assertEquals("UniProt Database", feature.getFeatureOrigin().getName());
         assertEquals(53406.0, feature.getValue().doubleValue(), 0.0);
         assertEquals(GRAM_PER_MOLE, feature.getUnit());

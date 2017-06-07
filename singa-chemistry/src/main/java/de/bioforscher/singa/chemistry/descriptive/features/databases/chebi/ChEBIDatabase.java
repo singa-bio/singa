@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
@@ -47,9 +48,9 @@ public class ChEBIDatabase {
             ChebiWebServiceClient client = new ChebiWebServiceClient();
             try {
                 // fetch and parse weight
-                double weight = parseMolarMass(client.getCompleteEntity(identifier.get().toString()).getMass());
+                final double weight = parseMolarMass(client.getCompleteEntity(identifier.get().toString()).getMass());
                 if (weight != Double.NaN) {
-                    Quantity<MolarMass> quantity = Quantities.getQuantity(weight, GRAM_PER_MOLE);
+                    final Quantity<MolarMass> quantity = Quantities.getQuantity(weight, GRAM_PER_MOLE);
                     return new MolarMass(quantity, origin);
                 }
             } catch (ChebiWebServiceFault_Exception e) {
@@ -64,6 +65,24 @@ public class ChEBIDatabase {
             return Double.valueOf(massAsString);
         }
         return Double.NaN;
+    }
+
+    public static <FeaturableType extends Featureable> Smiles fetchSmiles(Featureable featureable) {
+        // try to get Chebi identifier
+        ChemicalEntity<?> species = (ChemicalEntity) featureable;
+        Optional<Identifier> identifier = ChEBIIdentifier.find(species.getAllIdentifiers());
+        // try to get weight from ChEBI Database
+        if (identifier.isPresent()) {
+            ChebiWebServiceClient client = new ChebiWebServiceClient();
+            try {
+                // fetch and parse smiles string
+                final String smilesString = client.getCompleteEntity(identifier.get().toString()).getSmiles();
+                return new Smiles(smilesString, origin);
+            } catch (ChebiWebServiceFault_Exception e) {
+                logger.warn("Can not reach Chemical Entities of Biological Interest (ChEBI) Database. Identifier {} can not be fetched.", identifier);
+            }
+        }
+        return null;
     }
 
 }

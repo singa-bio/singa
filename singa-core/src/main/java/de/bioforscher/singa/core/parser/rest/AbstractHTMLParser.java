@@ -16,10 +16,19 @@ import java.util.Map;
  */
 public abstract class AbstractHTMLParser<ResultType> extends AbstractParser<ResultType> {
 
+    public void fetchResource() {
+        try {
+            URL url = new URL(getResource());
+            setFetchResult(url.openStream());
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException("The url \""+ getResource() +"\" seems to be malformed", e);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not connect to \""+ getResource() +"\", the server seems to be unavailable.", e);
+        }
+    }
+
     public void fetchResource(String resource) {
-        // encode string to utf and connect to resource
         String urlString = getResource() + resource;
-        // open url and fetch result
         try {
             URL url = new URL(urlString);
             setFetchResult(url.openStream());

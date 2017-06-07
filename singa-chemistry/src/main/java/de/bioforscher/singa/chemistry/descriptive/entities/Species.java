@@ -1,7 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
@@ -25,17 +27,14 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
             .build();
 
     /**
-     * The SIMLES representation of this species.
-     */
-    private String smilesRepresentation = "No SMILES representation defined.";
-
-    /**
      * Creates a new Species with the given {@link ChEBIIdentifier}.
      *
      * @param identifier The {@link SimpleStringIdentifier}.
      */
     protected Species(SimpleStringIdentifier identifier) {
         super(identifier);
+        this.availableFeatures.add(Smiles.class);
+        this.availableFeatures.add(LogP.class);
     }
 
     /**
@@ -45,24 +44,6 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
      */
     protected Species(String identifier) {
         this(new SimpleStringIdentifier(identifier));
-    }
-
-    /**
-     * Returns the SMILES representation.
-     *
-     * @return The SMILES representation.
-     */
-    public String getSmilesRepresentation() {
-        return this.smilesRepresentation;
-    }
-
-    /**
-     * Sets the SMILES representation.
-     *
-     * @param smilesRepresentation The SMILES representation.
-     */
-    public void setSmilesRepresentation(String smilesRepresentation) {
-        this.smilesRepresentation = smilesRepresentation;
     }
 
     public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {
@@ -82,13 +63,6 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
 
         @Override
         protected Builder getBuilder() {
-            return this;
-        }
-
-        public Builder smilesRepresentation(String smilesRepresentation) {
-            if (smilesRepresentation != null) {
-                this.topLevelObject.setSmilesRepresentation(smilesRepresentation);
-            }
             return this;
         }
 
