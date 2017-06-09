@@ -5,6 +5,7 @@ import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
@@ -13,6 +14,8 @@ import javax.measure.Quantity;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
+import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
 import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
@@ -22,12 +25,11 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     private ConcentrationContainer concentrations;
     private boolean isObserved;
 
-
     public BioNode(int identifier) {
         super(identifier);
-        this.state = NodeState.AQUEOUS;
+        this.state = AQUEOUS;
         this.cellSection = new EnclosedCompartment("default", "Default Compartment");
-        this.concentrations = new MultiConcentrationContainer(this.cellSection);
+        this.concentrations = new SimpleConcentrationContainer();
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -90,7 +92,11 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     }
 
     public void setCellSection(CellSection cellSection) {
+        if (cellSection instanceof Membrane) {
+            setState(MEMBRANE);
+        }
         this.cellSection = cellSection;
+        cellSection.addNode(this);
     }
 
     public ConcentrationContainer getConcentrations() {

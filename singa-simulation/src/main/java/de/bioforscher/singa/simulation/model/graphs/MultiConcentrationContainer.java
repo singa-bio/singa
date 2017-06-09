@@ -42,6 +42,10 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
+        if (!this.concentrations.containsKey(cellSection)) {
+            System.out.println();
+        }
+
         return this.concentrations.get(cellSection).get(chemicalEntity);
     }
 

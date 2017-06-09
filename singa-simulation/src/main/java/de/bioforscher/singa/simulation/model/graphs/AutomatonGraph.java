@@ -61,6 +61,10 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
         return new HashSet<>(this.sections.values());
     }
 
+    public CellSection getSection(String identifier) {
+        return this.sections.get(identifier);
+    }
+
     public void addSection(CellSection cellSection) {
         this.sections.put(cellSection.getIdentifier(), cellSection);
     }

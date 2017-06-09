@@ -31,12 +31,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
 
 import java.io.File;
-
-import static tec.units.ri.unit.MetricPrefix.NANO;
-import static tec.units.ri.unit.Units.SECOND;
 
 public class BioGraphSimulation extends Application {
 
@@ -62,7 +58,8 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
+        this.simulation = SimulationExamples.createPassiveMembraneTransportExample();
+                // SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;

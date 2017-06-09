@@ -3,10 +3,14 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
+import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
+import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
@@ -15,6 +19,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -24,7 +29,6 @@ import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricRea
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +38,11 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.bioforscher.singa.units.UnitProvider.*;
+import static de.bioforscher.singa.units.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -225,7 +232,7 @@ public class SimulationExamples {
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
                 .addSubstrate(fructosePhosphate)
                 .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
                 .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
@@ -490,10 +497,33 @@ public class SimulationExamples {
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
         logger.debug("Importing species ...");
-        // hydrophilic
-        Species urea = ChEBIParserService.parse("CHEBI:16199");
-        // hydrophobic
-        Species cobamamide = ChEBIParserService.parse("CHEBI:18408");
+
+        // all species
+        Set<Species> allSpecies = new HashSet<>();
+        // Domperidone
+        Species domperidone = PubChemParserService.parse("CID:3151");
+        domperidone.setFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED));
+        domperidone.setFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED));
+        domperidone.setFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED));
+        allSpecies.add(domperidone);
+        // Loperamide
+        Species loperamide = PubChemParserService.parse("CID:3955");
+        loperamide.setFeature(new MembraneEntry(8.59e8, MANUALLY_ANNOTATED));
+        loperamide.setFeature(new MembraneExit(1.81e3, MANUALLY_ANNOTATED));
+        loperamide.setFeature(new MembraneFlipFlop(6.71e5, MANUALLY_ANNOTATED));
+        allSpecies.add(loperamide);
+        // Propranolol
+        Species propranolol = PubChemParserService.parse("CID:4946");
+        propranolol.setFeature(new MembraneEntry(1.27e9, MANUALLY_ANNOTATED));
+        propranolol.setFeature(new MembraneExit(3.09e4, MANUALLY_ANNOTATED));
+        propranolol.setFeature(new MembraneFlipFlop(4.75e6, MANUALLY_ANNOTATED));
+        allSpecies.add(propranolol);
+        // Desipramine
+        Species desipramine = PubChemParserService.parse("CID:2995");
+        desipramine.setFeature(new MembraneEntry(2.13e9, MANUALLY_ANNOTATED));
+        desipramine.setFeature(new MembraneExit(4.86e4, MANUALLY_ANNOTATED));
+        desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
+        allSpecies.add(desipramine);
 
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
@@ -509,10 +539,12 @@ public class SimulationExamples {
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
+                // FIXME currently cell sections are assigned in both directions
                 node.setCellSection(left);
                 left.addNode(node);
             } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
                 node.setState(NodeState.MEMBRANE);
+                node.setCellSection(membrane);
                 membrane.addNode(node);
             } else {
                 node.setCellSection(right);
@@ -527,21 +559,17 @@ public class SimulationExamples {
         membrane.initializeNodes(graph);
 
         // set concentrations
+        // only 4 left most nodes
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < 4) {
-                node.setConcentration(urea, 1.0);
-                node.setConcentration(cobamamide, 1.0);
+                for (Species species: allSpecies) {
+                    node.setConcentration(species, 1.0);
+                }
             } else {
-                node.setConcentration(urea, 0.0);
-                node.setConcentration(cobamamide, 0.0);
+                for (Species species: allSpecies) {
+                    node.setConcentration(species, 0.0);
+                }
             }
-        }
-
-
-        logger.debug("Adding default permeability to edges ... ");
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(urea, 1);
-            edge.addPermeability(cobamamide, 1);
         }
 
         // setup time step size as given
@@ -559,8 +587,10 @@ public class SimulationExamples {
         simulation.setGraph(graph);
         // add diffusion module
         simulation.getModules().add(new FreeDiffusion());
+        // add transmembrane transport
+        simulation.getModules().add(new PassiveMembraneTransport());
         // add desired species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(Arrays.asList(urea, cobamamide));
+        simulation.getChemicalEntities().addAll(allSpecies);
         return simulation;
     }
 

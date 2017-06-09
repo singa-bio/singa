@@ -15,15 +15,15 @@ import java.util.Set;
  */
 public class SimpleConcentrationContainer implements ConcentrationContainer {
 
-    private Map<ChemicalEntity, Quantity<MolarConcentration>> container;
+    private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
 
     public SimpleConcentrationContainer() {
-        this.container = new HashMap<>();
+        this.concentrations = new HashMap<>();
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        return this.container.get(chemicalEntity);
+        return this.concentrations.get(chemicalEntity);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        this.container.put(chemicalEntity, concentration);
+        this.concentrations.put(chemicalEntity, concentration);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Set<ChemicalEntity> getAllReferencedEntities() {
-        return this.container.keySet();
+        return this.concentrations.keySet();
     }
 
     @Override
@@ -53,6 +53,6 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
-        return this.container;
+        return this.concentrations;
     }
 }

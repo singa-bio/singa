@@ -116,7 +116,15 @@ class PubChemContentHandler implements ContentHandler {
                     }
                 } else if (this.inLogP && this.inLogPInformation) {
                     // set logP
-                    this.logP = Double.parseDouble(new String(ch, start, length));
+                    String logPString = new String(ch, start, length);
+                    // explicitly stated as log KOW
+                    if (logPString.contains("log Kow")) {
+                        // remove "non double characters" (very simple for now)
+                        String cleanedString = logPString.replaceAll("[^0-9.]", "");
+                        this.logP = Double.parseDouble(cleanedString);
+                    } else {
+                        this.logP = Double.parseDouble(logPString);
+                    }
                     this.inLogP = false;
                     this.inLogPInformation = false;
                 }

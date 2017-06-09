@@ -10,6 +10,8 @@ import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBeh
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -27,6 +29,8 @@ import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
+    private static final Logger logger = LoggerFactory.getLogger(FreeDiffusion.class);
+
     private Set<ChemicalEntity<?>> chemicalEntities;
 
     public FreeDiffusion() {
@@ -43,6 +47,7 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     @Override
     public void applyTo(AutomatonGraph graph) {
+        logger.debug("Applying Free Diffusion module.");
         updateGraph(graph);
     }
 

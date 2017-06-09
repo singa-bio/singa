@@ -37,15 +37,20 @@ public class MembraneContainer implements ConcentrationContainer {
         this.outerSection = outerSection;
         this.innerSection = innerSection;
         this.membrane = membrane;
+
+        this.outerPhase = new HashMap<>();
+        this.outerLayer = new HashMap<>();
+        this.innerLayer = new HashMap<>();
+        this.innerPhase = new HashMap<>();
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         Quantity<MolarConcentration> concentrationSum = this.outerPhase.get(chemicalEntity);
-        concentrationSum.add(this.outerLayer.get(chemicalEntity));
-        concentrationSum.add(this.innerLayer.get(chemicalEntity));
-        concentrationSum.add(this.innerPhase.get(chemicalEntity));
-        return concentrationSum.divide(4.0);
+        concentrationSum = concentrationSum.add(this.innerPhase.get(chemicalEntity));
+        concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity).divide(2.0));
+        concentrationSum = concentrationSum.add(this.innerLayer.get(chemicalEntity).divide(2.0));
+        return concentrationSum.divide(3.0);
     }
 
     public Quantity<MolarConcentration> getOuterPhaseConcentration(ChemicalEntity chemicalEntity) {
@@ -78,22 +83,22 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
-        if (cellSection != this.outerSection ) {
+        if (cellSection.equals(this.outerSection)) {
             if (this.outerPhase.containsKey(chemicalEntity)) {
                 return this.outerPhase.get(chemicalEntity);
             }
-        } else if (cellSection != this.innerSection)  {
+        } else if (cellSection.equals(this.innerSection))  {
             if (this.innerPhase.containsKey(chemicalEntity)) {
                 return this.innerPhase.get(chemicalEntity);
             }
-        } else if (cellSection != this.membrane) {
-            Quantity<MolarConcentration> concentrationSum = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        } else if (cellSection.equals(this.membrane)) {
+            Quantity<MolarConcentration> concentrationSum;
             if (this.innerLayer.containsKey(chemicalEntity)) {
-                concentrationSum.add(this.innerLayer.get(chemicalEntity));
-            } else {
-                concentrationSum.add(this.outerLayer.get(chemicalEntity));
+                concentrationSum = (this.innerLayer.get(chemicalEntity));
+                concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity));
+                return concentrationSum.divide(2.0);
             }
-            return concentrationSum.divide(2.0);
+
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
@@ -108,11 +113,11 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public void setAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        if (cellSection != this.outerSection ) {
+        if (cellSection.equals(this.outerSection)) {
             this.outerPhase.put(chemicalEntity, concentration);
-        } else if (cellSection != this.innerSection)  {
+        } else if (cellSection.equals(this.innerSection))  {
             this.innerPhase.put(chemicalEntity, concentration);
-        } else if (cellSection != this.membrane) {
+        } else if (cellSection.equals(this.membrane)) {
            this.innerLayer.put(chemicalEntity, concentration);
            this.outerLayer.put(chemicalEntity, concentration);
         }
