@@ -347,6 +347,10 @@ public final class Matrices {
         return readUnlabeledMatrixFromCSV(Files.lines(path), delimiter);
     }
 
+    public static Matrix readUnlabeledMatrixFromCSV(Path path) throws IOException {
+        return readUnlabeledMatrixFromCSV(path, ",");
+    }
+
     /**
      * calculates the covariance matrix between to matrices in respect to matrix A
      * cov(A) = B'*A
@@ -362,4 +366,5 @@ public final class Matrices {
     public static SVDecomposition performSVDecomposition(Matrix matrix) {
         return new SVDecomposition(matrix);
     }
+
 }
