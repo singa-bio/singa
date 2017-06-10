@@ -1,7 +1,6 @@
-package de.bioforscher.singa.javafx.geometry;
+package de.bioforscher.singa.javafx.voronoi;
 
 import de.bioforscher.singa.javafx.renderer.Renderer;
-import de.bioforscher.singa.mathematics.algorithms.geometry.ConvexHull;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
@@ -9,8 +8,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -18,9 +17,10 @@ import java.util.List;
 /**
  * Created by Christoph on 14/04/2017.
  */
-public class ConvexHullPlayground extends Application implements Renderer {
+public class VoronoiPlayground extends Application implements Renderer {
 
     private Canvas canvas;
+    private VoronoiDiagram voronoiDiagram;
 
     public static void main(String[] args) {
         launch();
@@ -34,24 +34,19 @@ public class ConvexHullPlayground extends Application implements Renderer {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // setup root
-        BorderPane root = new BorderPane();
-        root.setCenter(this.canvas);
-        this.canvas.getGraphicsContext2D().setLineWidth(7);
 
         // generate points
         List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(20, new Rectangle(500, 500));
-        ConvexHull convexHull = ConvexHull.calculateHullFor(vectors);
+        // initialize voronoi diagram
+        this.voronoiDiagram = new VoronoiDiagram(vectors, this.canvas);
 
-        this.canvas.getGraphicsContext2D().setFill(Color.DIMGRAY);
-        convexHull.getNonHullVectors().forEach(this::drawPoint);
+        // setup root
+        BorderPane root = new BorderPane();
+        root.setCenter(this.canvas);
 
-        this.canvas.getGraphicsContext2D().setFill(Color.CORNFLOWERBLUE);
-        convexHull.getHull().forEach(this::drawPoint);
-
-        this.canvas.getGraphicsContext2D().setStroke(Color.CORNFLOWERBLUE);
-        this.canvas.getGraphicsContext2D().setLineWidth(2);
-        connectPoints(convexHull.getHull());
+        Button nextEventButton = new Button("Next Event");
+        nextEventButton.setOnAction(event -> this.voronoiDiagram.nextEvent());
+        root.setBottom(nextEventButton);
 
         // show
         Scene scene = new Scene(root);

@@ -33,7 +33,7 @@ public class ConvexHull {
         // find the element(s) with the minimal y value
         List<Vector2D> vectorsWithMinimalY = Vectors.getVectorsWithMinimalValueForIndex(convexHull.vectors, Vector2D.Y_INDEX);
         // in case that there are multiple minimal elements choose the one that also has the minimal x value
-        Vector2D referenceVector = Vectors.getVectorsWithMinimalValueForIndex(vectorsWithMinimalY, Vector2D.Y_INDEX).iterator().next();
+        Vector2D referenceVector = Vectors.getVectorsWithMinimalValueForIndex(vectorsWithMinimalY, Vector2D.X_INDEX).iterator().next();
         // sort the points by angle to the reference vector
         convexHull.vectors.sort(comparing(vector -> {
             double deltaY = referenceVector.getY() - vector.getY();
