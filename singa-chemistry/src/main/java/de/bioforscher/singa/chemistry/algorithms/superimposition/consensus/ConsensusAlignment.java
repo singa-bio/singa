@@ -14,6 +14,7 @@ import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
@@ -458,10 +459,21 @@ public class ConsensusAlignment {
                         referenceAtom.getPosition().add(candidateAtom.getPosition()).divide(2.0)));
                 atomCounter++;
             }
+
+            // try to retain family notation for each consensus leaf substructure if possible
+            StructuralFamily<?> family = null;
+            if (reference.get(i).getFamily().equals(candidate.get(i).getFamily())) {
+                family = candidate.get(i).getFamily();
+            }
+            // default to alanine if family type differs
+            if (family == null) {
+                family = AminoAcidFamily.UNKNOWN;
+            }
+
             // create new atom container
-            AtomContainer<AminoAcidFamily> atomContainer = new AtomContainer<>(new LeafIdentifier(leaveCounter),
-                    AminoAcidFamily.ALANINE,
-                    AminoAcidFamily.ALANINE.getThreeLetterCode());
+            AtomContainer<?> atomContainer = new AtomContainer<>(new LeafIdentifier(leaveCounter),
+                    family,
+                    family.getThreeLetterCode());
             averagedAtoms.forEach(atomContainer::addNode);
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
