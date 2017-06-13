@@ -14,11 +14,6 @@ public class Membrane extends CellSection {
 
     private final EnclosedCompartment innerCompartment;
 
-    public Membrane(String identifier, String name, Set<BioNode> content, EnclosedCompartment innerCompartment) {
-        super(identifier, name, content);
-        this.innerCompartment = innerCompartment;
-    }
-
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
