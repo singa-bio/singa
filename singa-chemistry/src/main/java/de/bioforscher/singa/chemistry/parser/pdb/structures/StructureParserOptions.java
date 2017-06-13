@@ -7,6 +7,77 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures;
  */
 public class StructureParserOptions {
 
+    public enum Setting {
+
+        CREATE_EDGES,
+        OMIT_EDGES,
+
+        GET_LIGAND_INFORMATION,
+        OMIT_LIGAND_INFORMATION,
+
+        GET_HYDROGEN_CONNECTIONS,
+        OMIT_HYDROGENS_CONNECTIONS,
+
+        GET_HYDROGENS,
+        OMIT_HYDROGENS,
+
+        GET_TITLE_FROM_FILENAME,
+        GET_TITLE_FROM_PDB,
+
+        GET_IDENTIFIER_FROM_FILENAME,
+        GET_IDENTIFIER_FROM_PDB
+
+    }
+
+    public static StructureParserOptions withSettings(Setting ... settings) {
+        StructureParserOptions options = new StructureParserOptions();
+        for (Setting setting: settings) {
+            setOption(options, setting);
+        }
+        return options;
+    }
+
+    private static void setOption(StructureParserOptions options, Setting setting) {
+        switch (setting) {
+            case CREATE_EDGES:
+                options.createEdges(true);
+                break;
+            case OMIT_EDGES:
+                options.createEdges(false);
+                break;
+            case GET_LIGAND_INFORMATION:
+                options.retrieveLigandInformation(true);
+                break;
+            case OMIT_LIGAND_INFORMATION:
+                options.retrieveLigandInformation(false);
+                break;
+            case GET_HYDROGEN_CONNECTIONS:
+                options.connectHydrogens(true);
+                break;
+            case OMIT_HYDROGENS_CONNECTIONS:
+                options.connectHydrogens(false);
+                break;
+            case GET_HYDROGENS:
+                options.omitHydrogens(false);
+                break;
+            case OMIT_HYDROGENS:
+                options.omitHydrogens(true);
+                break;
+            case GET_TITLE_FROM_FILENAME:
+                options.inferTitleFromFileName(true);
+                break;
+            case GET_TITLE_FROM_PDB:
+                options.inferTitleFromFileName(false);
+                break;
+            case GET_IDENTIFIER_FROM_FILENAME:
+                options.inferIdentifierFromFileName(true);
+                break;
+            case GET_IDENTIFIER_FROM_PDB:
+                options.inferIdentifierFromFileName(false);
+                break;
+        }
+    }
+
     /**
      * Creates edges in the graph.
      */
@@ -125,6 +196,9 @@ public class StructureParserOptions {
      */
     public void omitHydrogens(boolean omitHydrogens) {
         this.omitHydrogens = omitHydrogens;
+        if (omitHydrogens) {
+            this.connectHydrogens = false;
+        }
     }
 
     /**

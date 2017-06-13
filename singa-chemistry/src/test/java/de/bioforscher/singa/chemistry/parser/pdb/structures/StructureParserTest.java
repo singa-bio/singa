@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_PDB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -124,7 +126,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldAssignInformationFromFileName() {
-        StructureParserOptions options = new StructureParserOptions();
+        StructureParserOptions options = StructureParserOptions.withSettings(GET_IDENTIFIER_FROM_FILENAME, GET_IDENTIFIER_FROM_PDB);
         options.inferTitleFromFileName(true);
         options.inferIdentifierFromFileName(true);
         Structure structure = StructureParser.local()
