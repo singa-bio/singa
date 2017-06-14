@@ -348,7 +348,7 @@ public final class Matrices {
     }
 
     public static Matrix readUnlabeledMatrixFromCSV(Path path) throws IOException {
-        return readUnlabeledMatrixFromCSV(path, ",");
+        return readUnlabeledMatrixFromCSV(path, DEFAULT_CSV_DELIMITER);
     }
 
     /**

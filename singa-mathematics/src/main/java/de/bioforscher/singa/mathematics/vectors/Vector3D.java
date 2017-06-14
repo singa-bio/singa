@@ -1,7 +1,7 @@
 package de.bioforscher.singa.mathematics.vectors;
 
 import de.bioforscher.singa.mathematics.matrices.FastMatrices;
-import de.bioforscher.singa.mathematics.matrices.Matrix;
+import de.bioforscher.singa.mathematics.matrices.SquareMatrix;
 
 /**
  * The {@code Vector3D} class handles the general properties and operations of
@@ -83,6 +83,17 @@ public class Vector3D implements Vector {
         return vector.getDimension() == 3;
     }
 
+    @Override
+    public <VectorType extends Vector> VectorType as(Class<VectorType> vectorClass) {
+        if (vectorClass.equals(Vector3D.class)) {
+            return (VectorType) this;
+        }
+        if (vectorClass.equals(RegularVector.class)) {
+            return (VectorType) new RegularVector(this.x, y, z);
+        }
+        throw new IllegalArgumentException("Can not convert Vector3D to " + vectorClass.getSimpleName());
+    }
+
     /**
      * Returns the x coordinate of this vector.
      *
@@ -110,14 +121,57 @@ public class Vector3D implements Vector {
         return this.z;
     }
 
-    /**
-     * Additively inverts (negates) the whole vector.
-     *
-     * @return A new vector where each element is inverted.
-     */
+    @Override
+    public double getElement(int index) {
+        switch (index) {
+            case X_INDEX:
+                return this.x;
+            case Y_INDEX:
+                return this.y;
+            case Z_INDEX:
+                return this.z;
+            default:
+                throw new IllegalArgumentException("Can only get values for available indices (0 - 3)");
+        }
+    }
+
+    @Override
+    public double[] getElements() {
+        return new double[]{this.x, this.y, this.z};
+    }
+
+    @Override
+    public int getDimension() {
+        return 3;
+    }
+
+    @Override
+    public boolean hasSameDimensions(Vector element) {
+        return element.getDimension() == 3;
+    }
+
+    @Override
+    public String getDimensionAsString() {
+        return "3D";
+    }
+
     @Override
     public Vector3D additivelyInvert() {
         return new Vector3D(-this.x, -this.y, -this.z);
+    }
+
+    @Override
+    public Vector additiveleyInvertElement(int index) {
+        switch (index) {
+            case X_INDEX:
+                return invertX();
+            case Y_INDEX:
+                return invertY();
+            case Z_INDEX:
+                return invertZ();
+            default:
+                throw new IllegalArgumentException("Can only invert available indices (0 - 3)");
+        }
     }
 
     /**
@@ -162,6 +216,17 @@ public class Vector3D implements Vector {
         return new Vector3D(this.x + vector.x, this.y + vector.y, this.z + vector.z);
     }
 
+    @Override
+    public Vector3D add(Vector summand) {
+        if (summand.getDimension() != 3) {
+            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
+        }
+        return new Vector3D(
+                this.x + summand.getElement(X_INDEX),
+                this.y + summand.getElement(Y_INDEX),
+                this.z + summand.getElement(Z_INDEX));
+    }
+
     /**
      * The subtraction is an algebraic operation that returns a new vector where
      * each element in the given vector is subtracted from the corresponding
@@ -175,50 +240,14 @@ public class Vector3D implements Vector {
     }
 
     @Override
-    public <VectorType extends Vector> VectorType as(Class<VectorType> vectorClass) {
-        if (vectorClass.equals(RegularVector.class)) {
-            return (VectorType) new RegularVector(this.x, y, z);
-        } else {
-            throw new IllegalArgumentException("Can not convert Vector3D to " + vectorClass.getSimpleName());
+    public Vector3D subtract(Vector subtrahend) {
+        if (subtrahend.getDimension() != 3) {
+            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
-    }
-
-    @Override
-    public double getElement(int index) {
-        switch (index) {
-            case X_INDEX:
-                return this.x;
-            case Y_INDEX:
-                return this.y;
-            case Z_INDEX:
-                return this.z;
-            default:
-                throw new IllegalArgumentException("Can only get values for available indices (0 - 3)");
-        }
-    }
-
-    @Override
-    public double[] getElements() {
-        return new double[]{this.x, this.y, this.z};
-    }
-
-    @Override
-    public int getDimension() {
-        return 3;
-    }
-
-    @Override
-    public Vector additiveleyInvertElement(int index) {
-        switch (index) {
-            case X_INDEX:
-                return invertX();
-            case Y_INDEX:
-                return invertY();
-            case Z_INDEX:
-                return invertZ();
-            default:
-                throw new IllegalArgumentException("Can only invert available indices (0 - 3)");
-        }
+        return new Vector3D(
+                this.x - subtrahend.getElement(X_INDEX),
+                this.y - subtrahend.getElement(Y_INDEX),
+                this.z - subtrahend.getElement(Z_INDEX));
     }
 
     @Override
@@ -239,6 +268,17 @@ public class Vector3D implements Vector {
     }
 
     @Override
+    public Vector3D multiply(Vector multiplicand) {
+        if (multiplicand.getDimension() != 3) {
+            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
+        }
+        return new Vector3D(
+                this.x * multiplicand.getElement(X_INDEX),
+                this.y * multiplicand.getElement(Y_INDEX),
+                this.z * multiplicand.getElement(Z_INDEX));
+    }
+
+    @Override
     public Vector3D divide(double scalar) {
         return new Vector3D(this.x / scalar, this.y / scalar, this.z / scalar);
     }
@@ -256,9 +296,32 @@ public class Vector3D implements Vector {
     }
 
     @Override
+    public Vector3D divide(Vector divisor) {
+        if (divisor.getDimension() != 3) {
+            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
+        }
+        return new Vector3D(
+                this.x / divisor.getElement(X_INDEX),
+                this.y / divisor.getElement(Y_INDEX),
+                this.z / divisor.getElement(Z_INDEX));
+    }
+
+    @Override
     public Vector3D normalize() {
         return divide(getMagnitude());
     }
+
+    /**
+     * The dot product or scalar product is an algebraic operation that returns
+     * the sum of the products of the corresponding elements of the two vectors.
+     *
+     * @param vector Another 3D vector.
+     * @return The dot product.
+     */
+    public double dotProduct(Vector3D vector) {
+        return this.x * vector.x + this.y * vector.y + this.z * vector.z;
+    }
+
 
     @Override
     public double dotProduct(Vector vector) {
@@ -271,7 +334,7 @@ public class Vector3D implements Vector {
     }
 
     @Override
-    public Matrix dyadicProduct(Vector vector) {
+    public SquareMatrix dyadicProduct(Vector vector) {
         if (vector.getDimension() != 3) {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
@@ -279,18 +342,7 @@ public class Vector3D implements Vector {
                 {{this.x * vector.getElement(X_INDEX)}, {this.x * vector.getElement(Y_INDEX)}, {this.x * vector.getElement(Z_INDEX)},
                         {this.y * vector.getElement(X_INDEX)}, {this.y * vector.getElement(Y_INDEX)}, {this.y * vector.getElement(Z_INDEX)},
                         {this.z * vector.getElement(X_INDEX)}, {this.z * vector.getElement(Y_INDEX)}, {this.z * vector.getElement(Z_INDEX)}};
-        return FastMatrices.createRegularMatrix(values);
-    }
-
-    /**
-     * The dot product or scalar product is an algebraic operation that returns
-     * the sum of the products of the corresponding elements of the two vectors.
-     *
-     * @param vector Another 3D vector.
-     * @return The dot product.
-     */
-    public double dotProduct(Vector3D vector) {
-        return this.x * vector.x + this.y * vector.y + this.z * vector.z;
+        return FastMatrices.createSquareMatrix(values);
     }
 
     /**
@@ -309,58 +361,4 @@ public class Vector3D implements Vector {
         );
     }
 
-
-    @Override
-    public boolean hasSameDimensions(Vector element) {
-        return element.getDimension() == 3;
-    }
-
-    @Override
-    public String getDimensionAsString() {
-        return "3";
-    }
-
-    @Override
-    public Vector subtract(Vector subtrahend) {
-        if (subtrahend.getDimension() != 3) {
-            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
-        }
-        return new Vector3D(
-                this.x - subtrahend.getElement(X_INDEX),
-                this.y - subtrahend.getElement(Y_INDEX),
-                this.z - subtrahend.getElement(Z_INDEX));
-    }
-
-    @Override
-    public Vector divide(Vector divisor) {
-        if (divisor.getDimension() != 3) {
-            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
-        }
-        return new Vector3D(
-                this.x / divisor.getElement(X_INDEX),
-                this.y / divisor.getElement(Y_INDEX),
-                this.z / divisor.getElement(Z_INDEX));
-    }
-
-    @Override
-    public Vector multiply(Vector multiplicand) {
-        if (multiplicand.getDimension() != 3) {
-            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
-        }
-        return new Vector3D(
-                this.x * multiplicand.getElement(X_INDEX),
-                this.y * multiplicand.getElement(Y_INDEX),
-                this.z * multiplicand.getElement(Z_INDEX));
-    }
-
-    @Override
-    public Vector add(Vector summand) {
-        if (summand.getDimension() != 3) {
-            throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
-        }
-        return new Vector3D(
-                this.x + summand.getElement(X_INDEX),
-                this.y + summand.getElement(Y_INDEX),
-                this.z + summand.getElement(Z_INDEX));
-    }
 }

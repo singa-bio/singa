@@ -5,8 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +33,9 @@ public abstract class AbstractRepresentationScheme implements RepresentationSche
         return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.CENTROID.getAtomNameString(),
-                Vectors.getCentroid(leafSubstructure.getAllAtoms().stream()
+                Vectors3D.getCentroid(leafSubstructure.getAllAtoms().stream()
                         .filter(AtomFilter.isHydrogen().negate())
                         .map(Atom::getPosition)
-                        .collect(Collectors.toList()))
-                        .as(Vector3D.class));
+                        .collect(Collectors.toList())));
     }
 }
