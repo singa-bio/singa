@@ -14,7 +14,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class MatricesTest {
 
     @Test
-    public void shouldReadUnlabeledRegularMatrixFromCSV() throws Exception{
+    public void shouldReadUnlabeledRegularMatrixFromCSV() throws Exception {
         Path regularMatrixPath = Paths.get(Thread.currentThread()
                 .getContextClassLoader().getResource("matrices/regular_matrix.csv").toURI());
         RegularMatrix squareMatrix = Matrices.readUnlabeledMatrixFromCSV(regularMatrixPath).as(RegularMatrix.class);
@@ -49,6 +49,22 @@ public class MatricesTest {
     public void shouldReadLabeledSymmetricMatrixFromCSV() throws Exception {
         Path labeledSymmetricMatrixPath = Paths.get(Thread.currentThread()
                 .getContextClassLoader().getResource("matrices/labeled_symmetric_matrix.csv").toURI());
+        LabeledMatrix<String> labeledSymmetricMatrix = Matrices.readLabeledMatrixFromCSV(labeledSymmetricMatrixPath);
+        Assert.assertArrayEquals(new double[]{8.0, 14.0, 20.0, 28.0}, labeledSymmetricMatrix.getColumnByLabel("L4").getElements(), 0.0);
+    }
+
+    @Test
+    public void shouldReadLabeledLowerTriangularMatrixFromCSV() throws Exception {
+        Path labeledSymmetricMatrixPath = Paths.get(Thread.currentThread()
+                .getContextClassLoader().getResource("matrices/labeled_symmetric_matrix_triangular_lower.csv").toURI());
+        LabeledMatrix<String> labeledSymmetricMatrix = Matrices.readLabeledMatrixFromCSV(labeledSymmetricMatrixPath);
+        Assert.assertArrayEquals(new double[]{8.0, 14.0, 20.0, 28.0}, labeledSymmetricMatrix.getColumnByLabel("L4").getElements(), 0.0);
+    }
+
+    @Test
+    public void shouldReadLabeledUpperTriangularMatrixFromCSV() throws Exception {
+        Path labeledSymmetricMatrixPath = Paths.get(Thread.currentThread()
+                .getContextClassLoader().getResource("matrices/labeled_symmetric_matrix_triangular_upper.csv").toURI());
         LabeledMatrix<String> labeledSymmetricMatrix = Matrices.readLabeledMatrixFromCSV(labeledSymmetricMatrixPath);
         Assert.assertArrayEquals(new double[]{8.0, 14.0, 20.0, 28.0}, labeledSymmetricMatrix.getColumnByLabel("L4").getElements(), 0.0);
     }

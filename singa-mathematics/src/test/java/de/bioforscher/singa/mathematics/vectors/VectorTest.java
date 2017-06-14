@@ -12,11 +12,11 @@ import static org.junit.Assert.*;
 
 public class VectorTest {
 
-    RegularVector first4DVector;
-    RegularVector first2DVector;
-    RegularVector second2DVector;
-    RegularVector first3DVector;
-    double scalar;
+    private RegularVector first4DVector;
+    private RegularVector first2DVector;
+    private RegularVector second2DVector;
+    private RegularVector first3DVector;
+    private double scalar;
 
     @Before
     public void initialize() {
@@ -80,6 +80,15 @@ public class VectorTest {
         Vector v2 = new Vector3D(2, -2, 2);
         Vector v3 = new Vector3D(1, 4, -4);
         Vector actual = Vectors.getCentroid(Arrays.asList(v1, v2, v3));
+        assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements(), 0.0);
+    }
+
+    @Test
+    public void calculate3DCentroid() {
+        Vector3D v1 = new Vector3D(0, 1, 2);
+        Vector3D v2 = new Vector3D(2, -2, 2);
+        Vector3D v3 = new Vector3D(1, 4, -4);
+        Vector actual = Vectors3D.getCentroid(Arrays.asList(v1, v2, v3));
         assertArrayEquals(new double[]{1.0, 1.0, 0.0}, actual.getElements(), 0.0);
     }
 

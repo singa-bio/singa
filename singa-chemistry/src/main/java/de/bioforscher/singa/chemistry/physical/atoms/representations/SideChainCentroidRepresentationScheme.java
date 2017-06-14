@@ -3,14 +3,12 @@ package de.bioforscher.singa.chemistry.physical.atoms.representations;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.atoms.UncertainAtom;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
                 .count() == 0) {
             return determineCentroid(leafSubstructure);
         }
-        List<Vector> atomPositions = leafSubstructure.getAllAtoms().stream()
+        List<Vector3D> atomPositions = leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isSideChain().and(AtomFilter.isHydrogen()
                         .negate()))
                 .map(Atom::getPosition)
@@ -50,7 +48,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
         return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.SIDE_CHAIN_CENTROID.getAtomNameString(),
-                Vectors.getCentroid(atomPositions).as(Vector3D.class));
+                Vectors3D.getCentroid(atomPositions));
     }
 
     @Override

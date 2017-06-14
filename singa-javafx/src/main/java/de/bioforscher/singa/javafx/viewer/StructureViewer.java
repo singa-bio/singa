@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.SplitPane;
@@ -133,10 +133,10 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
+        final Vector3D centroid = Vectors3D.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
-                .as(Vector3D.class).multiply(3.0);
+                .multiply(3.0);
 
         allAtoms.forEach(atom -> atom.setPosition(
                 atom.getPosition().multiply(3.0).subtract(centroid)));

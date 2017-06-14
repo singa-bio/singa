@@ -36,6 +36,14 @@ public class Vectors {
         return true;
     }
 
+    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVcetors, Rectangle rectangle) {
+        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVcetors);
+        for (int i = 0; i < numberOfVcetors; i++) {
+            vectors.add(generateRandom2DVector(rectangle));
+        }
+        return vectors;
+    }
+
     /**
      * Generates a random Vector2D that is contained in the given {@link Rectangle}. The random values is inclusive the
      * left and bottom boundary and exclusive the right and top boundary.
@@ -43,7 +51,7 @@ public class Vectors {
      * @param rectangle The rectangle in which the vectors should be included.
      * @return A randomly placed vector.
      */
-    public static Vector2D generateRandomVectorInRectangle(Rectangle rectangle) {
+    public static Vector2D generateRandom2DVector(Rectangle rectangle) {
         double x = ThreadLocalRandom.current().nextDouble(rectangle.getLeftMostXPosition(),
                 rectangle.getRightMostXPosition());
         double y = ThreadLocalRandom.current().nextDouble(rectangle.getBottomMostYPosition(),
@@ -51,12 +59,14 @@ public class Vectors {
         return new Vector2D(x, y);
     }
 
+
     public static Vector3D generateRandomVector3D() {
         double x = ThreadLocalRandom.current().nextDouble();
         double y = ThreadLocalRandom.current().nextDouble();
         double z = ThreadLocalRandom.current().nextDouble();
         return new Vector3D(x, y, z);
     }
+
 
     /**
      * Returns the average value of an {@link Vector}s elements or Double.NaN if not present.
@@ -170,6 +180,25 @@ public class Vectors {
             }
         }
         return maximalIndex;
+    }
+
+    public static <VectorType extends Vector> List<VectorType> getVectorsWithMinimalValueForIndex(List<VectorType> vectors, int index) {
+        if (vectors.size() == 1) {
+            return vectors;
+        }
+        double minimalValue = Double.MAX_VALUE;
+        List<VectorType> minimalVectors = new ArrayList<>();
+        for (VectorType vector : vectors) {
+            double currentValue = vector.getElement(index);
+            if (Double.compare(currentValue, minimalValue) == 0)
+                minimalVectors.add(vector);
+            else if (Double.compare(currentValue, minimalValue) < 0) {
+                minimalValue = currentValue;
+                minimalVectors.clear();
+                minimalVectors.add(vector);
+            }
+        }
+        return minimalVectors;
     }
 
     /**

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.mathematics.geometry.edges;
 
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
  * A line is a straight one-dimensional figure having no thickness and extending
@@ -167,6 +167,8 @@ public class Line {
     public double getYValue(double x) {
         return this.slope * x + this.yIntercept;
     }
+
+
 
     /**
      * Returns the angle to the x-axis in radians.

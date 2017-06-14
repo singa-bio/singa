@@ -194,7 +194,6 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
         return Math.acos(this.dotProduct(another) / (this.getMagnitude() * another.getMagnitude()));
     }
 
-
     /**
      * Checks if this vector contains only Zeros.
      *

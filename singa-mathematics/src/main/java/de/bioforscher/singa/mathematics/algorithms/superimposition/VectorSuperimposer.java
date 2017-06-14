@@ -73,8 +73,7 @@ public class VectorSuperimposer {
     }
 
     private void applyMapping() {
-        this.mappedCandidate =
-                this.candidate.stream()
+        this.mappedCandidate = this.candidate.stream()
                         .map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
                         .collect(Collectors.toList());
     }

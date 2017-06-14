@@ -187,7 +187,7 @@ public class Vector2D extends RegularVector {
      * @param vector Another 2D vector.
      * @return The angle in radians.
      */
-    public double angleBetween(Vector2D vector) {
+    public double angleTo(Vector2D vector) {
         return Math.acos(dotProduct(vector) / (getMagnitude() * vector.getMagnitude()));
     }
 

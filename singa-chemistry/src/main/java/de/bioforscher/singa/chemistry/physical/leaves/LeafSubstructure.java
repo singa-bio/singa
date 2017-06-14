@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.physical.atoms.representations.Representat
 import de.bioforscher.singa.chemistry.physical.model.*;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -323,10 +323,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     @Override
     public Vector3D getPosition() {
-        return Vectors.getCentroid(this.atoms.values().stream()
+        return Vectors3D.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)
-                .collect(Collectors.toList()))
-                .as(Vector3D.class);
+                .collect(Collectors.toList()));
     }
 
     /**

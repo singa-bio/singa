@@ -13,7 +13,7 @@ public class FastMatrices {
      * @param values Values the matrix should have.
      * @return A regular matrix.
      */
-    public static Matrix createRegularMatrix(double[][] values) {
+    public static RegularMatrix createRegularMatrix(double[][] values) {
         return new RegularMatrix(values, values.length, values[0].length);
     }
 
@@ -26,7 +26,20 @@ public class FastMatrices {
      * @param values Jagged lower triangle array with the values.
      * @return A symmetric matrix.
      */
-    public static Matrix createSymmetricMatrix(double[][] values) {
+    public static SquareMatrix createSquareMatrix(double[][] values) {
+        return new SquareMatrix(values, values.length, values[values.length - 1].length);
+    }
+
+    /**
+     * Creates a symmetric matrix without checking if the array has the right format or has to be compacted. The method
+     * requires a jagged lower triangle array like:
+     * <pre>
+     * {{1.0}, {2.0, 5.0}, {3.0, 6.0, 9.0}} </pre>
+     *
+     * @param values Jagged lower triangle array with the values.
+     * @return A symmetric matrix.
+     */
+    public static SymmetricMatrix createSymmetricMatrix(double[][] values) {
         return new SymmetricMatrix(values, values.length, values[values.length - 1].length);
     }
 
