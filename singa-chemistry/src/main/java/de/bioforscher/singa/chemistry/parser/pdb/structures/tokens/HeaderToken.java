@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
  */
 public enum HeaderToken implements PDBToken {
 
-    CLASSIFICATION(Range.of(11,50)),
+    CLASSIFICATION(Range.of(11, 50)),
     DEPOSITION_DATE(Range.of(51, 59)),
-    ID_CODE(Range.of(63,66));
+    ID_CODE(Range.of(63, 66));
 
     public static final Pattern RECORD_PATTERN = Pattern.compile("^HEADER.*");
     private final Range<Integer> columns;
@@ -28,5 +28,9 @@ public enum HeaderToken implements PDBToken {
     @Override
     public Range<Integer> getColumns() {
         return this.columns;
+    }
+
+    public String createHeaderLine(String content) {
+        return "HEADER" + String.format("%" + (getColumns().getLowerBound() - content.length() + 1) + "s", content.toUpperCase());
     }
 }

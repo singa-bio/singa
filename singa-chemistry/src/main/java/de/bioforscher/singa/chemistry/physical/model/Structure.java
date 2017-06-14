@@ -21,7 +21,6 @@ public class Structure {
 
     private String pdbIdentifier;
     private String title;
-
     /**
      * The branchSubstructures of the graph.
      */
@@ -29,6 +28,13 @@ public class Structure {
 
     public Structure() {
         this.branchSubstructures = new TreeMap<>();
+    }
+
+    @Override
+    public String toString() {
+        return "Structure{" +
+                "pdbIdentifier='" + this.pdbIdentifier + '\'' +
+                '}';
     }
 
     /**

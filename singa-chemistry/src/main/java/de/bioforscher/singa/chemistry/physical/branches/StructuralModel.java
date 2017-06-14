@@ -4,7 +4,10 @@ import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
 
 /**
  * To handle structures with multiple models (of NMR).
@@ -22,6 +25,13 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
 
     public StructuralModel(StructuralModel structuralModel) {
         super(structuralModel);
+    }
+
+    public Optional<Chain> getFirstChain() {
+        return getBranchSubstructures().stream()
+                .filter(isChain())
+                .map(Chain.class::cast)
+                .findFirst();
     }
 
     public List<Chain> getAllChains() {
