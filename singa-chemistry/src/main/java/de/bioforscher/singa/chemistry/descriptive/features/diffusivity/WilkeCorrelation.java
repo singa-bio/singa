@@ -1,16 +1,16 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.units.features.model.Correlation;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
-import de.bioforscher.singa.units.features.model.Featureable;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.model.Correlation;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static de.bioforscher.singa.units.parameters.EnvironmentalParameterDefaults.MOLAR_MASS_OF_WATER;
+import static de.bioforscher.singa.features.parameters.EnvironmentalParameterDefaults.MOLAR_MASS_OF_WATER;
 import static tec.units.ri.AbstractUnit.ONE;
 
 /**

@@ -5,6 +5,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameterExamples;
+import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -15,16 +18,13 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameterExamples;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.units.UnitProvider.*;
+import static de.bioforscher.singa.features.units.UnitProvider.*;
 
 /**
  * @author cl

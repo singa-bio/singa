@@ -11,7 +11,7 @@ import tec.units.ri.quantity.Quantities;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 
 /**

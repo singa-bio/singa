@@ -82,7 +82,7 @@
         <module>../singa-benchmark</module>
         <module>../singa-core</module>
         <module>../singa-mathematics</module>
-        <module>../singa-units</module>
+        <module>../singa-features</module>
         <module>../singa-chemistry</module>
         <module>../singa-simulation</module>
         <module>../singa-javafx</module>

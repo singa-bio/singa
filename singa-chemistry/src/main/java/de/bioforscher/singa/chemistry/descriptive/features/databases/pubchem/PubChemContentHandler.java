@@ -61,7 +61,7 @@ class PubChemContentHandler implements ContentHandler {
                 .build();
 
         Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType.ADDITIONAL_IDENTIFIER,
-                new PubChemIdentifier("CID:"+this.pubChemIdentifier));
+                new PubChemIdentifier("CID:" + this.pubChemIdentifier));
         result.addAnnotation(pubChemIdentifierAnnotation);
 
         return result;
@@ -111,7 +111,7 @@ class PubChemContentHandler implements ContentHandler {
                     this.inCanonicalSMILESInformation = false;
                 } else if (this.inComputedProperties) {
                     // set logP
-                    if ("Molecular Weight".equals(new String(ch, start, length))) {
+                    if ("Molecular Weight" .equals(new String(ch, start, length))) {
                         this.inMolecularWeightInformation = true;
                     }
                 } else if (this.inLogP && this.inLogPInformation) {
@@ -122,11 +122,13 @@ class PubChemContentHandler implements ContentHandler {
                         // remove "non double characters" (very simple for now)
                         String cleanedString = logPString.replaceAll("[^0-9.]", "");
                         this.logP = Double.parseDouble(cleanedString);
-                    } else {
+                        this.inLogP = false;
+                        this.inLogPInformation = false;
+                    } else if (logPString.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
                         this.logP = Double.parseDouble(logPString);
+                        this.inLogP = false;
+                        this.inLogPInformation = false;
                     }
-                    this.inLogP = false;
-                    this.inLogPInformation = false;
                 }
                 break;
             }
@@ -148,6 +150,13 @@ class PubChemContentHandler implements ContentHandler {
                     this.molarMass = Double.parseDouble(new String(ch, start, length));
                     this.inMolecularWeightInformation = false;
                     this.inComputedProperties = false;
+                } else if (this.inLogP && this.inLogPInformation) {
+                    // set logP
+                    String logPString = new String(ch, start, length);
+                    // explicitly stated as log KOW
+                    this.logP = Double.parseDouble(logPString);
+                    this.inLogP = false;
+                    this.inLogPInformation = false;
                 }
                 break;
             }
@@ -160,8 +169,7 @@ class PubChemContentHandler implements ContentHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
 
         switch (this.currentTag) {
             case "RecordNumber":
@@ -216,8 +224,7 @@ class PubChemContentHandler implements ContentHandler {
             case "Information":
                 if (this.inRecordTitle) {
                     this.inRecordTitleInformation = true;
-                } else
-                if (this.inCanonicalSMILES) {
+                } else if (this.inCanonicalSMILES) {
                     this.inCanonicalSMILESInformation = true;
                 }
                 if (this.inSynonyms) {

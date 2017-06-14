@@ -1,5 +1,6 @@
 package de.bioforscher.singa.simulation.application;
 
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.application.components.controlpanles.CompartmentControlPanel;
 import de.bioforscher.singa.simulation.application.components.controlpanles.EnvironmentalParameterControlPanel;
 import de.bioforscher.singa.simulation.application.components.controlpanles.PlotControlPanel;
@@ -12,7 +13,6 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLExportService;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLParserService;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;

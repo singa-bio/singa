@@ -1,14 +1,14 @@
 package de.bioforscher.singa.simulation.application.wizards;
 
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.DynamicViscosity;
+import de.bioforscher.singa.features.units.UnitName;
+import de.bioforscher.singa.features.units.UnitPrefix;
+import de.bioforscher.singa.features.units.UnitPrefixes;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.units.UnitName;
-import de.bioforscher.singa.units.UnitPrefix;
-import de.bioforscher.singa.units.UnitPrefixes;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.units.quantities.DynamicViscosity;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -24,7 +24,7 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
-import static de.bioforscher.singa.units.UnitProvider.PASCAL_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.PASCAL_SECOND;
 import static tec.units.ri.unit.MetricPrefix.*;
 import static tec.units.ri.unit.Units.*;
 

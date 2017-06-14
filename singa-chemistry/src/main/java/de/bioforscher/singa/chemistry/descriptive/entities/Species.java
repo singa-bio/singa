@@ -6,7 +6,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 
 /**
  * A chemical species should be used to handle everything that can be described with a SMILES (Simplified Molecular

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.features.permeability;
 
-import de.bioforscher.singa.units.features.model.AbstractFeature;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.AbstractFeature;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

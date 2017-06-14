@@ -13,7 +13,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="singa-core" />
-    <orderEntry type="module" module-name="singa-units" />
+    <orderEntry type="module" module-name="singa-features" />
     <orderEntry type="library" name="Maven: tec.units:unit-ri:1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />

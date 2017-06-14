@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 
 import javax.measure.Quantity;
 

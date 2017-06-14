@@ -1,6 +1,9 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
@@ -8,16 +11,13 @@ import de.bioforscher.singa.simulation.modules.reactions.implementations.kinetic
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameter;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.singa.units.UnitProvider.PER_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.PER_SECOND;
 
 /**
  * @author cl

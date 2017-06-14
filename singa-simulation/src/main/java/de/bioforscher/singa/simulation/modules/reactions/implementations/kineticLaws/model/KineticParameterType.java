@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model;
 
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
 
 import javax.measure.quantity.Dimensionless;
 

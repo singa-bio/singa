@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.Featureable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

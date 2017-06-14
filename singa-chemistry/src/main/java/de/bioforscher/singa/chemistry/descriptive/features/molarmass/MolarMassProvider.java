@@ -5,8 +5,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIDatabase;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtDatabase;
-import de.bioforscher.singa.units.features.model.FeatureProvider;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.FeatureProvider;
+import de.bioforscher.singa.features.model.Featureable;
 
 /**
  * @author cl
