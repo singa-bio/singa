@@ -361,4 +361,33 @@ public class Vector3D implements Vector {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vector3D vector3D = (Vector3D) o;
+
+        if (Double.compare(vector3D.x, this.x) != 0) return false;
+        if (Double.compare(vector3D.y, this.y) != 0) return false;
+        return Double.compare(vector3D.z, this.z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(this.x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Vector3D (" + x + ", " + y + ", " + z + ')';
+    }
 }

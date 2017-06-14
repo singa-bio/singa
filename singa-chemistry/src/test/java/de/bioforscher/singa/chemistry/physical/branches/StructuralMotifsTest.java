@@ -4,15 +4,14 @@ package de.bioforscher.singa.chemistry.physical.branches;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class StructuralMotifsTest {
     @Before
     public void setUp() throws Exception {
         Structure motifStructure = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("Asn_3m4p.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
         this.structuralMotif = StructuralMotif.fromLeaves(1, motifStructure.getAllLeaves());

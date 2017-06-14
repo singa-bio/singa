@@ -1,7 +1,5 @@
 package de.bioforscher.singa.mathematics.vectors;
 
-import de.bioforscher.singa.mathematics.concepts.Addable;
-
 import java.util.Collection;
 
 /**

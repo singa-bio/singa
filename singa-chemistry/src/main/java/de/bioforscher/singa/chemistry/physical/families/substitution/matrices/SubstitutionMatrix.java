@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.physical.families.substitution.matrices;
 
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.singa.core.utility.TestUtils;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 
@@ -24,8 +25,7 @@ public enum SubstitutionMatrix {
 
     SubstitutionMatrix(String resourceLocation) {
         // get resource
-        Path resource = Paths.get(
-                Thread.currentThread().getContextClassLoader().getResource(resourceLocation).getPath());
+        Path resource = Paths.get(TestUtils.getResourceAsFilepath(resourceLocation));
         LabeledSymmetricMatrix<String> stringLabeledMatrix = null;
         // parse matrix
         try {

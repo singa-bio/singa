@@ -9,6 +9,7 @@ import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class ConsensusAlignmentTest {
     public void setUp() throws Exception {
         StructureParserOptions structureParserOptions = new StructureParserOptions();
         structureParserOptions.inferIdentifierFromFileName(true);
-        this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
+        this.input = Files.list(Paths.get(TestUtils.getResourceAsFilepath("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .everything()

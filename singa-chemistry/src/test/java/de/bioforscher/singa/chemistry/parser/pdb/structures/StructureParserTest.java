@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Test;
 
 import java.io.UncheckedIOException;
@@ -130,7 +131,7 @@ public class StructureParserTest {
         options.inferTitleFromFileName(true);
         options.inferIdentifierFromFileName(true);
         Structure structure = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
                 .parse();

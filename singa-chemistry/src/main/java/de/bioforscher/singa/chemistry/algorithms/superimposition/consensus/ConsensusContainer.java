@@ -44,7 +44,7 @@ public class ConsensusContainer {
     @Override
     public String toString() {
         return this.structuralMotif.toString() +
-                ":" + this.consensusDistance;
+                "_" + this.consensusDistance;
     }
 
     public StructuralMotif getStructuralMotif() {
