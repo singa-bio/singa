@@ -141,7 +141,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     }
                     return fit3d.getMatches();
                 } catch (Fit3DException | StructureParserException | SubStructureSuperimpositionException | UncheckedIOException e) {
-                    logger.warn("failed to run Fit3D against structure", e);
+                    logger.warn("failed to run Fit3D against structure {}", Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier(), e);
                 }
             }
             return null;
