@@ -38,7 +38,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
 
     public int addNextAtom(Element element) {
         final MoleculeAtom atom = new MoleculeAtom(nextNodeIdentifier(),
-                Vectors.generateRandomVectorInRectangle(new Rectangle(100, 100)), element);
+                Vectors.generateRandom2DVector(new Rectangle(100, 100)), element);
         addNode(atom);
         return atom.getIdentifier();
     }
