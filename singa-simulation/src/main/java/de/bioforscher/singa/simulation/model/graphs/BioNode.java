@@ -29,7 +29,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         super(identifier);
         this.state = AQUEOUS;
         this.cellSection = new EnclosedCompartment("default", "Default Compartment");
-        this.concentrations = new SimpleConcentrationContainer();
+        this.concentrations = new SimpleConcentrationContainer(cellSection);
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -96,6 +96,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
             setState(MEMBRANE);
         }
         this.cellSection = cellSection;
+        this.
         cellSection.addNode(this);
     }
 

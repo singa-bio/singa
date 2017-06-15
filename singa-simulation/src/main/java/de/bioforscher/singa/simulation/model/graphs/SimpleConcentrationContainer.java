@@ -16,9 +16,11 @@ import java.util.Set;
 public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
+    private CellSection cellSection;
 
-    public SimpleConcentrationContainer() {
+    public SimpleConcentrationContainer(CellSection cellSection) {
         this.concentrations = new HashMap<>();
+        this.cellSection = cellSection;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        return Collections.emptySet();
+        return Collections.singleton(this.cellSection);
     }
 
     @Override
