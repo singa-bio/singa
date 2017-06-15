@@ -1,6 +1,9 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
@@ -9,9 +12,6 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

@@ -2,14 +2,14 @@ package de.bioforscher.singa.simulation.modules.diffusion;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
@@ -17,7 +17,7 @@ import tec.units.ri.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.*;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
@@ -47,7 +47,6 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     @Override
     public void applyTo(AutomatonGraph graph) {
-        logger.debug("Applying Free Diffusion module.");
         updateGraph(graph);
     }
 

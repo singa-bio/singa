@@ -2,13 +2,13 @@ package de.bioforscher.singa.simulation.application.components.plots;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.application.SingaPreferences;
 import de.bioforscher.singa.simulation.application.renderer.ColorManager;
 import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdates;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIDatabase;
-import de.bioforscher.singa.units.features.model.FeatureProvider;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.FeatureProvider;
+import de.bioforscher.singa.features.model.Featureable;
 
 /**
  * @author cl

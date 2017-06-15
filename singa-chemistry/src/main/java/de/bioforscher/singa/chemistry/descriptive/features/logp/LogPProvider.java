@@ -6,8 +6,8 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.Pub
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.core.identifier.PubChemIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
-import de.bioforscher.singa.units.features.model.FeatureProvider;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.FeatureProvider;
+import de.bioforscher.singa.features.model.Featureable;
 
 import java.util.Optional;
 

@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.core.parameters.*;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.algorithms.optimization.AbstractGridSearch;
 import de.bioforscher.singa.mathematics.combinatorics.Permutations;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
@@ -17,7 +18,6 @@ import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

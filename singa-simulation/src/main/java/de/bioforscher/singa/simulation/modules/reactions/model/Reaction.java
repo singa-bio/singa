@@ -1,10 +1,10 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * A chemical reaction is a process that leads to the transformation of one set of chemical substances to another.

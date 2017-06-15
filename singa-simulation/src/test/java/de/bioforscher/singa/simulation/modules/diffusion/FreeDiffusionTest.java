@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.diffusion;
 
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 

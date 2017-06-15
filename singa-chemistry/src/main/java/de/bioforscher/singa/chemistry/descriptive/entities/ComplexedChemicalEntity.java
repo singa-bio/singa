@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 
 import java.util.HashMap;
 import java.util.Map;

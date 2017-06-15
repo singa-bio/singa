@@ -1,13 +1,13 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;

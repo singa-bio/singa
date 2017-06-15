@@ -1,10 +1,10 @@
 package de.bioforscher.singa.simulation.application.components.controlpanles;
 
-import de.bioforscher.singa.units.UnitName;
-import de.bioforscher.singa.units.UnitPrefix;
-import de.bioforscher.singa.units.UnitPrefixes;
-import de.bioforscher.singa.units.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.units.quantities.DynamicViscosity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.DynamicViscosity;
+import de.bioforscher.singa.features.units.UnitName;
+import de.bioforscher.singa.features.units.UnitPrefix;
+import de.bioforscher.singa.features.units.UnitPrefixes;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -25,7 +25,7 @@ import javax.measure.quantity.Time;
 import java.util.Observable;
 import java.util.Observer;
 
-import static de.bioforscher.singa.units.UnitProvider.PASCAL_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.PASCAL_SECOND;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.*;
 

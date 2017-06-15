@@ -9,9 +9,9 @@ import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
-import de.bioforscher.singa.units.features.model.Feature;
-import de.bioforscher.singa.units.features.model.FeatureContainer;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.features.model.FeatureContainer;
+import de.bioforscher.singa.features.model.Featureable;
 
 import java.util.*;
 

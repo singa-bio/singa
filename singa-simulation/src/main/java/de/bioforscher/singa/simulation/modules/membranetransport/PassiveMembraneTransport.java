@@ -14,7 +14,7 @@ import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl

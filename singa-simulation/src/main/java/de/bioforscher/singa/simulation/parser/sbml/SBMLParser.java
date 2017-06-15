@@ -11,6 +11,7 @@ import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
@@ -19,7 +20,6 @@ import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLAssignmentRuleC
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLReactionConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLUnitConverter;
-import de.bioforscher.singa.units.features.model.FeatureOrigin;
 import org.sbml.jsbml.CVTerm;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;

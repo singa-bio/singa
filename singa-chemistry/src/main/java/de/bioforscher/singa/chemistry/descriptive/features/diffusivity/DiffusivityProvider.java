@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.units.features.model.FeatureProvider;
-import de.bioforscher.singa.units.features.model.Featureable;
+import de.bioforscher.singa.features.model.FeatureProvider;
+import de.bioforscher.singa.features.model.Featureable;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;

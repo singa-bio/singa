@@ -5,17 +5,17 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.Uni
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.features.units.UnitProvider;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
-import static de.bioforscher.singa.units.UnitProvider.PER_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.PER_SECOND;
 
 /**
  * An Enzyme is a Protein, that is associated with a catalytic function. For the usage in reactions this chemical

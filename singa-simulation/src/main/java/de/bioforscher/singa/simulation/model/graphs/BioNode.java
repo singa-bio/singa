@@ -1,22 +1,22 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
