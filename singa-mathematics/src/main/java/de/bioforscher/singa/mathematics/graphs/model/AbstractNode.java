@@ -90,7 +90,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      *
      * @param node The node to remove.
      */
-    public void removeNeighbour(RegularNode node) {
+    public void removeNeighbour(NodeType node) {
         this.neighbours.remove(node);
     }
 
@@ -100,8 +100,23 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      * @param node The node.
      * @return true if the list of neighbors contains the given node.
      */
-    public boolean hasNeighbour(RegularNode node) {
+    public boolean hasNeighbour(NodeType node) {
         return this.neighbours.contains(node);
+    }
+
+    /**
+     * Returns true if the list of neighbours contains a node with the given identifier.
+     *
+     * @param identifier The identifier.
+     * @return true if the list of neighbours contains a node with the given identifier.
+     */
+    public boolean hasNeighbour(int identifier) {
+        for (NodeType node: this.neighbours) {
+            if (node.getIdentifier() == identifier) {
+                return  true;
+            }
+        }
+        return false;
     }
 
     @Override

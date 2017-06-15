@@ -1,9 +1,13 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameterExamples;
+import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -14,15 +18,13 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameterExamples;
-import de.bioforscher.singa.units.UnitProvider;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.units.UnitProvider.*;
+import static de.bioforscher.singa.features.units.UnitProvider.*;
 
 /**
  * @author cl
@@ -45,21 +47,14 @@ public class ReactionsTest {
         AutomatonGraph graph = prepareGraph();
 
         // Species
-        ChEBIParserService service = new ChEBIParserService();
-
-        service.setResource("CHEBI:18105");
-        Species fp = service.fetchSpecies();
-
-        service.setResource("CHEBI:16108");
-        Species gp = service.fetchSpecies();
-
-        service.setResource("CHEBI:17378");
-        Species ga = service.fetchSpecies();
+        Species fp = ChEBIParserService.parse("CHEBI:18105");
+        Species gp = ChEBIParserService.parse("CHEBI:16108");
+        Species ga = ChEBIParserService.parse("CHEBI:17378");
 
         // Enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .molarMass(82142.0)
+                .assignFeature(new MolarMass(82142, FeatureOrigin.MANUALLY_ANNOTATED))
                 .addSubstrate(fp)
                 .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
                 .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
@@ -71,13 +66,6 @@ public class ReactionsTest {
             node.setConcentration(aldolase, 0.2);
             node.setConcentration(ga, 0);
             node.setConcentration(gp, 0);
-        }
-        // set permeability
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(fp, 1);
-            edge.addPermeability(aldolase, 1);
-            edge.addPermeability(ga, 1);
-            edge.addPermeability(gp, 1);
         }
 
         // Environment
@@ -117,12 +105,10 @@ public class ReactionsTest {
         // Species
         Species speciesA = new Species.Builder("CHEBI:00001")
                 .name("A")
-                .molarMass(10.0)
                 .build();
 
         Species speciesB = new Species.Builder("CHEBI:00002")
                 .name("B")
-                .molarMass(10.0)
                 .build();
 
         for (BioNode node : graph.getNodes()) {
@@ -174,16 +160,11 @@ public class ReactionsTest {
         ChEBIParserService chebiService = new ChEBIParserService();
 
         // dinitrogen pentaoxide
-        chebiService.setResource("CHEBI:29802");
-        Species dpo = chebiService.fetchSpecies();
-
+        Species dpo = ChEBIParserService.parse("CHEBI:29802");
         // nitrogen dioxide
-        chebiService.setResource("CHEBI:33101");
-        Species ndo = chebiService.fetchSpecies();
-
+        Species ndo = ChEBIParserService.parse("CHEBI:33101");
         // dioxigen
-        chebiService.setResource("CHEBI:15379");
-        Species oxygen = chebiService.fetchSpecies();
+        Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (BioNode node : graph.getNodes()) {
             node.setConcentration(dpo, 0.020);

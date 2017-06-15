@@ -1,12 +1,13 @@
 package de.bioforscher.singa.simulation.modules.membranetransport;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,12 +21,13 @@ public class ActiveMembraneTransport implements Module, CumulativeUpdateBehavior
     }
 
     @Override
-    public Set<ChemicalEntity<?>> collectAllReferencesEntities() {
+    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
         return null;
     }
 
     @Override
-    public PotentialUpdate calculateUpdate(BioNode node, ChemicalEntity entity) {
+    public List<PotentialUpdate> calculateUpdates(BioNode node) {
         return null;
     }
+
 }

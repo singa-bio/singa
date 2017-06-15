@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author cl
@@ -51,5 +52,22 @@ public class SimulationManager extends Task<Simulation> implements UpdateEventEm
         }
         return this.simulation;
     }
+
+    @Override
+    protected void done() {
+        try {
+            if (!isCancelled()) {
+                get();
+            }
+        } catch (ExecutionException e) {
+            // Exception occurred, deal with it
+            logger.error("Encountered an exception during simulation: " + e.getCause());
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            // Shouldn't happen, we're invoked when computation is finished
+            throw new AssertionError(e);
+        }
+    }
+
 
 }

@@ -2,11 +2,11 @@ package de.bioforscher.singa.chemistry.descriptive.estimations;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBond;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
 import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
-import de.bioforscher.singa.chemistry.parser.smiles.SmilesParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

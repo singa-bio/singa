@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.application.wizards;
 
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.singa.simulation.parser.sbml.SabioRKParserService;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
@@ -12,15 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A wizard used to search and add a reaction to the automaton.
@@ -114,35 +105,36 @@ class GetSuggestionsPage extends WizardPage {
 
     public void searchReactions(ActionEvent event) {
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client
-                .target("http://sabiork.h-its.org/sabioRestWebServices/");
-        WebTarget suggestionsPath = target.path("searchKineticLaws")
-                .path("kinlaws");
-        // Only supported reactions with kCat and km are retrieved
-        WebTarget suggestionsQuery = suggestionsPath.queryParam(
-                "q",
-                "Pathway:" + "%22"
-                        + this.tfSearch.getText().replaceAll(" ", "%20")
-                        + "%22%20AND%20Parametertype:%22kCat%22%20AND%20Parametertype:%22km%22");
-        Invocation.Builder invocationBuilder = suggestionsQuery
-                .request(MediaType.TEXT_PLAIN);
-        Response response = invocationBuilder.get();
+//        Client client = ClientBuilder.newClient();
+//        WebTarget target = client
+//                .target("http://sabiork.h-its.org/sabioRestWebServices/");
+//        WebTarget suggestionsPath = target.path("searchKineticLaws")
+//                .path("kinlaws");
+//        // Only supported reactions with kCat and km are retrieved
+//        WebTarget suggestionsQuery = suggestionsPath.queryParam(
+//                "q",
+//                "Pathway:" + "%22"
+//                        + this.tfSearch.getText().replaceAll(" ", "%20")
+//                        + "%22%20AND%20Parametertype:%22kCat%22%20AND%20Parametertype:%22km%22");
+//        Invocation.Builder invocationBuilder = suggestionsQuery
+//                .request(MediaType.TEXT_PLAIN);
+//        Response response = invocationBuilder.get();
+//
+//        Pattern pattern = Pattern.compile("<SabioEntryID>(\\d+)");
+//        String suggestions = response.readEntity(String.class);
+//
+//        Matcher matcher = pattern.matcher(suggestions);
+//
+//        int count = 0;
+//
+//        while (matcher.find() && count < 10) {
+//            String sabioId = matcher.group(1);
+//            SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
+//                    + sabioId);
+//
+//            count++;
+//        }
 
-        Pattern pattern = Pattern.compile("<SabioEntryID>(\\d+)");
-        String suggestions = response.readEntity(String.class);
-
-        Matcher matcher = pattern.matcher(suggestions);
-
-        int count = 0;
-
-        while (matcher.find() && count < 10) {
-            String sabioId = matcher.group(1);
-            SabioRKParserService sabiorkParser = new SabioRKParserService("EntryID:"
-                    + sabioId);
-
-            count++;
-        }
     }
 
 

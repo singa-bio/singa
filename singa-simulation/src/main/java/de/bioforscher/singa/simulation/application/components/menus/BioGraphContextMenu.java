@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.application.components.menus;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntities;
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntities;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.application.components.panes.SimulationCanvas;
 import de.bioforscher.singa.simulation.application.renderer.RenderingMode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;

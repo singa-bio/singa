@@ -29,6 +29,7 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
 
     /**
      * Initializes the Shortest path finder with a given source node.
+     *
      * @param sourceNode the source node.
      */
     private void initialize(NodeType sourceNode) {
@@ -42,11 +43,12 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Returns the shortest path originating from the source node. The target node is the first node that satisfies
      * target predicate. E.g. To to search for a specific node in the graph it is possible to use the identifier in the
-     * predicate. If no shortest path can be found null is returned.
-     * @param sourceNode The source node.
+     * predicate. If no path can be found null is returned.
+     *
+     * @param sourceNode      The source node.
      * @param targetPredicate The predicate the target has to fulfill.
-     * @param <VectorType> The type of the position of the node.
-     * @param <NodeType> The type of the node.
+     * @param <VectorType>    The type of the position of the node.
+     * @param <NodeType>      The type of the node.
      * @return The shortest path.
      */
     public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
@@ -57,7 +59,7 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
-                if (path!= null) {
+                if (path != null) {
                     return path;
                 }
             }
@@ -68,12 +70,13 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Returns the shortest path originating from the source node. The target node is the first node that satisfies
      * target predicate. Additionally all nodes on the path to the target predicate have to fulfill the track predicate.
-     * If no shortest path can be found null is returned.
-     * @param sourceNode The source node.
+     * If no path can be found null is returned.
+     *
+     * @param sourceNode      The source node.
      * @param targetPredicate The predicate the target has to fulfill.
-     * @param trackPredicate The predicate all nodes on the path have to fulfill.
-     * @param <VectorType> The type of the position of the node.
-     * @param <NodeType> The type of the node.
+     * @param trackPredicate  The predicate all nodes on the path have to fulfill.
+     * @param <VectorType>    The type of the position of the node.
+     * @param <NodeType>      The type of the node.
      * @return The shortest path.
      */
     public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
@@ -85,7 +88,7 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 if (trackPredicate.test(currentNode)) {
                     LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
-                    if (path!= null) {
+                    if (path != null) {
                         return path;
                     }
                 }
@@ -99,8 +102,8 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
      * target is returned. Otherwise the target is added to the queue, it is referenced in the predecessors map and
      * the distance is set in the distance map.
      *
-     * @param source The source node.
-     * @param target The target node.
+     * @param source          The source node.
+     * @param target          The target node.
      * @param targetPredicate The predicate to fulfill.
      * @return The shortest path if the target fulfills the predicate and null otherwise.
      */

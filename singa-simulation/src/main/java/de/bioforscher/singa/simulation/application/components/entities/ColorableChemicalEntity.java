@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.application.components.entities;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.application.renderer.ColorManager;
 import javafx.scene.paint.Color;
 

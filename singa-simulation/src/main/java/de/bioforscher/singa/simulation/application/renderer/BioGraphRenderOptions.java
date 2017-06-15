@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.application.renderer;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.javafx.renderer.colors.ColorScale;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
@@ -16,7 +16,7 @@ public class BioGraphRenderOptions {
 
     public BioGraphRenderOptions() {
         // todo render depending on maximal value in any node
-        this.nodeColorScale = new ColorScale.Builder(0, 5000).build();
+        this.nodeColorScale = new ColorScale.Builder(0, 1).build();
         this.renderingMode = RenderingMode.STATE_BASED;
     }
 

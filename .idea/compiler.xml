@@ -15,6 +15,7 @@
         <module name="singa-benchmark" />
         <module name="singa-chemistry" />
         <module name="singa-core" />
+        <module name="singa-features" />
         <module name="singa-javafx" />
         <module name="singa-mathematics" />
         <module name="singa-simulation" />
@@ -33,6 +34,7 @@
       <module name="singa-benchmark" target="1.8" />
       <module name="singa-chemistry" target="1.8" />
       <module name="singa-core" target="1.8" />
+      <module name="singa-features" target="1.8" />
       <module name="singa-javafx" target="1.8" />
       <module name="singa-mathematics" target="1.8" />
       <module name="singa-simulation" target="1.8" />

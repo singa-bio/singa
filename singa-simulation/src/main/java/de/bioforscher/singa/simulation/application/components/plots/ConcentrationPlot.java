@@ -1,16 +1,14 @@
 package de.bioforscher.singa.simulation.application.components.plots;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.application.SingaPreferences;
 import de.bioforscher.singa.simulation.application.renderer.ColorManager;
 import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdates;
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,12 +19,14 @@ import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.Quantity;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 
 /**
  * The chart is used for visualization of BioNode concentrations changes over
@@ -40,7 +40,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     private ObservableList<ChemicalEntity<?>> observedEntities = FXCollections.observableArrayList();
     // mirrors the data received from events
-    private Map<Integer, Set<PotentialUpdate>> mirroredData;
+    private Map<Integer, List<PotentialUpdate>> mirroredData;
     private BioNode referencedNode;
 
     private int maximalDataPoints;
@@ -117,7 +117,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
     }
 
     private void configureYAxis() {
-        this.getYAxis().setLabel("Molar concentration in " + UnitProvider.GRAM_PER_MOLE.toString());
+        this.getYAxis().setLabel("Molar concentration in " + GRAM_PER_MOLE.toString());
     }
 
     public void setObservedSpecies(Set<ChemicalEntity<?>> observedSpecies) {
@@ -157,9 +157,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
-
         if (event.getNode().equals(this.referencedNode)) {
-            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = event.getNode().getAllConcentrations();
             // TODO iterate over species instead of series
             for (ChemicalEntity entity : this.observedEntities) {
                 // get associated value
@@ -167,9 +165,9 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
                         .filter(s -> s.getName().equals(entity.getIdentifier().toString()))
                         .findFirst().get();
                 // add to mirrored values
-                this.mirroredData.put(event.getEpoch(), PotentialUpdates.collectAsPotentialUpdates(concentrations));
+                this.mirroredData.put(event.getEpoch(), PotentialUpdates.collectChanges(event.getNode()));
                 // get concentration of entity
-                double concentration = concentrations.get(entity).getValue().doubleValue();
+                double concentration = event.getNode().getConcentration(entity).getValue().doubleValue();
                 // add to plot
                 Platform.runLater(() -> {
                     series.getData().add(new XYChart.Data<>(event.getEpoch(), concentration));

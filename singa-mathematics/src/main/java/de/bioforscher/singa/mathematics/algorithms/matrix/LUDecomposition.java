@@ -75,8 +75,6 @@ public class LUDecomposition {
         return rank;
     }
 
-
-
     public static void main(String[] args) {
         // uncritical system of equations
         Matrix a = new RegularMatrix(new double[][]{{2, 1, -1, 8}, {-3, -1, 2, -11}, {-2, 1, 2, -3}});
