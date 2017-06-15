@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
@@ -30,11 +30,6 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
     @Override
     public AtomContainer<StructuralFamilyType> getCopy() {
         return new AtomContainer<>(this);
-    }
-
-    @Override
-    public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
     }
 
     @Override

@@ -3,14 +3,16 @@ package de.bioforscher.singa.chemistry.physical.branches;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -24,23 +26,33 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  */
 public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
 
+    private static final int DEFAULT_IDENTIFIER = 0;
+
+    public LinkedHashMap<Integer, Substructure<?>> orderedSubstructures;
+
     public StructuralMotif(int identifier) {
         super(identifier);
+        this.orderedSubstructures = new LinkedHashMap<>();
     }
 
     public StructuralMotif(StructuralMotif branchSubstructure) {
         super(branchSubstructure);
+        this.orderedSubstructures = new LinkedHashMap<>();
+        for (LeafSubstructure<?, ?> leafSubstructure : branchSubstructure.getOrderedLeafSubstructures()) {
+            this.orderedSubstructures.put(leafSubstructure.getIdentifier(),
+                    getSubstructures().get(getSubstructures().indexOf(leafSubstructure)));
+        }
     }
 
     /**
      * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
      *
-     * @param identifier      The internally-used pdbIdentifier of the {@link StructuralMotif}.
+     * @param identifier      The internally-used identifier of the {@link StructuralMotif}.
      * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
      * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafs(int identifier, Structure structure, List<LeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeaves(int identifier, Structure structure, List<LeafIdentifier> leafIdentifiers) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafIdentifiers.forEach(leafIdentifer -> {
             Substructure subStructure = structure.getAllChains().stream()
@@ -55,16 +67,77 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
     }
 
     /**
+     * Creates a {@link StructuralMotif} by extracting the given residues identified by a list of {@link LeafIdentifier}s.
+     * <b>The resulting structural motif has the internal default identifier. This method is only save to use if you
+     * do not intent to bundle the resulting {@link StructuralMotif} in a superordinate
+     * {@link BranchSubstructure}.</b>
+     *
+     * @param structure       The {@link Structure} from which the {@link StructuralMotif} should be extracted.
+     * @param leafIdentifiers The {@link LeafIdentifier}s of the residues that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
+    public static StructuralMotif fromLeaves(Structure structure, List<LeafIdentifier> leafIdentifiers) {
+        return fromLeaves(DEFAULT_IDENTIFIER, structure, leafIdentifiers);
+    }
+
+    /**
      * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
      *
-     * @param identifier        The internally-used pdbIdentifier of the {@link StructuralMotif}.
+     * @param identifier        The internally-used identifier of the {@link StructuralMotif}.
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafs(int identifier, List<LeafSubstructure<?, ?>> leafSubstructures) {
+    public static StructuralMotif fromLeaves(int identifier, List<LeafSubstructure<?, ?>> leafSubstructures) {
         StructuralMotif motif = new StructuralMotif(identifier);
         leafSubstructures.forEach(motif::addSubstructure);
         return motif;
+    }
+
+    /**
+     * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
+     * <b>The resulting structural motif has the internal default identifier. This method is only save to use if you
+     * do not intent to bundle the resulting {@link StructuralMotif} in a superordinate
+     * {@link BranchSubstructure}.</b>
+     *
+     * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
+     * @return A new {@link StructuralMotif}.
+     */
+    public static StructuralMotif fromLeaves(List<LeafSubstructure<?, ?>> leafSubstructures) {
+        return fromLeaves(DEFAULT_IDENTIFIER, leafSubstructures);
+    }
+
+    @Override
+    public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        super.removeLeafSubstructure(leafIdentifier);
+        // has to be done for structural motifs: remove desired leave substructure also from ordered storage
+        this.orderedSubstructures.entrySet().removeIf(substructure -> substructure.getValue().getIdentifier()
+                == leafIdentifier.getIdentifier());
+    }
+
+    /**
+     * Returns the {@link LeafSubstructure}s of this {@link StructuralMotif} exactly in the order they were given
+     * upon creation. This is a special implementation of {@link StructuralMotif} and should be used if one wants to
+     * ensure a correct predefined order when working with the {@link LeafSubstructure}s independent of their sequence
+     * order.
+     *
+     * @return The ordered {@link LeafSubstructure}s of this {@link StructuralMotif}.
+     */
+    public List<LeafSubstructure<?, ?>> getOrderedLeafSubstructures() {
+        List<LeafSubstructure<?, ?>> leafSubstructures = new ArrayList<>();
+        for (Substructure substructure : this.orderedSubstructures.values()) {
+            if (substructure instanceof LeafSubstructure) {
+                leafSubstructures.add((LeafSubstructure) substructure);
+            } else if (substructure instanceof BranchSubstructure) {
+                leafSubstructures.addAll(((BranchSubstructure<?>) substructure).getLeafSubstructures());
+            }
+        }
+        return leafSubstructures;
+    }
+
+    @Override
+    public void addSubstructure(Substructure substructure) {
+        this.substructures.put(substructure.getIdentifier(), substructure);
+        this.orderedSubstructures.put(substructure.getIdentifier(), substructure);
     }
 
     @Override
@@ -74,12 +147,11 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif> {
                 .collect(Collectors.joining("_", getLeafSubstructures().stream()
                         .findAny()
                         .map(LeafSubstructure::getPdbIdentifier)
-                        .orElse("") + "|", ""));
+                        .orElse("") + "_", ""));
     }
 
     /**
-     * Returns the size of the structural motif (the number of contained
-     * {@link LeafSubstructure}s.
+     * Returns the size of the structural motif (the number of contained {@link LeafSubstructure}s).
      *
      * @return The size of the motif.
      */

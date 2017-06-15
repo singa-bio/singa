@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.physical.atoms.representations.Representat
 import de.bioforscher.singa.chemistry.physical.model.*;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,6 +68,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     private Map<Integer, Bond> bonds;
 
+    /**
+     * Remembers if this Leaf was an HETATOM entry
+     */
+    private boolean annotatedAsHetAtom;
+
     public LeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
         this.family = family;
@@ -103,12 +108,13 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         }
         // add exchangeable types
         this.exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
+        this.annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
     /**
-     * Returns the integer part of the leaf pdbIdentifier.
+     * Returns the integer part of the leaf identifier.
      *
-     * @return The integer part of the leaf pdbIdentifier.
+     * @return The integer part of the leaf identifier.
      */
     @Override
     public int getIdentifier() {
@@ -317,10 +323,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     @Override
     public Vector3D getPosition() {
-        return Vectors.getCentroid(this.atoms.values().stream()
+        return Vectors3D.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)
-                .collect(Collectors.toList()))
-                .as(Vector3D.class);
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -380,9 +385,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
-     * Returns the chain pdbIdentifier this leaf belongs to.
+     * Returns the chainIdentifier pdbIdentifier this leaf belongs to.
      *
-     * @return The chain pdbIdentifier this leaf belongs to.
+     * @return The chainIdentifier pdbIdentifier this leaf belongs to.
      */
     public String getChainIdentifier() {
         return this.leafIdentifier.getChainIdentifer();
@@ -406,6 +411,15 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return AtomToken.assemblePDBLine(this);
     }
 
+
+    public boolean isAnnotatedAsHetAtom() {
+        return this.annotatedAsHetAtom;
+    }
+
+    public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
+        this.annotatedAsHetAtom = annotatedAsHetAtom;
+    }
+
     @Override
     public Set<FamilyType> getExchangeableFamilies() {
         return this.exchangeableFamilies;
@@ -414,6 +428,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     @Override
     public void addExchangeableFamily(FamilyType exchangeableType) {
         this.exchangeableFamilies.add(exchangeableType);
+    }
+
+    @Override
+    public String toString() {
+        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getThreeLetterCode() + "-" + getIdentifier();
     }
 
     @Override

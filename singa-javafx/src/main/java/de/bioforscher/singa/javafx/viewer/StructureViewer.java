@@ -3,11 +3,11 @@ package de.bioforscher.singa.javafx.viewer;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.SplitPane;
@@ -133,10 +133,10 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        final Vector3D centroid = Vectors.getCentroid(allAtoms.stream()
+        final Vector3D centroid = Vectors3D.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
-                .as(Vector3D.class).multiply(3.0);
+                .multiply(3.0);
 
         allAtoms.forEach(atom -> atom.setPosition(
                 atom.getPosition().multiply(3.0).subtract(centroid)));
@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeafs().forEach(this::addLeaf);
+        this.displayStructure.getAllLeaves().forEach(this::addLeaf);
         // edges in chains (backbone connections)
         this.displayStructure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world
@@ -218,7 +218,7 @@ public class StructureViewer extends Application {
         Chain chain = structure.getAllChains().stream()
                 .filter(ChainFilter.isInChain(identifier.replace("Chain: ", "")))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Chould not retrieve chain " + identifier.replace("Chain: ", "")));
+                .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
         this.displayStructure.addSubstructure(chain);
         buildDisplayedStructure();
         this.displayGroup.getChildren().retainAll();

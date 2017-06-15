@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.MultiParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
@@ -9,7 +11,6 @@ import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -133,10 +134,10 @@ public class Fit3DBuilder {
          * Defines the targets against which this Fit3D search should be run in batch mode. This can either be a list
          * of PDB-IDs or file paths pointing to target files in PDB format.
          *
-         * @param targets The targets against the search should be run in batch mode.
+         * @param multiParser The {@link MultiParser} that provides the structures to that should be run in batch mode.
          * @return The {@link ParallelStep} to define the level of parallelism the batch search should use.
          */
-        ParallelStep targets(List<String> targets);
+        ParallelStep targets(MultiParser multiParser);
     }
 
     public interface ParallelStep {
@@ -162,7 +163,7 @@ public class Fit3DBuilder {
          *
          * @return A new {@link Fit3D} search when finished.
          */
-        Fit3D run();
+        Fit3D run() throws SubStructureSuperimpositionException;
 
         /**
          * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g. only
@@ -188,7 +189,7 @@ public class Fit3DBuilder {
          *
          * @return A new {@link Fit3D} search when finished.
          */
-        Fit3D run();
+        Fit3D run() throws SubStructureSuperimpositionException;
 
         /**
          * Defines the RMSD cutoff up to which matches should be reported. If a {@link Fit3DSiteAlignment} is performed
@@ -213,8 +214,8 @@ public class Fit3DBuilder {
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
 
         StructuralMotif queryMotif;
+        MultiParser multiParser;
         BranchSubstructure<?> target;
-        List<String> targetStructures;
         int parallelism;
         double rmsdCutoff = DEFAULT_RMSD_CUTOFF;
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
@@ -249,19 +250,17 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public ParallelStep targets(List<String> targets) {
-            Objects.requireNonNull(targets);
-            if (targets.isEmpty()) {
-                throw new Fit3DException("target structures cannot be empty");
-            }
-            this.targetStructures = targets;
+        public ParallelStep targets(MultiParser multiParser) {
+            Objects.requireNonNull(multiParser);
+
+            this.multiParser = multiParser;
             return this;
         }
 
         @Override
-        public Fit3D run() {
+        public Fit3D run() throws SubStructureSuperimpositionException {
             // decide which implementation should be used
-            if (this.targetStructures != null) {
+            if (this.multiParser != null) {
                 return new Fit3DAlignmentBatch(this);
             }
             if (this.site1 != null && this.site2 != null) {

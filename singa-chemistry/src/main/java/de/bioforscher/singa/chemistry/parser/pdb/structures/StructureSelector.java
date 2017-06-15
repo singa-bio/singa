@@ -4,10 +4,10 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.AtomContainer;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 
 import java.util.NoSuchElementException;
@@ -33,7 +33,7 @@ public class StructureSelector {
         return new Selector(chain);
     }
 
-    public static ResidueStep selectFrom(StructuralMotif structuralMotif) {
+    public static StructuralModelStep selectFrom(StructuralMotif structuralMotif) {
         return new Selector(structuralMotif);
     }
 
@@ -126,6 +126,7 @@ public class StructureSelector {
             this.atomContainer = atomContainer;
         }
 
+        // FIXME the selector is currently malfunctioning for structural motifs
         public Selector(StructuralMotif structuralMotif) {
             this.structuralMotif = structuralMotif;
         }
@@ -149,7 +150,7 @@ public class StructureSelector {
             this.chain = this.structuralModel.getAllChains().stream()
                     .filter(chain -> chain.getIdentifier() == identifier)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chain with index " + identifier));
+                    .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
             return this;
         }
 
@@ -158,7 +159,7 @@ public class StructureSelector {
             this.chain = this.structuralModel.getAllChains().stream()
                     .filter(chain -> chain.getChainIdentifier().equals(chainIdentifier))
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chain with ID " + chainIdentifier));
+                    .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with ID " + chainIdentifier));
             return this;
         }
 

@@ -4,10 +4,10 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.AtomContainer;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.BondType;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.core.utility.Pair;
@@ -19,15 +19,10 @@ import java.util.Map;
  */
 public class LeafSkeleton {
 
-    public enum AssignedFamily {
-        AMINO_ACID, NUCLEOTIDE, MODIFIED_AMINO_ACID, MODIFIED_NUCLEOTIDE, LIGAND
-    }
-
     private String threeLetterCode;
     private String parent;
     private AssignedFamily assignedFamily;
     private Map<Pair<String>, BondType> bonds;
-
     public LeafSkeleton(String threeLetterCode, String parent, AssignedFamily assignedFamily, Map<Pair<String>, BondType> bonds) {
         this.threeLetterCode = threeLetterCode;
         this.parent = parent;
@@ -91,6 +86,10 @@ public class LeafSkeleton {
                     atoms.get(bond.getKey().getSecond()), bond.getValue());
         }
         return substructure;
+    }
+
+    public enum AssignedFamily {
+        AMINO_ACID, NUCLEOTIDE, MODIFIED_AMINO_ACID, MODIFIED_NUCLEOTIDE, LIGAND
     }
 
 }

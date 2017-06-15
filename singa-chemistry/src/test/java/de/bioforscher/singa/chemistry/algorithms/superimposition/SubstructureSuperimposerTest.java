@@ -4,9 +4,10 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,10 +33,10 @@ public class SubstructureSuperimposerTest {
     @Before
     public void setUp() throws IOException {
         Structure motif1 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_01.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("motif_HDS_01.pdb"))
                 .parse();
         Structure motif2 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("motif_HDS_02.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("motif_HDS_02.pdb"))
                 .parse();
         this.reference = motif1.getAllChains().get(0);
         this.candidate = motif2.getAllChains().get(0);
@@ -45,7 +46,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateLastHeavySidechainSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
-                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN));
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN));
         assertEquals(0.5706912104847501, superimposition.getRmsd(), 0E-9);
     }
 
@@ -53,7 +54,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateSidechainCentroidSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
-                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID));
+                        RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID));
         assertEquals(0.05433403549113087, superimposition.getRmsd(), 0E-9);
     }
 
@@ -84,12 +85,12 @@ public class SubstructureSuperimposerTest {
     @Test
     public void shouldCalculateSidechainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubStructureSuperimposer
-                .calculateSubstructureSuperimposition(this.reference, this.candidate, isSidechain());
+                .calculateSubstructureSuperimposition(this.reference, this.candidate, isSideChain());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
-        assertEquals(superimposition.getMappedCandidate().stream()
+        assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
-                .sum(), 12);
+                .sum());
         assertEquals(reconstructedAndMappedCandidate.size(), this.reference.getLeafSubstructures().size());
     }
 

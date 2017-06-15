@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.physical.atoms;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Test;
@@ -21,19 +21,24 @@ public class AtomFilterTest {
 
     @Test
     public void shouldApplyAtomFilter() throws IOException {
-        LeafFactory.setToOmitHydrogens(true);
+
+        StructureParserOptions options = new StructureParserOptions();
+        options.omitHydrogens(true);
+
         Structure structure = StructureParser.online()
                 .pdbIdentifier("4HHB")
+                .everything()
+                .setOptions(options)
                 .parse();
 
         // valine
-        AminoAcid branchSubstructure = structure.getAllResidues().get(0);
+        AminoAcid branchSubstructure = structure.getAllAminoAcids().get(0);
 
         List<Atom> backboneAtoms = branchSubstructure.getAllAtoms().stream()
                                                .filter(StructuralEntityFilter.AtomFilter.isBackbone())
                                                .collect(Collectors.toList());
         List<Atom> sideChainAtoms = branchSubstructure.getAllAtoms().stream()
-                                                .filter(StructuralEntityFilter.AtomFilter.isSidechain())
+                                                .filter(StructuralEntityFilter.AtomFilter.isSideChain())
                                                 .collect(Collectors.toList());
 
         // check backbone atoms

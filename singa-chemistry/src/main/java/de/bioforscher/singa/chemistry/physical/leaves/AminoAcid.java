@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
@@ -132,18 +132,6 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      */
     public Atom getBackboneOxygen() {
         return getAtomByName(AtomName.O);
-    }
-
-    /**
-     * Return the name of this residue in the format
-     * [Chain pdbIdentifier of the AminoAcid]-[One Letter Code of the AminoAcid][AminoAcid pdbIdentifier]
-     * (e.g. A-D123 or A-M17).
-     *
-     * @return The String representation of this residue.
-     */
-    @Override
-    public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
     }
 
     /**

@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 /**
  * @author cl
  */
-public class LigandFamily implements StructuralFamily {
+public class LigandFamily implements StructuralFamily<LigandFamily> {
 
     private String oneLetterCode;
     private String threeLetterCode;
@@ -25,4 +25,8 @@ public class LigandFamily implements StructuralFamily {
         return this.threeLetterCode;
     }
 
+    @Override
+    public int compareTo(LigandFamily o) {
+        return String.CASE_INSENSITIVE_ORDER.compare(this.getThreeLetterCode(), o.getThreeLetterCode());
+    }
 }

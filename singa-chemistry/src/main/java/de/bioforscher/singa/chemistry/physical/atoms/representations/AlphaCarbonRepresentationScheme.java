@@ -1,8 +1,9 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
@@ -15,14 +16,18 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 public class AlphaCarbonRepresentationScheme extends AbstractRepresentationScheme {
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?, ?> leafSubstructure) {
-        if(!(leafSubstructure instanceof AminoAcid)){
-            logger.warn("fallback for ", leafSubstructure);
+        // immediately return atom if part of structure
+        if (leafSubstructure.containsAtomWithName(AtomName.CA)) {
+            return leafSubstructure.getAtomByName(AtomName.CA);
+        }
+        if (!(leafSubstructure instanceof AminoAcid)) {
+            logger.warn("fallback for {} because it is no amino acid", leafSubstructure);
             return determineCentroid(leafSubstructure);
         }
-       return leafSubstructure.getAllAtoms().stream()
+        return leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isAlphaCarbon())
                 .findAny()
-                .orElseGet(() -> determineCentroid(leafSubstructure));
+                .orElseGet(() -> determineCentroid(leafSubstructure)).getCopy();
     }
 
     @Override

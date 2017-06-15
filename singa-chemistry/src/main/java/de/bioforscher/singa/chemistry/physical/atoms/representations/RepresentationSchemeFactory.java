@@ -27,7 +27,7 @@ public abstract class RepresentationSchemeFactory {
      * @return The {@link RepresentationScheme} (defaults to {@link AbstractRepresentationScheme}) for unknown types.
      */
     public static RepresentationScheme createRepresentationScheme(RepresentationSchemeType representationSchemeType) {
-        logger.info("creating representation scheme for type {}", representationSchemeType);
+        logger.debug("creating representation scheme for type {}", representationSchemeType);
         try {
             return representationSchemeType.getCompatibleRepresentationScheme().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

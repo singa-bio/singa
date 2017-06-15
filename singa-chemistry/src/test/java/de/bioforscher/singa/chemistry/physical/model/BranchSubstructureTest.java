@@ -4,14 +4,12 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.junit.Test;
 
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.CARBON;
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.NITROGEN;
+import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +51,7 @@ public class BranchSubstructureTest {
         assertTrue(chain.getClass() == chainCopy.getClass());
         // the chains are NOT identical
         assertFalse(chain == chainCopy);
-        // but equal (all attributes that are crucial to the identification of the chain are equal)
+        // but equal (all attributes that are crucial to the identification of the chainIdentifier are equal)
         assertTrue(chain.equals(chainCopy));
 
     }

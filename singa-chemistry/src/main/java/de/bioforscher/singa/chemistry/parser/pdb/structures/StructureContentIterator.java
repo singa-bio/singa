@@ -10,7 +10,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -27,16 +30,21 @@ class StructureContentIterator implements Iterator<List<String>> {
     private StructureParser.LocalPDB localPdb;
     private List<URL> identifiers;
     private List<Path> paths;
+
     private List<String> pdbIds;
     private Iterator<String> pdbIdIterator;
     private String currentPdbIdentifier;
+
     private List<String> chains;
     private Iterator<String> chainIterator;
     private String currentChain;
+
     private Iterator<URL> currentURL;
     private Iterator<Path> currentPath;
     private SourceLocation location;
+    private String currentSource;
 
+    private int progressCounter;
 
     public StructureContentIterator(String identifier) {
         this(String.class, Collections.singletonList(identifier));
@@ -92,6 +100,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         this.paths = new ArrayList<>();
         this.identifiers = new ArrayList<>();
         this.pdbIds = new ArrayList<>();
+        this.progressCounter = 0;
 
         if (context.equals(String.class)) {
             // pdbIdentifiers for pdb online
@@ -194,6 +203,19 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
     }
 
+    /**
+     * Returns the the number of structures that still have to be parsed.
+     *
+     * @return The the number of structures still to be parsed.
+     */
+    public int getNumberOfRemainingStructures() {
+        if (this.location == SourceLocation.ONLINE) {
+            return this.identifiers.size() - this.progressCounter;
+        } else {
+            return this.paths.size() - this.progressCounter;
+        }
+    }
+
     public String getCurrentPdbIdentifier() {
         if (this.currentPdbIdentifier != null) {
             return this.currentPdbIdentifier;
@@ -206,9 +228,12 @@ class StructureContentIterator implements Iterator<List<String>> {
         if (this.currentChain != null) {
             return this.currentChain;
         } else {
-            throw new IllegalStateException("Unable to retrieve chain Identifier in the current state.");
+            throw new IllegalStateException("Unable to retrieve chainIdentifier Identifier in the current state.");
         }
+    }
 
+    public String getCurrentSource() {
+        return this.currentSource;
     }
 
     @Override
@@ -227,24 +252,37 @@ class StructureContentIterator implements Iterator<List<String>> {
             this.currentPdbIdentifier = this.pdbIdIterator.next();
             if (this.chains != null) {
                 this.currentChain = this.chainIterator.next();
+                logger.debug("parsing structure {}/{}", this.currentPdbIdentifier, this.currentChain);
+            } else {
+                logger.debug("parsing structure {}", this.currentPdbIdentifier);
             }
         }
         if (this.location == SourceLocation.OFFLINE) {
             try {
-                Path path = this.currentPath.next();
-                if (path.endsWith(".ent.gz")) {
+                final Path path = this.currentPath.next();
+                // remove extension
+                this.currentSource = path.getFileName().toString()
+                        .replaceFirst("[.][^.]+$", "");
+                if (path.toString().endsWith(".ent.gz")) {
                     return fetchLines(readPacked(path));
                 } else {
                     return fetchLines(Files.newInputStream(path));
                 }
             } catch (IOException e) {
                 throw new UncheckedIOException("Could not open input stream for path.", e);
+            } finally {
+                this.progressCounter++;
             }
         } else {
             try {
-                return fetchLines(this.currentURL.next().openStream());
+                URL url = this.currentURL.next();
+                this.currentSource = url.getFile();
+                return fetchLines(url.openStream());
             } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for URL.", e);
+                throw new UncheckedIOException("Could not open input stream for URL. The PDBID \""
+                        + this.currentPdbIdentifier + "\" does not seem to exist", e);
+            } finally {
+                this.progressCounter++;
             }
         }
 

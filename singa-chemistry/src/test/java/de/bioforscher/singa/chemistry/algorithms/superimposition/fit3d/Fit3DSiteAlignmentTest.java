@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,15 +26,15 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("truncated_1asz_A_renum.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("truncated_1asz_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
+        this.bindingSite1 = StructuralMotif.fromLeaves(1, bindingSiteStructure1.getAllLeaves());
         Structure bindingSiteStructure2 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("truncated_3m4p_A_renum.pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath("truncated_3m4p_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
+        this.bindingSite2 = StructuralMotif.fromLeaves(1, bindingSiteStructure2.getAllLeaves());
     }
 
     @Test

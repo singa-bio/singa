@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.leafes;
+package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
@@ -37,18 +37,6 @@ public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
         super(nucleotide);
         this.modified = nucleotide.modified;
         this.modifiedName = nucleotide.modifiedName;
-    }
-
-    /**
-     * Return the name of this {@link Nucleotide} in the format
-     * [Chain pdbIdentifier of the {@link Nucleotide}]-[One Letter Code of the {@link Nucleotide}][AminoAcid pdbIdentifier]
-     * (e.g. A-A123 or A-U17).
-     *
-     * @return The String representation of this {@link Nucleotide}.
-     */
-    @Override
-    public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getOneLetterCode() + getIdentifier();
     }
 
     @Override

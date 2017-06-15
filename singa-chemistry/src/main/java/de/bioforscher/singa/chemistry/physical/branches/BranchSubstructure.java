@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
@@ -12,7 +12,7 @@ import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.SymmetricMatrix;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain AtomFilter. Edges in a BranchSubstructure
  * are only able to connect AtomFilter, but this can be done across different substructures. For example, this makes it
- * possible to connect AminoAcids in a chain with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
+ * possible to connect AminoAcids in a chainIdentifier with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
  * <p>
  * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
  *
@@ -46,33 +46,29 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
-     * The pdbIdentifier of this entity.
+     * The identifier of this entity.
      */
     public int identifier;
-
+    /**
+     * The substructures of this substructure.
+     */
+    protected Map<Integer, Substructure<?>> substructures;
     /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
-
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
-
     /**
      * The neighboring substructures.
      */
     private List<SubstructureType> neighbours;
-    /**
-     * The substructures of this substructure.
-     */
-    private Map<Integer, Substructure<?>> substructures;
 
     /*
      * GRAPH VARIABLES
      */
-
     /**
      * The actual nodes
      */
@@ -83,9 +79,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     private Map<Integer, Bond> edges;
 
     /**
-     * Creates a new BranchSubstructure. The pdbIdentifier is considered in the superordinate BranchSubstructure.
+     * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
      *
-     * @param identifier The pdbIdentifier of this BranchSubstructure.
+     * @param identifier The identifier of this BranchSubstructure.
      */
     public BranchSubstructure(int identifier) {
         this.identifier = identifier;
@@ -107,7 +103,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     public BranchSubstructure(BranchSubstructure<SubstructureType> branchSubstructure) {
         this.identifier = branchSubstructure.getIdentifier();
-        this.substructures = new HashMap<>();
+        this.substructures = new TreeMap<>();
         for (Substructure structure : branchSubstructure.substructures.values()) {
             this.substructures.put(structure.getIdentifier(), structure.getCopy());
         }
@@ -164,9 +160,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
 
     /**
-     * Returns the pdbIdentifier of this BranchSubstructure in the superordinate BranchSubstructure.
+     * Returns the identifier of this BranchSubstructure in the superordinate BranchSubstructure.
      *
-     * @return The pdbIdentifier.
+     * @return The identifier.
      */
     @Override
     public int getIdentifier() {
@@ -177,14 +173,13 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * Returns the centroid of this substructure.
      *
      * @return The centroid.
-     * @see Vectors#getCentroid(Collection)
+     * @see Vectors3D#getCentroid(Collection)
      */
     @Override
     public Vector3D getPosition() {
-        return Vectors.getCentroid(this.getAllAtoms().stream()
+        return Vectors3D.getCentroid(this.getAllAtoms().stream()
                 .map(Atom::getPosition)
-                .collect(Collectors.toList()))
-                .as(Vector3D.class);
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -230,7 +225,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     /**
      * Returns all atoms that are contained in this substructure. This does not imply all atoms of the contained
-     * SubStructures. For example a chain could not contain any atoms, but only residues, that themselves contain the
+     * SubStructures. For example a chainIdentifier could not contain any atoms, but only residues, that themselves contain the
      * actual atoms. To get all atoms use the {@link BranchSubstructure#getAllAtoms()} method.
      *
      * @return All atoms that are contained in this substructure.
@@ -241,11 +236,11 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns a specific atom of this BranchSubstructure identified by its pdbIdentifier.
+     * Returns a specific atom of this BranchSubstructure identified by its identifier.
      *
-     * @param identifier The pdbIdentifier
-     * @return The atom associated with the pdbIdentifier.
-     * @throws IllegalArgumentException if the pdbIdentifier is not assigned in this substructure.
+     * @param identifier The identifier
+     * @return The atom associated with the identifier.
+     * @throws IllegalArgumentException if the identifier is not assigned in this substructure.
      */
     @Override
     public Atom getNode(int identifier) {
@@ -277,9 +272,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     /**
      * Considering the SubStructures that are contained in this BranchSubstructure, this method returns the next larger and
-     * unused pdbIdentifier.
+     * unused identifier.
      *
-     * @return The next free pdbIdentifier.
+     * @return The next free identfier.
      */
     public int getNextSubstructureIdentifier() {
         if (this.substructures.keySet().isEmpty()) {
@@ -298,12 +293,12 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Removes the substructure with the given pdbIdentifier from this {@link Substructure}. This removes all {@link Atom}s
+     * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
      * and {@link Bond}s as well
      * <p>
      * FIXME this may produce a NPE
      *
-     * @param identifier The pdbIdentifier of the atom to remove.
+     * @param identifier The identifier of the atom to remove.
      */
     public void removeSubstructure(int identifier) {
         List<Integer> atomsToBeRemoved = this.substructures.get(identifier).getAllAtoms().stream()
@@ -318,7 +313,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * <p>
      * FIXME this may produce a NPE
      *
-     * @param leafIdentifier The pdbIdentifier of the atom to remove.
+     * @param leafIdentifier The {@link LeafIdentifier} of the atom to remove.
      */
     public void removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         List<Integer> atomsToBeRemoved = new ArrayList<>();
@@ -355,10 +350,10 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns the {@link Substructure} with the given pdbIdentifier or {@link Optional#empty()} if no such substructure
+     * Returns the {@link Substructure} with the given identifier or {@link Optional#empty()} if no such substructure
      * exists.
      *
-     * @param identifier The pdbIdentifier that should be returned.
+     * @param identifier The identifier that should be returned.
      * @return The matching Substructure or {@link Optional#empty()}.
      */
     public Optional<Substructure> getSubstructure(int identifier) {
@@ -375,10 +370,10 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Removes the atom with the given pdbIdentifier from this BranchSubstructure. Also disbands all edges associated to this
+     * Removes the atom with the given identifier from this BranchSubstructure. Also disbands all edges associated to this
      * node.
      *
-     * @param identifier The pdbIdentifier of the atom to remove.
+     * @param identifier The identifier of the atom to remove.
      */
     @Override
     public void removeNode(int identifier) {
@@ -404,9 +399,9 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Gets a specific bond using its pdbIdentifier.
+     * Gets a specific bond using its identifier.
      *
-     * @param identifier The pdbIdentifier.
+     * @param identifier The identifier.
      * @return The Edge.
      */
     @Override

@@ -3,8 +3,9 @@ package de.bioforscher.singa.chemistry.physical.families;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.singa.core.utility.TestUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ import static de.bioforscher.singa.chemistry.physical.atoms.AtomName.*;
  *
  * @author cl
  */
-public enum AminoAcidFamily implements StructuralFamily {
+public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
@@ -108,9 +109,9 @@ public enum AminoAcidFamily implements StructuralFamily {
     public AminoAcid getPrototype() {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
+                .fileLocation(TestUtils.getResourceAsFilepath(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
                 .parse()
-                .getAllResidues()
+                .getAllAminoAcids()
                 .get(0);
     }
 }

@@ -1,8 +1,11 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
+import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * @author cl
@@ -22,20 +25,30 @@ public class PDBParserPlayground {
          LeafSubstructure<?,?> leaf = AminoAcidFamily.ARGININE.getPrototype();
          Structure structure = new Structure();
          StructuralModel structuralModel = new StructuralModel(0);
-         Chain chain = new Chain(1);
-         chain.setChainIdentifier("A");
-         chain.addSubstructure(leaf);
-         structuralModel.addSubstructure(chain);
+         Chain chainIdentifier = new Chain(1);
+         chainIdentifier.setChainIdentifier("A");
+         chainIdentifier.addSubstructure(leaf);
+         structuralModel.addSubstructure(chainIdentifier);
          structure.addSubstructure(structuralModel);
         */
 
-        // Structure motif = StructuralMotif.fromLeafs(1, structure,
+        // Structure motif = StructuralMotif.fromLeaves(1, structure,
         // LeafIdentifiers.of("A-36", "B-67", "B-60", "B-204")).toStructure();
 
         // they all have the same ligand
         Structure structure = StructureParser.online()
-                .pdbIdentifier("1pqs")
+                .pdbIdentifier("2odr")
+                .chainIdentifier("")
                 .parse();
+
+        Chain first = structure.getAllChains().iterator().next();
+
+        StructureWriter.writeLeafSubstructures(new ArrayList<>(first.getConsecutivePart()), Paths.get("/home/leberech/test.pdb"));
+
+        first.getConsecutivePart().forEach(System.out::println);
+        System.out.println();
+        first.getNonConsecutivePart().forEach(System.out::println);
+
 
     }
 

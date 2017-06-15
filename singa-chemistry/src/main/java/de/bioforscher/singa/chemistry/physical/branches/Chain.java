@@ -1,41 +1,44 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * The chain is one of the grouping elements that should contain primarily residues and are connected to form a single
+ * The chainIdentifier is one of the grouping elements that should contain primarily residues and are connected to form a single
  * molecule. This model is adopted from the classical PDB structure files. Since this also implements the nameable
- * interface, the name of a chin is its chain pdbIdentifier (a single letter).
+ * interface, the name of a chin is its chainIdentifier pdbIdentifier (a single letter).
  *
  * @author cl
  * @see AminoAcid
  */
 public class Chain extends BranchSubstructure<Chain> implements Nameable {
 
+    private Set<Integer> consecutiveIdentifier;
+
     /**
-     * The pdbIdentifier of this chain.
+     * The chainIdentifier identifier of this chainIdentifier.
      */
     private String chainIdentifier;
 
     /**
-     * Creates a new Chain with the given graph pdbIdentifier. This is not the single letter chain pdbIdentifier, but the
+     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chainIdentifier identifier, but the
      * reference for the placement in the graph.
      *
-     * @param graphIdentifier The pdbIdentifier in the graph.
+     * @param graphIdentifier The identifier in the graph.
      */
     public Chain(int graphIdentifier) {
         super(graphIdentifier);
+        this.consecutiveIdentifier = new TreeSet<>();
     }
 
     public Chain(Chain chain) {
@@ -57,33 +60,33 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     /**
-     * Creates a new Chain with the graph pdbIdentifier 0. Use this method only if there is only one chain and nothing
-     * more on this level in a structure.
+     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chainIdentifier and nothing
+     * more on this level in a structure.</b>
      */
     public Chain() {
         super(0);
     }
 
     /**
-     * Returns the chain pdbIdentifier (the single letter pdbIdentifier).
+     * Returns the chainIdentifier identifier (the single character identifier).
      *
-     * @return The chain pdbIdentifier.
+     * @return The chainIdentifier identifier.
      */
     public String getChainIdentifier() {
         return this.chainIdentifier;
     }
 
     /**
-     * Sets the chain pdbIdentifier (the single letter pdbIdentifier).
+     * Sets the chainIdentifier identifier (the single letter identifier).
      *
-     * @param chainIdentifier The chain pdbIdentifier.
+     * @param chainIdentifier The chainIdentifier identifier.
      */
     public void setChainIdentifier(String chainIdentifier) {
         this.chainIdentifier = chainIdentifier;
     }
 
     /**
-     * Connects the all residues, that are currently in the chain, in order of their appearance in the
+     * Connects the all residues, that are currently in the chainIdentifier, in order of their appearance in the
      * List of AminoAcids ({@link BranchSubstructure#getAminoAcids()}).
      */
     public void connectChainBackbone() {
@@ -123,8 +126,36 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         }
     }
 
+    public void addToConsecutivePart(LeafSubstructure<?, ?> leafSubstructure) {
+        this.consecutiveIdentifier.add(leafSubstructure.getIdentifier());
+        this.addSubstructure(leafSubstructure);
+    }
+
+    public List<LeafSubstructure<?, ?>> getConsecutivePart() {
+        return this.consecutiveIdentifier.stream()
+                .map(this::getLeafSubstructure)
+                .collect(Collectors.toList());
+    }
+
+    public List<LeafSubstructure<?, ?>> getNonConsecutivePart() {
+        return this.getLeafSubstructures().stream()
+                .filter(leafSubstructure -> !this.consecutiveIdentifier.contains(leafSubstructure.getIdentifier()))
+                .map(substructure -> (LeafSubstructure<?, ?>) substructure)
+                .collect(Collectors.toList());
+    }
+
+    public List<LeafSubstructure<?, ?>> getLeafSubstructures() {
+        return this.substructures.values().stream()
+                .map(substructure -> (LeafSubstructure<?, ?>) substructure)
+                .collect(Collectors.toList());
+    }
+
+    public LeafSubstructure<?, ?> getLeafSubstructure(int identifier) {
+        return (LeafSubstructure<?, ?>) this.substructures.get(identifier);
+    }
+
     /**
-     * Gets the name (i.e. the single letter chain pdbIdentifier) of this chain.
+     * Gets the name (i.e. the single letter chainIdentifier identifier) of this chainIdentifier.
      *
      * @return The name.
      */
@@ -158,7 +189,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         return getLeafSubstructures().stream()
                 .findAny()
                 .map(LeafSubstructure::getPdbIdentifier)
-                .orElse("") + "|" + this.chainIdentifier;
+                .orElse("") + "_" + this.chainIdentifier;
     }
 
     @Override

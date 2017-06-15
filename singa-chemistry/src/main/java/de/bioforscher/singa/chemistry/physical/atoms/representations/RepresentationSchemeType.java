@@ -10,8 +10,8 @@ public enum RepresentationSchemeType {
     CA(AlphaCarbonRepresentationScheme.class, "CA"),
     CB(BetaCarbonRepresentationScheme.class, "CB"),
     CENTROID(CentroidRepresentationScheme.class, "CO"),
-    LAST_HEAVY_SIDECHAIN(LastHeavySidechainRepresentationScheme.class, "LH"),
-    SIDECHAIN_CENTROID(SidechainCentroidRepresentationScheme.class, "SC");
+    LAST_HEAVY_SIDE_CHAIN(LastHeavySidechainRepresentationScheme.class, "LH"),
+    SIDE_CHAIN_CENTROID(SideChainCentroidRepresentationScheme.class, "SC");
 
     private Class<? extends AbstractRepresentationScheme> compatibleRepresentationScheme;
     private String atomNomenclature;

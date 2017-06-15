@@ -9,11 +9,10 @@ import java.util.regex.Pattern;
  */
 public enum TitleToken implements PDBToken {
 
-    CLASSIFICATION(Range.of(11,50)),
-    DEPOSITION_DATE(Range.of(51, 59)),
-    ID_CODE(Range.of(63,66));
+    CONTINUATION(Range.of(9, 10)),
+    TEXT(Range.of(11, 80));
 
-    public static final Pattern RECORD_PATTERN = Pattern.compile("^HEADER.*");
+    public static final Pattern RECORD_PATTERN = Pattern.compile("^TITLE.*");
     private final Range<Integer> columns;
 
     TitleToken(Range<Integer> columns) {
@@ -29,4 +28,16 @@ public enum TitleToken implements PDBToken {
     public Range<Integer> getColumns() {
         return this.columns;
     }
+
+    @Override
+    public String extract(String line) {
+        if (line.length() >= this.getColumns().getUpperBound()) {
+            return line.substring(
+                    this.getColumns().getLowerBound() - 1, this.getColumns().getUpperBound());
+        } else {
+            return "";
+        }
+    }
+
+
 }

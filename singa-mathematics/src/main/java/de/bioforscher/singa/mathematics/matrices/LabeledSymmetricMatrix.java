@@ -34,7 +34,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
      */
     public LabeledSymmetricMatrix(double[][] values) {
         super(values);
-        this.labelMap = new HashMap<>();
+        this.labelMap = new IdentityHashMap<>();
     }
 
     @Override
@@ -112,12 +112,13 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern(STRING_REPRESENTATION_DECIMAL_FORMAT);
-        for (int i = 0; i < getCompleteElements().length; i++) {
+        double[][] completeElements = getCompleteElements();
+        for (int i = 0; i < completeElements.length; i++) {
             StringJoiner columnJoiner = new StringJoiner(",");
             if (!this.labelMap.isEmpty())
                 columnJoiner.add(String.valueOf(getColumnLabel(i)));
-            for (int j = 0; j < getCompleteElements()[i].length; j++) {
-                columnJoiner.add(df.format(getCompleteElements()[i][j]));
+            for (int j = 0; j < completeElements.length; j++) {
+                columnJoiner.add(df.format(completeElements[i][j]));
             }
             rowJoiner.add(columnJoiner.toString());
         }
