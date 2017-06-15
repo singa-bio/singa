@@ -1,22 +1,18 @@
 package de.bioforscher.singa.simulation.application;
 
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.application.components.controlpanles.CompartmentControlPanel;
 import de.bioforscher.singa.simulation.application.components.controlpanles.EnvironmentalParameterControlPanel;
-import de.bioforscher.singa.simulation.application.components.panes.ResizablePane;
-import de.bioforscher.singa.simulation.application.components.panes.SimulationCanvas;
-import de.bioforscher.singa.simulation.application.components.panes.SpeciesOverviewPane;
-import de.bioforscher.singa.simulation.application.components.panes.ModuleOverviewPane;
 import de.bioforscher.singa.simulation.application.components.controlpanles.PlotControlPanel;
-import de.bioforscher.singa.simulation.application.components.panes.PlotPreferencesPane;
+import de.bioforscher.singa.simulation.application.components.panes.*;
 import de.bioforscher.singa.simulation.application.wizards.AddSpeciesWizard;
 import de.bioforscher.singa.simulation.application.wizards.NewGraphWizard;
 import de.bioforscher.singa.simulation.application.wizards.NewReactionWizard;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLExportService;
 import de.bioforscher.singa.simulation.parser.graphs.GraphMLParserService;
-import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -62,7 +58,8 @@ public class BioGraphSimulation extends Application {
     public void start(Stage stage) throws Exception {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
-        this.simulation = SimulationExamples.createSimulationFromSBML();
+        this.simulation = SimulationExamples.createPassiveMembraneTransportExample();
+                // SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;
@@ -347,7 +344,7 @@ public class BioGraphSimulation extends Application {
         File file = fileChooser.showOpenDialog(this.stage);
         if (file != null) {
             GraphMLParserService parserService = new GraphMLParserService(file.getPath());
-            AutomatonGraph graph = parserService.fetchGraph();
+            AutomatonGraph graph = parserService.parse();
             resetGraph(graph);
         }
     }

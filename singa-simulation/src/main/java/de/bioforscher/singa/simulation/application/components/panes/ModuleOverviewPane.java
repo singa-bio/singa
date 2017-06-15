@@ -1,15 +1,15 @@
 package de.bioforscher.singa.simulation.application.components.panes;
 
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.application.BioGraphSimulation;
 import de.bioforscher.singa.simulation.application.components.cells.ModuleCell;
 import de.bioforscher.singa.simulation.application.components.controlpanles.EnvironmentalParameterControlPanel;
 import de.bioforscher.singa.simulation.application.components.plots.SimulationRobustnessPlot;
-import de.bioforscher.singa.simulation.modules.model.AvailableModules;
 import de.bioforscher.singa.simulation.modules.diffusion.DiffusionUtilities;
-import de.bioforscher.singa.units.quantities.Diffusivity;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.modules.model.AvailableModules;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

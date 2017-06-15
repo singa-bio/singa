@@ -1,12 +1,12 @@
 package de.bioforscher.singa.simulation.application.components.cards;
 
 import com.sun.javafx.stage.StageHelper;
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.application.IconProvider;
 import de.bioforscher.singa.simulation.application.components.cells.ColoredEntityCell;
 import de.bioforscher.singa.simulation.application.components.plots.ConcentrationPlot;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

@@ -3,40 +3,57 @@ package de.bioforscher.singa.simulation.model.compartments;
 import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
+ * An EnclosedCompartment is a {@link CellSection} that is bordered or enclosed by a {@link Membrane}.
+ *
  * @author cl
  */
 public class EnclosedCompartment extends CellSection {
 
+    /**
+     * The enclosing membrane.
+     */
     private Membrane enclosingMembrane;
 
+     /**
+     * Creates a new EnclosedCompartment with the given identifier and name.
+     *
+     * @param identifier The identifier (should be unique).
+     * @param name       The qualified name.
+     */
     public EnclosedCompartment(String identifier, String name) {
         super(identifier, name);
     }
 
-    public EnclosedCompartment(String identifier, String name, Set<BioNode> content) {
-        super(identifier, name, content);
-    }
-
+    /**
+     * Tries to generate a {@link Membrane} around the contents of this compartment. This methods looks for neighbours
+     * that are not part of this compartment and generates the membrane following this border.
+     *
+     * @return The generated membrane
+     */
     public Membrane generateMembrane() {
-        LinkedList<BioNode> nodes = new LinkedList<>();
-        getContent().forEach(node -> node.setState(NodeState.CYTOSOL));
-
         // TODO fix placement of borders along graph borders
         // TODO fix all the other problems :(
 
+        // the nodes of the membrane
+        LinkedList<BioNode> nodes = new LinkedList<>();
+        // set the internal node state to cytosol
+        getContent().forEach(node -> node.setState(NodeState.CYTOSOL));
         // find starting point
         BioNode first = getContent().stream()
                 .filter(bioNode -> bioNode.getNeighbours().stream()
                         .anyMatch(neighbour -> neighbour.getCellSection().getIdentifier().equals(this.getIdentifier())))
                 .findAny().get();
-
+        // add first node
         nodes.add(first);
+        // the iterating node
         BioNode step = first;
+        // remembers if a connection around the compartment could be made
         boolean notConnected = true;
-
+        // as lon as no connection could be found
         while (notConnected) {
 
             boolean foundNeighbour = false;

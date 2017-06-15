@@ -14,8 +14,7 @@ public interface XMLParser extends Parser {
 
     void setFetchResult(String fetchResult);
 
-    @Override
-    default void fetchResource() {
+    default void fetchResourceWithQuery() {
 
         // create stream and connection
         BufferedReader inputStream = null;

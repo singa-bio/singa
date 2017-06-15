@@ -1,14 +1,15 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.units.UnitScaler;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -29,9 +30,9 @@ public class NthOrderReaction extends Reaction {
     }
 
     @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
+    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
         // concentrations of substrates that influence the reaction
-        Quantity<MolarConcentration> concentration = determineConcentration(node, ReactantRole.DECREASING);
+        Quantity<MolarConcentration> concentration = determineConcentration(node, section, ReactantRole.DECREASING);
         // acceleration = concentration * applied rate
         return Quantities.getQuantity(
                 concentration.getValue().doubleValue() * this.appliedRateConstant.getValue().doubleValue(),

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.application.components.panes;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.application.IconProvider;
 import de.bioforscher.singa.simulation.application.components.cards.ChemicalEntityCard;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;

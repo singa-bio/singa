@@ -1,23 +1,22 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
 
@@ -62,6 +61,10 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
         return new HashSet<>(this.sections.values());
     }
 
+    public CellSection getSection(String identifier) {
+        return this.sections.get(identifier);
+    }
+
     public void addSection(CellSection cellSection) {
         this.sections.put(cellSection.getIdentifier(), cellSection);
     }
@@ -75,10 +78,12 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
                 node.setCellSection(enclosedCompartment);
             }
         });
-        this.sections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
-        Membrane membrane = enclosedCompartment.generateMembrane();
-        enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
-        this.sections.put(membrane.getIdentifier(), membrane);
+        if (!compartmentContent.isEmpty()) {
+            this.sections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
+            Membrane membrane = enclosedCompartment.generateMembrane();
+            enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
+            this.sections.put(membrane.getIdentifier(), membrane);
+        }
     }
 
 }

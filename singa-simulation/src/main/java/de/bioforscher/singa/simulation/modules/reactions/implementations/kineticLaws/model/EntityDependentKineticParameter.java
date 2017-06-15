@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 
 import javax.measure.Quantity;
 

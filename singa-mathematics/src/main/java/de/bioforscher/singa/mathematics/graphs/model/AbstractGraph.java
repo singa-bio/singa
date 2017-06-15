@@ -61,8 +61,8 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
     }
 
     @Override
-    public Set<NodeType> getNodes() {
-        return new HashSet<>(this.nodes.values());
+    public Collection<NodeType> getNodes() {
+        return this.nodes.values();
     }
 
     @Override

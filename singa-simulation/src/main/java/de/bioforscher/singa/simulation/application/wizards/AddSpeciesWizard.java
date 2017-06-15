@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.application.wizards;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.application.BioGraphSimulation;
 import de.bioforscher.singa.simulation.application.components.cells.EntityCell;
 import de.bioforscher.singa.simulation.application.components.panes.SBMLSearchPane;

@@ -1,33 +1,35 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.Map;
 import java.util.Set;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
+import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
 
 public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     private NodeState state;
+    private CellSection cellSection;
     private ConcentrationContainer concentrations;
     private boolean isObserved;
 
-    private CellSection cellSection;
-
     public BioNode(int identifier) {
         super(identifier);
-        this.state = NodeState.AQUEOUS;
+        this.state = AQUEOUS;
         this.cellSection = new EnclosedCompartment("default", "Default Compartment");
-        this.concentrations = new MultiConcentrationContainer(this.cellSection);
+        this.concentrations = new SimpleConcentrationContainer(cellSection);
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -41,6 +43,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     }
 
     public void setConcentration(ChemicalEntity entity, double value) {
+        // FIXME This is ignored if no compartment is set
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
     }
 
@@ -50,6 +53,18 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
         return this.concentrations.getConcentration(entity);
+    }
+
+    public void setAvailableConcentration(ChemicalEntity entity, CellSection cellSection, Quantity<MolarConcentration> quantity) {
+        this.concentrations.setAvailableConcentration(cellSection, entity, quantity);
+    }
+
+    public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
+        return this.concentrations.getAvailableConcentration(cellSection, entity);
+    }
+
+    public Set<CellSection> getAllReferencedSections() {
+        return this.concentrations.getAllReferencedSections();
     }
 
     public Set<ChemicalEntity> getAllReferencedEntities() {
@@ -77,7 +92,12 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     }
 
     public void setCellSection(CellSection cellSection) {
+        if (cellSection instanceof Membrane) {
+            setState(MEMBRANE);
+        }
         this.cellSection = cellSection;
+        this.
+        cellSection.addNode(this);
     }
 
     public ConcentrationContainer getConcentrations() {

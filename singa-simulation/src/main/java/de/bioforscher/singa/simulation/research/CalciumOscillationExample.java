@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.research;
 
-import de.bioforscher.singa.chemistry.descriptive.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 

@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
-import static de.bioforscher.singa.mathematics.matrices.FastMatrices.*;
+import static de.bioforscher.singa.mathematics.matrices.FastMatrices.createRegularMatrix;
 
 /**
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
@@ -132,7 +132,7 @@ public class RegularMatrix implements Matrix, Serializable {
     @Override
     public String getDimensionAsString() {
         return String.valueOf(this.getRowDimension()) + "x"
-                + String.valueOf(this.getRowDimension());
+                + String.valueOf(this.getColumnDimension());
     }
 
     @Override
