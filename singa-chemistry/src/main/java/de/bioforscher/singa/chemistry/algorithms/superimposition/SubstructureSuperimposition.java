@@ -54,7 +54,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
      * <p>
-     * <pre>[RMSD]_[PDB-ID of mapped candidates]|[candidate residues]...</pre>
+     * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
      *
      * TODO move this to interface, as other superimpositions should also get a string representation.
      *
@@ -66,7 +66,7 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
                 .map(Object::toString)
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
                         + this.mappedCandidate.get(0).getPdbIdentifier()
-                        + "|", ""));
+                        + "_", ""));
     }
 
     @Override
