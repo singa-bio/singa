@@ -56,7 +56,7 @@ public class Fit3DSiteAlignmentTest {
     @Test
     public void shouldCreateGutteridgeBindingSiteAlignment() {
         // exchanges have only be added for one of the sites because they are transitive
-        StructuralMotifs.assignExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)

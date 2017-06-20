@@ -5,10 +5,11 @@ import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.core.utility.TestUtils;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,21 +19,24 @@ import java.util.List;
  */
 public enum SubstitutionMatrix {
 
-    BLOSUM_45("physical/families/substitution/matrices/blosum45.csv"),
-    MC_LACHLAN("physical/families/substitution/matrices/mclachlan.csv");
+    BLOSUM_45("de/bioforscher/singa/chemistry/physical/families/substitution/matrices/blosum45.csv"),
+    MC_LACHLAN("de/bioforscher/singa/chemistry/physical/families/substitution/matrices/mclachlan.csv");
 
     private LabeledSymmetricMatrix<StructuralFamily> matrix;
 
     SubstitutionMatrix(String resourceLocation) {
+
+        Logger logger = LoggerFactory.getLogger(SubstitutionMatrix.class);
+
         // get resource
-        Path resource = Paths.get(TestUtils.getResourceAsFilepath(resourceLocation));
+        InputStream stream = TestUtils.getResourceAsStream(resourceLocation);
         LabeledSymmetricMatrix<String> stringLabeledMatrix = null;
         // parse matrix
         try {
             stringLabeledMatrix = (LabeledSymmetricMatrix<String>) Matrices
-                    .readLabeledMatrixFromCSV(resource);
+                    .readLabeledMatrixFromCSV(stream);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("failed to read subsitution matrices from resources", e);
         }
         // replace string labels with amino acid families
         List<StructuralFamily> structuralFamilyLabels = new ArrayList<>();

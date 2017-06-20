@@ -41,7 +41,7 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES),
     UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
 
-    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "physical/leafs/prototypes/";
+    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "de/bioforscher/singa/chemistry/physical/leaves/prototypes/";
     private String name;
     private String oneLetterCode;
     private String threeLetterCode;

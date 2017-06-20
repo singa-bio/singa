@@ -71,7 +71,6 @@ public class Fit3DAlignmentTest {
         assertEquals(0.0005, matches.firstKey(), 1E-4);
     }
 
-
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
@@ -130,7 +129,6 @@ public class Fit3DAlignmentTest {
                 .target(nucleotideTarget.getAllChains().get(0))
                 .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
 

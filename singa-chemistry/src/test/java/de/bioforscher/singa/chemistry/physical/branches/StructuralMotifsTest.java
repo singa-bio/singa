@@ -36,7 +36,7 @@ public class StructuralMotifsTest {
 
     @Test
     public void shouldAssignExchanges() {
-        StructuralMotifs.assignExchanges(this.structuralMotif, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(this.structuralMotif, MatcherFamily.GUTTERIDGE);
         assertTrue(MatcherFamily.GUTTERIDGE.stream()
                 .map(MatcherFamily::getMembers)
                 .flatMap(Collection::stream)
