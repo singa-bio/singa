@@ -372,7 +372,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(5.0, MILLI(SECOND)));
+        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         logger.debug("Composing simulation ... ");
         // create reactions module

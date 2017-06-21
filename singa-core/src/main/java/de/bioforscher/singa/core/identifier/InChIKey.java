@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 public class InChIKey extends AbstractIdentifier {
 
     // GZUITABIAKMVPG-UHFFFAOYSA-N
-    public static final Pattern PATTERN = Pattern.compile("[A-Z]{14}-[A-Z]{10}-N");
+    public static final Pattern PATTERN = Pattern.compile("[A-Z]{14}-[A-Z]{10}-[A-Z]");
 
     public InChIKey(String key) throws IllegalArgumentException {
         super(key, PATTERN);

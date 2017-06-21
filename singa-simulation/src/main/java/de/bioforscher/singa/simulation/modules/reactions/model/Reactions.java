@@ -80,7 +80,10 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
                             }
                         }));
                 // update every concentration using the calculateUpdateMethod
-                updates.add(calculateUpdate(node, section, entity));
+                PotentialUpdate potentialUpdate = calculateUpdate(node, section, entity);
+                if (potentialUpdate != null) {
+                    updates.add(potentialUpdate);
+                }
             }
         }
         this.velocities.clear();
@@ -99,9 +102,12 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
     }
 
     public PotentialUpdate calculateUpdate(BioNode node, CellSection section, ChemicalEntity entity) {
-        Quantity<MolarConcentration> updatedQuantity = node.getConcentration(entity)
-                .add(Quantities.getQuantity(this.velocities.get(entity).getValue(), UnitProvider.MOLE_PER_LITRE));
-        return new PotentialUpdate(node, section, entity, updatedQuantity);
+        if (this.velocities.get(entity) != null) {
+            Quantity<MolarConcentration> updatedQuantity = node.getConcentration(entity)
+                    .add(Quantities.getQuantity(this.velocities.get(entity).getValue(), UnitProvider.MOLE_PER_LITRE));
+            return new PotentialUpdate(node, section, entity, updatedQuantity);
+        }
+        return null;
     }
 
 }
