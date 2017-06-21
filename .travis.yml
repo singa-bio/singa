@@ -4,6 +4,5 @@ cache:
   directories:
   - $HOME/.m2
 sudo: false
-script:
-  - cd singa-all
-  - mvn clean install
+before_install: cd singa-all
+script: mvn clean install
