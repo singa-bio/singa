@@ -1,20 +1,22 @@
 package de.bioforscher.singa.simulation.modules.membranetransport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
+import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
+import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -62,15 +64,37 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         return this.chemicalEntities;
     }
 
-    private PotentialUpdate calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity entity) {
-        // this method is only called for membrane nodes
-        // determine scaling factor for membrane association
-        // final double membraneFactor = 1.0/Math.pow(10, getOctanolWaterCoefficient(entity));
+    private List<PotentialUpdate> calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity<?> entity) {
 
-        // three step process
+        setUpParameters(entity);
+
+        MembraneContainer concentrations = (MembraneContainer) node.getConcentrations();
+        double outerPhase = concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue();
+        double outerLayer = concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
+        double innerLayer = concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
+        double innerPhase = concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue();
+
         // membrane entry (outer phase -> outer layer and inner phase -> inner layer) - kIn
-        // flip-flip across membrane (outer layer <-> inner layer) - kFlip
+        double kIn = entity.getFeature(MembraneEntry.class).getScaledQuantity().getValue().doubleValue();
         // membrane exit (outer layer -> outer phase and inner layer -> inner phase) - kOut
+        double kOut = entity.getFeature(MembraneExit.class).getScaledQuantity().getValue().doubleValue();
+        // flip-flip across membrane (outer layer <-> inner layer) - kFlip
+        double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue();
+
+        // four concentrations (ao, lo, li, ai) have to be set
+        // (outer phase) ao = -kIn * ao + kOut * lo
+        // (outer layer) lo = kIn * ao - (kOut + kFlip) * lo + kFlip * li
+        // (inner layer) li = kIn * ai - (kOut + kFlip) * li + kFlip * lo
+        // (inner phase) ai = -kIn * ai + kOut * li
+
+        double newOuterPhase = -kIn * outerPhase + kOut * outerLayer;
+        double newOuterLayer = kIn * outerPhase - (kOut + kFlip) * outerLayer + kFlip * innerLayer;
+        double newInnerLayer = kIn * innerPhase - (kOut + kFlip) * innerLayer + kFlip * outerLayer;
+        double newInnerPhase = -kIn * innerPhase + kOut * innerLayer;
+
+        List<PotentialUpdate> updates = new ArrayList<>();
+        // updates.add(new PotentialUpdate(node, concentrations.get, entity, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
+
 
         // for highly polar molecules kIn and kFlip determine overall permeation speed which is slow
 
@@ -90,7 +114,7 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
             //if ()
         }
 
-        return new PotentialUpdate(node, cellSection, entity, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
+        return null;
     }
 
     @Override
@@ -98,4 +122,26 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         return Collections.emptyList();
     }
 
+    /**
+     * Determines the diffusivity of the entity and scales it to the dimensions of the system.
+     *
+     * @param entity The entity.
+     * @return The diffusivity of the entity.
+     */
+    private void setUpParameters(ChemicalEntity<?> entity) {
+        if (!this.chemicalEntities.contains(entity)) {
+            // entry
+            MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
+            membraneEntry.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            // exit
+            MembraneExit membraneExit = entity.getFeature(MembraneExit.class);
+            membraneExit.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            // flip flop
+            MembraneFlipFlop membraneFlipFlop = entity.getFeature(MembraneFlipFlop.class);
+            membraneFlipFlop.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            // add to set
+            this.chemicalEntities.add(entity);
+        }
+
+    }
 }

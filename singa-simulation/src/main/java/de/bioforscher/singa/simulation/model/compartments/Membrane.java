@@ -14,9 +14,14 @@ public class Membrane extends CellSection {
 
     private final EnclosedCompartment innerCompartment;
 
+    private CellSection innerLayer;
+    private CellSection outerLayer;
+
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
+        this.innerLayer = new EnclosedCompartment(identifier+"I", name+ " Inner Layer");
+        this.outerLayer = new EnclosedCompartment(identifier+"O", name+ " Outer Layer");
     }
 
     public static Membrane forCompartment(EnclosedCompartment enclosedCompartment) {

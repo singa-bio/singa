@@ -24,8 +24,8 @@ import java.util.Set;
  */
 public class MembraneContainer implements ConcentrationContainer {
 
-    private CellSection outerSection;
-    private CellSection innerSection;
+    private CellSection outerPhaseSection;
+    private CellSection innerPhaseSection;
     private Membrane membrane;
 
     private Map<ChemicalEntity, Quantity<MolarConcentration>> outerPhase;
@@ -33,9 +33,9 @@ public class MembraneContainer implements ConcentrationContainer {
     private Map<ChemicalEntity, Quantity<MolarConcentration>> innerLayer;
     private Map<ChemicalEntity, Quantity<MolarConcentration>> innerPhase;
 
-    public MembraneContainer(CellSection outerSection, CellSection innerSection, Membrane membrane) {
-        this.outerSection = outerSection;
-        this.innerSection = innerSection;
+    public MembraneContainer(CellSection outerPhaseSection, CellSection innerPhaseSection, Membrane membrane) {
+        this.outerPhaseSection = outerPhaseSection;
+        this.innerPhaseSection = innerPhaseSection;
         this.membrane = membrane;
 
         this.outerPhase = new HashMap<>();
@@ -83,11 +83,11 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
-        if (cellSection.equals(this.outerSection)) {
+        if (cellSection.equals(this.outerPhaseSection)) {
             if (this.outerPhase.containsKey(chemicalEntity)) {
                 return this.outerPhase.get(chemicalEntity);
             }
-        } else if (cellSection.equals(this.innerSection))  {
+        } else if (cellSection.equals(this.innerPhaseSection))  {
             if (this.innerPhase.containsKey(chemicalEntity)) {
                 return this.innerPhase.get(chemicalEntity);
             }
@@ -113,9 +113,9 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public void setAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        if (cellSection.equals(this.outerSection)) {
+        if (cellSection.equals(this.outerPhaseSection)) {
             this.outerPhase.put(chemicalEntity, concentration);
-        } else if (cellSection.equals(this.innerSection))  {
+        } else if (cellSection.equals(this.innerPhaseSection))  {
             this.innerPhase.put(chemicalEntity, concentration);
         } else if (cellSection.equals(this.membrane)) {
            this.innerLayer.put(chemicalEntity, concentration);
@@ -136,8 +136,8 @@ public class MembraneContainer implements ConcentrationContainer {
     @Override
     public Set<CellSection> getAllReferencedSections() {
         Set<CellSection> sections = new HashSet<>();
-        sections.add(this.innerSection);
-        sections.add(this.outerSection);
+        sections.add(this.innerPhaseSection);
+        sections.add(this.outerPhaseSection);
         sections.add(this.membrane);
         return sections;
     }
