@@ -10,4 +10,4 @@ addons:
     packages:
       - oracle-java8-installer
 before_install: cd singa-all
-script: mvn clean install -X -Xdiags:verbose
+script: mvn clean install -X
