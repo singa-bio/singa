@@ -8,7 +8,7 @@
     <groupId>de.bioforscher.singa</groupId>
     <artifactId>singa-all</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>Simulation of Natural Systems using Graph Automata</name>
+    <name>singa-all</name>
     <description>
         SiNGA (Simulation of Natural Systems using Graph Automata) is an open-source library containing tools especially
         for structural bioinformatics and systems biology.
@@ -100,6 +100,7 @@
                     <!-- Travis build workaround -->
                     <argLine>-Xms1024m -Xmx2048m</argLine>
                 </configuration>
+                <version>2.20</version>
             </plugin>
         </plugins>
     </build>
