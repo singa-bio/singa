@@ -3,7 +3,7 @@ package de.bioforscher.singa.core.parser;
 /**
  * Implements methods to fetch resource and parse articles into the right format.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Parser<ResultType> {
 

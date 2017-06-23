@@ -8,8 +8,7 @@ package de.bioforscher.singa.mathematics.exceptions;
  * <p>
  * If an object is constructed such that this is the case an exception should be thrown.
  *
- * @author Christoph Leberecht
- * @version 0.0.0
+ * @author cl
  */
 public class DegenerateCaseException extends RuntimeException {
 

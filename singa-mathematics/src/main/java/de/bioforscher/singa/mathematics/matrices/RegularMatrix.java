@@ -14,7 +14,7 @@ import static de.bioforscher.singa.mathematics.matrices.FastMatrices.createRegul
  * to store values it provides the fundamental operations of linear algebra. This implementation declares all values
  * as final.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia: Matrix</a>
  */
 public class RegularMatrix implements Matrix, Serializable {

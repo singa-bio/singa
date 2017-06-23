@@ -7,10 +7,11 @@
     <packaging>pom</packaging>
     <groupId>de.bioforscher.singa</groupId>
     <artifactId>singa-all</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>Simulation of Natural Systems using Graph Automata</name>
     <description>
-        SiNGA desires to be a open-source project to model and simulate natural systems. We try to create a
-        lightweight, explicit, and clear framework to tackle problems occurring in life sciences.
+        SiNGA (Simulation of Natural Systems using Graph Automata) is an open-source library containing tools especially
+        for structural bioinformatics and systems biology.
     </description>
 
     <licenses>
@@ -32,10 +33,16 @@
         <developer>
             <id>fk</id>
             <name>Florian Kaiser</name>
+            <email>florian.kaiser@hs-mittweida.de</email>
+            <organization>bigM</organization>
+            <organizationUrl>http://www.bioforscher.de/bigM</organizationUrl>
         </developer>
         <developer>
             <id>sb</id>
             <name>Sebastian Bittrich</name>
+            <email>sebastian.bittrich@hs-mittweida.de</email>
+            <organization>bigM</organization>
+            <organizationUrl>http://www.bioforscher.de/bigM</organizationUrl>
         </developer>
     </developers>
 
@@ -43,6 +50,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -75,16 +93,87 @@
                 </configuration>
                 <version>3.6.1</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- Travis build workaround -->
-                    <argLine>-Xms1024m -Xmx2048m</argLine>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                        <version>3.6.1</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!-- Travis build workaround -->
+                            <argLine>-Xms1024m -Xmx2048m</argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
     <modules>
         <module>../singa-benchmark</module>

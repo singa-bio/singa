@@ -32,7 +32,7 @@ import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.Mola
  * The chart is used for visualization of BioNode concentrations changes over
  * the course of a simulation.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class ConcentrationPlot extends LineChart<Number, Number> implements UpdateEventListener<NodeUpdatedEvent> {
 

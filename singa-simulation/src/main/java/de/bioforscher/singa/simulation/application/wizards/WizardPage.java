@@ -18,7 +18,7 @@ import javafx.scene.text.TextFlow;
  * A page in a wizard. Modified from
  * http://www.java2s.com/Code/Java/JavaFX/StackPanebasedwizard.htm
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public abstract class WizardPage extends VBox {
 

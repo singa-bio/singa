@@ -15,7 +15,7 @@ import java.util.Map.Entry;
  * The class represents a context menu that is able to manipulate the graph and
  * its rendering.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class BioGraphContextMenu extends ContextMenu {
 

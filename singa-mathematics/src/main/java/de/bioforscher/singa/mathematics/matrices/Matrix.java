@@ -18,7 +18,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Each implementation is: addable, subtractable, additively invertible and multipliable.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
 

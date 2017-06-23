@@ -14,7 +14,7 @@ import java.util.Map;
  * {@link LeafFactory#createNucleotideFromAtoms(LeafIdentifier, NucleotideFamily, Map)}  NucleotideFactory}. This establishes the bonds
  * within the Nucleotides, where possible.
  *
- * @author fkaiser
+ * @author fk
  */
 public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
 

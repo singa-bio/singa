@@ -3,7 +3,7 @@ package de.bioforscher.singa.mathematics.forces;
 /**
  * A force that attracts two objects.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class AttractiveForce extends AbstractForce implements Force {
 

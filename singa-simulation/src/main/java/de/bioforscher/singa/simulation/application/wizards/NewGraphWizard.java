@@ -31,7 +31,7 @@ import static tec.units.ri.unit.Units.*;
 /**
  * A wizard used to create a new graph.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class NewGraphWizard extends Wizard {
 

@@ -16,7 +16,7 @@ import java.util.*;
  * This class can be used to write the concentrations of a node to a file while
  * simulating.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 

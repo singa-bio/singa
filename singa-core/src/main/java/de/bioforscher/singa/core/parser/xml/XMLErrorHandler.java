@@ -7,7 +7,7 @@ import org.xml.sax.SAXParseException;
 /**
  * Your average all purpose SAX Error-Handler.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class XMLErrorHandler implements ErrorHandler {
 

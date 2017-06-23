@@ -12,7 +12,7 @@ import java.util.Stack;
  * An implementation of a simple wizard. Modified after
  * http://www.java2s.com/Code/Java/JavaFX/StackPanebasedwizard.htm
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public abstract class Wizard extends StackPane {
 

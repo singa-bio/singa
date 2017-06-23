@@ -19,8 +19,7 @@ import java.util.HashMap;
  * (1991): 1129-1164.<br>
  * With some modifications.
  *
- * @author Christoph Leberecht
- * @version 1.0.1
+ * @author cl
  */
 public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
         GraphType extends Graph<NodeType, EdgeType>> {

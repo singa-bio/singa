@@ -7,8 +7,7 @@ package de.bioforscher.singa.core.utility;
  * bounds.
  *
  * @param <Type> The Type of the bound. Has to be {@link Comparable}.
- * @author Christoph Leberecht
- * @version 1.0.0
+ * @author cl
  */
 public interface Bounded<Type extends Comparable<Type>> {
 

@@ -3,7 +3,7 @@ package de.bioforscher.singa.mathematics.forces;
 /**
  * A force that repels two objects.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class RepulsiveForce extends AbstractForce implements Force {
 

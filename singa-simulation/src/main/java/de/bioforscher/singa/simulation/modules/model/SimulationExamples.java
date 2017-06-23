@@ -51,7 +51,7 @@ import static tec.units.ri.unit.Units.SECOND;
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class SimulationExamples {
 

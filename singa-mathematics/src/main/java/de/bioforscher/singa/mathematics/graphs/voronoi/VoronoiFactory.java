@@ -12,7 +12,7 @@ import java.util.List;
  * Just the interface for the Graph
  * implementation.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class VoronoiFactory {
 

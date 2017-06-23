@@ -27,7 +27,7 @@ import java.util.Map;
  * Graph to a GraphML
  * file.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class GraphMLExportService {
 

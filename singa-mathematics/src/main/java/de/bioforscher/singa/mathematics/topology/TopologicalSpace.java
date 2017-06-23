@@ -7,8 +7,7 @@ package de.bioforscher.singa.mathematics.topology;
  * <p>
  * Currently this class is a stub and subject to change.
  *
- * @author Christoph Leberecht
- * @version 0.0.1
+ * @author cl
  */
 public interface TopologicalSpace {
 

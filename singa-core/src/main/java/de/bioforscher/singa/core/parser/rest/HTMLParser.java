@@ -5,7 +5,7 @@ import de.bioforscher.singa.core.parser.Parser;
 /**
  * Implements default method to fetch from a defined resource.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface HTMLParser<ResultType> extends Parser<ResultType> {
 

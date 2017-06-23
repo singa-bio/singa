@@ -19,7 +19,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * Currently supports parsing nodes and connecting them with the given edges.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class GraphMLContentHandler implements ContentHandler {
 

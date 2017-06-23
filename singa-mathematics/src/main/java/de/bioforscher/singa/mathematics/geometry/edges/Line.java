@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * infinitely in both directions. It is uniquely defined by two distinct points
  * or a single point and its slope.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Line_(geometry)">Wikipedia: Line (geometry)</a>
  */
 public class Line {

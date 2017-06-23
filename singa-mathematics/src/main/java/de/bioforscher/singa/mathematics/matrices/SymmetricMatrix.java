@@ -7,8 +7,7 @@ import de.bioforscher.singa.mathematics.exceptions.MalformedMatrixException;
 /**
  * The {@code SymmetricMatrix} implementation only stores a the main diagonal and one copy of the symmetric values.
  *
- * @author Christoph Leberecht
- * @version 1.1.0
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Symmetric_matrix">Wikipedia: Symmetric matrix</a>
  */
 public class SymmetricMatrix extends SquareMatrix {

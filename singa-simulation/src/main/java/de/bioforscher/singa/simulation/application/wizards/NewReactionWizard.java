@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * A wizard used to search and add a reaction to the automaton.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class NewReactionWizard extends Wizard {
 

@@ -6,12 +6,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>de.bioforscher.singa</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-chemistry</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -28,17 +28,17 @@
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-features</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-mathematics</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         <!-- external dependencies -->
         <dependency>
