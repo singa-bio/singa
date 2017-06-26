@@ -5,7 +5,6 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
@@ -15,8 +14,14 @@ import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBeh
 import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.units.ri.quantity.Quantities;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -31,18 +36,8 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         this.chemicalEntities = new HashSet<>();
     }
 
-    public void prepareCoefficients(Set<ChemicalEntity<?>> entities) {
-        this.chemicalEntities = entities;
-        for (ChemicalEntity entity : entities) {
-            // Diffusivity feature = entity.getFeature(Diffusivity.class);
-            // feature.scale(EnvironmentalParameters.getInstance().getTimeStep(),
-            //         EnvironmentalParameters.getInstance().getNodeDistance());
-        }
-    }
-
     @Override
     public void applyTo(AutomatonGraph graph) {
-        logger.debug("Applying Passive Membrane Transport module.");
         updateGraph(graph);
     }
 
@@ -64,8 +59,17 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         return this.chemicalEntities;
     }
 
-    private List<PotentialUpdate> calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity<?> entity) {
+    @Override
+    public List<PotentialUpdate> calculateUpdates(BioNode node) {
+        List<PotentialUpdate> updates = new ArrayList<>();
+        for (ChemicalEntity<?> entity: node.getAllReferencedEntities()) {
+            updates.addAll(calculateUpdateForEntity(node, entity));
+        }
+        return updates;
+    }
 
+    private List<PotentialUpdate> calculateUpdateForEntity(BioNode node, ChemicalEntity<?> entity) {
+        // scale potentially not already scaled parameters
         setUpParameters(entity);
 
         MembraneContainer concentrations = (MembraneContainer) node.getConcentrations();
@@ -81,6 +85,10 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         // flip-flip across membrane (outer layer <-> inner layer) - kFlip
         double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue();
 
+        // for highly polar molecules kIn and kFlip determine overall permeation speed which is slow
+        // as lipophilicity increases kIn becomes high and and kFlip and kOut are roughly equivalent
+        // leading to a optimal permeation
+        // at high lipophilicity kOut becomes low and the compound tends to reside in the membrane
         // four concentrations (ao, lo, li, ai) have to be set
         // (outer phase) ao = -kIn * ao + kOut * lo
         // (outer layer) lo = kIn * ao - (kOut + kFlip) * lo + kFlip * li
@@ -92,42 +100,15 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         double newInnerLayer = kIn * innerPhase - (kOut + kFlip) * innerLayer + kFlip * outerLayer;
         double newInnerPhase = -kIn * innerPhase + kOut * innerLayer;
 
+        // setup and return updates
         List<PotentialUpdate> updates = new ArrayList<>();
-        // updates.add(new PotentialUpdate(node, concentrations.get, entity, Quantities.getQuantity(0.0, MOLE_PER_LITRE));
-
-
-        // for highly polar molecules kIn and kFlip determine overall permeation speed which is slow
-
-        // as lipophilicity increases kIn becomes high and and kFlip and kOut are roughly equivalent
-        // leading to a optimal permeation
-
-        // at high lipophilicity kOut becomes low and the compound tends to reside in the membrane
-
-        // 
-
-
-
-        // (l)-(c)-(r)
-        // D*sum(c(Neighbour)) - D*#neighbours*c(this)
-        // M*sum(c(NM-Neighbor))
-        for (BioNode neighbour : node.getNeighbours()) {
-            //if ()
-        }
-
-        return null;
+        updates.add(new PotentialUpdate(node, concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(newOuterPhase, MOLE_PER_LITRE)));
+        updates.add(new PotentialUpdate(node, concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(newOuterLayer, MOLE_PER_LITRE)));
+        updates.add(new PotentialUpdate(node, concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(newInnerLayer, MOLE_PER_LITRE)));
+        updates.add(new PotentialUpdate(node, concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(newInnerPhase, MOLE_PER_LITRE)));
+        return updates;
     }
 
-    @Override
-    public List<PotentialUpdate> calculateUpdates(BioNode node) {
-        return Collections.emptyList();
-    }
-
-    /**
-     * Determines the diffusivity of the entity and scales it to the dimensions of the system.
-     *
-     * @param entity The entity.
-     * @return The diffusivity of the entity.
-     */
     private void setUpParameters(ChemicalEntity<?> entity) {
         if (!this.chemicalEntities.contains(entity)) {
             // entry
@@ -142,6 +123,6 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
             // add to set
             this.chemicalEntities.add(entity);
         }
-
     }
+
 }

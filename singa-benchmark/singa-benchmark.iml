@@ -14,6 +14,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
+    <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjdk.jmh:jmh-core:1.17.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:4.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.2" level="project" />

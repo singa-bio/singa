@@ -9,13 +9,13 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
@@ -527,41 +527,18 @@ public class SimulationExamples {
 
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
-        int numberOfNodes = 11;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
-                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(11, 11);
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
-        Membrane membrane = new Membrane("LC-M", "Left-Membrane", left);
 
-        // compartments have to be set before concentrations can be set
-        logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        for (BioNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                // FIXME currently cell sections are assigned in both directions
-                node.setCellSection(left);
-                left.addNode(node);
-            } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
-                node.setState(NodeState.MEMBRANE);
-                node.setCellSection(membrane);
-                membrane.addNode(node);
-            } else {
-                node.setCellSection(right);
-                right.addNode(node);
-            }
-        }
-
-        // setup compartments
-        graph.addSection(left);
-        graph.addSection(right);
-        graph.addSection(membrane);
-        membrane.initializeNodes(graph);
+        Membrane membrane = AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, left, right);
 
         // set concentrations
         // only 4 left most nodes
         for (BioNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < 4) {
+            if (node.getIdentifier() % converter.getNumberOfColumns() < 4) {
                 for (Species species: allSpecies) {
                     node.setConcentration(species, 1.0);
                 }
@@ -578,7 +555,7 @@ public class SimulationExamples {
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
         EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
+                Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
 
         // setup simulation
         logger.debug("Composing simulation ... ");

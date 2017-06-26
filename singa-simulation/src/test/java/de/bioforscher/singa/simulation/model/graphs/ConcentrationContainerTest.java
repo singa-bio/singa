@@ -66,7 +66,7 @@ public class ConcentrationContainerTest {
         node.setAvailableConcentration(this.entity, this.outerSection, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
         node.setAvailableConcentration(this.entity, this.membrane, Quantities.getQuantity(0.1, MOLE_PER_LITRE));
         // plain get concentration returns average
-        assertEquals(0.3, node.getConcentration(this.entity).getValue().doubleValue(),1e-16);
+        assertEquals(0.25, node.getConcentration(this.entity).getValue().doubleValue(),1e-16);
         // asking specifically will get available concentration
         assertEquals(0.3, node.getAvailableConcentration(this.entity, this.innerSection).getValue().doubleValue(), 0.0);
         assertEquals(0.5, node.getAvailableConcentration(this.entity, this.outerSection).getValue().doubleValue(), 0.0);

@@ -48,9 +48,9 @@ public class MembraneContainer implements ConcentrationContainer {
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         Quantity<MolarConcentration> concentrationSum = this.outerPhase.get(chemicalEntity);
         concentrationSum = concentrationSum.add(this.innerPhase.get(chemicalEntity));
-        concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity).divide(2.0));
-        concentrationSum = concentrationSum.add(this.innerLayer.get(chemicalEntity).divide(2.0));
-        return concentrationSum.divide(3.0);
+        concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity));
+        concentrationSum = concentrationSum.add(this.innerLayer.get(chemicalEntity));
+        return concentrationSum.divide(4.0);
     }
 
     public Quantity<MolarConcentration> getOuterPhaseConcentration(ChemicalEntity chemicalEntity) {
@@ -98,7 +98,14 @@ public class MembraneContainer implements ConcentrationContainer {
                 concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity));
                 return concentrationSum.divide(2.0);
             }
-
+        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
+            if (this.innerLayer.containsKey(chemicalEntity)) {
+                return this.innerLayer.get(chemicalEntity);
+            }
+        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
+            if (this.outerLayer.containsKey(chemicalEntity)) {
+                return this.outerLayer.get(chemicalEntity);
+            }
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
@@ -120,6 +127,10 @@ public class MembraneContainer implements ConcentrationContainer {
         } else if (cellSection.equals(this.membrane)) {
            this.innerLayer.put(chemicalEntity, concentration);
            this.outerLayer.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
+            this.innerLayer.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
+            this.outerLayer.put(chemicalEntity, concentration);
         }
     }
 
@@ -138,8 +149,25 @@ public class MembraneContainer implements ConcentrationContainer {
         Set<CellSection> sections = new HashSet<>();
         sections.add(this.innerPhaseSection);
         sections.add(this.outerPhaseSection);
-        sections.add(this.membrane);
+        sections.add(this.membrane.getInnerLayer());
+        sections.add(this.membrane.getOuterLayer());
         return sections;
+    }
+
+    public CellSection getOuterPhaseSection() {
+        return outerPhaseSection;
+    }
+
+    public CellSection getOuterLayerSection() {
+        return membrane.getOuterLayer();
+    }
+
+    public CellSection getInnerLayerSection() {
+        return membrane.getInnerLayer();
+    }
+
+    public CellSection getInnerPhaseSection() {
+        return innerPhaseSection;
     }
 
     @Override

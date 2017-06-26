@@ -22,7 +22,7 @@ import java.util.Map;
 public class AutomatonGraphs {
 
     private static final Logger logger = LoggerFactory.getLogger(AutomatonGraphs.class);
-    private static final Rectangle defaultBoundingBox = new Rectangle(100, 100);
+    private static final Rectangle defaultBoundingBox = new Rectangle(600, 600);
 
     private AutomatonGraphs() {
 
@@ -74,7 +74,7 @@ public class AutomatonGraphs {
         return bioGraph;
     }
 
-    public static void splitRectangularGraphWithMembrane(AutomatonGraph graph, RectangularGridCoordinateConverter converter,
+    public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, RectangularGridCoordinateConverter converter,
                                                                    EnclosedCompartment innerSection, CellSection outerSection) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(),
                 outerSection.getName());
@@ -84,10 +84,10 @@ public class AutomatonGraphs {
         Membrane membrane = Membrane.forCompartment(innerSection);
         // distribute nodes to sections
         for (BioNode node : graph.getNodes()) {
-            if (converter.convert(node.getIdentifier()).getX() < (numberOfColumns / 2)) {
+            if (converter.convert(node.getIdentifier()).getY() < (numberOfColumns / 2)) {
                 // left half is outer
                 node.setCellSection(outerSection);
-            } else if (converter.convert(node.getIdentifier()).getX() == (numberOfColumns / 2)) {
+            } else if (converter.convert(node.getIdentifier()).getY() == (numberOfColumns / 2)) {
                 // middle is membrane
                 node.setCellSection(membrane);
             } else {
@@ -101,6 +101,8 @@ public class AutomatonGraphs {
         graph.addSection(membrane);
         // membrane has to be initialized after every node knows its section
         membrane.initializeNodes(graph);
+
+        return membrane;
     }
 
 

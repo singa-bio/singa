@@ -169,7 +169,7 @@ public class BioGraphSimulation extends Application {
 
         logger.debug("Initializing simulation canvas ...");
         this.simulationCanvas = new SimulationCanvas(this);
-        this.simulationCanvas.getRenderer().getRenderingOptions().setNodeDiameter(8);
+        this.simulationCanvas.getRenderer().getRenderingOptions().setNodeDiameter(10);
         ResizablePane anchorPane = new ResizablePane(this.simulationCanvas);
         // Simulation Half
         AnchorPane.setTopAnchor(this.simulationCanvas, 0.0);

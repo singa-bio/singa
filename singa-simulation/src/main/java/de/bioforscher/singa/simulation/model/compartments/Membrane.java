@@ -32,6 +32,14 @@ public class Membrane extends CellSection {
         return this.innerCompartment;
     }
 
+    public CellSection getInnerLayer() {
+        return innerLayer;
+    }
+
+    public CellSection getOuterLayer() {
+        return outerLayer;
+    }
+
     public void initializeNodes(AutomatonGraph automatonGraph) {
         // reinitialize MultiConcentrationContainer
         for (BioNode node: getContent()) {
