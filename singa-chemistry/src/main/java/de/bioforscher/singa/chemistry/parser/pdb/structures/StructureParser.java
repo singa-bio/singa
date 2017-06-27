@@ -393,8 +393,8 @@ public class StructureParser {
         int modelIdentifier;
         String chainIdentifier;
 
-        boolean allModels;
-        boolean allChains;
+        boolean allModels = true;
+        boolean allChains = true;
         boolean parseMapping = false;
 
         StructureParserOptions options = new StructureParserOptions();
