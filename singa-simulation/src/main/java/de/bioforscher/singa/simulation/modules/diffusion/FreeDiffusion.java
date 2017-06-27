@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
@@ -63,14 +64,19 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     private PotentialUpdate calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity entity) {
         final double currentConcentration = node.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
+        if (node.getState() == NodeState.MEMBRANE) {
+            System.out.println("Membrane");
+        }
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
         // traverse each neighbouring cell
         for (BioNode neighbour : node.getNeighbours()) {
-            numberOfNeighbors++;
-            // if the node is from an different compartment
-            concentration += neighbour.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
+            if (neighbour.getCellSection().equals(cellSection)) {
+                numberOfNeighbors++;
+                // if the node is from an different compartment
+                concentration += neighbour.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
+            }
         }
         // entering amount
         final double enteringConcentration = concentration * getDiffusivity(entity).getValue().doubleValue();

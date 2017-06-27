@@ -71,7 +71,13 @@ public class ConcentrationContainerTest {
         assertEquals(0.3, node.getAvailableConcentration(this.entity, this.innerSection).getValue().doubleValue(), 0.0);
         assertEquals(0.5, node.getAvailableConcentration(this.entity, this.outerSection).getValue().doubleValue(), 0.0);
         assertEquals(0.1, node.getAvailableConcentration(this.entity, this.membrane).getValue().doubleValue(), 0.0);
+        // set inner and outer layer
+        node.setAvailableConcentration(this.entity, this.membrane.getInnerLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE));
+        node.setAvailableConcentration(this.entity, this.membrane.getOuterLayer(), Quantities.getQuantity(0.2, MOLE_PER_LITRE));
+        assertEquals(0.1, node.getAvailableConcentration(this.entity, this.membrane.getInnerLayer()).getValue().doubleValue(), 0.0);
+        assertEquals(0.2, node.getAvailableConcentration(this.entity, this.membrane.getOuterLayer()).getValue().doubleValue(), 0.0);
     }
+
 
 
 

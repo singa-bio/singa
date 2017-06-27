@@ -21,7 +21,9 @@ public class Membrane extends CellSection {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
         this.innerLayer = new EnclosedCompartment(identifier+"I", name+ " Inner Layer");
+        this.innerLayer.setSubsection(true);
         this.outerLayer = new EnclosedCompartment(identifier+"O", name+ " Outer Layer");
+        this.innerLayer.setSubsection(true);
     }
 
     public static Membrane forCompartment(EnclosedCompartment enclosedCompartment) {

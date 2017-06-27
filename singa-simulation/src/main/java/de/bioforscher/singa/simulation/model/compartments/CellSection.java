@@ -21,6 +21,11 @@ public abstract class CellSection implements Nameable {
     private final String identifier;
 
     /**
+     * Signifies if this compartment is a smaller part of another compartment (e.g. layer of a membrane)
+     */
+    private boolean isSubsection;
+
+    /**
      * The qualified name.
      */
     private final String name;
@@ -79,6 +84,14 @@ public abstract class CellSection implements Nameable {
         this.content.add(node);
     }
 
+    public boolean isSubsection() {
+        return isSubsection;
+    }
+
+    public void setSubsection(boolean subsection) {
+        isSubsection = subsection;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,5 +105,13 @@ public abstract class CellSection implements Nameable {
     @Override
     public int hashCode() {
         return this.identifier != null ? this.identifier.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "CellSection{" +
+                "identifier='" + identifier + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

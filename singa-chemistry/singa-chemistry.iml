@@ -12,9 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
     <orderEntry type="module" module-name="singa-core" />
     <orderEntry type="module" module-name="singa-features" />
     <orderEntry type="library" name="Maven: tec.units:unit-ri:1.0" level="project" />
