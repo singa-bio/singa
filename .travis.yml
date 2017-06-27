@@ -18,4 +18,5 @@ deploy:
     skip_cleanup: true
     on:
       repo: cleberecht/singa
+      tags: true
       jdk: oraclejdk8
