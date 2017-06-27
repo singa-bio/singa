@@ -132,7 +132,7 @@ public interface Renderer {
      * {@link GraphicsContext#setLineWidth(double)}).</li>
      * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
      * </ul>
-     *
+     * @param dashes An array of finite non negative dash length.
      * @param lineSegment The line segment.
      */
     default void dashLineSegment(LineSegment lineSegment, double... dashes) {

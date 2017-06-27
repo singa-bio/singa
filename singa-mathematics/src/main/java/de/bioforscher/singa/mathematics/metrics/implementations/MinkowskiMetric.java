@@ -5,14 +5,14 @@ import de.bioforscher.singa.mathematics.metrics.model.Metric;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
 /**
- * Calculates the distance between two {@link Vector}s of order "p". For p >= 1,
+ * Calculates the distance between two {@link Vector}s of order "p". For p &gt;= 1,
  * the Minkowski distance is a metric as a result of the Minkowski inequality.
  * For p = 1 the Minkowski metric is the Manhattan or Taxicab metric, and for p
  * = 2 it is the Euclidean metric.
  * <p>
  * Watch out!
  * <p>
- * If p < 1, this is not a proper distance metric, since it does not satisfy the
+ * If p &lt; 1, this is not a proper distance metric, since it does not satisfy the
  * triangle inequality.
  *
  * @param <VectorType> The type of vector that the distance is applied to.

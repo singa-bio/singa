@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * superimposition of two point sets (a list of {@link Vector}s).
  *
  * @author fk
- * @see {https://en.wikipedia.org/wiki/Kabsch_algorithm}
+ * @see <a href="https://en.wikipedia.org/wiki/Kabsch_algorithm">Wikipedia: Kabsch algorithm</a>
  */
 public class VectorSuperimposer {
 

@@ -42,6 +42,8 @@ public abstract class AbstractHTMLParser<ResultType> extends AbstractParser<Resu
     /**
      * Builds a {@code Client} and {@code WebTarget} with the specified parameters in the query map and sets the
      * input stream as a fetch result.
+     *
+     * @param queryMap A map with the query, key is the name of the parameter, value is the parameter itself.
      */
     public void fetchWithQuery(Map<String, String> queryMap) {
         // build query

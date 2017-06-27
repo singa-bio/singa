@@ -54,10 +54,11 @@ public class Element {
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight.
      *
-     * @param name         The name.
-     * @param symbol       The symbol.
-     * @param protonNumber The proton number.
-     * @param atomicWeight The atomic weight.
+     * @param name                  The name.
+     * @param symbol                The symbol.
+     * @param protonNumber          The proton number.
+     * @param atomicWeight          The atomic weight.
+     * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight, String electronConfiguration) {
         this.name = name;
@@ -73,10 +74,11 @@ public class Element {
      * Creates a new Element with name, symbol, proton number and atomic weight in
      * {@link MolarMass#GRAM_PER_MOLE g/mol}.
      *
-     * @param name         The name.
-     * @param symbol       The symbol.
-     * @param protonNumber The proton number.
-     * @param atomicWeight The atomic weight.
+     * @param name                  The name.
+     * @param symbol                The symbol.
+     * @param protonNumber          The proton number.
+     * @param atomicWeight          The atomic weight.
+     * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);
@@ -170,6 +172,7 @@ public class Element {
 
     /**
      * Estimates the Number of potential bonds this element forms.
+     *
      * @return The number of potential bonds this element forms
      */
     public int getNumberOfPotentialBonds() {

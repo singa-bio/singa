@@ -40,21 +40,11 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
     }
 
     /**
-     * Creates a new edge without an identifer, but with source and target nodes defined.
-     *
-     * @param source The source.
-     * @param target The target.
-     */
-    public AbstractEdge(NodeType source, NodeType target) {
-        this.source = source;
-        this.target = target;
-    }
-
-    /**
      * Creates a new Edge connecting two {@link Node}.
      *
      * @param source The source {@link Node}.
      * @param target The target {@link Node}.
+     * @param identifier The identifer.
      */
     public AbstractEdge(int identifier, NodeType source, NodeType target) {
         this.identifier = identifier;

@@ -1,18 +1,12 @@
 package de.bioforscher.singa.chemistry.physical.leaves;
 
-import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
-import java.util.Map;
-
 /**
  * A nucleotide is a grouping element that should only contain atoms. Each and every residue has a associate NucleotideType,
- * that determines the nucleotide. Based on this NucleotideType a Nucleotide can be created
- * from a set of atoms that belong to this residue using the
- * {@link LeafFactory#createNucleotideFromAtoms(LeafIdentifier, NucleotideFamily, Map)}  NucleotideFactory}. This establishes the bonds
- * within the Nucleotides, where possible.
+ * that determines the nucleotide.
  *
  * @author fk
  */

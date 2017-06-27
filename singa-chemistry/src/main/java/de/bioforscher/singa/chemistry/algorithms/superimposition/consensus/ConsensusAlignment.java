@@ -33,7 +33,6 @@ import java.util.stream.IntStream;
 /**
  * A consensus alignment of same-sized {@link StructuralMotif}s can be used to cluster them according their
  * geometric similarity in a multi-structure alignment manner as described in:
- * <p>
  * <pre>to be published</pre>
  *
  * TODO this has to be rewritten as soon as equals of {@link StructuralMotif} is implemented

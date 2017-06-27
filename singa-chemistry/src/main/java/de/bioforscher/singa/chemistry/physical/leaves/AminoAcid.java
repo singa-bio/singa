@@ -3,18 +3,12 @@ package de.bioforscher.singa.chemistry.physical.leaves;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.families.LeafFactory;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
-import java.util.Map;
-
 /**
  * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
- * that determines the amino acid (and the overarching features). Based on this ResidueType a AminoAcid can be created
- * of a set of atoms that belong to this residue using the
- * {@link LeafFactory#createAminoAcidFromAtoms(LeafIdentifier, AminoAcidFamily, Map)} LeafFactory}. This establishes the bonds
- * in the amino acid, where possible.
+ * that determines the amino acid (and the overarching features).
  *
  * @author cl
  */
@@ -44,6 +38,7 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      *
      * @param leafIdentifier The pdbIdentifier.
      * @param family         The ResidueType.
+     *                       @param modifiedName The name of the modified amino acid.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
         super(leafIdentifier, family);
@@ -135,7 +130,7 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Returns a copy of this residue. See {@link this#AminoAcid(AminoAcid)}.
+     * Returns a copy of this residue.
      *
      * @return A copy of this residue.
      */

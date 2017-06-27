@@ -125,6 +125,7 @@ public final class Matrices {
     /**
      * Returns a list of positions of the minimal elements of a {@link Matrix}
      *
+     * @param matrix The matrix.
      * @return positions of the minimal elements represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static List<Pair<Integer>> getPositionsOfMinimalElement(Matrix matrix) {
@@ -149,6 +150,7 @@ public final class Matrices {
      * returns an {@link Optional} of a {@link Pair} that represents the position of the unique minimal element,
      * or an empty {@link Optional} if the minimal element is ambiguous
      *
+     * @param matrix The matrix.
      * @return position of the minimal element represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static Optional<Pair<Integer>> getPositionOfMinimalElement(Matrix matrix) {
@@ -159,6 +161,7 @@ public final class Matrices {
     /**
      * returns a list of positions of the maximal elements of a {@link Matrix}
      *
+     * @param matrix The matrix.
      * @return positions of the maximal elements represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static List<Pair<Integer>> getPositionsOfMaximalElement(Matrix matrix) {
@@ -183,6 +186,7 @@ public final class Matrices {
      * Returns an {@link Optional} of a {@link Pair} that represents the position of the unique maximal element,
      * or an empty {@link Optional} if the maximal element is ambiguous.
      *
+     * @param matrix The matrix.
      * @return position of the maximal element represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static Optional<Pair<Integer>> getPositionOfMaximalElement(Matrix matrix) {

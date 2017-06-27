@@ -24,14 +24,14 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 /**
  * The BranchSubstructure is the central component in the three dimensional structure representation of macro molecules.
  * A BranchSubstructure can contain other substructures and/or atoms. Further implementations are used to infer more
- * information. <br/>
+ * information. <br>
  * <p>
  * Each BranchSubstructure is both, a graph-like structure that connects atoms with bonds and a node of a graph.
  * As a graph a BranchSubstructure contains Elements that are themselves SubStructures or plain AtomFilter. Edges in a BranchSubstructure
  * are only able to connect AtomFilter, but this can be done across different substructures. For example, this makes it
- * possible to connect AminoAcids in a chainIdentifier with the peptide backbone ({@link Chain#connectChainBackbone()}).<br/>
+ * possible to connect AminoAcids in a chainIdentifier with the peptide backbone ({@link Chain#connectChainBackbone()}).<br>
  * <p>
- * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br/>
+ * SubStructures are also able to be structuring elements of a Structure such as Motifs or Domains.<br>
  *
  * @author cl
  * @see Chain
@@ -69,6 +69,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /*
      * GRAPH VARIABLES
      */
+
     /**
      * The actual nodes
      */

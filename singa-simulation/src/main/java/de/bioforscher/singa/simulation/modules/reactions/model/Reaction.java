@@ -65,9 +65,10 @@ public abstract class Reaction {
     /**
      * Determines the concentration of reactants that influence the velocity of the reaction.
      *
-     * @param node The node, where the concentrations are collected.
-     * @param role The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
-     *             ReactantRole#DECREASING} for Substrates).
+     * @param node    The node, where the concentrations are collected.
+     * @param role    The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
+     *                ReactantRole#DECREASING} for Substrates).
+     * @param section The cell section.
      * @return The total concentration.
      */
     protected Quantity<MolarConcentration> determineConcentration(BioNode node, CellSection section, ReactantRole role) {
@@ -89,7 +90,8 @@ public abstract class Reaction {
      * Determines the actual acceleration of concentration that would result in a change in concentration if the
      * reaction is occurring in the given {@link BioNode}.
      *
-     * @param node The node containing the concentrations of species subject to this reaction.
+     * @param node    The node containing the concentrations of species subject to this reaction.
+     * @param section The cell section.
      * @return The acceleration of concentration (change in reaction rate for the species of this reaction)
      */
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section);
@@ -118,7 +120,7 @@ public abstract class Reaction {
         String substrates = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
                 .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        +  substrate.getEntity().getIdentifier())
+                        + substrate.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
         String products = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)

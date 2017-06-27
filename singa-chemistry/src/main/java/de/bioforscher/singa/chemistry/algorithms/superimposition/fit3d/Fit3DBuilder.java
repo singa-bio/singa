@@ -109,6 +109,7 @@ public class Fit3DBuilder {
         /**
          * The cutoff score that should be used when extending the site alignment.
          *
+         * @param cutoffScore The cutoff score.
          * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
         SiteParameterConfigurationStep cutoffScore(double cutoffScore);
@@ -116,6 +117,7 @@ public class Fit3DBuilder {
         /**
          * The {@link SubstitutionMatrix} to be used to calculate the Xie score.
          *
+         * @param substitutionMatrix The substitution matrix.
          * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
         SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix);

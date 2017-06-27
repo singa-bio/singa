@@ -15,7 +15,7 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
     ALL(EnumSet.allOf(AminoAcidFamily.class), "*", "ALL"),
 
     /**
-     * The following types are according to Gutteridge, A. & Thornton, J. M.: Understanding
+     * The following types are according to Gutteridge, A. and Thornton, J. M.: Understanding
      * nature's catalytic toolkit Trends in biochemical sciences, Elsevier, 2005, 30, 622-629.
      */
     GUTTERIDGE_IMIDAZOLE(EnumSet.of(AminoAcidFamily.HISTIDINE), "i", "IMI"),

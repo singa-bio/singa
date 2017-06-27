@@ -9,7 +9,7 @@ public interface Parser<ResultType> {
 
     /**
      * Returns the result of the parsing.
-     * @return
+     * @return The result.
      */
     ResultType parse();
 

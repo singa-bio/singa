@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
- * A
+ * Calculates the ideal superimposition.
  *
  * @author fk
  */

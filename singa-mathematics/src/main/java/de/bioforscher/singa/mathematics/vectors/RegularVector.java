@@ -39,6 +39,7 @@ public class RegularVector implements Vector {
      * A factory method for the creation of a new specific vector. This method can be used when the dimensionality of
      * the resulting vector is known in advance.
      *
+     * @param <VectorDimension> The concrete implementation.
      * @param elements The elements of this vector.
      * @param typeClass The class of the resulting vector.
      * @return A new vector with the specified class and values.

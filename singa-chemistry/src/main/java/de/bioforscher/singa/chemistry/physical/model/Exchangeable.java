@@ -20,7 +20,7 @@ public interface Exchangeable<R extends StructuralFamily> {
     /**
      * Returns the {@link StructuralFamily} of the {@link StructuralEntity}.
      *
-     * @return the {@link StructuralFamily
+     * @return the {@link StructuralFamily}
      */
     R getFamily();
 

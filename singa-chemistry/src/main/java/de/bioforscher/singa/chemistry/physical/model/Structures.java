@@ -58,7 +58,7 @@ public class Structures {
      * Returns the distance matrix of the given {@link StructuralEntity} object.
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
-     *
+     * @param <T> The Type of the structural entity.
      * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
      * @return The distance matrix of the {@link StructuralEntity} objects.
      */
@@ -76,6 +76,7 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
+     * @param <T> The Type of the structural entity.
      * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
      * @return The squared distance matrix of the {@link StructuralEntity} objects.
      */

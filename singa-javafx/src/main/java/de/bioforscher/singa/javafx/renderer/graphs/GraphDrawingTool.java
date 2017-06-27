@@ -40,6 +40,8 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
      *
      * @param totalIterations Number of total iterations
      * @param graph           The graph to arrange
+     * @param drawingHeight   The height property.
+     * @param drawingWidth    The width property.
      */
     public GraphDrawingTool(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
         this.drawingWidth = drawingWidth;

@@ -53,7 +53,6 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
 
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
-     * <p>
      * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
      *
      * TODO move this to interface, as other superimpositions should also get a string representation.
