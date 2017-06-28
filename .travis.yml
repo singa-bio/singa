@@ -10,7 +10,7 @@ addons:
     packages:
       - oracle-java8-installer
 before_install: cd singa-all
-script: mvn --settings -DskipTests=true .travis/settings.xml clean verify
+script: mvn --settings .travis/settings.xml -DskipTests=true clean verify
 deploy:
   -
     provider: script
