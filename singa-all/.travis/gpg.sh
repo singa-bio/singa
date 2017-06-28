@@ -25,7 +25,7 @@ gpg --batch --gen-key gen-key-script
 
 
 # export created GPG key
-export GPG_KEYNAME=$(gpg -K | awk '/sec/{getline; print}' | sed -e 's/^[ \t]*//' | tail -n1)
+export GPG_KEYNAME=$(gpg -K | grep ^sec | awk '{print $2}' | awk -F '/' '{print $2}')
 
 echo "gpg keys are"
 gpg -K
