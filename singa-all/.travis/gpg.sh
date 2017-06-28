@@ -25,7 +25,10 @@ gpg --batch --gen-key gen-key-script
 
 
 # export created GPG key
-export GPG_KEYNAME=$(gpg -K | grep ^sec | cut -d/  -f2 | cut -d\  -f1 | head -n1)
+export GPG_KEYNAME=$(gpg -K | awk '/sec/{getline; print}' | sed -e 's/^[ \t]*//' | tail -n1)
+
+echo "gpg keys are"
+gpg -K
 
 # cleanup local configuration
 shred gen-key-script
