@@ -1,5 +1,7 @@
 <img src="singa_logo_text.png" height="125"/>
 
+[![Build Status](https://travis-ci.org/cleberecht/singa.svg?branch=master)](https://travis-ci.org/cleberecht/singa)
+
 SiNGA (**Si**mulation of **N**atural **S**ystems using **G**raph **A**utomata) is an open-source library containing
 tools especially for structural bioinformatics and systems biology.
 
