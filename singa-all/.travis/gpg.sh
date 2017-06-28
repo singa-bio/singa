@@ -25,10 +25,10 @@ gpg --batch --gen-key gen-key-script
 
 
 # export created GPG key
-export GPG_KEYNAME=$(gpg -K | grep ^sec | awk '{print $2}' | awk -F '/' '{print $2}')
+export GPG_KEYNAME=$(gpg -k | grep ^pub | awk '{print $2}' | awk -F '/' '{print $2}')
 
 echo "gpg keys are"
-gpg -K
+gpg -k
 
 # cleanup local configuration
 shred gen-key-script
