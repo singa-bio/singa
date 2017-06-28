@@ -7,7 +7,7 @@ set -e
 # then
 
     echo "on a tag -> set pom.xml <version> to $TRAVIS_TAG"
-    mvn --settings .travis/settings.xml org.codehaus.mojo:versions-maven-plugin:2.3:set -DnewVersion=$0.1.2 --activate-profiles release &
+    mvn --settings .travis/settings.xml org.codehaus.mojo:versions-maven-plugin:2.3:set -DnewVersion=$TRAVIS_TAG --activate-profiles release &
 
     # Output to the screen every minute to prevent a travis timeout
     export PID=$!
