@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class StructuresTest {
     @Test
-    public void isAlphaCarbonStructure() throws Exception {
+    public void testIsAlphaCarbonStructure() throws Exception {
         Structure alphaCarbonStructure = StructureParser.online()
                 .pdbIdentifier("1zlg")
                 .parse();
