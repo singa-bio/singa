@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.graphs;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -7,10 +7,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author cl
@@ -38,6 +35,14 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
         return Quantities.getQuantity(this.concentrations.keySet().stream()
                 .mapToDouble(identifier -> getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue())
                 .average().orElse(0.0), UnitProvider.MOLE_PER_LITRE);
+    }
+
+    @Override
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+        if (concentrations.containsKey(cellSection)) {
+            return concentrations.get(cellSection);
+        }
+        return Collections.emptyMap();
     }
 
     @Override

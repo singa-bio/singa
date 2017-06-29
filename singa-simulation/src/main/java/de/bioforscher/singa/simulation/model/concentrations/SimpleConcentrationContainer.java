@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.graphs;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -26,6 +26,14 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         return this.concentrations.get(chemicalEntity);
+    }
+
+    @Override
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+        if (this.cellSection.equals(cellSection)) {
+            return concentrations;
+        }
+        return Collections.emptyMap();
     }
 
     @Override

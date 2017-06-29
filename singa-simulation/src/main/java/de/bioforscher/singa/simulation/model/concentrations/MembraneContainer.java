@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.graphs;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -8,10 +8,7 @@ import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * In this representation of a membrane is divided into four parts. An outer aqueous phase, an inner aqueous phase, the
@@ -79,6 +76,26 @@ public class MembraneContainer implements ConcentrationContainer {
             return this.innerLayer.get(chemicalEntity);
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+    }
+
+    @Override
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+        if (cellSection.equals(this.outerPhaseSection)) {
+            return this.outerPhase;
+        } else if (cellSection.equals(this.innerPhaseSection))  {
+            return this.innerPhase;
+        } else if (cellSection.equals(this.membrane)) {
+            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = new HashMap<>();
+            for(Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry: innerLayer.entrySet()) {
+                concentrations.put(entry.getKey(), entry.getValue().add(outerLayer.get(entry.getKey())).divide(2.0));
+            }
+            return concentrations;
+        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
+            return this.innerLayer;
+        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
+            return this.outerLayer;
+        }
+        return Collections.emptyMap();
     }
 
     @Override

@@ -8,9 +8,14 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.concentrations.DeltaContainer;
+import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +28,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     private NodeState state;
     private CellSection cellSection;
     private ConcentrationContainer concentrations;
+    private DeltaContainer deltas;
     private boolean isObserved;
 
     public BioNode(int identifier) {
@@ -30,6 +36,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         this.state = AQUEOUS;
         this.cellSection = new EnclosedCompartment("default", "Default Compartment");
         this.concentrations = new SimpleConcentrationContainer(cellSection);
+        this.deltas = new DeltaContainer();
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -51,6 +58,10 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.concentrations.getAllConcentrations();
     }
 
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+        return this.concentrations.getAllConcentrationsForSection(cellSection);
+    }
+
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
         return this.concentrations.getConcentration(entity);
     }
@@ -61,6 +72,22 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
 
     public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
         return this.concentrations.getAvailableConcentration(cellSection, entity);
+    }
+
+    public List<ConcentrationDelta> getDeltas() {
+        return deltas.getDeltas();
+    }
+
+    public void addDelta(ConcentrationDelta delta) {
+        this.deltas.addDelta(delta);
+    }
+
+    public void applyDeltas() {
+        for (ConcentrationDelta delta :this.deltas.getDeltas()) {
+            setAvailableConcentration(delta.getEntity(), delta.getCellSection(),
+                    getAvailableConcentration(delta.getEntity(), delta.getCellSection()).add(delta.getQuantity()));
+        }
+        this.deltas.clear();
     }
 
     public Set<CellSection> getAllReferencedSections() {
@@ -96,8 +123,8 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
             setState(MEMBRANE);
         }
         this.cellSection = cellSection;
-        this.
-        cellSection.addNode(this);
+        this.concentrations = new SimpleConcentrationContainer(cellSection);
+        this.cellSection.addNode(this);
     }
 
     public ConcentrationContainer getConcentrations() {

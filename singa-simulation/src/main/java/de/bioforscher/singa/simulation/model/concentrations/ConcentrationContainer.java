@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.graphs;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -28,11 +28,19 @@ public interface ConcentrationContainer {
     Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity);
 
     /**
-     * Returns the available concentration based on the given compartment.
+     * Returns all concentrations for a particular {@link CellSection}.
      *
-     * @param cellSection The identifier of the compartment.
-     * @param chemicalEntity        The ChemicalEntity.
-     * @return The concentration.
+     * @param cellSection The CellSection
+     * @return All concentrations in this CellSection.
+     */
+    Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection);
+
+    /**
+     * Returns the concentration of the specified {@link ChemicalEntity} available in the {@link CellSection}.
+     *
+     * @param cellSection The CellSection
+     * @param chemicalEntity The ChemicalEntity.
+     * @return The concentration of the ChemicalEntity in the CellSection.
      */
     Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity);
 

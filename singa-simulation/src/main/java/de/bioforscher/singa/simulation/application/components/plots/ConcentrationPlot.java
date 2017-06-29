@@ -7,8 +7,6 @@ import de.bioforscher.singa.simulation.application.SingaPreferences;
 import de.bioforscher.singa.simulation.application.renderer.ColorManager;
 import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdates;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
@@ -40,7 +35,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     private ObservableList<ChemicalEntity<?>> observedEntities = FXCollections.observableArrayList();
     // mirrors the data received from events
-    private Map<Integer, List<PotentialUpdate>> mirroredData;
+    // private Map<Integer, List<ConcentrationDelta>> mirroredData;
     private BioNode referencedNode;
 
     private int maximalDataPoints;
@@ -51,7 +46,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
         super(new NumberAxis(), new NumberAxis());
         logger.debug("Initializing {} for node {} ...", this.getClass().getSimpleName(), referencedNode.getIdentifier());
         this.referencedNode = referencedNode;
-        this.mirroredData = new HashMap<>();
+        // this.mirroredData = new HashMap<>();
         setObservedSpecies(observedEntities);
         initializeData();
         initializePreferences();
@@ -165,7 +160,6 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
                         .filter(s -> s.getName().equals(entity.getIdentifier().toString()))
                         .findFirst().get();
                 // add to mirrored values
-                this.mirroredData.put(event.getEpoch(), PotentialUpdates.collectChanges(event.getNode()));
                 // get concentration of entity
                 double concentration = event.getNode().getConcentration(entity).getValue().doubleValue();
                 // add to plot

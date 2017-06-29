@@ -5,12 +5,11 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import tec.units.ri.quantity.Quantities;
 
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * their specified {@link KineticLaw KineticLaws}s
  * and new concentrations are set using the {@link Reactions#applyTo(AutomatonGraph)} method.
  */
-public class Reactions implements Module, CumulativeUpdateBehavior {
+public class Reactions implements Module {
 
     private List<Reaction> reactions;
     private Map<ChemicalEntity<?>, Quantity<ReactionRate>> velocities;
@@ -44,7 +43,9 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
 
     @Override
     public void applyTo(AutomatonGraph graph) {
-        updateGraph(graph);
+        for (BioNode node : graph.getNodes()) {
+            calculateDeltas(node);
+        }
     }
 
     @Override
@@ -55,11 +56,8 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
                 .collect(Collectors.toSet());
     }
 
-    // TODO calculate acceleration also based on compartments
-    // TODO many improvements can be made
-    @Override
-    public List<PotentialUpdate> calculateUpdates(BioNode node) {
-        List<PotentialUpdate> updates = new ArrayList<>();
+    public void calculateDeltas(BioNode node) {
+        // TODO calculate acceleration also based on compartments
         // for each cell section
         for (CellSection section : node.getAllReferencedSections()) {
             // for each entity
@@ -80,11 +78,12 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
                             }
                         }));
                 // update every concentration using the calculateUpdateMethod
-                updates.add(calculateUpdate(node, section, entity));
+                Quantity<MolarConcentration> updatedQuantity = node.getConcentration(entity)
+                        .add(Quantities.getQuantity(this.velocities.get(entity).getValue(), UnitProvider.MOLE_PER_LITRE));
+                node.addDelta(new ConcentrationDelta(section, entity, updatedQuantity));
             }
         }
         this.velocities.clear();
-        return updates;
     }
 
     private void updateVelocity(StoichiometricReactant reactant, Quantity<ReactionRate> acceleration) {
@@ -96,12 +95,6 @@ public class Reactions implements Module, CumulativeUpdateBehavior {
             this.velocities.compute(reactant.getEntity(), (entity, velocity) ->
                     velocity.add(acceleration.multiply(reactant.getStoichiometricNumber())));
         }
-    }
-
-    public PotentialUpdate calculateUpdate(BioNode node, CellSection section, ChemicalEntity entity) {
-        Quantity<MolarConcentration> updatedQuantity = node.getConcentration(entity)
-                .add(Quantities.getQuantity(this.velocities.get(entity).getValue(), UnitProvider.MOLE_PER_LITRE));
-        return new PotentialUpdate(node, section, entity, updatedQuantity);
     }
 
 }

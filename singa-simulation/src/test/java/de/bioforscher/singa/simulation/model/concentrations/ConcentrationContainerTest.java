@@ -1,10 +1,11 @@
-package de.bioforscher.singa.simulation.model.graphs;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -77,9 +78,5 @@ public class ConcentrationContainerTest {
         assertEquals(0.1, node.getAvailableConcentration(this.entity, this.membrane.getInnerLayer()).getValue().doubleValue(), 0.0);
         assertEquals(0.2, node.getAvailableConcentration(this.entity, this.membrane.getOuterLayer()).getValue().doubleValue(), 0.0);
     }
-
-
-
-
 
 }

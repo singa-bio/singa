@@ -59,7 +59,7 @@ public class BioGraphSimulation extends Application {
         // setup the simulation
         logger.info("Setting up simulation from example ...");
         this.simulation = SimulationExamples.createPassiveMembraneTransportExample();
-                // SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
+                 // SimulationExamples.createDiffusionModuleExample(10, Quantities.getQuantity(500, NANO(SECOND)));
         logger.info("Initializing simulation GUI.");
         // Stage
         this.stage = stage;

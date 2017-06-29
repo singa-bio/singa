@@ -1,31 +1,24 @@
-package de.bioforscher.singa.simulation.modules.model.updates;
+package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
 
 import javax.measure.Quantity;
 
 /**
  * @author cl
  */
-public class PotentialUpdate {
+public class ConcentrationDelta {
 
-    private final BioNode node;
     private final CellSection cellSection;
     private final ChemicalEntity entity;
     private final Quantity<MolarConcentration> quantity;
 
-    public PotentialUpdate(BioNode node, CellSection cellSection, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        this.node = node;
+    public ConcentrationDelta(CellSection cellSection, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
         this.entity = entity;
         this.cellSection = cellSection;
         this.quantity = quantity;
-    }
-
-    public BioNode getNode() {
-        return this.node;
     }
 
     public CellSection getCellSection() {
@@ -40,8 +33,16 @@ public class PotentialUpdate {
         return this.quantity;
     }
 
-    public void apply() {
-        this.node.setAvailableConcentration(this.entity, this.cellSection, this.quantity);
+    public ConcentrationDelta merge(ConcentrationDelta anotherDelta) {
+        return new ConcentrationDelta(this.cellSection, this.entity, this.quantity.add(anotherDelta.getQuantity()));
     }
 
+    @Override
+    public String toString() {
+        return "ConcentrationDelta{" +
+                "cellSection=" + cellSection +
+                ", entity=" + entity +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

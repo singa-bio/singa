@@ -6,19 +6,16 @@ import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.graphs.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.Module;
-import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -26,7 +23,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * @author cl
  */
-public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavior {
+public class PassiveMembraneTransport implements Module {
 
     private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransport.class);
 
@@ -38,20 +35,13 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
 
     @Override
     public void applyTo(AutomatonGraph graph) {
-        updateGraph(graph);
-    }
-
-    @Override
-    public void updateGraph(AutomatonGraph graph) {
-        // collect updates but this is only relevant in membrane nodes
-        List<PotentialUpdate> updates = new ArrayList<>();
         for (BioNode node : graph.getNodes()) {
             if (node.getState() == NodeState.MEMBRANE) {
-                updates.addAll(calculateUpdates(node));
+                for (ChemicalEntity<?> entity : node.getAllReferencedEntities()) {
+                    calculateDelta(node, entity);
+                }
             }
         }
-        // apply updates
-        updates.forEach(PotentialUpdate::apply);
     }
 
     @Override
@@ -59,16 +49,7 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         return this.chemicalEntities;
     }
 
-    @Override
-    public List<PotentialUpdate> calculateUpdates(BioNode node) {
-        List<PotentialUpdate> updates = new ArrayList<>();
-        for (ChemicalEntity<?> entity: node.getAllReferencedEntities()) {
-            updates.addAll(calculateUpdateForEntity(node, entity));
-        }
-        return updates;
-    }
-
-    private List<PotentialUpdate> calculateUpdateForEntity(BioNode node, ChemicalEntity<?> entity) {
+    public void calculateDelta(BioNode node, ChemicalEntity<?> entity) {
         // scale potentially not already scaled parameters
         setUpParameters(entity);
 
@@ -79,11 +60,11 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         double innerPhase = concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue();
 
         // membrane entry (outer phase -> outer layer and inner phase -> inner layer) - kIn
-        double kIn = entity.getFeature(MembraneEntry.class).getScaledQuantity().getValue().doubleValue();
+        double kIn = entity.getFeature(MembraneEntry.class).getScaledQuantity().getValue().doubleValue()/1000;
         // membrane exit (outer layer -> outer phase and inner layer -> inner phase) - kOut
-        double kOut = entity.getFeature(MembraneExit.class).getScaledQuantity().getValue().doubleValue();
+        double kOut = entity.getFeature(MembraneExit.class).getScaledQuantity().getValue().doubleValue()/1000;
         // flip-flip across membrane (outer layer <-> inner layer) - kFlip
-        double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue();
+        double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue()/1000;
 
         // for highly polar molecules kIn and kFlip determine overall permeation speed which is slow
         // as lipophilicity increases kIn becomes high and and kFlip and kOut are roughly equivalent
@@ -101,25 +82,26 @@ public class PassiveMembraneTransport implements Module, CumulativeUpdateBehavio
         double newInnerPhase = -kIn * innerPhase + kOut * innerLayer;
 
         // setup and return updates
-        List<PotentialUpdate> updates = new ArrayList<>();
-        updates.add(new PotentialUpdate(node, concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(newOuterPhase, MOLE_PER_LITRE)));
-        updates.add(new PotentialUpdate(node, concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(newOuterLayer, MOLE_PER_LITRE)));
-        updates.add(new PotentialUpdate(node, concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(newInnerLayer, MOLE_PER_LITRE)));
-        updates.add(new PotentialUpdate(node, concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(newInnerPhase, MOLE_PER_LITRE)));
-        return updates;
+        node.addDelta(new ConcentrationDelta(concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(newOuterPhase, MOLE_PER_LITRE)));
+        node.addDelta(new ConcentrationDelta(concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(newOuterLayer, MOLE_PER_LITRE)));
+        node.addDelta(new ConcentrationDelta(concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(newInnerLayer, MOLE_PER_LITRE)));
+        node.addDelta(new ConcentrationDelta(concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(newInnerPhase, MOLE_PER_LITRE)));
     }
 
     private void setUpParameters(ChemicalEntity<?> entity) {
         if (!this.chemicalEntities.contains(entity)) {
             // entry
             MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
-            membraneEntry.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            membraneEntry.scale(EnvironmentalParameters.getInstance().getTimeStep(),
+                    EnvironmentalParameters.getInstance().getNodeDistance());
             // exit
             MembraneExit membraneExit = entity.getFeature(MembraneExit.class);
-            membraneExit.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            membraneExit.scale(EnvironmentalParameters.getInstance().getTimeStep(),
+                    EnvironmentalParameters.getInstance().getNodeDistance());
             // flip flop
             MembraneFlipFlop membraneFlipFlop = entity.getFeature(MembraneFlipFlop.class);
-            membraneFlipFlop.scale(EnvironmentalParameters.getInstance().getTimeStep());
+            membraneFlipFlop.scale(EnvironmentalParameters.getInstance().getTimeStep(),
+                    EnvironmentalParameters.getInstance().getNodeDistance());
             // add to set
             this.chemicalEntities.add(entity);
         }

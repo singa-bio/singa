@@ -4,19 +4,21 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
-import de.bioforscher.singa.simulation.modules.model.updates.CumulativeUpdateBehavior;
-import de.bioforscher.singa.simulation.modules.model.updates.PotentialUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -28,7 +30,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  * @author Christoph Leberecht
  * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
  */
-public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
+public class FreeDiffusion implements Module {
 
     private static final Logger logger = LoggerFactory.getLogger(FreeDiffusion.class);
 
@@ -48,34 +50,29 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
 
     @Override
     public void applyTo(AutomatonGraph graph) {
-        updateGraph(graph);
-    }
-
-    @Override
-    public List<PotentialUpdate> calculateUpdates(BioNode node) {
-        List<PotentialUpdate> updates = new ArrayList<>();
-        for (CellSection section: node.getAllReferencedSections()) {
-            for (ChemicalEntity entity: node.getAllReferencedEntities()) {
-                updates.add(calculateCompartmentSpecificUpdate(node, section, entity));
+        for (BioNode node : graph.getNodes()) {
+            for (CellSection section : node.getAllReferencedSections()) {
+                for (ChemicalEntity entity : node.getAllReferencedEntities()) {
+                    calculateDelta(node, section, entity);
+                }
             }
         }
-        return updates;
     }
 
-    private PotentialUpdate calculateCompartmentSpecificUpdate(BioNode node, CellSection cellSection, ChemicalEntity entity) {
+    private void calculateDelta(BioNode node, CellSection cellSection, ChemicalEntity entity) {
         final double currentConcentration = node.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
-        if (node.getState() == NodeState.MEMBRANE) {
-            System.out.println("Membrane");
-        }
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
         // traverse each neighbouring cell
+//        if (node.getCellSection().getIdentifier().equals("RC") && currentConcentration != 0) {
+//            System.out.println();
+//        }
         for (BioNode neighbour : node.getNeighbours()) {
-            if (neighbour.getCellSection().equals(cellSection)) {
+            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = neighbour.getAllConcentrationsForSection(cellSection);
+            if (!concentrations.isEmpty()) {
                 numberOfNeighbors++;
-                // if the node is from an different compartment
-                concentration += neighbour.getAvailableConcentration(entity, cellSection).getValue().doubleValue();
+                concentration += concentrations.get(entity).getValue().doubleValue();
             }
         }
         // entering amount
@@ -83,8 +80,9 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
         // calculate leaving amount
         final double leavingConcentration = numberOfNeighbors * getDiffusivity(entity).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
-        final double nextConcentration = enteringConcentration - leavingConcentration + currentConcentration;
-        return new PotentialUpdate(node, cellSection, entity, Quantities.getQuantity(nextConcentration, MOLE_PER_LITRE));
+        final double delta = enteringConcentration - leavingConcentration; //+ currentConcentration;
+        // add delta to node
+        node.addDelta(new ConcentrationDelta(cellSection, entity, Quantities.getQuantity(delta, MOLE_PER_LITRE)));
     }
 
 

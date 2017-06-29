@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.graphs.MembraneContainer;
 
 import java.util.Set;
 import java.util.stream.Collectors;

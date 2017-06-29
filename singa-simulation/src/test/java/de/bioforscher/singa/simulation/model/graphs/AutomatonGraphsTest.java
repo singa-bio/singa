@@ -4,6 +4,8 @@ import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateCon
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

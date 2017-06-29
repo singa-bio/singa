@@ -7,6 +7,7 @@ import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
 import static tec.units.ri.AbstractUnit.ONE;
@@ -27,12 +28,13 @@ public class MembraneEntry extends AbstractFeature<Quantity<Frequency>> {
         super(Quantities.getQuantity(frequency, HERTZ), featureOrigin);
     }
 
-    public void scale(Quantity<Time> targetTimeScale) {
+    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetSpaceScale) {
+        double area = targetSpaceScale.getValue().doubleValue()*targetSpaceScale.getValue().doubleValue();
         // transform to specified unit
         Quantity<Frequency> scaledQuantity = getFeatureContent()
                 .to(new ProductUnit<>(ONE.divide(targetTimeScale.getUnit())));
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.multiply(targetTimeScale.getValue());
+        this.scaledQuantity = scaledQuantity.multiply(targetTimeScale.getValue()).divide(area);
     }
 
     public Quantity<Frequency> getScaledQuantity() {

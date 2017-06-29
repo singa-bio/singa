@@ -50,10 +50,18 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public void nextEpoch() {
-        this.modules.forEach(
-                module -> module.applyTo(this.graph)
-        );
-        this.graph.getNodes().stream().filter(BioNode::isObserved).forEach(this::emitNextEpochEvent);
+        // apply all modules
+        for (Module module : this.modules) {
+            module.applyTo(this.graph);
+        }
+        // apply generated deltas
+        for (BioNode node : this.getGraph().getNodes()) {
+            node.applyDeltas();
+            if (node.isObserved()) {
+                this.emitNextEpochEvent(node);
+            }
+        }
+        // update epoch
         this.epoch++;
     }
 

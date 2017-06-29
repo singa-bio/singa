@@ -15,7 +15,6 @@ import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
@@ -533,12 +532,12 @@ public class SimulationExamples {
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
 
-        Membrane membrane = AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, left, right);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, right, left);
 
         // set concentrations
-        // only 4 left most nodes
+        // only 5 left most nodes
         for (BioNode node : graph.getNodes()) {
-            if (node.getIdentifier() % converter.getNumberOfColumns() < 4) {
+            if (node.getIdentifier() % converter.getNumberOfColumns() < 5) {
                 for (Species species: allSpecies) {
                     node.setConcentration(species, 1.0);
                 }
