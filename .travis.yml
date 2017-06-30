@@ -16,6 +16,8 @@ env:
     - # ^^ GPG_KEY_NAME
     - secure: "k8l/0HmlN0khdoW/NRrM23kX2Y7TqcNwTP5WpqA0MnlClsQMa4BBp7zDijaOZdUsLsH2crhc387pzN2vP9JZOjYI7o47oyfI1eMLPHopM8fbg+m8mnA4I494P25y6kFQennL6jp0gpKtuhIZqx4+hB4D/DHxaFaPKckkCkSkQGoj/RGa1TlSUpIZuss4kpT7OOnUIHoQ4DCvtJX4yoHkx6YQYETEdeVXHuGuEwBhXgHoCATG8s7sYZ6TS+VYZ2kyuW5m9nOWmkjYElRWYOaVka5tcnmdT0BU5+MFAN2PPBJjD+SPZMF2ElAUhejqKwPr6OIhjxHx9llCN3jHV0ctU0aRBMKdWEbBEfshhUolrlfVC8qh+Jx/RwbctCuxtYnUdtak6ecDEHfSHu8vDPh0nBeM+bT0fmqE7FWZB+8TC7KrCrQYwaac6nazcS6Ag8sBH4rmKRJSE5OV+5EUcySnlzVsRwpscH2WLZe77I1B6elyEVKn8tndfH9AiBseeWCkGh0v681jD6ARcbBl76DZ0yMIoy8mdVZzRaYsq4uvYH9PWiK95i9vzJyXtGQvTuYIgTHX4gXXQHOY5ppiJ5JRYq3xWKBeRpobMSY4p07EJD6WUY+tg6IEcWp+tHiyrwaYsz1dnq9lW7Bzhe6s768kG6Ibpm0Gy6RuVVJAuFO4d2s="
     - # ^^ GPG_PASSPHRASE
+    - secure: "hGo6DfgIuhOyFi6iuv6aA5sOVsQXFQmE7t3eDCn93xc6ic8icxGeixx+v/+PWVcTUjgSlX5bYOwsNrc+vsnz/qi4t1LEsQTdM0f3+6luwhnUel/O89Qk4GV3SA7TW5i4edhSw5EYYchybjfBhQ3BFJkBFxLvqEBN9GL/mkUW/6pCfa/mUBvjK3QjbAju6iydKX7bXiK/Yt1Dfpu4XoufkTf7MlWeQB5rkNZQzm1xaa7zP2iMlvc5sR8UY2qkXhhWqScfAZkKEyc297FP9yuqudNbkn8f9ilZfpBwFlEw0R+MGF2hTdqnx+OiHYmiHNB56AnMY5d0pM5ZmFy8AEjFmWFrS0KO6GkpskuhMgalCt2HCpOV3+13d7NPqEb3NHGvv4EZTc8aYGfeGdTWSTKfmK1FjryP+ytT57wMROVJgmLRh6mTC8v9hQ46GVz6pj9wty+zol9Ul6JXAykoEHSo95YUkhplSHKf7TaqwEgTJcAXblb71ZQ1NnrSc8Iqmndyq4t9NnWRrbRvim86CDFnqOsTN4oWbwtaplbBqxqWw/HQ66c4Q/SkFSvmzphlW+5MN6eQbGijHNmMUD0OS1TN1BFLNT7ntaHxCJw+H6UPIiM6MsE6hWaTYlRwpZfYHsEcCxzkCCfJfMVbOZZ+Tx2poQ5P2BpszOZo98jfE2n5M0Q="
+    - # ^^ GITHUB_DOC_TOKEN
 
 before_install: cd singa-all
 
@@ -26,6 +28,7 @@ script: mvn test -P !build-extras -B
 after_success:
   - ./cd/before-deploy.sh
   - ./cd/deploy.sh
+  - ./cd/publish-documentation.sh
 
 cache:
   directories:
