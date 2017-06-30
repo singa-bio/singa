@@ -1,21 +1,32 @@
 language: java
 jdk: oraclejdk8
 dist: trusty
-cache:
-  directories:
-  - $HOME/.m2
-sudo: false
 addons:
   apt:
     packages:
       - oracle-java8-installer
+
+env:
+  global:
+    - secure: "oKBf6W2GxUfCe80287zcVkjuGZuA3DntBG6hGm6BG/pM72Sc8u244g4aezHjRj6R2aZr6wmbY7+p9cXClz05KElrLRsFcwfl2zz5RbcKupY/o9GqotUu4tZkrQIZ3ltFHhLmDm9qMJ/W/3C4sbrakwOmA2wRbYEw5QNBmvAfRI4dqYTL6pg1VF1m4xeP5PZkqPCNAURN+leUcXSNlhcnpo8z4TOG+mgr9UL70hIPXXCPqRmZ+DDNiSOouyvaHGiK0VcWJlgdyd6WsIZiSYQptRpGJ7vTLMw4/WAIsj/CzMZ//+H99JcQhvXY562yxU8uqYDxQ5twmRq2Os8g/lxHsWm0JD+p1m7uN5uvb/Qi7gXAgJKgRgzVA39sqAEiUzAcZCXnTPRKN+6j5ZIqgVW/ErRWWoWsevlEcHAVN+QiKm4aKapFQKmiE6j9f+DKA74tE/l8MjIUmecm36vPdMFwQ0eIlUNbDFngCbcKtOJdgIY9t1sfV/8O0WRodDdlXkXlHscE+/ESawInYaghDThiCal+b7iikflaSbsyLaVr39HWec80sCDxwsFWaJFrtBxUaB6YlU5hi0vywM5Kop59l1P5RtvQ5mi0tsJpZCWFYkSg2GbZS0+g0aAiwepC8Zp2JCNcoNAQeoukgwR0KKWqcZV+R3KdIAw78hzwm/wqNIc="
+    - # ^^ OSSRH_JIRA_USERNAME
+    - secure: "p7Zq2gCDtMVIDSUh/SePGnx/Wee6s2eiHIP+72+CDhw9Xy01b73ccgb7d0YZ2sg5QbP5ooQxU2m9je5gnqCsjYrqSdQZRCgBVzOImzBdYj/WdezfdL/loFelpc5g2VE9ABt5HGICRPUKPur9IAWOt8AZnlTOJ8NSo1cdS9vT+/zFJLbS+S/Q8hy9wQFK5z9PXsA2H22eB5DVKEc3+5NJxZ803zwk5og7io5zJ76w1BQd/I/RIMcDDeENid8iqhfVUI/tdOUj0jnJzZ0WfTv/LdQYfUJwHh+im02CbTSpofTcnNlxmwKoJOKG1joL0P82/M5HuJVY2cu108VPTAc+3gca1lf3k5uUXfjHURV93z+2tgHVFFtcOLBWcTwzbpuwilc0d+p1+a0WTW3buaccswipeiL+nY43KaW+Z4GPHNBCvaOv/do5iCkS6jO2et4z3/jE36F/S2sm0RyomSruD3MnPaXcVWmuaYh8vfgrSkVdIDaxvIRVhAZ6acVDSUwwyxWlC5PWq+tndsKPCladukEfCfkhrNPGtB2xbKHw0+xRhkSl2AEoS7n8SKv+gIYy05uogjpqoyfIibAQcm4yOrU/BUBeA0jpFCB3CXNtx65H3pLKFb2VQMriXB+ijF+Cutn3bkGnAysW7URMJQl2NxrzjLF34nVopvWbvQ8V9x8="
+    - # ^^ OSSRH_JIRA_PASSWORD
+    - secure: "V2G8W67YQlnJwPuZTHDUUxd3QQjtt75YaCFKVntAwlHNVCdBNVARMrkzTKT+GpSUWxcCMLrJ+hBSwOUZGRV310L68roF3Lpak7vcF1qwDJcqVytwnyd7RCk9NHMBuqI/LNof5TeCfXZFHTCQiEaVxX8Yx4r+OB70VHp+UGiKIQWvWl7XDPz9uHYpXxXqdpnJEZSx/E33ZMOGh72IkGeymtum4glnmTMguc+UofRCMjzSbCiWPFfSqj9egM0lHFl0oeuE3+I6dKXfcjLYnKwqUebRW/rKc7E0sFQp5KaaMrRnFeckNLJqeGculxJBT2xpqvwNbkIhIXytGn9VcgrjtutT2PpuAxCiqeY9rq0V6SeW/9DWUlYe3VWquyG1YO5JbaH4LN87Q6wqKyRUXW3NTk3dz+wuweucOol6Wu4zQZzRxAcs0SfDNTxkbKcRHbno+O81YHFlHHCQlqomuiiIO0IR5HzdpNYeIA0JoNayzIwP4YLhNIi+uTlJLohNwkDvOAMprHSU/F20OGvnStr0qcrJJczPjwwRnXErR6Q8m+Ezo2EilYxTwYj+cxy5QJEWESlxXnpuwk9AgZfi/0rkypDSmdHWmrJtmHhnqDrg4BgnEwqa8J7b0zc1XYJflgGZSjiNqbxFxXOvwuSu+TpCrSQRjaBfMhvO8PGtc8emSjg="
+    - # ^^ GPG_KEY_NAME
+    - secure: "Z45BwghRGZgfJEL7BbGKUmeo0YMOl+XJTDwsSgKZBc9CpxG1VpcRFn8wKwe9gueEPFD6AkodQRTviTvIAklZIa5LyyKAOvn5CLCU7SeI3rzDddu91AdqQjJyE5VYido1CsiuI8WlYowQg++pHTY+hpRoN/b8QiAvzNCJQETMoToQxTeNjUkJwo/POXhN2ktI8vTLrm3AuQ1T9iOdREs7BKRpVHrhzXMdFKvoTf4L8WNH8cVrmtKGfhKIqqDLqTk1DlRweG64EI49RxPkSRmllIGVoV3u2j1zpkNi1EYEfq3nvPY8FKlW60sGY5KgugUbAhYdyPVOK6p3sKFeeQY6H6hbKwVjJmlQ5J8oI1LkmBL3vWnOl3uMbi7punD4xr1dkgQ0/0ZRGpxIi9jEnGBkpICrk5fLrs6aG2B1u7st+noTqa3vlxoStBdzjMp7TWKlowpe5aHhPEXmZH7GClBlZYtFM6D/8trt45iLyJNIFH6sBt37c5dF6fow5wu/Onz6vf0O4PUWSauLzXOMKdOsVRVpXlrNHJRgqpx1+CQvtyyk5xHbCtJ7qwXz82WD5Vi54yocs1E3j1wHCFG/E6OdpzEVpdobaaEEGEu8i+XcHYshyKtdF8f2Lgf/F5mNa+N0nXS2+58oEn1MotD44xhV17De7trEdsxIz2phzD5hRU0="
+    - # ^^ GPG_PASSPHRASE
+
 before_install: cd singa-all
-script: mvn --settings .travis/settings.xml -DskipTests=true clean verify
-deploy:
-  -
-    provider: script
-    script: .travis/deploy.sh
-    skip_cleanup: true
-    on:
-      repo: cleberecht/singa
-      jdk: oraclejdk8
+
+install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+script: mvn test -P !build-extras -B
+
+after_success:
+  - ./cd/before-deploy.sh
+  - ./cd/deploy.sh
+
+cache:
+  directories:
+    - ~/.m2/repository
