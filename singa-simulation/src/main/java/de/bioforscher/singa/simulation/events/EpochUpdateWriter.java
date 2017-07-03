@@ -14,7 +14,7 @@ import java.util.*;
 
 /**
  * This class can be used to write the concentrations of a node to a file while
- * simulating.
+ * simulating. This appends ech time
  *
  * @author cl
  */
