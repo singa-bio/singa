@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.physical.model;
 
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 
@@ -58,7 +59,8 @@ public class Structures {
      * Returns the distance matrix of the given {@link StructuralEntity} object.
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
-     * @param <T> The Type of the structural entity.
+     *
+     * @param <T>                The Type of the structural entity.
      * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
      * @return The distance matrix of the {@link StructuralEntity} objects.
      */
@@ -76,7 +78,7 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
-     * @param <T> The Type of the structural entity.
+     * @param <T>                The Type of the structural entity.
      * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
      * @return The squared distance matrix of the {@link StructuralEntity} objects.
      */
@@ -97,4 +99,31 @@ public class Structures {
 //        labeledDistances.setRowLabels(atoms);
 //        return labeledDistances;
 //    }
+
+    /**
+     * Returns true iff the given {@link Structure} consists only of alpha carbon atoms
+     * (<b>this may include hydrogen atoms</b>).
+     *
+     * @param structure The {@link Structure} to check.
+     * @return True iff structure contains only alpha carbon atoms.
+     */
+    public static boolean isAlphaCarbonStructure(Structure structure) {
+        return structure.getAllAtoms().stream()
+                .noneMatch(AtomFilter.isAlphaCarbon().negate()
+                        .and(AtomFilter.isHydrogen().negate()));
+    }
+
+    /**
+     * Returns true iff the given {@link Structure} consists only of backbone atoms
+     * (<b>this may include beta carbon and hydrogen atoms</b>).
+     *
+     * @param structure The {@link Structure} to check.
+     * @return True iff structure contains only backbone and hydrogen atoms.
+     */
+    public static boolean isBackboneStructure(Structure structure) {
+        return structure.getAllAtoms().stream()
+                .noneMatch(AtomFilter.isBackbone().negate()
+                        .and(AtomFilter.isHydrogen().negate())
+                        .and(AtomFilter.isBetaCarbon().negate()));
+    }
 }

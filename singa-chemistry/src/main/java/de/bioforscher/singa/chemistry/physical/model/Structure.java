@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.model;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
@@ -109,6 +110,14 @@ public class Structure {
                 .map(BranchSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public Set<AtomName> getUniqueAtomNames() {
+        return getAllAtoms().stream()
+                .map(Atom::getAtomNameString)
+                .map(AtomName::getAtomNameFromString)
+                .distinct()
+                .collect(Collectors.toSet());
     }
 
     public String getPdbIdentifier() {
