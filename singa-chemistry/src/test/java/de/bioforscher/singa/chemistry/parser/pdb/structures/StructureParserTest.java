@@ -156,5 +156,12 @@ public class StructureParserTest {
                 .parse();
     }
 
+    @Test
+    public void shouldParseAllChainsFromLocalFile() {
+        StructureParser.local()
+                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .allChains()
+                .parse();
+    }
 
 }
