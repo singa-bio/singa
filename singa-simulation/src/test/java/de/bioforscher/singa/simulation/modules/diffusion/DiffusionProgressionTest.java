@@ -16,6 +16,8 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -38,6 +40,8 @@ import static tec.units.ri.unit.Units.SECOND;
  */
 @RunWith(Parameterized.class)
 public class DiffusionProgressionTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(DiffusionProgressionTest.class);
 
     private static final Rectangle boundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
@@ -90,6 +94,7 @@ public class DiffusionProgressionTest {
 
     @Test
     public void shouldReachCorrectHalfLife() {
+        logger.info("Performing free diffusion test for {} with a time step of {} and {} nodes ...", this.species.getName(), this.timeStep, this.numberOfNodes);
         // setup and run simulation
         Simulation simulation = setUpSimulation(this.numberOfNodes, this.timeStep, this.species);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, this.numberOfNodes, this.species);
@@ -126,23 +131,17 @@ public class DiffusionProgressionTest {
     private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, Species species) {
         // grants access to easier access to grid coordinates
         RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes, numberOfNodes);
-        // returns the node in the middle on the right
+        // observe the node in the middle on the right
         int observedNodeIdentifier = converter.convert(new Vector2D(numberOfNodes - 1, (numberOfNodes / 2) - 1));
-        System.out.println("Observing node: " + observedNodeIdentifier);
         simulation.getGraph().getNode(observedNodeIdentifier).setObserved(true);
-
-        System.out.println("Starting simulation ...");
         // simulate until half life concentration has been reached
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
             final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(observedNodeIdentifier).getConcentration(species);
             currentConcentration = concentration.getValue().doubleValue();
-            if (simulation.getEpoch() % 1000 == 0 && simulation.getEpoch() > 1) {
-                System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
-            }
         }
-        System.out.println("Half life time of " + species.getName() + " reached at " + simulation.getElapsedTime().to(MICRO(SECOND)));
+        logger.info("Half life time of {} reached at {}.", species.getName(), simulation.getElapsedTime().to(MICRO(SECOND)));
         return simulation.getElapsedTime().to(MICRO(SECOND));
     }
 

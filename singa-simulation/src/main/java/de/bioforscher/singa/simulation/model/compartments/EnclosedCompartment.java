@@ -2,6 +2,8 @@ package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -12,6 +14,8 @@ import java.util.LinkedList;
  * @author cl
  */
 public class EnclosedCompartment extends CellSection {
+
+    private static final Logger logger = LoggerFactory.getLogger(EnclosedCompartment.class);
 
     /**
      * The enclosing membrane.
@@ -82,7 +86,8 @@ public class EnclosedCompartment extends CellSection {
 
             // try to traverse bridge
             if (!foundNeighbour) {
-                LinkedList<BioNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step, currentNode -> this.isNewBorder(nodes, currentNode), this::isInThisCompartment);
+                LinkedList<BioNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
+                        currentNode -> this.isNewBorder(nodes, currentNode), this::isInThisCompartment);
                 if (nextBest != null) {
                     for (BioNode node : nextBest) {
                         if (!nodes.contains(node)) {
@@ -92,7 +97,7 @@ public class EnclosedCompartment extends CellSection {
                     }
                     step = nextBest.getLast();
                 } else {
-                    System.out.println("could not finish compartment border");
+                    logger.error("Could not finish compartment membrane.");
                     break;
                 }
 

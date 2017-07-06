@@ -24,6 +24,9 @@
 
 package uk.co.cogitolearning.cogpar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,9 +37,12 @@ import java.util.regex.Pattern;
  * The user can add regular expressions that will be matched against the front
  * of the string. Regular expressions should not contain beginning-of-string or
  * end-of-string anchors or any capturing groups as these will be added by the
- * tokenizer itslef.
+ * tokenizer itself.
  */
 public class Tokenizer {
+
+    private static final Logger logger = LoggerFactory.getLogger(Tokenizer.class);
+
     /**
      * Internal class holding the information about a token type.
      */
@@ -45,20 +51,22 @@ public class Tokenizer {
         /**
          * the regular expression to match against
          */
-        public final Pattern regex;
+        final Pattern regex;
+
         /**
          * the token id that the regular expression is linked to
          */
-        public final int token;
+        final int token;
 
         /**
          * Construct TokenInfo with its values
          */
-        public TokenInfo(Pattern regex, int token) {
+        TokenInfo(Pattern regex, int token) {
             super();
             this.regex = regex;
             this.token = token;
         }
+
     }
 
     /**
@@ -82,8 +90,8 @@ public class Tokenizer {
      */
     public Tokenizer() {
         super();
-        tokenInfos = new LinkedList<TokenInfo>();
-        tokens = new LinkedList<Token>();
+        tokenInfos = new LinkedList<>();
+        tokens = new LinkedList<>();
     }
 
     /**
@@ -132,31 +140,31 @@ public class Tokenizer {
 
     /**
      * Tokenize an input string.
-     * The reult of tokenizing can be accessed via getTokens
+     * The result of tokenizing can be accessed via getTokens
      *
-     * @param str the string to tokenize
+     * @param string the string to tokenize
      */
-    public void tokenize(String str) {
-        String s = str.trim();
-        int totalLength = s.length();
+    public void tokenize(String string) {
+        logger.info("Tokenizing string+ \""+string+"\".");
+        String trimmedString = string.trim();
+        int totalLength = trimmedString.length();
         tokens.clear();
-        while (!s.equals("")) {
-            int remaining = s.length();
+        while (!trimmedString.equals("")) {
+            int remaining = trimmedString.length();
             boolean match = false;
-            for (TokenInfo info : tokenInfos) {
-                Matcher m = info.regex.matcher(s);
-                if (m.find()) {
+            for (TokenInfo tokenInfo : tokenInfos) {
+                Matcher tokenMatcher = tokenInfo.regex.matcher(trimmedString);
+                if (tokenMatcher.find()) {
                     match = true;
-                    String tok = m.group().trim();
-                    // System.out.println("Success matching " + s + " against " +
-                    // info.regex.pattern() + " : " + tok);
-                    s = m.replaceFirst("").trim();
-                    tokens.add(new Token(info.token, tok, totalLength - remaining));
+                    String token = tokenMatcher.group().trim();
+                    logger.trace("Matched token \""+token+"\" to "+tokenInfo.regex.toString());
+                    trimmedString = tokenMatcher.replaceFirst("").trim();
+                    tokens.add(new Token(tokenInfo.token, token, totalLength - remaining));
                     break;
                 }
             }
             if (!match)
-                throw new ParserException("Unexpected character in input: " + s);
+                throw new ParserException("Unexpected character in input: " + trimmedString);
         }
     }
 

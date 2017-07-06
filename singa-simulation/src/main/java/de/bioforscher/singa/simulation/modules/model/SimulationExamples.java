@@ -429,8 +429,8 @@ public class SimulationExamples {
     public static Simulation createSimulationFromSBML() {
 
         // BIOMD0000000023
-        // BIOMD0000000064 //
-        // BIOMD0000000184 // ca oscillations
+        // BIOMD0000000064
+        // BIOMD0000000184 for ca oscillations
 
         logger.info("Setting up simulation for model BIOMD0000000184 ...");
         SBMLParser model = BioModelsParserService.parseModelById("BIOMD0000000184");
@@ -438,18 +438,17 @@ public class SimulationExamples {
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildGridGraph(20, 20, defaultBoundingBox, false));
+                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
 
         model.getCompartments().keySet().forEach(graph::addSection);
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        for (BioNode node : graph.getNodes()) {
-            model.getStartingConcentrations().forEach((entity, value) -> {
-                logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-                node.setConcentration(entity, value);
-            });
-        }
+        BioNode bioNode = graph.getNodes().iterator().next();
+        model.getStartingConcentrations().forEach((entity, value) -> {
+            logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
+            bioNode.setConcentration(entity, value);
+        });
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");

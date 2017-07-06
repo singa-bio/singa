@@ -1,5 +1,7 @@
 package de.bioforscher.singa.core.parser.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -11,33 +13,24 @@ import org.xml.sax.SAXParseException;
  */
 public class XMLErrorHandler implements ErrorHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(XMLErrorHandler.class);
+
     @Override
-    public void error(SAXParseException ex) throws SAXException {
-
-        System.out.println("An error has occured.\n" +
-                ex.getSystemId() + " in line " + ex.getLineNumber() + " :\n" +
-                ex.getMessage());
-
+    public void error(SAXParseException exception) throws SAXException {
+        logger.error("An error has occurred {} in line {} : {}", exception.getSystemId(), exception.getLineNumber(), exception.getMessage());
+        throw exception;
     }
 
     @Override
-    public void fatalError(SAXParseException ex) throws SAXException {
-
-        System.out.println("A fatal error has occured.\n" +
-                ex.getSystemId() + " in line " + ex.getLineNumber() + " :\n" +
-                ex.getMessage());
-        throw ex;
-
+    public void fatalError(SAXParseException exception) throws SAXException {
+        logger.error("An fatal error has occurred {} in line {} : {}", exception.getSystemId(), exception.getLineNumber(), exception.getMessage());
+        throw exception;
     }
 
     @Override
-    public void warning(SAXParseException ex) throws SAXException {
-
-        System.out.println("Warning:\n" +
-                ex.getSystemId() + " in line " + ex.getLineNumber() + " :\n" +
-                ex.getMessage());
-        throw ex;
-
+    public void warning(SAXParseException exception) throws SAXException {
+        logger.error("Warning {} in line {} : {}", exception.getSystemId(), exception.getLineNumber(), exception.getMessage());
+        throw exception;
     }
 
 }

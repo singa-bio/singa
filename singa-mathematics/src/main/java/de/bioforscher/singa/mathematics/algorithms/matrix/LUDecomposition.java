@@ -2,7 +2,6 @@ package de.bioforscher.singa.mathematics.algorithms.matrix;
 
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
-import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
@@ -73,31 +72,6 @@ public class LUDecomposition {
             }
         }
         return rank;
-    }
-
-    public static void main(String[] args) {
-        // uncritical system of equations
-        Matrix a = new RegularMatrix(new double[][]{{2, 1, -1, 8}, {-3, -1, 2, -11}, {-2, 1, 2, -3}});
-        System.out.println("A =\n" + a);
-        System.out.println("Row Echelon Form =\n" + calculateRowEchelonMatrix(a));
-        System.out.println();
-        // potential division by zero
-        Matrix b = new RegularMatrix(new double[][]{{1, 2 ,3},{0, 5, 4},{0, 10, 2}});
-        System.out.println("B =\n" + b);
-        System.out.println("Row Echelon Form =\n" + calculateRowEchelonMatrix(b));
-        System.out.println();
-        // linear dependent vectors
-        Matrix c = new RegularMatrix(new double[][]{{1, 2 ,3},{0, 6, 4},{0, 3, 2}});
-        System.out.println("C =\n" + c);
-        System.out.println("Row Echelon Form =\n" + calculateRowEchelonMatrix(c));
-        System.out.println();
-        // linear dependent vectors
-        Matrix d = new RegularMatrix(new double[][]{{2 ,3},{0, 1},{4, -1}});
-        System.out.println("D =\n" + d);
-        System.out.println("Row Echelon Form =\n" + calculateRowEchelonMatrix(d));
-        System.out.println();
-
-
     }
 
 }

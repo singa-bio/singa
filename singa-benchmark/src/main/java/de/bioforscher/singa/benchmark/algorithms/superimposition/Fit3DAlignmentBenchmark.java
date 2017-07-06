@@ -37,7 +37,6 @@ public class Fit3DAlignmentBenchmark {
         this.queryMotif = StructuralMotif.fromLeaves(1, motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
-        System.out.println("setup");
     }
 
     @Benchmark

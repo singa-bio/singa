@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.LinkedList;
+import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author cl
@@ -22,18 +25,17 @@ public class ShortestPathFinderTest {
     @Before
     public void initObjects() {
         this.linearGraph = GraphFactory.buildLinearGraph(10, this.boundingBox);
-        UndirectedGraph circularGraph = GraphFactory.buildCircularGraph(10, this.boundingBox);
-        UndirectedGraph treeGraph = GraphFactory.buildTreeGraph(4, this.boundingBox);
     }
 
     @Test
     public void shouldFindWithPredicate() {
         RegularNode source = this.linearGraph.getNode(9);
-        LinkedList<RegularNode> basedOnPredicate = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
-        System.out.println(basedOnPredicate);
+        LinkedList<RegularNode> shortestPath = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
+        Objects.requireNonNull(shortestPath);
+        int start = 9;
+        for (RegularNode node: shortestPath) {
+            assertEquals(node.getIdentifier(), start--);
+        }
     }
-
-    // @Test
-    //public void shouldTrack
 
 }
