@@ -248,6 +248,7 @@ public class SubStructureSuperimposer {
         }
 
         if (referenceAtoms.isEmpty() || candidateAtoms.isEmpty()) {
+            logger.error("reference {} against candidate {} has no compatible atom sets: {} {}", this.reference, this.candidate, referenceAtoms, candidateAtoms);
             throw new SubStructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
         }
 
