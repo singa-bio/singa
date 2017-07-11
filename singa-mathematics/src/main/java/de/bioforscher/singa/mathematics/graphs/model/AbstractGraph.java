@@ -78,6 +78,14 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
 
     @Override
     public void removeNode(int identifier) {
+        NodeType nodeToBeRemoved = this.nodes.values().stream()
+                .filter(entry -> entry.getIdentifier() == identifier)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Could not remove node with identifier " + identifier + "."));
+
+        nodeToBeRemoved.getNeighbours()
+                .forEach(neighbor -> neighbor.getNeighbours().remove(nodeToBeRemoved));
+
         this.nodes.entrySet().removeIf(node -> node.getValue().getIdentifier() == identifier);
         this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(identifier));
     }
