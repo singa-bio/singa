@@ -28,4 +28,7 @@ public class RegularNode extends AbstractNode<RegularNode, Vector2D> {
         super(identifier, position);
     }
 
+    public RegularNode(RegularNode node) {
+        super(node);
+    }
 }

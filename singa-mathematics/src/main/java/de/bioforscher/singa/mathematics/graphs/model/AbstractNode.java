@@ -52,6 +52,10 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
         this.position = position;
     }
 
+    public AbstractNode(NodeType node) {
+        this(node.getIdentifier(), node.getPosition().getCopy());
+    }
+
     @Override
     public int getIdentifier() {
         return this.identifier;

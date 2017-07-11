@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -62,8 +63,8 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * present in the graph it is overwritten.
      *
      * @param identifier The identifier of the edge to be inserted.
-     * @param source     The source node.
-     * @param target     The target node.
+     * @param source The source node.
+     * @param target The target node.
      * @return The identifier of the added edge.
      */
     int addEdgeBetween(int identifier, NodeType source, NodeType target);
@@ -72,7 +73,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * Adds the given edge to the graph setting the given source an target nodes. If an edge with the identifier is
      * already present in the graph it is overwritten.
      *
-     * @param edge   The edge to be added.
+     * @param edge The edge to be added.
      * @param source The source node.
      * @param target The target node.
      * @return The identifier of the added edge.
@@ -87,6 +88,13 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * @return The identifier of the added edge.
      */
     int addEdgeBetween(NodeType source, NodeType target);
+
+    default EdgeType getEdgeBetween(NodeType source, NodeType target) {
+        return getEdges().stream()
+                .filter(edge -> edge.containsNode(source.getIdentifier()) && edge.containsNode(target.getIdentifier()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
+    }
 
     /**
      * Returns true, if the graph contains the node and false otherwise.
@@ -128,5 +136,14 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
         return getEdges().size() + 1;
     }
 
+    default <G extends Graph<NodeType, EdgeType>> G getCopy() {
+        try {
+            return (G) getClass().getConstructor(getClass()).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 
 }

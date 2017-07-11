@@ -1,5 +1,7 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The edge object connects two nodes of the same type.
  *
@@ -57,5 +59,15 @@ public interface Edge<NodeType extends Node<NodeType, ?>> {
      * @return true if a node with the given identifier is either source or target of the node.
      */
     boolean containsNode(int identifier);
+
+    default <E extends Edge<NodeType>> E getCopy() {
+        try {
+            return (E) getClass().getConstructor(getClass()).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 
 }

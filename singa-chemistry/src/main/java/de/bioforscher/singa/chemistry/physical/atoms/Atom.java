@@ -4,8 +4,6 @@ import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntity;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * @author cl
  */
@@ -31,13 +29,4 @@ public interface Atom extends StructuralEntity<Atom> {
         return this.getElement().getProtonNumber() == 1;
     }
 
-    default Atom getCopy() {
-        try {
-            return getClass().getConstructor(getClass()).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
-        }
-    }
 }
