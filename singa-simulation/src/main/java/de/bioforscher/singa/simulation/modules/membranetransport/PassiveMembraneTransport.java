@@ -49,7 +49,7 @@ public class PassiveMembraneTransport implements Module {
         return this.chemicalEntities;
     }
 
-    public void calculateDelta(BioNode node, ChemicalEntity<?> entity) {
+    public Set<ConcentrationDelta> calculateDelta(BioNode node, ChemicalEntity<?> entity) {
         // scale potentially not already scaled parameters
         setUpParameters(entity);
 
@@ -60,11 +60,11 @@ public class PassiveMembraneTransport implements Module {
         double innerPhase = concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue();
 
         // membrane entry (outer phase -> outer layer and inner phase -> inner layer) - kIn
-        double kIn = entity.getFeature(MembraneEntry.class).getScaledQuantity().getValue().doubleValue()/1000;
+        double kIn = entity.getFeature(MembraneEntry.class).getScaledQuantity().getValue().doubleValue();
         // membrane exit (outer layer -> outer phase and inner layer -> inner phase) - kOut
-        double kOut = entity.getFeature(MembraneExit.class).getScaledQuantity().getValue().doubleValue()/1000;
+        double kOut = entity.getFeature(MembraneExit.class).getScaledQuantity().getValue().doubleValue();
         // flip-flip across membrane (outer layer <-> inner layer) - kFlip
-        double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue()/1000;
+        double kFlip = entity.getFeature(MembraneFlipFlop.class).getScaledQuantity().getValue().doubleValue();
 
         // for highly polar molecules kIn and kFlip determine overall permeation speed which is slow
         // as lipophilicity increases kIn becomes high and and kFlip and kOut are roughly equivalent
@@ -82,29 +82,38 @@ public class PassiveMembraneTransport implements Module {
         double newInnerPhase = -kIn * innerPhase + kOut * innerLayer;
 
         // setup and return updates
-        node.addDelta(new ConcentrationDelta(concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(newOuterPhase, MOLE_PER_LITRE)));
-        node.addDelta(new ConcentrationDelta(concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(newOuterLayer, MOLE_PER_LITRE)));
-        node.addDelta(new ConcentrationDelta(concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(newInnerLayer, MOLE_PER_LITRE)));
-        node.addDelta(new ConcentrationDelta(concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(newInnerPhase, MOLE_PER_LITRE)));
+        Set<ConcentrationDelta> deltas = new HashSet<>();
+        ConcentrationDelta dOP = new ConcentrationDelta(concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(newOuterPhase, MOLE_PER_LITRE));
+        ConcentrationDelta dOL = new ConcentrationDelta(concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(newOuterLayer, MOLE_PER_LITRE));
+        ConcentrationDelta dIL = new ConcentrationDelta(concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(newInnerLayer, MOLE_PER_LITRE));
+        ConcentrationDelta dIP = new ConcentrationDelta(concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(newInnerPhase, MOLE_PER_LITRE));
+        // add deltas tp node
+        node.addDelta(dOP);
+        node.addDelta(dOL);
+        node.addDelta(dIL);
+        node.addDelta(dIP);
+        // return deltas
+        deltas.add(dOP);
+        deltas.add(dOL);
+        deltas.add(dIL);
+        deltas.add(dIP);
+        return deltas;
     }
 
     private void setUpParameters(ChemicalEntity<?> entity) {
-        if (!this.chemicalEntities.contains(entity)) {
+         if (!this.chemicalEntities.contains(entity)) {
             // entry
             MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
-            membraneEntry.scale(EnvironmentalParameters.getInstance().getTimeStep(),
-                    EnvironmentalParameters.getInstance().getNodeDistance());
+            membraneEntry.scale(EnvironmentalParameters.getInstance().getTimeStep());
             // exit
             MembraneExit membraneExit = entity.getFeature(MembraneExit.class);
-            membraneExit.scale(EnvironmentalParameters.getInstance().getTimeStep(),
-                    EnvironmentalParameters.getInstance().getNodeDistance());
+            membraneExit.scale(EnvironmentalParameters.getInstance().getTimeStep());
             // flip flop
             MembraneFlipFlop membraneFlipFlop = entity.getFeature(MembraneFlipFlop.class);
-            membraneFlipFlop.scale(EnvironmentalParameters.getInstance().getTimeStep(),
-                    EnvironmentalParameters.getInstance().getNodeDistance());
+            membraneFlipFlop.scale(EnvironmentalParameters.getInstance().getTimeStep());
             // add to set
             this.chemicalEntities.add(entity);
-        }
+         }
     }
 
 }

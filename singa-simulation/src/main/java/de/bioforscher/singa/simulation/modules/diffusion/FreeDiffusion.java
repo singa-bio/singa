@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Time;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -35,9 +36,11 @@ public class FreeDiffusion implements Module {
     private static final Logger logger = LoggerFactory.getLogger(FreeDiffusion.class);
 
     private Set<ChemicalEntity<?>> chemicalEntities;
+    private Quantity<Time> timeStep;
 
     public FreeDiffusion() {
         this.chemicalEntities = new HashSet<>();
+        timeStep = EnvironmentalParameters.getInstance().getTimeStep();
     }
 
     public void prepareDiffusionCoefficients(Set<ChemicalEntity<?>> entities) {
@@ -64,10 +67,7 @@ public class FreeDiffusion implements Module {
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
-        // traverse each neighbouring cell
-//        if (node.getCellSection().getIdentifier().equals("RC") && currentConcentration != 0) {
-//            System.out.println();
-//        }
+        // traverse each neighbouring cells
         for (BioNode neighbour : node.getNeighbours()) {
             Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = neighbour.getAllConcentrationsForSection(cellSection);
             if (!concentrations.isEmpty()) {
