@@ -1,6 +1,11 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
-import java.util.*;
+
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a simple implementation of the graph interface, that handles the most common operations defined for adding
@@ -13,7 +18,7 @@ import java.util.*;
  * @author cl
  */
 public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>, EdgeType extends
-        Edge<NodeType>, VectorType extends de.bioforscher.singa.mathematics.vectors.Vector>
+        Edge<NodeType>, VectorType extends Vector>
         implements Graph<NodeType, EdgeType> {
 
     /**
@@ -83,10 +88,11 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Could not remove node with identifier " + identifier + "."));
 
-        nodeToBeRemoved.getNeighbours()
-                .forEach(neighbor -> neighbor.getNeighbours().remove(nodeToBeRemoved));
+        for (NodeType neighbor : nodeToBeRemoved.getNeighbours()) {
+            neighbor.getNeighbours().remove(nodeToBeRemoved);
+        }
 
-        this.nodes.entrySet().removeIf(node -> node.getValue().getIdentifier() == identifier);
+        this.nodes.remove(identifier);
         this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(identifier));
     }
 
@@ -96,8 +102,8 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
     }
 
     @Override
-    public Set<EdgeType> getEdges() {
-        return new HashSet<>(this.edges.values());
+    public Collection<EdgeType> getEdges() {
+        return this.edges.values();
     }
 
     @Override

@@ -14,12 +14,11 @@ import java.util.List;
 public class GraphViewerPlayground {
 
     public static void main(String[] args) {
-        UndirectedGraph graph = GraphFactory.buildRandomGraph(100, 0.01, new Rectangle(400, 400));
+        UndirectedGraph graph = GraphFactory.buildCircularGraph(20, new Rectangle(400, 400));
         graph.removeNode(5);
         graph.removeNode(16);
 
         List<UndirectedGraph> disconnectedSubgraphs = DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
-
         System.out.println(disconnectedSubgraphs);
 
         GraphDisplayApplication.graph = graph;

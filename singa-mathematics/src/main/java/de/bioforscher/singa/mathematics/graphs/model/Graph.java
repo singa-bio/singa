@@ -1,8 +1,9 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * The graph contains nodes connected by edges of a certain type.
@@ -11,7 +12,7 @@ import java.util.Set;
  * @param <EdgeType> The type of the edges in the graph.
  * @author cl
  */
-public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge<NodeType>> {
+public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeType extends Edge<NodeType>> {
 
     /**
      * Returns all nodes.
@@ -48,7 +49,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      *
      * @return All edges.
      */
-    Set<EdgeType> getEdges();
+    Collection<EdgeType> getEdges();
 
     /**
      * Returns the node with the given identifier.

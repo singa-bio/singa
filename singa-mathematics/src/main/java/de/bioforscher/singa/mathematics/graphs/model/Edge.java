@@ -1,5 +1,7 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -8,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
  * @param <NodeType> The type of the node to connect with this edge.
  * @author cl
  */
-public interface Edge<NodeType extends Node<NodeType, ?>> {
+public interface Edge<NodeType extends Node<NodeType, ? extends Vector>> {
 
     /**
      * Returns the identifier of the edge in the graph.

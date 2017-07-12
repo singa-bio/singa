@@ -5,8 +5,10 @@ import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
+import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
@@ -19,7 +21,7 @@ import java.util.List;
  */
 public class GraphFactory {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GraphFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(GraphFactory.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -262,7 +264,8 @@ public class GraphFactory {
      * @param <GraphType> The type of the graph.
      * @return A list of all disconnected subgraphs.
      */
-    public static <NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
+    public static <NodeType extends Node<NodeType, VectorType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector,
             GraphType extends Graph<NodeType, EdgeType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
         return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
     }

@@ -3,7 +3,7 @@ package de.bioforscher.singa.mathematics.algorithms.graphs;
 import de.bioforscher.singa.mathematics.graphs.model.Edge;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.mathematics.vectors.Vector;
 
 import java.util.*;
 
@@ -16,8 +16,8 @@ import java.util.*;
  * @author fk
  * @see <a href="https://en.wikipedia.org/wiki/Connectivity_(graph_theory)">Wikipedia: Connectivity of Graphs</a>
  */
-public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> {
+public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorType>, EdgeType extends Edge<NodeType>,
+        VectorType extends Vector, GraphType extends Graph<NodeType, EdgeType>> {
 
     private Queue<NodeType> queue;
     private GraphType graph;
@@ -46,10 +46,11 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, Vector2D
      * @param <GraphType> The type of the graph.
      * @return A list of all disconnected subgraphs.
      */
-    public static <NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
+    public static <NodeType extends Node<NodeType, VectorType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector,
             GraphType extends Graph<NodeType, EdgeType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
         // create new instance for the given graph
-        DisconnectedSubgraphFinder<NodeType, EdgeType, GraphType> finder = new DisconnectedSubgraphFinder<>(graph);
+        DisconnectedSubgraphFinder<NodeType, EdgeType, VectorType, GraphType> finder = new DisconnectedSubgraphFinder<>(graph);
         // while not every node has been assigned to a subgraph
         Optional<NodeType> nextSubgraphOrigin;
         while ((nextSubgraphOrigin = finder.getNextSubgraphOrigin()).isPresent()) {
