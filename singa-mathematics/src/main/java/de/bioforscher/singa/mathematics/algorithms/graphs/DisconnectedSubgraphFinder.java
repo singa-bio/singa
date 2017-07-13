@@ -128,11 +128,11 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
         // for each extracted list of connected nodes
         for (int i = 0; i < this.nodesOfSubgraphs.size(); i++) {
             // create a new graph
-            GraphType subgraph = null;
+            GraphType subgraph;
             try {
                 subgraph = (GraphType) graph.getClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Failed to create a new graph.");
             }
             // copy and add nodes
             Objects.requireNonNull(subgraph);
