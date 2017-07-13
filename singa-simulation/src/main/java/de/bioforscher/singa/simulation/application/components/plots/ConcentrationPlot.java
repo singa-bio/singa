@@ -35,7 +35,7 @@ public class ConcentrationPlot extends LineChart<Number, Number> implements Upda
 
     private ObservableList<ChemicalEntity<?>> observedEntities = FXCollections.observableArrayList();
     // mirrors the data received from events
-    // private Map<Integer, List<ConcentrationDelta>> mirroredData;
+    // private Map<Integer, List<Delta>> mirroredData;
     private BioNode referencedNode;
 
     private int maximalDataPoints;

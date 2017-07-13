@@ -4,15 +4,15 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 
 public class NodeUpdatedEvent {
 
-    private final int epoch;
+    private final long epoch;
     private final BioNode node;
 
-    public NodeUpdatedEvent(int epoch, BioNode node) {
+    public NodeUpdatedEvent(long epoch, BioNode node) {
         this.epoch = epoch;
         this.node = node;
     }
 
-    public int getEpoch() {
+    public long getEpoch() {
         return this.epoch;
     }
 

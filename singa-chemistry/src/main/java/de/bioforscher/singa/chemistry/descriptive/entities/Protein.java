@@ -89,7 +89,9 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
         return getContentOfAnnotations(String.class, description, AMINO_ACID_SEQUENCE);
     }
 
+
     public static class Builder extends ChemicalEntity.Builder<Protein, Builder, SimpleStringIdentifier> {
+
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
         }

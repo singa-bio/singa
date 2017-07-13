@@ -6,7 +6,7 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
@@ -82,7 +82,7 @@ public class FreeDiffusion implements Module {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration; //+ currentConcentration;
         // add delta to node
-        node.addDelta(new ConcentrationDelta(cellSection, entity, Quantities.getQuantity(delta, MOLE_PER_LITRE)));
+        node.addDelta(new Delta(cellSection, entity, Quantities.getQuantity(delta, MOLE_PER_LITRE)));
     }
 
 

@@ -171,6 +171,10 @@ public class MembraneContainer implements ConcentrationContainer {
         return sections;
     }
 
+    public Membrane getMembrane() {
+        return membrane;
+    }
+
     public CellSection getOuterPhaseSection() {
         return outerPhaseSection;
     }

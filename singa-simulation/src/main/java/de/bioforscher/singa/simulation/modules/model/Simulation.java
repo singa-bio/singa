@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import static tec.units.ri.unit.MetricPrefix.MICRO;
+import static tec.units.ri.unit.Units.SECOND;
 /**
  * @author cl
  */
@@ -30,7 +32,8 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     private List<AssignmentRule> assignmentRules;
     private Set<ChemicalEntity<?>> chemicalEntities;
     private Set<SimulationParameter> globalParameters;
-    private int epoch;
+    private long epoch;
+    private Quantity<Time> elapsedTime;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
     private EpochUpdateWriter writer;
@@ -39,6 +42,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.modules = new HashSet<>();
         this.chemicalEntities = new HashSet<>();
         this.listeners = new CopyOnWriteArrayList<>();
+        this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         this.epoch = 0;
     }
 
@@ -61,8 +65,13 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
                 this.emitNextEpochEvent(node);
             }
         }
-        // update epoch
+        // update epoch and elapsed time
+        updateEpoch();
+    }
+
+    private void updateEpoch() {
         this.epoch++;
+        this.elapsedTime = this.elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
     }
 
     public void applyAssignmentRules() {
@@ -104,13 +113,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.chemicalEntities = chemicalEntities;
     }
 
-    public int getEpoch() {
+    public long getEpoch() {
         return this.epoch;
     }
 
     public Quantity<Time> getElapsedTime() {
-        return Quantities.getQuantity(EnvironmentalParameters.getInstance().getTimeStep().getValue().doubleValue() *
-                this.epoch, EnvironmentalParameters.getInstance().getTimeStep().getUnit());
+        return this.elapsedTime;
     }
 
     public EpochUpdateWriter getWriter() {

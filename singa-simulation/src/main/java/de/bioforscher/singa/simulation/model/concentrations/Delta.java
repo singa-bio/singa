@@ -9,13 +9,13 @@ import javax.measure.Quantity;
 /**
  * @author cl
  */
-public class ConcentrationDelta {
+public class Delta {
 
     private final CellSection cellSection;
     private final ChemicalEntity entity;
     private final Quantity<MolarConcentration> quantity;
 
-    public ConcentrationDelta(CellSection cellSection, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
+    public Delta(CellSection cellSection, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
         this.entity = entity;
         this.cellSection = cellSection;
         this.quantity = quantity;
@@ -33,13 +33,13 @@ public class ConcentrationDelta {
         return this.quantity;
     }
 
-    public ConcentrationDelta merge(ConcentrationDelta anotherDelta) {
-        return new ConcentrationDelta(this.cellSection, this.entity, this.quantity.add(anotherDelta.getQuantity()));
+    public Delta merge(Delta anotherDelta) {
+        return new Delta(this.cellSection, this.entity, this.quantity.add(anotherDelta.getQuantity()));
     }
 
     @Override
     public String toString() {
-        return "ConcentrationDelta{" +
+        return "Delta{" +
                 "cellSection=" + cellSection +
                 ", entity=" + entity +
                 ", quantity=" + quantity +

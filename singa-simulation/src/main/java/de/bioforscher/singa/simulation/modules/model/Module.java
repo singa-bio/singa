@@ -12,7 +12,6 @@ public interface Module {
 
     void applyTo(AutomatonGraph graph);
 
-
     Set<ChemicalEntity<?>> collectAllReferencedEntities();
 
 }

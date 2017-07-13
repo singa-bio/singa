@@ -13,12 +13,21 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -31,11 +40,15 @@ import static tec.units.ri.unit.Units.SECOND;
  */
 public class PassiveMembraneTransportTest {
 
-    private static final double epsilon = 0.1;
+    private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransportTest.class);
+
+    private static final double epsilon = 0.01;
     private Map<String, ChemicalEntity<?>> entities;
+    private List<String> logContent;
 
     private void initialize() {
         this.entities = new HashMap<>();
+        this.logContent = new ArrayList<>();
     }
 
     private void setupEntities() {
@@ -69,54 +82,80 @@ public class PassiveMembraneTransportTest {
         simulation.setGraph(graph);
         simulation.getModules().add(transport);
         // scale time step with epsilon
-        MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
-        membraneEntry.scale(Quantities.getQuantity(1.0, NANO(SECOND)));
-        Quantity<Time> timeStep = Quantities.getQuantity(epsilon / membraneEntry.getScaledQuantity().getValue().doubleValue(), NANO(SECOND));
-        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
+        updateTimestep(entity);
         // return simulation
         return simulation;
     }
 
     private ChemicalEntity createEntity(String name, double kIn, double kout, double kflip) {
         return new Species.Builder(name)
+                .name(name)
                 .assignFeature(new MembraneEntry(kIn, MANUALLY_ANNOTATED))
                 .assignFeature(new MembraneExit(kout, MANUALLY_ANNOTATED))
                 .assignFeature(new MembraneFlipFlop(kflip, MANUALLY_ANNOTATED))
                 .build();
     }
 
+    private void updateTimestep(ChemicalEntity<?> entity) {
+        MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
+        membraneEntry.scale(Quantities.getQuantity(1.0, NANO(SECOND)));
+        Quantity<Time> timeStep = Quantities.getQuantity(epsilon / membraneEntry.getScaledQuantity().getValue().doubleValue(), NANO(SECOND));
+        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
+    }
+
+    private void writeLogContent(ChemicalEntity<?> entity) {
+        String lines = this.logContent.stream()
+                .collect(Collectors.joining("\n"));
+        Path path = Paths.get(System.getProperty("user.home") + "/git/my_data/data_analysis/passive_membrane_transport/raw/" + entity.getName() + ".csv");
+        try {
+            Files.write(path, lines.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void passiveDiffusionTest() {
-
         initialize();
         setupEntities();
-
         for (ChemicalEntity<?> entity : this.entities.values()) {
-
+            this.logContent.clear();
             EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
             Simulation simulation = setupSimulation(entity);
             BioNode node = simulation.getGraph().getNode(0);
-
-            double previous = 0.0;
-            double current;
-            double change = 1.0;
+            logger.info("Calculating passive membrane diffusion for {}.", entity.getName());
+            double previousConcentration = 0.0;
+            double currentConcentration;
+            double changeInConcentration = 1.0;
+            double currentTime = 0;
+            double previousTime = 0.0;
             // as long as something changes
-            while (change > 0) {
+            while (changeInConcentration > 0 && currentTime < 0.8) {
                 // get concentration
-                current = node.getAvailableConcentration(entity, left).getValue().doubleValue();
+                currentConcentration = node.getAvailableConcentration(entity, left).getValue().doubleValue();
+                // current time
+                currentTime = simulation.getElapsedTime().getValue().doubleValue();
                 // calculate change
-                if (current != 0 && previous != 0) {
-                    change = 1 - previous / current;
+                if (currentConcentration != 0 && previousConcentration != 0) {
+                    changeInConcentration = 1 - previousConcentration / currentConcentration;
                 }
                 // print log
-                if (simulation.getEpoch() % 100 == 0 || simulation.getEpoch() == 0) {
-                    System.out.println(simulation.getElapsedTime().to(SECOND).getValue() + ", " + current);
+                if (currentTime - previousTime > 1e-5 || previousTime == 0.0) {
+                    Number elapsedTime = simulation.getElapsedTime().to(SECOND).getValue();
+                    String logString = elapsedTime + ", " + currentConcentration;
+                    this.logContent.add(logString);
+                    previousTime = currentTime;
                 }
                 // update
-                previous = current;
+                previousConcentration = currentConcentration;
                 simulation.nextEpoch();
             }
-
+            if (changeInConcentration == 0) {
+                logger.info("Exited because concentration was not changing anymore");
+            } else if (currentTime >= 100) {
+                logger.info("Exited because goal time was reached");
+            }
+            writeLogContent(entity);
         }
 
     }

@@ -125,7 +125,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toString(event.getEpoch())).append(SEPARATOR_CHARACTER);
+        sb.append(Long.toString(event.getEpoch())).append(SEPARATOR_CHARACTER);
         int count = 0;
         for (ChemicalEntity entity : this.observedEntities) {
             if (count < this.observedEntities.size() - 1) {

@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.DeltaContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import tec.units.ri.quantity.Quantities;
@@ -74,16 +74,16 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.concentrations.getAvailableConcentration(cellSection, entity);
     }
 
-    public List<ConcentrationDelta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas.getDeltas();
     }
 
-    public void addDelta(ConcentrationDelta delta) {
+    public void addDelta(Delta delta) {
         this.deltas.addDelta(delta);
     }
 
     public void applyDeltas() {
-        for (ConcentrationDelta delta :this.deltas.getDeltas()) {
+        for (Delta delta :this.deltas.getDeltas()) {
             setAvailableConcentration(delta.getEntity(), delta.getCellSection(),
                     getAvailableConcentration(delta.getEntity(), delta.getCellSection()).add(delta.getQuantity()));
         }

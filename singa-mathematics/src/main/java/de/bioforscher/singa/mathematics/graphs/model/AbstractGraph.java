@@ -1,5 +1,8 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
 import java.util.*;
 
 /**
@@ -13,7 +16,7 @@ import java.util.*;
  * @author cl
  */
 public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>, EdgeType extends
-        Edge<NodeType>, VectorType extends de.bioforscher.singa.mathematics.vectors.Vector>
+        Edge<NodeType>, VectorType extends Vector>
         implements Graph<NodeType, EdgeType> {
 
     /**

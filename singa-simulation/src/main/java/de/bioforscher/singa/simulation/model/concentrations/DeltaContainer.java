@@ -10,16 +10,16 @@ import java.util.ListIterator;
  */
 public class DeltaContainer {
 
-    private List<ConcentrationDelta> deltas;
+    private List<Delta> deltas;
 
     public DeltaContainer() {
         this.deltas = new ArrayList<>();
     }
 
-    public void addDelta(ConcentrationDelta delta) {
-        ListIterator<ConcentrationDelta> iterator = deltas.listIterator();
+    public void addDelta(Delta delta) {
+        ListIterator<Delta> iterator = deltas.listIterator();
         while (iterator.hasNext()) {
-            ConcentrationDelta currentDelta = iterator.next();
+            Delta currentDelta = iterator.next();
             if (delta.getCellSection().equals(currentDelta.getCellSection()) &&
                     delta.getEntity().equals(currentDelta.getEntity())) {
                 iterator.set(currentDelta.merge(delta));
@@ -29,7 +29,7 @@ public class DeltaContainer {
         deltas.add(delta);
     }
 
-    public List<ConcentrationDelta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 

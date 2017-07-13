@@ -5,7 +5,7 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Module;
@@ -80,7 +80,7 @@ public class Reactions implements Module {
                 // update every concentration using the calculateUpdateMethod
                 Quantity<MolarConcentration> updatedQuantity = node.getConcentration(entity)
                         .add(Quantities.getQuantity(this.velocities.get(entity).getValue(), UnitProvider.MOLE_PER_LITRE));
-                node.addDelta(new ConcentrationDelta(section, entity, updatedQuantity));
+                node.addDelta(new Delta(section, entity, updatedQuantity));
             }
         }
         this.velocities.clear();

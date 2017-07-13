@@ -28,12 +28,11 @@ public class MembraneEntry extends AbstractFeature<Quantity<Frequency>> {
     }
 
     public void scale(Quantity<Time> targetTimeScale) {
-        // double area = targetSpaceScale.getValue().doubleValue()*targetSpaceScale.getValue().doubleValue();
         // transform to specified unit
         Quantity<Frequency> scaledQuantity = getFeatureContent()
                 .to(new ProductUnit<>(ONE.divide(targetTimeScale.getUnit())));
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.multiply(targetTimeScale.getValue());// .divide(area);
+        this.scaledQuantity = scaledQuantity.multiply(targetTimeScale.getValue());
     }
 
     public Quantity<Frequency> getScaledQuantity() {

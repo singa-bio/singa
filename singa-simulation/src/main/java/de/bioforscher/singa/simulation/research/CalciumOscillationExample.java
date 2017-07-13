@@ -15,7 +15,7 @@ public class CalciumOscillationExample {
 
         Species x = new Species.Builder("X").build();
 
-        int epoch = 1;
+        long epoch = 1;
         while (epoch < 50000) {
             simulation.nextEpoch();
             if (simulation.getEpoch() % 100 == 0 && simulation.getEpoch() > 1) {
