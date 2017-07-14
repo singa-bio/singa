@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_PDB;
@@ -92,6 +94,13 @@ public class StructureParserTest {
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
+
+        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeaves().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
+                .collect(Collectors.toList());
+
+        assertEquals(2, leavesWithInsertionCode.size());
+
     }
 
     // structure with insertion codes

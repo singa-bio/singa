@@ -36,14 +36,12 @@ public class StructureCollector {
     private Map<UniqueAtomIdentifer, Atom> atoms;
     private Map<LeafIdentifier, String> leafNames;
 
-    // stuff we need to remember while parsing for further processing
-    // hetatoms need to be distinguishable
+    // leaves that are hetatoms
     private Set<LeafIdentifier> hetAtoms;
-    // leafes that are not part of the consecutive chainIdentifier have to be noted
+    // leaves that are not part of the consecutive chain have to be noted
     private Set<LeafIdentifier> notInConsecutiveChain;
     private String currentChain;
     private Set<String> closedChains;
-
 
     private ContentTreeNode contentTree;
 
@@ -218,12 +216,14 @@ public class StructureCollector {
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
-                LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer());
+                LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),
+                        identifier.getModelIdentifier(), identifier.getChainIdentifier(),
+                        identifier.getLeafIdentifer(), identifier.getLeafInsertionCode());
                 this.currentChain = leafIdentifier.getChainIdentifier();
                 if (currentRecordType.equals("HETATM")) {
                     this.hetAtoms.add(leafIdentifier);
                 }
-                // add everything before termination record to consecutive chainIdentifier
+                // add everything before termination record to consecutive chain
                 if (this.closedChains.contains(this.currentModel + "-" + this.currentChain)) {
                     this.notInConsecutiveChain.add(leafIdentifier);
                 }
@@ -249,12 +249,13 @@ public class StructureCollector {
         int atomSerial = Integer.valueOf(AtomToken.ATOM_SERIAL.extract(atomLine));
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
         int leaf = Integer.valueOf(AtomToken.RESIDUE_SERIAL.extract(atomLine));
-        return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, atomSerial);
+        char insertionCode = AtomToken.RESIDUE_INSERTION.extract(atomLine).charAt(0);
+        return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, insertionCode, atomSerial);
     }
 
     private LeafSubstructure<?, ?> assignLeaf(ContentTreeNode leafNode, int modelIdentifier, String chainIdentifer) {
         // generate leaf pdbIdentifier
-        LeafIdentifier leafIdentifier = new LeafIdentifier(this.currentPDB, modelIdentifier, chainIdentifer, Integer.valueOf(leafNode.getIdentifier()));
+        LeafIdentifier leafIdentifier = new LeafIdentifier(this.currentPDB, modelIdentifier, chainIdentifer, Integer.valueOf(leafNode.getIdentifier()), leafNode.getInsertionCode());
         // get leaf name for leaf identifer
         String leafName = this.leafNames.get(leafIdentifier);
         // get atoms of this leaf

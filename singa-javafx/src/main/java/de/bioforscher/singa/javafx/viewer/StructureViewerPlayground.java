@@ -16,10 +16,12 @@ public class StructureViewerPlayground {
         options.omitHydrogens(true);
 
         StructureViewer.structure = StructureParser.online()
-                .pdbIdentifier("1pqs")
-                .chainIdentifier("A")
+                .pdbIdentifier("1C0A")
+                .everything()
                 .setOptions(options)
                 .parse();
+
+        StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
 
         Application.launch(StructureViewer.class);
     }

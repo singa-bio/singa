@@ -16,7 +16,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
             .comparing(LeafIdentifier::getPdbIdentifier)
             .thenComparing(LeafIdentifier::getModelIdentifier)
             .thenComparing(LeafIdentifier::getChainIdentifier)
-            .thenComparing(LeafIdentifier::getSerial);
+            .thenComparing(LeafIdentifier::getSerial)
+            .thenComparing(LeafIdentifier::getInsertionCode);
 
     private final String pdbIdentifer;
     private final int modelIdentifer;
@@ -65,6 +66,10 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         return this.identifier;
     }
 
+    public char getInsertionCode() {
+        return insertionCode;
+    }
+
     @Override
     public int compareTo(LeafIdentifier o) {
         return leafIdentiferComparator.compare(this, o);
@@ -72,7 +77,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     @Override
     public String toString() {
-        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier;
+        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier + (this.insertionCode != 32 ? this.insertionCode : "");
     }
 
     @Override
