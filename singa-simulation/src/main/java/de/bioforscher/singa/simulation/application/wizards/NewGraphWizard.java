@@ -6,7 +6,7 @@ import de.bioforscher.singa.features.units.UnitName;
 import de.bioforscher.singa.features.units.UnitPrefix;
 import de.bioforscher.singa.features.units.UnitPrefixes;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import javafx.beans.value.ObservableValue;
@@ -169,12 +169,12 @@ class GraphConfigurationPage extends WizardPage {
 
     public AutomatonGraph createGraph() {
         if (this.tgMethods.getSelectedToggle().equals(this.rbRectangularGraph)) {
-            return AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+            return AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                     this.spNumberVerticalNodes.getValue(), this.spNumberHorizontalNodes.getValue(),
                     new Rectangle(400, 400), false));
         } else {
             return AutomatonGraphs
-                    .copyStructureToBioGraph(GraphFactory.buildRandomGraph(this.spNumberNodes.getValue(),
+                    .copyStructureToBioGraph(Graphs.buildRandomGraph(this.spNumberNodes.getValue(),
                             this.spConnectivity.getValue(), new Rectangle(400, 400)));
         }
     }

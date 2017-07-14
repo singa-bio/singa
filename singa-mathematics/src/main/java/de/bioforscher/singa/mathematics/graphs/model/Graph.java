@@ -12,7 +12,7 @@ import java.util.Collection;
  * @param <EdgeType> The type of the edges in the graph.
  * @author cl
  */
-public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeType extends Edge<NodeType>> {
+public interface Graph<NodeType extends Node<NodeType, ? extends Vector, IdentifierType>, EdgeType extends Edge<NodeType>, IdentifierType> {
 
     /**
      * Returns all nodes.
@@ -27,7 +27,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeTy
      * @param identifier The identifier of the node.
      * @return The node with the given identifier.
      */
-    NodeType getNode(int identifier);
+    NodeType getNode(IdentifierType identifier);
 
     /**
      * Adds a node to the graph.
@@ -35,14 +35,16 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeTy
      * @param node The node to be added.
      * @return The identifier of the node.
      */
-    int addNode(NodeType node);
+    IdentifierType addNode(NodeType node);
 
     /**
      * Removes the node with the given identifier from the node. Edges connected to this node will also be removed.
      *
-     * @param identifier The identifer of the node to be removed.
+     * @param node The node to be removed.
      */
-    void removeNode(int identifier);
+    NodeType removeNode(NodeType node);
+
+    NodeType removeNode(IdentifierType identifier);
 
     /**
      * Returns all edges.
@@ -92,7 +94,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeTy
 
     default EdgeType getEdgeBetween(NodeType source, NodeType target) {
         return getEdges().stream()
-                .filter(edge -> edge.containsNode(source.getIdentifier()) && edge.containsNode(target.getIdentifier()))
+                .filter(edge -> edge.containsNode(source) && edge.containsNode(target))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
     }
@@ -118,12 +120,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeTy
      *
      * @return The next free node identifier.
      */
-    default int nextNodeIdentifier() {
-        if (getNodes().isEmpty()) {
-            return 0;
-        }
-        return getEdges().size();
-    }
+    IdentifierType nextNodeIdentifier();
 
     /**
      * Returns the next free edge identifier.
@@ -137,7 +134,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector>, EdgeTy
         return getEdges().size() + 1;
     }
 
-    default <G extends Graph<NodeType, EdgeType>> G getCopy() {
+    default <G extends Graph<NodeType, EdgeType, IdentifierType>> G getCopy() {
         try {
             return (G) getClass().getConstructor(getClass()).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

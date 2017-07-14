@@ -8,14 +8,14 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 /**
  * @author cl
  */
-public class GraphProducer<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> implements Runnable {
+public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements Runnable {
 
-    private final GraphRenderer<NodeType, EdgeType, GraphType> renderer;
+    private final GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer;
     private GraphType graph;
     private int totalIterations;
 
-    public GraphProducer(GraphRenderer<NodeType, EdgeType, GraphType> renderer, GraphType graph, int iterations) {
+    public GraphProducer(GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, GraphType graph, int iterations) {
         this.renderer = renderer;
         this.graph = graph;
         this.totalIterations = iterations;
@@ -23,7 +23,7 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D>, EdgeType e
 
     @Override
     public void run() {
-        GraphDrawingTool<NodeType, EdgeType, GraphType> gdt = new GraphDrawingTool<>(this.graph,
+        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(this.graph,
                 this.renderer.drawingWidthProperty(), this.renderer.drawingHeightProperty(), 100);
         for (int i = 0; i < this.totalIterations; i++) {
             this.renderer.getGraphQueue().add(gdt.arrangeGraph(i));

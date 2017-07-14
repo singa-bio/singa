@@ -1,12 +1,7 @@
 package de.bioforscher.singa.mathematics.graphs;
 
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedEdge;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.singa.mathematics.graphs.util.NodeFactory;
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,8 +21,8 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldAddNode() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode nodeToAdd = NodeFactory.createRandomlyPlacedNode(0, this.boundingBox);
-        RegularNode nodeNotToAdd = NodeFactory.createRandomlyPlacedNode(1, this.boundingBox);
+        RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0, this.boundingBox);
+        RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1, this.boundingBox);
         testGraph.addNode(nodeToAdd);
         assertTrue(testGraph.containsNode(nodeToAdd));
         assertFalse(testGraph.containsEdge(nodeNotToAdd));
@@ -36,8 +31,8 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldConnectNodes() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode source = NodeFactory.createRandomlyPlacedNode(0, this.boundingBox);
-        RegularNode target = NodeFactory.createRandomlyPlacedNode(1, this.boundingBox);
+        RegularNode source = Nodes.createRandomlyPlacedNode(0, this.boundingBox);
+        RegularNode target = Nodes.createRandomlyPlacedNode(1, this.boundingBox);
         testGraph.addNode(source);
         testGraph.addNode(target);
         testGraph.addEdgeBetween(0, source, target);
@@ -50,22 +45,22 @@ public class GeneralGraphModelTest {
 
     @Test
     public void shouldRemoveNode() {
-        UndirectedGraph linearGraph = GraphFactory.buildLinearGraph(10, this.boundingBox);
+        UndirectedGraph linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
         int unexpectedNodeIdentifier = 5;
-        linearGraph.removeNode(unexpectedNodeIdentifier);
+        RegularNode removedNode = linearGraph.removeNode(unexpectedNodeIdentifier);
         // check if node has been removed correctly
         for (RegularNode node : linearGraph.getNodes()) {
-            assertNotEquals(unexpectedNodeIdentifier, node.getIdentifier());
+            assertNotEquals(unexpectedNodeIdentifier, (int) node.getIdentifier());
         }
         // check if edge has been removed correctly
         for (UndirectedEdge edge : linearGraph.getEdges()) {
-            assertFalse(edge.containsNode(unexpectedNodeIdentifier));
+            assertFalse(edge.containsNode(removedNode));
         }
     }
 
     @Test
     public void shouldConvertCoordinateToIdentifier() {
-        RectangularGridCoordinateConverter rgc = new RectangularGridCoordinateConverter(7, 7);
+        GridCoordinateConverter rgc = new GridCoordinateConverter(7, 7);
         Assert.assertEquals(38, rgc.convert(new Vector2D(3, 5)));
         assertArrayEquals(new Vector2D(3, 5).getElements(), rgc.convert(26).getElements(), 0.0);
     }

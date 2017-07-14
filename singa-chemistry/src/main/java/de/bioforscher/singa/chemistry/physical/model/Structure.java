@@ -22,10 +22,11 @@ public class Structure {
 
     private String pdbIdentifier;
     private String title;
+
     /**
      * The branchSubstructures of the graph.
      */
-    private Map<Integer, BranchSubstructure<?>> branchSubstructures;
+    private Map<Object, BranchSubstructure<?, ?>> branchSubstructures;
 
     public Structure() {
         this.branchSubstructures = new TreeMap<>();
@@ -41,17 +42,17 @@ public class Structure {
     /**
      * TODO behavior of this method is unexpected, this should return a {@link StructuralModel}?
      */
-    private List<BranchSubstructure<?>> getBranchSubstructures() {
+    private List<BranchSubstructure<?, ?>> getBranchSubstructures() {
         return new ArrayList<>(this.branchSubstructures.values());
     }
 
     /**
-     * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a unique
-     * identifier, with which it can be addressed.
+     * Adds a predefined {@link BranchSubstructure} to this Structure. This {@link BranchSubstructure} needs to have a
+     * unique identifier, with which it can be addressed.
      *
      * @param branchSubstructure The {@link BranchSubstructure} to add.
      */
-    public void addSubstructure(BranchSubstructure<?> branchSubstructure) {
+    public void addSubstructure(BranchSubstructure<?, ?> branchSubstructure) {
         this.branchSubstructures.put(branchSubstructure.getIdentifier(), branchSubstructure);
     }
 
@@ -96,8 +97,8 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
-    public List<BranchSubstructure<?>> getAllBranches() {
-        List<BranchSubstructure<?>> branchSubstructures = this.branchSubstructures.values().stream()
+    public List<BranchSubstructure<?, ?>> getAllBranches() {
+        List<BranchSubstructure<?, ?>> branchSubstructures = this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getBranchSubstructures)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -124,8 +125,8 @@ public class Structure {
         return this.pdbIdentifier;
     }
 
-    public void setPdbIdentifier(String pdbID) {
-        this.pdbIdentifier = pdbID;
+    public void setPdbIdentifier(String pdbIdentifier) {
+        this.pdbIdentifier = pdbIdentifier;
     }
 
     public String getTitle() {

@@ -48,10 +48,10 @@ public class RegularAtom implements Atom {
     /**
      * Creates a new atom with the given pdbIdentifier, element, name and position.
      *
-     * @param identifier     The pdbIdentifier.
-     * @param element        The element.
+     * @param identifier The pdbIdentifier.
+     * @param element The element.
      * @param atomNameString The name as String.
-     * @param position       The position.
+     * @param position The position.
      */
     public RegularAtom(int identifier, Element element, String atomNameString, Vector3D position) {
         this.atomNameString = atomNameString;
@@ -68,13 +68,13 @@ public class RegularAtom implements Atom {
      * lifecycle of the atom to copy. If you want to keep the neighbouring atoms, copy the superordinate
      * substructure that contains this atom and it will also traverse and copy the neighbouring atoms.
      *
-     *  @param atom The atom to copy.
+     * @param atom The atom to copy.
      */
     public RegularAtom(Atom atom) {
         this.atomNameString = atom.getAtomNameString();
         this.atomName = AtomName.getAtomNameFromString(this.atomNameString);
         this.identifier = atom.getIdentifier();
-        this.element =  atom.getElement();
+        this.element = atom.getElement();
         this.position = new Vector3D(atom.getPosition());
         this.neighbours = new ArrayList<>();
     }
@@ -99,7 +99,7 @@ public class RegularAtom implements Atom {
     }
 
     @Override
-    public int getIdentifier() {
+    public Integer getIdentifier() {
         return this.identifier;
     }
 
@@ -130,6 +130,9 @@ public class RegularAtom implements Atom {
 
     @Override
     public void addNeighbour(Atom node) {
+        if (this.equals(node)) {
+            throw new IllegalArgumentException("Can not establish self reference between two identical atoms.");
+        }
         this.neighbours.add(node);
     }
 

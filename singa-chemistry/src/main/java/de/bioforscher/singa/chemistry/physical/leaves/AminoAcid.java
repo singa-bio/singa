@@ -21,7 +21,7 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      * Creates a new AminoAcid.
      *
      * @param leafIdentifier The pdbIdentifier.
-     * @param family         The ResidueType.
+     * @param family The ResidueType.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
@@ -37,8 +37,8 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
      * Creates a new modified AminoAcid with a pdbIdentifier and ResidueType.
      *
      * @param leafIdentifier The pdbIdentifier.
-     * @param family         The ResidueType.
-     *                       @param modifiedName The name of the modified amino acid.
+     * @param family The ResidueType.
+     * @param modifiedName The name of the modified amino acid.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
         super(leafIdentifier, family);
@@ -159,4 +159,5 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
         //FIXME not yet implemented
         throw new UnsupportedOperationException();
     }
+
 }

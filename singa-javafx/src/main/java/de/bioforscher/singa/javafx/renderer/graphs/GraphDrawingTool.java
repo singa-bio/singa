@@ -21,8 +21,8 @@ import java.util.HashMap;
  *
  * @author cl
  */
-public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> {
+public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private DoubleProperty drawingWidth;
     private DoubleProperty drawingHeight;

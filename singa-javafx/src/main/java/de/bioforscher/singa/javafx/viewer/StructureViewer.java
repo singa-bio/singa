@@ -182,9 +182,9 @@ public class StructureViewer extends Application {
         for (StructuralModel model : structure.getAllModels()) {
             TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getIdentifier()));
             model.getAllChains().stream()
-                    .sorted(Comparator.comparing(Chain::getChainIdentifier))
+                    .sorted(Comparator.comparing(Chain::getIdentifier))
                     .forEach(chain -> {
-                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getChainIdentifier()));
+                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getIdentifier()));
                         modelNode.getChildren().add(chainNode);
                     });
             rootItem.getChildren().add(modelNode);
@@ -263,11 +263,11 @@ public class StructureViewer extends Application {
         } else if (colorScheme == ColorScheme.BY_FAMILY) {
             return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
-                String chain = origin.getLeafIdentifier().getChainIdentifer();
+                String chain = origin.getIdentifier().getChainIdentifier();
                 if (this.chainMaterials.containsKey(chain)) {
                     return this.chainMaterials.get(chain);
                 } else {
-                    return getMaterialForChain(origin.getLeafIdentifier().getChainIdentifer());
+                    return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
                 }
             }
 
@@ -279,7 +279,7 @@ public class StructureViewer extends Application {
         } else if (colorScheme == ColorScheme.BY_FAMILY) {
             return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
-            return getMaterialForChain(origin.getLeafIdentifier().getChainIdentifer());
+            return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
         }
     }
 
@@ -287,7 +287,7 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {
-            return getMaterialForChain(origin.getChainIdentifier());
+            return getMaterialForChain(origin.getIdentifier());
         }
     }
 

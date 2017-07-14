@@ -89,7 +89,7 @@ public enum AtomToken implements PDBToken {
                     .append(RESIDUE_NAME.createTokenString(leaf.getName().toUpperCase()))
                     .append(" ")
                     .append(leaf.getChainIdentifier())
-                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier())))
+                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
                     .append("    ") // RESIDUE_INSERTION not yet implemented + 3 spaces for coordinates
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))

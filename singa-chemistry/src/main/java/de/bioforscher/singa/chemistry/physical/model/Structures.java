@@ -60,12 +60,13 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
-     * @param <T>                The Type of the structural entity.
-     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
+     * @param <EntityType> The Type of the structural entity.
+     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be
+     * obtained.
      * @return The distance matrix of the {@link StructuralEntity} objects.
      */
-    public static <T extends StructuralEntity<T>> LabeledSymmetricMatrix<T> calculateDistanceMatrix(List<T> structuralEntities) {
-        LabeledSymmetricMatrix<T> labeledDistances = new LabeledSymmetricMatrix<>(
+    public static <EntityType extends StructuralEntity<EntityType, ?>> LabeledSymmetricMatrix<EntityType> calculateDistanceMatrix(List<EntityType> structuralEntities) {
+        LabeledSymmetricMatrix<EntityType> labeledDistances = new LabeledSymmetricMatrix<>(
                 VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(structuralEntities.stream()
                         .map(StructuralEntity::getPosition)
                         .collect(Collectors.toList())).getElements());
@@ -78,12 +79,13 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
-     * @param <T>                The Type of the structural entity.
-     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
+     * @param <EntityType> The Type of the structural entity.
+     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be
+     * obtained.
      * @return The squared distance matrix of the {@link StructuralEntity} objects.
      */
-    public static <T extends StructuralEntity<T>> LabeledSymmetricMatrix<T> calculateSquaredDistanceMatrix(List<T> structuralEntities) {
-        LabeledSymmetricMatrix<T> labeledDistances = new LabeledSymmetricMatrix<>(
+    public static <EntityType extends StructuralEntity<EntityType, ?>> LabeledSymmetricMatrix<EntityType> calculateSquaredDistanceMatrix(List<EntityType> structuralEntities) {
+        LabeledSymmetricMatrix<EntityType> labeledDistances = new LabeledSymmetricMatrix<>(
                 VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(structuralEntities.stream()
                         .map(StructuralEntity::getPosition)
                         .collect(Collectors.toList())).getElements());

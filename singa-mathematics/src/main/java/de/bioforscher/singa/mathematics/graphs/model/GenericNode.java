@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
  * @param <ContentType> The content of the node.
  * @author cl
  */
-public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentType>, Vector> {
+public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentType>, Vector, Integer> {
 
     /**
      * The content.

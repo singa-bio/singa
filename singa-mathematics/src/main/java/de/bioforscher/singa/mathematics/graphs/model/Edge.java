@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
  * @param <NodeType> The type of the node to connect with this edge.
  * @author cl
  */
-public interface Edge<NodeType extends Node<NodeType, ? extends Vector>> {
+public interface Edge<NodeType extends Node<NodeType, ? extends Vector, ?>> {
 
     /**
      * Returns the identifier of the edge in the graph.
@@ -57,10 +57,10 @@ public interface Edge<NodeType extends Node<NodeType, ? extends Vector>> {
     /**
      * Returns true if a node with the given identifier is either source or target of the node.
      *
-     * @param identifier The identifier of the node to look for.
+     * @param node The node to look for.
      * @return true if a node with the given identifier is either source or target of the node.
      */
-    boolean containsNode(int identifier);
+    boolean containsNode(NodeType node);
 
     default <E extends Edge<NodeType>> E getCopy() {
         try {

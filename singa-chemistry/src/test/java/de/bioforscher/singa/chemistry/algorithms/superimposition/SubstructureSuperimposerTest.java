@@ -27,8 +27,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class SubstructureSuperimposerTest {
 
-    private BranchSubstructure<?> candidate;
-    private BranchSubstructure<?> reference;
+    private BranchSubstructure<?, ?> candidate;
+    private BranchSubstructure<?, ?> reference;
 
     @Before
     public void setUp() throws IOException {

@@ -189,14 +189,13 @@ public class StructureCollector {
             StructuralModel model = new StructuralModel(Integer.valueOf(modelNode.getIdentifier()));
             for (ContentTreeNode chainNode : modelNode.getNodesFromLevel(ContentTreeNode.StructureLevel.CHAIN)) {
                 logger.trace("collecting leafs for chainIdentifier {}", chainNode.getIdentifier());
-                Chain chain = new Chain(chainGraphId++);
-                chain.setChainIdentifier(chainNode.getIdentifier());
+                Chain chain = new Chain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
                     LeafSubstructure<?, ?> leafSubstructure = assignLeaf(leafNode, Integer.valueOf(modelNode.getIdentifier()), chainNode.getIdentifier());
-                    if (this.hetAtoms.contains(leafSubstructure.getLeafIdentifier())) {
+                    if (this.hetAtoms.contains(leafSubstructure.getIdentifier())) {
                         leafSubstructure.setAnnotatedAsHetAtom(true);
                     }
-                    if (this.notInConsecutiveChain.contains(leafSubstructure.getLeafIdentifier())) {
+                    if (this.notInConsecutiveChain.contains(leafSubstructure.getIdentifier())) {
                         chain.addSubstructure(leafSubstructure);
                     } else {
                         chain.addToConsecutivePart(leafSubstructure);
@@ -220,7 +219,7 @@ public class StructureCollector {
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(), identifier.getModelIdentifier(), identifier.getChainIdentifier(), identifier.getLeafIdentifer());
-                this.currentChain = leafIdentifier.getChainIdentifer();
+                this.currentChain = leafIdentifier.getChainIdentifier();
                 if (currentRecordType.equals("HETATM")) {
                     this.hetAtoms.add(leafIdentifier);
                 }

@@ -11,7 +11,6 @@ import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
@@ -278,17 +277,15 @@ public class Fit3DSiteAlignment implements Fit3D {
                 if (this.restrictToExchanges) {
                     // align the subset of sites with Fit3D
                     StructuralMotif query = this.site1.getCopy();
-                    List<LeafIdentifier> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
+                    List<LeafSubstructure<?,?>> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
                             .filter(leafSubstructure -> !site1Partition.contains(leafSubstructure))
-                            .map(LeafSubstructure::getLeafIdentifier)
                             .collect(Collectors.toList());
-                    queryLeavesToBeRemoved.forEach(query::removeLeafSubstructure);
+                    queryLeavesToBeRemoved.forEach(query::removeSubstructure);
                     StructuralMotif target = this.site2.getCopy();
-                    List<LeafIdentifier> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
+                    List<LeafSubstructure<?,?>> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
                             .filter(leafSubstructure -> !site2Partition.contains(leafSubstructure))
-                            .map(LeafSubstructure::getLeafIdentifier)
                             .collect(Collectors.toList());
-                    targetLeavesToBeRemoved.forEach(target::removeLeafSubstructure);
+                    targetLeavesToBeRemoved.forEach(target::removeSubstructure);
 
                     // configure Fit3D
                     Fit3D fit3d;

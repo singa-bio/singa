@@ -12,7 +12,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 /**
  * To handle structures with multiple models (of NMR).
  */
-public class StructuralModel extends BranchSubstructure<StructuralModel> {
+public class StructuralModel extends BranchSubstructure<StructuralModel, Integer> {
 
     /**
      * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
@@ -53,8 +53,24 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StructuralModel that = (StructuralModel) o;
+
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return identifier != null ? identifier.hashCode() : 0;
+    }
+
+    @Override
     public void setPosition(Vector3D position) {
         //FIXME not yet implemented
         throw new UnsupportedOperationException();
     }
+
 }

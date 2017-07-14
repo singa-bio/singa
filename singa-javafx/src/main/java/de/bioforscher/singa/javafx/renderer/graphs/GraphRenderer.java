@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author cl
  */
-public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> extends AnimationTimer implements Renderer {
+public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();

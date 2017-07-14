@@ -17,8 +17,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * This static class bundles filters for {@link LeafSubstructure}s and {@link BranchSubstructure}s that can be concatenated by using the {@link Predicate}
- * interface.
+ * This static class bundles filters for {@link LeafSubstructure}s and {@link BranchSubstructure}s that can be
+ * concatenated by using the {@link Predicate} interface.
  *
  * @author cl
  * @see Predicate
@@ -31,13 +31,13 @@ public class StructuralEntityFilter {
         MODEL(BranchFilter.isModel()),
         STRUCTURAL_MOTIF(BranchFilter.isStructuralMotif());
 
-        private final Predicate<BranchSubstructure<?>> filter;
+        private final Predicate<BranchSubstructure<?, ?>> filter;
 
-        BranchFilterType(Predicate<BranchSubstructure<?>> filter) {
+        BranchFilterType(Predicate<BranchSubstructure<?, ?>> filter) {
             this.filter = filter;
         }
 
-        public Predicate<BranchSubstructure<?>> getFilter() {
+        public Predicate<BranchSubstructure<?, ?>> getFilter() {
             return this.filter;
         }
     }
@@ -96,19 +96,19 @@ public class StructuralEntityFilter {
      */
     public static final class BranchFilter {
 
-        public static Predicate<BranchSubstructure<?>> hasId(int id) {
-            return branchSubstructure -> branchSubstructure.getIdentifier() == id;
+        public static Predicate<BranchSubstructure<?, ?>> hasIdentifier(Object identifier) {
+            return branchSubstructure -> branchSubstructure.getIdentifier().equals(identifier);
         }
 
-        public static Predicate<BranchSubstructure<?>> isChain() {
+        public static Predicate<BranchSubstructure<?, ?>> isChain() {
             return branch -> branch instanceof Chain;
         }
 
-        public static Predicate<BranchSubstructure<?>> isModel() {
+        public static Predicate<BranchSubstructure<?, ?>> isModel() {
             return branch -> branch instanceof StructuralModel;
         }
 
-        public static Predicate<BranchSubstructure<?>> isStructuralMotif() {
+        public static Predicate<BranchSubstructure<?, ?>> isStructuralMotif() {
             return branch -> branch instanceof StructuralMotif;
         }
     }
@@ -118,7 +118,7 @@ public class StructuralEntityFilter {
      */
     public static final class ChainFilter {
         public static Predicate<Chain> isInChain(String chainIdentifier) {
-            return chain -> chainIdentifier.equals(chain.getChainIdentifier());
+            return chain -> chainIdentifier.equals(chain.getIdentifier());
         }
     }
 
@@ -127,8 +127,8 @@ public class StructuralEntityFilter {
      */
     public static final class LeafFilter {
 
-        public static Predicate<LeafSubstructure<?, ?>> hasId(int id) {
-            return leafSubstructure -> leafSubstructure.getIdentifier() == id;
+        public static Predicate<LeafSubstructure<?, ?>> hasIdentifier(Object identifier) {
+            return leafSubstructure -> leafSubstructure.getIdentifier().equals(identifier);
         }
 
         public static Predicate<LeafSubstructure<?, ?>> isAminoAcid() {
@@ -143,9 +143,9 @@ public class StructuralEntityFilter {
             return leaf -> leaf instanceof Nucleotide;
         }
 
-        public static Predicate<LeafSubstructure<?, ?>> isWithinRange(int startId, int endId) {
-            Range<Integer> range = new Range<>(startId, endId);
-            return leaf -> range.isInRange(leaf.getIdentifier());
+        public static Predicate<LeafSubstructure<?, ?>> isWithinRange(int startIdentifier, int endIdentifier) {
+            Range<Integer> range = new Range<>(startIdentifier, endIdentifier);
+            return leaf -> range.isInRange(leaf.getIdentifier().getSerial());
         }
     }
 

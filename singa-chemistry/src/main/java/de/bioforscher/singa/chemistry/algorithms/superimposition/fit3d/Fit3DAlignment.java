@@ -8,7 +8,6 @@ import de.bioforscher.singa.chemistry.physical.atoms.representations.Representat
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.chemistry.physical.model.Structures;
 import de.bioforscher.singa.core.utility.Pair;
@@ -32,7 +31,7 @@ public class Fit3DAlignment implements Fit3D {
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
     private final StructuralMotif queryMotif;
-    private final BranchSubstructure<?> target;
+    private final BranchSubstructure<?,?> target;
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
     private double squaredQueryExtent;
@@ -47,7 +46,7 @@ public class Fit3DAlignment implements Fit3D {
         // obtain copies of the input structures
         // TODO this cast is not nice, can we do something better?
         this.queryMotif = builder.queryMotif.getCopy();
-        this.target = (BranchSubstructure<?>) builder.target.getCopy();
+        this.target = (BranchSubstructure<?,?>) builder.target.getCopy();
         this.rmsdCutoff = builder.rmsdCutoff;
         // use squared distance tolerance
         this.squaredDistanceTolerance = builder.distanceTolerance * builder.distanceTolerance;
@@ -189,11 +188,10 @@ public class Fit3DAlignment implements Fit3D {
                 .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<LeafIdentifier> toBeRemoved = this.target.getLeafSubstructures().stream()
+        List<LeafSubstructure<?,?>> toBeRemoved = this.target.getLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
-                .map(LeafSubstructure::getLeafIdentifier)
                 .collect(Collectors.toList());
-        toBeRemoved.forEach(this.target::removeLeafSubstructure);
+        toBeRemoved.forEach(this.target::removeSubstructure);
     }
 
     /**

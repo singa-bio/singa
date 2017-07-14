@@ -2,11 +2,7 @@ package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedEdge;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -46,7 +42,7 @@ public class AutomatonGraphs {
     }
 
     public static AutomatonGraph createRectangularAutomatonGraph(int numberOfColumns, int numberOfRows) {
-        return AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(numberOfColumns, numberOfRows, defaultBoundingBox, false));
+        return AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(numberOfColumns, numberOfRows, defaultBoundingBox, false));
     }
 
     /**
@@ -74,7 +70,7 @@ public class AutomatonGraphs {
         return bioGraph;
     }
 
-    public static void splitRectangularGraphWithMembrane(AutomatonGraph graph, RectangularGridCoordinateConverter converter,
+    public static void splitRectangularGraphWithMembrane(AutomatonGraph graph, GridCoordinateConverter converter,
                                                                    EnclosedCompartment innerSection, CellSection outerSection) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(),
                 outerSection.getName());

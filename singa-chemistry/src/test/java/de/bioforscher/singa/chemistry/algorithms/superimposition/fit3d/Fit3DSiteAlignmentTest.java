@@ -29,12 +29,12 @@ public class Fit3DSiteAlignmentTest {
                 .fileLocation(TestUtils.getResourceAsFilepath("truncated_1asz_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite1 = StructuralMotif.fromLeaves(1, bindingSiteStructure1.getAllLeaves());
+        this.bindingSite1 = StructuralMotif.fromLeaves(bindingSiteStructure1.getAllLeaves());
         Structure bindingSiteStructure2 = StructureParser.local()
                 .fileLocation(TestUtils.getResourceAsFilepath("truncated_3m4p_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite2 = StructuralMotif.fromLeaves(1, bindingSiteStructure2.getAllLeaves());
+        this.bindingSite2 = StructuralMotif.fromLeaves(bindingSiteStructure2.getAllLeaves());
     }
 
     @Test

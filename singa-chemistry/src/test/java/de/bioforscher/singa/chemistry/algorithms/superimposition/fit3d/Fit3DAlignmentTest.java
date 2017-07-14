@@ -43,7 +43,7 @@ public class Fit3DAlignmentTest {
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeaves(1, motifContainingStructure,
+        this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
@@ -77,7 +77,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
@@ -100,7 +100,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(1, target,
+        StructuralMotif queryMotif = StructuralMotif.fromLeaves(target,
                 LeafIdentifiers.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -121,7 +121,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
@@ -139,7 +139,7 @@ public class Fit3DAlignmentTest {
                 .everything()
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(1, queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
+        StructuralMotif queryMotif = StructuralMotif.fromLeaves(queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)

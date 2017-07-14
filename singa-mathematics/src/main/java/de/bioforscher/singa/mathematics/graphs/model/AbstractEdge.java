@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
  *
  * @param <NodeType> The type of nodes this edge connects.
  */
-public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vector>> implements Edge<NodeType> {
+public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vector, ?>> implements Edge<NodeType> {
 
     /**
      * An unique identifier.
@@ -80,11 +80,6 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
     @Override
     public void setTarget(NodeType target) {
         this.target = target;
-    }
-
-    @Override
-    public boolean containsNode(int identifier) {
-        return this.source.getIdentifier() == identifier || this.target.getIdentifier() == identifier;
     }
 
     /**

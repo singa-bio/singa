@@ -25,7 +25,7 @@ public class StructuralMotifTest {
                 .fileLocation(TestUtils.getResourceAsFilepath("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeaves(1, motifStructure.getAllLeaves());
+        this.structuralMotif = StructuralMotif.fromLeaves(motifStructure.getAllLeaves());
     }
 
     @Test
@@ -36,14 +36,14 @@ public class StructuralMotifTest {
         aminoAcids.add(aminoAcid1);
         aminoAcids.add(aminoAcid2);
         StructuralMotif motif = StructuralMotif.fromLeaves(aminoAcids);
-        assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                > motif.getLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
-        assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                < motif.getOrderedLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
+        assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                > motif.getLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                < motif.getOrderedLeafSubstructures().get(0).getIdentifier().getSerial());
         StructuralMotif copiedMotif = motif.getCopy();
-        assertTrue(copiedMotif.getLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                > copiedMotif.getLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
-        assertTrue(copiedMotif.getOrderedLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getLeafIdentifier().getIdentifier()
-                < copiedMotif.getOrderedLeafSubstructures().get(0).getLeafIdentifier().getIdentifier());
+        assertTrue(copiedMotif.getLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                > copiedMotif.getLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(copiedMotif.getOrderedLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                < copiedMotif.getOrderedLeafSubstructures().get(0).getIdentifier().getSerial());
     }
 }

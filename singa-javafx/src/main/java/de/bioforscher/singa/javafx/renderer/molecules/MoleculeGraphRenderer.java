@@ -8,7 +8,7 @@ import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 
-public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeBond, MoleculeGraph> {
+public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeBond, Integer, MoleculeGraph> {
 
     private MoleculeRendererOptions moleculeOptions = new MoleculeRendererOptions();
 

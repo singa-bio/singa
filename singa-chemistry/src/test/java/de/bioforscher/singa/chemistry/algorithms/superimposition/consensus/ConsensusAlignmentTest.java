@@ -43,7 +43,7 @@ public class ConsensusAlignmentTest {
                         .setOptions(structureParserOptions)
                         .parse())
                 .map(Structure::getAllLeaves)
-                .map(leaves -> StructuralMotif.fromLeaves(0, leaves))
+                .map(StructuralMotif::fromLeaves)
                 .collect(Collectors.toList());
     }
 

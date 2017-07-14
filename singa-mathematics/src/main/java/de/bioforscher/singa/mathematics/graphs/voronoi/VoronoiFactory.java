@@ -14,8 +14,8 @@ import java.util.List;
  *
  * @author cl
  */
-public class VoronoiFactory <NodeType extends Node<NodeType, Vector2D>,
-        EdgeType extends Edge<NodeType>, GraphType extends Graph<NodeType, EdgeType>> {
+public class VoronoiFactory <NodeType extends Node<NodeType, Vector2D, IdentifierType>,
+        EdgeType extends Edge<NodeType>, IdentifierType,  GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private double[] xValuesIn;
     private double[] yValuesIn;
@@ -33,7 +33,7 @@ public class VoronoiFactory <NodeType extends Node<NodeType, Vector2D>,
         this.xValuesIn = new double[graph.getNodes().size()];
         this.yValuesIn = new double[graph.getNodes().size()];
         int i = 0;
-        for (Node<?, Vector2D> node : graph.getNodes()) {
+        for (Node<?, Vector2D, ?> node : graph.getNodes()) {
             Vector2D vector = node.getPosition();
             this.xValuesIn[i] = vector.getX();
             this.yValuesIn[i] = vector.getY();

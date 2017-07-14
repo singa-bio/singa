@@ -54,7 +54,6 @@ public class StructureSelector {
     }
 
     public interface ChainStep {
-        ResidueStep chain(int chainId);
 
         ResidueStep chain(String chainIdentifier);
 
@@ -146,20 +145,11 @@ public class StructureSelector {
         }
 
         @Override
-        public ResidueStep chain(int identifier) {
+        public ResidueStep chain(String identifier) {
             this.chain = this.structuralModel.getAllChains().stream()
-                    .filter(chain -> chain.getIdentifier() == identifier)
+                    .filter(chain -> chain.getIdentifier().equals(identifier))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
-            return this;
-        }
-
-        @Override
-        public ResidueStep chain(String chainIdentifier) {
-            this.chain = this.structuralModel.getAllChains().stream()
-                    .filter(chain -> chain.getChainIdentifier().equals(chainIdentifier))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with ID " + chainIdentifier));
             return this;
         }
 
@@ -173,7 +163,7 @@ public class StructureSelector {
             this.aminoAcid = this.chain.getLeafSubstructures().stream()
                     .filter(AminoAcid.class::isInstance)
                     .map(AminoAcid.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no amino acid with ID " + identifier));
             return this;
@@ -189,7 +179,7 @@ public class StructureSelector {
             this.nucleotide = this.chain.getLeafSubstructures().stream()
                     .filter(Nucleotide.class::isInstance)
                     .map(Nucleotide.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no nucleotide with ID " + identifier));
             return this;
@@ -205,7 +195,7 @@ public class StructureSelector {
             this.atomContainer = this.chain.getLeafSubstructures().stream()
                     .filter(AtomContainer.class::isInstance)
                     .map(AtomContainer.class::cast)
-                    .filter(leafSubstructure -> leafSubstructure.getIdentifier() == identifier)
+                    .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no atom container with ID " + identifier));
             return this;

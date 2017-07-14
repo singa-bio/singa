@@ -6,8 +6,8 @@ import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
+import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
-import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.*;
@@ -21,34 +21,28 @@ import java.util.stream.Collectors;
  * @author cl
  * @see AminoAcid
  */
-public class Chain extends BranchSubstructure<Chain> implements Nameable {
+public class Chain extends BranchSubstructure<Chain, String> {
 
-    private Set<Integer> consecutiveIdentifier;
-
-    /**
-     * The chainIdentifier identifier of this chainIdentifier.
-     */
-    private String chainIdentifier;
+    private Set<LeafIdentifier> consecutiveIdentifiers;
 
     /**
      * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chainIdentifier identifier, but the
      * reference for the placement in the graph.
      *
-     * @param graphIdentifier The identifier in the graph.
+     * @param identifier The identifier in the graph.
      */
-    public Chain(int graphIdentifier) {
-        super(graphIdentifier);
-        this.consecutiveIdentifier = new TreeSet<>();
+    public Chain(String identifier) {
+        super(identifier);
+        this.consecutiveIdentifiers = new TreeSet<>();
     }
 
     public Chain(Chain chain) {
         this(chain.getIdentifier());
-        this.chainIdentifier = chain.chainIdentifier;
-        for (Substructure<?> structure : chain.getSubstructures()) {
+        for (Substructure<?, ?> structure : chain.getSubstructures()) {
             this.addSubstructure(structure.getCopy());
         }
         Map<Integer, Atom> atoms = new TreeMap<>();
-        for (Atom atom : this.getAllAtoms()) {
+        for (Atom atom : getAllAtoms()) {
             atoms.put(atom.getIdentifier(), atom);
         }
         for (Bond bond : chain.getEdges()) {
@@ -64,25 +58,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
      * more on this level in a structure.</b>
      */
     public Chain() {
-        super(0);
-    }
-
-    /**
-     * Returns the chainIdentifier identifier (the single character identifier).
-     *
-     * @return The chainIdentifier identifier.
-     */
-    public String getChainIdentifier() {
-        return this.chainIdentifier;
-    }
-
-    /**
-     * Sets the chainIdentifier identifier (the single letter identifier).
-     *
-     * @param chainIdentifier The chainIdentifier identifier.
-     */
-    public void setChainIdentifier(String chainIdentifier) {
-        this.chainIdentifier = chainIdentifier;
+        super(LeafIdentifier.DEFAULT_CHAIN_IDENTIFER);
     }
 
     /**
@@ -127,19 +103,19 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
     }
 
     public void addToConsecutivePart(LeafSubstructure<?, ?> leafSubstructure) {
-        this.consecutiveIdentifier.add(leafSubstructure.getIdentifier());
+        this.consecutiveIdentifiers.add(leafSubstructure.getIdentifier());
         this.addSubstructure(leafSubstructure);
     }
 
     public List<LeafSubstructure<?, ?>> getConsecutivePart() {
-        return this.consecutiveIdentifier.stream()
+        return this.consecutiveIdentifiers.stream()
                 .map(this::getLeafSubstructure)
                 .collect(Collectors.toList());
     }
 
     public List<LeafSubstructure<?, ?>> getNonConsecutivePart() {
         return this.getLeafSubstructures().stream()
-                .filter(leafSubstructure -> !this.consecutiveIdentifier.contains(leafSubstructure.getIdentifier()))
+                .filter(leafSubstructure -> !this.consecutiveIdentifiers.contains(leafSubstructure.getIdentifier()))
                 .map(substructure -> (LeafSubstructure<?, ?>) substructure)
                 .collect(Collectors.toList());
     }
@@ -150,19 +126,10 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
                 .collect(Collectors.toList());
     }
 
-    public LeafSubstructure<?, ?> getLeafSubstructure(int identifier) {
+    public LeafSubstructure<?, ?> getLeafSubstructure(LeafIdentifier identifier) {
         return (LeafSubstructure<?, ?>) this.substructures.get(identifier);
     }
 
-    /**
-     * Gets the name (i.e. the single letter chainIdentifier identifier) of this chainIdentifier.
-     *
-     * @return The name.
-     */
-    @Override
-    public String getName() {
-        return String.valueOf(this.chainIdentifier);
-    }
 
     @Override
     public Chain getCopy() {
@@ -174,14 +141,14 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Chain chain = (Chain) o;
+        Chain that = (Chain) o;
 
-        return this.chainIdentifier != null ? this.chainIdentifier.equals(chain.chainIdentifier) : chain.chainIdentifier == null;
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.chainIdentifier != null ? this.chainIdentifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     @Override
@@ -189,7 +156,7 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         return getLeafSubstructures().stream()
                 .findAny()
                 .map(LeafSubstructure::getPdbIdentifier)
-                .orElse("") + "_" + this.chainIdentifier;
+                .orElse("") + "_" + getIdentifier();
     }
 
     @Override
@@ -197,4 +164,5 @@ public class Chain extends BranchSubstructure<Chain> implements Nameable {
         //FIXME not yet implemented
         throw new UnsupportedOperationException();
     }
+
 }

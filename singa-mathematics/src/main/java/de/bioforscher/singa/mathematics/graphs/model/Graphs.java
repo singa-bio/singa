@@ -1,8 +1,7 @@
-package de.bioforscher.singa.mathematics.graphs.util;
+package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
 import de.bioforscher.singa.mathematics.vectors.Vector;
@@ -19,9 +18,9 @@ import java.util.List;
  *
  * @author cl
  */
-public class GraphFactory {
+public class Graphs {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -33,7 +32,7 @@ public class GraphFactory {
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
-            graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
+            graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
         }
         for (int i = 0; i < numberOfNodes - 1; i++) {
             graph.addEdgeBetween(i, graph.getNode(i), graph.getNode(i + 1));
@@ -68,9 +67,9 @@ public class GraphFactory {
             throw new IllegalArgumentException("The depth of a tree-like graph must be at least 1");
         }
         UndirectedGraph graph = new UndirectedGraph();
-        RegularNode root = NodeFactory.createRandomlyPlacedNode(0, boundingBox);
+        RegularNode root = Nodes.createRandomlyPlacedNode(0, boundingBox);
         graph.addNode(root);
-        GraphFactory.growTree(depth - 1, graph, root, boundingBox);
+        Graphs.growTree(depth - 1, graph, root, boundingBox);
         return graph;
     }
 
@@ -84,7 +83,7 @@ public class GraphFactory {
      */
     private static void growTree(int depth, UndirectedGraph graph, RegularNode predecessor, Rectangle boundingBox) {
         int next = graph.nextNodeIdentifier();
-        graph.addNode(NodeFactory.createRandomlyPlacedNode(next, boundingBox));
+        graph.addNode(Nodes.createRandomlyPlacedNode(next, boundingBox));
         graph.addEdgeBetween(graph.nextEdgeIdentifier(), predecessor, graph.getNode(next));
         if (depth > 0) {
             growTree(depth - 1, graph, graph.getNode(next), boundingBox);
@@ -103,7 +102,7 @@ public class GraphFactory {
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
-            graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
+            graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
         }
         int j = 0;
         for (RegularNode source : graph.getNodes()) {
@@ -264,9 +263,9 @@ public class GraphFactory {
      * @param <GraphType> The type of the graph.
      * @return A list of all disconnected subgraphs.
      */
-    public static <NodeType extends Node<NodeType, VectorType>,
-            EdgeType extends Edge<NodeType>, VectorType extends Vector,
-            GraphType extends Graph<NodeType, EdgeType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
         return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
     }
 
