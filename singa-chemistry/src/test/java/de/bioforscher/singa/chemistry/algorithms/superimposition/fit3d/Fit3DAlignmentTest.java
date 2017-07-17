@@ -81,7 +81,7 @@ public class Fit3DAlignmentTest {
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
-                Paths.get("src/test/resources/RF00167"))
+                Paths.get(TestUtils.getResourceAsFilepath("RF00167")))
                 .collect(Collectors.toList());
         StructureParser.MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)

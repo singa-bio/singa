@@ -4,15 +4,15 @@ import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.simulation.events.GraphUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.events.GraphUpdatedEvent;
 import javafx.scene.paint.Color;
 
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
 
-public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, AutomatonGraph> implements UpdateEventListener<GraphUpdatedEvent> {
+public class BioGraphRenderer extends GraphRenderer<BioNode, BioEdge, Integer, AutomatonGraph> implements UpdateEventListener<GraphUpdatedEvent> {
 
     private BioGraphRenderOptions bioRenderingOptions;
 

@@ -88,7 +88,7 @@ public class StructureParserTest {
 
     // structure with modified nucleotides
     @Test
-    public void shouldParseResiduesWithModifiedNucleotides() {
+    public void shouldParseStructureWithInsertionCodes() {
         // TODO some strange bonds between 620 and 621 issue #41
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1C0A")
@@ -101,12 +101,6 @@ public class StructureParserTest {
 
         assertEquals(2, leavesWithInsertionCode.size());
 
-    }
-
-    // structure with insertion codes
-    @Test
-    public void shouldParseStructureWithInsertionCodes() {
-        // TODO issue #35
     }
 
     @Test

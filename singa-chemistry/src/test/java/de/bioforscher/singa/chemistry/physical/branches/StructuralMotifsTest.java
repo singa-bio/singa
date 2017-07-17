@@ -49,7 +49,7 @@ public class StructuralMotifsTest {
 
     @Test
     public void shouldCalculateRmsdMatrix() throws IOException {
-        List<StructuralMotif> input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
+        List<StructuralMotif> input = Files.list(Paths.get(TestUtils.getResourceAsFilepath("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .parse())
