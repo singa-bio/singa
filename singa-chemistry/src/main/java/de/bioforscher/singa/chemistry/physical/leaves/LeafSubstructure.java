@@ -454,4 +454,13 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String flatToString() {
+        return getClass().getSimpleName()+": "+getIdentifier();
+    }
+
+    @Override
+    public String deepToString() {
+        return flatToString() + "{atoms: "+getNodes().stream().map(Atom::toString).collect(Collectors.joining(","))+"}";
+    }
 }

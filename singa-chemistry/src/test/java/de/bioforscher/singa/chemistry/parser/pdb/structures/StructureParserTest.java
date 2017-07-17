@@ -6,6 +6,7 @@ import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.TestUtils;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
-import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_PDB;
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -130,9 +131,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldAssignInformationFromFileName() {
-        StructureParserOptions options = StructureParserOptions.withSettings(GET_IDENTIFIER_FROM_FILENAME, GET_IDENTIFIER_FROM_PDB);
-        options.inferTitleFromFileName(true);
-        options.inferIdentifierFromFileName(true);
+        StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
                 .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
@@ -140,7 +139,15 @@ public class StructureParserTest {
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
-        assertEquals("1GL0", structure.getPdbIdentifier());
+        assertEquals("1gl0", structure.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseFromInputStream() {
+        InputStream inputStream = TestUtils.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
+        Structure structure = StructureParser.local()
+                .inputStream(inputStream)
+                .parse();
     }
 
     @Test

@@ -252,9 +252,9 @@ class StructureContentIterator implements Iterator<List<String>> {
             this.currentPdbIdentifier = this.pdbIdIterator.next();
             if (this.chains != null) {
                 this.currentChain = this.chainIterator.next();
-                logger.debug("parsing structure {}/{}", this.currentPdbIdentifier, this.currentChain);
+                logger.debug("Parsing structure {}/{}.", this.currentPdbIdentifier, this.currentChain);
             } else {
-                logger.debug("parsing structure {}", this.currentPdbIdentifier);
+                logger.debug("Parsing structure {}.", this.currentPdbIdentifier);
             }
         }
         if (this.location == SourceLocation.OFFLINE) {
@@ -279,7 +279,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                 this.currentSource = url.getFile();
                 return fetchLines(url.openStream());
             } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for URL. The PDBID \""
+                throw new UncheckedIOException("Could not open input stream for URL. The PDB identifier \""
                         + this.currentPdbIdentifier + "\" does not seem to exist", e);
             } finally {
                 this.progressCounter++;

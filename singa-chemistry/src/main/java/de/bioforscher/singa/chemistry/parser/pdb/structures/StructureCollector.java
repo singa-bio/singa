@@ -201,7 +201,7 @@ public class StructureCollector {
                 }
                 model.addSubstructure(chain);
             }
-            structure.addSubstructure(model);
+            structure.addBranchSubstructure(model);
         }
         if (this.reducer.options.isCreatingEdges()) {
             structure.getAllChains().forEach(Chain::connectChainBackbone);

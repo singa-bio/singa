@@ -13,5 +13,9 @@ public interface Substructure<SubstructureType extends Substructure<Substructure
 
     List<Atom> getAllAtoms();
 
+    String flatToString();
+
+    String deepToString();
+
     SubstructureType getCopy();
 }

@@ -485,7 +485,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     public Structure toStructure() {
         Structure structure = new Structure();
-        structure.addSubstructure(this);
+        structure.addBranchSubstructure(this);
         return structure;
     }
 
@@ -495,6 +495,18 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     public Integer nextNodeIdentifier() {
         //FIXME not yet implemented
         throw new UnsupportedOperationException();
+    }
+
+    public String flatToString() {
+        return getClass().getSimpleName()+" "+identifier+ ": " + getSubstructures().stream()
+                .map(branch -> branch.getClass().getSimpleName()+" "+branch.getIdentifier())
+                .collect(Collectors.joining(","));
+    }
+
+    public String deepToString() {
+        return "Model "+identifier+ " {branches: " + getSubstructures().stream()
+                .map(Substructure::deepToString)
+                .collect(Collectors.joining(",")) + "}";
     }
 
 }
