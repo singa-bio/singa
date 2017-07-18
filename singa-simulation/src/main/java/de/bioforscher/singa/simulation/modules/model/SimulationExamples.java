@@ -8,7 +8,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
@@ -74,7 +74,7 @@ public class SimulationExamples {
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
@@ -124,7 +124,7 @@ public class SimulationExamples {
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
@@ -177,7 +177,7 @@ public class SimulationExamples {
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
@@ -240,7 +240,7 @@ public class SimulationExamples {
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
@@ -293,7 +293,7 @@ public class SimulationExamples {
         Species sucrose = ChEBIParserService.parse("CHEBI:17992");
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
@@ -365,7 +365,7 @@ public class SimulationExamples {
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         graph.getNode(0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
@@ -439,6 +439,7 @@ public class SimulationExamples {
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
                 GraphFactory.buildLinearGraph(1, defaultBoundingBox));
+                Graphs.buildGridGraph(20, 20, defaultBoundingBox, false));
 
         model.getCompartments().keySet().forEach(graph::addSection);
 
@@ -481,7 +482,7 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
         int numberOfNodes = 50;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
         // setup simulation
         logger.debug("Composing simulation ... ");
@@ -527,7 +528,7 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
         int numberOfNodes = 11;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");

@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia: Dijkstra's algorithm</a>
  */
-public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> {
+public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType> {
 
     private Queue<NodeType> queue;
     private Map<NodeType, Integer> distances;
@@ -23,16 +23,7 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Private constructor to prevent external instantiation.
      */
-    private ShortestPathFinder() {
-
-    }
-
-    /**
-     * Initializes the Shortest path finder with a given source node.
-     *
-     * @param sourceNode the source node.
-     */
-    private void initialize(NodeType sourceNode) {
+    private ShortestPathFinder(NodeType sourceNode) {
         this.distances = new HashMap<>();
         this.predecessors = new HashMap<>();
         this.queue = new LinkedList<>();
@@ -51,9 +42,9 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
      * @param <NodeType>      The type of the node.
      * @return The shortest path.
      */
-    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
-        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
-        pathfinder.initialize(sourceNode);
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            VectorType extends Vector, IdentifierType> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
+        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
@@ -79,9 +70,9 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
      * @param <NodeType>      The type of the node.
      * @return The shortest path.
      */
-    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
-        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
-        pathfinder.initialize(sourceNode);
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            VectorType extends Vector,IdentifierType> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();

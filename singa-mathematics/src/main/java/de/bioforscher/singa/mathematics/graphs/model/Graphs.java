@@ -1,38 +1,38 @@
-package de.bioforscher.singa.mathematics.graphs.util;
+package de.bioforscher.singa.mathematics.graphs.model;
 
+import de.bioforscher.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.GenericGraph;
-import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
-import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
+import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A factory class used to create graphs and convert other things to graphs.
  *
  * @author cl
  */
-public class GraphFactory {
+public class Graphs {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GraphFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
      *
      * @param numberOfNodes The number of nodes the graph should contain.
-     * @param boundingBox   A bounding box where the nodes should be positioned.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
-            graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
+            graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
         }
         for (int i = 0; i < numberOfNodes - 1; i++) {
             graph.addEdgeBetween(i, graph.getNode(i), graph.getNode(i + 1));
@@ -45,7 +45,7 @@ public class GraphFactory {
      * successor.
      *
      * @param numberOfNodes The number of nodes the circle should contain.
-     * @param boundingBox   A bounding box where the nodes should be positioned.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A circular graph.
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
@@ -58,7 +58,7 @@ public class GraphFactory {
      * Generates a graph with a tree-like structure, where every node is connected to one predecessor and two
      * successors, thus forming a fractal structure.
      *
-     * @param depth       The depth of the tree.
+     * @param depth The depth of the tree.
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A tree-like graph.
      */
@@ -67,23 +67,23 @@ public class GraphFactory {
             throw new IllegalArgumentException("The depth of a tree-like graph must be at least 1");
         }
         UndirectedGraph graph = new UndirectedGraph();
-        RegularNode root = NodeFactory.createRandomlyPlacedNode(0, boundingBox);
+        RegularNode root = Nodes.createRandomlyPlacedNode(0, boundingBox);
         graph.addNode(root);
-        GraphFactory.growTree(depth - 1, graph, root, boundingBox);
+        Graphs.growTree(depth - 1, graph, root, boundingBox);
         return graph;
     }
 
     /**
      * A private method used to grow the tree-like graph structure. The given graph will be modified!
      *
-     * @param depth       The current depth.
-     * @param graph       The graph to add the new node.
+     * @param depth The current depth.
+     * @param graph The graph to add the new node.
      * @param predecessor The previously added node.
      * @param boundingBox A bounding box where the nodes should be positioned.
      */
     private static void growTree(int depth, UndirectedGraph graph, RegularNode predecessor, Rectangle boundingBox) {
         int next = graph.nextNodeIdentifier();
-        graph.addNode(NodeFactory.createRandomlyPlacedNode(next, boundingBox));
+        graph.addNode(Nodes.createRandomlyPlacedNode(next, boundingBox));
         graph.addEdgeBetween(graph.nextEdgeIdentifier(), predecessor, graph.getNode(next));
         if (depth > 0) {
             growTree(depth - 1, graph, graph.getNode(next), boundingBox);
@@ -94,15 +94,15 @@ public class GraphFactory {
     /**
      * Generates a randomised graph based on the Erdös - Renyi model.
      *
-     * @param numberOfNodes   The number of nodes the graph should contain.
+     * @param numberOfNodes The number of nodes the graph should contain.
      * @param edgeProbability The probability, that two nodes will be connected.
-     * @param boundingBox     A bounding box where the nodes should be positioned.
+     * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A randomized graph.
      */
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
-            graph.addNode(NodeFactory.createRandomlyPlacedNode(i, boundingBox));
+            graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
         }
         int j = 0;
         for (RegularNode source : graph.getNodes()) {
@@ -122,9 +122,9 @@ public class GraphFactory {
      * Generates a grid graph with columns and rows.
      *
      * @param boundingBox Rectangle where the Graph is positioned.
-     * @param columns     The Number of columns
-     * @param rows        The Number of rows
-     * @param periodic    Applies periodic boundary condition, if {@code true}.
+     * @param columns The Number of columns
+     * @param rows The Number of rows
+     * @param periodic Applies periodic boundary condition, if {@code true}.
      * @return A rectangular grid graph.
      */
     public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
@@ -199,7 +199,7 @@ public class GraphFactory {
     /**
      * Converts a {@link BinaryTree} to a {@link GenericGraph}.
      *
-     * @param tree          The tree.
+     * @param tree The tree.
      * @param <ContentType> The content of the resulting generic graph.
      * @return The generic graph.
      */
@@ -240,6 +240,7 @@ public class GraphFactory {
     /**
      * Converts a {@link BinaryTreeNode} to a {@link GenericNode} with the next free node identifer from the graph.
      * Places the node randomly in a 200 x 200 rectangle.
+     *
      * @param treeNode The node to convert.
      * @param graph The graph to take the index from.
      * @param <ContentType> The content type of the node.
@@ -251,5 +252,22 @@ public class GraphFactory {
         result.setPosition(Vectors.generateRandom2DVector(new Rectangle(200, 200)));
         return result;
     }
+
+    /**
+     * Given a graph, this method returns a list of all disconnected subgraphs. The subgraphs are copies and changes are
+     * not reflected back into the original graph, but node and edge identifiers, as well as attached data is conserved.
+     *
+     * @param graph The graph to decompose.
+     * @param <NodeType> The type of the nodes.
+     * @param <EdgeType> The type of the edges.
+     * @param <GraphType> The type of the graph.
+     * @return A list of all disconnected subgraphs.
+     */
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> List<GraphType> findDisconnectedSubgraphs(GraphType graph) {
+        return DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
+    }
+
 
 }

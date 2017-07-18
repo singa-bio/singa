@@ -36,13 +36,14 @@ public class StructureWriter {
     }
 
     /**
-     * Writes a given {@link BranchSubstructure} to PDB format by getting the PDB lines of all {@link LeafSubstructure}s.
+     * Writes a given {@link BranchSubstructure} to PDB format by getting the PDB lines of all {@link
+     * LeafSubstructure}s.
      *
      * @param branchSubstructure The {@link BranchSubstructure} to be written.
-     * @param outputPath         The output {@link Path}.
+     * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
-    public static void writeBranchSubstructure(BranchSubstructure<?> branchSubstructure, Path outputPath) throws IOException {
+    public static void writeBranchSubstructure(BranchSubstructure<?, ?> branchSubstructure, Path outputPath) throws IOException {
         logger.info("writing {} to {}", branchSubstructure, outputPath);
         writeLeafSubstructures(branchSubstructure.getLeafSubstructures(), outputPath);
     }
@@ -51,7 +52,7 @@ public class StructureWriter {
      * Writes a given list of {@link LeafSubstructure}s to PDB format.
      *
      * @param leafSubstructures The list of {@link LeafSubstructure}s to be written.
-     * @param outputPath        The output {@link Path}.
+     * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
     public static void writeLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures, Path outputPath) throws IOException {

@@ -6,8 +6,8 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -104,7 +104,7 @@ public class DiffusionProgressionTest {
 
     private Simulation setUpSimulation(int numberOfNodes, Quantity<Time> timeStep, Species species) {
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, boundingBox, false));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (BioNode node : graph.getNodes()) {
@@ -132,6 +132,8 @@ public class DiffusionProgressionTest {
         // grants access to easier access to grid coordinates
         RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes, numberOfNodes);
         // observe the node in the middle on the right
+        GridCoordinateConverter converter = new GridCoordinateConverter(numberOfNodes, numberOfNodes);
+        // returns the node in the middle on the right
         int observedNodeIdentifier = converter.convert(new Vector2D(numberOfNodes - 1, (numberOfNodes / 2) - 1));
         simulation.getGraph().getNode(observedNodeIdentifier).setObserved(true);
         // simulate until half life concentration has been reached

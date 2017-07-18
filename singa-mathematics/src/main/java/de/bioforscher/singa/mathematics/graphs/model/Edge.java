@@ -1,12 +1,16 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The edge object connects two nodes of the same type.
  *
  * @param <NodeType> The type of the node to connect with this edge.
  * @author cl
  */
-public interface Edge<NodeType extends Node<NodeType, ?>> {
+public interface Edge<NodeType extends Node<NodeType, ? extends Vector, ?>> {
 
     /**
      * Returns the identifier of the edge in the graph.
@@ -53,9 +57,19 @@ public interface Edge<NodeType extends Node<NodeType, ?>> {
     /**
      * Returns true if a node with the given identifier is either source or target of the node.
      *
-     * @param identifier The identifier of the node to look for.
+     * @param node The node to look for.
      * @return true if a node with the given identifier is either source or target of the node.
      */
-    boolean containsNode(int identifier);
+    boolean containsNode(NodeType node);
+
+    default <E extends Edge<NodeType>> E getCopy() {
+        try {
+            return (E) getClass().getConstructor(getClass()).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 
 }

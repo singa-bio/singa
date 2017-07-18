@@ -18,7 +18,9 @@ import java.util.Set;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
-public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
+public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D, Integer> {
+
+    private int nextNodeIdentifier;
 
     private Map<String, CellSection> sections;
 
@@ -39,6 +41,11 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D> {
     @Override
     public int addEdgeBetween(BioNode source, BioNode target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
+    }
+
+    @Override
+    public Integer nextNodeIdentifier() {
+        return nextNodeIdentifier++;
     }
 
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {

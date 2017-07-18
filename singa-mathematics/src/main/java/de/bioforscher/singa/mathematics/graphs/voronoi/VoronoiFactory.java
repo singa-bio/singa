@@ -14,35 +14,31 @@ import java.util.List;
  *
  * @author cl
  */
-public class VoronoiFactory {
+public class VoronoiFactory <NodeType extends Node<NodeType, Vector2D, IdentifierType>,
+        EdgeType extends Edge<NodeType>, IdentifierType,  GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
-    double[] xValuesIn;
-    double[] yValuesIn;
+    private double[] xValuesIn;
+    private double[] yValuesIn;
 
-    double minX;
-    double maxX;
-    double minY;
-    double maxY;
-
-    Voronoi voronoi;
+    private double minX;
+    private double maxX;
+    private double minY;
+    private double maxY;
 
     public VoronoiFactory() {
 
     }
 
-    private void readGraph(Graph<? extends Node<?, Vector2D>, ? extends Edge<?>> graph) {
-
+    private void readGraph(GraphType graph) {
         this.xValuesIn = new double[graph.getNodes().size()];
         this.yValuesIn = new double[graph.getNodes().size()];
-
         int i = 0;
-        for (Node<?, Vector2D> node : graph.getNodes()) {
+        for (Node<?, Vector2D, ?> node : graph.getNodes()) {
             Vector2D vector = node.getPosition();
             this.xValuesIn[i] = vector.getX();
             this.yValuesIn[i] = vector.getY();
             i++;
         }
-
     }
 
     private void readSpace(Rectangle rectangle) {
@@ -52,11 +48,11 @@ public class VoronoiFactory {
         this.maxY = rectangle.getTopMostYPosition();
     }
 
-    public List<VoronoiFaceEdge> generateVonoroi(Graph<? extends Node<?, Vector2D>, ?> graph, Rectangle rectangle) {
+    public List<VoronoiFaceEdge> generateVonoroi(GraphType graph, Rectangle rectangle) {
         this.readSpace(rectangle);
         this.readGraph(graph);
-        this.voronoi = new Voronoi(10);
-        return this.voronoi.generateVoronoi(this.xValuesIn, this.yValuesIn, this.minX, this.maxX,
+        Voronoi voronoi = new Voronoi(10);
+        return voronoi.generateVoronoi(this.xValuesIn, this.yValuesIn, this.minX, this.maxX,
                 this.minY, this.maxY);
     }
 

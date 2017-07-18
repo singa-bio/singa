@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  *
  * @author cl
  */
-public class RegularNode extends AbstractNode<RegularNode, Vector2D> {
+public class RegularNode extends AbstractNode<RegularNode, Vector2D, Integer> {
 
     /**
      * Creates a new regular node with the given identifier.
@@ -28,4 +28,7 @@ public class RegularNode extends AbstractNode<RegularNode, Vector2D> {
         super(identifier, position);
     }
 
+    public RegularNode(RegularNode node) {
+        super(node);
+    }
 }

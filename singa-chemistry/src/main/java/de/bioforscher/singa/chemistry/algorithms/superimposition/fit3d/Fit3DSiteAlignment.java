@@ -8,9 +8,9 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
@@ -49,6 +49,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final boolean exhaustive;
     private final boolean restrictToExchanges;
     private final SubstitutionMatrix substitutionMatrix;
+    private final boolean containsNonAminoAcids;
 
     private double cutoffScore;
 
@@ -66,6 +67,14 @@ public class Fit3DSiteAlignment implements Fit3D {
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubStructureSuperimpositionException {
         this.site1 = builder.site1.getCopy();
         this.site2 = builder.site2.getCopy();
+
+        this.containsNonAminoAcids = site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily)) ||
+                site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
+
+        if (containsNonAminoAcids) {
+            logger.info("sites contain non-amino acid residues, no Xie score can be calculated");
+        }
+
         this.exhaustive = builder.exhaustive;
         this.restrictToExchanges = builder.restrictToExchanges;
 
@@ -135,7 +144,9 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         if (this.currentBestSuperimposition != null) {
             this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
-            calculateXieScore();
+            if (!containsNonAminoAcids) {
+                calculateXieScore();
+            }
             outputSummary();
         } else {
             logger.info("no suitable alignment could be found");
@@ -171,8 +182,8 @@ public class Fit3DSiteAlignment implements Fit3D {
                         .collect(Collectors.joining("|", String.format("%-7s", "s2") + "|", "|")) + "\n" +
                 String.format("%-7s", "RMSD") + "|" + this.currentBestSuperimposition.getRmsd() + "\n" +
                 String.format("%-7s", "frac") + "|" + getAlignedResidueFraction() + "\n" +
-                String.format("%-7s", "XieS") + "|" + getXieScore().getScore() + "\n" +
-                String.format("%-7s", "XieExp") + "|" + getXieScore().getSignificance() + "\n" +
+                String.format("%-7s", "XieS") + "|" + (this.containsNonAminoAcids ? "NaN" : getXieScore().getScore()) + "\n" +
+                String.format("%-7s", "XieExp") + "|" + (this.containsNonAminoAcids ? "NaN" : getXieScore().getSignificance()) + "\n" +
                 String.format("%-7s", "s1algn") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2algn") + site2Joiner.toString();
         logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);
@@ -266,17 +277,15 @@ public class Fit3DSiteAlignment implements Fit3D {
                 if (this.restrictToExchanges) {
                     // align the subset of sites with Fit3D
                     StructuralMotif query = this.site1.getCopy();
-                    List<LeafIdentifier> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
+                    List<LeafSubstructure<?,?>> queryLeavesToBeRemoved = this.site1.getLeafSubstructures().stream()
                             .filter(leafSubstructure -> !site1Partition.contains(leafSubstructure))
-                            .map(LeafSubstructure::getLeafIdentifier)
                             .collect(Collectors.toList());
-                    queryLeavesToBeRemoved.forEach(query::removeLeafSubstructure);
+                    queryLeavesToBeRemoved.forEach(query::removeSubstructure);
                     StructuralMotif target = this.site2.getCopy();
-                    List<LeafIdentifier> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
+                    List<LeafSubstructure<?,?>> targetLeavesToBeRemoved = this.site2.getLeafSubstructures().stream()
                             .filter(leafSubstructure -> !site2Partition.contains(leafSubstructure))
-                            .map(LeafSubstructure::getLeafIdentifier)
                             .collect(Collectors.toList());
-                    targetLeavesToBeRemoved.forEach(target::removeLeafSubstructure);
+                    targetLeavesToBeRemoved.forEach(target::removeSubstructure);
 
                     // configure Fit3D
                     Fit3D fit3d;

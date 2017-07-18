@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -103,7 +104,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to the structure, that is to be parsed.
          *
-         * @param localPDB      The local pdb.
+         * @param localPDB The local pdb.
          * @param pdbIdentifier The PDB identifier.
          * @return Branch selection
          */
@@ -112,7 +113,7 @@ public class StructureParser {
         /**
          * The location of a local PDB installation in addition to a list of structures, that are to be parsed.
          *
-         * @param localPDB       The local pdb.
+         * @param localPDB The local pdb.
          * @param pdbIdentifiers The PDB identifiers.
          * @return Branch selection
          */
@@ -134,6 +135,14 @@ public class StructureParser {
          */
         MultiBranchStep fileLocations(List<String> targetStructures);
 
+        /**
+         * Parses a structure from an input stream of a pdb file.
+         *
+         * @param inputStream The input stream of a pdb file.
+         * @return Branch selection
+         */
+        SingleBranchStep inputStream(InputStream inputStream);
+
     }
 
     public interface AdditionalLocalSourceStep {
@@ -152,7 +161,7 @@ public class StructureParser {
          * Reads the provided chainIdentifier list from a file. Each line in the file should have the format:
          * <pre>[PDBId][separator][ChainId] </pre>
          *
-         * @param path      The path of the chainIdentifier list file
+         * @param path The path of the chainIdentifier list file
          * @param separator The separator between the PDBId and the ChainId
          * @return The MultiParser.
          */
@@ -492,6 +501,21 @@ public class StructureParser {
         public MultiBranchStep paths(List<Path> paths) {
             this.contentIterator = new StructureContentIterator(Path.class, paths);
             return new MultiReducingSelector(this);
+        }
+
+        @Override
+        public SingleBranchStep inputStream(InputStream inputStream) {
+            File tempFile;
+            try {
+                tempFile = File.createTempFile("temporaryStructure", ".pdb");
+                Objects.requireNonNull(tempFile);
+                tempFile.deleteOnExit();
+                Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new UncheckedIOException("Unable to parse structure from input stream.", e);
+            }
+            this.contentIterator = new StructureContentIterator(tempFile);
+            return new SingleReducingSelector(this);
         }
 
         @Override

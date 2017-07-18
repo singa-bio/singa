@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  *
  * @author cl
  */
-public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, Vector2D> {
+public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, Vector2D, Integer> {
 
     @Override
     public int addEdgeBetween(int identifier, RegularNode source, RegularNode target) {
@@ -19,5 +19,12 @@ public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, 
         return addEdgeBetween(nextNodeIdentifier(), source, target);
     }
 
+    @Override
+    public Integer nextNodeIdentifier() {
+        if (getNodes().isEmpty()) {
+            return 0;
+        }
+        return getNodes().size();
+    }
 
 }

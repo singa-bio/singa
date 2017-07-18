@@ -1,9 +1,9 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class ShortestPathFinderTest {
 
     @Before
     public void initObjects() {
-        this.linearGraph = GraphFactory.buildLinearGraph(10, this.boundingBox);
+        this.linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
     }
 
     @Test

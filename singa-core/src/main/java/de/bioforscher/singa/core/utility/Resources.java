@@ -6,9 +6,9 @@ import java.util.Objects;
 
 /**
  * Access to commonly used test functions and constants.
- * Created by S on 29.09.2016.
+ * @author sb
  */
-public class TestUtils {
+public class Resources {
 
     public static String getResourceAsFilepath(String filename) {
         ClassLoader ccl = Thread.currentThread().getContextClassLoader();

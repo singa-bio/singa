@@ -30,7 +30,7 @@ public class StructureWriterTest {
         Structure reparsedStructure = StructureParser.local()
                 .path(structureOutputPath)
                 .parse();
-        assertEquals(pdbIdentifier.toUpperCase(), reparsedStructure.getPdbIdentifier());
+        assertEquals(pdbIdentifier, reparsedStructure.getPdbIdentifier());
     }
 
     @Test

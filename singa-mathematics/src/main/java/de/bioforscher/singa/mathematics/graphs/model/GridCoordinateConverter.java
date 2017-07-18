@@ -1,16 +1,16 @@
-package de.bioforscher.singa.mathematics.graphs.util;
+package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
  * @author cl
  */
-public class RectangularGridCoordinateConverter {
+public class GridCoordinateConverter {
 
     private final int numberOfColumns;
     private final int numberOfRows;
 
-    public RectangularGridCoordinateConverter(int numberOfColumns, int numberOfRows) {
+    public GridCoordinateConverter(int numberOfColumns, int numberOfRows) {
         this.numberOfColumns = numberOfColumns;
         this.numberOfRows = numberOfRows;
     }

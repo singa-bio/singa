@@ -1,6 +1,5 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
-import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 /**
  * To handle structures with multiple models (of NMR).
  */
-public class StructuralModel extends BranchSubstructure<StructuralModel> {
+public class StructuralModel extends BranchSubstructure<StructuralModel, Integer> {
 
     /**
      * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
@@ -46,10 +45,18 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
     }
 
     @Override
-    public String toString() {
-        return "StructuralModel{" + getSubstructures().stream()
-                .map(Substructure::toString)
-                .collect(Collectors.joining(",")) + "}";
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StructuralModel that = (StructuralModel) o;
+
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     @Override
@@ -57,4 +64,5 @@ public class StructuralModel extends BranchSubstructure<StructuralModel> {
         //FIXME not yet implemented
         throw new UnsupportedOperationException();
     }
+
 }

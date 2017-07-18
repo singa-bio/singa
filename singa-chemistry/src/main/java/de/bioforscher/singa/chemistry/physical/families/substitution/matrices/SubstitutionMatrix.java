@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.physical.families.substitution.matrices;
 
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public enum SubstitutionMatrix {
         Logger logger = LoggerFactory.getLogger(SubstitutionMatrix.class);
 
         // get resource
-        InputStream stream = TestUtils.getResourceAsStream(resourceLocation);
+        InputStream stream = Resources.getResourceAsStream(resourceLocation);
         LabeledSymmetricMatrix<String> stringLabeledMatrix = null;
         // parse matrix
         try {

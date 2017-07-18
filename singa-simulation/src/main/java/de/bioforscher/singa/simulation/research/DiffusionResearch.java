@@ -4,8 +4,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -51,7 +51,7 @@ public class DiffusionResearch {
         System.out.println("Initializing Graph ...");
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
@@ -100,7 +100,7 @@ public class DiffusionResearch {
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(speciesList);
 
-        RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes,
+        GridCoordinateConverter converter = new GridCoordinateConverter(numberOfNodes,
                 numberOfNodes);
 
         int observedNodeIdentifier = converter.convert(new Vector2D(numberOfNodes-1, (numberOfNodes/2)-1));

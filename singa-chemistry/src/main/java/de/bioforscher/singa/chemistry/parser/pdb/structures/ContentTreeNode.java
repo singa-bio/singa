@@ -22,6 +22,7 @@ public class ContentTreeNode {
 
     private StructureLevel level;
     private String identifier;
+    private char insertionCode;
     private Map<Atom, UniqueAtomIdentifer> identiferMap;
     private Atom atom;
 
@@ -39,6 +40,11 @@ public class ContentTreeNode {
         this.identifier = identifier;
         this.atom = atom;
         this.children = null;
+    }
+
+    private ContentTreeNode(String identifier, StructureLevel level, char insertionCode) {
+        this(identifier, level);
+        this.insertionCode = insertionCode;
     }
 
     public StructureLevel getLevel() {
@@ -59,6 +65,10 @@ public class ContentTreeNode {
 
     public void setAtom(Atom atom) {
         this.atom = atom;
+    }
+
+    public char getInsertionCode() {
+        return insertionCode;
     }
 
     public List<ContentTreeNode> getChildren() {
@@ -101,7 +111,7 @@ public class ContentTreeNode {
                     break;
                 }
                 case CHAIN: {
-                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF));
+                    iterator.add(new ContentTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF,  identifer.getLeafInsertionCode()));
                     logger.trace("Added leaf {}", identifer.getLeafIdentifer());
                     break;
                 }
@@ -146,7 +156,7 @@ public class ContentTreeNode {
                 case CHAIN: {
                     while (iterator.hasNext()) {
                         ContentTreeNode leaf = iterator.next();
-                        if (leaf.identifier.equals(String.valueOf(identifer.getLeafIdentifer()))) {
+                        if (leaf.identifier.equals(String.valueOf(identifer.getLeafIdentifer())) && leaf.insertionCode == identifer.getLeafInsertionCode()) {
                             logger.trace("Found correct leaf, appending atom {}",identifer.getAtomSerial());
                             leaf.children.add(new ContentTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
                             leaf.identiferMap.put(atom, identifer);
@@ -154,7 +164,7 @@ public class ContentTreeNode {
                         }
                     }
                     logger.trace("Added leaf {} with initial atom {} ", identifer.getLeafIdentifer(), identifer.getAtomSerial());
-                    ContentTreeNode leafNode = new ContentTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF);
+                    ContentTreeNode leafNode = new ContentTreeNode(String.valueOf(identifer.getLeafIdentifer()), LEAF, identifer.getLeafInsertionCode());
                     leafNode.identiferMap.put(atom, identifer);
                     leafNode.children.add(new ContentTreeNode(String.valueOf(identifer.getAtomSerial()), ATOM, atom));
                     iterator.add(leafNode);

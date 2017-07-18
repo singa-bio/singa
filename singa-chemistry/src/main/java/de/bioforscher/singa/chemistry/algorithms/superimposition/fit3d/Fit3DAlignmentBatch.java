@@ -116,7 +116,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
             Fit3D fit3d;
             if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
                 try {
-                    BranchSubstructure<?> target = Fit3DAlignmentBatch.this.multiParser.next().getFirstModel()
+                    BranchSubstructure<?, ?> target = Fit3DAlignmentBatch.this.multiParser.next().getFirstModel()
                             .orElseThrow(() -> new Fit3DException("no model available for " +
                                     Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier() +
                                     "/" + Fit3DAlignmentBatch.this.multiParser.getCurrentChainIdentifier()));
