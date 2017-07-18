@@ -20,7 +20,7 @@ public class StructuralMotifTest {
     private StructuralMotif structuralMotif;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup() throws Exception {
         Structure motifStructure = StructureParser.local()
                 .fileLocation(TestUtils.getResourceAsFilepath("Asn_3m4p.pdb"))
                 .everything()
@@ -46,4 +46,7 @@ public class StructuralMotifTest {
         assertTrue(copiedMotif.getOrderedLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
                 < copiedMotif.getOrderedLeafSubstructures().get(0).getIdentifier().getSerial());
     }
+
+
+
 }

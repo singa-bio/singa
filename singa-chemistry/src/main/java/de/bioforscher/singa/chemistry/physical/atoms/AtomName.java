@@ -8,7 +8,7 @@ import java.util.EnumSet;
 import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.*;
 
 /**
- * Most of the AtomNames in the PDB.
+ * Most (some) of the AtomNames in the PDB.
  */
 public enum AtomName {
 

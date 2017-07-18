@@ -77,7 +77,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     @Override
     public String toString() {
-        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier + (this.insertionCode != 32 ? this.insertionCode : "");
+        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier + (this.insertionCode != DEFAULT_INSERTION_CODE  ? this.insertionCode : "");
     }
 
     @Override

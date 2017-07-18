@@ -163,13 +163,9 @@ public class RegularAtom implements Atom {
 
     @Override
     public String toString() {
-        return "RegularAtom{" +
-                "pdbIdentifier=" + this.identifier +
-                ", element=" + this.element +
-                ", atomName=" + this.atomName +
-                ", atomNameString='" + this.atomNameString + '\'' +
-                ", position=" + this.position +
-                '}';
+        return "Atom: " + this.atomName +
+                " " + this.identifier +
+                " (" + this.position.getX() + ", " + this.position.getY() + ", " + this.position.getZ() + ")";
     }
 
     @Override

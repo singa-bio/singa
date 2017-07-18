@@ -2,11 +2,10 @@ package de.bioforscher.singa.chemistry.physical.leaves;
 
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 /**
- * A nucleotide is a grouping element that should only contain atoms. Each and every residue has a associate NucleotideType,
- * that determines the nucleotide.
+ * A nucleotide is a grouping element that should only contain atoms. Each and every residue has a associate
+ * NucleotideType, that determines the nucleotide.
  *
  * @author fk
  */
@@ -47,9 +46,4 @@ public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
         return this.modified;
     }
 
-    @Override
-    public void setPosition(Vector3D position) {
-        //FIXME not yet implemented
-        throw new UnsupportedOperationException();
-    }
 }

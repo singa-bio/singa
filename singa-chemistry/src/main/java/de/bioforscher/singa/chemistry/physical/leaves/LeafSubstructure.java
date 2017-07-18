@@ -275,14 +275,21 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      *
      * @param source The source atom.
      * @param target The target atom.
-     * @return The identifer to retrieve this edge.
+     * @return The identifer of the added edge.
      */
     @Override
     public int addEdgeBetween(Atom source, Atom target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
-
+    /**
+     * Adds a bond of the given type connecting the the given atoms.
+     *
+     * @param source The source atom.
+     * @param target The target atom.
+     * @param type The type of the bond.
+     * @return The identifer of the added edge.
+     */
     public int addEdgeBetween(Atom source, Atom target, BondType type) {
         return addEdgeBetween(new Bond(nextEdgeIdentifier(), type), source, target);
     }
@@ -318,6 +325,16 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return Vectors3D.getCentroid(this.atoms.values().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Moves all atoms in this LeafSubstructure, such that the centroid of this LeafSubstructure is at the specified position.
+     *
+     * @param position The new centroid position.
+     */
+    @Override
+    public void setPosition(Vector3D position) {
+        this.atoms.values().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
     }
 
     /**
@@ -406,11 +423,18 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return AtomToken.assemblePDBLine(this);
     }
 
-
+    /**
+     * Returns true if this atom has been annotated as HETATM in the source pdb file.
+     * @return true if this atom has been annotated as HETATM in the source pdb file.
+     */
     public boolean isAnnotatedAsHetAtom() {
         return this.annotatedAsHetAtom;
     }
 
+    /**
+     * Sets the annotation of this atom as a HETATM.
+     * @param annotatedAsHetAtom true, if this atom should be annotated as HETATM.
+     */
     public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
         this.annotatedAsHetAtom = annotatedAsHetAtom;
     }
@@ -456,11 +480,13 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     @Override
     public String flatToString() {
-        return getClass().getSimpleName()+": "+getIdentifier();
+        return getClass().getSimpleName()+": "+getFamily().getThreeLetterCode()+" "+getIdentifier();
     }
 
     @Override
     public String deepToString() {
-        return flatToString() + "{atoms: "+getNodes().stream().map(Atom::toString).collect(Collectors.joining(","))+"}";
+        return flatToString() + ", with Atoms: {"+getNodes().stream()
+                .map(atom -> atom.getAtomNameString() + "-"+atom.getIdentifier())
+                .collect(Collectors.joining(", "))+"}";
     }
 }

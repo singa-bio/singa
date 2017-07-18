@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
+
 /**
  * An implementation of the Fit3D algorithm for substructure search.
  *
@@ -31,7 +33,7 @@ public class Fit3DAlignment implements Fit3D {
     private static final Logger logger = LoggerFactory.getLogger(Fit3DAlignment.class);
 
     private final StructuralMotif queryMotif;
-    private final BranchSubstructure<?,?> target;
+    private final BranchSubstructure<?, ?> target;
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
     private double squaredQueryExtent;
@@ -46,7 +48,7 @@ public class Fit3DAlignment implements Fit3D {
         // obtain copies of the input structures
         // TODO this cast is not nice, can we do something better?
         this.queryMotif = builder.queryMotif.getCopy();
-        this.target = (BranchSubstructure<?,?>) builder.target.getCopy();
+        this.target = (BranchSubstructure<?, ?>) builder.target.getCopy();
         this.rmsdCutoff = builder.rmsdCutoff;
         // use squared distance tolerance
         this.squaredDistanceTolerance = builder.distanceTolerance * builder.distanceTolerance;
@@ -75,7 +77,7 @@ public class Fit3DAlignment implements Fit3D {
         calculateMotifExtent();
 
         // calculate squared distance matrix
-        this.squaredDistanceMatrix = this.target.getSquaredDistanceMatrix();
+        this.squaredDistanceMatrix = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(this.target.getLeafSubstructures(), LeafSubstructure::getPosition);
         logger.debug("the target structure squared distance matrix is\n{}",
                 this.squaredDistanceMatrix.getStringRepresentation());
 
@@ -188,7 +190,7 @@ public class Fit3DAlignment implements Fit3D {
                 .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<LeafSubstructure<?,?>> toBeRemoved = this.target.getLeafSubstructures().stream()
+        List<LeafSubstructure<?, ?>> toBeRemoved = this.target.getLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
                 .collect(Collectors.toList());
         toBeRemoved.forEach(this.target::removeSubstructure);

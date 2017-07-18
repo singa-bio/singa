@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.chemistry.physical.atoms.AtomName.*;
 
 /**
- * A {@link AminoAcidFamily} should contain the general data of an amino acid of the same type.
+ * A {@link AminoAcidFamily} contains the general information of a type of amino acid.
  *
  * @author cl
  */

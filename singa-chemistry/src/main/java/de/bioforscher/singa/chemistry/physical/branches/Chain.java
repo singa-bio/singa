@@ -8,7 +8,6 @@ import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -130,6 +129,17 @@ public class Chain extends BranchSubstructure<Chain, String> {
         return (LeafSubstructure<?, ?>) this.substructures.get(identifier);
     }
 
+    @Override
+    public String flatToString() {
+        return "Chain " + identifier + " containing "+this.getSubstructures().size()+" LeafSubstructures";
+    }
+
+    @Override
+    public String deepToString() {
+        return "Chain " + identifier + ", with Leaves: {" + getLeafSubstructures().stream()
+                .map(leaf -> leaf.getFamily().getThreeLetterCode()+"-"+ leaf.getIdentifier().getSerial())
+                .collect(Collectors.joining(", ")) + "}";
+    }
 
     @Override
     public Chain getCopy() {
@@ -151,18 +161,6 @@ public class Chain extends BranchSubstructure<Chain, String> {
         return identifier != null ? identifier.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return getLeafSubstructures().stream()
-                .findAny()
-                .map(LeafSubstructure::getPdbIdentifier)
-                .orElse("") + "_" + getIdentifier();
-    }
 
-    @Override
-    public void setPosition(Vector3D position) {
-        //FIXME not yet implemented
-        throw new UnsupportedOperationException();
-    }
 
 }

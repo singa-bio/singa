@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.Fit3DBuilder;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
@@ -9,7 +10,6 @@ import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -135,10 +135,25 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
         return getLeafSubstructures().size();
     }
 
+    /**
+     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
+     * {@link Fit3DBuilder Fit3D}. The {@link MatcherFamily} allows exchanges for groups of {@link LeafSubstructure}s
+     * with similar physicochemical attributes.
+     *
+     * @param leafIdentifier The leaf to add the exchange to.
+     * @param matcherFamily The {@link MatcherFamily}.
+     */
     public void addExchangeableFamily(LeafIdentifier leafIdentifier, MatcherFamily matcherFamily) {
         matcherFamily.getMembers().forEach(matcherFamilyMember -> addExchangeableFamily(leafIdentifier, matcherFamilyMember));
     }
 
+    /**
+     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
+     * {@link Fit3DBuilder Fit3D}.
+     *
+     * @param leafIdentifier The leaf to add the exchange to.
+     * @param nucleotideFamily The {@link Nucleotide} that can be exchanged.
+     */
     public void addExchangeableFamily(LeafIdentifier leafIdentifier, NucleotideFamily nucleotideFamily) {
         getLeafSubstructures().stream()
                 .filter(isNucleotide())
@@ -151,6 +166,13 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
                 .addExchangeableFamily(nucleotideFamily);
     }
 
+    /**
+     * For a given {@link LeafIdentifier} a possible exchange is added. This exchange is considered when searching with
+     * {@link Fit3DBuilder Fit3D}.
+     *
+     * @param leafIdentifier The leaf to add the exchange to.
+     * @param aminoAcidFamily The {@link AminoAcid} that can be exchanged.
+     */
     public void addExchangeableFamily(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily) {
         getLeafSubstructures().stream()
                 .filter(isAminoAcid())
@@ -165,7 +187,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     }
 
     /**
-     * Assigns an {@link AminoAcidFamily} to all members as exchange.
+     * Assigns an {@link AminoAcidFamily} to all members of this motif as exchange.
      *
      * @param aminoAcidFamily The {@link AminoAcidFamily} which should be assigned as exchangeable type.
      */
@@ -178,7 +200,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     }
 
     /**
-     * Assigns an {@link NucleotideFamily} to all members as exchange.
+     * Assigns an {@link NucleotideFamily} to all members of this motif as exchange.
      *
      * @param nucleotideFamily The {@link NucleotideFamily} which should be assigned as exchangeable type.
      */
@@ -190,7 +212,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     }
 
     /**
-     * Assigns each member of a {@link MatcherFamily} to all members as exchange.
+     * Assigns each member of a {@link MatcherFamily} to all members of this motif as exchange.
      *
      * @param matcherFamily The {@link MatcherFamily} that bundles all members which should be assigned as exchangeable
      * type.
@@ -202,16 +224,9 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     }
 
 
-
     @Override
     public StructuralMotif getCopy() {
         return new StructuralMotif(this);
-    }
-
-    @Override
-    public void setPosition(Vector3D position) {
-        //FIXME not yet implemented
-        throw new UnsupportedOperationException();
     }
 
 }

@@ -1,6 +1,5 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
-import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.List;
@@ -43,13 +42,6 @@ public class StructuralModel extends BranchSubstructure<StructuralModel, Integer
     @Override
     public StructuralModel getCopy() {
         return new StructuralModel(this);
-    }
-
-    @Override
-    public String toString() {
-        return "StructuralModel{" + getSubstructures().stream()
-                .map(Substructure::toString)
-                .collect(Collectors.joining(",")) + "}";
     }
 
     @Override

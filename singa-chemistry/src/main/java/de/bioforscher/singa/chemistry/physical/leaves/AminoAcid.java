@@ -4,10 +4,9 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 /**
- * A residue is a grouping element that should only contain atoms. Each and every residue has a associate ResidueType,
+ * A AminoAcid is a grouping element that should only contain atoms. Each and every AminoAcid has a associate ResidueType,
  * that determines the amino acid (and the overarching features).
  *
  * @author cl
@@ -20,8 +19,8 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     /**
      * Creates a new AminoAcid.
      *
-     * @param leafIdentifier The pdbIdentifier.
-     * @param family The ResidueType.
+     * @param leafIdentifier The identifier.
+     * @param family The {@link AminoAcidFamily}.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family) {
         super(leafIdentifier, family);
@@ -29,15 +28,21 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
         this.modifiedName = null;
     }
 
-    public AminoAcid(int identifer, AminoAcidFamily family) {
-        this(new LeafIdentifier(identifer), family);
+    /**
+     * Creates a new AminoAcid with a default leaf identifier with the given serial and family type.
+     *
+     * @param leafsSerial The leaf serial.
+     * @param family The {@link AminoAcidFamily}.
+     */
+    public AminoAcid(int leafsSerial, AminoAcidFamily family) {
+        this(new LeafIdentifier(leafsSerial), family);
     }
 
     /**
-     * Creates a new modified AminoAcid with a pdbIdentifier and ResidueType.
+     * Creates a new AminoAcid marked as modified with a identifier and {@link AminoAcidFamily}.
      *
-     * @param leafIdentifier The pdbIdentifier.
-     * @param family The ResidueType.
+     * @param leafIdentifier The identifier.
+     * @param family The {@link AminoAcidFamily}.
      * @param modifiedName The name of the modified amino acid.
      */
     public AminoAcid(LeafIdentifier leafIdentifier, AminoAcidFamily family, String modifiedName) {
@@ -47,14 +52,14 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * This is a copy constructor. Creates a new aminoAcid with the same attributes as the given aminoAcid. This
+     * This is a copy constructor. Creates a new amino acid with the same attributes as the given amino acid. This
      * also recursively creates copies of all the underlying substructures and atoms. The neighbours of this
      * substructure are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations
      * to the lifecycle of the substructure to copy. If you want to keep the neighbouring substructures, copy the
      * superordinate substructure that contains this substructure and it will also traverse and copy the neighbouring
      * substructures.
      *
-     * @param aminoAcid The aminoAcid to copy
+     * @param aminoAcid The amino acid to copy
      */
     public AminoAcid(AminoAcid aminoAcid) {
         super(aminoAcid);
@@ -63,23 +68,28 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Returns the one letter code of this residue.
+     * Returns the one letter code of this AminoAcid.
      *
-     * @return The one letter code of this residue.
+     * @return The one letter code of this AminoAcid.
      */
     public String getOneLetterCode() {
         return getFamily().getOneLetterCode();
     }
 
     /**
-     * Returns the three letter code of this residue.
+     * Returns the three letter code of this AminoAcid.
      *
-     * @return The three letter code of this residue.
+     * @return The three letter code of this AminoAcid.
      */
     public String getThreeLetterCode() {
         return this.modified ? this.modifiedName : getFamily().getThreeLetterCode();
     }
 
+    /**
+     * Returns true, if this amino acid is no standard amino acid.
+     *
+     * @return true, if this amino acid is no standard amino acid.
+     */
     public boolean isModified() {
         return this.modified;
     }
@@ -130,9 +140,9 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Returns a copy of this residue.
+     * Returns a copy of this AminoAcid.
      *
-     * @return A copy of this residue.
+     * @return A copy of this AminoAcid.
      */
     @Override
     public AminoAcid getCopy() {
@@ -140,24 +150,13 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
     }
 
     /**
-     * Returns the name (i.e. the three letter code) of this residue.
+     * Returns the name (i.e. the three letter code) of this AminoAcid.
      *
      * @return The three letter code.
      */
     @Override
     public String getName() {
         return this.getThreeLetterCode();
-    }
-
-    /**
-     * Moves all atoms in this residue, such that the centroid of this residue is at the specified position.
-     *
-     * @param position The new centroid position.
-     */
-    @Override
-    public void setPosition(Vector3D position) {
-        //FIXME not yet implemented
-        throw new UnsupportedOperationException();
     }
 
 }
