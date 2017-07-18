@@ -34,7 +34,7 @@ public class ShortestPathFinderTest {
         Objects.requireNonNull(shortestPath);
         int start = 9;
         for (RegularNode node: shortestPath) {
-            assertEquals(node.getIdentifier(), start--);
+            assertEquals(node.getIdentifier().intValue(), start--);
         }
     }
 

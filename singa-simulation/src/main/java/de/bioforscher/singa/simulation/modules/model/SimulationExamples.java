@@ -438,8 +438,7 @@ public class SimulationExamples {
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                GraphFactory.buildLinearGraph(1, defaultBoundingBox));
-                Graphs.buildGridGraph(20, 20, defaultBoundingBox, false));
+                Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         model.getCompartments().keySet().forEach(graph::addSection);
 

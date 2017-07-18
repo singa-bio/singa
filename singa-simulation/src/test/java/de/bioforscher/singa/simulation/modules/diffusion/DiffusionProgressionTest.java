@@ -129,8 +129,6 @@ public class DiffusionProgressionTest {
     }
 
     private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, Species species) {
-        // grants access to easier access to grid coordinates
-        RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes, numberOfNodes);
         // observe the node in the middle on the right
         GridCoordinateConverter converter = new GridCoordinateConverter(numberOfNodes, numberOfNodes);
         // returns the node in the middle on the right
