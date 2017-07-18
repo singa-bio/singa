@@ -109,7 +109,7 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     public AminoAcid getPrototype() {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
+                .inputStream(TestUtils.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR + getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
                 .parse()
                 .getAllAminoAcids()
                 .get(0);
