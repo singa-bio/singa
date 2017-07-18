@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -109,7 +109,7 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     public AminoAcid getPrototype() {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
-                .inputStream(TestUtils.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR + getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
+                .inputStream(Resources.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR + getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
                 .parse()
                 .getAllAminoAcids()
                 .get(0);

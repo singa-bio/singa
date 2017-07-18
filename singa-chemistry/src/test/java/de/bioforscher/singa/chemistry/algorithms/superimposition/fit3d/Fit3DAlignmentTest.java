@@ -10,7 +10,7 @@ import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
@@ -81,7 +81,7 @@ public class Fit3DAlignmentTest {
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
-                Paths.get(TestUtils.getResourceAsFilepath("RF00167")))
+                Paths.get(Resources.getResourceAsFilepath("RF00167")))
                 .collect(Collectors.toList());
         StructureParser.MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)

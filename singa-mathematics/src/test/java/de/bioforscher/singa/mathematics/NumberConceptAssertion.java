@@ -1,4 +1,4 @@
-package de.bioforscher.singa.mathematics.TestUtilities;
+package de.bioforscher.singa.mathematics;
 
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;

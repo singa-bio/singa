@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -133,7 +133,7 @@ public class StructureParserTest {
     public void shouldAssignInformationFromFileName() {
         StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
                 .parse();
@@ -144,7 +144,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseFromInputStream() {
-        InputStream inputStream = TestUtils.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
+        InputStream inputStream = Resources.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
         Structure structure = StructureParser.local()
                 .inputStream(inputStream)
                 .parse();
@@ -169,7 +169,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseAllChainsFromLocalFile() {
         StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
     }
