@@ -58,18 +58,20 @@ public class Structure {
 
     /**
      * Sets the PDB identifier. The identifier has to conform to the patterns in {@link PDBIdentifier}.
+     *
      * @param pdbIdentifier The PDB Identifier.
      */
     public void setPdbIdentifier(String pdbIdentifier) {
         if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches()) {
             this.pdbIdentifier = pdbIdentifier.toLowerCase();
         } else {
-            logger.warn("The identifier {} is not a valid PDB identifier. No identifier has been set.");
+            logger.warn("The identifier {} is not a valid PDB identifier. No identifier has been set.", pdbIdentifier);
         }
     }
 
     /**
      * Returns the title of the structure.
+     *
      * @return The title of the structure.
      */
     public String getTitle() {
@@ -78,6 +80,7 @@ public class Structure {
 
     /**
      * Sets the title of the structure.
+     *
      * @param title The title of the structure.
      */
     public void setTitle(String title) {

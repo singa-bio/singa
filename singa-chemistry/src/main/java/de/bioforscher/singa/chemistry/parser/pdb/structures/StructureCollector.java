@@ -176,11 +176,12 @@ public class StructureCollector {
         collectAtomInformation();
         createContentTree();
 
+        logger.debug("creating structure for {}", this.contentTree.getIdentifier());
+
         Structure structure = new Structure();
         structure.setPdbIdentifier(this.contentTree.getIdentifier());
         structure.setTitle(this.titleBuilder.toString());
 
-        logger.debug("creating structure");
         int chainGraphId = 0;
         for (ContentTreeNode modelNode : this.contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("collecting chains for model {}", modelNode.getIdentifier());
