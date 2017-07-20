@@ -41,6 +41,10 @@ public class MembraneContainer implements ConcentrationContainer {
         this.innerPhase = new HashMap<>();
     }
 
+    public MembraneContainer(MembraneContainer container) {
+        this(container.outerPhaseSection, container.innerPhaseSection, container.membrane);
+    }
+
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         Quantity<MolarConcentration> concentrationSum = this.outerPhase.get(chemicalEntity);
@@ -86,8 +90,8 @@ public class MembraneContainer implements ConcentrationContainer {
             return this.innerPhase;
         } else if (cellSection.equals(this.membrane)) {
             Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = new HashMap<>();
-            for(Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry: innerLayer.entrySet()) {
-                concentrations.put(entry.getKey(), entry.getValue().add(outerLayer.get(entry.getKey())).divide(2.0));
+            for(Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry: this.innerLayer.entrySet()) {
+                concentrations.put(entry.getKey(), entry.getValue().add(this.outerLayer.get(entry.getKey())).divide(2.0));
             }
             return concentrations;
         } else if (cellSection.equals(this.membrane.getInnerLayer())) {
@@ -172,23 +176,23 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     public Membrane getMembrane() {
-        return membrane;
+        return this.membrane;
     }
 
     public CellSection getOuterPhaseSection() {
-        return outerPhaseSection;
+        return this.outerPhaseSection;
     }
 
     public CellSection getOuterLayerSection() {
-        return membrane.getOuterLayer();
+        return this.membrane.getOuterLayer();
     }
 
     public CellSection getInnerLayerSection() {
-        return membrane.getInnerLayer();
+        return this.membrane.getInnerLayer();
     }
 
     public CellSection getInnerPhaseSection() {
-        return innerPhaseSection;
+        return this.innerPhaseSection;
     }
 
     @Override
@@ -199,5 +203,11 @@ public class MembraneContainer implements ConcentrationContainer {
         }
         return result;
     }
+
+    @Override
+    public MembraneContainer copy() {
+        return new MembraneContainer(this);
+    }
+
 
 }

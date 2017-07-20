@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.membranetransport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
@@ -18,7 +19,9 @@ import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -28,6 +31,13 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class PassiveMembraneTransport implements Module {
 
+    private Quantity<Time> fullTimeStep;
+    private Quantity<Time> halfTimeStep;
+
+    enum DeltaSection {
+        OUTER_PHASE, OUTER_LAYER, INNER_LAYER, INNER_PHASE
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransport.class);
     private static final double epsilon = 0.0001;
 
@@ -36,11 +46,20 @@ public class PassiveMembraneTransport implements Module {
     private double kOut;
     private double kFlip;
 
-    private Set<Delta> temoraryDeltas;
+    private Map<DeltaSection, Double> fullDeltas;
+    private MembraneContainer fullConcentrations;
+    private Map<DeltaSection, Double> halfDeltas;
+    private MembraneContainer halfConcentrations;
+    private Map<DeltaSection, CellSection> sectionMapping;
+
+    private Set<Delta> temporaryDeltas;
 
     public PassiveMembraneTransport() {
         this.chemicalEntities = new HashSet<>();
-        this.temoraryDeltas = new HashSet<>();
+        this.temporaryDeltas = new HashSet<>();
+        this.fullDeltas = new EnumMap<>(DeltaSection.class);
+        this.halfDeltas = new EnumMap<>(DeltaSection.class);
+        this.sectionMapping = new EnumMap<>(DeltaSection.class);
     }
 
     @Override
@@ -63,82 +82,38 @@ public class PassiveMembraneTransport implements Module {
         // determines the update using the midpoint method
 
         // clear previous deltas
-        this.temoraryDeltas.clear();
+        this.temporaryDeltas.clear();
         // get current concentrations
-        MembraneContainer concentrations = (MembraneContainer) node.getConcentrations();
+        this.fullConcentrations = (MembraneContainer) node.getConcentrations();
         // create now container for temporary storage of half step concentrations
-        MembraneContainer halfConcentrations = new MembraneContainer(concentrations.getOuterPhaseSection(), concentrations.getInnerPhaseSection(), concentrations.getMembrane());
-
-        double outerPhaseDelta = 0.0;
-        double outerLayerDelta = 0.0;
-        double innerLayerDelta = 0.0;
-        double innerPhaseDelta = 0.0;
+        this.halfConcentrations = new MembraneContainer(this.fullConcentrations.getOuterPhaseSection(), this.fullConcentrations.getInnerPhaseSection(), this.fullConcentrations.getMembrane());
 
         double localError = 1.0;
 
         while (localError > epsilon) {
-
             // set full time step
-            Quantity<Time> fullTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
-            setUpParameters(entity, fullTimeStep);
-
-            // outer phase half step concentrations
-            double outerPhaseConcentration = concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue();
-            double outerPhaseHalfStepConcentration = outerPhaseConcentration + 0.5 * calculateOuterPhaseDelta(entity, concentrations);
-            halfConcentrations.setAvailableConcentration(concentrations.getOuterPhaseSection(), entity, Quantities.getQuantity(outerPhaseHalfStepConcentration, MOLE_PER_LITRE));
-
-            // outer layer half step concentrations
-            double outerLayerConcentration = concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-            double outerLayerHalfStepConcentration = outerLayerConcentration + 0.5 * calculateOuterLayerDelta(entity, concentrations);
-            halfConcentrations.setAvailableConcentration(concentrations.getOuterLayerSection(), entity, Quantities.getQuantity(outerLayerHalfStepConcentration, MOLE_PER_LITRE));
-
-            // inner layer half step concentrations
-            double innerLayerConcentration = concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
-            double innerLayerHalfStepConcentration = innerLayerConcentration + 0.5 * calculateInnerLayerDelta(entity, concentrations);
-            halfConcentrations.setAvailableConcentration(concentrations.getInnerLayerSection(), entity, Quantities.getQuantity(innerLayerHalfStepConcentration, MOLE_PER_LITRE));
-
-            // inner phase half step concentrations
-            double innerPhaseConcentration = concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue();
-            double innerPhaseFullDelta = calculateInnerPhaseDelta(entity, concentrations);
-            double innerPhaseHalfStepConcentration = innerPhaseConcentration + 0.5 * innerPhaseFullDelta;
-            halfConcentrations.setAvailableConcentration(concentrations.getInnerPhaseSection(), entity, Quantities.getQuantity(innerPhaseHalfStepConcentration, MOLE_PER_LITRE));
-
+            this.fullTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+            setUpParameters(entity, this.fullTimeStep);
+            // determine deltas for full time step
+            determineFullDeltas(entity);
             // set half time step
-            Quantity<Time> halfTimeStep = EnvironmentalParameters.getInstance().getTimeStep().divide(2.0);
-            setUpParameters(entity, halfTimeStep);
-
-            // calculate deltas
-            outerPhaseDelta = 2.0 * calculateOuterPhaseDelta(entity, halfConcentrations);
-            outerLayerDelta = 2.0 * calculateOuterLayerDelta(entity, halfConcentrations);
-            innerLayerDelta = 2.0 * calculateInnerLayerDelta(entity, halfConcentrations);
-            innerPhaseDelta = 2.0 * calculateInnerPhaseDelta(entity, halfConcentrations);
-
-            // only if there is any change there can be a local error
-            if (innerPhaseFullDelta != 0.0 && innerPhaseDelta != 0) {
-                // calculate error
-                localError = Math.abs(1 - (innerPhaseFullDelta / innerPhaseDelta));
-                logger.trace("The local error is {}.", localError);
-                // determine whether to increase or reduce time step size
-                if (localError > epsilon) {
-                    logger.trace("Reducing time step and trying again.");
-                    EnvironmentalParameters.getInstance().setTimeStep(halfTimeStep.multiply(0.8));
-                } else {
-                    logger.trace("Increasing time step for the epoch.");
-                    EnvironmentalParameters.getInstance().setTimeStep(fullTimeStep.multiply(1.2));
-                }
-            } else {
-                logger.trace("No change has been detected, continuing.", localError);
-                localError = 0.0;
-            }
+            this.halfTimeStep = EnvironmentalParameters.getInstance().getTimeStep().divide(2.0);
+            setUpParameters(entity, this.halfTimeStep);
+            // determine deltas for half time step
+            determineHalfDeltas(entity);
+            // determine biggest local error
+            localError = determineBiggestError();
+            // evaluate error by increasing or decreasing time step
+            evaluateLocalError(localError);
         }
 
         // register deltas
-        registerDelta(concentrations.getOuterPhaseSection(), entity, outerPhaseDelta);
-        registerDelta(concentrations.getOuterLayerSection(), entity, outerLayerDelta);
-        registerDelta(concentrations.getInnerLayerSection(), entity, innerLayerDelta);
-        registerDelta(concentrations.getInnerPhaseSection(), entity, innerPhaseDelta);
+        registerDelta(this.fullConcentrations.getOuterPhaseSection(), entity, this.halfDeltas.get(DeltaSection.OUTER_PHASE));
+        registerDelta(this.fullConcentrations.getInnerLayerSection(), entity, this.halfDeltas.get(DeltaSection.INNER_LAYER));
+        registerDelta(this.fullConcentrations.getOuterLayerSection(), entity, this.halfDeltas.get(DeltaSection.OUTER_LAYER));
+        registerDelta(this.fullConcentrations.getInnerPhaseSection(), entity, this.halfDeltas.get(DeltaSection.INNER_PHASE));
 
-        return this.temoraryDeltas;
+        return this.temporaryDeltas;
     }
 
 
@@ -152,50 +127,159 @@ public class PassiveMembraneTransport implements Module {
     private void registerDelta(CellSection cellSection, ChemicalEntity<?> chemicalEntity, double delta) {
         if (delta != 0.0) {
             // only register, if there is any change
-            this.temoraryDeltas.add(new Delta(cellSection, chemicalEntity, Quantities.getQuantity(delta, MOLE_PER_LITRE)));
+            this.temporaryDeltas.add(new Delta(cellSection, chemicalEntity, Quantities.getQuantity(delta, MOLE_PER_LITRE)));
         }
+    }
+
+    private void determineFullDeltas(ChemicalEntity<?> entity) {
+        for (DeltaSection section : DeltaSection.values()) {
+            determineFullDelta(section, entity);
+        }
+    }
+
+    private void determineFullDelta(DeltaSection section, ChemicalEntity<?> entity) {
+        final double fullConcentration = getConcentration(section, entity);
+        final double fullDelta = calculateDelta(section, entity, this.fullConcentrations);
+        this.fullDeltas.put(section, fullDelta);
+        final double halfStepConcentration = fullConcentration + 0.5 * fullDelta;
+        setConcentration(section, entity, halfStepConcentration);
+    }
+
+    private double getConcentration(DeltaSection section, ChemicalEntity<?> entity) {
+        switch (section) {
+            case OUTER_PHASE:
+                return this.fullConcentrations.getOuterPhaseConcentration(entity).getValue().doubleValue();
+            case OUTER_LAYER:
+                return this.fullConcentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
+            case INNER_LAYER:
+                return this.fullConcentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
+            case INNER_PHASE:
+                return this.fullConcentrations.getInnerPhaseConcentration(entity).getValue().doubleValue();
+        }
+        throw new IllegalStateException("Could not get concentration for section " + section.name());
+    }
+
+    private void setConcentration(DeltaSection section, ChemicalEntity<?> entity, double concentration) {
+        Quantity<MolarConcentration> quantity = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
+        switch (section) {
+            case OUTER_PHASE:
+                this.halfConcentrations.setAvailableConcentration(this.fullConcentrations.getOuterPhaseSection(), entity, quantity);
+                break;
+            case OUTER_LAYER:
+                this.halfConcentrations.setAvailableConcentration(this.fullConcentrations.getOuterLayerSection(), entity, quantity);
+                break;
+            case INNER_LAYER:
+                this.halfConcentrations.setAvailableConcentration(this.fullConcentrations.getInnerLayerSection(), entity, quantity);
+                break;
+            case INNER_PHASE:
+                this.halfConcentrations.setAvailableConcentration(this.fullConcentrations.getInnerPhaseSection(), entity, quantity);
+                break;
+        }
+    }
+
+    private void determineHalfDeltas(ChemicalEntity<?> entity) {
+        for (DeltaSection section : DeltaSection.values()) {
+            determineHalfDelta(section, entity);
+        }
+    }
+
+    private void determineHalfDelta(DeltaSection section, ChemicalEntity<?> entity) {
+        double halfDelta = 2.0 * calculateDelta(section, entity, this.halfConcentrations);
+        this.halfDeltas.put(section, halfDelta);
+    }
+
+    private double calculateDelta(DeltaSection section, ChemicalEntity<?> entity, MembraneContainer concentrations) {
+        switch (section) {
+            case OUTER_PHASE:
+                return calculateOuterPhaseDelta(entity, concentrations);
+            case OUTER_LAYER:
+                return calculateOuterLayerDelta(entity, concentrations);
+            case INNER_LAYER:
+                return calculateInnerLayerDelta(entity, concentrations);
+            case INNER_PHASE:
+                return calculateInnerPhaseDelta(entity, concentrations);
+        }
+        throw new IllegalStateException("Could not calculate delta for section " + section.name());
     }
 
     private double calculateOuterPhaseDelta(ChemicalEntity<?> entity, MembraneContainer concentrations) {
         // (outer phase) outer phase = -kIn * outer phase + kOut * outer layer
-        return -kIn * concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue() +
-                kOut * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
+        return -this.kIn * concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue() +
+                this.kOut * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
     }
 
     private double calculateOuterLayerDelta(ChemicalEntity<?> entity, MembraneContainer concentrations) {
         // (outer layer) outer layer = kIn * outer phase - (kOut + kFlip) * outer layer + kFlip * inner layer
-        return kIn * concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue() -
-                (kOut + kFlip) * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue() +
-                kFlip * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
+        return this.kIn * concentrations.getOuterPhaseConcentration(entity).getValue().doubleValue() -
+                (this.kOut + this.kFlip) * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue() +
+                this.kFlip * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
     }
 
     private double calculateInnerLayerDelta(ChemicalEntity<?> entity, MembraneContainer concentrations) {
         // (inner layer) inner layer = kIn * inner phase - (kOut + kFlip) * inner layer + kFlip * outer layer
-        return kIn * concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue() -
-                (kOut + kFlip) * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue() +
-                kFlip * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
+        return this.kIn * concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue() -
+                (this.kOut + this.kFlip) * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue() +
+                this.kFlip * concentrations.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
     }
 
     private double calculateInnerPhaseDelta(ChemicalEntity<?> entity, MembraneContainer concentrations) {
         // (inner phase) inner phase = -kIn * inner phase + kOut * inner layer
-        return -kIn * concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue() +
-                kOut * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
+        return -this.kIn * concentrations.getInnerPhaseConcentration(entity).getValue().doubleValue() +
+                this.kOut * concentrations.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
     }
 
+    private double determineBiggestError() {
+        DeltaSection sectionWithLargestError = null;
+        double largestError = -Double.MAX_VALUE;
+        for (DeltaSection section : DeltaSection.values()) {
+            double currentError = determineError(section);
+            if (largestError < currentError) {
+                largestError = currentError;
+                sectionWithLargestError = section;
+            }
+        }
+        logger.debug("The section with the largest local error of {} is {}.", largestError, sectionWithLargestError);
+        return largestError;
+    }
+
+    private double determineError(DeltaSection section) {
+        // only if there is any change there can be a local error
+        double fullDelta = this.fullDeltas.get(section);
+        double halfDelta = this.halfDeltas.get(section);
+        if (fullDelta != 0.0 && halfDelta != 0) {
+            // calculate error
+            return Math.abs(1 - (fullDelta / halfDelta));
+
+        } else {
+            // no changes, no error
+            return 0.0;
+        }
+    }
+
+    private void evaluateLocalError(double localError) {
+        // determine whether to increase or reduce time step size
+        if (localError > epsilon) {
+            logger.trace("Reducing time step and trying again.");
+            EnvironmentalParameters.getInstance().setTimeStep(this.halfTimeStep.multiply(0.8));
+        } else {
+            logger.trace("Increasing time step for the epoch.");
+            EnvironmentalParameters.getInstance().setTimeStep(this.fullTimeStep.multiply(1.2));
+        }
+    }
 
     private void setUpParameters(ChemicalEntity<?> entity, Quantity<Time> timeStep) {
         // membrane entry (outer phase -> outer layer and inner phase -> inner layer) - kIn
         MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
         membraneEntry.scale(timeStep);
-        kIn = membraneEntry.getScaledQuantity().getValue().doubleValue();
+        this.kIn = membraneEntry.getScaledQuantity().getValue().doubleValue();
         // membrane exit (outer layer -> outer phase and inner layer -> inner phase) - kOut
         MembraneExit membraneExit = entity.getFeature(MembraneExit.class);
         membraneExit.scale(timeStep);
-        kOut = membraneExit.getScaledQuantity().getValue().doubleValue();
+        this.kOut = membraneExit.getScaledQuantity().getValue().doubleValue();
         // flip-flip across membrane (outer layer <-> inner layer) - kFlip
         MembraneFlipFlop membraneFlipFlop = entity.getFeature(MembraneFlipFlop.class);
         membraneFlipFlop.scale(timeStep);
-        kFlip = membraneFlipFlop.getScaledQuantity().getValue().doubleValue();
+        this.kFlip = membraneFlipFlop.getScaledQuantity().getValue().doubleValue();
     }
 
 }

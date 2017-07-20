@@ -13,7 +13,7 @@ public class Delta {
 
     private final CellSection cellSection;
     private final ChemicalEntity entity;
-    private final Quantity<MolarConcentration> quantity;
+    private Quantity<MolarConcentration> quantity;
 
     public Delta(CellSection cellSection, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
         this.entity = entity;
@@ -32,6 +32,12 @@ public class Delta {
     public Quantity<MolarConcentration> getQuantity() {
         return this.quantity;
     }
+
+    public Delta multiply(double multiplicand) {
+        this.quantity = this.quantity.multiply(multiplicand);
+        return this;
+    }
+
 
     public Delta merge(Delta anotherDelta) {
         return new Delta(this.cellSection, this.entity, this.quantity.add(anotherDelta.getQuantity()));

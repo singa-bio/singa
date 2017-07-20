@@ -11,17 +11,20 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
-import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.timing.TimeStepHarmonizer;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import static tec.units.ri.unit.MetricPrefix.MICRO;
+import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.SECOND;
+
 /**
  * @author cl
  */
@@ -34,6 +37,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     private Set<SimulationParameter> globalParameters;
     private long epoch;
     private Quantity<Time> elapsedTime;
+    private TimeStepHarmonizer harmonizer;
 
     private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
     private EpochUpdateWriter writer;
@@ -44,20 +48,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.listeners = new CopyOnWriteArrayList<>();
         this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         this.epoch = 0;
-    }
-
-    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        return this.modules.stream()
-                .map(Module::collectAllReferencedEntities)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        this.harmonizer = new TimeStepHarmonizer(Quantities.getQuantity(10, NANO(SECOND)));
     }
 
     public void nextEpoch() {
         // apply all modules
-        for (Module module : this.modules) {
-            module.applyTo(this.graph);
-        }
+        boolean timeStepChanged = this.harmonizer.determineHarmonicTimeStep();
         // apply generated deltas
         for (BioNode node : this.getGraph().getNodes()) {
             node.applyDeltas();
@@ -67,6 +63,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         }
         // update epoch and elapsed time
         updateEpoch();
+        // if time step did not change
+        if (!timeStepChanged) {
+            // try larger time step next time
+            this.harmonizer.increateTimeStep();
+        }
     }
 
     private void updateEpoch() {
@@ -75,9 +76,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public void applyAssignmentRules() {
-        this.assignmentRules.forEach(rule ->
-                this.graph.getNodes().forEach(rule::applyRule)
-        );
+        for (AssignmentRule rule : this.assignmentRules) {
+            for (BioNode bioNode : this.graph.getNodes()) {
+                rule.applyRule(bioNode);
+            }
+        }
     }
 
     public AutomatonGraph getGraph() {
@@ -138,16 +141,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
         return this.listeners;
-    }
-
-    public FreeDiffusion getFreeDiffusionModule() {
-        // FIXME: probably temporary
-        Optional<FreeDiffusion> diffusion = this.modules.stream()
-                .filter(module -> module.getClass().equals(FreeDiffusion.class))
-                .findFirst().map(module -> (FreeDiffusion) module);
-        this.collectAllReferencedEntities();
-        diffusion.get().prepareDiffusionCoefficients(this.getChemicalEntities());
-        return diffusion.get();
     }
 
 }

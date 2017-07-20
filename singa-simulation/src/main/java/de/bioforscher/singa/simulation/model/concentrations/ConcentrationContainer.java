@@ -80,4 +80,6 @@ public interface ConcentrationContainer {
      */
     Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations();
 
+    ConcentrationContainer copy();
+
 }

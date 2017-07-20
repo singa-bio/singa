@@ -15,6 +15,7 @@ import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationC
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     private CellSection cellSection;
     private ConcentrationContainer concentrations;
     private DeltaContainer deltas;
+    private List<Delta> potentialDeltas;
     private boolean isObserved;
 
     public BioNode(int identifier) {
@@ -37,6 +39,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         this.cellSection = new EnclosedCompartment("default", "Default Compartment");
         this.concentrations = new SimpleConcentrationContainer(cellSection);
         this.deltas = new DeltaContainer();
+        this.potentialDeltas = new ArrayList<>();
     }
 
     public void setConcentrations(double concentration, ChemicalEntity... entities) {
@@ -75,7 +78,19 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
     }
 
     public List<Delta> getDeltas() {
-        return deltas.getDeltas();
+        return this.deltas.getDeltas();
+    }
+
+    public void addPotentialDeltas(List<Delta> potentialDeltas) {
+        this.potentialDeltas.addAll(potentialDeltas);
+    }
+
+    public void addPotentialDelta(Delta potentialDelta) {
+        this.potentialDeltas.add(potentialDelta);
+    }
+
+    public void clearPotentialDeltas() {
+        this.potentialDeltas.clear();
     }
 
     public void addDelta(Delta delta) {

@@ -1,17 +1,20 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-
-import java.util.Set;
+import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.modules.timing.LocalError;
 
 /**
  * @author cl
  */
 public interface Module {
 
-    void applyTo(AutomatonGraph graph);
+    void determineAllDeltas();
 
-    Set<ChemicalEntity<?>> collectAllReferencedEntities();
+    LocalError determineDeltasForNode(BioNode node);
+
+    LocalError getLargestLocalError();
+
+    <FeatureContent> FeatureContent useFeature(Class<Feature<FeatureContent>> featureClass);
 
 }

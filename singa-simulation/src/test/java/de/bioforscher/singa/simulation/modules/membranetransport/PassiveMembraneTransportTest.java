@@ -52,13 +52,13 @@ public class PassiveMembraneTransportTest {
     }
 
     private void setupEntities() {
-        entities.put("domperidone", createEntity("domperidone", 1.48e9, 1.76e3, 3.50e2));
-        entities.put("labetalol", createEntity("labetalol", 1.17e9, 1.14e4, 1.30e4));
-        entities.put("loperamide", createEntity("loperamide", 1.03e8, 1.81e3, 6.71e5));
-        entities.put("verapamil", createEntity("verapamil", 4.56e8, 1.43e2, 7.53e6));
-        entities.put("propranolol", createEntity("propranolol", 1.27e9, 3.09e4, 4.75e6));
-        entities.put("chlorpromazine", createEntity("chlorpromazine", 1.94e9, 7.75e2, 1.74e7));
-        entities.put("desipramine", createEntity("desipramine", 2.13e9, 4.86e4, 1.09e7));
+        this.entities.put("domperidone", createEntity("domperidone", 1.48e9, 1.76e3, 3.50e2));
+        this.entities.put("labetalol", createEntity("labetalol", 1.17e9, 1.14e4, 1.30e4));
+        this.entities.put("loperamide", createEntity("loperamide", 1.03e8, 1.81e3, 6.71e5));
+        this.entities.put("verapamil", createEntity("verapamil", 4.56e8, 1.43e2, 7.53e6));
+        this.entities.put("propranolol", createEntity("propranolol", 1.27e9, 3.09e4, 4.75e6));
+        this.entities.put("chlorpromazine", createEntity("chlorpromazine", 1.94e9, 7.75e2, 1.74e7));
+        this.entities.put("desipramine", createEntity("desipramine", 2.13e9, 4.86e4, 1.09e7));
     }
 
     private Simulation setupSimulation(ChemicalEntity<?> entity) {
@@ -130,7 +130,7 @@ public class PassiveMembraneTransportTest {
             double currentTime = 0;
             double previousTime = 0.0;
             // as long as something changes
-            while (changeInConcentration > 0 && currentTime < 0.8) {
+            while (currentTime < 0.8) {
                 // get concentration
                 currentConcentration = node.getAvailableConcentration(entity, left).getValue().doubleValue();
                 // current time
@@ -152,7 +152,7 @@ public class PassiveMembraneTransportTest {
             }
             if (changeInConcentration == 0) {
                 logger.info("Exited because concentration was not changing anymore");
-            } else if (currentTime >= 100) {
+            } else if (currentTime >= 0.8) {
                 logger.info("Exited because goal time was reached");
             }
             writeLogContent(entity);

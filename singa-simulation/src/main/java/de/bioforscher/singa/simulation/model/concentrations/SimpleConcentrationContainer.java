@@ -31,7 +31,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     @Override
     public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (this.cellSection.equals(cellSection)) {
-            return concentrations;
+            return this.concentrations;
         }
         return Collections.emptyMap();
     }
@@ -65,4 +65,10 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
         return this.concentrations;
     }
+
+    @Override
+    public SimpleConcentrationContainer copy() {
+        return new SimpleConcentrationContainer(this.cellSection);
+    }
+
 }

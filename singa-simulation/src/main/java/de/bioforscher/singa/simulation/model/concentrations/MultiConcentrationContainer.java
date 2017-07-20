@@ -29,6 +29,13 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
         cellSections.forEach(compartment -> this.concentrations.put(compartment, new HashMap<>()));
     }
 
+    public MultiConcentrationContainer(MultiConcentrationContainer multiConcentrationContainer) {
+        this.referencedEntities = multiConcentrationContainer.referencedEntities;
+        this.concentrations = new HashMap<>();
+        Set<CellSection> cellSections = multiConcentrationContainer.concentrations.keySet();
+        cellSections.forEach(compartment -> this.concentrations.put(compartment, new HashMap<>()));
+    }
+
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         // FIXME this always assumes mol/l
@@ -82,5 +89,10 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
             result.put(chemicalEntity, getConcentration(chemicalEntity));
         }
         return result;
+    }
+
+    @Override
+    public MultiConcentrationContainer copy() {
+        return new MultiConcentrationContainer(this);
     }
 }
