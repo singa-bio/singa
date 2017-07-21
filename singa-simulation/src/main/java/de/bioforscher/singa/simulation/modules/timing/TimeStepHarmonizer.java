@@ -1,5 +1,7 @@
 package de.bioforscher.singa.simulation.modules.timing;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.modules.model.Module;
@@ -26,13 +28,15 @@ public class TimeStepHarmonizer {
     private LocalError largestLocalError;
     private boolean timeStepChanged;
 
-    public TimeStepHarmonizer(Quantity<Time> initialTimeStep) {
+    public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
         EnvironmentalParameters.getInstance().setTimeStep(initialTimeStep);
+        rescaleParameters();
+        this.simulation = simulation;
         this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
     public boolean determineHarmonicTimeStep() {
-        // set inital step
+        // set initial step
         this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
         // request local error for each module
         executeAllModules();
@@ -78,16 +82,31 @@ public class TimeStepHarmonizer {
 
     }
 
-    public void increateTimeStep() {
-        logger.trace("Increasing time step for the epoch.");
+    public void rescaleParameters() {
+        for (ChemicalEntity<?> entity : this.simulation.getChemicalEntities()) {
+            entity.getAllFeatures().stream()
+                    .filter(feature -> feature instanceof ScalableFeature)
+                    .map(feature -> (ScalableFeature) feature)
+                    .forEach(ScalableFeature::scale);
+        }
+    }
+
+    public void increaseTimeStep() {
+        logger.trace("Increasing time step for the next epoch.");
         EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(1.2));
+        rescaleParameters();
+    }
+
+    public void decreaseTimeStep() {
+        logger.trace("Reducing time step and trying again.");
+        EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(0.4));
+        rescaleParameters();
     }
 
     private boolean evaluateLocalError(double localError) {
         // determine whether to increase or reduce time step size
         if (localError > epsilon) {
-            logger.trace("Reducing time step and trying again.");
-            EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(0.4));
+            decreaseTimeStep();
             this.timeStepChanged = true;
             return true;
         }

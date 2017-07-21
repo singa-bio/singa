@@ -116,6 +116,10 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return getContentOfAnnotations(Identifier.class, AnnotationType.ADDITIONAL_IDENTIFIER);
     }
 
+    public Collection<Feature<?>> getAllFeatures() {
+        return this.features.getAllFeatures();
+    }
+
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
         return this.features.getFeature(featureTypeClass);

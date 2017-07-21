@@ -48,7 +48,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.listeners = new CopyOnWriteArrayList<>();
         this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         this.epoch = 0;
-        this.harmonizer = new TimeStepHarmonizer(Quantities.getQuantity(10, NANO(SECOND)));
+        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(10, NANO(SECOND)));
     }
 
     public void nextEpoch() {
@@ -66,7 +66,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         // if time step did not change
         if (!timeStepChanged) {
             // try larger time step next time
-            this.harmonizer.increateTimeStep();
+            this.harmonizer.increaseTimeStep();
         }
     }
 

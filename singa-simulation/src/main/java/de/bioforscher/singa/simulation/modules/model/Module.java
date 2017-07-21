@@ -1,6 +1,5 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.timing.LocalError;
 
@@ -14,7 +13,5 @@ public interface Module {
     LocalError determineDeltasForNode(BioNode node);
 
     LocalError getLargestLocalError();
-
-    <FeatureContent> FeatureContent useFeature(Class<Feature<FeatureContent>> featureClass);
 
 }

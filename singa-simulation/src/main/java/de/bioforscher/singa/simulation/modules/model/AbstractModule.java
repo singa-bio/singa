@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -12,6 +13,7 @@ import tec.units.ri.quantity.Quantities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -24,6 +26,8 @@ public abstract class AbstractModule implements Module {
 
     private final Simulation simulation;
     private List<Function<ConcentrationContainer, Delta>> deltaFunctions;
+
+    private Predicate<BioNode> conditionalApplication;
 
     private LocalError largestLocalError;
 
@@ -45,10 +49,6 @@ public abstract class AbstractModule implements Module {
         this.deltaFunctions.add(deltaFunction);
     }
 
-    public Simulation getSimulation() {
-        return this.simulation;
-    }
-
     public BioNode getCurrentNode() {
         return this.currentNode;
     }
@@ -61,11 +61,29 @@ public abstract class AbstractModule implements Module {
         return this.currentCellSection;
     }
 
+    public void onlyApplyIf(Predicate<BioNode> predicate) {
+        this.conditionalApplication = predicate;
+    }
+
+    public void applyAlways() {
+        this.conditionalApplication = bioNode -> true;
+    }
+
+    protected <FeatureContent> FeatureContent getFeature(ChemicalEntity<?> entity, Class<? extends ScalableFeature<FeatureContent>> featureClass) {
+        ScalableFeature<FeatureContent> feature = entity.getFeature(featureClass);
+        if (this.halfTime) {
+            return feature.getHalfScaledQuantity();
+        }
+        return feature.getScaledQuantity();
+    }
+
     public void determineAllDeltas() {
         AutomatonGraph graph = this.simulation.getGraph();
         // determine deltas
         for (BioNode node : graph.getNodes()) {
-            determineDeltasForNode(node);
+            if (this.conditionalApplication.test(node)) {
+                determineDeltasForNode(node);
+            }
         }
     }
 
