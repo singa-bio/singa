@@ -8,7 +8,7 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -224,7 +224,7 @@ public class ReactionsTest {
     }
 
     private AutomatonGraph prepareGraph() {
-        return AutomatonGraphs.copyStructureToBioGraph(GraphFactory.buildLinearGraph(1,
+        return AutomatonGraphs.copyStructureToBioGraph(Graphs.buildLinearGraph(1,
                 new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
     }
 

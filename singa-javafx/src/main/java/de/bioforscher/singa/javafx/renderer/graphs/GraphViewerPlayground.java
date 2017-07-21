@@ -2,8 +2,8 @@ package de.bioforscher.singa.javafx.renderer.graphs;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import javafx.application.Application;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class GraphViewerPlayground {
 
     public static void main(String[] args) {
-        UndirectedGraph graph = GraphFactory.buildCircularGraph(20, new Rectangle(400, 400));
+        UndirectedGraph graph = Graphs.buildCircularGraph(20, new Rectangle(400, 400));
         graph.removeNode(5);
         graph.removeNode(16);
 

@@ -1,10 +1,12 @@
 package de.bioforscher.singa.mathematics.metrics.model;
 
+import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.SymmetricMatrix;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * A metric or distance function is a function that defines a distance between each pair of elements of a set. A metric
@@ -51,8 +53,27 @@ public interface Metric<MetrizableType> {
         return new SymmetricMatrix(compactValues);
     }
 
+    default <LabelType, SubType extends MetrizableType> LabeledSymmetricMatrix<LabelType> calculateDistancesPairwise(List<LabelType> list, Function<LabelType, SubType> function) {
+        // initialize jagged array
+        double[][] compactValues = new double[list.size()][];
+        for (int rowIndex = 0; rowIndex < list.size(); rowIndex++) {
+            compactValues[rowIndex] = new double[rowIndex + 1];
+        }
+        // compute distances
+        for (int rowIndex = 0; rowIndex < compactValues.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < compactValues[rowIndex].length; columnIndex++) {
+                compactValues[rowIndex][columnIndex] = calculateDistance(function.apply(list.get(rowIndex)), function.apply(list.get(columnIndex)));
+            }
+        }
+        // construct label
+        LabeledSymmetricMatrix<LabelType> labeledSymmetricMatrix = new LabeledSymmetricMatrix<>(compactValues);
+        labeledSymmetricMatrix.setColumnLabels(list);
+        return labeledSymmetricMatrix;
+    }
+
     /**
      * Calculates the distance for each Vector in the given target list to the reference vector.
+     *
      * @param list The list of targets.
      * @param reference The reference vector.
      * @param <SubType> The Type or Subtype of the Metrizable.
@@ -67,6 +88,7 @@ public interface Metric<MetrizableType> {
 
     /**
      * Returns the closest element in the given target list to the reference vector.
+     *
      * @param list The list of targets.
      * @param reference The reference vector.
      * @param <SubType> The Type or Subtype of the Metrizable.

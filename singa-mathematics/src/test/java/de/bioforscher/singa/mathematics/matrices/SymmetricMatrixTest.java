@@ -126,9 +126,9 @@ public class SymmetricMatrixTest {
     public void shouldCopy() {
         SymmetricMatrix copy1 = this.trueSymmetricMatrix.getCopy();
         SquareMatrix copy2 = this.trueSymmetricMatrix.getCopy();
-        copy1.getElements()[0][0] = Double.NaN;
+        copy1.getElements()[0][0] = Double.MIN_VALUE;
         assertTrue(SymmetricMatrix.isCompact(copy2.getElements()));
-        assertTrue(copy2.getElements()[0][0] != Double.NaN);
+        assertTrue(copy2.getElements()[0][0] != Double.MIN_VALUE);
     }
 
     @Test

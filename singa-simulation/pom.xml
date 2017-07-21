@@ -12,75 +12,59 @@
     </parent>
 
     <artifactId>singa-simulation</artifactId>
-    <version>0.1.3</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- singa dependencies -->
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-core</artifactId>
-            <version>0.1.3</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-features</artifactId>
-            <version>0.1.3</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-mathematics</artifactId>
-            <version>0.1.3</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
-            <version>0.1.4</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-javafx</artifactId>
-            <version>0.1.3</version>
+            <version>0.2.0</version>
         </dependency>
         <!-- this is used to parse sbml files conveniently -->
         <dependency>
             <groupId>org.sbml.jsbml</groupId>
             <artifactId>jsbml-core</artifactId>
             <version>1.2</version>
-        </dependency>
-        <!-- this is a cogpar fork https://github.com/cleberecht/cogpar-maven used to solve equations-->
-        <dependency>
-            <groupId>uk.co.cogitolearning</groupId>
-            <artifactId>cogpar</artifactId>
-            <version>1.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/cogpar-1.1.jar</systemPath>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-1.2-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
-
-    <!--build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>uk.co.cogitolearning</groupId>
-                            <artifactId>cogpar</artifactId>
-                            <version>1.1</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/cogpar-1.1.jar</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build-->
 
 </project>

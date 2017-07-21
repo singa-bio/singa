@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D> {
+public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D, Integer> {
 
     // TODO add a reference of this to Species
 
@@ -76,11 +76,12 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
                 .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
     }
 
-    public MoleculeBond getEdgeBetween(int sourceIdentifier, int targetIdentifier) {
-        return this.getEdges().stream()
-                .filter(bond -> bond.containsNode(sourceIdentifier) && bond.containsNode(targetIdentifier))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + sourceIdentifier + " and " + targetIdentifier + "."));
+    @Override
+    public Integer nextNodeIdentifier() {
+        if (getNodes().isEmpty()) {
+            return 0;
+        }
+        return getNodes().size();
     }
 
     public int countAtomsOfElement(Element element) {
@@ -103,7 +104,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         // replace every second bond with a double bond
         for (List<MoleculeBond> path : aromaticPaths) {
             for (int i = 0; i < path.size(); i++) {
-                if (i % 2  == 0) {
+                if (i % 2 == 0) {
                     path.get(i).setType(MoleculeBondType.DOUBLE_BOND);
                 } else {
                     path.get(i).setType(MoleculeBondType.SINGLE_BOND);

@@ -4,20 +4,24 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
 import javafx.application.Application;
 
+import java.io.IOException;
+
 /**
  * @author fk
  */
 public class StructureViewerPlayground {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);
 
         StructureViewer.structure = StructureParser.online()
-                .pdbIdentifier("1pqs")
-                .chainIdentifier("A")
+                .pdbIdentifier("1C0A")
+                .everything()
                 .setOptions(options)
                 .parse();
+
+        StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
 
         Application.launch(StructureViewer.class);
     }

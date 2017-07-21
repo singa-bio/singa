@@ -2,7 +2,7 @@ package de.bioforscher.singa.javafx.renderer.graphs;
 
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
+import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph graph = GraphFactory.buildTreeGraph(10 , new Rectangle(500,500));
+    public static Graph graph = Graphs.buildTreeGraph(10 , new Rectangle(500,500));
     public static GraphRenderer renderer = new GraphRenderer();
 
     @Override

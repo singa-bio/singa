@@ -18,7 +18,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
 
-public class BioNode extends AbstractNode<BioNode, Vector2D> {
+public class BioNode extends AbstractNode<BioNode, Vector2D, Integer> {
 
     private NodeState state;
     private CellSection cellSection;

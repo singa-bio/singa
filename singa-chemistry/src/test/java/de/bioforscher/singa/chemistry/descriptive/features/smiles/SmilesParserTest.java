@@ -39,7 +39,7 @@ public class SmilesParserTest {
 
 
     @Test
-    public void shhouldParseBranches() {
+    public void shouldParseBranches() {
         // original: (COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
         String smilesString = "COP(O)(=O)OP(O)(=O)OP(O)(O)=O[C@@H](O)[C@H]1O";
         MoleculeGraph moleculeGraph = SmilesParser.parse(smilesString);
@@ -54,10 +54,10 @@ public class SmilesParserTest {
         assertTrue(neighboursOfP2.stream()
                 .anyMatch(atom -> atom.getIdentifier() == 5 && atom.getElement().equals(OXYGEN)));
         // where one is a double bond and the rest are single bonds
-        assertEquals(moleculeGraph.getEdgeBetween(2,4).getType(), MoleculeBondType.DOUBLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(2,1).getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(2,3).getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(2,5).getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(4)).getType(), MoleculeBondType.DOUBLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(1)).getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(3)).getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(5)).getType(), MoleculeBondType.SINGLE_BOND);
     }
 
 

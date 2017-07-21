@@ -47,14 +47,22 @@ public class XForm extends Group {
     public Translate ip = new Translate();
 
     public Rotate rx = new Rotate();
+
     {
-        this.rx.setAxis(Rotate.X_AXIS); }
+        this.rx.setAxis(Rotate.X_AXIS);
+    }
+
     public Rotate ry = new Rotate();
+
     {
-        this.ry.setAxis(Rotate.Y_AXIS); }
+        this.ry.setAxis(Rotate.Y_AXIS);
+    }
+
     public Rotate rz = new Rotate();
+
     {
-        this.rz.setAxis(Rotate.Z_AXIS); }
+        this.rz.setAxis(Rotate.Z_AXIS);
+    }
 
     public Scale s = new Scale();
 
@@ -96,17 +104,17 @@ public class XForm extends Group {
         this.translate.setY(y);
     }
 
-    // Cannot override these methods as they are final:
-    // public void setTranslateX(double x) { translate.setX(x); }
-    // public void setTranslateY(double y) { translate.setY(y); }
-    // public void setTranslateZ(double z) { translate.setZ(z); }
-    // Use these methods instead:
     public void setTx(double x) {
-        this.translate.setX(x); }
+        this.translate.setX(x);
+    }
+
     public void setTy(double y) {
-        this.translate.setY(y); }
+        this.translate.setY(y);
+    }
+
     public void setTz(double z) {
-        this.translate.setZ(z); }
+        this.translate.setZ(z);
+    }
 
     public void setRotate(double x, double y, double z) {
         this.rx.setAngle(x);
@@ -115,15 +123,24 @@ public class XForm extends Group {
     }
 
     public void setRotateX(double x) {
-        this.rx.setAngle(x); }
+        this.rx.setAngle(x);
+    }
+
     public void setRotateY(double y) {
-        this.ry.setAngle(y); }
+        this.ry.setAngle(y);
+    }
+
     public void setRotateZ(double z) {
-        this.rz.setAngle(z); }
+        this.rz.setAngle(z);
+    }
+
     public void setRy(double y) {
-        this.ry.setAngle(y); }
+        this.ry.setAngle(y);
+    }
+
     public void setRz(double z) {
-        this.rz.setAngle(z); }
+        this.rz.setAngle(z);
+    }
 
     public void setScale(double scaleFactor) {
         this.s.setX(scaleFactor);
@@ -131,17 +148,17 @@ public class XForm extends Group {
         this.s.setZ(scaleFactor);
     }
 
-    // Cannot override these methods as they are final:
-    // public void setScaleX(double x) { s.setX(x); }
-    // public void setScaleY(double y) { s.setY(y); }
-    // public void setScaleZ(double z) { s.setZ(z); }
-    // Use these methods instead:
     public void setSx(double x) {
-        this.s.setX(x); }
+        this.s.setX(x);
+    }
+
     public void setSy(double y) {
-        this.s.setY(y); }
+        this.s.setY(y);
+    }
+
     public void setSz(double z) {
-        this.s.setZ(z); }
+        this.s.setZ(z);
+    }
 
     public void setPivot(double x, double y, double z) {
         this.p.setX(x);
@@ -185,26 +202,4 @@ public class XForm extends Group {
         this.ip.setZ(0.0);
     }
 
-    public void debug() {
-        System.out.println("translate = (" +
-                this.translate.getX() + ", " +
-                this.translate.getY() + ", " +
-                this.translate.getZ() + ")  " +
-                "r = (" +
-                this.rx.getAngle() + ", " +
-                this.ry.getAngle() + ", " +
-                this.rz.getAngle() + ")  " +
-                "s = (" +
-                this.s.getX() + ", " +
-                this.s.getY() + ", " +
-                this.s.getZ() + ")  " +
-                "p = (" +
-                this.p.getX() + ", " +
-                this.p.getY() + ", " +
-                this.p.getZ() + ")  " +
-                "ip = (" +
-                this.ip.getX() + ", " +
-                this.ip.getY() + ", " +
-                this.ip.getZ() + ")");
-    }
 }

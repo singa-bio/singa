@@ -27,7 +27,17 @@ public enum AtomToken implements PDBToken {
     RESIDUE_NAME(Range.of(18, 20), RIGHT),
     CHAIN_IDENTIFIER(Range.of(22), LEFT),
     RESIDUE_SERIAL(Range.of(23, 26), RIGHT),
-    RESIDUE_INSERTION(Range.of(27), LEFT),
+    RESIDUE_INSERTION(Range.of(27), LEFT) {
+        @Override
+        public String extract(String line) {
+            if (line.length() >= getColumns().getUpperBound()) {
+                return line.substring(
+                        getColumns().getLowerBound() - 1, getColumns().getUpperBound());
+            } else {
+                return "";
+            }
+        }
+    },
     X_COORDINATE(Range.of(31, 38), RIGHT),
     Y_COORDINATE(Range.of(39, 46), RIGHT),
     Z_COORDINATE(Range.of(47, 54), RIGHT),
@@ -89,7 +99,7 @@ public enum AtomToken implements PDBToken {
                     .append(RESIDUE_NAME.createTokenString(leaf.getName().toUpperCase()))
                     .append(" ")
                     .append(leaf.getChainIdentifier())
-                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier())))
+                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
                     .append("    ") // RESIDUE_INSERTION not yet implemented + 3 spaces for coordinates
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))

@@ -248,7 +248,7 @@ public class LeafFactory {
                 }
                 case TRYPTOPHAN: {
                     connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "CD1", "CE2", "CE2", "CZ2", "CH2", "CZ2", "CE3", "CD2", "CG");
+                            "CA", "CB", "CG", "CD", "CD1", "CE2", "CZ2", "CH2", "CZ2", "CE3", "CD2", "CG");
                     aminoAcid.addEdgeBetween(atoms.get("CD2"), atoms.get("CE2"));
                     break;
                 }

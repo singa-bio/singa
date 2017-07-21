@@ -27,9 +27,9 @@ public class PDBParserPlayground {
          StructuralModel structuralModel = new StructuralModel(0);
          Chain chainIdentifier = new Chain(1);
          chainIdentifier.setChainIdentifier("A");
-         chainIdentifier.addSubstructure(leaf);
-         structuralModel.addSubstructure(chainIdentifier);
-         structure.addSubstructure(structuralModel);
+         chainIdentifier.addBranchSubstructure(leaf);
+         structuralModel.addBranchSubstructure(chainIdentifier);
+         structure.addBranchSubstructure(structuralModel);
         */
 
         // Structure motif = StructuralMotif.fromLeaves(1, structure,

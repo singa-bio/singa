@@ -9,7 +9,12 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
  * @param <ContentType> The content type of the nodes.
  * @author cl
  */
-public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<ContentType>, GenericEdge<ContentType>, Vector> {
+public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<ContentType>, GenericEdge<ContentType>, Vector, Integer> {
+
+    /**
+     * A iterating variable to add a new node.
+     */
+    private int nextNodeIdentifier;
 
     @Override
     public int addEdgeBetween(int identifier, GenericNode<ContentType> source, GenericNode<ContentType> target) {
@@ -21,5 +26,9 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
+    @Override
+    public Integer nextNodeIdentifier() {
+        return nextNodeIdentifier++;
+    }
 
 }

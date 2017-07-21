@@ -21,12 +21,12 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  * {@link AtomContainer},
  *
  * @param <LeafSubstructureType> A self reference to remember valid neighbours.
- * @param <FamilyType>           The possible representations of this leaf substructure implementation.
+ * @param <FamilyType> The possible representations of this leaf substructure implementation.
  * @author cl
  */
 public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstructure<LeafSubstructureType, FamilyType>,
         FamilyType extends StructuralFamily>
-        implements Substructure<LeafSubstructureType>, Exchangeable<FamilyType>, Nameable {
+        implements Substructure<LeafSubstructureType, LeafIdentifier>, Exchangeable<FamilyType>, Nameable {
 
     /**
      * The unique leaf identifer;
@@ -117,30 +117,10 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @return The integer part of the leaf identifier.
      */
     @Override
-    public int getIdentifier() {
-        return this.leafIdentifier.getIdentifier();
-    }
-
-    /**
-     * Returnt the complete leaf pdbIdentifier.
-     *
-     * @return The complete pdbIdentifier.
-     */
-    public LeafIdentifier getLeafIdentifier() {
+    public LeafIdentifier getIdentifier() {
         return this.leafIdentifier;
     }
 
-    /**
-     * Returns the next free node identifer. This method returns the value of a counting variable that is used to add
-     * all internal nodes. Every time this method is called a new identifer is given. You should only need to use this
-     * method if you really need to add a atom form outside and cannot use predefined pdbIdentifiers.
-     *
-     * @return The next free node identifer.
-     */
-    @Override
-    public int nextNodeIdentifier() {
-        return this.nextNodeIdentifier++;
-    }
 
     /**
      * Returns all atoms of this leaf substructure. The collection is backed by the map, so changes to the map are
@@ -160,7 +140,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @return The atom with the specified identifer.
      */
     @Override
-    public Atom getNode(int identifier) {
+    public Atom getNode(Integer identifier) {
         return this.atoms.get(identifier);
     }
 
@@ -171,7 +151,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @return The identifer of the atom.
      */
     @Override
-    public int addNode(Atom atom) {
+    public Integer addNode(Atom atom) {
         this.atoms.put(atom.getIdentifier(), atom);
         return atom.getIdentifier();
     }
@@ -182,9 +162,21 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @param identifier The identifer of the atom to be removed.
      */
     @Override
-    public void removeNode(int identifier) {
-        this.atoms.remove(identifier);
-        this.bonds.entrySet().removeIf(bond -> bond.getValue().containsNode(identifier));
+    public Atom removeNode(Integer identifier) {
+        Atom atomToBeRemoved = getNode(identifier);
+
+        for (Atom neighbor : atomToBeRemoved.getNeighbours()) {
+            neighbor.getNeighbours().remove(atomToBeRemoved);
+        }
+
+        this.atoms.remove(atomToBeRemoved.getIdentifier());
+        this.bonds.entrySet().removeIf(edge -> edge.getValue().containsNode(atomToBeRemoved));
+        return atomToBeRemoved;
+    }
+
+    @Override
+    public Atom removeNode(Atom node) {
+        return removeNode(node.getIdentifier());
     }
 
     /**
@@ -246,8 +238,8 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * does not matter, but is retained.
      *
      * @param identifier The identifer of the new bond.
-     * @param source     The source atom.
-     * @param target     The target atom.
+     * @param source The source atom.
+     * @param target The target atom.
      * @return The identifer of the added edge.
      */
     @Override
@@ -259,7 +251,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * Adds a bond connecting the the given atoms. The order of the given atoms does not matter, but is retained. The
      * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifer in the leaf.
      *
-     * @param edge   The edge to be added.
+     * @param edge The edge to be added.
      * @param source The source atom.
      * @param target The target atom.
      * @return The identifer of the added edge.
@@ -283,14 +275,21 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      *
      * @param source The source atom.
      * @param target The target atom.
-     * @return The identifer to retrieve this edge.
+     * @return The identifer of the added edge.
      */
     @Override
     public int addEdgeBetween(Atom source, Atom target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
-
+    /**
+     * Adds a bond of the given type connecting the the given atoms.
+     *
+     * @param source The source atom.
+     * @param target The target atom.
+     * @param type The type of the bond.
+     * @return The identifer of the added edge.
+     */
     public int addEdgeBetween(Atom source, Atom target, BondType type) {
         return addEdgeBetween(new Bond(nextEdgeIdentifier(), type), source, target);
     }
@@ -329,6 +328,16 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     }
 
     /**
+     * Moves all atoms in this LeafSubstructure, such that the centroid of this LeafSubstructure is at the specified position.
+     *
+     * @param position The new centroid position.
+     */
+    @Override
+    public void setPosition(Vector3D position) {
+        this.atoms.values().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
+    }
+
+    /**
      * Adds a neighbour to this leaf substructure. This should only be used if you add an edge as well. But adding
      * an edge with the given methods always takes care of the neighbours.
      *
@@ -336,6 +345,9 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      */
     @Override
     public void addNeighbour(LeafSubstructureType node) {
+        if (this.equals(node)) {
+            throw new IllegalArgumentException("Can not establish self reference between two identical leaves.");
+        }
         this.neighbours.add(node);
     }
 
@@ -390,7 +402,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
      * @return The chainIdentifier pdbIdentifier this leaf belongs to.
      */
     public String getChainIdentifier() {
-        return this.leafIdentifier.getChainIdentifer();
+        return this.leafIdentifier.getChainIdentifier();
     }
 
     /**
@@ -411,11 +423,18 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return AtomToken.assemblePDBLine(this);
     }
 
-
+    /**
+     * Returns true if this atom has been annotated as HETATM in the source pdb file.
+     * @return true if this atom has been annotated as HETATM in the source pdb file.
+     */
     public boolean isAnnotatedAsHetAtom() {
         return this.annotatedAsHetAtom;
     }
 
+    /**
+     * Sets the annotation of this atom as a HETATM.
+     * @param annotatedAsHetAtom true, if this atom should be annotated as HETATM.
+     */
     public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
         this.annotatedAsHetAtom = annotatedAsHetAtom;
     }
@@ -432,7 +451,7 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
 
     @Override
     public String toString() {
-        return getLeafIdentifier().getChainIdentifer() + "-" + getFamily().getThreeLetterCode() + "-" + getIdentifier();
+        return getIdentifier().toString();
     }
 
     @Override
@@ -451,5 +470,23 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         int result = this.family.hashCode();
         result = 31 * result + this.leafIdentifier.hashCode();
         return result;
+    }
+
+    @Override
+    public Integer nextNodeIdentifier() {
+        //FIXME not yet implemented
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String flatToString() {
+        return getClass().getSimpleName()+": "+getFamily().getThreeLetterCode()+" "+getIdentifier();
+    }
+
+    @Override
+    public String deepToString() {
+        return flatToString() + ", with Atoms: {"+getNodes().stream()
+                .map(atom -> atom.getAtomNameString() + "-"+atom.getIdentifier())
+                .collect(Collectors.joining(", "))+"}";
     }
 }

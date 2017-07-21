@@ -34,10 +34,9 @@ public class Fit3DAlignmentBenchmark {
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Thread.currentThread().getContextClassLoader().getResource("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb").getFile())
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeaves(1, motifContainingStructure,
+        this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
-        System.out.println("setup");
     }
 
     @Benchmark

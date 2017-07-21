@@ -388,12 +388,12 @@ public class ConsensusAlignment {
         List<LeafSubstructure<?, ?>> candidate = substructurePair.getKey().getMappedFullCandidate();
 
 //        Chain chainReference = new Chain(0);
-//        reference.forEach(chainReference::addSubstructure);
+//        reference.forEach(chainReference::addBranchSubstructure);
 //        Chain chainCandidate = new Chain(1);
-//        candidate.forEach(chainCandidate::addSubstructure);
+//        candidate.forEach(chainCandidate::addBranchSubstructure);
 //        Structure structure = new Structure();
-//        structure.addSubstructure(chainReference);
-//        structure.addSubstructure(chainCandidate);
+//        structure.addBranchSubstructure(chainReference);
+//        structure.addBranchSubstructure(chainCandidate);
 //        StructureViewer.structure = structure;
 //        Application.launch(StructureViewer.class);
 
@@ -480,7 +480,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(0, consensusLeaveSubstructures), true);
+        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(consensusLeaveSubstructures), true);
 
         // create tree node
         BinaryTreeNode<ConsensusContainer> leftNode;

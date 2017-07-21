@@ -130,7 +130,7 @@ public class Fit3DBuilder {
          * @param target The target {@link BranchSubstructure} against which the search should be run.
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
-        AtomStep target(BranchSubstructure<?> target);
+        AtomStep target(BranchSubstructure<?, ?> target);
 
         /**
          * Defines the targets against which this Fit3D search should be run in batch mode. This can either be a list
@@ -168,8 +168,8 @@ public class Fit3DBuilder {
         Fit3D run() throws SubStructureSuperimpositionException;
 
         /**
-         * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g. only
-         * sidechain atoms).
+         * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g.
+         * only sidechain atoms).
          *
          * @param atomFilter The {@link StructuralEntityFilter.AtomFilter} filter to be used for the alignment.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -217,7 +217,7 @@ public class Fit3DBuilder {
 
         StructuralMotif queryMotif;
         MultiParser multiParser;
-        BranchSubstructure<?> target;
+        BranchSubstructure<?, ?> target;
         int parallelism;
         double rmsdCutoff = DEFAULT_RMSD_CUTOFF;
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
@@ -245,7 +245,7 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public AtomStep target(BranchSubstructure<?> target) {
+        public AtomStep target(BranchSubstructure<?, ?> target) {
             Objects.requireNonNull(target);
             this.target = target;
             return this;

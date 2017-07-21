@@ -15,8 +15,12 @@ import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
@@ -53,8 +57,8 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     @Override
     public List<PotentialUpdate> calculateUpdates(BioNode node) {
         List<PotentialUpdate> updates = new ArrayList<>();
-        for (CellSection section: node.getAllReferencedSections()) {
-            for (ChemicalEntity entity: node.getAllReferencedEntities()) {
+        for (CellSection section : node.getAllReferencedSections()) {
+            for (ChemicalEntity entity : node.getAllReferencedEntities()) {
                 updates.add(calculateCompartmentSpecificUpdate(node, section, entity));
             }
         }
@@ -115,15 +119,20 @@ public class FreeDiffusion implements Module, CumulativeUpdateBehavior {
     }
 
     public Quantity<Diffusivity> getMaximalDiffusivity() {
-        return Quantities.getQuantity(this.chemicalEntities.stream()
-                .mapToDouble(entity -> entity.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue())
-                .max().orElse(0.0), Diffusivity.SQUARE_CENTIMETER_PER_SECOND);
+        Quantity<Diffusivity> max = Quantities.getQuantity(0.0, SQUARE_CENTIMETER_PER_SECOND);
+        for (ChemicalEntity<?> chemicalEntity : this.chemicalEntities) {
+            Quantity<Diffusivity> current = chemicalEntity.getFeature(Diffusivity.class).getScaledQuantity();
+            if (current.getValue().doubleValue() > max.getValue().doubleValue()) {
+                max = current;
+            }
+        }
+        return max;
     }
 
     public ChemicalEntity getEntityWithMaximalDiffusivity() {
-        Quantity<Diffusivity> maximalDiffusivity = getMaximalDiffusivity();
+        final Quantity<Diffusivity> maximalDiffusivity = getMaximalDiffusivity();
         return this.chemicalEntities.stream()
-                .filter(entity -> Objects.equals(entity.getFeature(Diffusivity.class).getScaledQuantity(), maximalDiffusivity))
+                .filter(entity -> entity.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue() == maximalDiffusivity.getValue().doubleValue())
                 .findFirst().orElse(null);
     }
 

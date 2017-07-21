@@ -7,17 +7,13 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 /**
  * @author cl
  */
-public interface Atom extends StructuralEntity<Atom> {
+public interface Atom extends StructuralEntity<Atom, Integer> {
 
     Element getElement();
 
     void setElement(Element element);
 
-    // getIdentifier from StructuralEntity
-
     void setIdentifier(int identifier);
-
-    // getPosition from StructuralEntity
 
     void setPosition(Vector3D position);
 

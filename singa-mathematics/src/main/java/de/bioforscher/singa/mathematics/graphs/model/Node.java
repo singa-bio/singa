@@ -12,14 +12,14 @@ import java.util.List;
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */
-public interface Node<NodeType extends Node<NodeType, VectorType>, VectorType extends Vector> {
+public interface Node<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType> {
 
     /**
      * Returns the identifier of the node.
      *
      * @return The identifier of the node.
      */
-    int getIdentifier();
+    IdentifierType getIdentifier();
 
     /**
      * Returns the position of the node.
