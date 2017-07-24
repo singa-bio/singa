@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics;
 
+import de.bioforscher.singa.mathematics.intervals.Interval;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import org.junit.Assert;
@@ -33,6 +34,19 @@ public class NumberConceptAssertion {
             if (doubleIsDifferent(expectedValue, actualValue, delta)) {
                 Assert.fail("expected: <" + expectedValue + "> at index " + index + " but was: <" + actualValue + ">");
             }
+        }
+    }
+
+    public static void assertIntervalEquals(Interval expected, Interval actual, double delta) {
+        double expectedLowerBond = expected.getLowerBound();
+        double actualLowerBond = actual.getLowerBound();
+        if (doubleIsDifferent(expectedLowerBond, actualLowerBond, delta)) {
+            Assert.fail("expected: <" + expectedLowerBond + "> as lower bond but was: <" + actualLowerBond + ">");
+        }
+        double expectedUpperBond = expected.getUpperBound();
+        double actualUpperBond = actual.getUpperBound();
+        if (doubleIsDifferent(expectedUpperBond, actualUpperBond, delta)) {
+            Assert.fail("expected: <" + expectedUpperBond + "> as upper bond but was: <" + actualUpperBond + ">");
         }
     }
 
