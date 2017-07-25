@@ -7,6 +7,7 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
@@ -48,13 +49,14 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.listeners = new CopyOnWriteArrayList<>();
         this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         this.epoch = 0;
-        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(10, NANO(SECOND)));
+        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(10.0, NANO(SECOND)));
     }
 
     public void nextEpoch() {
         // apply all modules
         boolean timeStepChanged = this.harmonizer.determineHarmonicTimeStep();
         // apply generated deltas
+
         for (BioNode node : this.getGraph().getNodes()) {
             node.applyDeltas();
             if (node.isObserved()) {
@@ -89,6 +91,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
+        this.chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
     }
 
     public Set<Module> getModules() {

@@ -14,4 +14,5 @@ public interface Module {
 
     LocalError getLargestLocalError();
 
+    void resetLargestLocalError();
 }

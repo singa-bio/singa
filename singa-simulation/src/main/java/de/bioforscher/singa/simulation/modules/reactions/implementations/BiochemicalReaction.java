@@ -1,6 +1,5 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -11,11 +10,8 @@ import de.bioforscher.singa.simulation.modules.reactions.implementations.kinetic
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameter;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 
 import javax.measure.Quantity;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -41,15 +37,6 @@ public class BiochemicalReaction extends Reaction {
     @Override
     public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
         return this.kineticLaw.calculateAcceleration(node, section);
-    }
-
-    @Override
-    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        Set<ChemicalEntity<?>> referencedEntities = this.getStoichiometricReactants().stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toSet());
-        referencedEntities.add(this.enzyme);
-        return referencedEntities;
     }
 
 }

@@ -1,19 +1,15 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.ReactionRate;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -50,10 +46,4 @@ public class DynamicReaction extends Reaction {
         return this.kineticLaw.calculateAcceleration(node, section);
     }
 
-    @Override
-    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        return this.getStoichiometricReactants().stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toSet());
-    }
 }

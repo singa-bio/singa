@@ -15,6 +15,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -38,6 +39,9 @@ public class ReactionsTest {
 
     @Test
     public void testEnzymeReaction() {
+
+        Simulation simulation = new Simulation();
+
         // SABIO Entry ID: 28851
         // Kinetic properties of fructose bisphosphate aldolase from Trypanosoma
         // brucei compared to aldolase from rabbit muscle and Staphylococcus
@@ -78,8 +82,12 @@ public class ReactionsTest {
                 new StoichiometricReactant(gp, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
         reactions.getReactions().add(reaction);
+        // add graph
+        simulation.setGraph(graph);
+        // add the reactions module
+        simulation.getModules().add(reactions);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
@@ -87,7 +95,7 @@ public class ReactionsTest {
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
-            reactions.applyTo(graph);
+            simulation.nextEpoch();
             String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
@@ -98,7 +106,7 @@ public class ReactionsTest {
 
     @Test
     public void testEquilibriumReaction() {
-
+        Simulation simulation = new Simulation();
         // Graph
         AutomatonGraph graph = prepareGraph();
 
@@ -133,8 +141,12 @@ public class ReactionsTest {
                 new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
         reactions.getReactions().add(reaction);
+        // add graph
+        simulation.setGraph(graph);
+        // add the reactions module
+        simulation.getModules().add(reactions);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
@@ -142,7 +154,7 @@ public class ReactionsTest {
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
-            reactions.applyTo(graph);
+            simulation.nextEpoch();
             String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
@@ -153,7 +165,7 @@ public class ReactionsTest {
 
     @Test
     public void testNthOrderReaction() {
-
+        Simulation simulation = new Simulation();
         // Graph
         AutomatonGraph graph = prepareGraph();
 
@@ -189,8 +201,12 @@ public class ReactionsTest {
                 new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
         reactions.getReactions().add(reaction);
+        // add graph
+        simulation.setGraph(graph);
+        // add the reactions module
+        simulation.getModules().add(reactions);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
@@ -198,7 +214,7 @@ public class ReactionsTest {
         System.out.println("time," + header);
 
         for (int time = 0; time < 10000; time++) {
-            reactions.applyTo(graph);
+            simulation.nextEpoch();
             String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));

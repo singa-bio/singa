@@ -118,7 +118,7 @@ public class DiffusionProgressionTest {
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion());
+        simulation.getModules().add(new FreeDiffusion(simulation));
         // return complete simulation
         return simulation;
     }

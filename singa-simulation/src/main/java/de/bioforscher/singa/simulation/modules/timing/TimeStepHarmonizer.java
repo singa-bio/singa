@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.timing;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -19,7 +20,7 @@ public class TimeStepHarmonizer {
 
     private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransport.class);
 
-    private static final double epsilon = 0.0001;
+    private static final double epsilon = 0.01;
 
     private Simulation simulation;
     private Quantity<Time> currentTimeStep;
@@ -30,7 +31,6 @@ public class TimeStepHarmonizer {
 
     public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
         EnvironmentalParameters.getInstance().setTimeStep(initialTimeStep);
-        rescaleParameters();
         this.simulation = simulation;
         this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
@@ -38,6 +38,7 @@ public class TimeStepHarmonizer {
     public boolean determineHarmonicTimeStep() {
         // set initial step
         this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+        rescaleParameters();
         // request local error for each module
         executeAllModules();
         // optimize simulation for the largest local error
@@ -47,6 +48,9 @@ public class TimeStepHarmonizer {
             // update deltas
             executeAllModules();
         }
+        // shift potential deltas to true deltas
+        finalizeDeltas();
+        // logger.info("finalized time step {}.", currentTimeStep);
         return this.timeStepChanged;
     }
 
@@ -56,7 +60,14 @@ public class TimeStepHarmonizer {
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error
             LocalError largestLocalError = module.getLargestLocalError();
+            module.resetLargestLocalError();
             examineLocalError(module, largestLocalError);
+        }
+    }
+
+    private void finalizeDeltas() {
+        for (BioNode node : this.simulation.getGraph().getNodes()) {
+            node.shiftDeltas();
         }
     }
 
@@ -76,6 +87,8 @@ public class TimeStepHarmonizer {
             this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
             // determine biggest local error
             localError = this.criticalModule.determineDeltasForNode(this.largestLocalError.getNode()).getValue();
+            // logger.info("Current local error is {}",localError);
+            this.criticalModule.resetLargestLocalError();
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = evaluateLocalError(localError);
         }
@@ -99,7 +112,7 @@ public class TimeStepHarmonizer {
 
     public void decreaseTimeStep() {
         logger.trace("Reducing time step and trying again.");
-        EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(0.4));
+        EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(0.8));
         rescaleParameters();
     }
 
@@ -112,5 +125,6 @@ public class TimeStepHarmonizer {
         }
         return false;
     }
+
 
 }

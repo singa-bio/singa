@@ -2,7 +2,6 @@ package de.bioforscher.singa.simulation.modules.membranetransport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Time;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,7 +29,6 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.SECOND;
 
 /**
@@ -42,7 +38,6 @@ public class PassiveMembraneTransportTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransportTest.class);
 
-    private static final double epsilon = 0.01;
     private Map<String, ChemicalEntity<?>> entities;
     private List<String> logContent;
 
@@ -62,6 +57,8 @@ public class PassiveMembraneTransportTest {
     }
 
     private Simulation setupSimulation(ChemicalEntity<?> entity) {
+        // create simulation
+        Simulation simulation = new Simulation();
         // create compartments and membrane
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
@@ -75,14 +72,11 @@ public class PassiveMembraneTransportTest {
         graph.addNode(node);
         // assign concentration
         node.setAvailableConcentration(entity, right, Quantities.getQuantity(20, MICRO(MOLE_PER_LITRE)).to(MOLE_PER_LITRE));
-        // create module
-        PassiveMembraneTransport transport = new PassiveMembraneTransport();
-        // create simulation and assign module
-        Simulation simulation = new Simulation();
         simulation.setGraph(graph);
+        // create module
+        PassiveMembraneTransport transport = new PassiveMembraneTransport(simulation);
+        // assign module
         simulation.getModules().add(transport);
-        // scale time step with epsilon
-        updateTimestep(entity);
         // return simulation
         return simulation;
     }
@@ -94,13 +88,6 @@ public class PassiveMembraneTransportTest {
                 .assignFeature(new MembraneExit(kout, MANUALLY_ANNOTATED))
                 .assignFeature(new MembraneFlipFlop(kflip, MANUALLY_ANNOTATED))
                 .build();
-    }
-
-    private void updateTimestep(ChemicalEntity<?> entity) {
-        MembraneEntry membraneEntry = entity.getFeature(MembraneEntry.class);
-        membraneEntry.scale(Quantities.getQuantity(1.0, NANO(SECOND)));
-        Quantity<Time> timeStep = Quantities.getQuantity(epsilon / membraneEntry.getScaledQuantity().getValue().doubleValue(), NANO(SECOND));
-        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
     }
 
     private void writeLogContent(ChemicalEntity<?> entity) {

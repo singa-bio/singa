@@ -1,6 +1,5 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.ReactionRate;
@@ -9,12 +8,9 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -45,13 +41,6 @@ public class EquilibriumReaction extends Reaction {
                         productConcentration.getValue().doubleValue() * this.appliedBackwardsRateConstant.getValue()
                                 .doubleValue(),
                 this.appliedForwardsRateConstant.getUnit());
-    }
-
-    @Override
-    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        return this.getStoichiometricReactants().stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toSet());
     }
 
     public void prepareAppliedRateConstants() {

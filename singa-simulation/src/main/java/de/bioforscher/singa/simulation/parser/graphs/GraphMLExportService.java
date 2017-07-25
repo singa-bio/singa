@@ -50,7 +50,7 @@ public class GraphMLExportService {
             Element rootElement = doc.createElement("graphml");
             doc.appendChild(rootElement);
 
-            Map<String, ChemicalEntity> entityMap = AutomatonGraphs.generateMapOfEntities(graph);
+            Map<String, ChemicalEntity<?>> entityMap = AutomatonGraphs.generateMapOfEntities(graph);
             // x coordiante key
             Element keyXCoordinate = doc.createElement("key");
             keyXCoordinate.setAttribute("id", "x");

@@ -36,9 +36,9 @@ public class MembraneEntry extends AbstractFeature<Quantity<Frequency>> implemen
         Quantity<Frequency> scaledQuantity = getFeatureContent()
                 .to(new ProductUnit<>(ONE.divide(time.getUnit())));
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.multiply(time.getValue());
+        this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half
-        this.halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue());
+        this.halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
     }
 
     @Override

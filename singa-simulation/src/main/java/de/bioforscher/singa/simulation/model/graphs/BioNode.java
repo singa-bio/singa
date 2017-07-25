@@ -57,11 +57,11 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
     }
 
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
         return this.concentrations.getAllConcentrations();
     }
 
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         return this.concentrations.getAllConcentrationsForSection(cellSection);
     }
 
@@ -97,8 +97,13 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         this.deltas.addDelta(delta);
     }
 
+    public void shiftDeltas() {
+        this.potentialDeltas.forEach(this::addDelta);
+        this.potentialDeltas.clear();
+    }
+
     public void applyDeltas() {
-        for (Delta delta :this.deltas.getDeltas()) {
+        for (Delta delta : this.deltas.getDeltas()) {
             setAvailableConcentration(delta.getEntity(), delta.getCellSection(),
                     getAvailableConcentration(delta.getEntity(), delta.getCellSection()).add(delta.getQuantity()));
         }
@@ -109,7 +114,7 @@ public class BioNode extends AbstractNode<BioNode, Vector2D> {
         return this.concentrations.getAllReferencedSections();
     }
 
-    public Set<ChemicalEntity> getAllReferencedEntities() {
+    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
         return this.concentrations.getAllReferencedEntities();
     }
 

@@ -33,7 +33,7 @@ public interface ConcentrationContainer {
      * @param cellSection The CellSection
      * @return All concentrations in this CellSection.
      */
-    Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection);
+    Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection);
 
     /**
      * Returns the concentration of the specified {@link ChemicalEntity} available in the {@link CellSection}.
@@ -66,7 +66,7 @@ public interface ConcentrationContainer {
      * Returns all {@link ChemicalEntity ChemicalEntities} that are referenced in this container.
      * @return All {@link ChemicalEntity ChemicalEntities} that are referenced in this container.
      */
-    Set<ChemicalEntity> getAllReferencedEntities();
+    Set<ChemicalEntity<?>> getAllReferencedEntities();
 
     /**
      * Returns all {@link EnclosedCompartment Compartments} that are referenced in this container.
@@ -78,7 +78,7 @@ public interface ConcentrationContainer {
      * Returns the representative concentrations of all referenced chemical entities.
      * @return The representative concentrations of all referenced chemical entities.
      */
-    Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations();
+    Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations();
 
     ConcentrationContainer copy();
 

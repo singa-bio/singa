@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class SimpleConcentrationContainer implements ConcentrationContainer {
 
-    private Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations;
+    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations;
     private CellSection cellSection;
 
     public SimpleConcentrationContainer(CellSection cellSection) {
@@ -29,7 +29,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (this.cellSection.equals(cellSection)) {
             return this.concentrations;
         }
@@ -52,7 +52,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Set<ChemicalEntity> getAllReferencedEntities() {
+    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
         return this.concentrations.keySet();
     }
 
@@ -62,7 +62,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
         return this.concentrations;
     }
 

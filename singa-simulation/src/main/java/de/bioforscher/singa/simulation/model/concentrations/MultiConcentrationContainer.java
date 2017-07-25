@@ -14,8 +14,8 @@ import java.util.*;
  */
 public class MultiConcentrationContainer implements ConcentrationContainer {
 
-    private Set<ChemicalEntity> referencedEntities;
-    private Map<CellSection, Map<ChemicalEntity, Quantity<MolarConcentration>>> concentrations;
+    private Set<ChemicalEntity<?>> referencedEntities;
+    private Map<CellSection, Map<ChemicalEntity<?>, Quantity<MolarConcentration>>> concentrations;
 
     public MultiConcentrationContainer(CellSection cellSection) {
         this.referencedEntities = new HashSet<>();
@@ -45,7 +45,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (concentrations.containsKey(cellSection)) {
             return concentrations.get(cellSection);
         }
@@ -73,7 +73,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Set<ChemicalEntity> getAllReferencedEntities() {
+    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
         return this.referencedEntities;
     }
 
@@ -83,9 +83,9 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
-        Map<ChemicalEntity, Quantity<MolarConcentration>> result = new HashMap<>();
-        for (ChemicalEntity chemicalEntity : this.referencedEntities) {
+    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
+        Map<ChemicalEntity<?>, Quantity<MolarConcentration>> result = new HashMap<>();
+        for (ChemicalEntity<?> chemicalEntity : this.referencedEntities) {
             result.put(chemicalEntity, getConcentration(chemicalEntity));
         }
         return result;

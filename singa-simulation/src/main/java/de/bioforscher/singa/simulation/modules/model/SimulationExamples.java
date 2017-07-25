@@ -65,7 +65,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createDecompositionReactionExample() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species dinitrogenPentaoxide = ChEBIParserService.parse("CHEBI:29802");
         Species nitrogenDioxide = ChEBIParserService.parse("CHEBI:33101");
@@ -84,7 +85,7 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
@@ -97,15 +98,10 @@ public class SimulationExamples {
 
         // add reaction to the reactions used in the simulation
         reactions.getReactions().add(reaction);
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
         simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -116,7 +112,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createSynthesisReactionExample() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species butadiene = ChEBIParserService.parse("CHEBI:39478");
         Species octatriene = ChEBIParserService.parse("CHEBI:77504");
@@ -133,7 +130,7 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.614, PER_SECOND));
@@ -146,14 +143,10 @@ public class SimulationExamples {
         // add reaction to the reactions used in the simulation
         reactions.getReactions().add(reaction);
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
         simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -164,6 +157,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createEquilibriumReactionExample() {
+        // setup simulation
+        Simulation simulation = new Simulation();
 
         // set up arbitrary species
         Species speciesA = new Species.Builder("CHEBI:00001")
@@ -186,7 +181,7 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // create reaction
         EquilibriumReaction reaction = new EquilibriumReaction(Quantities.getQuantity(10, PER_SECOND),
@@ -199,15 +194,10 @@ public class SimulationExamples {
 
         // add reaction to the reactions used in the simulation
         reactions.getReactions().add(reaction);
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
         simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -223,6 +213,8 @@ public class SimulationExamples {
      */
     public static Simulation createMichaelisMentenReactionExample() {
 
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
         Species glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
@@ -251,7 +243,7 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // create reaction using the properties of the enzyme
         BiochemicalReaction reaction = new BiochemicalReaction(aldolase);
@@ -264,14 +256,10 @@ public class SimulationExamples {
         // add reaction to the reactions used in the simulation
         reactions.getReactions().add(reaction);
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
         simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -328,7 +316,7 @@ public class SimulationExamples {
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion());
+        simulation.getModules().add(new FreeDiffusion(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
 
@@ -341,6 +329,9 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createIodineMultiReactionExample() {
+
+        // setup simulation
+        Simulation simulation = new Simulation();
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
         logger.debug("Importing species ...");
@@ -375,7 +366,7 @@ public class SimulationExamples {
 
         logger.debug("Composing simulation ... ");
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // create first reaction
         NthOrderReaction firstReaction = new NthOrderReaction(Quantities.getQuantity(1.43e3, PER_SECOND));
@@ -413,20 +404,16 @@ public class SimulationExamples {
         // add reaction to the reactions used in the simulation
         reactions.getReactions().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
 
     public static Simulation createSimulationFromSBML() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // BIOMD0000000023
         // BIOMD0000000064 //
         // BIOMD0000000184 // ca oscillations
@@ -455,13 +442,11 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // create reactions module
-        Reactions reactions = new Reactions();
+        Reactions reactions = new Reactions(simulation);
 
         // add reaction to the reactions used in the simulations
         reactions.getReactions().addAll(model.getReactions());
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
@@ -469,8 +454,6 @@ public class SimulationExamples {
         // add, sort and apply assignment rules
         simulation.setAssignmentRules(new ArrayList<>(model.getAssignmentRules()));
         simulation.applyAssignmentRules();
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -538,11 +521,11 @@ public class SimulationExamples {
         // only 5 left most nodes
         for (BioNode node : graph.getNodes()) {
             if (node.getIdentifier() % converter.getNumberOfColumns() < 5) {
-                for (Species species: allSpecies) {
+                for (Species species : allSpecies) {
                     node.setConcentration(species, 1.0);
                 }
             } else {
-                for (Species species: allSpecies) {
+                for (Species species : allSpecies) {
                     node.setConcentration(species, 0.0);
                 }
             }
@@ -562,9 +545,9 @@ public class SimulationExamples {
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion());
+        simulation.getModules().add(new FreeDiffusion(simulation));
         // add transmembrane transport
-        simulation.getModules().add(new PassiveMembraneTransport());
+        simulation.getModules().add(new PassiveMembraneTransport(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(allSpecies);
         return simulation;

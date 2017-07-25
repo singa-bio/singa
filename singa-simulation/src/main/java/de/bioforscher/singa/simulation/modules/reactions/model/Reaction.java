@@ -10,7 +10,6 @@ import tec.units.ri.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -93,8 +92,6 @@ public abstract class Reaction {
      * @return The acceleration of concentration (change in reaction rate for the species of this reaction)
      */
     public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section);
-
-    public abstract Set<ChemicalEntity<?>> collectAllReferencedEntities();
 
     /**
      * Returns {@code true} if this Reaction is considered elementary and {@code false} otherwise.

@@ -35,10 +35,10 @@ public class AutomatonGraphs {
      * @param graph A graph with species
      * @return All chemical entities in the graph.
      */
-    public static Map<String, ChemicalEntity> generateMapOfEntities(AutomatonGraph graph) {
-        Map<String, ChemicalEntity> results = new HashMap<>();
+    public static Map<String, ChemicalEntity<?>> generateMapOfEntities(AutomatonGraph graph) {
+        Map<String, ChemicalEntity<?>> results = new HashMap<>();
         for (BioNode node : graph.getNodes()) {
-            for (ChemicalEntity entity : node.getAllReferencedEntities()) {
+            for (ChemicalEntity<?> entity : node.getAllReferencedEntities()) {
                 results.put(entity.getName(), entity);
             }
         }
