@@ -1,13 +1,18 @@
 package de.bioforscher.singa.chemistry.physical.model;
 
+import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.core.identifier.PDBIdentifier;
+import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +45,8 @@ public class Structure {
      */
     private Map<Object, BranchSubstructure<?, ?>> branchSubstructures;
 
+    private int lastAddedAtomIdentfier;
+
     /**
      * Creates a new empty structure.
      */
@@ -67,6 +74,14 @@ public class Structure {
         } else {
             logger.warn("The identifier {} is not a valid PDB identifier. No identifier has been set.", pdbIdentifier);
         }
+    }
+
+    public int getLastAddedAtomIdentfier() {
+        return lastAddedAtomIdentfier;
+    }
+
+    public void setLastAddedAtomIdentfier(int lastAddedAtomIdentfier) {
+        this.lastAddedAtomIdentfier = lastAddedAtomIdentfier;
     }
 
     /**
@@ -205,6 +220,37 @@ public class Structure {
                 .map(BranchSubstructure::getAllAtoms)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<LeafSubstructure<?, ?>> getLeaf(LeafIdentifier identifier) {
+        // ignores models!!
+        return this.getAllLeaves().stream()
+                .filter(leaf -> leaf.getChainIdentifier().equals(identifier.getChainIdentifier())
+                        && leaf.getIdentifier().getSerial() == identifier.getSerial())
+                .findFirst();
+    }
+
+    public void addAtom(LeafIdentifier leafIdentifier, Element element, String atomName, Vector3D position) {
+        Optional<LeafSubstructure<?, ?>> optionalLeaf = getLeaf(leafIdentifier);
+        if (optionalLeaf.isPresent()) {
+            this.lastAddedAtomIdentfier++;
+            optionalLeaf.get().addNode(new RegularAtom(this.lastAddedAtomIdentfier, element, atomName, position));
+        }
+    }
+
+    public void addAtom(int model, String chain, Element element, String atomName, Vector3D position) {
+        Chain leafChain = this.getFirstModel()
+                .orElseThrow(() -> new IllegalStateException("Could not find any models to add an atom to."))
+                .getAllChains().stream()
+                .filter(c -> c.getIdentifier().equals(chain))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Could not find given chain to add an atom to."));
+        LeafIdentifier nextIdentifier = leafChain.getNextLeafIdentifier();
+        AtomContainer<LigandFamily> container = new AtomContainer<>(nextIdentifier, new LigandFamily("ADD"));
+        this.lastAddedAtomIdentfier++;
+        container.addNode(new RegularAtom(this.lastAddedAtomIdentfier, element, atomName, position));
+        leafChain.addSubstructure(container);
+
     }
 
 

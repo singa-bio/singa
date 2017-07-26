@@ -2,10 +2,10 @@ package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
-import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 
@@ -57,7 +57,7 @@ public class Chain extends BranchSubstructure<Chain, String> {
      * more on this level in a structure.</b>
      */
     public Chain() {
-        super(LeafIdentifier.DEFAULT_CHAIN_IDENTIFER);
+        super(LeafIdentifier.DEFAULT_CHAIN_IDENTIFIER);
     }
 
     /**

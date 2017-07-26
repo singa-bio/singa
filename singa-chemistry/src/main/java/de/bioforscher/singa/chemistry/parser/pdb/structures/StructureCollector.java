@@ -207,6 +207,8 @@ public class StructureCollector {
         if (this.reducer.options.isCreatingEdges()) {
             structure.getAllChains().forEach(Chain::connectChainBackbone);
         }
+        UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
+        structure.setLastAddedAtomIdentfier(lastAtom.getAtomSerial());
         return structure;
     }
 

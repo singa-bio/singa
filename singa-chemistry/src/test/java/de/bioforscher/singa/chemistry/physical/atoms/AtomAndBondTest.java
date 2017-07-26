@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.atoms;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.singa.chemistry.physical.model.Bond;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.junit.Test;
 

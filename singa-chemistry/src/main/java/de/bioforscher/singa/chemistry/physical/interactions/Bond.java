@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.model;
+package de.bioforscher.singa.chemistry.physical.interactions;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractEdge;

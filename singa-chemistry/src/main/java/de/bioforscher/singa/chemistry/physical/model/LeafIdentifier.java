@@ -9,7 +9,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     public static final String DEFAULT_PDB_IDENTIFIER = "0000";
     public static final int DEFAULT_MODEL_IDENTIFIER = 0;
-    public static final String DEFAULT_CHAIN_IDENTIFER = "X";
+    public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
     public static final char DEFAULT_INSERTION_CODE = ' ';
 
     private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
@@ -28,7 +28,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int identifier, char insertionCode) {
         this.pdbIdentifer = pdbIdentifer.toLowerCase();
         this.modelIdentifer = modelIdentifer;
-        this.chainIdentifer = chainIdentifer.toUpperCase();
+        this.chainIdentifer = chainIdentifer;
         this.identifier = identifier;
         this.insertionCode = insertionCode;
     }
@@ -42,7 +42,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     public LeafIdentifier(int identifier) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, identifier);
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFIER, identifier);
     }
 
     public static LeafIdentifier fromString(String identifier) {
