@@ -54,7 +54,6 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
      * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
-     *
      * TODO move this to interface, as other superimpositions should also get a string representation.
      *
      * @return The full string representation of this {@link SubstructureSuperimposition}.
@@ -62,7 +61,8 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     public String getStringRepresentation() {
         return this.mappedCandidate.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                .map(Object::toString)
+                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
+                        + leafSubstructure.getIdentifier().getSerial())
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
                         + this.mappedCandidate.get(0).getPdbIdentifier()
                         + "_", ""));

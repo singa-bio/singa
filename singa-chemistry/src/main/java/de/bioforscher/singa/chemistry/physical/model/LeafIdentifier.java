@@ -22,27 +22,27 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     private final String pdbIdentifer;
     private final int modelIdentifer;
     private final String chainIdentifer;
-    private final int identifier;
+    private final int serial;
     private final char insertionCode;
 
-    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int identifier, char insertionCode) {
+    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int serial, char insertionCode) {
         this.pdbIdentifer = pdbIdentifer.toLowerCase();
         this.modelIdentifer = modelIdentifer;
         this.chainIdentifer = chainIdentifer.toUpperCase();
-        this.identifier = identifier;
+        this.serial = serial;
         this.insertionCode = insertionCode;
     }
 
-    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int identifier) {
-        this(pdbIdentifer, modelIdentifer, chainIdentifer, identifier, DEFAULT_INSERTION_CODE);
+    public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int serial) {
+        this(pdbIdentifer, modelIdentifer, chainIdentifer, serial, DEFAULT_INSERTION_CODE);
     }
 
-    public LeafIdentifier(String chainIdentifer, int identifier) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, identifier);
+    public LeafIdentifier(String chainIdentifer, int serial) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, serial);
     }
 
-    public LeafIdentifier(int identifier) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, identifier);
+    public LeafIdentifier(int serial) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, serial);
     }
 
     public static LeafIdentifier fromString(String identifier) {
@@ -63,7 +63,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     public int getSerial() {
-        return this.identifier;
+        return this.serial;
     }
 
     public char getInsertionCode() {
@@ -77,7 +77,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     @Override
     public String toString() {
-        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.identifier + (this.insertionCode != DEFAULT_INSERTION_CODE  ? this.insertionCode : "");
+        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.serial + (this.insertionCode != DEFAULT_INSERTION_CODE ? this.insertionCode : "");
     }
 
     @Override
@@ -87,7 +87,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
         LeafIdentifier that = (LeafIdentifier) o;
 
-        if (identifier != that.identifier) return false;
+        if (serial != that.serial) return false;
         if (modelIdentifer != that.modelIdentifer) return false;
         if (insertionCode != that.insertionCode) return false;
         if (pdbIdentifer != null ? !pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
@@ -99,7 +99,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         int result = pdbIdentifer != null ? pdbIdentifer.hashCode() : 0;
         result = 31 * result + modelIdentifer;
         result = 31 * result + (chainIdentifer != null ? chainIdentifer.hashCode() : 0);
-        result = 31 * result + identifier;
+        result = 31 * result + serial;
         result = 31 * result + (int) insertionCode;
         return result;
     }
