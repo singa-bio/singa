@@ -19,11 +19,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A test for the implementation of the Fit3D algorithm.
@@ -148,6 +150,44 @@ public class Fit3DAlignmentTest {
 
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0, matches.firstKey(), 1E-6);
+    }
+
+    @Test
+    public void shouldSkipAlphaCarbonStructureInBatch() {
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        List<String> alphaCarbonStructures = new ArrayList<>();
+        alphaCarbonStructures.add("1zlg");
+        StructureParser.MultiParser multiParser = StructureParser.online()
+                .pdbIdentifiers(alphaCarbonStructures)
+                .everything();
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+                .targets(multiParser)
+                .skipAlphaCarbonTargets()
+                .maximalParallelism()
+                .atomFilter(AtomFilter.isArbitrary())
+                .rmsdCutoff(3.0)
+                .run();
+
+        assertTrue(fit3d.getMatches().isEmpty());
+    }
+
+    @Test
+    public void shouldSkipBackboneStructureInBatch() {
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        List<String> alphaCarbonStructures = new ArrayList<>();
+        alphaCarbonStructures.add("2plp");
+        StructureParser.MultiParser multiParser = StructureParser.online()
+                .pdbIdentifiers(alphaCarbonStructures)
+                .everything();
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+                .targets(multiParser)
+                .skipBackboneTargets()
+                .maximalParallelism()
+                .atomFilter(AtomFilter.isArbitrary())
+                .rmsdCutoff(3.0)
+                .run();
+
+        assertTrue(fit3d.getMatches().isEmpty());
     }
 
 //    @Test
