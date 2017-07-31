@@ -8,11 +8,17 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
  */
 public abstract class Interaction {
 
+    int plipIdentifier;
+
     LeafIdentifier source;
     LeafIdentifier target;
 
     Vector3D ligandCoordiante;
     Vector3D proteinCoordinate;
+
+    public Interaction(int plipIdentifier) {
+        this.plipIdentifier = plipIdentifier;
+    }
 
     public LeafIdentifier getSource() {
         return source;
@@ -44,5 +50,13 @@ public abstract class Interaction {
 
     public void setProteinCoordinate(Vector3D proteinCoordinate) {
         this.proteinCoordinate = proteinCoordinate;
+    }
+
+    public int getPlipIdentifier() {
+        return plipIdentifier;
+    }
+
+    public void setPlipIdentifier(int plipIdentifier) {
+        this.plipIdentifier = plipIdentifier;
     }
 }

@@ -9,6 +9,10 @@ public class HydrophobicInteraction extends Interaction {
     private int atom2;
     private double distance;
 
+    public HydrophobicInteraction(int plipIdentifier) {
+        super(plipIdentifier);
+    }
+
     public double getDistance() {
         return distance;
     }

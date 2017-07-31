@@ -15,7 +15,8 @@ public class PiCationInteraction extends Interaction {
     private boolean protcharged;
     private String ligandGroup;
 
-    public PiCationInteraction() {
+    public PiCationInteraction(int plipIdentifier) {
+        super(plipIdentifier);
         this.atoms1 = new ArrayList<>();
         this.atoms2 = new ArrayList<>();
     }

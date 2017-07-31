@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
@@ -35,6 +36,8 @@ public class PlipContentHandler implements ContentHandler {
     private double c2x;
     private double c2y;
     private double c2z;
+
+    private boolean noResidueInteraction;
 
     private InteractionType interactionType;
     private Interaction currentInteraction;
@@ -86,35 +89,35 @@ public class PlipContentHandler implements ContentHandler {
         this.currentTag = qName;
         switch (qName) {
             case "halogen_bond":
-                this.currentInteraction = new HalogenBond();
+                this.currentInteraction = new HalogenBond(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = HALOGEN_BOND;
                 break;
             case "hydrophobic_interaction":
-                this.currentInteraction = new HydrophobicInteraction();
+                this.currentInteraction = new HydrophobicInteraction(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = HYDROPHOBIC_INTERACTION;
                 break;
             case "hydrogen_bond":
-                this.currentInteraction = new HydrogenBond();
+                this.currentInteraction = new HydrogenBond(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = HYDROGEN_BOND;
                 break;
             case "water_bridge":
-                this.currentInteraction = new WaterBridge();
+                this.currentInteraction = new WaterBridge(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = WATER_BRIDGE;
                 break;
             case "salt_bridge":
-                this.currentInteraction = new SaltBridge();
+                this.currentInteraction = new SaltBridge(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = SALT_BRIDGE;
                 break;
             case "pi_stack":
-                this.currentInteraction = new PiStacking();
+                this.currentInteraction = new PiStacking(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = PI_STACKING;
                 break;
             case "pi_cation_interaction":
-                this.currentInteraction = new PiCationInteraction();
+                this.currentInteraction = new PiCationInteraction(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = PI_CATION_INTERACTION;
                 break;
             case "metal_complex":
-                this.currentInteraction = new MetalComplex();
+                this.currentInteraction = new MetalComplex(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = METAL_COMPLEX;
                 break;
             case "ligcoo":
@@ -234,7 +237,13 @@ public class PlipContentHandler implements ContentHandler {
                 as(WaterBridge.class).setAcceptor(asInteger(ch, start, length));
                 break;
             case "sidechain":
-                as(HydrogenBond.class).setSidechain(asBoolean(ch, start, length));
+                switch (this.interactionType) {
+                    case HYDROGEN_BOND:
+                        as(HydrogenBond.class).setSidechain(asBoolean(ch, start, length));
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case "protisdon":
                 switch (this.interactionType) {
@@ -273,15 +282,17 @@ public class PlipContentHandler implements ContentHandler {
             case "geometry":
                 as(MetalComplex.class).setGeometry(new String(ch, start, length));
                 break;
-            case "rms":
-                as(MetalComplex.class).setRms(asDouble(ch, start, length));
-                break;
+            // TODO this is sometimes "nan"
+//            case "rms":
+//                as(MetalComplex.class).setRms(asDouble(ch, start, length));
+//                break;
             case "complexnum":
                 as(MetalComplex.class).setComplexnum(asInteger(ch, start, length));
                 break;
-            case "coordination":
-                as(MetalComplex.class).setCoordination(asInteger(ch, start, length));
-                break;
+            // TODO this is sometimes NA
+//            case "coordination":
+//                as(MetalComplex.class).setCoordination(asInteger(ch, start, length));
+//                break;
             case "acc_angle":
                 as(HalogenBond.class).setAcceptorAngle(asDouble(ch, start, length));
                 break;
@@ -342,6 +353,11 @@ public class PlipContentHandler implements ContentHandler {
             case "ligcarbonidx":
                 as(HydrophobicInteraction.class).setAtom2(asInteger(ch, start, length));
                 break;
+            case "restype_lig":
+                String restype = new String(ch, start, length);
+                if (!AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(restype).isPresent()) {
+                    this.noResidueInteraction = true;
+                }
         }
 
     }
@@ -366,6 +382,22 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     private void addInteraction() {
+        // skip all interactions that are not between standard amino acids
+        // TODO This may be going down for amino acid ligands or modified amino acids
+        if (noResidueInteraction) {
+            noResidueInteraction = false;
+            return;
+        }
+        // TODO sometimes there are impossible lief indices
+        if (this.firstLeafSerial.length() > 9 || this.firstLeafSerial.equals("NA")) {
+            logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+            return;
+        }
+        if (this.secondLeafSerial.length() > 9 || this.secondLeafSerial.equals("NA")) {
+            logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+            return;
+        }
+
         final LeafIdentifier source = new LeafIdentifier(this.currentPdbIdentifier, 0, this.firstLeafChain, Integer.valueOf(this.firstLeafSerial));
         final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 0, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
@@ -373,7 +405,7 @@ public class PlipContentHandler implements ContentHandler {
         this.currentInteraction.setLigandCoordiante(new Vector3D(c1x, c1y, c1z));
         this.currentInteraction.setProteinCoordinate(new Vector3D(c2x, c2y, c2z));
         this.interactions.addInteraction(this.currentInteraction);
-        logger.info("added interaction: {}", this.currentInteraction);
+
     }
 
     private double asDouble(char[] ch, int start, int length) {

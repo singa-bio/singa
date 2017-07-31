@@ -15,6 +15,10 @@ public class MetalComplex extends Interaction {
     private int coordination;
     private int complexnum;
 
+    public MetalComplex(int plipIdentifier) {
+        super(plipIdentifier);
+    }
+
     public int getAtom1() {
         return atom1;
     }

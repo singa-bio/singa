@@ -13,6 +13,10 @@ public class WaterBridge extends Interaction {
     private double waterAngle;
     private boolean protIsDon;
 
+    public WaterBridge(int plipIdentifier) {
+        super(plipIdentifier);
+    }
+
     public int getDonor() {
         return donor;
     }

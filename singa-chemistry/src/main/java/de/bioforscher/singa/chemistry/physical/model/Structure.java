@@ -238,7 +238,7 @@ public class Structure {
         }
     }
 
-    public void addAtom(int model, String chain, Element element, String atomName, Vector3D position) {
+    public void addAtom(String chain, Element element, String atomName, Vector3D position) {
         Chain leafChain = this.getFirstModel()
                 .orElseThrow(() -> new IllegalStateException("Could not find any models to add an atom to."))
                 .getAllChains().stream()

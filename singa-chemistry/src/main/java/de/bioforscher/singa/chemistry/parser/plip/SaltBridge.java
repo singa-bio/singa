@@ -14,7 +14,8 @@ public class SaltBridge extends Interaction {
     private boolean protIsPos;
     private String ligandGroup;
 
-    public SaltBridge() {
+    public SaltBridge(int plipIdentifier) {
+        super(plipIdentifier);
         this.atoms1 = new ArrayList<>();
         this.atoms2 = new ArrayList<>();
     }
@@ -57,6 +58,10 @@ public class SaltBridge extends Interaction {
 
     public void setLigandGroup(String ligandGroup) {
         this.ligandGroup = ligandGroup;
+    }
+
+    public void mergeWith(SaltBridge other) {
+        this.atoms1 = other.atoms2;
     }
 
     @Override

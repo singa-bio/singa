@@ -13,6 +13,10 @@ public class HydrogenBond extends Interaction {
     private double distanceDA;
     private double angle;
 
+    public HydrogenBond(int plipIdentifier) {
+        super(plipIdentifier);
+    }
+
     public int getDonor() {
         return donor;
     }

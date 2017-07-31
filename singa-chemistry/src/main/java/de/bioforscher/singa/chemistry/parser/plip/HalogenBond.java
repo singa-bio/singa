@@ -11,6 +11,10 @@ public class HalogenBond extends Interaction {
     private double donorAngle;
     private double acceptorAngle;
 
+    public HalogenBond(int plipIdentifier) {
+        super(plipIdentifier);
+    }
+
     public int getDonor() {
         return donor;
     }

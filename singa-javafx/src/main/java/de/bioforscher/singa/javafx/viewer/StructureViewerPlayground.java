@@ -30,7 +30,6 @@ public class StructureViewerPlayground {
                 .setOptions(options)
                 .parse();
 
-        interactions.convertToEdgeFor(structure);
         StructureViewer.structure = structure;
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
 

@@ -15,7 +15,8 @@ public class PiStacking extends Interaction {
     private double angle;
     private String type;
 
-    public PiStacking() {
+    public PiStacking(int plipIdentifier) {
+        super(plipIdentifier);
         this.atoms1 = new ArrayList<>();
         this.atoms2 = new ArrayList<>();
     }
@@ -66,6 +67,10 @@ public class PiStacking extends Interaction {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void mergeWith(PiStacking other) {
+        this.atoms1 = other.getAtoms2();
     }
 
     @Override
