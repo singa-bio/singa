@@ -26,11 +26,6 @@ public class RegularAtom implements Atom {
     private Element element;
 
     /**
-     * An additional name such as CA or CB.
-     */
-    private AtomName atomName;
-
-    /**
      * The AtomName as String
      */
     private String atomNameString;
@@ -55,7 +50,6 @@ public class RegularAtom implements Atom {
      */
     public RegularAtom(int identifier, Element element, String atomNameString, Vector3D position) {
         this.atomNameString = atomNameString;
-        this.atomName = AtomName.getAtomNameFromString(atomNameString);
         this.identifier = identifier;
         this.element = element;
         this.position = position;
@@ -72,7 +66,6 @@ public class RegularAtom implements Atom {
      */
     public RegularAtom(Atom atom) {
         this.atomNameString = atom.getAtomNameString();
-        this.atomName = AtomName.getAtomNameFromString(this.atomNameString);
         this.identifier = atom.getIdentifier();
         this.element = atom.getElement();
         this.position = new Vector3D(atom.getPosition());
@@ -163,7 +156,7 @@ public class RegularAtom implements Atom {
 
     @Override
     public String toString() {
-        return "Atom: " + this.atomName +
+        return "Atom: " + this.atomNameString +
                 " " + this.identifier +
                 " (" + this.position.getX() + ", " + this.position.getY() + ", " + this.position.getZ() + ")";
     }

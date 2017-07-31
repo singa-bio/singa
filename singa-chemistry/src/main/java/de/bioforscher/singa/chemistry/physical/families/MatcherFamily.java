@@ -38,7 +38,6 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
 
     /**
      * The following types are grouped according to
-     * <p>
      * <pre>
      *      Gutteridge, A. and Thornton, J. M.:
      *      Understanding nature's catalytic toolkit Trends in biochemical sciences, Elsevier, 2005, 30, 622-629.
@@ -50,7 +49,6 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
 
     /**
      * The following ypes are grouped according to functional chemical groups:
-     * <p>
      * <pre>
      *      aromatic (a)             F,Y,W
      *      negatively charged (n)   D,E
@@ -58,7 +56,6 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
      *      polar, uncharged (o)     P,N,Q,C,T,S
      *      nonpolar, aliphatic (i)  G,A,V,L,M,I
      * </pre>
-     * <p>
      */
     public static EnumSet<MatcherFamily> FUNCTIONAL = EnumSet.of(FUNCTIONAL_AROMATIC, FUNCTIONAL_NEGATIVE,
             FUNCTIONAL_POSITIVE, FUNCTIONAL_POLAR, FUNCTIONAL_UNPOLAR);

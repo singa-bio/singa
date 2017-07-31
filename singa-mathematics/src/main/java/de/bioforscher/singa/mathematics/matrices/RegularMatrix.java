@@ -146,8 +146,8 @@ public class RegularMatrix implements Matrix, Serializable {
     }
 
     @Override
-    public RegularVector getRow(int rowNumber) {
-        return new RegularVector(this.elements[rowNumber]);
+    public RegularVector getRow(int rowIndex) {
+        return new RegularVector(this.elements[rowIndex]);
     }
 
     @Override
@@ -156,10 +156,10 @@ public class RegularMatrix implements Matrix, Serializable {
     }
 
     @Override
-    public RegularVector getColumn(int columnNumber) {
+    public RegularVector getColumn(int columnIndex) {
         double[] columnValues = new double[getRowDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
-            columnValues[rowIndex] = this.elements[rowIndex][columnNumber];
+            columnValues[rowIndex] = this.elements[rowIndex][columnIndex];
         }
         return new RegularVector(columnValues);
     }
