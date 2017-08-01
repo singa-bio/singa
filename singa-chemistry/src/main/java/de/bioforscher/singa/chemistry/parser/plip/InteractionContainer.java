@@ -1,7 +1,9 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,27 +12,84 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * The interaction container takes all interactions in a PLIP xml-file that was generated using the inter-chain
+ * interaction annotation feature.
+ *
  * @author cl
  */
 public class InteractionContainer {
 
-    int duplicateCounter;
-
     private static final Logger logger = LoggerFactory.getLogger(InteractionContainer.class);
 
-    private ArrayList<Interaction> interactions;
+    /**
+     * The interactions
+     */
+    private List<Interaction> interactions;
 
+    /**
+     * Creates a new empty interaction container.
+     */
     public InteractionContainer() {
         this.interactions = new ArrayList<>();
     }
 
+    /**
+     * Returns all Interactions between two leaves (i.e. two residues.). If no interactions are present an empty list is
+     * returned. The order in which the {@link LeafIdentifier}s are given is irrelevant.
+     *
+     * @param first The first leaf.
+     * @param second The second leaf.
+     * @return A list of interactions between both leaves.
+     */
     public List<Interaction> getInteractionsBetween(LeafIdentifier first, LeafIdentifier second) {
         return interactions.stream()
                 .filter(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns true if any interaction between the two leaves is annotated in this container.
+     *
+     * @param first The first leaf.
+     * @param second The second leaf.
+     * @return True, if any interaction between the two leaves is annotated.
+     */
+    public boolean hasInteractions(LeafIdentifier first, LeafIdentifier second) {
+        return interactions.stream()
+                .anyMatch(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second));
+    }
+
+    /**
+     * Adds the interactions in this container to a structure as pseudo atoms. Every interactions is assigned a new
+     * {@link LeafSubstructure} that has a three letter code according to the type of interaction. The pseudo atom is
+     * positioned a the center of the annotated interaction centers.
+     *
+     * @param structure The structure to assign the interaction to.
+     */
+    public void mapToPseudoAtoms(Structure structure) {
+        for (Interaction interaction : this.interactions) {
+            Vector3D centroid = interaction.getLigandCoordiante().add(interaction.getProteinCoordinate()).multiply(0.5);
+            structure.addPseudoAtom(interaction.getSource().getChainIdentifier(), InteractionType.getThreeLetterCode(interaction.getClass()), centroid);
+        }
+    }
+
+    /**
+     * Retuens all interactions from this container.
+     *
+     * @return All interactions.
+     */
+    public List<Interaction> getInteractions() {
+        return interactions;
+    }
+
+    /**
+     * Adds an interaction to this container. Symmetrical interactions are not added twice. If possible overlapping
+     * interactions are merged.
+     *
+     * @param interaction The interaction to add.
+     */
     public void addInteraction(Interaction interaction) {
+        // some day this can be implemented better...
         logger.debug("Handling interaction between: {} and {}", interaction.getSource(), interaction.getTarget());
         // get interactions that are already present between the leaves
         List<Interaction> presentInteractions = getInteractionsBetween(interaction.getSource(), interaction.getTarget());
@@ -171,16 +230,33 @@ public class InteractionContainer {
             this.interactions.add(interaction);
         }
 
-
     }
 
-    private static boolean interactionPairEquals(LeafIdentifier source1, LeafIdentifier target1, LeafIdentifier source2, LeafIdentifier target2) {
-        if (source1.equals(source2)) {
-            return target1.equals(target2);
+    /**
+     * Tests if two pairs of {@link LeafIdentifier}s contain the same entries. This method considers source and target
+     * swappable.
+     *
+     * @param firstSource The source of the first leaf.
+     * @param firstTarget The target of the first leaf.
+     * @param secondSource The source of the second leaf.
+     * @param secondTarget The target of the second leaf.
+     * @return True, if first source equals second source and first target equals second target or first source equals
+     * second target and first target equals second source.
+     */
+    private static boolean interactionPairEquals(LeafIdentifier firstSource, LeafIdentifier firstTarget, LeafIdentifier secondSource, LeafIdentifier secondTarget) {
+        if (firstSource.equals(secondSource)) {
+            return firstTarget.equals(secondTarget);
         }
-        return source1.equals(target2) && target1.equals(source2);
+        return firstSource.equals(secondTarget) && firstTarget.equals(secondSource);
     }
 
+    /**
+     * Tests if two sets of integers (atom identifiers in this context) overlap.
+     *
+     * @param firstList The first list of integers.
+     * @param secondList The second lst of integers.
+     * @return True, if at least one integer is contained in both sets.
+     */
     private static boolean atomsOverlap(List<Integer> firstList, List<Integer> secondList) {
         for (int first : firstList) {
             for (int second : secondList) {
@@ -190,14 +266,6 @@ public class InteractionContainer {
             }
         }
         return false;
-    }
-
-    public void convertToPseudoAtomsFor(Structure structure) {
-        // for now add some pseudo atoms
-//        for (Interaction interaction : this.interactions.values()) {
-//            Vector3D centroid = interaction.getLigandCoordiante().add(interaction.getProteinCoordinate()).multiply(0.5);
-//            structure.addAtom(interaction.getSource().getChainIdentifier(), ElementProvider.ARSENIC, interaction.getClass().getSimpleName(), centroid);
-//        }
     }
 
 }

@@ -282,17 +282,9 @@ public class PlipContentHandler implements ContentHandler {
             case "geometry":
                 as(MetalComplex.class).setGeometry(new String(ch, start, length));
                 break;
-            // TODO this is sometimes "nan"
-//            case "rms":
-//                as(MetalComplex.class).setRms(asDouble(ch, start, length));
-//                break;
             case "complexnum":
                 as(MetalComplex.class).setComplexnum(asInteger(ch, start, length));
                 break;
-            // TODO this is sometimes NA
-//            case "coordination":
-//                as(MetalComplex.class).setCoordination(asInteger(ch, start, length));
-//                break;
             case "acc_angle":
                 as(HalogenBond.class).setAcceptorAngle(asDouble(ch, start, length));
                 break;
@@ -388,7 +380,7 @@ public class PlipContentHandler implements ContentHandler {
             noResidueInteraction = false;
             return;
         }
-        // TODO sometimes there are impossible lief indices
+        // TODO sometimes there are impossible leaf indices
         if (this.firstLeafSerial.length() > 9 || this.firstLeafSerial.equals("NA")) {
             logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
             return;
@@ -397,13 +389,14 @@ public class PlipContentHandler implements ContentHandler {
             logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
             return;
         }
-
+        // generate identifiers
         final LeafIdentifier source = new LeafIdentifier(this.currentPdbIdentifier, 0, this.firstLeafChain, Integer.valueOf(this.firstLeafSerial));
         final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 0, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
         this.currentInteraction.setTarget(target);
         this.currentInteraction.setLigandCoordiante(new Vector3D(c1x, c1y, c1z));
         this.currentInteraction.setProteinCoordinate(new Vector3D(c2x, c2y, c2z));
+        // add the container to interactions
         this.interactions.addInteraction(this.currentInteraction);
 
     }

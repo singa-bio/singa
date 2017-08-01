@@ -7,11 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Base64;
 
 /**
  * @author cl
@@ -22,17 +23,17 @@ public class PlipParser extends AbstractXMLParser<InteractionContainer> {
     private static final String BASE_URL = "https://biosciences.hs-mittweida.de/plip/interaction/";
 
     private static String secret;
-    static {
-        try {
-            String line = new BufferedReader(new InputStreamReader(Thread.currentThread()
-                    .getContextClassLoader()
-                    .getResourceAsStream("plip_credentials.txt"))).readLine();
-            secret = new String(Base64.getMimeEncoder().encode(line.getBytes()));
-            logger.info("PLIP Service is running against: {} - authentication provided", BASE_URL);
-        } catch (IOException | NullPointerException e) {
-            throw new IllegalStateException("no credentials provided to access 'biosciences.hs-mittweida.de/plip/'");
-        }
-    }
+//    static {
+//        try {
+//            String line = new BufferedReader(new InputStreamReader(Thread.currentThread()
+//                    .getContextClassLoader()
+//                    .getResourceAsStream("plip_credentials.txt"))).readLine();
+//            secret = new String(Base64.getMimeEncoder().encode(line.getBytes()));
+//            logger.info("PLIP Service is running against: {} - authentication provided", BASE_URL);
+//        } catch (IOException | NullPointerException e) {
+//            throw new IllegalStateException("no credentials provided to access 'biosciences.hs-mittweida.de/plip/'");
+//        }
+//    }
 
     public PlipParser(String pdbIdentifier, String chainIdentifier, int residueNumber) {
         logger.info("Parsing interactions for {} chain {} residue {}", pdbIdentifier, chainIdentifier, residueNumber);
@@ -70,9 +71,8 @@ public class PlipParser extends AbstractXMLParser<InteractionContainer> {
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Could not parse xml from fetch result, the xml seems top be malformed.", e);
         }
-        return null;
     }
 
     @Override

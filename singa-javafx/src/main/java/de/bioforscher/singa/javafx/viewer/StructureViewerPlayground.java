@@ -30,6 +30,8 @@ public class StructureViewerPlayground {
                 .setOptions(options)
                 .parse();
 
+        interactions.mapToPseudoAtoms(structure);
+
         StructureViewer.structure = structure;
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
 

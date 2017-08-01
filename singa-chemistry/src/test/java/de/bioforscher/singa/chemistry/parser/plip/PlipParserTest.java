@@ -6,11 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import static de.bioforscher.singa.core.utility.Resources.getResourceAsFilepath;
 import static de.bioforscher.singa.core.utility.Resources.getResourceAsStream;
 
 /**
@@ -22,29 +18,17 @@ public class PlipParserTest {
     private static int structureCount = 0;
 
     @Test
-    public void shouldParseInterChainInteractions() throws IOException {
-        // InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
-        // PlipParser.parse("1c0a",inputStream);
-        String nrPDB_chains_blast_10e80 = getResourceAsFilepath("nrPDB_chains_BLAST_10e80");
-
-        Files.readAllLines(Paths.get(nrPDB_chains_blast_10e80)).forEach(line -> {
-            structureCount++;
-            logger.info("Processing structure {}/39592.", structureCount);
-            String[] split = line.split("\t");
-            try {
-                PlipParser.parse(split[0], split[1]);
-            } catch (UncheckedIOException e) {
-                logger.warn("Unable to parse {}. ", split[0], e);
-            }
-        });
-
-
+    public void shouldParseInteractionsOf1c0a() throws IOException {
+        InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
+        InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
+        interactionContainer.getInteractions().forEach(System.out::println);
     }
 
     @Test
-    public void shouldParseInterChainInteractionsWithIllReferences() {
+    public void shouldParseInteractionsOf3aou() {
         InputStream inputStream = getResourceAsStream("plip/3aou.xml");
-        PlipParser.parse("3aou", inputStream);
+        InteractionContainer interactionContainer = PlipParser.parse("3aou", inputStream);
+        interactionContainer.getInteractions().forEach(System.out::println);
     }
 
 

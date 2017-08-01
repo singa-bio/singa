@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.model;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
@@ -238,19 +239,17 @@ public class Structure {
         }
     }
 
-    public void addAtom(String chain, Element element, String atomName, Vector3D position) {
+    public void addPseudoAtom(String chain, String threeLetterCode, Vector3D position) {
         Chain leafChain = this.getFirstModel()
                 .orElseThrow(() -> new IllegalStateException("Could not find any models to add an atom to."))
                 .getAllChains().stream()
                 .filter(c -> c.getIdentifier().equals(chain))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Could not find given chain to add an atom to."));
-        LeafIdentifier nextIdentifier = leafChain.getNextLeafIdentifier();
-        AtomContainer<LigandFamily> container = new AtomContainer<>(nextIdentifier, new LigandFamily("ADD"));
+        AtomContainer<LigandFamily> container = new AtomContainer<>(leafChain.getNextLeafIdentifier(), new LigandFamily(threeLetterCode));
         this.lastAddedAtomIdentfier++;
-        container.addNode(new RegularAtom(this.lastAddedAtomIdentfier, element, atomName, position));
+        container.addNode(new RegularAtom(this.lastAddedAtomIdentfier, ElementProvider.UNKOWN, "CA", position));
         leafChain.addSubstructure(container);
-
     }
 
 
