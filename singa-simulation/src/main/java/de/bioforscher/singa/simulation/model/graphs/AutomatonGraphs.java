@@ -54,14 +54,14 @@ public class AutomatonGraphs {
      */
     public static AutomatonGraph copyStructureToBioGraph(UndirectedGraph undirectedGraph) {
         AutomatonGraph bioGraph = new AutomatonGraph();
-        // copy nodes
+        // getCopy nodes
         for (RegularNode regularNode : undirectedGraph.getNodes()) {
             int id = regularNode.getIdentifier();
             BioNode bioNode = new BioNode(id);
             bioNode.setPosition(regularNode.getPosition());
             bioGraph.addNode(bioNode);
         }
-        // copy edges
+        // getCopy edges
         for (UndirectedEdge undirectedEdge : undirectedGraph.getEdges()) {
             int id = undirectedEdge.getIdentifier();
             bioGraph.addEdgeBetween(id, bioGraph.getNode(undirectedEdge.getSource().getIdentifier()),

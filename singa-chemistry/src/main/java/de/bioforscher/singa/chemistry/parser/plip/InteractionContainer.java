@@ -68,7 +68,7 @@ public class InteractionContainer {
      */
     public void mapToPseudoAtoms(Structure structure) {
         for (Interaction interaction : this.interactions) {
-            Vector3D centroid = interaction.getLigandCoordiante().add(interaction.getProteinCoordinate()).multiply(0.5);
+            Vector3D centroid = new Vector3D(interaction.getLigandCoordiante()).add(new Vector3D(interaction.getProteinCoordinate())).multiply(0.5);
             structure.addPseudoAtom(interaction.getSource().getChainIdentifier(), InteractionType.getThreeLetterCode(interaction.getClass()), centroid);
         }
     }

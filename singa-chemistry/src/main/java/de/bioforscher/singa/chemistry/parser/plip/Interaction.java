@@ -1,7 +1,6 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 /**
  * @author cl
@@ -13,8 +12,8 @@ public abstract class Interaction {
     LeafIdentifier source;
     LeafIdentifier target;
 
-    Vector3D ligandCoordiante;
-    Vector3D proteinCoordinate;
+    double[] ligandCoordiante;
+    double[] proteinCoordinate;
 
     public Interaction(int plipIdentifier) {
         this.plipIdentifier = plipIdentifier;
@@ -36,19 +35,19 @@ public abstract class Interaction {
         this.target = target;
     }
 
-    public Vector3D getLigandCoordiante() {
+    public double[] getLigandCoordiante() {
         return ligandCoordiante;
     }
 
-    public void setLigandCoordiante(Vector3D ligandCoordiante) {
+    public void setLigandCoordiante(double[] ligandCoordiante) {
         this.ligandCoordiante = ligandCoordiante;
     }
 
-    public Vector3D getProteinCoordinate() {
+    public double[] getProteinCoordinate() {
         return proteinCoordinate;
     }
 
-    public void setProteinCoordinate(Vector3D proteinCoordinate) {
+    public void setProteinCoordinate(double[] proteinCoordinate) {
         this.proteinCoordinate = proteinCoordinate;
     }
 

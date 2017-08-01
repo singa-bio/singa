@@ -2,7 +2,6 @@ package de.bioforscher.singa.chemistry.parser.plip;
 
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -394,8 +393,8 @@ public class PlipContentHandler implements ContentHandler {
         final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 0, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
         this.currentInteraction.setTarget(target);
-        this.currentInteraction.setLigandCoordiante(new Vector3D(c1x, c1y, c1z));
-        this.currentInteraction.setProteinCoordinate(new Vector3D(c2x, c2y, c2z));
+        this.currentInteraction.setLigandCoordiante(new double[] {c1x, c1y, c1z});
+        this.currentInteraction.setProteinCoordinate(new double[] {c2x, c2y, c2z});
         // add the container to interactions
         this.interactions.addInteraction(this.currentInteraction);
 
