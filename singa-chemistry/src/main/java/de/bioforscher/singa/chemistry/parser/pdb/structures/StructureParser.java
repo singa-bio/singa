@@ -421,6 +421,7 @@ public class StructureParser {
         public void setModel(int modelIdentifier) {
             this.modelIdentifier = modelIdentifier;
             this.modelsReduced = true;
+            this.allModels = false;
         }
 
         public void setEverything() {
@@ -441,6 +442,7 @@ public class StructureParser {
         public void setChainIdentifier(String chainIdentifier) {
             Objects.requireNonNull(chainIdentifier);
             this.chainIdentifier = chainIdentifier;
+            this.allChains = false;
             if (!this.modelsReduced) {
                 this.allModels = true;
             }

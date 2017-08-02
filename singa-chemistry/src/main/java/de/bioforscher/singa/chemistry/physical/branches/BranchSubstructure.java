@@ -38,7 +38,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     /**
      * The identifier of this entity.
      */
-    public IdentifierType identifier;
+    protected IdentifierType identifier;
 
     /**
      * The substructures of this substructure.

@@ -48,6 +48,7 @@ public class ValidCandidateGenerator {
         }
     }
 
+    // TODO this is the current bottleneck of the Fit3D algorithm
     public Set<Set<LeafSubstructure<?, ?>>> getValidCandidates() {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges
