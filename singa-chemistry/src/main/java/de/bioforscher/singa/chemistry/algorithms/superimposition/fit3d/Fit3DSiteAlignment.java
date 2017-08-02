@@ -422,14 +422,16 @@ public class Fit3DSiteAlignment implements Fit3D {
             StructureWriter.writeLeafSubstructures(this.site1.getLeafSubstructures(),
                     outputDirectory.resolve(this.site1.getLeafSubstructures().stream()
                             .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                            .map(Object::toString)
+                            .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
+                                    + leafSubstructure.getIdentifier().getSerial())
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
                                     + this.site1.getLeafSubstructures().get(0).getPdbIdentifier()
                                     + "|", "")) + "_site1.pdb"));
             StructureWriter.writeLeafSubstructures(mappedSite2,
                     outputDirectory.resolve(this.site2.getLeafSubstructures().stream()
                             .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
-                            .map(Object::toString)
+                            .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
+                                    + leafSubstructure.getIdentifier().getSerial())
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
                                     + this.site2.getLeafSubstructures().get(0).getPdbIdentifier()
                                     + "|", "")) + "_site2.pdb"));
