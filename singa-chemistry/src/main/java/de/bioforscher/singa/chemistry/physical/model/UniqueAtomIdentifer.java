@@ -83,9 +83,7 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
     }
 
     @Override
-    public int compareTo(UniqueAtomIdentifer o) {
-        return Comparator.comparing(UniqueAtomIdentifer::getPdbIdentifier).thenComparing(UniqueAtomIdentifer::getModelIdentifier)
-                .thenComparing(UniqueAtomIdentifer::getChainIdentifier).thenComparing(UniqueAtomIdentifer::getLeafIdentifer)
-                .thenComparing(UniqueAtomIdentifer::getAtomSerial).compare(this, o);
+    public int compareTo(UniqueAtomIdentifer other) {
+        return Comparator.comparing(UniqueAtomIdentifer::getAtomSerial).compare(this, other);
     }
 }

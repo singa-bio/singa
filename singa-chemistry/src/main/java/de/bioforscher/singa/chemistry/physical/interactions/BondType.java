@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.physical.model;
+package de.bioforscher.singa.chemistry.physical.interactions;
 
 import java.util.Arrays;
 import java.util.Optional;
