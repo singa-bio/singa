@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,18 +71,25 @@ public class PiCationInteraction extends Interaction {
     }
 
     @Override
+    public int getFirstSourceAtom() {
+        return atoms1.iterator().next();
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return atoms2.iterator().next();
+    }
+
+    @Override
     public String toString() {
         return "PiCationInteraction{" +
                 "atoms1=" + atoms1 +
                 ", atoms2=" + atoms2 +
-                ", distance=" + distance +
-                ", offset=" + offset +
-                ", protcharged=" + protcharged +
-                ", ligandGroup='" + ligandGroup + '\'' +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

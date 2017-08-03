@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import java.util.Arrays;
+
 /**
  * @author cl
  */
@@ -74,19 +76,26 @@ public class HydrogenBond extends Interaction {
     }
 
     @Override
+    public int getFirstSourceAtom() {
+        return protIsDon ? donor : acceptor;
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return protIsDon ? acceptor : donor;
+    }
+
+    @Override
     public String toString() {
         return "HydrogenBond{" +
                 "donor=" + donor +
                 ", acceptor=" + acceptor +
-                ", sidechain=" + sidechain +
                 ", protIsDon=" + protIsDon +
-                ", distanceHA=" + distanceHA +
-                ", distanceDA=" + distanceDA +
-                ", angle=" + angle +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

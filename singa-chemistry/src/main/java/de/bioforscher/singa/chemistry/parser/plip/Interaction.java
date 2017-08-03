@@ -58,4 +58,9 @@ public abstract class Interaction {
     public void setPlipIdentifier(int plipIdentifier) {
         this.plipIdentifier = plipIdentifier;
     }
+
+    abstract public int getFirstSourceAtom();
+
+    abstract public int getFirstTargetAtom();
+
 }

@@ -221,7 +221,7 @@ public class StructureCollector {
                 this.atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),
                         identifier.getModelIdentifier(), identifier.getChainIdentifier(),
-                        identifier.getLeafIdentifer(), identifier.getLeafInsertionCode());
+                        identifier.getLeafSerial(), identifier.getLeafInsertionCode());
                 this.currentChain = leafIdentifier.getChainIdentifier();
                 if (currentRecordType.equals("HETATM")) {
                     this.hetAtoms.add(leafIdentifier);

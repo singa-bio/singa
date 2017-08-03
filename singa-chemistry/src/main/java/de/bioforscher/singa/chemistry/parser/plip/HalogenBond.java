@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import java.util.Arrays;
+
 /**
  * @author cl
  */
@@ -56,17 +58,25 @@ public class HalogenBond extends Interaction {
     }
 
     @Override
+    public int getFirstSourceAtom() {
+        return donor;
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return acceptor;
+    }
+
+    @Override
     public String toString() {
         return "HalogenBond{" +
                 "donor=" + donor +
                 ", acceptor=" + acceptor +
-                ", distance=" + distance +
-                ", donorAngle=" + donorAngle +
-                ", acceptorAngle=" + acceptorAngle +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }
