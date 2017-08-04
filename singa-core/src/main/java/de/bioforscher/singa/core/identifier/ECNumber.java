@@ -18,7 +18,7 @@ public class ECNumber extends AbstractIdentifier {
     /**
      * The pattern to verify the identifier.
      */
-    public static final Pattern PATTERN = Pattern.compile("^([1-6])$|^([1-6])\\.(\\d{1,2})$|^([1-6])\\.(\\d{1,2})\\.(\\d{1,2})$|^([1-6])\\.(\\d{1,2})\\.(\\d{1,2})\\.(\\d{1,3})$");
+    public static final Pattern PATTERN = Pattern.compile("^([1-6])$|^([1-6])\\.([\\d-]{1,2})$|^([1-6])\\.([\\d-]{1,2})\\.([\\d-]{1,2})-$|^([1-6])\\.([\\d-]{1,2})\\.([\\d-]{1,2})\\.([n\\d-]{1,3})$");
 
     /**
      * Creates a new identifier.

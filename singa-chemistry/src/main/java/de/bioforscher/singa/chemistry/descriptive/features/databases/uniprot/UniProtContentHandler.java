@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.biology.Organism;
 import de.bioforscher.singa.core.biology.Taxon;
+import de.bioforscher.singa.core.identifier.ECNumber;
 import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import org.xml.sax.Attributes;
@@ -44,6 +45,7 @@ public class UniProtContentHandler implements ContentHandler {
     private String aminoAcidSequence;
     private Organism sourceOrganism;
     private List<Annotation<String>> textComments;
+    private List<ECNumber> ecNumbers;
 
     // parser attributes
     private String currentTag = "";
@@ -60,12 +62,12 @@ public class UniProtContentHandler implements ContentHandler {
     public UniProtContentHandler() {
         this.additionalNames = new ArrayList<>();
         this.textComments = new ArrayList<>();
+        this.ecNumbers = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
+        this();
         this.primaryIdentifier = primaryIdentifier;
-        this.additionalNames = new ArrayList<>();
-        this.textComments = new ArrayList<>();
     }
 
     Protein getProtein() {
@@ -91,6 +93,8 @@ public class UniProtContentHandler implements ContentHandler {
         this.additionalNames.forEach(protein::addAdditionalName);
         // add textComments
         this.textComments.forEach(protein::addAnnotation);
+        // add ecNumbers
+        this.ecNumbers.forEach(protein::addAdditionalIdentifier);
 
         return protein;
     }
@@ -131,6 +135,7 @@ public class UniProtContentHandler implements ContentHandler {
             case "accession":
             case "fullName":
             case "text":
+            case "ecNumber":
             case "taxon": {
                 this.currentTag = qName;
                 break;
@@ -191,7 +196,6 @@ public class UniProtContentHandler implements ContentHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-
         if (qName.equals(this.currentTag)) {
             this.currentTag = "";
         }
@@ -234,7 +238,12 @@ public class UniProtContentHandler implements ContentHandler {
             case "accession": {
                 // set pdbIdentifier
                 this.identifier = new UniProtIdentifier(new String(ch, start, length));
-
+                break;
+            }
+            case "ecNumber": {
+                // add ec number
+                this.ecNumbers.add(new ECNumber(new String(ch, start, length)));
+                break;
             }
             case "fullName": {
                 if (this.inRecommendedName) {
@@ -283,6 +292,7 @@ public class UniProtContentHandler implements ContentHandler {
                                 + new String(ch, start, length));
                     }
                 }
+                break;
             }
 
         }
