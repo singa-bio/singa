@@ -43,7 +43,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
         this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
@@ -83,7 +83,7 @@ public class Fit3DAlignmentTest {
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
-                Paths.get(Resources.getResourceAsFilepath("RF00167")))
+                Paths.get(Resources.getResourceAsFileLocation("RF00167")))
                 .collect(Collectors.toList());
         StructureParser.MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)

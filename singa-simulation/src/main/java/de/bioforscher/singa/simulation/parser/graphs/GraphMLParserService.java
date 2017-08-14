@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
-import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
+import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

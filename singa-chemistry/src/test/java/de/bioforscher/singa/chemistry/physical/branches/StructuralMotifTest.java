@@ -22,7 +22,7 @@ public class StructuralMotifTest {
     @Before
     public void setup() throws Exception {
         Structure motifStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("Asn_3m4p.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
         this.structuralMotif = StructuralMotif.fromLeaves(motifStructure.getAllLeaves());

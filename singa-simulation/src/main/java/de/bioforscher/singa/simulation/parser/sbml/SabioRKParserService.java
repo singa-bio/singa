@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.parser.sbml;
 
-import de.bioforscher.singa.core.parser.rest.AbstractHTMLParser;
+import de.bioforscher.singa.core.parser.AbstractHTMLParser;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
 
 import java.util.HashMap;
