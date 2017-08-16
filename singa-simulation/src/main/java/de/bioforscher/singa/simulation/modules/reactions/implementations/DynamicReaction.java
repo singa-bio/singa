@@ -1,13 +1,11 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.features.quantities.ReactionRate;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
-import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +17,16 @@ public class DynamicReaction extends Reaction {
     private List<CatalyticReactant> catalyticReactants;
     private DynamicKineticLaw kineticLaw;
 
-    public DynamicReaction(DynamicKineticLaw kineticLaw) {
+    public DynamicReaction(Simulation simulation, DynamicKineticLaw kineticLaw) {
+        super(simulation);
         this.kineticLaw = kineticLaw;
         this.catalyticReactants = new ArrayList<>();
-        this.kineticLaw.prepareAppliedRateConstants();
+    }
+
+    public DynamicReaction(DynamicKineticLaw kineticLaw) {
+        super();
+        this.kineticLaw = kineticLaw;
+        this.catalyticReactants = new ArrayList<>();
     }
 
     public DynamicKineticLaw getKineticLaw() {
@@ -42,8 +46,9 @@ public class DynamicReaction extends Reaction {
     }
 
     @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
-        return this.kineticLaw.calculateAcceleration(node, section);
+    public double calculateVelocity(ConcentrationContainer concentrationContainer) {
+        kineticLaw.setCurrentCellSection(getCurrentCellSection());
+        return this.kineticLaw.calculateVelocity(concentrationContainer);
     }
 
 }

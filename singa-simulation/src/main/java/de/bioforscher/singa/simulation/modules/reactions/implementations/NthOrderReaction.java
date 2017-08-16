@@ -1,48 +1,37 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.features.quantities.ReactionRate;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Frequency;
 
 /**
  * @author cl
  */
 public class NthOrderReaction extends Reaction {
 
-    private final Quantity<ReactionRate> rateConstant;
-    private Quantity<ReactionRate> appliedRateConstant;
-
-    public NthOrderReaction(Quantity<ReactionRate> rateConstant) {
-        this.rateConstant = rateConstant;
-        prepareAppliedRateConstant();
+    public NthOrderReaction(Simulation simulation, Quantity<Frequency> rateConstant) {
+        super(simulation);
+        // feature
+        this.availableFeatures.add(RateConstant.class);
+        setFeature(new RateConstant(rateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
+        // deltas
+        applyAlways();
+        addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
-    @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
+    public double calculateVelocity(ConcentrationContainer concentrationContainer) {
+        // reaction rate for this reaction
+        final Quantity<Frequency> reactionRate = getScaledFeature(RateConstant.class);
         // concentrations of substrates that influence the reaction
-        Quantity<MolarConcentration> concentration = determineConcentration(node, section, ReactantRole.DECREASING);
-        // acceleration = concentration * applied rate
-        return Quantities.getQuantity(
-                concentration.getValue().doubleValue() * this.appliedRateConstant.getValue().doubleValue(),
-                this.appliedRateConstant.getUnit());
+        double concentration = determineConcentration(concentrationContainer, ReactantRole.DECREASING);
+        // calculate acceleration
+        return concentration * reactionRate.getValue().doubleValue();
     }
-
-    public void prepareAppliedRateConstant() {
-        this.appliedRateConstant = UnitScaler.rescaleReactionRate(this.rateConstant,
-                EnvironmentalParameters.getInstance().getTimeStep());
-    }
-
-    public Quantity<ReactionRate> getRateConstant() {
-        return this.rateConstant;
-    }
-
 
 }

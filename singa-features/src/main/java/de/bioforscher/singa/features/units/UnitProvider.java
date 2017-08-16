@@ -3,7 +3,6 @@ package de.bioforscher.singa.features.units;
 
 import de.bioforscher.singa.features.quantities.DynamicViscosity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.features.quantities.ReactionRate;
 import tec.units.ri.AbstractSystemOfUnits;
 import tec.units.ri.AbstractUnit;
 import tec.units.ri.unit.ProductUnit;
@@ -13,7 +12,6 @@ import javax.measure.Unit;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tec.units.ri.AbstractUnit.ONE;
 import static tec.units.ri.unit.Units.*;
 
 /**
@@ -42,18 +40,6 @@ public final class UnitProvider extends AbstractSystemOfUnits {
     public static final Unit<MolarConcentration> MOLE_PER_LITRE = addUnit(new ProductUnit<>(MOLE.divide(LITRE)), MolarConcentration.class);
 
     public static final Unit<MolarConcentration> MOLAR = addUnit(new ProductUnit<>(MOLE.divide(LITRE)), MolarConcentration.class);
-
-    /**
-     * For Reaction that are occurring secondly.
-     */
-    public static final Unit<ReactionRate> PER_SECOND = addUnit(new ProductUnit<>(ONE.divide(SECOND)),
-            ReactionRate.class);
-
-    /**
-     * For Reaction that are occurring minutely.
-     */
-    public static final Unit<ReactionRate> PER_MINUTE = addUnit(new ProductUnit<>(ONE.divide(MINUTE)),
-            ReactionRate.class);
 
     /**
      * The SI unit for dynamic viscosity quantities.

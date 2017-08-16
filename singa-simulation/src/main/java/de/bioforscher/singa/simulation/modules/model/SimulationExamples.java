@@ -5,8 +5,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
@@ -21,11 +22,10 @@ import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
@@ -40,8 +40,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
-import static de.bioforscher.singa.features.units.UnitProvider.*;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -84,11 +86,8 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
-
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(dinitrogenPentaoxide, ReactantRole.DECREASING, 2),
@@ -96,12 +95,10 @@ public class SimulationExamples {
                 new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add the reaction
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -129,24 +126,19 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
-
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.614, PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.614, PER_SECOND));
         reaction.setElementary(false);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(butadiene, ReactantRole.DECREASING, 2, 2),
                 new StoichiometricReactant(octatriene, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
 
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -180,11 +172,8 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
-
         // create reaction
-        EquilibriumReaction reaction = new EquilibriumReaction(Quantities.getQuantity(10, PER_SECOND),
+        EquilibriumReaction reaction = new EquilibriumReaction(simulation, Quantities.getQuantity(10, PER_SECOND),
                 Quantities.getQuantity(10, PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
@@ -192,18 +181,16 @@ public class SimulationExamples {
                 new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
 
     /**
-     * This simulation simulates a {@link BiochemicalReaction}, where D-Fructose 1-phosphate is convertet to glycerone
+     * This simulation simulates a {@link MichaelisMentenReaction}, where D-Fructose 1-phosphate is convertet to glycerone
      * phosphate and D-glyceraldehyde using fructose bisphosphate aldolase.
      * From: Callens, M. et al. (1991). Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei
      * compared to aldolase from rabbit muscle and Staphylococcus aureus.
@@ -223,10 +210,10 @@ public class SimulationExamples {
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
                 .addSubstrate(fructosePhosphate)
-                .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
-                .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
+                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
+                .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
         // setup graph with a single node
@@ -242,24 +229,18 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
-
         // create reaction using the properties of the enzyme
-        BiochemicalReaction reaction = new BiochemicalReaction(aldolase);
+        MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(fructosePhosphate, ReactantRole.DECREASING),
                 new StoichiometricReactant(glyceronePhosphate, ReactantRole.INCREASING),
                 new StoichiometricReactant(glyceraldehyde, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
-
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
-        simulation.getModules().add(reactions);
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -365,11 +346,9 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(5.0, MILLI(SECOND)));
 
         logger.debug("Composing simulation ... ");
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
 
         // create first reaction
-        NthOrderReaction firstReaction = new NthOrderReaction(Quantities.getQuantity(1.43e3, PER_SECOND));
+        NthOrderReaction firstReaction = new NthOrderReaction(simulation, Quantities.getQuantity(1.43e3, PER_SECOND));
         firstReaction.setElementary(true);
         firstReaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(hydron, ReactantRole.DECREASING, 2),
@@ -380,7 +359,7 @@ public class SimulationExamples {
         ));
 
         // create second reaction
-        NthOrderReaction secondReaction = new NthOrderReaction(Quantities.getQuantity(2.0e4, PER_SECOND));
+        NthOrderReaction secondReaction = new NthOrderReaction(simulation, Quantities.getQuantity(2.0e4, PER_SECOND));
         secondReaction.setElementary(true);
         secondReaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(hydron, ReactantRole.DECREASING),
@@ -390,7 +369,7 @@ public class SimulationExamples {
         ));
 
         // create second reaction
-        EquilibriumReaction thirdReaction = new EquilibriumReaction(Quantities.getQuantity(3.1e4, PER_SECOND),
+        EquilibriumReaction thirdReaction = new EquilibriumReaction(simulation, Quantities.getQuantity(3.1e4, PER_SECOND),
                 Quantities.getQuantity(2.2, PER_SECOND));
         thirdReaction.setElementary(true);
         thirdReaction.getStoichiometricReactants().addAll(Arrays.asList(
@@ -401,8 +380,8 @@ public class SimulationExamples {
                 new StoichiometricReactant(water, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
+        // add reactions
+        simulation.getModules().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
 
         // add graph
         simulation.setGraph(graph);
@@ -441,16 +420,11 @@ public class SimulationExamples {
         logger.debug("Adjusting time step size ... ");
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
-        // create reactions module
-        Reactions reactions = new Reactions(simulation);
-
-        // add reaction to the reactions used in the simulations
-        reactions.getReactions().addAll(model.getReactions());
-
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add reaction to the reactions used in the simulations
+        model.getReactions().forEach(reaction -> reaction.setSimulation(simulation));
+        simulation.getModules().addAll(model.getReactions());
         // add, sort and apply assignment rules
         simulation.setAssignmentRules(new ArrayList<>(model.getAssignmentRules()));
         simulation.applyAssignmentRules();

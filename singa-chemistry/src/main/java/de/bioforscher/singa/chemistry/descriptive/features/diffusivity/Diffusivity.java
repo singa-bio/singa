@@ -50,12 +50,12 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         // transform to specified unit
         Quantity<Diffusivity> scaledQuantity = getFeatureContent()
                 .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+        // denominator
+        Quantity<Diffusivity> denominator = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue());
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue())
-                .multiply(targetTimeScale.getValue());
+        this.scaledQuantity = denominator.multiply(targetTimeScale.getValue());
         // and half of it
-        this.halfScaledQuantity = scaledQuantity.divide(targetLengthScale.multiply(0.5).getValue()).divide(targetLengthScale.multiply(0.5).getValue())
-                .multiply(targetTimeScale.multiply(0.5).getValue());
+        this.halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
     public Quantity<Diffusivity> getScaledQuantity() {

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.timing;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
@@ -36,6 +36,7 @@ public class TimeStepHarmonizer {
     }
 
     public boolean determineHarmonicTimeStep() {
+        this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         // set initial step
         this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
         rescaleParameters();
@@ -81,7 +82,7 @@ public class TimeStepHarmonizer {
     private void optimizeTimeStep() {
         double localError;
         this.timeStepChanged = false;
-        boolean errorIsTooLarge = true;
+        boolean errorIsTooLarge = evaluateLocalError(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
             this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
@@ -97,10 +98,12 @@ public class TimeStepHarmonizer {
 
     public void rescaleParameters() {
         for (ChemicalEntity<?> entity : this.simulation.getChemicalEntities()) {
-            entity.getAllFeatures().stream()
-                    .filter(feature -> feature instanceof ScalableFeature)
-                    .map(feature -> (ScalableFeature) feature)
-                    .forEach(ScalableFeature::scale);
+            entity.scaleScalableFeatures();
+        }
+        for (Module module: this.simulation.getModules()) {
+            if (module instanceof Featureable) {
+                ((Featureable) module).scaleScalableFeatures();
+            }
         }
     }
 

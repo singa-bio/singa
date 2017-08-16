@@ -5,9 +5,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameterExamples;
-import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -16,8 +16,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
@@ -25,7 +25,12 @@ import tec.units.ri.quantity.Quantities;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.features.units.UnitProvider.*;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
+import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static tec.units.ri.unit.MetricPrefix.MILLI;
+import static tec.units.ri.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -58,10 +63,10 @@ public class ReactionsTest {
         // Enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, FeatureOrigin.MANUALLY_ANNOTATED))
                 .addSubstrate(fp)
-                .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
-                .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
+                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
+                .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
         // set concentrations
@@ -75,19 +80,17 @@ public class ReactionsTest {
         // Environment
         EnvironmentalParameterExamples.createEnzymeReactionTestEnvironment();
 
-        BiochemicalReaction reaction = new BiochemicalReaction(aldolase);
+        MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(fp, ReactantRole.DECREASING),
                 new StoichiometricReactant(ga, ReactantRole.INCREASING),
                 new StoichiometricReactant(gp, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions(simulation);
-        reactions.getReactions().add(reaction);
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
@@ -132,7 +135,7 @@ public class ReactionsTest {
         // Environment
         EnvironmentalParameterExamples.createFirstOrderReactionTestEnvironment();
 
-        EquilibriumReaction reaction = new EquilibriumReaction(
+        EquilibriumReaction reaction = new EquilibriumReaction(simulation,
                 Quantities.getQuantity(5, PER_SECOND),
                 Quantities.getQuantity(10, PER_SECOND));
         reaction.setElementary(true);
@@ -141,12 +144,10 @@ public class ReactionsTest {
                 new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions(simulation);
-        reactions.getReactions().add(reaction);
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
@@ -168,8 +169,6 @@ public class ReactionsTest {
         Simulation simulation = new Simulation();
         // Graph
         AutomatonGraph graph = prepareGraph();
-
-        ChEBIParserService chebiService = new ChEBIParserService();
 
         // dinitrogen pentaoxide
         Species dpo = ChEBIParserService.parse("CHEBI:29802");
@@ -193,7 +192,7 @@ public class ReactionsTest {
         // Environment
         EnvironmentalParameterExamples.createFirstOrderReactionTestEnvironment();
 
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),
@@ -201,24 +200,22 @@ public class ReactionsTest {
                 new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
         ));
 
-        Reactions reactions = new Reactions(simulation);
-        reactions.getReactions().add(reaction);
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
-        simulation.getModules().add(reactions);
+        simulation.getModules().add(reaction);
 
         String header = graph.getNode(0).getAllConcentrations().keySet().stream()
                 .map(ChemicalEntity::getName)
                 .collect(Collectors.joining(","));
         System.out.println("time," + header);
 
-        for (int time = 0; time < 10000; time++) {
+        for (int epoch = 0; epoch < 1000; epoch++) {
             simulation.nextEpoch();
             String csvLine = graph.getNode(0).getAllConcentrations().entrySet().stream()
                     .map(q -> String.valueOf(q.getValue().getValue().doubleValue()))
                     .collect(Collectors.joining(","));
-            System.out.println(time + "," + csvLine);
+            System.out.println(simulation.getElapsedTime().to(MILLI(SECOND)).getValue() + "," + csvLine);
         }
 
     }
