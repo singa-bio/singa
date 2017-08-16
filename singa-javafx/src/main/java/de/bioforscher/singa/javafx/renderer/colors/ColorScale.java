@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
  * This object provides a color scale between the given minimal and maximal
  * values.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class ColorScale {
 

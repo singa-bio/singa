@@ -9,8 +9,7 @@ package de.bioforscher.singa.mathematics.topology;
  * which every point in the plane turns about that fixed point through the same
  * angle.
  *
- * @author Christoph Leberecht
- * @version 0.0.1
+ * @author cl
  */
 public class EuclideanSpace implements MetricSpace, TopologicalSpace {
 

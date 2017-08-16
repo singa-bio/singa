@@ -7,8 +7,7 @@ import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
  * This class is a wrapper class for one dimensional vectors that may be used
  * instead of double values to avoid mixing of different levels of abstraction.
  *
- * @author Christoph Leberecht
- * @version 1.0.1
+ * @author cl
  */
 public class Scalar implements Vector {
 

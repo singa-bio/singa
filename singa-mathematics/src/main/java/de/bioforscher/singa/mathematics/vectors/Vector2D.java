@@ -10,7 +10,7 @@ import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
  * handle two dimensional vectors without dimensional violations. Additionally
  * it is able to perform operations that are solely defined for 2D vectors.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class Vector2D extends RegularVector {
 

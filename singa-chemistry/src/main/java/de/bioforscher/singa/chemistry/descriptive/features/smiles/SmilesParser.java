@@ -119,6 +119,7 @@ public class SmilesParser {
      * Parses a SMILES String and returns a {@link MoleculeGraph} that contains all the atoms and their connections.
      *
      * @param smilesString The SMILES String to parse
+     * @return The MoleculeGraph generated from the smiles String.
      */
     public static MoleculeGraph parse(String smilesString) {
         logger.info("parsing smiles string {} ", smilesString);

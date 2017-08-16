@@ -1,19 +1,22 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
-import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_PDB;
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -35,6 +38,8 @@ public class StructureParserTest {
                 .model(2)
                 .allChains()
                 .parse();
+        assertEquals(1, structure.getAllModels().size());
+        assertEquals(new Integer(2), structure.getFirstModel().get().getIdentifier());
     }
 
     @Test
@@ -44,6 +49,8 @@ public class StructureParserTest {
                 .pdbIdentifier("1BRR")
                 .chainIdentifier("A")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals("A", structure.getFirstChain().get().getIdentifier());
     }
 
     @Test
@@ -54,6 +61,9 @@ public class StructureParserTest {
                 .model(3)
                 .chainIdentifier("B")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals(new Integer(3), structure.getFirstModel().get().getIdentifier());
+        assertEquals("B", structure.getFirstChain().get().getIdentifier());
     }
 
     @Test
@@ -86,18 +96,19 @@ public class StructureParserTest {
 
     // structure with modified nucleotides
     @Test
-    public void shouldParseResiduesWithModifiedNucleotides() {
+    public void shouldParseStructureWithInsertionCodes() {
         // TODO some strange bonds between 620 and 621 issue #41
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
-    }
 
-    // structure with insertion codes
-    @Test
-    public void shouldParseStructureWithInsertionCodes() {
-        // TODO issue #35
+        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeaves().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
+                .collect(Collectors.toList());
+
+        assertEquals(2, leavesWithInsertionCode.size());
+
     }
 
     @Test
@@ -127,17 +138,23 @@ public class StructureParserTest {
 
     @Test
     public void shouldAssignInformationFromFileName() {
-        StructureParserOptions options = StructureParserOptions.withSettings(GET_IDENTIFIER_FROM_FILENAME, GET_IDENTIFIER_FROM_PDB);
-        options.inferTitleFromFileName(true);
-        options.inferIdentifierFromFileName(true);
+        StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
-        assertEquals("1GL0", structure.getPdbIdentifier());
+        assertEquals("1gl0", structure.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseFromInputStream() {
+        InputStream inputStream = Resources.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
+        Structure structure = StructureParser.local()
+                .inputStream(inputStream)
+                .parse();
     }
 
     @Test
@@ -156,5 +173,12 @@ public class StructureParserTest {
                 .parse();
     }
 
+    @Test
+    public void shouldParseAllChainsFromLocalFile() {
+        StructureParser.local()
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .allChains()
+                .parse();
+    }
 
 }

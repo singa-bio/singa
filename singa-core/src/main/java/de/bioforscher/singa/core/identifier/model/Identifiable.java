@@ -11,6 +11,7 @@ public interface Identifiable<IdentifierType extends Identifier> {
 
     /**
      * Returns the {@link Identifier}.
+     *
      * @return The {@link Identifier}.
      */
     IdentifierType getIdentifier();

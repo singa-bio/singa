@@ -70,7 +70,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Sets the content of this cell section.
-     * @param content
+     * @param content The nodes contained in this cell section.
      */
     public void setContent(Set<BioNode> content) {
         this.content = content;

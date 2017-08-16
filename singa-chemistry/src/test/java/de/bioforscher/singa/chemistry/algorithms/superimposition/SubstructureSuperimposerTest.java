@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,16 +27,16 @@ import static org.junit.Assert.assertEquals;
  */
 public class SubstructureSuperimposerTest {
 
-    private BranchSubstructure<?> candidate;
-    private BranchSubstructure<?> reference;
+    private BranchSubstructure<?, ?> candidate;
+    private BranchSubstructure<?, ?> reference;
 
     @Before
     public void setUp() throws IOException {
         Structure motif1 = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("motif_HDS_01.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("motif_HDS_01.pdb"))
                 .parse();
         Structure motif2 = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("motif_HDS_02.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("motif_HDS_02.pdb"))
                 .parse();
         this.reference = motif1.getAllChains().get(0);
         this.candidate = motif2.getAllChains().get(0);

@@ -5,7 +5,7 @@ import java.io.InputStream;
 /**
  * The class allows definition of resource path and storage for the fetched result.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 

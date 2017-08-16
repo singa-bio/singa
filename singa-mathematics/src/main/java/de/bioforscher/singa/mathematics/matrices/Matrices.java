@@ -6,7 +6,10 @@ import de.bioforscher.singa.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -122,6 +125,7 @@ public final class Matrices {
     /**
      * Returns a list of positions of the minimal elements of a {@link Matrix}
      *
+     * @param matrix The matrix.
      * @return positions of the minimal elements represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static List<Pair<Integer>> getPositionsOfMinimalElement(Matrix matrix) {
@@ -146,6 +150,7 @@ public final class Matrices {
      * returns an {@link Optional} of a {@link Pair} that represents the position of the unique minimal element,
      * or an empty {@link Optional} if the minimal element is ambiguous
      *
+     * @param matrix The matrix.
      * @return position of the minimal element represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static Optional<Pair<Integer>> getPositionOfMinimalElement(Matrix matrix) {
@@ -156,6 +161,7 @@ public final class Matrices {
     /**
      * returns a list of positions of the maximal elements of a {@link Matrix}
      *
+     * @param matrix The matrix.
      * @return positions of the maximal elements represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static List<Pair<Integer>> getPositionsOfMaximalElement(Matrix matrix) {
@@ -180,6 +186,7 @@ public final class Matrices {
      * Returns an {@link Optional} of a {@link Pair} that represents the position of the unique maximal element,
      * or an empty {@link Optional} if the maximal element is ambiguous.
      *
+     * @param matrix The matrix.
      * @return position of the maximal element represented as a {@link Pair} (i,j) of {@link Integer} values
      */
     public static Optional<Pair<Integer>> getPositionOfMaximalElement(Matrix matrix) {
@@ -332,6 +339,18 @@ public final class Matrices {
             return new SquareMatrix(values);
         } else {
             return new RegularMatrix(values);
+        }
+    }
+
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(InputStream inputStream, String delimiter) throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
+            return readLabeledMatrixFromCSV(buffer.lines(), delimiter);
+        }
+    }
+
+    public static LabeledMatrix<String> readLabeledMatrixFromCSV(InputStream inputStream) throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
+            return readLabeledMatrixFromCSV(buffer.lines(), DEFAULT_CSV_DELIMITER);
         }
     }
 

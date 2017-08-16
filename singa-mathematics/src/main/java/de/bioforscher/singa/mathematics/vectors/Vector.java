@@ -32,6 +32,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
     /**
      * Returns an element of this vector.
      *
+     * @param index The index, to get the value from.
      * @return A single element of this vector at the given position.
      */
     double getElement(int index);
@@ -66,6 +67,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
     /**
      * Returns an explicit copy of this vector. A new array is created and filled with values.
      *
+     * @param <V> The concrete implementation of this vector.
      * @return An exact copy of and as a unrelated copy (safe to modify).
      */
     default <V extends Vector> V getCopy() {
@@ -148,6 +150,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * obtained by multiplying the i'th element of this vector with the j'th
      * element of the other vector.
      *
+     * @param vector Another vector of the same dimension.
      * @return The matrix of the dyadic product
      */
     Matrix dyadicProduct(Vector vector);

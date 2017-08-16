@@ -7,12 +7,12 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>de.bioforscher.singa</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.2.1</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-core</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
 
 </project>

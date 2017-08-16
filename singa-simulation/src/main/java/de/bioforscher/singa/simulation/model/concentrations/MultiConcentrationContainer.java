@@ -38,7 +38,6 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        // FIXME this always assumes mol/l
         return Quantities.getQuantity(this.concentrations.keySet().stream()
                 .mapToDouble(identifier -> getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue())
                 .average().orElse(0.0), UnitProvider.MOLE_PER_LITRE);
@@ -55,9 +54,8 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
         if (!this.concentrations.containsKey(cellSection)) {
-            System.out.println();
+            Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
         }
-
         return this.concentrations.get(cellSection).get(chemicalEntity);
     }
 

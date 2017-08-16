@@ -14,14 +14,11 @@ import java.util.stream.Collectors;
  * This class constructs valid candidates for the Fit3D algorithm.
  * <p>
  * Consider Q=(H,D,S) to be the query motif of size <i>k</i>. Further, we allow exchanges that are:
- * <p>
  * <pre>
  *  E(H) = (E)
  * </pre>
- * <p>
  * For a given extracted environment N=(H,E,D1,S1,D2,H2,S2) only the following candidates of size <i>k</i>
  * are generated to be then aligned to the query motif:
- * <p>
  * <pre>
  *  C1 =   H | D1 | S1
  *  C2 =   H | D1 | S2
@@ -51,6 +48,7 @@ public class ValidCandidateGenerator {
         }
     }
 
+    // TODO this is the current bottleneck of the Fit3D algorithm
     public Set<Set<LeafSubstructure<?, ?>>> getValidCandidates() {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges

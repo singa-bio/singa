@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 
 /**
- * A
+ * Calculates the ideal superimposition.
  *
  * @author fk
  */
@@ -46,7 +46,7 @@ public class SubStructureSuperimposer {
         this(reference, candidate, AtomFilter.isArbitrary(), null);
     }
 
-    private SubStructureSuperimposer(BranchSubstructure<?> reference, BranchSubstructure<?> candidate, Predicate<Atom> atomFilter,
+    private SubStructureSuperimposer(BranchSubstructure<?, ?> reference, BranchSubstructure<?, ?> candidate, Predicate<Atom> atomFilter,
                                      RepresentationScheme representationScheme) {
         this.reference = reference.getLeafSubstructures();
         this.candidate = candidate.getLeafSubstructures();
@@ -248,6 +248,7 @@ public class SubStructureSuperimposer {
         }
 
         if (referenceAtoms.isEmpty() || candidateAtoms.isEmpty()) {
+            logger.error("reference {} against candidate {} has no compatible atom sets: {} {}", this.reference, this.candidate, referenceAtoms, candidateAtoms);
             throw new SubStructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
         }
 
@@ -283,13 +284,22 @@ public class SubStructureSuperimposer {
                 .collect(Collectors.toList());
 
         // remove all atoms and bonds not part of the alignment
-        List<Integer> atomIdsToBeRemoved = mappedCandidate.stream()
-                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-                .filter(atom -> !positionMapping.containsKey(atom.getIdentifier()))
-                .map(Atom::getIdentifier)
+        List<List<Atom>> atomsToBeRemoved = mappedCandidate.stream()
+                .map(subStructure -> subStructure.getAllAtoms().stream()
+                        .filter(atom -> !positionMapping.containsKey(atom.getIdentifier()))
+                        .collect(Collectors.toList()))
                 .collect(Collectors.toList());
-        atomIdsToBeRemoved.forEach(id -> mappedCandidate
-                .forEach(subStructure -> subStructure.removeNode(id)));
+
+        for (int i = 0; i < atomsToBeRemoved.size(); i++) {
+            List<Atom> atoms = atomsToBeRemoved.get(i);
+            for (Atom atom : atoms) {
+                mappedCandidate.get(i).removeNode(atom);
+            }
+        }
+
+        // TODO: FLO IS THIS CORRECT?
+        // i think this should be done for the structure but not for every leaf
+        // previously
 
         // apply superimposition to copy of the candidate
         mappedCandidate.forEach(subStructure -> subStructure.getAllAtoms()

@@ -100,6 +100,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         return product;
     }
 
+
     public List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);

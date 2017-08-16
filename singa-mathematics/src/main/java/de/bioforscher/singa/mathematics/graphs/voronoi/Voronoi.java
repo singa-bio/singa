@@ -69,10 +69,6 @@ public class Voronoi {
     private Halfedge ELleftend, ELrightend;
     private List<VoronoiFaceEdge> allEdges;
 
-    /*********************************************************
-     * Public methods
-     ********************************************************/
-
     public Voronoi(double minDistanceBetweenSites) {
         this.siteidx = 0;
         this.sites = null;
@@ -82,14 +78,15 @@ public class Voronoi {
     }
 
     /**
+     *  Computes a voronoi diagram.
+     *
      * @param xValuesIn Array of X values for each site.
-     * @param yValuesIn Array of Y values for each site. Must be identical length to
-     *                  yValuesIn
+     * @param yValuesIn Array of Y values for each site. Must be of identical length to yValuesIn
      * @param minX      The minimum X of the bounding box around the voronoi
      * @param maxX      The maximum X of the bounding box around the voronoi
      * @param minY      The minimum Y of the bounding box around the voronoi
      * @param maxY      The maximum Y of the bounding box around the voronoi
-     * @return
+     * @return The resulting edges of the voronoi diagram.
      */
     public List<VoronoiFaceEdge> generateVoronoi(double[] xValuesIn, double[] yValuesIn, double minX, double maxX,
                                                  double minY, double maxY) {
@@ -117,10 +114,6 @@ public class Voronoi {
 
         return this.allEdges;
     }
-
-    /*********************************************************
-     * Private methods - implementation details
-     ********************************************************/
 
     private void sort(double[] xValuesIn, double[] yValuesIn, int count) {
 

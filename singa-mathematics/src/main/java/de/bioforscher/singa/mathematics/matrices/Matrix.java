@@ -18,7 +18,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Each implementation is: addable, subtractable, additively invertible and multipliable.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
 
@@ -109,6 +109,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     /**
      * Returns an explicit copy of this matrix. A new array is created and filled with values.
      *
+     * @param <M> The concrete implementation of this vector.
      * @return An exact copy of and as a unrelated copy (safe to modify).
      */
     default <M extends Matrix> M getCopy() {
@@ -121,7 +122,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
         try {
             return (M) getClass().getConstructor(double[][].class).newInstance((Object) copyOfElements);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException  e) {
+                | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             throw new UnsupportedOperationException("Instance types must match to copy successfully.");
         }
@@ -228,7 +229,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     @Override
     default boolean hasSameDimensions(Matrix matrix) {
         return this.getRowDimension() == matrix.getRowDimension()
-               && this.getColumnDimension() == matrix.getColumnDimension();
+                && this.getColumnDimension() == matrix.getColumnDimension();
     }
 
 }

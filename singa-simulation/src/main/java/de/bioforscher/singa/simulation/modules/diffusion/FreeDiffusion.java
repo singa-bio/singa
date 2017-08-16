@@ -22,7 +22,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  * concentration. This module defines the diffusion between {@link BioNode}s in a {@link AutomatonGraph}, as described
  * by Fick's laws of diffusion.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {

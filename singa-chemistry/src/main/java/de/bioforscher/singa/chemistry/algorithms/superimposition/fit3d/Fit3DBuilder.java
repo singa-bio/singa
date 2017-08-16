@@ -90,8 +90,8 @@ public class Fit3DBuilder {
         AtomStep restrictToSpecifiedExchanges();
 
         /**
-         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type using
-         * a heuristic that does not necessarily yield the best alignment possible.
+         * Ignores the specified exchanges of the input sites and allows alignment of any type against any type using a
+         * heuristic that does not necessarily yield the best alignment possible.
          *
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
@@ -109,6 +109,7 @@ public class Fit3DBuilder {
         /**
          * The cutoff score that should be used when extending the site alignment.
          *
+         * @param cutoffScore The cutoff score.
          * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
         SiteParameterConfigurationStep cutoffScore(double cutoffScore);
@@ -116,6 +117,7 @@ public class Fit3DBuilder {
         /**
          * The {@link SubstitutionMatrix} to be used to calculate the Xie score.
          *
+         * @param substitutionMatrix The substitution matrix.
          * @return The {@link SiteParameterConfigurationStep} to configure other parameters.
          */
         SiteParameterConfigurationStep substitutionMatrix(SubstitutionMatrix substitutionMatrix);
@@ -128,19 +130,19 @@ public class Fit3DBuilder {
          * @param target The target {@link BranchSubstructure} against which the search should be run.
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
-        AtomStep target(BranchSubstructure<?> target);
+        AtomStep target(BranchSubstructure<?, ?> target);
 
         /**
-         * Defines the targets against which this Fit3D search should be run in batch mode. This can either be a list
-         * of PDB-IDs or file paths pointing to target files in PDB format.
+         * Defines the targets against which this Fit3D search should be run in batch mode. This can either be a list of
+         * PDB-IDs or file paths pointing to target files in PDB format.
          *
          * @param multiParser The {@link MultiParser} that provides the structures to that should be run in batch mode.
-         * @return The {@link ParallelStep} to define the level of parallelism the batch search should use.
+         * @return The {@link BatchParameterStep} to define the level of parallelism the batch search should use.
          */
-        ParallelStep targets(MultiParser multiParser);
+        BatchParameterStep targets(MultiParser multiParser);
     }
 
-    public interface ParallelStep {
+    public interface BatchParameterStep {
         /**
          * Defines for a batch search the level of parallelism (number of cores) that should be used by {@link Fit3D}.
          *
@@ -155,6 +157,23 @@ public class Fit3DBuilder {
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
         AtomStep maximalParallelism();
+
+        /**
+         * Sets the option to skip all targets that consist of only alpha carbon atoms to avoid a lot of noise in the
+         * results.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        BatchParameterStep skipAlphaCarbonTargets();
+
+
+        /**
+         * Sets the option to skip all targets that consist of only backbone atoms to avoid a lot of noise in the
+         * results.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        BatchParameterStep skipBackboneTargets();
     }
 
     public interface AtomStep {
@@ -166,8 +185,8 @@ public class Fit3DBuilder {
         Fit3D run() throws SubStructureSuperimpositionException;
 
         /**
-         * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g. only
-         * sidechain atoms).
+         * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g.
+         * only sidechain atoms).
          *
          * @param atomFilter The {@link StructuralEntityFilter.AtomFilter} filter to be used for the alignment.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -201,9 +220,9 @@ public class Fit3DBuilder {
         ParameterStep rmsdCutoff(double rmsdCutoff);
 
         /**
-         * Defines the distance tolerance that is accepted when extracting local environments. If a
-         * {@link Fit3DSiteAlignment} is performed this is the cutoff that is used for the internal call of the
-         * Fit3D algorithm.
+         * Defines the distance tolerance that is accepted when extracting local environments. If a {@link
+         * Fit3DSiteAlignment} is performed this is the cutoff that is used for the internal call of the Fit3D
+         * algorithm.
          *
          * @param distanceTolerance The distance tolerance considered when extracting local environments.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
@@ -211,11 +230,11 @@ public class Fit3DBuilder {
         ParameterStep distanceTolerance(double distanceTolerance);
     }
 
-    public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, ParallelStep, ParameterStep {
+    public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
 
         StructuralMotif queryMotif;
         MultiParser multiParser;
-        BranchSubstructure<?> target;
+        BranchSubstructure<?, ?> target;
         int parallelism;
         double rmsdCutoff = DEFAULT_RMSD_CUTOFF;
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
@@ -227,6 +246,8 @@ public class Fit3DBuilder {
         boolean exhaustive;
         boolean restrictToExchanges;
         SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
+        boolean skipAlphaCarbonTargets;
+        boolean skipBackboneTargets;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -243,14 +264,14 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public AtomStep target(BranchSubstructure<?> target) {
+        public AtomStep target(BranchSubstructure<?, ?> target) {
             Objects.requireNonNull(target);
             this.target = target;
             return this;
         }
 
         @Override
-        public ParallelStep targets(MultiParser multiParser) {
+        public BatchParameterStep targets(MultiParser multiParser) {
             Objects.requireNonNull(multiParser);
 
             this.multiParser = multiParser;
@@ -313,6 +334,18 @@ public class Fit3DBuilder {
         @Override
         public AtomStep maximalParallelism() {
             this.parallelism = Runtime.getRuntime().availableProcessors();
+            return this;
+        }
+
+        @Override
+        public BatchParameterStep skipAlphaCarbonTargets() {
+            this.skipAlphaCarbonTargets = true;
+            return this;
+        }
+
+        @Override
+        public BatchParameterStep skipBackboneTargets() {
+            this.skipBackboneTargets = true;
             return this;
         }
 

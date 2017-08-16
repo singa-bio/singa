@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * infinitely in both directions. It is uniquely defined by two distinct points
  * or a single point and its slope.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Line_(geometry)">Wikipedia: Line (geometry)</a>
  */
 public class Line {
@@ -20,7 +20,7 @@ public class Line {
      * Creates a new line from it's y-intercept and slope.
      *
      * @param yIntercept The y-intercept.
-     * @param slope The slope.
+     * @param slope      The slope.
      */
     public Line(double yIntercept, double slope) {
         if (Double.isNaN(yIntercept)) {
@@ -36,7 +36,7 @@ public class Line {
      * Creates a new Point from a strut point and the slope;
      *
      * @param strutPoint The strut point.
-     * @param slope The slope.
+     * @param slope      The slope.
      */
     public Line(Vector2D strutPoint, double slope) {
         if (!Double.isInfinite(slope)) {
@@ -66,7 +66,7 @@ public class Line {
     /**
      * Creates a new Line from two points.
      *
-     * @param first The first point.
+     * @param first  The first point.
      * @param second The second point.
      */
     public Line(Vector2D first, Vector2D second) {
@@ -91,6 +91,8 @@ public class Line {
      * <pre>
      * m = (y2 - y1)/(x2 - x1).</pre>
      *
+     * @param first  The first point of the line.
+     * @param second The second point of the line.
      * @return The slope.
      */
     public static double calculateSlope(Vector2D first, Vector2D second) {
@@ -105,6 +107,8 @@ public class Line {
      * <pre>
      * b = (y1 - x1) * slope</pre>
      *
+     * @param first The first point of the line.
+     * @param slope The slope of the line.
      * @return The y-intercept of the equation of the line segment.
      */
     public static double calculateYIntercept(Vector2D first, double slope) {
@@ -169,7 +173,6 @@ public class Line {
     }
 
 
-
     /**
      * Returns the angle to the x-axis in radians.
      *
@@ -183,6 +186,7 @@ public class Line {
      * Returns the perpendicular slope.
      * <pre>
      * s* = -1 / slope</pre>
+     *
      * @return the perpendiculat slope
      */
     public double getPerpendicularSlope() {
@@ -193,6 +197,7 @@ public class Line {
      * Returns a new line parallel to this line, separated by the given
      * ({@link VectorMetricProvider#EUCLIDEAN_METRIC Euclidean}-)distance.
      * Negative distances return lines below, respectively left of this line and positive distances vice versa.
+     *
      * @param distance The offset distance of the new parallel line.
      * @return A new line parallel to this one.
      */
@@ -208,6 +213,7 @@ public class Line {
 
     /**
      * Returns a point where the two lines intersect, if they are not parallel.
+     *
      * @param line Another line.
      * @return The intersection.
      */
@@ -221,6 +227,7 @@ public class Line {
 
     /**
      * Returns the mirror image of the given point, using this line as the mirror axis.
+     *
      * @param originalVector The original point.
      * @return The mirrored point.
      */
@@ -233,6 +240,7 @@ public class Line {
 
     /**
      * Returns {@code true}, if this line is horizontal (i.e. it's slope is zero).
+     *
      * @return {@code true}, if this line is horizontal
      */
     public boolean isHorizontal() {
@@ -241,6 +249,7 @@ public class Line {
 
     /**
      * Returns {@code true}, if this line is vertical (i.e. it's slope is infinite).
+     *
      * @return {@code true}, if this line is vertical
      */
     public boolean isVertical() {

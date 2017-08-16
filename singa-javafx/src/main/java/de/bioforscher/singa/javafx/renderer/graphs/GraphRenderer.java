@@ -12,15 +12,19 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 /**
  * @author cl
  */
-public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> extends AnimationTimer implements Renderer {
+public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();
+
+    private Function<GraphType, Void> renderBeforeFunction;
+    private Function<GraphType, Void> renderAfterFunction;
 
     private DoubleProperty drawingWidth;
     private DoubleProperty drawingHeight;
@@ -42,15 +46,18 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType e
     public void handle(long now) {
         GraphType graph;
         while ((graph = this.graphQueue.poll()) != null) {
+            fillBackground();
+            if (renderBeforeFunction != null) {
+                renderBeforeFunction.apply(graph);
+            }
             render(graph);
+            if (renderAfterFunction != null) {
+                renderAfterFunction.apply(graph);
+            }
         }
     }
 
     public void render(GraphType graph) {
-        // Background
-        // getRenderingOptions().setIdentifierFont(Font.getDefault());
-        getGraphicsContext().setFill(this.renderingOptions.getBackgroundColor());
-        getGraphicsContext().fillRect(0, 0, getDrawingWidth(), getDrawingHeight());
         // render edges
         if (this.renderingOptions.isDisplayingEdges()) {
             graph.getEdges().forEach(this::drawEdge);
@@ -59,6 +66,20 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D>, EdgeType e
         if (this.renderingOptions.isDisplayingNodes()) {
             graph.getNodes().forEach(this::drawNode);
         }
+    }
+
+    public void fillBackground() {
+        // background
+        getGraphicsContext().setFill(this.renderingOptions.getBackgroundColor());
+        getGraphicsContext().fillRect(0, 0, getDrawingWidth(), getDrawingHeight());
+    }
+
+    public void setRenderAfter(Function<GraphType, Void> renderAfterFunction) {
+        this.renderAfterFunction = renderAfterFunction;
+    }
+
+    public void setRenderBefore(Function<GraphType, Void> renderBeforeFunction) {
+        this.renderBeforeFunction = renderBeforeFunction;
     }
 
     protected void drawNode(NodeType node) {

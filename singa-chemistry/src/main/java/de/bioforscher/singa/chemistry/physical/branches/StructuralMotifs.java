@@ -27,11 +27,17 @@ public class StructuralMotifs {
 
     }
 
-    public static void assignExchanges(StructuralMotif structuralMotif, EnumSet<MatcherFamily> familyGroup) {
+    /**
+     * Assigns the given {@link EnumSet} of exchanges to the specified {@link StructuralMotif}.
+     *
+     * @param structuralMotif The {@link StructuralMotif} to which the exchanges should be assigned.
+     * @param familyGroup     The group of {@link MatcherFamily} to be assigned.
+     */
+    public static void assignComplexExchanges(StructuralMotif structuralMotif, EnumSet<MatcherFamily> familyGroup) {
         for (LeafSubstructure<?, ?> leafSubstructure : structuralMotif.getLeafSubstructures()) {
             familyGroup.stream()
                     .filter(family -> family.getMembers().contains(leafSubstructure.getFamily()))
-                    .forEach(familyMember -> structuralMotif.addExchangeableFamily(leafSubstructure.getLeafIdentifier(),
+                    .forEach(familyMember -> structuralMotif.addExchangeableFamily(leafSubstructure.getIdentifier(),
                             familyMember));
         }
     }

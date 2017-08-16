@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * The method {@code calculateForce} can be used to define the strength of the
  * force.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Force {
 

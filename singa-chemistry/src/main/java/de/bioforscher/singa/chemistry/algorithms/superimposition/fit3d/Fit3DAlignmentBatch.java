@@ -9,6 +9,8 @@ import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.chemistry.physical.model.Structures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +38,16 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final double distanceTolerance;
     private final ExecutorService executorService;
     private final StructureParser.MultiParser multiParser;
+    private final boolean skipAlphaCarbonTargets;
+    private final boolean skipBackboneTargets;
     private TreeMap<Double, SubstructureSuperimposition> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
         this.queryMotif = builder.queryMotif;
         this.multiParser = builder.multiParser;
         this.parallelism = builder.parallelism;
+        this.skipAlphaCarbonTargets = builder.skipAlphaCarbonTargets;
+        this.skipBackboneTargets = builder.skipBackboneTargets;
         this.executorService = Executors.newWorkStealingPool(this.parallelism);
         this.atomFilter = builder.atomFilter;
         this.representationScheme = builder.representationScheme;
@@ -116,7 +122,16 @@ public class Fit3DAlignmentBatch implements Fit3D {
             Fit3D fit3d;
             if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
                 try {
-                    BranchSubstructure<?> target = Fit3DAlignmentBatch.this.multiParser.next().getFirstModel()
+                    Structure structure = Fit3DAlignmentBatch.this.multiParser.next();
+                    if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
+                        logger.info("ignored alpha carbon only structure {}", structure);
+                        return null;
+                    }
+                    if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
+                        logger.info("ignored backbone only structure {}", structure);
+                        return null;
+                    }
+                    BranchSubstructure<?, ?> target = structure.getFirstModel()
                             .orElseThrow(() -> new Fit3DException("no model available for " +
                                     Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier() +
                                     "/" + Fit3DAlignmentBatch.this.multiParser.getCurrentChainIdentifier()));

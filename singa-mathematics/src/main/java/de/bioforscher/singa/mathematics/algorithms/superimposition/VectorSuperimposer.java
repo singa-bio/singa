@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.algorithms.superimposition;
 
 import de.bioforscher.singa.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
+import de.bioforscher.singa.mathematics.matrices.FastMatrices;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.matrices.SquareMatrix;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  * superimposition of two point sets (a list of {@link Vector}s).
  *
  * @author fk
- * @see {https://en.wikipedia.org/wiki/Kabsch_algorithm}
+ * @see <a href="https://en.wikipedia.org/wiki/Kabsch_algorithm">Wikipedia: Kabsch algorithm</a>
  */
 public class VectorSuperimposer {
 
@@ -84,8 +85,8 @@ public class VectorSuperimposer {
     }
 
     private void calculateRotation() {
-        Matrix referenceMatrix = Matrices.assembleMatrixFromRows(this.shiftedReference);
-        Matrix candidateMatrix = Matrices.assembleMatrixFromRows(this.shiftedCandidate);
+        Matrix referenceMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedReference);
+        Matrix candidateMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedCandidate);
 
         // calculate covariance
         Matrix covarianceMatrix = Matrices.calculateCovarianceMatrix(referenceMatrix, candidateMatrix);

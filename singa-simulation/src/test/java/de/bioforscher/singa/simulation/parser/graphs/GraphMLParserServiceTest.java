@@ -36,10 +36,10 @@ public class GraphMLParserServiceTest {
             assertEquals(node72.getConcentration(entity).getValue().doubleValue(), 1.0, 0.0);
         }
         // connections are set
-        assertTrue(node72.hasNeighbour(71));
-        assertTrue(node72.hasNeighbour(73));
-        assertTrue(node72.hasNeighbour(62));
-        assertTrue(node72.hasNeighbour(82));
+        assertTrue(node72.hasNeighbour(graph.getNode(71)));
+        assertTrue(node72.hasNeighbour(graph.getNode(73)));
+        assertTrue(node72.hasNeighbour(graph.getNode(62)));
+        assertTrue(node72.hasNeighbour(graph.getNode(82)));
     }
 
 

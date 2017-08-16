@@ -1,7 +1,7 @@
 package de.bioforscher.singa.core.utility;
 
 /**
- * The Nameable interface defines an Object that has a useful name attached to it.
+ * The nameable interface defines an Object that has a useful name attached to it.
  *
  * @author cl
  */

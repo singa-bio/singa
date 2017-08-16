@@ -10,7 +10,7 @@ import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.core.utility.TestUtils;
+import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +19,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A test for the implementation of the Fit3D algorithm.
@@ -41,9 +43,9 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
-                .fileLocation(TestUtils.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeaves(1, motifContainingStructure,
+        this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
@@ -71,18 +73,17 @@ public class Fit3DAlignmentTest {
         assertEquals(0.0005, matches.firstKey(), 1E-4);
     }
 
-
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
         Structure nucleotideTarget = StructureParser.online()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
-                Paths.get("src/test/resources/RF00167"))
+                Paths.get(Resources.getResourceAsFilepath("RF00167")))
                 .collect(Collectors.toList());
         StructureParser.MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)
@@ -101,7 +102,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(1, target,
+        StructuralMotif queryMotif = StructuralMotif.fromLeaves(target,
                 LeafIdentifiers.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -122,7 +123,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(1, nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
@@ -130,7 +131,6 @@ public class Fit3DAlignmentTest {
                 .target(nucleotideTarget.getAllChains().get(0))
                 .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-
         assertEquals(0.0, matches.firstKey(), 1E-6);
     }
 
@@ -141,7 +141,7 @@ public class Fit3DAlignmentTest {
                 .everything()
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(1, queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
+        StructuralMotif queryMotif = StructuralMotif.fromLeaves(queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -150,6 +150,44 @@ public class Fit3DAlignmentTest {
 
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0, matches.firstKey(), 1E-6);
+    }
+
+    @Test
+    public void shouldSkipAlphaCarbonStructureInBatch() {
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        List<String> alphaCarbonStructures = new ArrayList<>();
+        alphaCarbonStructures.add("1zlg");
+        StructureParser.MultiParser multiParser = StructureParser.online()
+                .pdbIdentifiers(alphaCarbonStructures)
+                .everything();
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+                .targets(multiParser)
+                .skipAlphaCarbonTargets()
+                .maximalParallelism()
+                .atomFilter(AtomFilter.isArbitrary())
+                .rmsdCutoff(3.0)
+                .run();
+
+        assertTrue(fit3d.getMatches().isEmpty());
+    }
+
+    @Test
+    public void shouldSkipBackboneStructureInBatch() {
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        List<String> alphaCarbonStructures = new ArrayList<>();
+        alphaCarbonStructures.add("2plp");
+        StructureParser.MultiParser multiParser = StructureParser.online()
+                .pdbIdentifiers(alphaCarbonStructures)
+                .everything();
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+                .targets(multiParser)
+                .skipBackboneTargets()
+                .maximalParallelism()
+                .atomFilter(AtomFilter.isArbitrary())
+                .rmsdCutoff(3.0)
+                .run();
+
+        assertTrue(fit3d.getMatches().isEmpty());
     }
 
 //    @Test

@@ -33,7 +33,6 @@ import java.util.stream.IntStream;
 /**
  * A consensus alignment of same-sized {@link StructuralMotif}s can be used to cluster them according their
  * geometric similarity in a multi-structure alignment manner as described in:
- * <p>
  * <pre>to be published</pre>
  *
  * TODO this has to be rewritten as soon as equals of {@link StructuralMotif} is implemented
@@ -62,7 +61,6 @@ public class ConsensusAlignment {
     private ConsensusContainer currentConsensus;
     private double clusterCutoff;
     private List<BinaryTree<ConsensusContainer>> clusters;
-
     ConsensusAlignment(ConsensusBuilder.Builder builder) {
 
         // convert given input structures to data model
@@ -129,6 +127,10 @@ public class ConsensusAlignment {
     private static ConsensusContainer toContainer(StructuralMotif structuralMotif) {
         // use copy of given structural motif
         return new ConsensusContainer(structuralMotif.getCopy(), false);
+    }
+
+    public List<Double> getAlignmentTrace() {
+        return alignmentTrace;
     }
 
     public List<BinaryTree<ConsensusContainer>> getClusters() {
@@ -386,12 +388,12 @@ public class ConsensusAlignment {
         List<LeafSubstructure<?, ?>> candidate = substructurePair.getKey().getMappedFullCandidate();
 
 //        Chain chainReference = new Chain(0);
-//        reference.forEach(chainReference::addSubstructure);
+//        reference.forEach(chainReference::addBranchSubstructure);
 //        Chain chainCandidate = new Chain(1);
-//        candidate.forEach(chainCandidate::addSubstructure);
+//        candidate.forEach(chainCandidate::addBranchSubstructure);
 //        Structure structure = new Structure();
-//        structure.addSubstructure(chainReference);
-//        structure.addSubstructure(chainCandidate);
+//        structure.addBranchSubstructure(chainReference);
+//        structure.addBranchSubstructure(chainCandidate);
 //        StructureViewer.structure = structure;
 //        Application.launch(StructureViewer.class);
 
@@ -478,7 +480,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(0, consensusLeaveSubstructures), true);
+        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(consensusLeaveSubstructures), true);
 
         // create tree node
         BinaryTreeNode<ConsensusContainer> leftNode;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
@@ -20,7 +20,7 @@ public class AutomatonGraphsTest {
     public void shouldSplitGraph() {
         final int numberOfNodes = 11;
         AutomatonGraph rectangularAutomatonGraph = AutomatonGraphs.createRectangularAutomatonGraph(numberOfNodes, numberOfNodes);
-        RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(numberOfNodes, numberOfNodes);
+        GridCoordinateConverter converter = new GridCoordinateConverter(numberOfNodes, numberOfNodes);
         EnclosedCompartment innerSection = new EnclosedCompartment("Right", "Right Compartment");
         EnclosedCompartment outerSection = new EnclosedCompartment("Left", "Left Compartment");
         AutomatonGraphs.splitRectangularGraphWithMembrane(rectangularAutomatonGraph, converter, innerSection, outerSection);

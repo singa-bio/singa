@@ -8,10 +8,14 @@ import java.util.List;
 /**
  * @author cl
  */
-public interface Substructure<SubstructureType extends Substructure<SubstructureType>>
-        extends Graph<Atom, Bond>, StructuralEntity<SubstructureType>{
+public interface Substructure<SubstructureType extends Substructure<SubstructureType, IdentifierType>, IdentifierType>
+        extends Graph<Atom, Bond, Integer>, StructuralEntity<SubstructureType, IdentifierType> {
 
     List<Atom> getAllAtoms();
+
+    String flatToString();
+
+    String deepToString();
 
     SubstructureType getCopy();
 }

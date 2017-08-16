@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.physical.model;
 
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 
@@ -59,11 +60,13 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
-     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
+     * @param <EntityType> The Type of the structural entity.
+     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be
+     * obtained.
      * @return The distance matrix of the {@link StructuralEntity} objects.
      */
-    public static <T extends StructuralEntity<T>> LabeledSymmetricMatrix<T> calculateDistanceMatrix(List<T> structuralEntities) {
-        LabeledSymmetricMatrix<T> labeledDistances = new LabeledSymmetricMatrix<>(
+    public static <EntityType extends StructuralEntity<EntityType, ?>> LabeledSymmetricMatrix<EntityType> calculateDistanceMatrix(List<EntityType> structuralEntities) {
+        LabeledSymmetricMatrix<EntityType> labeledDistances = new LabeledSymmetricMatrix<>(
                 VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistancesPairwise(structuralEntities.stream()
                         .map(StructuralEntity::getPosition)
                         .collect(Collectors.toList())).getElements());
@@ -76,11 +79,13 @@ public class Structures {
      * <p>
      * TODO This should be the only generic method to calculate distance matrices.
      *
-     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be obtained.
+     * @param <EntityType> The Type of the structural entity.
+     * @param structuralEntities The list of {@link StructuralEntity} objects for which a distance matrix should be
+     * obtained.
      * @return The squared distance matrix of the {@link StructuralEntity} objects.
      */
-    public static <T extends StructuralEntity<T>> LabeledSymmetricMatrix<T> calculateSquaredDistanceMatrix(List<T> structuralEntities) {
-        LabeledSymmetricMatrix<T> labeledDistances = new LabeledSymmetricMatrix<>(
+    public static <EntityType extends StructuralEntity<EntityType, ?>> LabeledSymmetricMatrix<EntityType> calculateSquaredDistanceMatrix(List<EntityType> structuralEntities) {
+        LabeledSymmetricMatrix<EntityType> labeledDistances = new LabeledSymmetricMatrix<>(
                 VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(structuralEntities.stream()
                         .map(StructuralEntity::getPosition)
                         .collect(Collectors.toList())).getElements());
@@ -96,4 +101,31 @@ public class Structures {
 //        labeledDistances.setRowLabels(atoms);
 //        return labeledDistances;
 //    }
+
+    /**
+     * Returns true iff the given {@link Structure} consists only of alpha carbon atoms
+     * (<b>this may include hydrogen atoms</b>).
+     *
+     * @param structure The {@link Structure} to check.
+     * @return True iff structure contains only alpha carbon atoms.
+     */
+    public static boolean isAlphaCarbonStructure(Structure structure) {
+        return structure.getAllAtoms().stream()
+                .noneMatch(AtomFilter.isAlphaCarbon().negate()
+                        .and(AtomFilter.isHydrogen().negate()));
+    }
+
+    /**
+     * Returns true iff the given {@link Structure} consists only of backbone atoms
+     * (<b>this may include beta carbon and hydrogen atoms</b>).
+     *
+     * @param structure The {@link Structure} to check.
+     * @return True iff structure contains only backbone and hydrogen atoms.
+     */
+    public static boolean isBackboneStructure(Structure structure) {
+        return structure.getAllAtoms().stream()
+                .noneMatch(AtomFilter.isBackbone().negate()
+                        .and(AtomFilter.isHydrogen().negate())
+                        .and(AtomFilter.isBetaCarbon().negate()));
+    }
 }

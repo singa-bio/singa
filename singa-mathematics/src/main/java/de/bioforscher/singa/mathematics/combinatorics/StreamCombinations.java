@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * An implementation of combinations of size <i>k</i> of <i>n</i> elements realized as stream as shown on:
  *
  * @author fk
- * @see {https://stackoverflow.com/questions/28515516/enumeration-combinations-of-k-elements-using-java-8}
+ * @see <a href="https://stackoverflow.com/questions/28515516/enumeration-combinations-of-k-elements-using-java-8">Stackoverflow post of streaming elements for combinations</a>
  */
 public class StreamCombinations {
 

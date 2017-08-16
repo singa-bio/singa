@@ -3,8 +3,7 @@ package de.bioforscher.singa.mathematics.topology;
 /**
  * Different types of coordinate systems.
  *
- * @author Christoph Leberecht
- * @version 0.0.1
+ * @author cl
  */
 public enum CoordinateSystem {
 

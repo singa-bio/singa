@@ -6,54 +6,47 @@ import de.bioforscher.singa.core.identifier.model.Identifier;
 import java.util.regex.Pattern;
 
 /**
- * The InChIKey, or hashed InChI, is a fixed length (25 character) condensed digital representation of the InChI.
+ * The IUPAC International Chemical Identifier is a textual identifier for chemical substances, designed to provide a
+ * standard way to encode molecular information and to facilitate the search for such information in databases and on
+ * the web.
  * <p>
- * From the official documents:
- * The InChIKey is a character signature based on a hash code of the InChI string. Also, this hash
- * may serve as a checksum for verifying InChI, for example, after transmission over a network."
- * <p>
- * InChIKey has four (4) distinct components: a 14-character hash of the basic (Mobile-H)
- * InChI layer (without /p segment accounting for added or removed protons); a 8-character
- * hash of the remaining layers; a 1 character is a flag indicating selected features (e.g.
- * presence of fixed-H layer); a 1 character is a “check” character. The overall length of
- * InChIKey is fixed at 25 characters, including separator:
- * AAAAAAAAAAAAAA-BBBBBBBBCD
- * <p>
- * This is significantly shorter than a typical InChI string (for example, the average length
- * of InChI string for Pubchem collection is 146 characters).
- * <p>
- * InChIKey layout is as follows:
- * <p>
- * AAAAAAAAAAAAAA <br>
- * First block (14 letters)<br>
- * Encodes molecular skeleton (connectivity)<br>
- * <p>
- * BBBBBBBB<br>
- * Second block (8 letters)<br>
- * Encodes proton positions (tautomers), stereochemistry, isotopomers, reconnected layer<br>
- * <p>
- * C<br>
- * Flag character<br>
- * Indicates InChI version, presence of a fixed-H layer, isotopes, and stereochemical information.<br><br>
- * D<br>
- * Check character, obtained from all symbols except delimiters
- * <p>
- * All symbols except the delimiter (a dash, that is, a minus) are uppercase English letters
- * representing a “base-26” encoding.
+ * The InChIKey is a short, fixed-length character signature based on a hash code of the InChI string.
+ *
+ * @author cl
+ * @see <a href="http://www.inchi-trust.org/technical-faq/#2.1">Enzyme Nomenclature</a>
  */
 public class InChIKey extends AbstractIdentifier {
 
-    // GZUITABIAKMVPG-UHFFFAOYSA-N
-    public static final Pattern PATTERN = Pattern.compile("[A-Z]{14}-[A-Z]{10}-N");
+    /**
+     * The pattern to verify the identifier.
+     */
+    public static final Pattern PATTERN = Pattern.compile("[A-Z]{14}-[A-Z]{10}-[A-Z]");
 
-    public InChIKey(String key) throws IllegalArgumentException {
-        super(key, PATTERN);
+    /**
+     * Creates a new identifier.
+     *
+     * @param identifier The identifier.
+     * @throws IllegalArgumentException If the identifier not valid.
+     */
+    public InChIKey(String identifier) throws IllegalArgumentException {
+        super(identifier, PATTERN);
     }
 
+    /**
+     * Returns true, if the identifier is valid.
+     *
+     * @param identifier The identifier.
+     * @return True, if the identifier is valid.
+     */
     public static boolean check(Identifier identifier) {
         return PATTERN.matcher(identifier.toString()).matches();
     }
 
+    /**
+     * Returns the pattern used to validate the identifier.
+     *
+     * @return The pattern used to validate the identifier.
+     */
     public static Pattern getPattern() {
         return PATTERN;
     }

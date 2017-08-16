@@ -17,19 +17,19 @@ import java.util.Queue;
  *
  * @author cl
  */
-public class ShortestPathMetric implements Metric<Node<?, ?>> {
+public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
 
-    private Graph<?, ?> graph;
+    private Graph<?, ?, ?> graph;
 
-    public ShortestPathMetric(Graph<?, ?> graph) {
+    public ShortestPathMetric(Graph<?, ?, ?> graph) {
         this.graph = graph;
     }
 
     @Override
-    public double calculateDistance(Node<?, ?> first, Node<?, ?> second) {
+    public double calculateDistance(Node<?, ?, ?> first, Node<?, ?, ?> second) {
 
         // registers distances of the nodes that have already been processed
-        Map<Node<?, ?>, Integer> distance = new HashMap<>(this.graph.getNodes().size());
+        Map<Node<?, ?, ?>, Integer> distance = new HashMap<>(this.graph.getNodes().size());
 
         // degenerate case: graph does not contain one or both of the requested
         // nodes
@@ -44,14 +44,14 @@ public class ShortestPathMetric implements Metric<Node<?, ?>> {
         }
 
         // setup FIFO queue
-        Queue<Node<?, ?>> queue = new LinkedList<>();
+        Queue<Node<?, ?, ?>> queue = new LinkedList<>();
         queue.offer(first);
         distance.put(first, 0);
 
         // processes all direct and indirect neighbours of the first node
         while (!queue.isEmpty()) {
-            Node<?, ?> currentNode = queue.poll();
-            for (Node<?, ?> adjacentNode : currentNode.getNeighbours()) {
+            Node<?, ?, ?> currentNode = queue.poll();
+            for (Node<?, ?, ?> adjacentNode : currentNode.getNeighbours()) {
                 // distance has already been determined
                 if (!distance.containsKey(adjacentNode)) {
                     // until first2DVector node has been found
