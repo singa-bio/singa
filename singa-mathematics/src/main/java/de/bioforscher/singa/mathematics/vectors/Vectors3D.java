@@ -17,11 +17,11 @@ public class Vectors3D {
     public static Vector3D getCentroid(Collection<Vector3D> vectors) {
         int vectorCount = vectors.size();
         double[] sum = new double[3];
-        for (Vector3D vector: vectors) {
+        for (Vector3D vector : vectors) {
             sum[0] += vector.getX();
             sum[1] += vector.getY();
             sum[2] += vector.getZ();
         }
-        return new Vector3D(sum[0]/vectorCount, sum[1]/vectorCount, sum[2]/vectorCount);
+        return new Vector3D(sum[0] / vectorCount, sum[1] / vectorCount, sum[2] / vectorCount);
     }
 }

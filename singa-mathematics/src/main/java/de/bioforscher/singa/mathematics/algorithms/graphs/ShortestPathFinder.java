@@ -36,10 +36,11 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * target predicate. E.g. To to search for a specific node in the graph it is possible to use the identifier in the
      * predicate. If no path can be found null is returned.
      *
-     * @param sourceNode      The source node.
+     * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
-     * @param <VectorType>    The type of the position of the node.
-     * @param <NodeType>      The type of the node.
+     * @param <VectorType> The type of the position of the node.
+     * @param <NodeType> The type of the node.
+     * @param <IdentifierType> The type of the identifier.
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
@@ -63,15 +64,16 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * target predicate. Additionally all nodes on the path to the target predicate have to fulfill the track predicate.
      * If no path can be found null is returned.
      *
-     * @param sourceNode      The source node.
+     * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
-     * @param trackPredicate  The predicate all nodes on the path have to fulfill.
-     * @param <VectorType>    The type of the position of the node.
-     * @param <NodeType>      The type of the node.
+     * @param trackPredicate The predicate all nodes on the path have to fulfill.
+     * @param <VectorType> The type of the position of the node.
+     * @param <NodeType> The type of the node.
+     * @param <IdentifierType> The type of the identifier.
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            VectorType extends Vector,IdentifierType> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+            VectorType extends Vector, IdentifierType> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
         ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
@@ -90,11 +92,11 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
 
     /**
      * Checks whether the current target fulfills the predicate. If this is the case the path from the source to the
-     * target is returned. Otherwise the target is added to the queue, it is referenced in the predecessors map and
-     * the distance is set in the distance map.
+     * target is returned. Otherwise the target is added to the queue, it is referenced in the predecessors map and the
+     * distance is set in the distance map.
      *
-     * @param source          The source node.
-     * @param target          The target node.
+     * @param source The source node.
+     * @param target The target node.
      * @param targetPredicate The predicate to fulfill.
      * @return The shortest path if the target fulfills the predicate and null otherwise.
      */

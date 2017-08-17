@@ -1,5 +1,9 @@
 package de.bioforscher.singa.mathematics.matrices;
 
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
+import java.util.List;
+
 /**
  * Fast(ish) Matrix operations you can use if you are sure what you are doing.
  *
@@ -41,6 +45,21 @@ public class FastMatrices {
      */
     public static SymmetricMatrix createSymmetricMatrix(double[][] values) {
         return new SymmetricMatrix(values, values.length, values[values.length - 1].length);
+    }
+
+    /**
+     * Creates a {@link Matrix} from the given row {@link Vector}s. No checks for validly formed row {@link Vector}s are
+     * done, use with care.
+     *
+     * @param rowVectors The {@link Vector}s that resemble the rows of the new {@link Matrix}.
+     * @return A new {@link Matrix}.
+     */
+    public static Matrix assembleMatrixFromRows(List<Vector> rowVectors) {
+        double[][] elements = new double[rowVectors.size()][rowVectors.get(0).getDimension()];
+        for (int column = 0; column < rowVectors.size(); column++) {
+            elements[column] = rowVectors.get(column).getElements();
+        }
+        return FastMatrices.createRegularMatrix(elements);
     }
 
 }

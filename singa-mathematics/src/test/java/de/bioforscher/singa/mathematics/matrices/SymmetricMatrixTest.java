@@ -142,4 +142,11 @@ public class SymmetricMatrixTest {
         RegularVector row = lsm.getRowByLabel("L1");
         assertTrue(row.equals(new RegularVector(1.0, 2.0, 3.0)));
     }
+
+    @Test
+    public void shouldGetRow() {
+        assertTrue(this.trueSymmetricMatrix.getRow(0).equals(new RegularVector(1.0, 2.0, 3.0)));
+        assertTrue(this.trueSymmetricMatrix.getRow(1).equals(new RegularVector(2.0, 4.0, 5.0)));
+        assertTrue(this.trueSymmetricMatrix.getRow(2).equals(new RegularVector(3.0, 5.0, 8.0)));
+    }
 }

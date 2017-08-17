@@ -44,6 +44,8 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
      * @param <NodeType> The type of the nodes.
      * @param <EdgeType> The type of the edges.
      * @param <GraphType> The type of the graph.
+     * @param <VectorType> The type of the position.
+     * @param <IdentifierType> The type of the identifier.
      * @return A list of all disconnected subgraphs.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,

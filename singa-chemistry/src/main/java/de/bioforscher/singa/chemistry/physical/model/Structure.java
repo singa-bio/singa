@@ -180,7 +180,7 @@ public class Structure {
      *
      * @return An {@link Optional} encapsulating the first {@link Chain} found.
      */
-    public Optional<Chain> getFistChain() {
+    public Optional<Chain> getFirstChain() {
         return getAllBranches().stream()
                 .filter(isChain())
                 .map(Chain.class::cast)

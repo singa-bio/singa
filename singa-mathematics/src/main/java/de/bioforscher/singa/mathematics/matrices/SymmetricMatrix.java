@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.matrices;
 
 import de.bioforscher.singa.mathematics.exceptions.IncompatibleDimensionsException;
 import de.bioforscher.singa.mathematics.exceptions.MalformedMatrixException;
+import de.bioforscher.singa.mathematics.vectors.RegularVector;
 
 
 /**
@@ -16,9 +17,7 @@ public class SymmetricMatrix extends SquareMatrix {
 
     /**
      * Creates a new {@code SymmetricMatrix} with the given double values. The first index of the double array
-     * represents the row index and the second index represents the column index. <br>
-     * <p>
-     * The following array:
+     * represents the row index and the second index represents the column index. <br> <p> The following array:
      * <pre>
      * {{1.0, 2.0, 3.0}, {2.0, 5.0, 6.0}, {3.0, 6.0, 9.0}} </pre>
      * result in the matrix:
@@ -102,9 +101,7 @@ public class SymmetricMatrix extends SquareMatrix {
 
     /**
      * Compacts the values of a symmetric matrix into a jagged array, that represents the lower triangular part of a
-     * symmetric matrix. <br>
-     * <p>
-     * The following array:
+     * symmetric matrix. <br> <p> The following array:
      * <pre>
      * {{1.0, 2.0, 3.0}, {2.0, 5.0, 6.0}, {3.0, 6.0, 9.0}} </pre>
      * compacts to the array:
@@ -134,6 +131,21 @@ public class SymmetricMatrix extends SquareMatrix {
     }
 
     @Override
+    public RegularVector getColumn(int columnIndex) {
+        return getRow(columnIndex);
+    }
+
+    @Override
+    public RegularVector getRow(int rowIndex) {
+        double[] rowElements = new double[getRowDimension()];
+        System.arraycopy(getElements()[rowIndex], 0, rowElements, 0, rowIndex + 1);
+        for (int j = rowIndex + 1; j < getRowDimension(); j++) {
+            rowElements[j] = getElements()[j][rowIndex];
+        }
+        return new RegularVector(rowElements);
+    }
+
+    @Override
     public double getElement(int rowIndex, int columnIndex) {
         if (rowIndex >= columnIndex) {
             return super.getElement(rowIndex, columnIndex);
@@ -159,7 +171,7 @@ public class SymmetricMatrix extends SquareMatrix {
 
     @Override
     public Matrix transpose() {
-        return this;
+        return FastMatrices.createSymmetricMatrix(getElements());
     }
 
 }

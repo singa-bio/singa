@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.algorithms.superimposition;
 
 import de.bioforscher.singa.mathematics.algorithms.matrix.SVDecomposition;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
+import de.bioforscher.singa.mathematics.matrices.FastMatrices;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.matrices.SquareMatrix;
@@ -84,8 +85,8 @@ public class VectorSuperimposer {
     }
 
     private void calculateRotation() {
-        Matrix referenceMatrix = Matrices.assembleMatrixFromRows(this.shiftedReference);
-        Matrix candidateMatrix = Matrices.assembleMatrixFromRows(this.shiftedCandidate);
+        Matrix referenceMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedReference);
+        Matrix candidateMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedCandidate);
 
         // calculate covariance
         Matrix covarianceMatrix = Matrices.calculateCovarianceMatrix(referenceMatrix, candidateMatrix);

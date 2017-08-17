@@ -13,12 +13,29 @@ public class Interval extends Range<Double> implements Ring<Interval> {
 
     /**
      * Creates a new interval with the given values.
-     * <pre> I = [lowerBound,upperBound]
+     * <pre> I = [lowerBound,upperBound]</pre>
+     *
      * @param lowerBound The lower bound.
      * @param upperBound The upper bond.
      */
     public Interval(Double lowerBound, Double upperBound) {
         super(lowerBound, upperBound);
+    }
+
+    private static double[] minMax(double first, double second, double third, double fourth) {
+        if (first > second) {
+            double temp = first;
+            first = second;
+            second = temp;
+        }
+        if (third > fourth) {
+            double temp = third;
+            third = fourth;
+            fourth = temp;
+        }
+        double min = first < third ? first : third;
+        double max = second > fourth ? second : fourth;
+        return new double[]{min, max};
     }
 
     @Override
@@ -45,21 +62,5 @@ public class Interval extends Range<Double> implements Ring<Interval> {
         final double upperBound = this.getUpperBound() - subtrahend.getUpperBound();
         final double lowerBound = this.getLowerBound() - subtrahend.getLowerBound();
         return new Interval(lowerBound, upperBound);
-    }
-
-    private static double[] minMax(double first, double second, double third, double fourth) {
-        if (first > second) {
-            double temp = first;
-            first = second;
-            second = temp;
-        }
-        if (third > fourth) {
-            double temp = third;
-            third = fourth;
-            fourth = temp;
-        }
-        double min = first < third ? first : third;
-        double max = second > fourth ? second : fourth;
-        return new double[] {min, max};
     }
 }

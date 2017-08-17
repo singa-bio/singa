@@ -52,8 +52,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new IllegalArgumentException("specified label " + label + " is not assigned"));
-        // we have to use reconstruct the vector because only jagged values are stored
-        return new RegularVector(getCompleteElements()[index]);
+        return getRow(index);
     }
 
     @Override

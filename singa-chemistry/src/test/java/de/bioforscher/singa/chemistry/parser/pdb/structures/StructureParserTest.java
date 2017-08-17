@@ -38,6 +38,8 @@ public class StructureParserTest {
                 .model(2)
                 .allChains()
                 .parse();
+        assertEquals(1, structure.getAllModels().size());
+        assertEquals(new Integer(2), structure.getFirstModel().get().getIdentifier());
     }
 
     @Test
@@ -47,6 +49,8 @@ public class StructureParserTest {
                 .pdbIdentifier("1BRR")
                 .chainIdentifier("A")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals("A", structure.getFirstChain().get().getIdentifier());
     }
 
     @Test
@@ -57,6 +61,9 @@ public class StructureParserTest {
                 .model(3)
                 .chainIdentifier("B")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals(new Integer(3), structure.getFirstModel().get().getIdentifier());
+        assertEquals("B", structure.getFirstChain().get().getIdentifier());
     }
 
     @Test
