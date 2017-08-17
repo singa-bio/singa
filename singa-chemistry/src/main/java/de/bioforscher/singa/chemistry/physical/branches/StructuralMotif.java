@@ -223,7 +223,6 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
                         matcherFamilyMember)));
     }
 
-
     @Override
     public StructuralMotif getCopy() {
         return new StructuralMotif(this);
