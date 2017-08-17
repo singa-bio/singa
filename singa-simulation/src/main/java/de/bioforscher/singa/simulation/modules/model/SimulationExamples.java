@@ -10,8 +10,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNum
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.graphs.util.GraphFactory;
-import de.bioforscher.singa.mathematics.graphs.util.RectangularGridCoordinateConverter;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
@@ -21,13 +20,13 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
-import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.transport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import org.slf4j.Logger;
@@ -62,8 +61,8 @@ public class SimulationExamples {
     private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
 
     /**
-     * This simulation simulates the thermal decomposition of dinitrogen pentaoxide.
-     * From: Brauer, G. (2012). Handbook of preparative inorganic chemistry, volume 2. Elsevier. 489–491.
+     * This simulation simulates the thermal decomposition of dinitrogen pentaoxide. From: Brauer, G. (2012). Handbook
+     * of preparative inorganic chemistry, volume 2. Elsevier. 489–491.
      *
      * @return The ready to go simulation.
      */
@@ -191,11 +190,10 @@ public class SimulationExamples {
     }
 
     /**
-     * This simulation simulates a {@link MichaelisMentenReaction}, where D-Fructose 1-phosphate is convertet to glycerone
-     * phosphate and D-glyceraldehyde using fructose bisphosphate aldolase.
-     * From: Callens, M. et al. (1991). Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei
-     * compared to aldolase from rabbit muscle and Staphylococcus aureus.
-     * Sabio-RK pdbIdentifier: 28851
+     * This simulation simulates a {@link MichaelisMentenReaction}, where D-Fructose 1-phosphate is convertet to
+     * glycerone phosphate and D-glyceraldehyde using fructose bisphosphate aldolase. From: Callens, M. et al. (1991).
+     * Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei compared to aldolase from rabbit
+     * muscle and Staphylococcus aureus. Sabio-RK pdbIdentifier: 28851
      *
      * @return The ready to go simulation.
      */
@@ -250,7 +248,7 @@ public class SimulationExamples {
      * This simulation simulates a diffusion of small molecules in a rectangular gird graph.
      *
      * @param numberOfNodes The number of nodes on one "side" of the rectangle.
-     * @param timeStep      The size of the time step.
+     * @param timeStep The size of the time step.
      * @return The ready to go simulation.
      */
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
@@ -483,7 +481,7 @@ public class SimulationExamples {
 
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
-        RectangularGridCoordinateConverter converter = new RectangularGridCoordinateConverter(11, 11);
+        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");

@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.diffusion;
+package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
@@ -39,9 +39,9 @@ import static tec.units.ri.unit.Units.SECOND;
  * @author cl
  */
 @RunWith(Parameterized.class)
-public class DiffusionProgressionTest {
+public class FreeDiffusionTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DiffusionProgressionTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(FreeDiffusionTest.class);
 
     private static final Rectangle boundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
@@ -67,12 +67,12 @@ public class DiffusionProgressionTest {
         return Arrays.asList(new Object[][]{
                 /* species, time step, number of nodes, expected result */
                 /* test different numbers of nodes (10, 20, 50)*/
-                /* 0 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 10, Quantities.getQuantity(167.2268, MICRO(SECOND))},
-                /* 1 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 20, Quantities.getQuantity(150.2408, MICRO(SECOND))},
-                /* 2 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 50, Quantities.getQuantity(141.2508, MICRO(SECOND))},
+                /* 0 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 10, Quantities.getQuantity(167.2309, MICRO(SECOND))},
+                /* 1 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 20, Quantities.getQuantity(150.2405, MICRO(SECOND))},
+                /* 2 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(145.1471, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 6 */ {ammonia, Quantities.getQuantity(10, NANO(SECOND)), 50, Quantities.getQuantity(272.5908, MICRO(SECOND))},
-                /* 7 */ {benzene, Quantities.getQuantity(10, NANO(SECOND)), 50, Quantities.getQuantity(570.1811, MICRO(SECOND))}
+                /* 6 */ {ammonia, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(280.1091, MICRO(SECOND))},
+                /* 7 */ {benzene, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(585.9218, MICRO(SECOND))}
         });
     }
 

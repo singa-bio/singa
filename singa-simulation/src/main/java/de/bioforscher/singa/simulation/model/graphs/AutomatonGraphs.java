@@ -35,7 +35,8 @@ public class AutomatonGraphs {
         Map<String, ChemicalEntity<?>> results = new HashMap<>();
         for (BioNode node : graph.getNodes()) {
             for (ChemicalEntity<?> entity : node.getAllReferencedEntities()) {
-                results.put(entity.getName(), entity);
+                // TODO check entity equals
+                results.put(entity.getIdentifier().toString(), entity);
             }
         }
         return results;

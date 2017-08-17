@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
+import de.bioforscher.singa.simulation.features.scale.AppliedScale;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
@@ -19,14 +19,23 @@ public class DynamicReaction extends Reaction {
 
     public DynamicReaction(Simulation simulation, DynamicKineticLaw kineticLaw) {
         super(simulation);
-        this.kineticLaw = kineticLaw;
-        this.catalyticReactants = new ArrayList<>();
+        initialize(kineticLaw);
     }
 
     public DynamicReaction(DynamicKineticLaw kineticLaw) {
         super();
+        initialize(kineticLaw);
+    }
+
+    private void initialize(DynamicKineticLaw kineticLaw) {
         this.kineticLaw = kineticLaw;
         this.catalyticReactants = new ArrayList<>();
+        // features
+        this.availableFeatures.add(AppliedScale.class);
+        setFeature(new AppliedScale());
+        // deltas
+        applyAlways();
+        addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
     public DynamicKineticLaw getKineticLaw() {
@@ -48,6 +57,7 @@ public class DynamicReaction extends Reaction {
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         kineticLaw.setCurrentCellSection(getCurrentCellSection());
+        kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class));
         return this.kineticLaw.calculateVelocity(concentrationContainer);
     }
 

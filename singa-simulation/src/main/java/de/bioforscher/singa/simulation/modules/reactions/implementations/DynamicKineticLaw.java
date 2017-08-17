@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations;
+package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -6,7 +6,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
+import de.bioforscher.singa.simulation.modules.reactions.model.KineticLaw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
@@ -29,7 +29,7 @@ public class DynamicKineticLaw implements KineticLaw {
 
     private CellSection currentCellSection;
 
-    private double appliedScale = 70;
+    private Double appliedScale = 1.0;
 
     public DynamicKineticLaw(AppliedExpression expression) {
         this.expression = expression;
@@ -42,8 +42,6 @@ public class DynamicKineticLaw implements KineticLaw {
 
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         this.entityReference.put(entity, parameterIdentifier);
-        // FIXME this is not done correctly
-        // FIXME parameters do not scale with time step
         this.expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
     }
 
@@ -55,7 +53,7 @@ public class DynamicKineticLaw implements KineticLaw {
         return this.appliedScale;
     }
 
-    public void setAppliedScale(double appliedScale) {
+    public void setAppliedScale(Double appliedScale) {
         this.appliedScale = appliedScale;
     }
 
@@ -75,8 +73,7 @@ public class DynamicKineticLaw implements KineticLaw {
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        // FIXME scale depending on time step
-        return this.expression.evaluate().getValue().doubleValue() / this.appliedScale;
+        return this.expression.evaluate().getValue().doubleValue() * this.appliedScale;
     }
 
 }

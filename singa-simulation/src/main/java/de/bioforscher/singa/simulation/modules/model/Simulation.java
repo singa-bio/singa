@@ -12,7 +12,6 @@ import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
-import de.bioforscher.singa.simulation.modules.timing.TimeStepHarmonizer;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -23,7 +22,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.MetricPrefix.NANO;
+import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.SECOND;
 
 /**
@@ -49,7 +48,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.listeners = new CopyOnWriteArrayList<>();
         this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         this.epoch = 0;
-        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(10.0, NANO(SECOND)));
+        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
     }
 
     public void nextEpoch() {
@@ -137,7 +136,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     private void emitNextEpochEvent(BioNode node) {
-        NodeUpdatedEvent event = new NodeUpdatedEvent(this.epoch, node);
+        NodeUpdatedEvent event = new NodeUpdatedEvent(this.elapsedTime, node);
         emitEvent(event);
     }
 

@@ -22,7 +22,7 @@ public class EquilibriumReaction extends Reaction {
         this.availableFeatures.add(ForwardsRateConstant.class);
         this.availableFeatures.add(BackwardsRateConstant.class);
         setFeature(new ForwardsRateConstant(forwardsRateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
-        setFeature(new ForwardsRateConstant(backwardsRateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
+        setFeature(new BackwardsRateConstant(backwardsRateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
         // deltas
         applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);

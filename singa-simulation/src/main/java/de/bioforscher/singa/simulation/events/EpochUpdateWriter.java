@@ -12,6 +12,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
+import static tec.units.ri.unit.MetricPrefix.MILLI;
+import static tec.units.ri.unit.Units.SECOND;
+
 /**
  * This class can be used to write the concentrations of a node to a file while
  * simulating. This appends ech time
@@ -125,7 +128,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Long.toString(event.getEpoch())).append(SEPARATOR_CHARACTER);
+        sb.append(event.getTime().to(MILLI(SECOND)).getValue()).append(SEPARATOR_CHARACTER);
         int count = 0;
         for (ChemicalEntity entity : this.observedEntities) {
             if (count < this.observedEntities.size() - 1) {

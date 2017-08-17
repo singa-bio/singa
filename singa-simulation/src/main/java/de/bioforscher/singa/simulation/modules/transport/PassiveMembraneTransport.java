@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.membranetransport;
+package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;

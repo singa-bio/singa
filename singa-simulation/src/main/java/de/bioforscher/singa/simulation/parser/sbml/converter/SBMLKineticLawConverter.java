@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.parser.sbml.converter;
 
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.parser.sbml.FunctionReference;
 import org.sbml.jsbml.KineticLaw;
 import org.slf4j.Logger;

@@ -1,12 +1,9 @@
-package de.bioforscher.singa.simulation.modules.timing;
+package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
-import de.bioforscher.singa.simulation.modules.model.Module;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +15,7 @@ import javax.measure.quantity.Time;
  */
 public class TimeStepHarmonizer {
 
-    private static final Logger logger = LoggerFactory.getLogger(PassiveMembraneTransport.class);
+    private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
 
     private static final double epsilon = 0.01;
 
@@ -46,6 +43,10 @@ public class TimeStepHarmonizer {
         optimizeTimeStep();
         // if time step changed
         if (this.timeStepChanged) {
+            // clear previously assigned deltas
+            for (BioNode bioNode : this.simulation.getGraph().getNodes()) {
+                bioNode.clearPotentialDeltas();
+            }
             // update deltas
             executeAllModules();
         }
@@ -80,7 +81,7 @@ public class TimeStepHarmonizer {
     }
 
     private void optimizeTimeStep() {
-        double localError;
+        double localError = largestLocalError.getValue();
         this.timeStepChanged = false;
         boolean errorIsTooLarge = evaluateLocalError(largestLocalError.getValue());
         while (errorIsTooLarge) {
@@ -93,14 +94,14 @@ public class TimeStepHarmonizer {
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = evaluateLocalError(localError);
         }
-
+        logger.debug("Optimized local error was {}.", localError);
     }
 
     public void rescaleParameters() {
         for (ChemicalEntity<?> entity : this.simulation.getChemicalEntities()) {
             entity.scaleScalableFeatures();
         }
-        for (Module module: this.simulation.getModules()) {
+        for (Module module : this.simulation.getModules()) {
             if (module instanceof Featureable) {
                 ((Featureable) module).scaleScalableFeatures();
             }

@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.timing;
+package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
@@ -32,4 +32,12 @@ public class LocalError {
         return this.value;
     }
 
+    @Override
+    public String toString() {
+        return "LocalError{" +
+                "node=" + node +
+                ", entity=" + entity.getIdentifier() +
+                ", value=" + value +
+                '}';
+    }
 }

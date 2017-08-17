@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.diffusion;
+package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;

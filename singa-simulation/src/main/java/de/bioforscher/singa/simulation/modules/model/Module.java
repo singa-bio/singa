@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.timing.LocalError;
 
 /**
  * @author cl

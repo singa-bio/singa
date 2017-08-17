@@ -46,8 +46,8 @@ public class Delta {
     @Override
     public String toString() {
         return "Delta{" +
-                "cellSection=" + cellSection +
-                ", entity=" + entity +
+                "cellSection=" + cellSection.getIdentifier() +
+                ", entity=" + entity.getIdentifier() +
                 ", quantity=" + quantity +
                 '}';
     }

@@ -8,7 +8,6 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.timing.LocalError;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
