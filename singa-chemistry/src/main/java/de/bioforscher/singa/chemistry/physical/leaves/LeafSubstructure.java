@@ -419,6 +419,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
         return this.leafIdentifier.getPdbIdentifier();
     }
 
+    public char getInsertionCode() {
+        return this.leafIdentifier.getInsertionCode();
+    }
+
+
     /**
      * Assembles a list of strings, where each sting represents a atom of this leaf in PDBFormat.
      *

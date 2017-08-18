@@ -1,14 +1,18 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.chemistry.physical.model.UniqueAtomIdentifer;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -228,6 +232,43 @@ public class InteractionContainer {
             logger.trace("There are no interactions annotated between those leaves.");
             logger.trace("Adding  : {}", interaction);
             this.interactions.add(interaction);
+        }
+
+    }
+
+    public void validateWithStructure(Structure structure) {
+
+        for (Interaction interaction : interactions) {
+
+            LeafIdentifier source = interaction.getSource();
+            if (!structure.getLeaf(source).isPresent()) {
+                logger.debug("Bad leaf reference for source {} in {}.", source, interaction);
+                Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomEntry = structure.getAtom(interaction.getFirstSourceAtom());
+                if (atomEntry.isPresent()) {
+                    UniqueAtomIdentifer atomIdentifer = atomEntry.get().getKey();
+                    LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
+                            atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+                    logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
+                    interaction.setSource(leafIdentifier);
+                } else {
+                    logger.warn("Unable to fix {}.", interaction);
+                }
+            }
+
+            LeafIdentifier target = interaction.getTarget();
+            if (!structure.getLeaf(target).isPresent()) {
+                logger.debug("Bad leaf reference for target {} in {}..", target, interaction);
+                Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomEntry = structure.getAtom(interaction.getFirstTargetAtom());
+                if (atomEntry.isPresent()) {
+                    UniqueAtomIdentifer atomIdentifer = atomEntry.get().getKey();
+                    LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
+                            atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+                    logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
+                    interaction.setTarget(leafIdentifier);
+                } else {
+                    logger.warn("Unable to fix {}.", interaction);
+                }
+            }
         }
 
     }

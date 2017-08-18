@@ -18,9 +18,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
- * A class to write {@link StructuralEntity} objects to PDB format.
- * <p>
- * TODO write test
+ * A class to write {@link StructuralEntity} objects to PDB format. <p> TODO write test
  *
  * @author fk
  */
@@ -66,6 +64,7 @@ public class StructureWriter {
         if (headerContent.isPresent()) {
             pdbFileContent = headerContent.get() + "\n" + pdbFileContent;
         }
+
         Files.write(outputPath, pdbFileContent.getBytes());
     }
 
@@ -87,4 +86,5 @@ public class StructureWriter {
         }
         return Optional.empty();
     }
+
 }

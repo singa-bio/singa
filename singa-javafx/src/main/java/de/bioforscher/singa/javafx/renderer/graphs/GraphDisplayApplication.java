@@ -3,6 +3,8 @@ package de.bioforscher.singa.javafx.renderer.graphs;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.mathematics.graphs.model.Node;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,12 +17,12 @@ import javafx.stage.Stage;
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph graph = Graphs.buildTreeGraph(10 , new Rectangle(500,500));
+    public static Graph<? extends Node<?,Vector2D, ?>,?,?> graph = Graphs.buildTreeGraph(10, new Rectangle(500, 500));
     public static GraphRenderer renderer = new GraphRenderer();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Canvas  canvas = new Canvas();
+        Canvas canvas = new Canvas();
         canvas.setWidth(1400);
         canvas.setHeight(1400);
 

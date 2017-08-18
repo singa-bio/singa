@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import java.util.Arrays;
+
 /**
  * @author cl
  */
@@ -38,15 +40,25 @@ public class HydrophobicInteraction extends Interaction {
     }
 
     @Override
+    public int getFirstSourceAtom() {
+        return atom1;
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return atom2;
+    }
+
+    @Override
     public String toString() {
         return "HydrophobicInteraction{" +
                 "atom1=" + atom1 +
                 ", atom2=" + atom2 +
-                ", distance=" + distance +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

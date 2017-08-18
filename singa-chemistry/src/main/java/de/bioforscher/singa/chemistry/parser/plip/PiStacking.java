@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,8 +70,14 @@ public class PiStacking extends Interaction {
         this.type = type;
     }
 
-    public void mergeWith(PiStacking other) {
-        this.atoms1 = other.getAtoms2();
+    @Override
+    public int getFirstSourceAtom() {
+        return atoms1.iterator().next();
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return atoms2.iterator().next();
     }
 
     @Override
@@ -78,14 +85,11 @@ public class PiStacking extends Interaction {
         return "PiStacking{" +
                 "atoms1=" + atoms1 +
                 ", atoms2=" + atoms2 +
-                ", distance=" + distance +
-                ", offset=" + offset +
-                ", angle=" + angle +
-                ", type='" + type + '\'' +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

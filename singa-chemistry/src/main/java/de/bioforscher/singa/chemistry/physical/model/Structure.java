@@ -223,6 +223,24 @@ public class Structure {
                 .collect(Collectors.toList());
     }
 
+    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getAtom(int atomSerial) {
+        for (StructuralModel model : getAllModels()) {
+            for (Chain chain : model.getAllChains()) {
+                for (LeafSubstructure<?, ?> leafSubstructure : chain.getLeafSubstructures()) {
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        if (atom.getIdentifier().equals(atomSerial)) {
+                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(this.pdbIdentifier, model.getIdentifier(),
+                                    chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
+                                    atomSerial);
+                            return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<LeafSubstructure<?, ?>> getLeaf(LeafIdentifier identifier) {
         // ignores models!!
         return this.getAllLeaves().stream()

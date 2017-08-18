@@ -29,6 +29,12 @@ public class ConvexHull {
     }
 
     public static ConvexHull calculateHullFor(Collection<Vector2D> vectors) {
+        if (vectors.size() < 3) {
+            ConvexHull convexHull = new ConvexHull(vectors);
+            vectors.forEach(vector -> convexHull.stack.push(vector));
+            return convexHull;
+        }
+
         ConvexHull convexHull = new ConvexHull(vectors);
         // find the element(s) with the minimal y value
         List<Vector2D> vectorsWithMinimalY = Vectors.getVectorsWithMinimalValueForIndex(convexHull.vectors, Vector2D.Y_INDEX);

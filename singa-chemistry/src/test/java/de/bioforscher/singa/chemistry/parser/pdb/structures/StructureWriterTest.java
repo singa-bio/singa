@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
-import de.bioforscher.singa.chemistry.physical.branches.Chain;
+import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.singa.chemistry.physical.branches.StructureRepresentation;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,13 +21,17 @@ public class StructureWriterTest {
 
     @Test
     public void shouldWritePdbIdentifierBranchSubstructure() throws Exception {
-        String pdbIdentifier = "1acj";
+        String pdbIdentifier = "1brr";
         Structure structure = StructureParser.online()
                 .pdbIdentifier(pdbIdentifier)
                 .parse();
-        Chain firstChain = structure.getFirstModel().get().getFirstChain().get();
-        Path structureOutputPath = this.folder.getRoot().toPath().resolve(firstChain + ".pdb");
-        StructureWriter.writeBranchSubstructure(firstChain, structureOutputPath);
+        StructuralModel structuralModel = structure.getFirstModel().get();
+        Path structureOutputPath = this.folder.getRoot().toPath().resolve(structuralModel + ".pdb");
+
+        String modelRepresentation = StructureRepresentation.composePdbRepresentation(structuralModel);
+
+        StructureWriter.writeBranchSubstructure(structuralModel, structureOutputPath);
+
         Structure reparsedStructure = StructureParser.local()
                 .path(structureOutputPath)
                 .parse();

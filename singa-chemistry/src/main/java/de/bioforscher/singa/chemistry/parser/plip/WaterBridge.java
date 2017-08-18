@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
+import java.util.Arrays;
+
 /**
  * @author cl
  */
@@ -74,19 +76,25 @@ public class WaterBridge extends Interaction {
     }
 
     @Override
+    public int getFirstSourceAtom() {
+        return donor;
+    }
+
+    @Override
+    public int getFirstTargetAtom() {
+        return acceptor;
+    }
+
+    @Override
     public String toString() {
         return "WaterBridge{" +
                 "donor=" + donor +
                 ", acceptor=" + acceptor +
-                ", distanceAW=" + distanceAW +
-                ", distanceDW=" + distanceDW +
-                ", donorAngle=" + donorAngle +
-                ", waterAngle=" + waterAngle +
-                ", protIsDon=" + protIsDon +
+                ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + ligandCoordiante +
-                ", proteinCoordinate=" + proteinCoordinate +
+                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

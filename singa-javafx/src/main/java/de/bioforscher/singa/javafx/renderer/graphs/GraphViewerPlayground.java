@@ -1,12 +1,15 @@
 package de.bioforscher.singa.javafx.renderer.graphs;
 
+import de.bioforscher.singa.mathematics.algorithms.geometry.ConvexHull;
 import de.bioforscher.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
+import de.bioforscher.singa.mathematics.graphs.model.*;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.application.Application;
+import javafx.scene.paint.Color;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author fk
@@ -14,15 +17,26 @@ import java.util.List;
 public class GraphViewerPlayground {
 
     public static void main(String[] args) {
-        UndirectedGraph graph = Graphs.buildCircularGraph(20, new Rectangle(400, 400));
-        graph.removeNode(5);
-        graph.removeNode(16);
 
-        List<UndirectedGraph> disconnectedSubgraphs = DisconnectedSubgraphFinder.findDisconnectedSubgraphs(graph);
-        System.out.println(disconnectedSubgraphs);
 
-        GraphDisplayApplication.graph = graph;
+        GraphDisplayApplication.graph = Graphs.buildRandomGraph(100, 0.005, new Rectangle(400, 400));
+        GraphRenderer<RegularNode, UndirectedEdge, Integer, UndirectedGraph> renderer = new GraphRenderer<>();
+        GraphDisplayApplication.renderer = renderer;
+
+        renderer.setRenderBefore((currentGraph) -> {
+            renderer.getGraphicsContext().setStroke(Color.CADETBLUE);
+            List<UndirectedGraph> disconnectedSubgraphs = DisconnectedSubgraphFinder.findDisconnectedSubgraphs(currentGraph);
+            disconnectedSubgraphs.forEach(graph -> {
+                List<Vector2D> hull = ConvexHull.calculateHullFor(graph.getNodes().stream()
+                        .map(Node::getPosition)
+                        .collect(Collectors.toList())).getHull();
+                renderer.connectPoints(hull);
+            });
+            return null;
+        });
+
         Application.launch(GraphDisplayApplication.class);
     }
+
 
 }
