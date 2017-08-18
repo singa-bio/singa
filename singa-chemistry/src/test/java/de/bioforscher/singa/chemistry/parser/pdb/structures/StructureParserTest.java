@@ -140,7 +140,7 @@ public class StructureParserTest {
     public void shouldAssignInformationFromFileName() {
         StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
                 .parse();
@@ -176,7 +176,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseAllChainsFromLocalFile() {
         StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
     }

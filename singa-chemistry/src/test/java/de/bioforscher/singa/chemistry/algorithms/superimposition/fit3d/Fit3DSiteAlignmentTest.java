@@ -26,12 +26,12 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("truncated_1asz_A_renum.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("truncated_1asz_A_renum.pdb"))
                 .everything()
                 .parse();
         this.bindingSite1 = StructuralMotif.fromLeaves(bindingSiteStructure1.getAllLeaves());
         Structure bindingSiteStructure2 = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("truncated_3m4p_A_renum.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("truncated_3m4p_A_renum.pdb"))
                 .everything()
                 .parse();
         this.bindingSite2 = StructuralMotif.fromLeaves(bindingSiteStructure2.getAllLeaves());

@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Parses structures in pdb format.
+ *
  * @author cl
  */
 public class StructureParser {
@@ -39,6 +41,9 @@ public class StructureParser {
         return new SourceSelector();
     }
 
+    /**
+     * After selecting the source, the identifer(s) to parse can be chosen.
+     */
     public interface IdentifierStep extends AdditionalLocalSourceStep {
 
         /**
@@ -59,6 +64,9 @@ public class StructureParser {
 
     }
 
+    /**
+     * Select a local source to parse from.
+     */
     public interface LocalSourceStep {
 
         /**
@@ -145,6 +153,9 @@ public class StructureParser {
 
     }
 
+    /**
+     * Using a local pdb installation, additional source steps might be used.
+     */
     public interface AdditionalLocalSourceStep {
 
         /**
@@ -169,7 +180,9 @@ public class StructureParser {
 
     }
 
-
+    /**
+     * Initiates the structure reduction steps for multiple structures.
+     */
     public interface MultiBranchStep extends MultiChainStep {
 
         /**
@@ -189,6 +202,9 @@ public class StructureParser {
 
     }
 
+    /**
+     * Initiates the structure reduction steps for a single structure.
+     */
     public interface SingleBranchStep extends SingleChainStep {
 
         /**
@@ -208,60 +224,168 @@ public class StructureParser {
 
     }
 
-    public interface SingleChainStep {
-        SingleParser chainIdentifier(String chainIdentifier);
-
-        SingleParser allChains();
-
-        SingleParser everything();
-
-        Structure parse() throws StructureParserException;
-    }
-
+    /**
+     * Initiates the selection of chains, if multiple structures have been chosen.
+     */
     public interface MultiChainStep {
+
+        /**
+         * If only a single chain should be parsed, choose it here.
+         *
+         * @param chainIdentifier The chain to parse.
+         * @return The MultiParser.
+         */
         MultiParser chain(String chainIdentifier);
 
+        /**
+         * Parses all chains.
+         *
+         * @return The MultiParser.
+         */
         MultiParser allChains();
 
+        /**
+         * Shortcut to parse all chains.
+         *
+         * @return The MultiParser.
+         */
         MultiParser everything();
 
+        /**
+         * Returns a list of parsed structures, skipping user contact with parsing.
+         *
+         * @return The specified structures.
+         */
         List<Structure> parse();
     }
 
+    /**
+     * Initiates the selection of chains, if a single structure has been chosen.
+     */
+    public interface SingleChainStep {
+
+        /**
+         * If only a single chain should be parsed, choose it here.
+         *
+         * @param chainIdentifier The chain to parse.
+         * @return The Parser.
+         */
+        SingleParser chainIdentifier(String chainIdentifier);
+
+        /**
+         * Parses all chains.
+         *
+         * @return The Parser.
+         */
+        SingleParser allChains();
+
+        /**
+         * Shortcut to parse all chains.
+         *
+         * @return The Parser.
+         */
+        SingleParser everything();
+
+        /**
+         * Returns the parsed structure, skipping user contact with parsing.
+         *
+         * @return The specified structure.
+         */
+        Structure parse() throws StructureParserException;
+    }
+
+
+    /**
+     * This parser should be used if you require only a single structure. If more structures should be parsed at once,
+     * the MultiParser grants more functionality and speed improvements.
+     */
     public static class SingleParser {
 
+        /**
+         * The reducer specifies what content is parsed.
+         */
         SingleReducingSelector selector;
 
+        /**
+         * Creates a new parser. The selector specifies what content should be parsed.
+         *
+         * @param selector The selector.
+         */
         SingleParser(SingleReducingSelector selector) {
             this.selector = selector;
         }
 
+        /**
+         * Sets the {@link StructureParserOptions}.
+         *
+         * @param options The options.
+         * @return The parser with the given options.
+         */
         public SingleParser setOptions(StructureParserOptions options) {
             this.selector.options = options;
             return this;
         }
 
+        /**
+         * Parses the structure as specifies during teh selection process and returns is,
+         *
+         * @return The structures.
+         * @throws StructureParserException if the structure could not be parsed as specified during the selection.
+         */
         public Structure parse() throws StructureParserException {
             return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
         }
     }
 
+    /**
+     * The MultiParser performs parsing of multiple structures from a single source. Using the {@link Iterator} pattern
+     * the structures can be parsed and processed individually. Each specified structure will be parsed lazily so
+     * parsing until a certain condition is met can be done without parsing unused structures. Additionally some
+     * speedups are provided parsing multiple structures. Every ligand is only parsed once, the first time it is
+     * encountered, afterwards it is stored as a {@link LeafSkeleton} that is completed with the the concrete atom
+     * positions for each new occurrence.
+     */
     public static class MultiParser implements Iterator<Structure> {
 
+        /**
+         * The reducer specifies what content is parsed.
+         */
         MultiReducingSelector selector;
 
+        /**
+         * Creates a new parser. The selector specifies what content should be parsed.
+         *
+         * @param selector The selector.
+         */
         MultiParser(MultiReducingSelector selector) {
             this.selector = selector;
         }
 
+        /**
+         * Returns the number of structures totally queued.
+         *
+         * @return The number of structures totally queued.
+         */
         public int getNumberOfQueuedStructures() {
             return this.selector.sourceSelector.contentIterator.getNumberOfQueuedStructures();
         }
 
+        /**
+         * Returns the number of structures remaining.
+         *
+         * @return The number of structures remaining.
+         */
         public int getNumberOfRemainingStructures() {
             return this.selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
         }
 
+        /**
+         * Returns the pdb identifier of the next structure, if it can be accessed prior to parsing. This can for
+         * example be the case if a list of files is given without any indication of pdb identifiers.
+         *
+         * @return The pdb identifier of the next structure.
+         * @throws IllegalStateException if the structures identifier could not be accessed.
+         */
         public String getCurrentPdbIdentifier() {
             return this.selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
         }

@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
-import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
+import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

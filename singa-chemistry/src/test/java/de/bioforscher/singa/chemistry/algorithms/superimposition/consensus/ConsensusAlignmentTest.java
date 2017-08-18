@@ -36,7 +36,7 @@ public class ConsensusAlignmentTest {
     public void setUp() throws Exception {
         StructureParserOptions structureParserOptions = new StructureParserOptions();
         structureParserOptions.inferIdentifierFromFileName(true);
-        this.input = Files.list(Paths.get(Resources.getResourceAsFilepath("consensus_alignment")))
+        this.input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .everything()

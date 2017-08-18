@@ -12,14 +12,32 @@ public class Range<RangeType extends Comparable<RangeType>> implements Bounded<R
      */
     private Pair<RangeType> values;
 
+    /**
+     * Creates a new Range.
+     * @param lowerBound The lower bond.
+     * @param upperBound The upper bond.
+     * @param <Type> The type of Comparable used.
+     * @return The new Range.
+     */
     public static <Type extends Comparable<Type>> Range<Type> of(Type lowerBound, Type upperBound) {
         return new Range<>(lowerBound, upperBound);
     }
 
+    /**
+     * Creates a new Range, where lower and upper bond are identical.
+     * @param bound The bond.
+     * @param <Type> The type of Comparable used.
+     * @return The new Range.
+     */
     public static <Type extends Comparable<Type>> Range<Type> of(Type bound) {
         return new Range<>(bound, bound);
     }
 
+    /**
+     * Creates a new Range.
+     * @param lowerBound The lower bond.
+     * @param upperBound The upper bond.
+     */
     public Range(RangeType lowerBound, RangeType upperBound) {
         if (lowerBound.compareTo(upperBound) > 0) {
             this.values = new Pair<>(upperBound, lowerBound);
