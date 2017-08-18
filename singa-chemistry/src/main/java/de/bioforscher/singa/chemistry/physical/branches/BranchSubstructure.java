@@ -486,6 +486,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     public abstract SubstructureType getCopy();
+
     @Override
     public Integer nextNodeIdentifier() {
         //FIXME not yet implemented

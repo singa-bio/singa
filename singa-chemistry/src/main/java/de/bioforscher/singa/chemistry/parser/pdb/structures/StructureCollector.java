@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.ligands.LigandParserService;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.Reducer;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.*;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
@@ -23,47 +24,113 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
+ * The actual processing of pdb files. This class collects all required information form the a list of lines from a pdb
+ * file.
+ *
  * @author cl
  */
-public class StructureCollector {
+class StructureCollector {
 
+    /**
+     * The logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(StructureCollector.class);
 
-    private String currentPDB = "0000";
+    /**
+     * The currently parsed pdb file.
+     */
+    private String currentPDB = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
+
+    /**
+     * The current model.
+     */
+    private int currentModel = LeafIdentifier.DEFAULT_MODEL_IDENTIFIER;
+
+    /**
+     * The current chain.
+     */
+    private String currentChain = LeafIdentifier.DEFAULT_CHAIN_IDENTIFIER;
+
+    /**
+     * The string builder building the title.
+     */
     private StringBuilder titleBuilder = new StringBuilder();
-    private int currentModel = 0;
 
+    /**
+     * A cache of all atoms identified by unique atom identifiers.
+     */
     private Map<UniqueAtomIdentifer, Atom> atoms;
-    private Map<LeafIdentifier, String> leafNames;
 
-    // leaves that are hetatoms
+    /**
+     * A cache of all leafs and their three letter codes.
+     */
+    private Map<LeafIdentifier, String> leafCodes;
+
+    /**
+     * Remembers all leafs that have been parsed from HETATM entries.
+     */
     private Set<LeafIdentifier> hetAtoms;
-    // leaves that are not part of the consecutive chain have to be noted
+
+    /**
+     * Remembers all leafs the were part of the consecutive part of the chain.
+     */
     private Set<LeafIdentifier> notInConsecutiveChain;
-    private String currentChain;
+
+    /**
+     * Chains that have already been terminated by a terminate record.
+     */
     private Set<String> closedChains;
 
+    /**
+     * The root node of the content tree.
+     */
     private ContentTreeNode contentTree;
 
-    private StructureParser.Reducer reducer;
+    /**
+     * The reducer containing the information of what should be parsed and how it should be done.
+     */
+    private Reducer reducer;
+
+    /**
+     * The list of relevant pdb lines.
+     */
     private List<String> pdbLines;
 
-    public StructureCollector(List<String> pdbLines, StructureParser.Reducer reducer) {
+    /**
+     * Creates a new structure collector to extract structural information from pdb lines and reducing information.
+     *
+     * @param pdbLines The lines of a pdb file.
+     * @param reducer The information on what should be parsed and how it should be done.
+     */
+    private StructureCollector(List<String> pdbLines, Reducer reducer) {
         this.reducer = reducer;
         this.pdbLines = pdbLines;
         this.atoms = new HashMap<>();
-        this.leafNames = new TreeMap<>();
+        this.leafCodes = new TreeMap<>();
         this.hetAtoms = new HashSet<>();
         this.notInConsecutiveChain = new HashSet<>();
         this.closedChains = new HashSet<>();
     }
 
-    static Structure parse(List<String> pdbLines, StructureParser.Reducer reducer) throws StructureParserException {
+    /**
+     * parses a structure from pdb lines and reducing information.
+     *
+     * @param pdbLines The lines of a pdb file.
+     * @param reducer The information on what should be parsed and how it should be done.
+     * @return The resulting structure.
+     * @throws StructureParserException if any problem occur during parsing.
+     */
+    static Structure parse(List<String> pdbLines, Reducer reducer) throws StructureParserException {
         StructureCollector collector = new StructureCollector(pdbLines, reducer);
         collector.reduceLines();
         return collector.collectStructure();
     }
 
+    /**
+     * Reduces the lines as described in the {@link Reducer}.
+     *
+     * @throws StructureParserException if any problem occur during reducing.
+     */
     private void reduceLines() throws StructureParserException {
         String firstLine = this.pdbLines.get(0);
         // parse meta information
@@ -98,6 +165,9 @@ public class StructureCollector {
         }
     }
 
+    /**
+     * Extracts the title from tha pdb header.
+     */
     private void getTitle() {
         if (this.reducer.options.isInferringTitleFromFileName()) {
             this.titleBuilder.append(this.reducer.sourceSelector.contentIterator.getCurrentSource());
@@ -123,6 +193,11 @@ public class StructureCollector {
         }
     }
 
+    /**
+     * Keeps only lines, that belong to a certain model.
+     *
+     * @param modelIdentifier The identifier of the model.
+     */
     private void reduceToModel(int modelIdentifier) {
         List<String> reducedList = new ArrayList<>();
         boolean collectLines = false;
@@ -150,6 +225,11 @@ public class StructureCollector {
         this.pdbLines = reducedList;
     }
 
+    /**
+     * Keeps only lines, that belong to a certain model.
+     *
+     * @param chainIdentifier The identifier of the model.
+     */
     private void reduceToChain(String chainIdentifier) {
         List<String> reducedList = new ArrayList<>();
         // for each line
@@ -172,11 +252,16 @@ public class StructureCollector {
         this.pdbLines = reducedList;
     }
 
+    /**
+     * Collects and creates the actual structure from all remaining lines.
+     *
+     * @return The parsde structure.
+     */
     private Structure collectStructure() {
         collectAtomInformation();
         createContentTree();
 
-        logger.debug("creating structure for {}", this.contentTree.getIdentifier());
+        logger.debug("Creating structure for {}", this.contentTree.getIdentifier());
 
         Structure structure = new Structure();
         structure.setPdbIdentifier(this.contentTree.getIdentifier());
@@ -184,10 +269,10 @@ public class StructureCollector {
 
         int chainGraphId = 0;
         for (ContentTreeNode modelNode : this.contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
-            logger.debug("collecting chains for model {}", modelNode.getIdentifier());
+            logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
             StructuralModel model = new StructuralModel(Integer.valueOf(modelNode.getIdentifier()));
             for (ContentTreeNode chainNode : modelNode.getNodesFromLevel(ContentTreeNode.StructureLevel.CHAIN)) {
-                logger.trace("collecting leafs for chainIdentifier {}", chainNode.getIdentifier());
+                logger.trace("Collecting leafs for chain {}", chainNode.getIdentifier());
                 Chain chain = new Chain(chainNode.getIdentifier());
                 for (ContentTreeNode leafNode : chainNode.getNodesFromLevel(ContentTreeNode.StructureLevel.LEAF)) {
                     LeafSubstructure<?, ?> leafSubstructure = assignLeaf(leafNode, Integer.valueOf(modelNode.getIdentifier()), chainNode.getIdentifier());
@@ -208,12 +293,15 @@ public class StructureCollector {
             structure.getAllChains().forEach(Chain::connectChainBackbone);
         }
         UniqueAtomIdentifer lastAtom = Collections.max(atoms.keySet());
-        structure.setLastAddedAtomIdentfier(lastAtom.getAtomSerial());
+        structure.setLastAddedAtomIdentifier(lastAtom.getAtomSerial());
         return structure;
     }
 
+    /**
+     * Collects information from atom and hetatm lines.
+     */
     private void collectAtomInformation() {
-        logger.debug("collecting information from {} PDB lines", this.pdbLines.size());
+        logger.debug("Collecting information from {} PDB lines", this.pdbLines.size());
         for (String currentLine : this.pdbLines) {
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
@@ -230,7 +318,7 @@ public class StructureCollector {
                 if (this.closedChains.contains(this.currentModel + "-" + this.currentChain)) {
                     this.notInConsecutiveChain.add(leafIdentifier);
                 }
-                this.leafNames.put(leafIdentifier, AtomToken.RESIDUE_NAME.extract(currentLine));
+                this.leafCodes.put(leafIdentifier, AtomToken.RESIDUE_NAME.extract(currentLine));
             } else if (currentRecordType.equals("MODEL")) {
                 this.currentModel = Integer.valueOf(ModelToken.MODEL_SERIAL.extract(currentLine));
             } else if (currentRecordType.equals("TER")) {
@@ -239,15 +327,24 @@ public class StructureCollector {
         }
     }
 
+    /**
+     * Places each atom in the content tree.
+     */
     private void createContentTree() {
-        logger.debug("creating content tree");
+        logger.debug("Creating content tree.");
         this.contentTree = new ContentTreeNode(this.currentPDB, ContentTreeNode.StructureLevel.STRUCTURE);
         this.atoms.forEach((identifer, atom) -> this.contentTree.appendAtom(atom, identifer));
         if (this.atoms.isEmpty()) {
-            throw new StructureParserException("could not reduce PDB-ID according to " + this.reducer);
+            throw new StructureParserException("Unable to apply the reduction, supplied with the reducer: " + this.reducer);
         }
     }
 
+    /**
+     * Creates a unique atom identifier for the given atom line.
+     *
+     * @param atomLine The atom line.
+     * @return An unique atom identifier.
+     */
     private UniqueAtomIdentifer createUniqueAtomIdentifier(String atomLine) {
         int atomSerial = Integer.valueOf(AtomToken.ATOM_SERIAL.extract(atomLine));
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
@@ -256,15 +353,23 @@ public class StructureCollector {
         return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, insertionCode, atomSerial);
     }
 
+    /**
+     * Chooses which kind of leaf to create and returns the assembled {@link LeafSubstructure}.
+     *
+     * @param leafNode The {@link ContentTreeNode} of a leaf.
+     * @param modelIdentifier The model of the leaf.
+     * @param chainIdentifer The chain of the leaf.
+     * @return The assembled leaf.
+     */
     private LeafSubstructure<?, ?> assignLeaf(ContentTreeNode leafNode, int modelIdentifier, String chainIdentifer) {
         // generate leaf pdbIdentifier
         LeafIdentifier leafIdentifier = new LeafIdentifier(this.currentPDB, modelIdentifier, chainIdentifer, Integer.valueOf(leafNode.getIdentifier()), leafNode.getInsertionCode());
         // get leaf name for leaf identifer
-        String leafName = this.leafNames.get(leafIdentifier);
+        String leafName = this.leafCodes.get(leafIdentifier);
         // get atoms of this leaf
         Map<String, Atom> atoms = leafNode.getAtomMap();
         // log it
-        logger.trace("creating leaf {}:{} for chainIdentifier {}", leafNode.getIdentifier(), leafName, chainIdentifer);
+        logger.trace("Creating leaf {}-{} in chain {}", leafNode.getIdentifier(), leafName, chainIdentifer);
         // find most suitable implementation
         if (isPlainAminoAcid(leafName)) {
             AminoAcidFamily family = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName).get();
@@ -281,28 +386,74 @@ public class StructureCollector {
         }
     }
 
+    /**
+     * Decides if a {@link LeafSubstructure} is a amino acid using this three letter code.
+     *
+     * @param leafName The three letter code of a leaf.
+     * @return True, if the given tree letter code used for an amino acid.
+     */
     private boolean isPlainAminoAcid(String leafName) {
         return AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName).isPresent();
     }
 
+    /**
+     * Decides if a {@link LeafSubstructure} is a nucleotide using this three letter code.
+     *
+     * @param leafName The three letter code of a leaf.
+     * @return True, if the given tree letter code used for an nucleotide.
+     */
     private boolean isPlainNucleotide(String leafName) {
         return NucleotideFamily.getNucleotideByThreeLetterCode(leafName).isPresent();
     }
 
+    /**
+     * Creates a new amino acid.
+     *
+     * @param identifier The identifier of the amino acid.
+     * @param family Its concrete family.
+     * @param atoms Its atoms.
+     * @return The amino acid.
+     */
     private AminoAcid createAminoAcid(LeafIdentifier identifier, AminoAcidFamily family, Map<String, Atom> atoms) {
         return LeafFactory.createAminoAcidFromAtoms(identifier, family, atoms, this.reducer.options);
     }
+
+    /**
+     * Creates a new nucleotide.
+     *
+     * @param identifier The identifier of the nucleotide.
+     * @param family Its concrete family.
+     * @param atoms Its atoms.
+     * @return The amino acid.
+     */
 
     private Nucleotide createNucleotide(LeafIdentifier identifier, NucleotideFamily family, Map<String, Atom> atoms) {
         return LeafFactory.createNucleotideFromAtoms(identifier, family, atoms, this.reducer.options);
     }
 
+    /**
+     * Creating a leaf from a {@link LeafSkeleton} in the cache.
+     *
+     * @param identifier The identifier of the leaf.
+     * @param leafName Its three letter code.
+     * @param atoms Its atoms.
+     * @return The Leaf.
+     */
     private LeafSubstructure<?, ?> createLeafWithoutAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {
         LeafSubstructure<?, ?> substructure = new AtomContainer<>(identifier, new LigandFamily("?", leafName));
         atoms.values().forEach(substructure::addNode);
         return substructure;
     }
 
+    /**
+     * Creating a leaf using additional information from parsing the corresponding cif file or using already parsed
+     * {@link LeafSkeleton}s from the cache.
+     *
+     * @param identifier The identifier of the leaf.
+     * @param leafName Its three letter code.
+     * @param atoms Its atoms.
+     * @return The Leaf.
+     */
     private LeafSubstructure<?, ?> createLeafWithAdditionalInformation(LeafIdentifier identifier, String leafName, Map<String, Atom> atoms) {
         LeafSkeleton leafSkeleton;
         if (!this.reducer.skeletons.containsKey(leafName)) {
@@ -313,6 +464,5 @@ public class StructureCollector {
         }
         return leafSkeleton.toRealLeafSubStructure(identifier, atoms);
     }
-
 
 }

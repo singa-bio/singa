@@ -380,8 +380,7 @@ public class StructureParser {
         }
 
         /**
-         * Returns the pdb identifier of the next structure, if it can be accessed prior to parsing. This can for
-         * example be the case if a list of files is given without any indication of pdb identifiers.
+         * Returns the pdb identifier of the next structure, if it can be accessed prior to parsing.
          *
          * @return The pdb identifier of the next structure.
          * @throws IllegalStateException if the structures identifier could not be accessed.
@@ -390,15 +389,32 @@ public class StructureParser {
             return this.selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
         }
 
+        /**
+         * Returns the chain identifier of the next structure, if it can be accessed prior to parsing.
+         *
+         * @return The chain identifier of the next structure.
+         * @throws IllegalStateException if the structures identifier could not be accessed.
+         */
         public String getCurrentChainIdentifier() {
             return this.selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
         }
 
+        /**
+         * Sets the {@link StructureParserOptions} for this parsing process.
+         *
+         * @param options The options.
+         * @return The parser with the set options.
+         */
         public MultiParser setOptions(StructureParserOptions options) {
             this.selector.options = options;
             return this;
         }
 
+        /**
+         * Parses all structures that are queued for this {@link MultiParser}.
+         *
+         * @return A list of structures.
+         */
         public List<Structure> parse() {
             logger.info("parsing {} structures ", getNumberOfQueuedStructures());
             List<Structure> structures = new ArrayList<>();
@@ -412,6 +428,7 @@ public class StructureParser {
             return structures;
         }
 
+
         @Override
         synchronized public boolean hasNext() {
             return this.selector.sourceSelector.contentIterator.hasNext();
@@ -423,16 +440,23 @@ public class StructureParser {
         }
     }
 
+    /**
+     * This class remembers what restrictions are to be applied during the parsing of multiple structures.
+     */
+    static class MultiReducingSelector extends Reducer implements MultiBranchStep {
 
-    public static class MultiReducingSelector extends Reducer implements MultiBranchStep {
-
+        /**
+         * Creates a new selector using the supplied source selector.
+         *
+         * @param sourceSelector
+         */
         MultiReducingSelector(SourceSelector sourceSelector) {
             super(sourceSelector);
         }
 
         @Override
         public MultiChainStep model(int modelIdentifier) {
-            setModel(modelIdentifier);
+            setModelIdentifier(modelIdentifier);
             return this;
         }
 
@@ -448,6 +472,11 @@ public class StructureParser {
             return new MultiParser(this);
         }
 
+        /**
+         * Returns a {@link MultiParser} that is configured to use a chain mapping during parsing.
+         *
+         * @return The {@link MultiParser}.
+         */
         private MultiParser mapping() {
             this.parseMapping = true;
             return new MultiParser(this);
@@ -472,15 +501,23 @@ public class StructureParser {
         }
     }
 
-    public static class SingleReducingSelector extends Reducer implements SingleBranchStep {
+    /**
+     * This class remembers what restrictions are to be applied during the parsing of a single structures.
+     */
+    static class SingleReducingSelector extends Reducer implements SingleBranchStep {
 
+        /**
+         * Creates a new selector using the supplied source selector.
+         *
+         * @param sourceSelector
+         */
         SingleReducingSelector(SourceSelector sourceSelector) {
             super(sourceSelector);
         }
 
         @Override
         public SingleChainStep model(int modelIdentifier) {
-            setModel(modelIdentifier);
+            setModelIdentifier(modelIdentifier);
             return this;
         }
 
@@ -516,20 +553,54 @@ public class StructureParser {
 
     }
 
+    /**
+     * This class remembers what general restrictions are to be applied during the parsing.
+     */
     protected static class Reducer {
 
+        /**
+         * The content to be parsed.
+         */
         SourceSelector sourceSelector;
 
+        /**
+         * A cache of {@link LeafSkeleton}s that are reused during parsing of ligands.
+         */
         Map<String, LeafSkeleton> skeletons;
 
+        /**
+         * The current pdb identifier. This is updated by the content iterator whenever possible.
+         */
         String pdbIdentifier;
+
+        /**
+         * The current model identifier. This is not updated by the content iterator.
+         */
         int modelIdentifier;
+
+        /**
+         * The current chain identifier. This is updated by the content iterator whenever possible
+         */
         String chainIdentifier;
 
+        /**
+         * References that all models should be parsed.
+         */
         boolean allModels = true;
+
+        /**
+         * References that all chains should be parsed.
+         */
         boolean allChains = true;
+
+        /**
+         * References that a pdb identifier - chain identifier pattern should be parsed.
+         */
         boolean parseMapping = false;
 
+        /**
+         * The options provided of the parser
+         */
         StructureParserOptions options = new StructureParserOptions();
 
         /**
@@ -537,33 +608,30 @@ public class StructureParser {
          */
         boolean modelsReduced;
 
+        /**
+         * Creates a new reducer with the supplied source selector.
+         * @param sourceSelector The source selector.
+         */
         Reducer(SourceSelector sourceSelector) {
             this.sourceSelector = sourceSelector;
             this.skeletons = new HashMap<>();
         }
 
-        public void setModel(int modelIdentifier) {
+        /**
+         * Sets the model to be parsed.
+         * @param modelIdentifier The model identifier.
+         */
+        void setModelIdentifier(int modelIdentifier) {
             this.modelIdentifier = modelIdentifier;
             this.modelsReduced = true;
             this.allModels = false;
         }
 
-        public void setEverything() {
-            if (!this.modelsReduced) {
-                this.allModels = true;
-            }
-            this.allChains = true;
-        }
-
-        public void updatePdbIdentifer() {
-            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPdbIdentifier();
-        }
-
-        public void updateChainIdentifier() {
-            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChainIdentifier();
-        }
-
-        public void setChainIdentifier(String chainIdentifier) {
+        /**
+         * Sets the chain to be parsed.
+         * @param chainIdentifier The chain identifier.
+         */
+        void setChainIdentifier(String chainIdentifier) {
             Objects.requireNonNull(chainIdentifier);
             this.chainIdentifier = chainIdentifier;
             this.allChains = false;
@@ -572,8 +640,35 @@ public class StructureParser {
             }
         }
 
-        public void setAllChains() {
+        /**
+         * Sets all chains to be parsed.
+         */
+        void setAllChains() {
             this.allChains = true;
+        }
+
+        /**
+         * Sets everything to be parsed.
+         */
+        void setEverything() {
+            if (!this.modelsReduced) {
+                this.allModels = true;
+            }
+            this.allChains = true;
+        }
+
+        /**
+         * Updates the pdb identifier after parsing.
+         */
+        void updatePdbIdentifer() {
+            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPdbIdentifier();
+        }
+
+        /**
+         * Updates the chain identifier after parsing.
+         */
+        void updateChainIdentifier() {
+            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChainIdentifier();
         }
 
         @Override
@@ -585,12 +680,22 @@ public class StructureParser {
                     ", allChains=" + this.allChains +
                     '}';
         }
+
     }
 
-    public static class SourceSelector implements LocalSourceStep, IdentifierStep, AdditionalLocalSourceStep {
+    /**
+     * Remembers the choices during the the stepwise building process.
+     */
+    static class SourceSelector implements LocalSourceStep, IdentifierStep, AdditionalLocalSourceStep {
 
+        /**
+         * The iterator that guides the parsing process to the specified files.
+         */
         StructureContentIterator contentIterator;
 
+        /**
+         * The local pdb installation if there is any.
+         */
         private LocalPDB localPDB;
 
         @Override
@@ -696,6 +801,13 @@ public class StructureParser {
             return chainList(path, "\t");
         }
 
+        /**
+         * Reads a pdb identifier chain identifier mapping file.
+         * @param mappingPath The path to the mapping file.
+         * @param separator The String separating both.
+         * @return A list of pdb identifier chain paris.
+         * @throws IOException if the file could not be read.
+         */
         private List<Pair<String>> readMappingFile(Path mappingPath, String separator) throws IOException {
             InputStream inputStream = Files.newInputStream(mappingPath);
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
@@ -705,6 +817,14 @@ public class StructureParser {
             }
         }
 
+        /**
+         * Reads a file of pdb identifier chain identifier paris and converts them to be read by the {@link
+         * StructureContentIterator}.
+         *
+         * @param lines The lines that should be parsed.
+         * @param separator The String separating the pairs.
+         * @return A list of pdb identifier chain paris.
+         */
         private List<Pair<String>> composePairsForChainList(List<String> lines, String separator) {
             ArrayList<Pair<String>> pairs = new ArrayList<>();
             for (String line : lines) {
@@ -719,18 +839,34 @@ public class StructureParser {
     }
 
     /**
-     * Represents a local PDB copy.
+     * This class represents a local PDB installation.
      */
     public static class LocalPDB {
 
-        private static final Path BASE_PATH = Paths.get("data/structures/divided/pdb");
+        /**
+         * The default folder structure of local pdb installations.
+         */
+        static final Path BASE_PATH = Paths.get("data/structures/divided/pdb");
 
+        /**
+         * The path to the local pdb.
+         */
         private Path localPdbPath;
 
+        /**
+         * Creates a new reference for a local pdb installation.
+         *
+         * @param localPdbLocation
+         */
         public LocalPDB(String localPdbLocation) {
             this.localPdbPath = Paths.get(localPdbLocation);
         }
 
+        /**
+         * Returns the path to the local pdb.
+         *
+         * @return The path to the local pdb.
+         */
         public Path getLocalPdbPath() {
             return this.localPdbPath;
         }
