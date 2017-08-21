@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.LEFT;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.RIGHT;
 
+/**
+ * The atom and hetatm token. Containing information of atoms.
+ */
 public enum AtomToken implements PDBToken {
 
     RECORD_TYPE(Range.of(1, 6), LEFT),
@@ -27,17 +30,7 @@ public enum AtomToken implements PDBToken {
     RESIDUE_NAME(Range.of(18, 20), RIGHT),
     CHAIN_IDENTIFIER(Range.of(22), LEFT),
     RESIDUE_SERIAL(Range.of(23, 26), RIGHT),
-    RESIDUE_INSERTION(Range.of(27, 30), LEFT) {
-        @Override
-        public String extract(String line) {
-            if (line.length() >= getColumns().getUpperBound()) {
-                return line.substring(
-                        getColumns().getLowerBound() - 1, getColumns().getUpperBound());
-            } else {
-                return "";
-            }
-        }
-    },
+    RESIDUE_INSERTION(Range.of(27, 30), LEFT),
     X_COORDINATE(Range.of(31, 38), RIGHT),
     Y_COORDINATE(Range.of(39, 46), RIGHT),
     Z_COORDINATE(Range.of(47, 54), RIGHT),
@@ -46,18 +39,10 @@ public enum AtomToken implements PDBToken {
     ELEMENT_SYMBOL(Range.of(77, 78), RIGHT),
     ELEMENT_CHARGE(Range.of(79, 80), LEFT);
 
-    /**
-     * @author cl
-     */
-    /**
-     * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
-     * parsable with this token.
-     */
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
-    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000",
-            new DecimalFormatSymbols(Locale.US));
-    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00",
-            new DecimalFormatSymbols(Locale.US));
+
+    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final Range<Integer> columns;
     private final Justification justification;

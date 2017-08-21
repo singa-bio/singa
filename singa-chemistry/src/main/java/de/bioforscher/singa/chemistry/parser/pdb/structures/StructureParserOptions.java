@@ -7,28 +7,78 @@ package de.bioforscher.singa.chemistry.parser.pdb.structures;
  */
 public class StructureParserOptions {
 
+    /**
+     * Settings that can be passed to the Options.
+     */
     public enum Setting {
 
+        /**
+         * Create Edges in between leaf substructures (default).
+         */
         CREATE_EDGES,
+
+        /**
+         * Omit Edges between leaf substructures.
+         */
         OMIT_EDGES,
 
+        /**
+         * Parse additional information for ligands form pdb (default).
+         */
         GET_LIGAND_INFORMATION,
+
+        /**
+         * Omit parsing of ligand information.
+         */
         OMIT_LIGAND_INFORMATION,
 
+        /**
+         * Connect hydrogens to leafs.
+         */
         GET_HYDROGEN_CONNECTIONS,
+
+        /**
+         * Omit hydrogen connections to leafs (default).
+         */
         OMIT_HYDROGENS_CONNECTIONS,
 
+        /**
+         * Parse hydrogen atoms.
+         */
         GET_HYDROGENS,
+
+        /**
+         * Omit hydrogen atoms (default).
+         */
         OMIT_HYDROGENS,
 
+        /**
+         * Use the file name as the title of the structure.
+         */
         GET_TITLE_FROM_FILENAME,
+
+        /**
+         * Use the pdb file to infer the pdb title (default).
+         */
         GET_TITLE_FROM_PDB,
 
+        /**
+         * Parse and use the first valid pdb identifier from the file name.
+         */
         GET_IDENTIFIER_FROM_FILENAME,
+
+        /**
+         * Use the pdb file to infer the pdb identifier (default).
+         */
         GET_IDENTIFIER_FROM_PDB
 
     }
 
+    /**
+     * Create a new Options object using enum constants.
+     * @param settings The settings.
+     * @return The options.
+     */
     public static StructureParserOptions withSettings(Setting ... settings) {
         StructureParserOptions options = new StructureParserOptions();
         for (Setting setting: settings) {
@@ -37,6 +87,11 @@ public class StructureParserOptions {
         return options;
     }
 
+    /**
+     * Sets the any option.
+     * @param options The options object to set.
+     * @param setting The settings.
+     */
     private static void setOption(StructureParserOptions options, Setting setting) {
         switch (setting) {
             case CREATE_EDGES:

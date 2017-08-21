@@ -349,7 +349,8 @@ class StructureCollector {
         int atomSerial = Integer.valueOf(AtomToken.ATOM_SERIAL.extract(atomLine));
         String chain = AtomToken.CHAIN_IDENTIFIER.extract(atomLine);
         int leaf = Integer.valueOf(AtomToken.RESIDUE_SERIAL.extract(atomLine));
-        char insertionCode = AtomToken.RESIDUE_INSERTION.extract(atomLine).charAt(0);
+        String insertion = AtomToken.RESIDUE_INSERTION.extract(atomLine);
+        char insertionCode = insertion.isEmpty() ? ' ' : insertion.charAt(0);
         return new UniqueAtomIdentifer(this.currentPDB, this.currentModel, chain, leaf, insertionCode, atomSerial);
     }
 
