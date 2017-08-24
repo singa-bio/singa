@@ -39,7 +39,7 @@ public class Taxon implements Nameable {
      * @param name The name.
      */
     public Taxon(String name) {
-        this ("Unkknown", name);
+        this ("Unknown", name);
     }
 
     /**

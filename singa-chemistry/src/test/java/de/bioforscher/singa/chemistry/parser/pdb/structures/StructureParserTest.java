@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.Loca
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -22,12 +23,37 @@ import static org.junit.Assert.assertTrue;
 
 public class StructureParserTest {
 
-    @Test
-    public void shouldParseUncomplicatedStructure() {
+    private static Structure hemoglobin;
+    private static Structure cyanase;
+
+    @BeforeClass
+    public static void parseUncomplicatedStructure() {
         // "normal" structure
-        Structure structure = StructureParser.online()
+        hemoglobin = StructureParser.online()
                 .pdbIdentifier("1BUW")
                 .parse();
+    }
+
+    @BeforeClass
+    public static void parseResiduesWithModifiedAminoAcids() {
+        cyanase= StructureParser.online()
+                .pdbIdentifier("1DW9")
+                .parse();
+    }
+
+    @Test
+    public void shouldParsePDBIdentifierFromHeader() {
+        assertEquals("1buw", hemoglobin.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseOneLineTitleFromHeader() {
+        assertEquals("CRYSTAL STRUCTURE OF S-NITROSO-NITROSYL HUMAN HEMOGLOBIN A", hemoglobin.getTitle());
+    }
+
+    @Test
+    public void shouldParseMultiLineTitleFromHeader() {
+        assertEquals("STRUCTURE OF CYANASE REVEALS THAT A NOVEL DIMERIC AND DECAMERIC ARRANGEMENT OF SUBUNITS IS REQUIRED FOR FORMATION OF THE ENZYME ACTIVE SITE", cyanase.getTitle());
     }
 
     @Test
@@ -75,16 +101,6 @@ public class StructureParserTest {
                 .parse();
     }
 
-
-    // structure with modified amino acids
-    @Test
-    public void shouldParseResiduesWithModifiedAminoAcids() {
-        Structure structure = StructureParser.online()
-                .pdbIdentifier("1DW9")
-                .everything()
-                .parse();
-    }
-
     // structure with dna or rna
     @Test
     public void shouldParseStructureWithNucleotides() {
@@ -111,7 +127,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseFromLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         Structure structure = StructureParser.local()
                 .localPDB(localPdb, "1C0A")
                 .parse();
@@ -119,8 +135,8 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
-        Path chainList = Paths.get(Thread.currentThread().getContextClassLoader().getResource("chain_list.txt").toURI());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+        Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
                 .localPDB(localPdb)
                 .chainList(chainList, ":")
@@ -130,7 +146,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
     }
 

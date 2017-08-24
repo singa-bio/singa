@@ -79,7 +79,7 @@ public class StructureWriter {
         // PDB-ID
         String pdbIdentifier = leafSubstructures.iterator().next().getPdbIdentifier();
         if (!pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
-            headerContent.add(HeaderToken.ID_CODE.createHeaderLine(pdbIdentifier));
+            headerContent.add(HeaderToken.assemblePDBLine(pdbIdentifier));
         }
         if (!headerContent.toString().isEmpty()) {
             return Optional.ofNullable(headerContent.toString());

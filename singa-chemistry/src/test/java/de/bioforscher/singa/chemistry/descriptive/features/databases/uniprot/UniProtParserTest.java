@@ -30,6 +30,7 @@ public class UniProtParserTest {
                 "KDGRISVAGVTSGNVGYLAHAIHQVTK", sequence);
         // organism
         Organism organism = entity.getAllOrganisms().iterator().next();
+
         // organism - name
         assertEquals("Oryctolagus cuniculus", organism.getName());
         // organism - id

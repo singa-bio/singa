@@ -30,7 +30,8 @@ public enum HeaderToken implements PDBToken {
         return this.columns;
     }
 
-    public String createHeaderLine(String content) {
-        return "HEADER" + String.format("%" + (getColumns().getLowerBound() - content.length() + 1) + "s", content.toUpperCase());
+    public static String assemblePDBLine(String pdbIdentifier) {
+        return "HEADER" +
+                String.format("%" + (ID_CODE.getColumns().getLowerBound() - pdbIdentifier.length() + 1) + "s", pdbIdentifier.toUpperCase());
     }
 }

@@ -44,11 +44,20 @@ public interface PDBToken {
         // pdb numbering is including the last letter  - substring is excluding the last letter this account for the
         // offset
         if (line.length() >= token.getColumns().getUpperBound()) {
-            return line.substring(
-                    token.getColumns().getLowerBound() - 1, token.getColumns().getUpperBound()).trim();
+            return line.substring(token.getColumns().getLowerBound() - 1, token.getColumns().getUpperBound()).trim();
         } else {
             return "";
         }
     }
+
+    static String endLine(String content) {
+        StringBuilder filler = new StringBuilder();
+        for (int i = 0; i < 80-content.length(); i++) {
+            filler.append(" ");
+        }
+        return content+filler+System.lineSeparator();
+    }
+
+
 
 }

@@ -29,7 +29,7 @@ import java.util.*;
  *
  * @author cl
  */
-class StructureCollector {
+public class StructureCollector {
 
     /**
      * The logger.
@@ -181,7 +181,7 @@ class StructureCollector {
                         titleFound = true;
                     }
                     // append title
-                    this.titleBuilder.append(TitleToken.TEXT.extract(currentLine));
+                    this.titleBuilder.append(trimEnd(TitleToken.TEXT.extract(currentLine)));
                 } else {
                     // if title has been found and a line with another content is found
                     if (titleFound) {
@@ -192,6 +192,21 @@ class StructureCollector {
             }
         }
     }
+
+    /**
+     * Removes trailing whitespaces.
+     * @param source The original string.
+     * @return The original string without trailing white spaces.
+     */
+    public static String trimEnd(String source) {
+        int pos = source.length() - 1;
+        while ((pos >= 0) && Character.isWhitespace(source.charAt(pos))) {
+            pos--;
+        }
+        pos++;
+        return (pos < source.length()) ? source.substring(0, pos) : source;
+    }
+
 
     /**
      * Keeps only lines, that belong to a certain model.
