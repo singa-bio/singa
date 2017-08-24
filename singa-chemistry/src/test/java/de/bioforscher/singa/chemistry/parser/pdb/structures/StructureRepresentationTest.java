@@ -1,7 +1,5 @@
-package de.bioforscher.singa.chemistry.physical.branches;
+package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureCollector;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.ChainTerminatorToken;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.HeaderToken;
@@ -34,8 +32,8 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pcbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
-        List<String> actualLines = Arrays.asList(pcbRepresentation.split(System.lineSeparator()));
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 
@@ -46,8 +44,8 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pcbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
-        List<String> actualLines = Arrays.asList(pcbRepresentation.split(System.lineSeparator()));
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
 
@@ -58,10 +56,24 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pcbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
-        List<String> actualLines = Arrays.asList(pcbRepresentation.split(System.lineSeparator()));
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
+
+    @Test
+    public void shouldRepresentLeaves() throws IOException {
+        String fileLocation = Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
+        List<String> expectedLines = Files.readAllLines(Paths.get(fileLocation));
+        Structure structure = StructureParser.local()
+                .fileLocation(fileLocation)
+                .everything()
+                .parse();
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure.getAllLeaves());
+        List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
+        assertPDBLinesEqual(expectedLines, actualLines);
+    }
+
 
     private static void assertPDBLinesEqual(List<String> expectedLines, List<String> actualLines) {
         assertEquals(expectedLines.size(), actualLines.size());

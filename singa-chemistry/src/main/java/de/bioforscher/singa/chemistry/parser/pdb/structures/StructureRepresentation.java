@@ -1,8 +1,10 @@
-package de.bioforscher.singa.chemistry.physical.branches;
+package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.ChainTerminatorToken;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.HeaderToken;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.TitleToken;
+import de.bioforscher.singa.chemistry.physical.branches.Chain;
+import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
@@ -45,20 +47,10 @@ public class StructureRepresentation {
      * @param chain The chain.
      */
     private StructureRepresentation(Chain chain) {
-        initializeMetaData(chain);
         List<LeafSubstructure<?, ?>> consecutivePart = chain.getConsecutivePart();
         this.consecutiveRecords = getPdbLines(consecutivePart);
         this.terminateRecord = ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
         this.nonConsecutiveLeafs = chain.getNonConsecutivePart();
-    }
-
-    private void initializeMetaData(Chain chain) {
-        if (!chain.getLeafSubstructures().isEmpty()) {
-            String pdbIdentifier = chain.getLeafSubstructures().iterator().next().getIdentifier().getPdbIdentifier();
-            if (!pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
-                // return pdbIdentifier
-            }
-        }
     }
 
     public static String composePdbRepresentaiton(Structure structure) {
@@ -79,6 +71,18 @@ public class StructureRepresentation {
                 sb.append("ENDMDL").append(System.lineSeparator());
             }
         }
+        // add postamble
+        sb.append(getPostamble());
+        return sb.toString();
+    }
+
+    public static String composePdbRepresentaiton(List<LeafSubstructure<?, ?>> leaves) {
+        StringBuilder sb = new StringBuilder();
+        LeafSubstructure<?, ?> first = leaves.iterator().next();
+        // add preamble
+        sb.append(getPreamble(first.getPdbIdentifier(), ""));
+        // if there is only one model
+        sb.append(composePdbRepresentationOfNonConsecutiveRecords(leaves));
         // add postamble
         sb.append(getPostamble());
         return sb.toString();
@@ -190,11 +194,11 @@ public class StructureRepresentation {
      */
     private static String getPreamble(String pdbIdentifier, String title) {
         StringBuilder sb = new StringBuilder();
-        if (pdbIdentifier != null) {
+        if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
             sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
             sb.append(System.lineSeparator());
         }
-        if (title != null) {
+        if (title != null && !title.isEmpty()) {
             for (String titleLine : TitleToken.assemblePDBLines(title)) {
                 sb.append(titleLine);
                 sb.append(System.lineSeparator());
