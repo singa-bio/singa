@@ -21,7 +21,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
- * A test class for the {@link SubStructureSuperimposer} implementation.
+ * A test class for the {@link SubstructureSuperimposer} implementation.
  *
  * @author fk
  */
@@ -44,7 +44,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateLastHeavySidechainSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN));
         assertEquals(0.5706912104847501, superimposition.getRmsd(), 0E-9);
@@ -52,7 +52,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateSidechainCentroidSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID));
         assertEquals(0.05433403549113087, superimposition.getRmsd(), 0E-9);
@@ -60,7 +60,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateCaSubstructureSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, isAlphaCarbon());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
@@ -72,7 +72,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateBackboneSubstructureSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, isBackbone());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
@@ -84,7 +84,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateSidechainSubstructureSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(this.reference, this.candidate, isSideChain());
         List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
                 superimposition.applyTo(this.candidate.getLeafSubstructures());
@@ -96,14 +96,14 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCalculateIdealSubStructureSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
     }
 
     @Test
     public void shouldCalculateMappedFullCandidates() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate, isBackbone());
         superimposition.getMappedFullCandidate().stream().map(leaf -> leaf.getPdbLines().stream().collect(Collectors.joining("\n"))).forEach(System.out::println);
         assertEquals(24, superimposition.getMappedFullCandidate().stream()
@@ -114,7 +114,7 @@ public class SubstructureSuperimposerTest {
 
     @Test
     public void shouldCorrectlyApplySubstructureSuperimposition() {
-        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(this.reference, this.candidate);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
         List<LeafSubstructure<?, ?>> mappedCandidate = superimposition.applyTo(this.candidate.getLeafSubstructures());
@@ -129,7 +129,7 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateSubstructureSuperimpositionWithMissingAtoms() {
 // FIXME: this test does not work, getCopy() of Chain shows awkward behavior
 //        BranchSubstructure<?> referenceWithMissingAtoms = this.reference.getCopy();
-//        SubstructureSuperimposition superimposition = SubStructureSuperimposer
+//        SubstructureSuperimposition superimposition = SubstructureSuperimposer
 //                .calculateSubstructureSuperimposition(referenceWithMissingAtoms, this.candidate);
 //        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
 //                superimposition.applyTo(this.candidate.getLeafSubstructures());

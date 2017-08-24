@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
@@ -90,8 +90,8 @@ public class StructuralMotifs {
 
                 // calculate superimposition
                 SubstructureSuperimposition superimposition = idealSuperimposition ?
-                        SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(reference, candidate, atomFilter) :
-                        SubStructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, atomFilter);
+                        SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(reference, candidate, atomFilter) :
+                        SubstructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, atomFilter);
 
                 // store distance matrix
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();

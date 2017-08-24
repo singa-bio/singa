@@ -93,7 +93,7 @@ public class WaterBridge extends Interaction {
                 ", plipIdentifier=" + plipIdentifier +
                 ", source=" + source +
                 ", target=" + target +
-                ", ligandCoordiante=" + Arrays.toString(ligandCoordiante) +
+                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
                 ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }

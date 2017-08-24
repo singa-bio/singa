@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.MultiParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
@@ -182,7 +182,7 @@ public class Fit3DBuilder {
          *
          * @return A new {@link Fit3D} search when finished.
          */
-        Fit3D run() throws SubStructureSuperimpositionException;
+        Fit3D run() throws SubstructureSuperimpositionException;
 
         /**
          * Defines a {@link StructuralEntityFilter.AtomFilter} filter to be used for the {@link Fit3D} alignment (e.g.
@@ -208,7 +208,7 @@ public class Fit3DBuilder {
          *
          * @return A new {@link Fit3D} search when finished.
          */
-        Fit3D run() throws SubStructureSuperimpositionException;
+        Fit3D run() throws SubstructureSuperimpositionException;
 
         /**
          * Defines the RMSD cutoff up to which matches should be reported. If a {@link Fit3DSiteAlignment} is performed
@@ -279,7 +279,7 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public Fit3D run() throws SubStructureSuperimpositionException {
+        public Fit3D run() throws SubstructureSuperimpositionException {
             // decide which implementation should be used
             if (this.multiParser != null) {
                 return new Fit3DAlignmentBatch(this);

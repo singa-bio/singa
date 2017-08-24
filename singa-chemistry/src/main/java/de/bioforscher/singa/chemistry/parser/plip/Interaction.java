@@ -12,7 +12,7 @@ public abstract class Interaction {
     LeafIdentifier source;
     LeafIdentifier target;
 
-    double[] ligandCoordiante;
+    double[] ligandCoordinate;
     double[] proteinCoordinate;
 
     public Interaction(int plipIdentifier) {
@@ -35,12 +35,12 @@ public abstract class Interaction {
         this.target = target;
     }
 
-    public double[] getLigandCoordiante() {
-        return ligandCoordiante;
+    public double[] getLigandCoordinate() {
+        return ligandCoordinate;
     }
 
-    public void setLigandCoordiante(double[] ligandCoordiante) {
-        this.ligandCoordiante = ligandCoordiante;
+    public void setLigandCoordinate(double[] ligandCoordinate) {
+        this.ligandCoordinate = ligandCoordinate;
     }
 
     public double[] getProteinCoordinate() {

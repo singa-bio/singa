@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
@@ -64,7 +64,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private boolean cutoffScoreReached;
     private XieScore xieScore;
 
-    public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubStructureSuperimpositionException {
+    public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubstructureSuperimpositionException {
         this.site1 = builder.site1.getCopy();
         this.site2 = builder.site2.getCopy();
 
@@ -252,7 +252,7 @@ public class Fit3DSiteAlignment implements Fit3D {
      * Calculates the similarity scores of the current round, either by naive superimposition or with a
      * {@link Fit3DAlignment} if exchanges are defined.
      */
-    private void calculateSimilarities() throws SubStructureSuperimpositionException {
+    private void calculateSimilarities() throws SubstructureSuperimpositionException {
 
         // reset best score for new iteration
         double localBestScore = Double.MAX_VALUE;
@@ -323,18 +323,18 @@ public class Fit3DSiteAlignment implements Fit3D {
                     SubstructureSuperimposition superimposition;
                     if (this.representationScheme != null) {
                         if (this.exhaustive) {
-                            superimposition = SubStructureSuperimposer
+                            superimposition = SubstructureSuperimposer
                                     .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.representationScheme);
                         } else {
-                            superimposition = SubStructureSuperimposer
+                            superimposition = SubstructureSuperimposer
                                     .calculateSubstructureSuperimposition(site1Partition, site2Partition, this.representationScheme);
                         }
                     } else {
                         if (this.exhaustive) {
-                            superimposition = SubStructureSuperimposer
+                            superimposition = SubstructureSuperimposer
                                     .calculateIdealSubstructureSuperimposition(site1Partition, site2Partition, this.atomFilter);
                         } else {
-                            superimposition = SubStructureSuperimposer
+                            superimposition = SubstructureSuperimposer
                                     .calculateSubstructureSuperimposition(site1Partition, site2Partition, this.atomFilter);
                         }
                     }

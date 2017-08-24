@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
@@ -155,7 +155,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .run();
                     }
                     return fit3d.getMatches();
-                } catch (Fit3DException | StructureParserException | SubStructureSuperimpositionException | UncheckedIOException e) {
+                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
                     logger.warn("failed to run Fit3D against structure {}", Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier(), e);
                 }
             }

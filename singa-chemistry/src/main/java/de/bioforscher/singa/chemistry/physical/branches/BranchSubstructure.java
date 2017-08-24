@@ -118,7 +118,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     @Override
     public Vector3D getPosition() {
-        return Vectors3D.getCentroid(this.getAllAtoms().stream()
+        return Vectors3D.getCentroid(getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()));
     }
@@ -130,7 +130,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     @Override
     public void setPosition(Vector3D position) {
-        this.getAllAtoms().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
+        getAllAtoms().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
     }
 
     /**
