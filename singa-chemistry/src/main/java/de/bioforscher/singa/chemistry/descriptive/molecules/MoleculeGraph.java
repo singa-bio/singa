@@ -69,13 +69,6 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         return addEdgeBetween(bond, source, target);
     }
 
-    public MoleculeBond getEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
-        return this.getEdges().stream()
-                .filter(bond -> bond.containsNode(source) && bond.containsNode(target))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
-    }
-
     @Override
     public Integer nextNodeIdentifier() {
         if (getNodes().isEmpty()) {

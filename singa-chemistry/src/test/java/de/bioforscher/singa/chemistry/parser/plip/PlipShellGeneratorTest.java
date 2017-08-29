@@ -7,8 +7,6 @@ import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.junit.Test;
 
-import java.io.InputStream;
-
 import static de.bioforscher.singa.core.utility.Resources.getResourceAsStream;
 
 public class PlipShellGeneratorTest {
@@ -17,18 +15,21 @@ public class PlipShellGeneratorTest {
     public void shouldFindShellsForLigand() {
 
         Structure structure = StructureParser.online()
-                .pdbIdentifier("1acj")
+                .pdbIdentifier("1c0a")
                 .parse();
 
         Chain chain = structure.getFirstChain().get();
 
         LeafSubstructure<?,?> reference = StructureSelector.selectFrom(chain)
-                .atomContainer(999)
+                .atomContainer(831)
                 .selectAtomContainer();
 
-        InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
-        InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
 
-        PlipShellGenerator.getInteractionShellsForLigand(chain, reference, interactionContainer, null);
+        InteractionContainer interInteractions = PlipParser.parse("1c0a", getResourceAsStream("plip/1c0a.xml"));
+
+        InteractionContainer ligandInteractions = PlipParser.parse("1c0a", getResourceAsStream("plip/1c0a_ligand.xml"));
+        System.out.println();
+
+        PlipShellGenerator.getInteractionShellsForLigand(chain, reference, interInteractions, ligandInteractions);
     }
 }

@@ -4,6 +4,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * The graph contains nodes connected by edges of a certain type.
@@ -98,11 +99,10 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
      */
     int addEdgeBetween(NodeType source, NodeType target);
 
-    default EdgeType getEdgeBetween(NodeType source, NodeType target) {
+    default Optional<EdgeType> getEdgeBetween(NodeType source, NodeType target) {
         return getEdges().stream()
                 .filter(edge -> edge.containsNode(source) && edge.containsNode(target))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
+                .findAny();
     }
 
     /**

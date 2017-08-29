@@ -347,7 +347,7 @@ public class PlipContentHandler implements ContentHandler {
             case "restype_lig":
                 String restype = new String(ch, start, length);
                 if (!AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(restype).isPresent()) {
-                    this.noResidueInteraction = true;
+                    // this.noResidueInteraction = true;
                 }
         }
 

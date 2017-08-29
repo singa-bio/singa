@@ -97,7 +97,7 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
                     // add to que and subgraph, remove from unprocessed nodes
                     processNode(neighbor);
                     // remember edge
-                    currentEdges.add(graph.getEdgeBetween(currentNode, neighbor));
+                    currentEdges.add(graph.getEdgeBetween(currentNode, neighbor).get());
                 }
             }
         }

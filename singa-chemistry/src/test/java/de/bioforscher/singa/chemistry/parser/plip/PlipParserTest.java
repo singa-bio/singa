@@ -27,6 +27,13 @@ public class PlipParserTest {
     }
 
     @Test
+    public void shouldParseLigandInteractionsOf1c0a() throws IOException {
+        InputStream inputStream = getResourceAsStream("plip/1c0a_ligand.xml");
+        InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
+        interactionContainer.getInteractions().forEach(System.out::println);
+    }
+
+    @Test
     public void shouldParseInteractionsOf3aou() {
         InputStream inputStream = getResourceAsStream("plip/3aou.xml");
         InteractionContainer interactionContainer = PlipParser.parse("3aou", inputStream);
