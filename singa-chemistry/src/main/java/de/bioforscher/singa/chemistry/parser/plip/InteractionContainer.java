@@ -119,8 +119,8 @@ public class InteractionContainer {
                             break;
                         }
                         if ((iPresent.getAcceptor() == iNew.getDonor() && (iPresent.getDonor() == iNew.getAcceptor()))) {
-                            logger.warn("The hydrogen bond (id {}) has swapped donor and acceptor with hydrogen bond {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
-                            logger.warn("Present : {}", presentInteraction);
+                            logger.info("The hydrogen bond (id {}) has swapped donor and acceptor with hydrogen bond {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
+                            logger.info("Present : {}", presentInteraction);
                             uncertainInteraction = true;
                             symmetricEntriesFound = true;
                             break;
@@ -157,14 +157,14 @@ public class InteractionContainer {
                         final SaltBridge iPresent = (SaltBridge) presentInteraction;
                         final SaltBridge iNew = (SaltBridge) interaction;
                         if (atomsOverlap(iPresent.getAtoms2(), iNew.getAtoms2())) {
-                            logger.warn("The salt bridge (id {}) has overlapping atoms with salt bridge {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
-                            logger.warn("Present : {}", presentInteraction);
+                            logger.info("The salt bridge (id {}) has overlapping atoms with salt bridge {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
+                            logger.info("Present : {}", presentInteraction);
                             uncertainInteraction = true;
                             symmetricEntriesFound = true;
                             break;
                         } else {
                             if (!iPresent.getAtoms1().isEmpty()) {
-                                logger.warn("Tried to merge salt bridge (id {}) with salt bridge (id {}) but atoms are already present");
+                                logger.info("Tried to merge salt bridge (id {}) with salt bridge (id {}) but atoms are already present");
                                 uncertainInteraction = true;
                             } else {
                                 logger.trace("Merging salt bridge (id {}) with salt bridge (id {}).", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
@@ -201,9 +201,9 @@ public class InteractionContainer {
                     } else {
                         // TODO it is possible that some more interactions can be merged
                         // TODO if currently all pi-cation and pi stacks are considered non symmetrical if they are not identical
-                        logger.warn("Interaction of {} (id={}) is a possible duplicate of {} with (id={}). Don't know what to do yet. ", interaction.getClass().getSimpleName(), interaction.getPlipIdentifier(), presentInteraction.getClass().getSimpleName(), presentInteraction.getPlipIdentifier());
+                        logger.info("Interaction of {} (id={}) is a possible duplicate of {} with (id={}). Don't know what to do yet. ", interaction.getClass().getSimpleName(), interaction.getPlipIdentifier(), presentInteraction.getClass().getSimpleName(), presentInteraction.getPlipIdentifier());
                         uncertainInteraction = true;
-                        logger.warn("Present : {}", presentInteraction);
+                        logger.info("Present : {}", presentInteraction);
                     }
                 }
             }

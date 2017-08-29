@@ -791,7 +791,7 @@ public class StructureParser {
                     this.contentIterator = new StructureContentIterator(readMappingFile(path, separator));
                 }
             } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for mapping file.", e);
+                throw new UncheckedIOException("Could not open input stream for chain list file.", e);
             }
             return new MultiReducingSelector(this).mapping();
         }

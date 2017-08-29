@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
+import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntity;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
@@ -28,6 +29,18 @@ public class StructureWriter {
     }
 
     /**
+     * Writes a given {@link BranchSubstructure} in PDB format.
+     *
+     * @param branchSubstructure The {@link BranchSubstructure} to be written.
+     * @param outputPath The output {@link Path}.
+     * @throws IOException If the path cannot be written.
+     */
+    public static void writeBranchSubstructure(BranchSubstructure<?, ?> branchSubstructure, Path outputPath) throws IOException {
+        logger.info("Writing branch substructure {} to {}.", branchSubstructure, outputPath);
+        writeLeafSubstructures(branchSubstructure.getLeafSubstructures(), outputPath);
+    }
+
+    /**
      * Writes a given list of {@link LeafSubstructure}s in PDB format.
      *
      * @param leafSubstructures The list of {@link LeafSubstructure}s to be written.
@@ -48,7 +61,7 @@ public class StructureWriter {
      * @throws IOException If the path cannot be written.
      */
     public static void writeStructure(Structure structure, Path outputPath) throws IOException {
-        logger.info("Writing structure {} to {}.",  structure, outputPath);
+        logger.info("Writing structure {} to {}.", structure, outputPath);
         Files.createDirectories(outputPath.getParent());
         Files.write(outputPath, StructureRepresentation.composePdbRepresentaiton(structure).getBytes());
     }
