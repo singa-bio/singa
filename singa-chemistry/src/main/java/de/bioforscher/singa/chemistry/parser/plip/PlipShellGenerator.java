@@ -2,12 +2,11 @@ package de.bioforscher.singa.chemistry.parser.plip;
 
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.mathematics.algorithms.graphs.NeighbourhoodExtractor;
 import de.bioforscher.singa.mathematics.graphs.model.GenericGraph;
+import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlipShellGenerator {
@@ -16,36 +15,41 @@ public class PlipShellGenerator {
     private final LeafSubstructure<?, ?> reference;
     private final InteractionContainer interChainInteractions;
     private final InteractionContainer referenceInteractions;
-    private Map<InteractionShell, Set<LeafSubstructure<?, ?>>> shells;
+    private final Map<InteractionShell, List<LeafSubstructure<?, ?>>> shells;
 
     private GenericGraph<LeafSubstructure<?, ?>> graph;
 
     private PlipShellGenerator(Chain chain, LeafSubstructure<?, ?> reference, InteractionContainer interChainInteractions,
                                InteractionContainer referenceInteractions) {
-
-//        if (!(reference instanceof AtomContainer && reference.getFamily() instanceof LigandFamily)) {
-//            throw new IllegalArgumentException("reference must be a valid ligand");
-//        }
-
         this.chain = chain;
         this.reference = reference;
         this.interChainInteractions = interChainInteractions;
         this.referenceInteractions = referenceInteractions;
         this.shells = new TreeMap<>();
         this.graph = new GenericGraph<>();
+        generateInteractionGraph();
         computeShells();
-        generateInterInteractionGraph();
     }
 
-    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure<?, ?> reference, InteractionContainer interChainInteractions, InteractionContainer referenceInteractions) {
+    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure<?, ?> reference,
+                                                                   InteractionContainer interChainInteractions,
+                                                                   InteractionContainer referenceInteractions) {
         return new PlipShellGenerator(chain, reference, interChainInteractions, referenceInteractions);
     }
 
-    public Map<InteractionShell, Set<LeafSubstructure<?, ?>>> getShells() {
+    private void computeShells() {
+        GenericNode<LeafSubstructure<?, ?>> referenceNode = graph.getNodeWithContent(reference)
+                .orElseThrow(() -> new IllegalArgumentException("No such reference node in interaction graph."));
+        for (InteractionShell interactionShell : InteractionShell.values()) {
+            shells.put(interactionShell, interactionShell.from(graph, referenceNode));
+        }
+    }
+
+    public Map<InteractionShell, List<LeafSubstructure<?, ?>>> getShells() {
         return shells;
     }
 
-    private void computeShells() {
+    private void generateInteractionGraph() {
         // compute first shell (directly interacting with reference)
         Set<LeafSubstructure<?, ?>> firstShell = referenceInteractions.getInteractions().stream()
                 .filter(interaction -> interaction.getTarget().equals(reference.getIdentifier()))
@@ -56,18 +60,12 @@ public class PlipShellGenerator {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
-        shells.put(InteractionShell.FIRST, firstShell);
         // add reference and its interactions to graph
         graph.addNode(reference);
         for (LeafSubstructure<?, ?> leafSubstructure : firstShell) {
             graph.addNode(leafSubstructure);
             graph.addEdgeBetween(reference, leafSubstructure);
         }
-
-
-    }
-
-    private void generateInterInteractionGraph() {
         // generate interaction graph from inter chain interactions
         for (Interaction interaction : interChainInteractions.getInteractions()) {
             LeafSubstructure<?, ?> source = chain.getLeafSubstructure(interaction.getSource());
@@ -76,18 +74,19 @@ public class PlipShellGenerator {
         }
     }
 
-    private void getNextShell(InteractionShell previousShell) {
-        Set<LeafSubstructure<?, ?>> previousLeafSubstructures = shells.get(previousShell);
-        for (LeafSubstructure<?, ?> previousLeafSubstructure : previousLeafSubstructures) {
-
-        }
-    }
-
     public GenericGraph<LeafSubstructure<?, ?>> getGraph() {
         return graph;
     }
 
     public enum InteractionShell {
-        FIRST, SECOND, THIRD
+
+        FIRST, SECOND, THIRD;
+
+        public List<LeafSubstructure<?, ?>> from(GenericGraph<LeafSubstructure<?, ?>> graph,
+                                                 GenericNode<LeafSubstructure<?, ?>> referenceNode) {
+            return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal()).stream()
+                    .map(GenericNode::getContent)
+                    .collect(Collectors.toList());
+        }
     }
 }

@@ -31,7 +31,7 @@ public class GraphViewerPlayground {
 
         Chain chain = structure.getFirstChain().get();
 
-        LeafSubstructure<?,?> reference = StructureSelector.selectFrom(chain)
+        LeafSubstructure<?, ?> reference = StructureSelector.selectFrom(chain)
                 .atomContainer(831)
                 .selectAtomContainer();
 
@@ -43,9 +43,10 @@ public class GraphViewerPlayground {
         GenericGraph<LeafSubstructure<?, ?>> graph = plipShellGenerator.getGraph();
         GenericNode<LeafSubstructure<?, ?>> referenceNode = graph.getNodeWithContent(reference).get();
 
-        GenericGraph<LeafSubstructure<?, ?>> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 2);
+        GenericGraph<LeafSubstructure<?, ?>> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 3);
         List<GenericNode<LeafSubstructure<?, ?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
         List<GenericNode<LeafSubstructure<?, ?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
+        List<GenericNode<LeafSubstructure<?, ?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
 
         GraphDisplayApplication.graph = subgraph;
         LeafShellRenderer renderer = new LeafShellRenderer();
@@ -54,11 +55,15 @@ public class GraphViewerPlayground {
         renderer.setRenderBefore((currentGraph) -> {
             renderer.getGraphicsContext().setStroke(Color.DARKBLUE);
             for (GenericNode<LeafSubstructure<?, ?>> shellNode : firstShell) {
-                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter()+2);
+                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             renderer.getGraphicsContext().setStroke(Color.RED);
             for (GenericNode<LeafSubstructure<?, ?>> shellNode : secondShell) {
-                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter()+2);
+                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
+            }
+            renderer.getGraphicsContext().setStroke(Color.YELLOW);
+            for (GenericNode<LeafSubstructure<?, ?>> shellNode : thirdShell) {
+                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             return null;
         });
