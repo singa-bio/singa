@@ -28,6 +28,14 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
     }
 
+    /**
+     * Checks whether nodes containing the source or target content are already contained in the graphs. Adds new nodes
+     * for the content that is not found the the graph and connects the previously created or retrieved nodes.
+     *
+     * @param sourceContent The content of the source node.
+     * @param targetContent The content of the target node.
+     * @return The identifier of the generated edge.
+     */
     public int addEdgeBetween(ContentType sourceContent, ContentType targetContent) {
         Optional<GenericNode<ContentType>> optionalSourceNode = getNodeWithContent(sourceContent);
         Optional<GenericNode<ContentType>> optionalTargetNode = getNodeWithContent(targetContent);
@@ -47,6 +55,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
                 GenericNode<ContentType> sourceNode = addNode(sourceContent);
                 return addEdgeBetween(optionalTargetNode.get(), sourceNode);
             } else {
+                // neither is present
                 GenericNode<ContentType> targetNode = addNode(targetContent);
                 GenericNode<ContentType> sourceNode = addNode(sourceContent);
                 return addEdgeBetween(targetNode, sourceNode);
@@ -59,12 +68,22 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
         return nextNodeIdentifier++;
     }
 
+    /**
+     * Adds a new node with the given content to the graph.
+     * @param content The content of the new node.
+     * @return The node that was added.
+     */
     public GenericNode<ContentType> addNode(ContentType content) {
         final GenericNode<ContentType> genericNode = new GenericNode<>(nextNodeIdentifier(), content);
         addNode(genericNode);
         return genericNode;
     }
 
+    /**
+     * Returns true if a node with the given content is already present.
+     * @param content The content to check.
+     * @return true if a node with the given content is already present.
+     */
     public boolean containsNodeWithContent(ContentType content) {
         for (GenericNode<ContentType> genericNode : getNodes()) {
             if (genericNode.getContent().equals(content)) {
@@ -74,6 +93,11 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
         return false;
     }
 
+    /**
+     * Returns the node with the given content or an empty optional if no node could be found.
+     * @param content The content of the node.
+     * @return The node with the given content or an empty optional if no node could be found.
+     */
     public Optional<GenericNode<ContentType>> getNodeWithContent(ContentType content) {
         for (GenericNode<ContentType> genericNode : getNodes()) {
             if (genericNode.getContent().equals(content)) {

@@ -8,9 +8,9 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
 import java.util.*;
 
 /**
- * Given a graph, the static method method returns a list of all disconnected subgraphs. The subgraphs are copies and
- * changes are not reflected back into the original graph, but node and edge identifiers, as well as attached data is
- * conserved.
+ * Given a graph, the static method method returns a list of all disconnected subgraphs. The resulting subgraphs are
+ * copies and changes are not reflected back into the original graph, but node and edge identifiers, as well as attached
+ * data is conserved.
  *
  * @author cl
  * @author fk
@@ -38,7 +38,8 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
 
     /**
      * Given a graph, this method returns a list of all disconnected subgraphs. The subgraphs are copies and changes are
-     * not reflected back into the original graph, but node and edge identifiers, as well as attached data is conserved.
+     * not reflected back into the original graph, but node and edge identifiers, as well as attached data is
+     * conserved.
      *
      * @param graph The graph to decompose.
      * @param <NodeType> The type of the nodes.
