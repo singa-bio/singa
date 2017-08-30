@@ -84,7 +84,7 @@ public class PlipShellGenerator {
 
         public List<LeafSubstructure<?, ?>> from(GenericGraph<LeafSubstructure<?, ?>> graph,
                                                  GenericNode<LeafSubstructure<?, ?>> referenceNode) {
-            return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal()).stream()
+            return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal() + 1).stream()
                     .map(GenericNode::getContent)
                     .collect(Collectors.toList());
         }
