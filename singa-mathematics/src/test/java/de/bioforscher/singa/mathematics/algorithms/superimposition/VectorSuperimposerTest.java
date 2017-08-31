@@ -6,11 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static de.bioforscher.singa.mathematics.NumberConceptAssertion.assertVectorEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * A test for the {@link VectorSuperimposer}.
@@ -51,11 +50,8 @@ public class VectorSuperimposerTest {
     public void applySuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(this.reference, this.candidate);
         List<Vector> mappedCandidate = vectorSuperimposition.applyTo(this.candidate);
-        assertTrue(Arrays.equals(mappedCandidate.get(0).getElements(),
-                vectorSuperimposition.getMappedCandidate().get(0).getElements()));
-        assertTrue(Arrays.equals(mappedCandidate.get(1).getElements(),
-                vectorSuperimposition.getMappedCandidate().get(1).getElements()));
-        assertTrue(Arrays.equals(mappedCandidate.get(2).getElements(),
-                vectorSuperimposition.getMappedCandidate().get(2).getElements()));
+        assertVectorEquals(mappedCandidate.get(0), vectorSuperimposition.getMappedCandidate().get(0), 0.0);
+        assertVectorEquals(mappedCandidate.get(1), vectorSuperimposition.getMappedCandidate().get(1), 0.0);
+        assertVectorEquals(mappedCandidate.get(2), vectorSuperimposition.getMappedCandidate().get(2), 0.0);
     }
 }

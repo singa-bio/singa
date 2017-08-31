@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntity;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 
 import java.util.ArrayList;
@@ -16,8 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class represents any {@link de.bioforscher.singa.chemistry.physical.model.StructuralEntity} in a pdb format,
- * ready to be written to a file.
+ * This class represents any {@link StructuralEntity} in a pdb format, ready to be written to a file.
  *
  * @author sb
  */
@@ -38,8 +38,6 @@ public class StructureRepresentation {
      */
     private final List<LeafSubstructure<?, ?>> nonConsecutiveLeafs;
 
-    private List<StructureRepresentation> innerRepresentations;
-
     /**
      * Creates a representation of the given chain. For multiple chains, use the {@link StructuralModel} to encapsulate
      * them.
@@ -53,6 +51,12 @@ public class StructureRepresentation {
         this.nonConsecutiveLeafs = chain.getNonConsecutivePart();
     }
 
+    /**
+     * Creates a pdb representation of the given structure.
+     *
+     * @param structure The structure.
+     * @return The string representing the structure in pdb format.
+     */
     public static String composePdbRepresentaiton(Structure structure) {
         StringBuilder sb = new StringBuilder();
         // add preamble
@@ -76,6 +80,11 @@ public class StructureRepresentation {
         return sb.toString();
     }
 
+    /**
+     * Creates a pdb representation of the given structure.
+     * @param leaves The leaves.
+     * @return The string representing the structure in pdb format.
+     */
     public static String composePdbRepresentaiton(List<LeafSubstructure<?, ?>> leaves) {
         StringBuilder sb = new StringBuilder();
         LeafSubstructure<?, ?> first = leaves.iterator().next();
@@ -88,6 +97,11 @@ public class StructureRepresentation {
         return sb.toString();
     }
 
+    /**
+     * Adds all chains in the model to the given string builder.
+     * @param sb The string builder to append to.
+     * @param structuralModel The model to be appended.
+     */
     private static void appendChainRepresentations(StringBuilder sb, StructuralModel structuralModel) {
         // create chain representations
         List<StructureRepresentation> chainRepresentations = structuralModel.getAllChains().stream()
