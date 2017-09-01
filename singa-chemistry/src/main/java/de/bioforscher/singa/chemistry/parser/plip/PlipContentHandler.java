@@ -381,11 +381,11 @@ public class PlipContentHandler implements ContentHandler {
         }
         // TODO sometimes there are impossible leaf indices
         if (this.firstLeafSerial.length() > 9 || this.firstLeafSerial.equals("NA")) {
-            logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
             return;
         }
         if (this.secondLeafSerial.length() > 9 || this.secondLeafSerial.equals("NA")) {
-            logger.warn("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
             return;
         }
         // generate identifiers
