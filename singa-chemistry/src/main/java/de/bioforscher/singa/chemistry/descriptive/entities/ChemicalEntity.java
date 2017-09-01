@@ -197,6 +197,11 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
             return this.builderObject;
         }
 
+        public BuilderType assignFeature(Class<? extends Feature> feature) {
+            this.topLevelObject.setFeature(feature);
+            return this.builderObject;
+        }
+
         public BuilderType additionalIdentifier(Identifier identifier) {
             this.topLevelObject.addAdditionalIdentifier(identifier);
             return this.builderObject;

@@ -53,9 +53,8 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public void nextEpoch() {
         // apply all modules
-        boolean timeStepChanged = this.harmonizer.determineHarmonicTimeStep();
+        boolean timeStepChanged = this.harmonizer.step();
         // apply generated deltas
-
         for (BioNode node : this.getGraph().getNodes()) {
             node.applyDeltas();
             if (node.isObserved()) {

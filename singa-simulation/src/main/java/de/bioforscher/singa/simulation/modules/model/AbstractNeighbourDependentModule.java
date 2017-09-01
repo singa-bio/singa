@@ -132,7 +132,6 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         for (BioNode node : graph.getNodes()) {
             if (this.conditionalApplication.test(node)) {
                 this.currentNode = node;
-                node.clearPotentialDeltas();
                 determineFullDeltas(node.getConcentrations());
             }
         }

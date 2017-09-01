@@ -17,7 +17,8 @@ public class TimeStepHarmonizer {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
 
-    private static final double epsilon = 0.01;
+    private static double epsilon = 0.01;
+    private static double tolerance = 0.005;
 
     private Simulation simulation;
     private Quantity<Time> currentTimeStep;
@@ -32,31 +33,37 @@ public class TimeStepHarmonizer {
         this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
-    public boolean determineHarmonicTimeStep() {
-        this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+    public boolean step() {
+        // TODO optimize the number of times the parameters have to be rescaled (only of time step has changed)
+        // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
         this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
         rescaleParameters();
         // request local error for each module
         executeAllModules();
         // optimize simulation for the largest local error
-        optimizeTimeStep();
-        // if time step changed
-        if (this.timeStepChanged) {
-            // clear previously assigned deltas
-            for (BioNode bioNode : this.simulation.getGraph().getNodes()) {
-                bioNode.clearPotentialDeltas();
+        System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
+        do {
+            optimizeTimeStep();
+            // if time step changed
+            if (this.timeStepChanged) {
+                // clear previously assigned deltas
+                for (BioNode bioNode : this.simulation.getGraph().getNodes()) {
+                    bioNode.clearPotentialDeltas();
+                }
+                // update deltas
+                executeAllModules();
             }
-            // update deltas
-            executeAllModules();
-        }
+            System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
+        } while (largestLocalError.getValue() > epsilon);
         // shift potential deltas to true deltas
         finalizeDeltas();
-        // logger.info("finalized time step {}.", currentTimeStep);
+
         return this.timeStepChanged;
     }
 
     private void executeAllModules() {
+        this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : this.simulation.getModules()) {
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
@@ -83,7 +90,7 @@ public class TimeStepHarmonizer {
     private void optimizeTimeStep() {
         double localError = largestLocalError.getValue();
         this.timeStepChanged = false;
-        boolean errorIsTooLarge = evaluateLocalError(largestLocalError.getValue());
+        boolean errorIsTooLarge = tryToDecreaseTimeStep(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
             this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
@@ -92,7 +99,7 @@ public class TimeStepHarmonizer {
             // logger.info("Current local error is {}",localError);
             this.criticalModule.resetLargestLocalError();
             // evaluate error by increasing or decreasing time step
-            errorIsTooLarge = evaluateLocalError(localError);
+            errorIsTooLarge = tryToDecreaseTimeStep(localError);
         }
         logger.debug("Optimized local error was {}.", localError);
     }
@@ -120,7 +127,7 @@ public class TimeStepHarmonizer {
         rescaleParameters();
     }
 
-    private boolean evaluateLocalError(double localError) {
+    private boolean tryToDecreaseTimeStep(double localError) {
         // determine whether to increase or reduce time step size
         if (localError > epsilon) {
             decreaseTimeStep();
@@ -129,6 +136,5 @@ public class TimeStepHarmonizer {
         }
         return false;
     }
-
 
 }

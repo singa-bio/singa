@@ -103,7 +103,6 @@ public abstract class AbstractNeighbourIndependentModule implements Module {
 
     public LocalError determineDeltasForNode(BioNode node) {
         this.currentNode = node;
-        node.clearPotentialDeltas();
         ConcentrationContainer fullConcentrations = node.getConcentrations();
         this.currentHalfConcentrations = fullConcentrations.copy();
         return determineDeltas(fullConcentrations);
