@@ -10,6 +10,25 @@ Everything is under constant development, currently many sections are unfinished
 * readability is more important than performance
 * have a minimal number of external dependencies
 
+## Quick start
+SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/de.bioforscher.singa). Simply add the desired modules to your ```pom.xml```:
+
+```
+<dependencies>
+    <dependency>
+        <groupId>de.bioforscher.singa</groupId>
+        <artifactId>singa-core</artifactId>
+        <version>0.2.1</version>
+    </dependency>
+    <dependency>
+        <groupId>de.bioforscher.singa</groupId>
+        <artifactId>singa-chemistry</artifactId>
+        <version>0.2.1</version>
+    </dependency>
+    <!-- more dependencies -->
+</dependencies>
+```
+
 ## Current structure
 SiNGA is currently divided into six modules intended for different areas of application. The sections listed in the following part are less likely to change, so some of the packages you might want to use are:
 
