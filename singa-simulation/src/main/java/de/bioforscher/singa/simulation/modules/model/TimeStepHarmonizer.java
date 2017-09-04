@@ -42,7 +42,7 @@ public class TimeStepHarmonizer {
         // request local error for each module
         executeAllModules();
         // optimize simulation for the largest local error
-        System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
+        // System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
         do {
             optimizeTimeStep();
             // if time step changed
@@ -54,7 +54,7 @@ public class TimeStepHarmonizer {
                 // update deltas
                 executeAllModules();
             }
-            System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
+            // System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
         } while (largestLocalError.getValue() > epsilon);
         // shift potential deltas to true deltas
         finalizeDeltas();

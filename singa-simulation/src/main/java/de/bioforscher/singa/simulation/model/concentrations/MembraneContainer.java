@@ -47,10 +47,10 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        Quantity<MolarConcentration> concentrationSum = this.outerPhase.get(chemicalEntity);
-        concentrationSum = concentrationSum.add(this.innerPhase.get(chemicalEntity));
-        concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity));
-        concentrationSum = concentrationSum.add(this.innerLayer.get(chemicalEntity));
+        Quantity<MolarConcentration> concentrationSum = getAvailableConcentration(outerPhaseSection, chemicalEntity);
+        concentrationSum = concentrationSum.add(getAvailableConcentration(innerPhaseSection,chemicalEntity));
+        concentrationSum = concentrationSum.add(getAvailableConcentration(membrane.getInnerLayer(),chemicalEntity));
+        concentrationSum = concentrationSum.add(getAvailableConcentration(membrane.getOuterLayer(),chemicalEntity));
         return concentrationSum.divide(4.0);
     }
 

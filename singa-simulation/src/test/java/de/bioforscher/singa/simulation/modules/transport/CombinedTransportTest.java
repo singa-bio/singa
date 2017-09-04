@@ -44,7 +44,7 @@ public class CombinedTransportTest {
         GridCoordinateConverter gcc = new GridCoordinateConverter(40, 30);
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
-                40, 30, boundingBox, false));
+                30, 40, boundingBox, false));
         // create compartments and membrane
         EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
         EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");

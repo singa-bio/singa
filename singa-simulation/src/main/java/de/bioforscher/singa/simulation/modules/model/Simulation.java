@@ -57,9 +57,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         // apply generated deltas
         for (BioNode node : this.getGraph().getNodes()) {
             node.applyDeltas();
-            if (node.isObserved()) {
-                this.emitNextEpochEvent(node);
-            }
+//            if (node.isObserved()) {
+//                this.emitNextEpochEvent(node);
+//            }
         }
         // update epoch and elapsed time
         updateEpoch();
@@ -134,7 +134,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.listeners.add(writer);
     }
 
-    private void emitNextEpochEvent(BioNode node) {
+    public void emitNextEpochEvent(BioNode node) {
         NodeUpdatedEvent event = new NodeUpdatedEvent(this.elapsedTime, node);
         emitEvent(event);
     }

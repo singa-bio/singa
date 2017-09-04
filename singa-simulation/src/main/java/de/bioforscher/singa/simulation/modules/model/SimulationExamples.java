@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
@@ -16,6 +17,8 @@ import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.BioEdge;
@@ -255,9 +258,13 @@ public class SimulationExamples {
 
         // get required species
         Species methanol = ChEBIParserService.parse("CHEBI:17790");
+        methanol.setFeature(Diffusivity.class);
         Species ethyleneGlycol = ChEBIParserService.parse("CHEBI:30742");
+        ethyleneGlycol.setFeature(Diffusivity.class);
         Species valine = ChEBIParserService.parse("CHEBI:27266");
+        valine.setFeature(Diffusivity.class);
         Species sucrose = ChEBIParserService.parse("CHEBI:17992");
+        sucrose.setFeature(Diffusivity.class);
 
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
@@ -522,6 +529,55 @@ public class SimulationExamples {
         simulation.getModules().add(new PassiveMembraneTransport(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(allSpecies);
+        return simulation;
+    }
+
+    public static Simulation createDiffusionAndMembraneTransportExample() {
+        Species domperidone = new Species.Builder("CHEBI:31515")
+                .name("domperidone")
+                .assignFeature(Diffusivity.class)
+                .assignFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED))
+                .assignFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED))
+                .assignFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED))
+                .build();
+
+        Simulation simulation = new Simulation();
+        GridCoordinateConverter gcc = new GridCoordinateConverter(40, 30);
+        // setup rectangular graph with number of nodes
+        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+                30, 40, defaultBoundingBox, false));
+        // create compartments and membrane
+        EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
+        EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
+        Membrane membrane = Membrane.forCompartment(inner);
+        // initialize species in graph with desired concentration
+        for (BioNode node : graph.getNodes()) {
+            Vector2D coordinate = gcc.convert(node.getIdentifier());
+            if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
+                    (coordinate.getX() == 37 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
+                    (coordinate.getY() == 2 && coordinate.getX() > 1 && coordinate.getX() < 38) ||
+                    (coordinate.getY() == 27 && coordinate.getX() > 1 && coordinate.getX() < 38)) {
+                // setup membrane
+                node.setCellSection(membrane);
+                node.setConcentrations(new MembraneContainer(outer, inner, membrane));
+                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+            } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 37 && coordinate.getY() < 27) {
+                node.setCellSection(inner);
+                node.setConcentration(domperidone, 0.0);
+            } else {
+                node.setCellSection(outer);
+                node.setConcentration(domperidone, 1.0);
+            }
+        }
+
+        simulation.setGraph(graph);
+
+        FreeDiffusion diffusion = new FreeDiffusion(simulation);
+        PassiveMembraneTransport membraneTransport = new PassiveMembraneTransport(simulation);
+
+        simulation.getModules().add(diffusion);
+        simulation.getModules().add(membraneTransport);
+
         return simulation;
     }
 

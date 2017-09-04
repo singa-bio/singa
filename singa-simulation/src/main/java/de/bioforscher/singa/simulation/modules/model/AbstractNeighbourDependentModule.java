@@ -208,6 +208,10 @@ public abstract class AbstractNeighbourDependentModule implements Module {
     }
 
     private void examineLocalError() {
+        // no deltas mean this module did not change anything in the course of this simulation step
+        if (currentFullDeltas.isEmpty()) {
+            return;
+        }
         double largestLocalError = -Double.MAX_VALUE;
         DeltaIdentifier largestIdentifier = null;
         for (DeltaIdentifier identifier : this.currentFullDeltas.keySet()) {
