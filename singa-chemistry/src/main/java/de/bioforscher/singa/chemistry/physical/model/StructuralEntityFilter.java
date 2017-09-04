@@ -162,6 +162,14 @@ public class StructuralEntityFilter {
             return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
         }
 
+        public static Predicate<Atom> hasAtomNames(String... atomNames) {
+            Predicate<Atom> predicate = atom -> false;
+            for (String atomName : atomNames) {
+                predicate = predicate.or(hasAtomName(atomName));
+            }
+            return predicate;
+        }
+
         public static Predicate<Atom> hasIdentifier(int identifier) {
             return atom -> atom.getIdentifier() == identifier;
         }
