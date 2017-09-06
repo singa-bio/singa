@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -107,4 +108,24 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
         return Optional.empty();
     }
 
+    @Override
+    public GenericGraph<ContentType> getCopy() {
+        // create a new graph
+       GenericGraph<ContentType> graphCopy = new GenericGraph<>();
+        // copy and add nodes
+        Collection<GenericNode<ContentType>> nodes = getNodes();
+        for (GenericNode<ContentType> node : nodes) {
+            // remember copy does not copy neighbours
+            GenericNode<ContentType> nodeCopy = node.getCopy();
+            graphCopy.addNode(nodeCopy);
+        }
+        // create and add edges for the nodes (preserving edge identifier)
+       Collection<GenericEdge<ContentType>> edges = getEdges();
+        for (GenericEdge<ContentType> edge : edges) {
+            GenericNode<ContentType> source = graphCopy.getNode(edge.getSource().getIdentifier());
+            GenericNode<ContentType> target = graphCopy.getNode(edge.getTarget().getIdentifier());
+            graphCopy.addEdgeBetween(edge.getIdentifier(), source, target);
+        }
+        return graphCopy;
+    }
 }

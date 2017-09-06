@@ -1,7 +1,6 @@
-package de.bioforscher.singa.mathematics.graphs;
+package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Assert;
 import org.junit.Before;

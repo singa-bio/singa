@@ -25,7 +25,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
 
 /**
  * Structure represents chemical objects in a three dimensional space. Substructures are used to partition a structure
- * into smaller branchSubstructures that can be connected with edges.
+ * into smaller substructures that can be connected with edges.
  */
 public class Structure {
 
