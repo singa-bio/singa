@@ -214,7 +214,7 @@ public class InteractionContainer {
                 return;
             } else {
                 if (uncertainInteraction) {
-                    logger.warn("Skipping: {}", interaction);
+                    logger.debug("Skipping uncertain interaction: {}", interaction);
                 } else {
                     logger.trace("Skipping: {}", interaction);
                 }
