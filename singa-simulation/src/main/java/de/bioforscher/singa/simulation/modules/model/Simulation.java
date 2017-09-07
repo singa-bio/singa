@@ -57,9 +57,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         // apply generated deltas
         for (BioNode node : this.getGraph().getNodes()) {
             node.applyDeltas();
-//            if (node.isObserved()) {
-//                this.emitNextEpochEvent(node);
-//            }
         }
         // update epoch and elapsed time
         updateEpoch();

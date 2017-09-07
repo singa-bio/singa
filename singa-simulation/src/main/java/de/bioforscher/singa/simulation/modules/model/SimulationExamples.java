@@ -542,10 +542,10 @@ public class SimulationExamples {
                 .build();
 
         Simulation simulation = new Simulation();
-        GridCoordinateConverter gcc = new GridCoordinateConverter(40, 30);
+        GridCoordinateConverter gcc = new GridCoordinateConverter(30, 20);
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
-                30, 40, defaultBoundingBox, false));
+                20, 30, defaultBoundingBox, false));
         // create compartments and membrane
         EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
         EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
@@ -553,15 +553,15 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration
         for (BioNode node : graph.getNodes()) {
             Vector2D coordinate = gcc.convert(node.getIdentifier());
-            if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
-                    (coordinate.getX() == 37 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
-                    (coordinate.getY() == 2 && coordinate.getX() > 1 && coordinate.getX() < 38) ||
-                    (coordinate.getY() == 27 && coordinate.getX() > 1 && coordinate.getX() < 38)) {
+            if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
+                    (coordinate.getX() == 27 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
+                    (coordinate.getY() == 2 && coordinate.getX() > 1 && coordinate.getX() < 28) ||
+                    (coordinate.getY() == 17 && coordinate.getX() > 1 && coordinate.getX() < 28)) {
                 // setup membrane
                 node.setCellSection(membrane);
                 node.setConcentrations(new MembraneContainer(outer, inner, membrane));
                 node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-            } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 37 && coordinate.getY() < 27) {
+            } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 27 && coordinate.getY() < 17) {
                 node.setCellSection(inner);
                 node.setConcentration(domperidone, 0.0);
             } else {
