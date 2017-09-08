@@ -36,7 +36,7 @@ public class StructureParserTest {
 
     @BeforeClass
     public static void parseResiduesWithModifiedAminoAcids() {
-        cyanase= StructureParser.online()
+        cyanase = StructureParser.online()
                 .pdbIdentifier("1DW9")
                 .parse();
     }

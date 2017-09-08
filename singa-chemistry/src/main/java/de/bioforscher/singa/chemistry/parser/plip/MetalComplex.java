@@ -95,13 +95,15 @@ public class MetalComplex extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return atom1;
+        return atom2;
     }
+    // take care here source is the metal ion
 
     @Override
     public int getFirstTargetAtom() {
-        return atom2;
+        return atom1;
     }
+    // and target is the partner
 
     @Override
     public String toString() {

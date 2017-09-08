@@ -1,6 +1,8 @@
 package de.bioforscher.singa.chemistry.parser.plip;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.branches.Chain;
+import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
@@ -9,10 +11,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,11 +29,14 @@ public class InteractionContainer {
      */
     private List<Interaction> interactions;
 
+    private List<Interaction> ligandInteractions;
+
     /**
      * Creates a new empty interaction container.
      */
     public InteractionContainer() {
         this.interactions = new ArrayList<>();
+        this.ligandInteractions = new ArrayList<>();
     }
 
     /**
@@ -84,6 +86,10 @@ public class InteractionContainer {
      */
     public List<Interaction> getInteractions() {
         return interactions;
+    }
+
+    public List<Interaction> getLigandInteractions() {
+        return ligandInteractions;
     }
 
     /**
@@ -154,26 +160,27 @@ public class InteractionContainer {
                             logger.trace("Present : {}", presentInteraction);
                         }
                     } else if (interaction instanceof SaltBridge) {
-                        final SaltBridge iPresent = (SaltBridge) presentInteraction;
-                        final SaltBridge iNew = (SaltBridge) interaction;
-                        if (atomsOverlap(iPresent.getAtoms2(), iNew.getAtoms2())) {
-                            logger.info("The salt bridge (id {}) has overlapping atoms with salt bridge {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
-                            logger.info("Present : {}", presentInteraction);
-                            uncertainInteraction = true;
-                            symmetricEntriesFound = true;
-                            break;
-                        } else {
-                            if (!iPresent.getAtoms1().isEmpty()) {
-                                logger.info("Tried to merge salt bridge (id {}) with salt bridge (id {}) but atoms are already present");
-                                uncertainInteraction = true;
-                            } else {
-                                logger.trace("Merging salt bridge (id {}) with salt bridge (id {}).", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
-                                iPresent.mergeWith(iNew);
-                                logger.trace("Updated : {}", presentInteraction);
-                            }
-                            symmetricEntriesFound = true;
-                            break;
-                        }
+                        // don't merge salt bridges until it is clear when to do this
+//                        final SaltBridge iPresent = (SaltBridge) presentInteraction;
+//                        final SaltBridge iNew = (SaltBridge) interaction;
+//                        if (atomsOverlap(iPresent.getAtoms2(), iNew.getAtoms2())) {
+//                            logger.info("The salt bridge (id {}) has overlapping atoms with salt bridge {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
+//                            logger.info("Present : {}", presentInteraction);
+//                            uncertainInteraction = true;
+//                            symmetricEntriesFound = true;
+//                            break;
+//                        } else {
+//                            if (!iPresent.getAtoms1().isEmpty()) {
+//                                logger.info("Tried to merge salt bridge (id {}) with salt bridge (id {}) but atoms are already present");
+//                                uncertainInteraction = true;
+//                            } else {
+//                                logger.trace("Merging salt bridge (id {}) with salt bridge (id {}).", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
+//                                iPresent.mergeWith(iNew);
+//                                logger.trace("Updated : {}", presentInteraction);
+//                            }
+//                            symmetricEntriesFound = true;
+//                            break;
+//                        }
                     } else if (interaction instanceof PiStacking) {
                         final PiStacking iPresent = (PiStacking) presentInteraction;
                         final PiStacking iNew = (PiStacking) interaction;
@@ -238,40 +245,96 @@ public class InteractionContainer {
 
     public void validateWithStructure(Structure structure) {
 
-        for (Interaction interaction : interactions) {
+        ListIterator<Interaction> interactionListIterator = interactions.listIterator();
 
+        while (interactionListIterator.hasNext()) {
+            Interaction interaction = interactionListIterator.next();
+            boolean sourceIsLigand = false;
+            boolean targetIsLigand = false;
+            // handle insertion codes for source
             LeafIdentifier source = interaction.getSource();
-            if (!structure.getLeaf(source).isPresent()) {
+            Optional<LeafSubstructure<?, ?>> optionalSourceLeaf = structure.getLeaf(source);
+            if (!optionalSourceLeaf.isPresent()) {
+                // source could not be retrieved
                 logger.debug("Bad leaf reference for source {} in {}.", source, interaction);
-                Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomEntry = structure.getAtom(interaction.getFirstSourceAtom());
-                if (atomEntry.isPresent()) {
-                    UniqueAtomIdentifer atomIdentifer = atomEntry.get().getKey();
-                    LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
-                            atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
-                    logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
-                    interaction.setSource(leafIdentifier);
-                } else {
-                    logger.warn("Unable to fix {}.", interaction);
-                }
+                fixBrokenSourceIdentifier(interaction, structure);
+            } else {
+                LeafSubstructure<?, ?> leafSubstructure = optionalSourceLeaf.get();
+                // in order to be classified as an ligand you should belong to the ligand family
+                // and be in the non-consecutive part of the chain
+                sourceIsLigand = determineLigandInteraction(leafSubstructure, structure);
             }
 
+            // handle insertion codes for target
             LeafIdentifier target = interaction.getTarget();
-            if (!structure.getLeaf(target).isPresent()) {
+            Optional<LeafSubstructure<?, ?>> optionalTargetLeaf = structure.getLeaf(target);
+            if (!optionalTargetLeaf.isPresent()) {
+                // target could not be retrieved
                 logger.debug("Bad leaf reference for target {} in {}.", target, interaction);
-                Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atomEntry = structure.getAtom(interaction.getFirstTargetAtom());
-                if (atomEntry.isPresent()) {
-                    UniqueAtomIdentifer atomIdentifer = atomEntry.get().getKey();
-                    LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
-                            atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
-                    logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
-                    interaction.setTarget(leafIdentifier);
-                } else {
-                    logger.warn("Unable to fix {}.", interaction);
-                }
+                // try to retrieve first referenced atom
+                fixBrokenTargetIdentifier(interaction, structure);
+            } else {
+                LeafSubstructure<?, ?> leafSubstructure = optionalTargetLeaf.get();
+                // in order to be classified as an ligand you should belong to the ligand family
+                // and be in the non-consecutive part of the chain
+                targetIsLigand = determineLigandInteraction(leafSubstructure, structure);
             }
+
+            if (targetIsLigand || sourceIsLigand) {
+                ligandInteractions.add(interaction);
+                interactionListIterator.remove();
+            }
+
         }
 
     }
+
+    private void fixBrokenSourceIdentifier(Interaction interaction, Structure structure) {
+        // try to retrieve first referenced atom
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getAtom(interaction.getFirstSourceAtom());
+        if (sourceEntry.isPresent()) {
+            // use the atom identifier to remap leaf
+            UniqueAtomIdentifer atomIdentifer = sourceEntry.get().getKey();
+            LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
+                    atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+            logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
+            interaction.setSource(leafIdentifier);
+        } else {
+            logger.warn("Unable to fix {}.", interaction);
+        }
+    }
+
+    private void fixBrokenTargetIdentifier(Interaction interaction, Structure structure) {
+        // try to retrieve first referenced atom
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> targetEntry = structure.getAtom(interaction.getFirstTargetAtom());
+        if (targetEntry.isPresent()) {
+            // use the atom identifier to remap leaf
+            UniqueAtomIdentifer atomIdentifer = targetEntry.get().getKey();
+            LeafIdentifier leafIdentifier = new LeafIdentifier(atomIdentifer.getPdbIdentifier(), atomIdentifer.getModelIdentifier(),
+                    atomIdentifer.getChainIdentifier(), atomIdentifer.getLeafSerial(), atomIdentifer.getLeafInsertionCode());
+            logger.debug("Fixed to leaf identifier {}.", leafIdentifier);
+            interaction.setTarget(leafIdentifier);
+        } else {
+            logger.warn("Unable to fix {}.", interaction);
+        }
+    }
+
+    private boolean determineLigandInteraction(LeafSubstructure<?, ?> leafSubstructure, Structure structure) {
+        if (leafSubstructure.getFamily() instanceof LigandFamily) {
+            Optional<Chain> optionalChain = structure.getChain(leafSubstructure.getIdentifier().getChainIdentifier());
+            if (optionalChain.isPresent()) {
+                Chain chain = optionalChain.get();
+                if (!chain.getConsecutivePart().contains(leafSubstructure)) {
+                    logger.debug("{} is an interaction to a ligand", leafSubstructure);
+                    return true;
+                } else {
+                    logger.debug("{} seems to be a ligand but is in the consecutive part of the chain", leafSubstructure);
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Tests if two pairs of {@link LeafIdentifier}s contain the same entries. This method considers source and target

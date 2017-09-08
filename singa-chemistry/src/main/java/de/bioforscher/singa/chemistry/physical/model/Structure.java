@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
-import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isModel;
+import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.BranchFilter.*;
 
 /**
  * Structure represents chemical objects in a three dimensional space. Substructures are used to partition a structure
@@ -188,10 +187,18 @@ public class Structure {
      * @return An {@link Optional} encapsulating the first {@link Chain} found.
      */
     public Optional<Chain> getFirstChain() {
-        return getAllBranches().stream()
-                .filter(isChain())
-                .map(Chain.class::cast)
-                .findFirst();
+        return getFirstModel().get().getFirstChain();
+    }
+
+    /**
+     * Returns an {@link Optional} of the {@link Chain} with the given identifier from the first model in the structure.
+     *
+     * @return An {@link Optional} encapsulating the {@link Chain} found.
+     */
+    public Optional<Chain> getChain(String chainIdentifier) {
+        return getFirstModel().get().getAllChains().stream()
+                .filter(hasIdentifier(chainIdentifier))
+                .findAny();
     }
 
     /**
