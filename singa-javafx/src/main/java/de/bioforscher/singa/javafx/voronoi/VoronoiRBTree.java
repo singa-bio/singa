@@ -1,13 +1,14 @@
 package de.bioforscher.singa.javafx.voronoi;
 
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.javafx.voronoi.representation.Edge;
 
 /**
  * Some kind of RB Tree
  */
 public class VoronoiRBTree {
 
-    private Vector2D site;
+    private Site site;
+    private Edge edge;
     private VoronoiRBTree circleEvent;
 
     private VoronoiRBTree root;
@@ -26,7 +27,7 @@ public class VoronoiRBTree {
 
     }
 
-    public VoronoiRBTree(Vector2D site) {
+    public VoronoiRBTree(Site site) {
         this.site = site;
     }
 
@@ -60,7 +61,7 @@ public class VoronoiRBTree {
             successor.rbNext = node;
             node.rbPrevious = successor;
             // add successor
-            node.rbRight = successor;
+            node.rbLeft = successor;
             parent = node;
         } else {
             successor.rbPrevious = null;
@@ -70,7 +71,9 @@ public class VoronoiRBTree {
         }
         successor.rbLeft = null;
         successor.rbRight = null;
+        successor.rbParent = parent;
         successor.rbRed = true;
+
         // Fixup the modified tree by recoloring nodes and performing
         // rotations (2 at most) hence the red-black tree properties are
         // preserved.
@@ -134,7 +137,7 @@ public class VoronoiRBTree {
         VoronoiRBTree parent = node.rbParent;
         VoronoiRBTree left = node.rbLeft;
         VoronoiRBTree right = node.rbRight;
-        VoronoiRBTree next = null;
+        VoronoiRBTree next;
 
         if (left == null) {
             next = right;
@@ -155,7 +158,7 @@ public class VoronoiRBTree {
         }
 
         // force red-black rules
-        boolean isRed = false;
+        boolean isRed;
         if (left != null && right != null) {
             isRed = next.rbRed;
             next.rbRed = node.rbRed;
@@ -323,7 +326,7 @@ public class VoronoiRBTree {
         this.root = root;
     }
 
-    public Vector2D getSite() {
+    public Site getSite() {
         return this.site;
     }
 
@@ -359,7 +362,7 @@ public class VoronoiRBTree {
         return this.rbPrevious;
     }
 
-    public void setSite(Vector2D site) {
+    public void setSite(Site site) {
         this.site = site;
     }
 
@@ -427,5 +430,11 @@ public class VoronoiRBTree {
         this.yCenter = yCenter;
     }
 
+    public Edge getEdge() {
+        return this.edge;
+    }
 
+    public void setEdge(Edge edge) {
+        this.edge = edge;
+    }
 }

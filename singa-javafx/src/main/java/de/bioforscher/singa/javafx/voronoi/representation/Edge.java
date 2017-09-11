@@ -1,56 +1,54 @@
 package de.bioforscher.singa.javafx.voronoi.representation;
 
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
-/**
- * Created by Christoph on 20/05/2017.
- */
+import de.bioforscher.singa.javafx.voronoi.Site;
+
 public class Edge {
 
-    private Vector2D lSite;
-    private Vector2D rSite;
+    private Site lSite;
+    private Site rSite;
 
-    private Vector2D va;
-    private Vector2D vb;
+    private Site va;
+    private Site vb;
 
-    public Edge(Vector2D lSite, Vector2D rSite) {
+    public Edge(Site lSite, Site rSite) {
         this.lSite = lSite;
         this.rSite = rSite;
     }
 
-    public Vector2D getlSite() {
+    public Site getlSite() {
         return this.lSite;
     }
 
-    public void setlSite(Vector2D lSite) {
+    public void setlSite(Site lSite) {
         this.lSite = lSite;
     }
 
-    public Vector2D getrSite() {
+    public Site getrSite() {
         return this.rSite;
     }
 
-    public void setrSite(Vector2D rSite) {
+    public void setrSite(Site rSite) {
         this.rSite = rSite;
     }
 
-    public Vector2D getVa() {
+    public Site getVa() {
         return this.va;
     }
 
-    public void setVa(Vector2D va) {
+    public void setVa(Site va) {
         this.va = va;
     }
 
-    public Vector2D getVb() {
+    public Site getVb() {
         return this.vb;
     }
 
-    public void setVb(Vector2D vb) {
+    public void setVb(Site vb) {
         this.vb = vb;
     }
 
-    public void setEdgeStartPoint(Vector2D lSite, Vector2D rSite, Vector2D vertex) {
+    public void setEdgeStartPoint(Site lSite, Site rSite, Site vertex) {
         if (this.va == null && this.vb == null) {
             this.va = vertex;
             this.lSite = lSite;
@@ -62,9 +60,18 @@ public class Edge {
         }
     }
 
-    public void setEdgeEndPoint(Vector2D lSite, Vector2D rSite, Vector2D vertex) {
+    public void setEdgeEndPoint(Site lSite, Site rSite, Site vertex) {
         this.setEdgeStartPoint(rSite, lSite, vertex);
     }
 
 
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "lSite=" + this.lSite +
+                ", rSite=" + this.rSite +
+                ", va=" + this.va +
+                ", vb=" + this.vb +
+                '}';
+    }
 }

@@ -1,13 +1,12 @@
 package de.bioforscher.singa.javafx.voronoi;
 
+import de.bioforscher.singa.javafx.voronoi.representation.Diagram;
+import de.bioforscher.singa.javafx.voronoi.representation.Edge;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.LinkedList;
 
-/**
- * Created by Christoph on 23/04/2017.
- */
+
 public class BeachLine {
 
     private static final double epsilon = 1E-9;
@@ -17,12 +16,15 @@ public class BeachLine {
 
     private VoronoiRBTree firstCircleEvent;
 
+    private Diagram diagram;
+
     public BeachLine() {
+        this.diagram = new Diagram();
         this.beachline = new VoronoiRBTree();
         this.circleEvents = new VoronoiRBTree();
     }
 
-    public void addBeachSection(Vector2D site) {
+    public void addBeachSection(Site site) {
 
         double x = site.getX();
         double directrix = site.getY();
@@ -99,7 +101,9 @@ public class BeachLine {
             this.beachline.insertSuccessor(newArc, rArc);
 
             // create Edge
-            // newArc.edge = rArc.edge = this.createEdge(lArc.site, newArc.site);
+            Edge edge = this.diagram.createEdge(lArc.getSite(), newArc.getSite());
+            newArc.setEdge(edge);
+            rArc.setEdge(edge);
 
             // check whether the left and right beach sections are collapsing and if so create circle events
             attachCircleEvent(lArc);
@@ -117,7 +121,7 @@ public class BeachLine {
         //   new beach section become right-most node of the RB-tree
 
         if (lArc != null && rArc == null) {
-            // newArc.edge = this.createEdge(lArc.site,newArc.site);
+            newArc.setEdge(this.diagram.createEdge(lArc.getSite(), newArc.getSite()));
             return;
         }
 
@@ -131,7 +135,7 @@ public class BeachLine {
         //   two new transitions appear
         //   the left and right beach section might be collapsing as a result
         //   only one new node added to the RB-tree
-        if (lArc != null && rArc != null && lArc != rArc) {
+        if (lArc != null) {
             // invalidate circle events of left and right sites
             detachCircleEvent(lArc);
             detachCircleEvent(rArc);
@@ -142,24 +146,25 @@ public class BeachLine {
             // vertex is at the center of the circumscribed circle of the left,
             // new and right beach sections.
             // http://mathforum.org/library/drmath/view/55002.html
-            Vector2D lSite = lArc.getSite();
+            Site lSite = lArc.getSite();
             double ax = lSite.getX();
             double ay = lSite.getY();
             double bx = site.getX() - ax;
             double by = site.getY() - ay;
-            Vector2D rSite = rArc.getSite();
+            Site rSite = rArc.getSite();
             double cx = rSite.getX() - ax;
             double cy = rSite.getY() - ay;
             double d = 2 * (bx * cy - by * cx);
             double hb = bx * bx + by * by;
             double hc = cx * cx + cy * cy;
-            Vector2D vertex = new Vector2D((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
+            Site vertex = new Site(new Vector2D((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay));
 
             // one transition disappear
-            // this.setEdgeStartpoint(rArc.edge, lSite, rSite, vertex);
+            rArc.getEdge().setEdgeStartPoint(lSite, rSite, vertex);
+
             // two new transitions appear at the new vertex location
-            // newArc.edge = this.createEdge(lSite, site, undefined, vertex);
-            // rArc.edge = this.createEdge(site, rSite, undefined, vertex);
+            newArc.setEdge(this.diagram.createEdge(lSite, site, null, vertex));
+            rArc.setEdge(this.diagram.createEdge(site, rSite, null, vertex));
 
             // check whether the left and right beach sections are collapsing
             // and if so create circle events, to handle the point of collapse.
@@ -173,11 +178,11 @@ public class BeachLine {
         VoronoiRBTree circle = beachSection.getCircleEvent();
         double x = circle.getX();
         double y = circle.getyCenter();
-        Vector2D vertex = new Vector2D(x, y);
+        Site vertex = new Site(new Vector2D(x, y));
         VoronoiRBTree previous = beachSection.getRbPrevious();
         VoronoiRBTree next = beachSection.getRbNext();
 
-        Deque<VoronoiRBTree> disappearingTransitions = new ArrayDeque<>();
+        LinkedList<VoronoiRBTree> disappearingTransitions = new LinkedList<>();
         disappearingTransitions.push(beachSection);
 
         // remove collapsed beach section from beach line
@@ -229,12 +234,12 @@ public class BeachLine {
 
         // walk through all the disappearing transitions between beach sections and
         // set the start point of their (implied) edge.
-        // int nArcs = disappearingTransitions.size();
-        // for (int iArc = 1; iArc<nArcs; iArc++) {
-        //     rArc = disappearingTransitions[iArc];
-        //    lArc = disappearingTransitions[iArc-1];
-        //    this.setEdgeStartpoint(rArc.edge, lArc.site, rArc.site, vertex);
-        //}
+        int nArcs = disappearingTransitions.size();
+        for (int iArc = 1; iArc < nArcs; iArc++) {
+            rArc = disappearingTransitions.get(iArc);
+            lArc = disappearingTransitions.get(iArc - 1);
+            rArc.getEdge().setEdgeStartPoint(lArc.getSite(), rArc.getSite(), vertex);
+        }
 
         // create a new edge as we have now a new transition between
         // two beach sections which were previously not adjacent.
@@ -243,7 +248,7 @@ public class BeachLine {
         // on the left)
         lArc = disappearingTransitions.getFirst();
         rArc = disappearingTransitions.getLast();
-        // rArc.edge = this.createEdge(lArc.site, rArc.site, undefined, vertex);
+        rArc.setEdge(this.diagram.createEdge(lArc.getSite(), rArc.getSite(), null, vertex));
 
         // create circle events if any for beach sections left in the beachline
         // adjacent to collapsed sections
@@ -257,7 +262,7 @@ public class BeachLine {
     }
 
     private double leftBreakPoint(VoronoiRBTree node, double directrix) {
-        Vector2D site = node.getSite();
+        Site site = node.getSite();
         double rfocx = site.getX();
         double rfocy = site.getY();
         // distance or delta to the directrix
@@ -272,7 +277,7 @@ public class BeachLine {
         if (previousSection == null) {
             return Double.NEGATIVE_INFINITY;
         }
-        Vector2D leftSite = previousSection.getSite();
+        Site leftSite = previousSection.getSite();
         double lfocx = leftSite.getX();
         double lfocy = leftSite.getY();
         double plby2 = lfocy - directrix;
@@ -297,7 +302,7 @@ public class BeachLine {
         if (rArc != null) {
             return this.leftBreakPoint(rArc, directrix);
         }
-        Vector2D site = node.getSite();
+        Site site = node.getSite();
         return site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
     }
 
@@ -317,12 +322,13 @@ public class BeachLine {
         VoronoiRBTree rArc = arc.getRbNext();
 
         if (lArc == null || rArc == null) {
+            System.out.println("");
             return;
         }
 
-        Vector2D lSite = lArc.getSite();
-        Vector2D cSite = arc.getSite();
-        Vector2D rSite = rArc.getSite();
+        Site lSite = lArc.getSite();
+        Site cSite = arc.getSite();
+        Site rSite = rArc.getSite();
 
         // If site of left beachsection is same as site of
         // right beachsection, there can't be convergence
@@ -407,5 +413,13 @@ public class BeachLine {
 
     public VoronoiRBTree getFirstCircleEvent() {
         return this.firstCircleEvent;
+    }
+
+    public Diagram getDiagram() {
+        return this.diagram;
+    }
+
+    public void setDiagram(Diagram diagram) {
+        this.diagram = diagram;
     }
 }

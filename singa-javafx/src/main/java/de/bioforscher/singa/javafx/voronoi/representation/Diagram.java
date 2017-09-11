@@ -1,5 +1,6 @@
 package de.bioforscher.singa.javafx.voronoi.representation;
 
+import de.bioforscher.singa.javafx.voronoi.Site;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class Diagram {
 
-    private Map<Vector2D, Cell> cells;
+    private Map<Integer, Cell> cells;
     private List<Edge> edges;
     private List<Vector2D> vertices;
 
@@ -30,7 +31,7 @@ public class Diagram {
         this.edges = edges;
     }
 
-    public Edge createEdge(Vector2D lSite, Vector2D rSite, Vector2D va, Vector2D vb) {
+    public Edge createEdge(Site lSite, Site rSite, Site va, Site vb) {
         Edge edge = new Edge(lSite, rSite);
         this.edges.add(edge);
         if (va != null) {
@@ -39,12 +40,16 @@ public class Diagram {
         if (vb != null) {
             edge.setEdgeEndPoint(lSite, rSite, vb);
         }
-        this.cells.get(lSite).getHalfEdges().add(new HalfEdge(edge, lSite, rSite));
-        this.cells.get(rSite).getHalfEdges().add(new HalfEdge(edge, rSite, lSite));
+        this.cells.get(lSite.getVoronoiId()).getHalfEdges().add(new HalfEdge(edge, lSite, rSite));
+        this.cells.get(rSite.getVoronoiId()).getHalfEdges().add(new HalfEdge(edge, rSite, lSite));
         return edge;
     }
 
-    public Edge createBorderEdge(Vector2D lSite, Vector2D va, Vector2D vb) {
+    public Edge createEdge(Site lSite, Site rSite) {
+        return createEdge(lSite, rSite, null, null);
+    }
+
+    public Edge createBorderEdge(Site lSite, Site va, Site vb) {
         Edge edge = new Edge(lSite, null);
         edge.setVa(va);
         edge.setVb(vb);
@@ -65,6 +70,16 @@ public class Diagram {
         this.vertices.add(vertex);
         return vertex;
     }
+
+    public Cell createCell(int siteId, Site site) {
+        site.setVoronoiId(siteId);
+        Cell cell = new Cell(site);
+        this.cells.put(siteId, cell);
+        return cell;
+    }
+
+
+    public void clipEdges() {}
 
     // TODO continue with diagram completion methods
 

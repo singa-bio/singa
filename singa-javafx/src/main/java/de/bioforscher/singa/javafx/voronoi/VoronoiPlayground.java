@@ -40,6 +40,9 @@ public class VoronoiPlayground extends Application implements Renderer {
         // initialize voronoi diagram
         this.voronoiDiagram = new VoronoiDiagram(vectors, this.canvas);
 
+        getGraphicsContext().setLineWidth(5.0);
+        vectors.forEach(this::drawPoint);
+
         // setup root
         BorderPane root = new BorderPane();
         root.setCenter(this.canvas);
