@@ -76,7 +76,7 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
      * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeafIdentifiers(List<LeafSubstructure<?, ?>> leafSubstructures) {
+    public static StructuralMotif fromLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures) {
         return new StructuralMotif(generateMotifIdentifier(leafSubstructures), leafSubstructures);
     }
 

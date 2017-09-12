@@ -31,7 +31,7 @@ public class StructuralMotifsTest {
                 .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeafIdentifiers(motifStructure.getAllLeafSubstructures());
+        this.structuralMotif = StructuralMotif.fromLeafSubstructures(motifStructure.getAllLeafSubstructures());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class StructuralMotifsTest {
                         .fileLocation(path.toString())
                         .parse())
                 .map(Structure::getAllLeafSubstructures)
-                .map(StructuralMotif::fromLeafIdentifiers)
+                .map(StructuralMotif::fromLeafSubstructures)
                 .collect(Collectors.toList());
         assertEquals(StructuralMotifs.calculateRmsdMatrix(input, false).getRowDimension(), input.size());
     }
