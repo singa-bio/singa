@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeaves().forEach(this::addLeaf);
+        this.displayStructure.getAllLeafSubstructures().forEach(this::addLeafSubstructure);
         // edges in chains (backbone connections)
         this.displayStructure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world
@@ -152,7 +152,7 @@ public class StructureViewer extends Application {
 
     }
 
-    private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
+    private void addLeafSubstructure(LeafSubstructure<?, ?> leafSubstructure) {
         leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
         leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }

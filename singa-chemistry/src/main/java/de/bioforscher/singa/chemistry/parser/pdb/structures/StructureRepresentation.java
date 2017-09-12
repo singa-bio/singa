@@ -112,7 +112,7 @@ public class StructureRepresentation {
         for (StructureRepresentation chainRepresentation : chainRepresentations) {
             sb.append(chainRepresentation.getConsecutiveRepresentation())
                     .append(chainRepresentation.getTerminateRecord());
-            nonConsecutiveRecords.addAll(chainRepresentation.getNonConsecutiveLeafs());
+            nonConsecutiveRecords.addAll(chainRepresentation.getNonConsecutiveLeafSubstructures());
         }
         // append non non consecutive part
         sb.append(composePdbRepresentationOfNonConsecutiveRecords(nonConsecutiveRecords));
@@ -134,7 +134,7 @@ public class StructureRepresentation {
         for (StructureRepresentation chainRepresentation : chainRepresentations) {
             stringBuilder.append(chainRepresentation.getConsecutiveRepresentation())
                     .append(chainRepresentation.getTerminateRecord());
-            nonConsecutiveRecords.addAll(chainRepresentation.getNonConsecutiveLeafs());
+            nonConsecutiveRecords.addAll(chainRepresentation.getNonConsecutiveLeafSubstructures());
         }
 
         stringBuilder.append(composePdbRepresentationOfNonConsecutiveRecords(nonConsecutiveRecords));
@@ -197,7 +197,7 @@ public class StructureRepresentation {
      *
      * @return The actual leaves of the nonconsecutive part.
      */
-    private List<LeafSubstructure<?, ?>> getNonConsecutiveLeafs() {
+    private List<LeafSubstructure<?, ?>> getNonConsecutiveLeafSubstructures() {
         return nonConsecutiveLeafs;
     }
 

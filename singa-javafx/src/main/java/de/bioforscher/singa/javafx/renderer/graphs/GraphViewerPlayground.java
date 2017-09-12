@@ -29,7 +29,7 @@ public class GraphViewerPlayground {
                 .pdbIdentifier("1c0a")
                 .parse();
 
-        Chain chain = structure.getFirstChain().get();
+        Chain chain = structure.getFirstChain();
 
         LeafSubstructure<?, ?> reference = StructureSelector.selectFrom(chain)
                 .atomContainer(831)
