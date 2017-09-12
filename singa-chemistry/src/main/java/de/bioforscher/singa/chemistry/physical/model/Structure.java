@@ -162,11 +162,12 @@ public class Structure {
      *
      * @return An {@link Optional} encapsulating the first {@link StructuralModel} found.
      */
-    public Optional<StructuralModel> getFirstModel() {
+    public StructuralModel getFirstModel() {
         return getBranchSubstructures().stream()
                 .filter(isModel())
                 .map(StructuralModel.class::cast)
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("The structure does not contain a model."));
     }
 
     /**
@@ -182,21 +183,22 @@ public class Structure {
     }
 
     /**
-     * Returns an {@link Optional} of the first {@link Chain} found in this structure.
+     * Returns the first {@link Chain} found in this structure.
      *
-     * @return An {@link Optional} encapsulating the first {@link Chain} found.
+     * @return The first {@link Chain} found.
      */
-    public Optional<Chain> getFirstChain() {
-        return getFirstModel().get().getFirstChain();
+    public Chain getFirstChain() {
+        return getFirstModel().getFirstChain();
     }
 
     /**
-     * Returns an {@link Optional} of the {@link Chain} with the given identifier from the first model in the structure.
+     * Returns an {@link Optional} of the {@link Chain} with the given identifier from the first model in the
+     * structure.
      *
      * @return An {@link Optional} encapsulating the {@link Chain} found.
      */
     public Optional<Chain> getChain(String chainIdentifier) {
-        return getFirstModel().get().getAllChains().stream()
+        return getFirstModel().getAllChains().stream()
                 .filter(hasIdentifier(chainIdentifier))
                 .findAny();
     }
@@ -206,7 +208,7 @@ public class Structure {
      *
      * @return All leaf substructures.
      */
-    public List<LeafSubstructure<?, ?>> getAllLeaves() {
+    public List<LeafSubstructure<?, ?>> getAllLeafSubstructures() {
         return this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getLeafSubstructures)
                 .flatMap(Collection::stream)
@@ -230,7 +232,7 @@ public class Structure {
      *
      * @return All amino acids.
      */
-    public List<Nucleotide> getAllANucleotides() {
+    public List<Nucleotide> getAllNucleotides() {
         return this.branchSubstructures.values().stream()
                 .map(BranchSubstructure::getNucleotides)
                 .flatMap(Collection::stream)
@@ -255,7 +257,7 @@ public class Structure {
      * @param identifier The leaf identifier.
      * @return The associated leaf.
      */
-    public Optional<LeafSubstructure<?, ?>> getLeaf(LeafIdentifier identifier) {
+    public Optional<LeafSubstructure<?, ?>> getLeafSubstructure(LeafIdentifier identifier) {
         for (StructuralModel model : getAllModels()) {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure<?, ?> leafSubstructure : chain.getLeafSubstructures()) {
@@ -294,14 +296,13 @@ public class Structure {
 
     /**
      * Adds a pseudo atom (preferably for interactions) to the first model of this structure.
+     *
      * @param chain The chain to add the atom to.
      * @param threeLetterCode The three letter code of the created leaf substructure.
      * @param position The position of the atom.
      */
     public void addPseudoAtom(String chain, String threeLetterCode, Vector3D position) {
-        Chain leafChain = this.getFirstModel()
-                .orElseThrow(() -> new IllegalStateException("Could not find any models to add an atom to."))
-                .getAllChains().stream()
+        Chain leafChain = getFirstModel().getAllChains().stream()
                 .filter(c -> c.getIdentifier().equals(chain))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Could not find given chain to add an atom to."));
@@ -310,6 +311,4 @@ public class Structure {
         container.addNode(new RegularAtom(this.lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
         leafChain.addSubstructure(container);
     }
-
-
 }

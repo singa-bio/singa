@@ -69,7 +69,7 @@ public class StructureRepresentationTest {
                 .fileLocation(fileLocation)
                 .everything()
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure.getAllLeaves());
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure.getAllLeafSubstructures());
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }

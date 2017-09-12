@@ -51,7 +51,7 @@ public class CifFileParser {
 
     public static LeafSubstructure<?, ?> parseLeafSubstructure(List<String> lines) {
         CifFileParser parser = new CifFileParser(lines);
-        return parser.parseCompleteLeaf();
+        return parser.parseCompleteLeafSubstructure();
     }
 
     public static LeafSkeleton parseLeafSkeleton(List<String> lines) {
@@ -171,20 +171,20 @@ public class CifFileParser {
      * Parses a leaf from scratch using only information provided in the cif file.
      * @return A leaf.
      */
-    private LeafSubstructure<?, ?> parseCompleteLeaf() {
+    private LeafSubstructure<?, ?> parseCompleteLeafSubstructure() {
         collectLines(false);
         extractAtoms();
         extractBonds();
-        return createLeaf(LeafIdentifier.fromString("A-1"));
+        return createLeafSubstructure(LeafIdentifier.fromString("A-1"));
     }
 
     /**
-     * Creates a complete leaf using the information collected until the call of this method.
+     * Creates a complete {@link LeafSubstructure} using the information collected until the call of this method.
      * @param leafIdentifier The identifier this leaf should have.
-     * @return A complete leaf using the information collected until the call of this method.
+     * @return A complete {@link LeafSubstructure} using the information collected until the call of this method.
      */
-    private LeafSubstructure<?, ?> createLeaf(LeafIdentifier leafIdentifier) {
-        LeafSubstructure<?, ?> leafSubstructure = null;
+    private LeafSubstructure<?, ?> createLeafSubstructure(LeafIdentifier leafIdentifier) {
+        LeafSubstructure<?, ?> leafSubstructure;
         if (isNucleotide()) {
             // check for nucleotides
                 Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);

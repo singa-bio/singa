@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserException;
@@ -131,10 +131,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                         logger.info("ignored backbone only structure {}", structure);
                         return null;
                     }
-                    BranchSubstructure<?, ?> target = structure.getFirstModel()
-                            .orElseThrow(() -> new Fit3DException("no model available for " +
-                                    Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier() +
-                                    "/" + Fit3DAlignmentBatch.this.multiParser.getCurrentChainIdentifier()));
+                    BranchSubstructure<?, ?> target = structure.getFirstModel();
                     logger.info("computing Fit3D alignment against {}", target);
                     // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
                     if (Fit3DAlignmentBatch.this.representationScheme == null) {

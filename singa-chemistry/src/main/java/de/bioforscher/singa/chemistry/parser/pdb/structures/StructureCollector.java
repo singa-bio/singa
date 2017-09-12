@@ -478,7 +478,7 @@ public class StructureCollector {
         } else {
             leafSkeleton = this.reducer.skeletons.get(leafName);
         }
-        return leafSkeleton.toRealLeafSubStructure(identifier, atoms);
+        return leafSkeleton.toRealLeafSubstructure(identifier, atoms);
     }
 
 }

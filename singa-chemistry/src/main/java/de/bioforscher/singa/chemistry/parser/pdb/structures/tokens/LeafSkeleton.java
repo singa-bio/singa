@@ -62,7 +62,7 @@ public class LeafSkeleton {
         this.bonds = bonds;
     }
 
-    public LeafSubstructure<?, ?> toRealLeafSubStructure(LeafIdentifier identifer, Map<String, Atom> atoms) {
+    public LeafSubstructure<?, ?> toRealLeafSubstructure(LeafIdentifier identifer, Map<String, Atom> atoms) {
         LeafSubstructure<?, ?> substructure;
         switch (this.assignedFamily) {
             case MODIFIED_AMINO_ACID: {

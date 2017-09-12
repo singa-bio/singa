@@ -27,7 +27,7 @@ public class BranchSubstructureTest {
 
     @Test
     public void shouldGenerateDistanceMatrixFromLeafs() {
-        Chain chain = structure.getFirstModel().get().getFirstChain().get();
+        Chain chain = structure.getFirstModel().getFirstChain();
         LabeledSymmetricMatrix<LeafSubstructure<?, ?>> actual = VectorMetricProvider.EUCLIDEAN_METRIC
                 .calculateDistancesPairwise(chain.getLeafSubstructures(), LeafSubstructure::getPosition);
         assertTrue(actual.getMainDiagonal().isZero());

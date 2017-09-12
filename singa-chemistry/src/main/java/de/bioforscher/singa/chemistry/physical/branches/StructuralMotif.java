@@ -56,10 +56,10 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
      * StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeaves(Structure structure, List<LeafIdentifier> leafIdentifiers) {
+    public static StructuralMotif fromLeafIdentifiers(Structure structure, List<LeafIdentifier> leafIdentifiers) {
         List<LeafSubstructure<?, ?>> leaves = new ArrayList<>();
         leafIdentifiers.forEach(leafIdentifer -> {
-            LeafSubstructure<?, ?> subStructure = structure.getAllLeaves().stream()
+            LeafSubstructure<?, ?> subStructure = structure.getAllLeafSubstructures().stream()
                     .filter(leaf -> leaf.getChainIdentifier().equals(leafIdentifer.getChainIdentifier())
                             && leaf.getIdentifier().getSerial() == leafIdentifer.getSerial())
                     .findFirst()
@@ -73,13 +73,19 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     /**
      * Forms a {@link StructuralMotif} out of the given {@link LeafSubstructure}s.
      *
-     * @param leaves The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
+     * @param leafSubstructures The {@link LeafSubstructure}s that should compose the {@link StructuralMotif}.
      * @return A new {@link StructuralMotif}.
      */
-    public static StructuralMotif fromLeaves(List<LeafSubstructure<?, ?>> leaves) {
-        return new StructuralMotif(generateMotifIdentifier(leaves), leaves);
+    public static StructuralMotif fromLeafIdentifiers(List<LeafSubstructure<?, ?>> leafSubstructures) {
+        return new StructuralMotif(generateMotifIdentifier(leafSubstructures), leafSubstructures);
     }
 
+    private static String generateMotifIdentifier(List<LeafSubstructure<?, ?>> substructures) {
+        String pdbIdentifier = substructures.iterator().next().getPdbIdentifier();
+        return substructures.stream()
+                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .collect(Collectors.joining("_", pdbIdentifier + "_", ""));
+    }
 
     @Override
     public <RemovableSubstructureType extends Substructure> void removeSubstructure(RemovableSubstructureType substructure) {
@@ -89,10 +95,9 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     }
 
     /**
-     * Returns the {@link LeafSubstructure}s of this {@link StructuralMotif} exactly in the order they were given
-     * upon creation. This is a special implementation of {@link StructuralMotif} and should be used if one wants to
-     * ensure a correct predefined order when working with the {@link LeafSubstructure}s independent of their sequence
-     * order.
+     * Returns the {@link LeafSubstructure}s of this {@link StructuralMotif} exactly in the order they were given upon
+     * creation. This is a special implementation of {@link StructuralMotif} and should be used if one wants to ensure a
+     * correct predefined order when working with the {@link LeafSubstructure}s independent of their sequence order.
      *
      * @return The ordered {@link LeafSubstructure}s of this {@link StructuralMotif}.
      */
@@ -117,13 +122,6 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
     @Override
     public String toString() {
         return generateMotifIdentifier(getLeafSubstructures());
-    }
-
-    private static String generateMotifIdentifier(List<LeafSubstructure<?, ?>> substructures) {
-        String pdbIdentifier = substructures.iterator().next().getPdbIdentifier();
-        return substructures.stream()
-                .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
-                .collect(Collectors.joining("_", pdbIdentifier + "_", ""));
     }
 
     /**

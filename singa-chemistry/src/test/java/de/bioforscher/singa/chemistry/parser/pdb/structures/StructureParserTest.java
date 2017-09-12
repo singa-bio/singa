@@ -65,7 +65,7 @@ public class StructureParserTest {
                 .allChains()
                 .parse();
         assertEquals(1, structure.getAllModels().size());
-        assertEquals(new Integer(2), structure.getFirstModel().get().getIdentifier());
+        assertEquals(new Integer(2), structure.getFirstModel().getIdentifier());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class StructureParserTest {
                 .chainIdentifier("A")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals("A", structure.getFirstChain().get().getIdentifier());
+        assertEquals("A", structure.getFirstChain().getIdentifier());
     }
 
     @Test
@@ -88,8 +88,8 @@ public class StructureParserTest {
                 .chainIdentifier("B")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals(new Integer(3), structure.getFirstModel().get().getIdentifier());
-        assertEquals("B", structure.getFirstChain().get().getIdentifier());
+        assertEquals(new Integer(3), structure.getFirstModel().getIdentifier());
+        assertEquals("B", structure.getFirstChain().getIdentifier());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class StructureParserTest {
                 .everything()
                 .parse();
 
-        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeaves().stream()
+        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
                 .collect(Collectors.toList());
 
@@ -141,7 +141,7 @@ public class StructureParserTest {
                 .localPDB(localPdb)
                 .chainList(chainList, ":")
                 .parse();
-        assertTrue(structure.get(0).getAllLeaves().size() > 0);
+        assertTrue(structure.get(0).getAllLeafSubstructures().size() > 0);
     }
 
     @Test

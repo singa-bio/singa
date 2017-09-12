@@ -42,8 +42,8 @@ public class ConsensusAlignmentTest {
                         .everything()
                         .setOptions(structureParserOptions)
                         .parse())
-                .map(Structure::getAllLeaves)
-                .map(StructuralMotif::fromLeaves)
+                .map(Structure::getAllLeafSubstructures)
+                .map(StructuralMotif::fromLeafIdentifiers)
                 .collect(Collectors.toList());
     }
 
