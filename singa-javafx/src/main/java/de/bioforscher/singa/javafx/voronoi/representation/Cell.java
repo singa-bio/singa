@@ -1,6 +1,7 @@
 package de.bioforscher.singa.javafx.voronoi.representation;
 
 import de.bioforscher.singa.javafx.voronoi.Site;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -56,7 +57,7 @@ public class Cell {
         double yMax = -Double.MAX_VALUE;
         // look for minimal and maximal x and y
         for (int iHalfedge = this.halfEdges.size(); iHalfedge > 0; iHalfedge--) {
-            Site v = this.halfEdges.get(iHalfedge).getStartPoint();
+            Vector2D v = this.halfEdges.get(iHalfedge).getStartPoint();
             double vx = v.getX();
             double vy = v.getY();
             if (vx < xMin) {
@@ -95,8 +96,8 @@ public class Cell {
         //   "on the line segment"
         for (int iHalfedge = this.halfEdges.size(); iHalfedge > 0; iHalfedge--) {
             HalfEdge halfEdge = this.halfEdges.get(iHalfedge);
-            Site p0 = halfEdge.getStartPoint();
-            Site p1 = halfEdge.getEndPoint();
+            Vector2D p0 = halfEdge.getStartPoint();
+            Vector2D p1 = halfEdge.getEndPoint();
             double r = (y - p0.getY()) * (p1.getX() - p0.getX()) - (x - p0.getX()) * (p1.getY() - p0.getY());
             if (r == 0) {
                 return 0;

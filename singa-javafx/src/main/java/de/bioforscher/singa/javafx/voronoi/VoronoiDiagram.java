@@ -14,17 +14,14 @@ import java.util.*;
  */
 public class VoronoiDiagram implements Renderer {
 
-    private static final Comparator<Vector2D> leftToRight = Comparator.comparingDouble(Vector2D::getX);
-    private static final Comparator<Vector2D> topToBottom = Comparator.comparingDouble(Vector2D::getY).reversed();
+    public static final Comparator<Vector2D> topToBottom = Comparator.comparingDouble(Vector2D::getY).reversed();
 
     private Canvas canvas;
     private BeachLine beachLine;
     private TreeSet<Vector2D> originalVectors;
     private Deque<Site> siteEvents;
 
-    private Site site;
     private Site previousSite;
-    private VoronoiRBTree circle;
 
     int siteId = 0;
 
@@ -38,44 +35,38 @@ public class VoronoiDiagram implements Renderer {
         // add them to the vector events
         this.siteEvents = new ArrayDeque<>();
         this.originalVectors.forEach(vector -> this.siteEvents.push(new Site(vector)));
-
-        this.site = this.siteEvents.pop();
-
-
     }
 
-    public void nextEvent() {
+    public void perform() {
+        // get next site Event
+        Site siteEvent = this.siteEvents.pop();
         while (!this.siteEvents.isEmpty()) {
-
-            // we need to figure whether we handle a site or circle event
-            // for this we find out if there is a site event and it is
-            // 'earlier' than the circle event
-            this.circle = this.beachLine.getFirstCircleEvent();
-            if (this.circle != null) {
-                System.out.println("Next circle event: " + new Vector2D(this.circle.getX(), this.circle.getY()));
+            // TODO circle events after site events have been cleared are skipped
+            // get next circle event
+            CircleEvent circleEvent = this.beachLine.getFirstCircleEvent();
+            if (circleEvent != null) {
+                System.out.println("Next circle event: " + circleEvent.getEventCoordinate());
             } else {
                 System.out.println("No circle event pending.");
             }
-            System.out.println("Next site event: " + this.site);
+            System.out.println("Next site event: " + siteEvent);
 
             // add beach section
-            if (this.site != null &&
-                    (this.circle == null || this.site.getY() < this.circle.getY() ||
-                            (this.site.getY() == this.circle.getY() && this.site.getX() < this.circle.getX()))) {
+            if (siteEvent != null && (circleEvent == null || siteEventIsBeforeCircleEvent(siteEvent, circleEvent))) {
                 // only if the site is not a duplicate
-                if (this.previousSite == null || this.site.getX() != this.previousSite.getX() || this.site.getY() != this.previousSite.getY()) {
+                if (this.previousSite == null || siteEvent.getX() != this.previousSite.getX() || siteEvent.getY() != this.previousSite.getY()) {
                     // first create cell for new site
-                    this.beachLine.getDiagram().createCell(this.siteId, this.site);
+                    this.beachLine.getDiagram().createCell(this.siteId, siteEvent);
                     this.siteId++;
                     System.out.println(" -> handling site event");
                     // then create a beach section for that site
-                    this.beachLine.addBeachSection(this.site);
-                    this.previousSite = this.site;
+                    this.beachLine.addBeachSection(siteEvent);
+                    this.previousSite = siteEvent;
                 }
-                this.site = this.siteEvents.pop();
-            } else if (this.circle != null) {
+                siteEvent = this.siteEvents.pop();
+            } else if (circleEvent != null) {
                 System.out.println(" -> handling circle event");
-                this.beachLine.removeBeachSection(this.circle.getArc());
+                this.beachLine.removeBeachSection(circleEvent.getArc());
             }
 
             List<Vector2D> vertices = this.beachLine.getDiagram().getVertices();
@@ -86,8 +77,24 @@ public class VoronoiDiagram implements Renderer {
             System.out.println("Current edges:");
             edges.forEach(System.out::println);
             System.out.println("---------------------");
-            getGraphicsContext().setStroke(Color.TOMATO);
         }
+
+        getGraphicsContext().setFill(Color.TOMATO);
+        this.beachLine.getDiagram().getEdges().forEach( edge -> {
+            if (edge.getVa() != null) {
+                System.out.println(edge.getVa());
+                drawPoint(edge.getVa());
+            }
+            if (edge.getVb() != null) {
+                System.out.println(edge.getVb());
+                drawPoint(edge.getVb());
+            }
+        });
+    }
+
+    private boolean siteEventIsBeforeCircleEvent(Site siteEvent, CircleEvent circleEvent) {
+        return siteEvent.getY() < circleEvent.getEventCoordinate().getY() ||
+                (siteEvent.getY() == circleEvent.getEventCoordinate().getY() && siteEvent.getX() < circleEvent.getEventCoordinate().getX());
     }
 
     @Override

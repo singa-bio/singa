@@ -48,7 +48,7 @@ public class VoronoiPlayground extends Application implements Renderer {
         root.setCenter(this.canvas);
 
         Button nextEventButton = new Button("Next Event");
-        nextEventButton.setOnAction(event -> this.voronoiDiagram.nextEvent());
+        nextEventButton.setOnAction(event -> this.voronoiDiagram.perform());
         root.setBottom(nextEventButton);
 
         // show

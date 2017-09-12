@@ -1,6 +1,7 @@
 package de.bioforscher.singa.javafx.voronoi.representation;
 
 import de.bioforscher.singa.javafx.voronoi.Site;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 public class HalfEdge {
 
@@ -21,8 +22,8 @@ public class HalfEdge {
         if (rSite != null) {
             this.angle = Math.atan2(rSite.getY()-lSite.getY(), rSite.getX()-lSite.getX());
         } else {
-            Site va = edge.getVa();
-            Site vb = edge.getVb();
+            Vector2D va = edge.getVa();
+            Vector2D vb = edge.getVb();
             if (edge.getlSite().equals(lSite)) {
                 this.angle = Math.atan2(vb.getX()-va.getX(), va.getY()-vb.getY());
             } else {
@@ -31,7 +32,7 @@ public class HalfEdge {
         }
     }
 
-    public Site getStartPoint() {
+    public Vector2D getStartPoint() {
         if (this.edge.getlSite().equals(this.site)) {
             return this.edge.getVa();
         } else {
@@ -39,7 +40,7 @@ public class HalfEdge {
         }
     }
 
-    public Site getEndPoint() {
+    public Vector2D getEndPoint() {
         if (this.edge.getlSite().equals(this.site)) {
             return this.edge.getVb();
         } else {

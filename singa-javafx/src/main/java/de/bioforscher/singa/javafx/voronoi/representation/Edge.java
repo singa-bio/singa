@@ -2,14 +2,15 @@ package de.bioforscher.singa.javafx.voronoi.representation;
 
 
 import de.bioforscher.singa.javafx.voronoi.Site;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 public class Edge {
 
     private Site lSite;
     private Site rSite;
 
-    private Site va;
-    private Site vb;
+    private Vector2D va;
+    private Vector2D vb;
 
     public Edge(Site lSite, Site rSite) {
         this.lSite = lSite;
@@ -32,23 +33,23 @@ public class Edge {
         this.rSite = rSite;
     }
 
-    public Site getVa() {
+    public Vector2D getVa() {
         return this.va;
     }
 
-    public void setVa(Site va) {
+    public void setVa(Vector2D va) {
         this.va = va;
     }
 
-    public Site getVb() {
+    public Vector2D getVb() {
         return this.vb;
     }
 
-    public void setVb(Site vb) {
+    public void setVb(Vector2D vb) {
         this.vb = vb;
     }
 
-    public void setEdgeStartPoint(Site lSite, Site rSite, Site vertex) {
+    public void setEdgeStartPoint(Site lSite, Site rSite, Vector2D vertex) {
         if (this.va == null && this.vb == null) {
             this.va = vertex;
             this.lSite = lSite;
@@ -60,7 +61,7 @@ public class Edge {
         }
     }
 
-    public void setEdgeEndPoint(Site lSite, Site rSite, Site vertex) {
+    public void setEdgeEndPoint(Site lSite, Site rSite, Vector2D vertex) {
         this.setEdgeStartPoint(rSite, lSite, vertex);
     }
 

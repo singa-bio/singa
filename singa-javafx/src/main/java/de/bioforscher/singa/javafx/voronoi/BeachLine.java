@@ -5,23 +5,22 @@ import de.bioforscher.singa.javafx.voronoi.representation.Edge;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 
 public class BeachLine {
 
     private static final double epsilon = 1E-9;
 
-    private VoronoiRBTree beachline;
-    private VoronoiRBTree circleEvents;
-
-    private VoronoiRBTree firstCircleEvent;
+    private VoronoiNode beachline;
+    private TreeSet<CircleEvent> circleEvents;
 
     private Diagram diagram;
 
     public BeachLine() {
         this.diagram = new Diagram();
-        this.beachline = new VoronoiRBTree();
-        this.circleEvents = new VoronoiRBTree();
+        this.beachline = new VoronoiNode();
+        this.circleEvents = new TreeSet<>(CircleEvent.topToBottom);
     }
 
     public void addBeachSection(Site site) {
@@ -29,10 +28,10 @@ public class BeachLine {
         double x = site.getX();
         double directrix = site.getY();
 
-        VoronoiRBTree node = this.beachline.getRoot();
+        VoronoiNode node = this.beachline.getRoot();
 
-        VoronoiRBTree lArc = null;
-        VoronoiRBTree rArc = null;
+        VoronoiNode lArc = null;
+        VoronoiNode rArc = null;
 
         double dxl;
         double dxr;
@@ -71,7 +70,7 @@ public class BeachLine {
             }
         }
 
-        VoronoiRBTree newArc = new VoronoiRBTree(site);
+        VoronoiNode newArc = new VoronoiNode(site);
         this.beachline.insertSuccessor(lArc, newArc);
 
         // case
@@ -97,7 +96,7 @@ public class BeachLine {
             detachCircleEvent(lArc);
 
             // split beach section into two separate sections
-            rArc = new VoronoiRBTree(lArc.getSite());
+            rArc = new VoronoiNode(lArc.getSite());
             this.beachline.insertSuccessor(newArc, rArc);
 
             // create Edge
@@ -157,7 +156,7 @@ public class BeachLine {
             double d = 2 * (bx * cy - by * cx);
             double hb = bx * bx + by * by;
             double hc = cx * cx + cy * cy;
-            Site vertex = new Site(new Vector2D((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay));
+            Vector2D vertex = new Vector2D((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
 
             // one transition disappear
             rArc.getEdge().setEdgeStartPoint(lSite, rSite, vertex);
@@ -174,15 +173,15 @@ public class BeachLine {
         }
     }
 
-    public void removeBeachSection(VoronoiRBTree beachSection) {
-        VoronoiRBTree circle = beachSection.getCircleEvent();
-        double x = circle.getX();
+    public void removeBeachSection(VoronoiNode beachSection) {
+        CircleEvent circle = beachSection.getCircleEvent();
+        double x = circle.getEventCoordinate().getX();
         double y = circle.getyCenter();
-        Site vertex = new Site(new Vector2D(x, y));
-        VoronoiRBTree previous = beachSection.getRbPrevious();
-        VoronoiRBTree next = beachSection.getRbNext();
+        Vector2D vertex = new Vector2D(x, y);
+        VoronoiNode previous = beachSection.getRbPrevious();
+        VoronoiNode next = beachSection.getRbNext();
 
-        LinkedList<VoronoiRBTree> disappearingTransitions = new LinkedList<>();
+        LinkedList<VoronoiNode> disappearingTransitions = new LinkedList<>();
         disappearingTransitions.push(beachSection);
 
         // remove collapsed beach section from beach line
@@ -198,9 +197,9 @@ public class BeachLine {
         // on their left/right side.
 
         // look left
-        VoronoiRBTree lArc = previous;
+        VoronoiNode lArc = previous;
         while (lArc.getCircleEvent() != null &&
-                Math.abs(x - lArc.getCircleEvent().getX()) < 1e-9 &&
+                Math.abs(x - lArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
                 Math.abs(y - lArc.getCircleEvent().getyCenter()) < 1e-9) {
             previous = lArc.getRbPrevious();
             disappearingTransitions.push(lArc);
@@ -216,10 +215,10 @@ public class BeachLine {
         detachCircleEvent(lArc);
 
         // look right
-        VoronoiRBTree rArc = next;
+        VoronoiNode rArc = next;
         while (rArc.getCircleEvent() != null &&
-                Math.abs(x - rArc.getCircleEvent().getX()) < 1e-9 &&
-                Math.abs(y - rArc.getCircleEvent().getY()) < 1e-9) {
+                Math.abs(x - rArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
+                Math.abs(y - rArc.getCircleEvent().getEventCoordinate().getY()) < 1e-9) {
             next = rArc.getRbNext();
             disappearingTransitions.offer(rArc);
             detachBeachsection(rArc);
@@ -256,12 +255,12 @@ public class BeachLine {
         attachCircleEvent(rArc);
     }
 
-    public void detachBeachsection(VoronoiRBTree beachSection) {
+    public void detachBeachsection(VoronoiNode beachSection) {
         detachCircleEvent(beachSection);
         this.beachline.removeNode(beachSection);
     }
 
-    private double leftBreakPoint(VoronoiRBTree node, double directrix) {
+    private double leftBreakPoint(VoronoiNode node, double directrix) {
         Site site = node.getSite();
         double rfocx = site.getX();
         double rfocy = site.getY();
@@ -273,7 +272,7 @@ public class BeachLine {
         }
 
         // handle previous  beach line section
-        VoronoiRBTree previousSection = node.getRbPrevious();
+        VoronoiNode previousSection = node.getRbPrevious();
         if (previousSection == null) {
             return Double.NEGATIVE_INFINITY;
         }
@@ -297,8 +296,8 @@ public class BeachLine {
         return (rfocx + lfocx) / 2;
     }
 
-    private double rightBreakPoint(VoronoiRBTree node, double directrix) {
-        VoronoiRBTree rArc = node.getRbNext();
+    private double rightBreakPoint(VoronoiNode node, double directrix) {
+        VoronoiNode rArc = node.getRbNext();
         if (rArc != null) {
             return this.leftBreakPoint(rArc, directrix);
         }
@@ -306,20 +305,17 @@ public class BeachLine {
         return site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
     }
 
-    private void detachCircleEvent(VoronoiRBTree arc) {
-        VoronoiRBTree circleEvent = arc.getCircleEvent();
+    private void detachCircleEvent(VoronoiNode arc) {
+        CircleEvent circleEvent = arc.getCircleEvent();
         if (circleEvent != null) {
-            if (circleEvent.getRbPrevious() != null) {
-                this.firstCircleEvent = circleEvent.getRbNext();
-            }
-            this.circleEvents.removeNode(circleEvent);
+            this.circleEvents.remove(circleEvent);
             arc.setCircleEvent(null);
         }
     }
 
-    private void attachCircleEvent(VoronoiRBTree arc) {
-        VoronoiRBTree lArc = arc.getRbPrevious();
-        VoronoiRBTree rArc = arc.getRbNext();
+    private void attachCircleEvent(VoronoiNode arc) {
+        VoronoiNode lArc = arc.getRbPrevious();
+        VoronoiNode rArc = arc.getRbNext();
 
         if (lArc == null || rArc == null) {
             System.out.println("");
@@ -367,52 +363,23 @@ public class BeachLine {
         double y = (ax * hc - cx * ha) / d;
         double ycenter = y + by;
 
-        VoronoiRBTree circleEvent = new VoronoiRBTree();
+        CircleEvent circleEvent = new CircleEvent();
         circleEvent.setArc(arc);
         circleEvent.setSite(cSite);
-        circleEvent.setX(x + bx);
-        circleEvent.setY(ycenter + Math.sqrt(x * x + y * y));
+        circleEvent.setEventCoordinate(new Vector2D(x + bx, ycenter + Math.sqrt(x * x + y * y)));
         circleEvent.setyCenter(ycenter);
         arc.setCircleEvent(circleEvent);
 
-        // find insertion point in RB-tree: circle events are ordered from
-        // smallest to largest
-        VoronoiRBTree predecessor = null;
-        VoronoiRBTree node = this.circleEvents.getRoot();
-        while (node != null) {
-            if (circleEvent.getY() < node.getY() || (circleEvent.getY() == node.getY() && circleEvent.getX() <= node.getX())) {
-                if (node.getRbLeft() != null) {
-                    node = node.getRbLeft();
-                } else {
-                    predecessor = node.getRbPrevious();
-                    break;
-                }
-            } else {
-                if (node.getRbRight() != null) {
-                    node = node.getRbRight();
-                } else {
-                    predecessor = node;
-                    break;
-                }
-            }
+        // add newly created circle event
+        this.circleEvents.add(circleEvent);
+    }
+
+    public CircleEvent getFirstCircleEvent() {
+        if (this.circleEvents.isEmpty()) {
+            return null;
+        } else {
+            return this.circleEvents.first();
         }
-
-        this.circleEvents.insertSuccessor(predecessor, circleEvent);
-        if (predecessor == null) {
-            this.firstCircleEvent = circleEvent;
-        }
-    }
-
-    public VoronoiRBTree getBeachline() {
-        return this.beachline;
-    }
-
-    public VoronoiRBTree getCircleEvents() {
-        return this.circleEvents;
-    }
-
-    public VoronoiRBTree getFirstCircleEvent() {
-        return this.firstCircleEvent;
     }
 
     public Diagram getDiagram() {

@@ -5,34 +5,35 @@ import de.bioforscher.singa.javafx.voronoi.representation.Edge;
 /**
  * Some kind of RB Tree
  */
-public class VoronoiRBTree {
+public class VoronoiNode {
 
     private Site site;
     private Edge edge;
-    private VoronoiRBTree circleEvent;
 
-    private VoronoiRBTree root;
+    private CircleEvent circleEvent;
 
-    private VoronoiRBTree rbNext;
-    private VoronoiRBTree rbPrevious;
+    private VoronoiNode root;
 
-    private VoronoiRBTree rbRight;
-    private VoronoiRBTree rbLeft;
+    private VoronoiNode rbNext;
+    private VoronoiNode rbPrevious;
 
-    private VoronoiRBTree rbParent;
+    private VoronoiNode rbRight;
+    private VoronoiNode rbLeft;
+
+    private VoronoiNode rbParent;
 
     private boolean rbRed;
 
-    public VoronoiRBTree() {
+    public VoronoiNode() {
 
     }
 
-    public VoronoiRBTree(Site site) {
+    public VoronoiNode(Site site) {
         this.site = site;
     }
 
-    public void insertSuccessor(VoronoiRBTree node, VoronoiRBTree successor) {
-        VoronoiRBTree parent;
+    public void insertSuccessor(VoronoiNode node, VoronoiNode successor) {
+        VoronoiNode parent;
         if (node != null) {
             // caching previous and next nodes for performance
             successor.rbPrevious = node;
@@ -77,8 +78,8 @@ public class VoronoiRBTree {
         // Fixup the modified tree by recoloring nodes and performing
         // rotations (2 at most) hence the red-black tree properties are
         // preserved.
-        VoronoiRBTree grandpa;
-        VoronoiRBTree uncle;
+        VoronoiNode grandpa;
+        VoronoiNode uncle;
         node = successor;
         while (parent != null && parent.rbRed) {
             grandpa = parent.rbParent;
@@ -123,7 +124,7 @@ public class VoronoiRBTree {
         this.root.rbRed = false;
     }
 
-    public void removeNode(VoronoiRBTree node) {
+    public void removeNode(VoronoiNode node) {
         // caching
         if (node.rbNext != null) {
             node.rbNext.rbPrevious = node.rbPrevious;
@@ -134,10 +135,10 @@ public class VoronoiRBTree {
         node.rbNext = null;
         node.rbPrevious = null;
 
-        VoronoiRBTree parent = node.rbParent;
-        VoronoiRBTree left = node.rbLeft;
-        VoronoiRBTree right = node.rbRight;
-        VoronoiRBTree next;
+        VoronoiNode parent = node.rbParent;
+        VoronoiNode left = node.rbLeft;
+        VoronoiNode right = node.rbRight;
+        VoronoiNode next;
 
         if (left == null) {
             next = right;
@@ -193,7 +194,7 @@ public class VoronoiRBTree {
             node.rbRed = false;
             return;
         }
-        VoronoiRBTree sibling;
+        VoronoiNode sibling;
         do {
             if (node == this.root) {
                 break;
@@ -254,10 +255,10 @@ public class VoronoiRBTree {
         }
     }
 
-    private void rotateRight(VoronoiRBTree node) {
-        VoronoiRBTree p = node;
-        VoronoiRBTree q = node.rbLeft;
-        VoronoiRBTree parent = p.rbParent;
+    private void rotateRight(VoronoiNode node) {
+        VoronoiNode p = node;
+        VoronoiNode q = node.rbLeft;
+        VoronoiNode parent = p.rbParent;
 
         if (parent != null) {
             if (parent.rbLeft == p) {
@@ -279,10 +280,10 @@ public class VoronoiRBTree {
         q.rbRight = p;
     }
 
-    private void rotateLeft(VoronoiRBTree node) {
-        VoronoiRBTree p = node;
-        VoronoiRBTree q = node.rbRight;
-        VoronoiRBTree parent = p.rbParent;
+    private void rotateLeft(VoronoiNode node) {
+        VoronoiNode p = node;
+        VoronoiNode q = node.rbRight;
+        VoronoiNode parent = p.rbParent;
 
         if (parent != null) {
             if (parent.rbLeft == p) {
@@ -304,25 +305,25 @@ public class VoronoiRBTree {
         q.rbLeft = p;
     }
 
-    private VoronoiRBTree getFirst(VoronoiRBTree node) {
+    private VoronoiNode getFirst(VoronoiNode node) {
         while (node.rbLeft != null) {
             node = node.rbLeft;
         }
         return node;
     }
 
-    private VoronoiRBTree getLast(VoronoiRBTree node) {
+    private VoronoiNode getLast(VoronoiNode node) {
         while (node.rbRight != null) {
             node = node.rbRight;
         }
         return node;
     }
 
-    public VoronoiRBTree getRoot() {
+    public VoronoiNode getRoot() {
         return this.root;
     }
 
-    public void setRoot(VoronoiRBTree root) {
+    public void setRoot(VoronoiNode root) {
         this.root = root;
     }
 
@@ -330,35 +331,35 @@ public class VoronoiRBTree {
         return this.site;
     }
 
-    public VoronoiRBTree getRbRight() {
+    public VoronoiNode getRbRight() {
         return this.rbRight;
     }
 
-    public void setRbRight(VoronoiRBTree rbRight) {
+    public void setRbRight(VoronoiNode rbRight) {
         this.rbRight = rbRight;
     }
 
-    public VoronoiRBTree getRbLeft() {
+    public VoronoiNode getRbLeft() {
         return this.rbLeft;
     }
 
-    public void setRbLeft(VoronoiRBTree rbLeft) {
+    public void setRbLeft(VoronoiNode rbLeft) {
         this.rbLeft = rbLeft;
     }
 
-    public VoronoiRBTree getRbParent() {
+    public VoronoiNode getRbParent() {
         return this.rbParent;
     }
 
-    public void setRbParent(VoronoiRBTree rbParent) {
+    public void setRbParent(VoronoiNode rbParent) {
         this.rbParent = rbParent;
     }
 
-    public VoronoiRBTree getRbNext() {
+    public VoronoiNode getRbNext() {
         return this.rbNext;
     }
 
-    public VoronoiRBTree getRbPrevious() {
+    public VoronoiNode getRbPrevious() {
         return this.rbPrevious;
     }
 
@@ -366,11 +367,11 @@ public class VoronoiRBTree {
         this.site = site;
     }
 
-    public void setRbNext(VoronoiRBTree rbNext) {
+    public void setRbNext(VoronoiNode rbNext) {
         this.rbNext = rbNext;
     }
 
-    public void setRbPrevious(VoronoiRBTree rbPrevious) {
+    public void setRbPrevious(VoronoiNode rbPrevious) {
         this.rbPrevious = rbPrevious;
     }
 
@@ -382,52 +383,12 @@ public class VoronoiRBTree {
         this.rbRed = rbRed;
     }
 
-    public VoronoiRBTree getCircleEvent() {
+    public CircleEvent getCircleEvent() {
         return this.circleEvent;
     }
 
-    public void setCircleEvent(VoronoiRBTree circleEvent) {
+    public void setCircleEvent(CircleEvent circleEvent) {
         this.circleEvent = circleEvent;
-    }
-
-    // circle event Stuff
-    // TODO create real class
-
-    private VoronoiRBTree arc;
-    private double x = 0;
-    private double y = 0;
-    private double yCenter = 0;
-
-    public VoronoiRBTree getArc() {
-        return this.arc;
-    }
-
-    public void setArc(VoronoiRBTree arc) {
-        this.arc = arc;
-    }
-
-    public double getX() {
-        return this.x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return this.y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getyCenter() {
-        return this.yCenter;
-    }
-
-    public void setyCenter(double yCenter) {
-        this.yCenter = yCenter;
     }
 
     public Edge getEdge() {
