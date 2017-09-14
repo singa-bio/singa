@@ -28,7 +28,7 @@ public class BeachLine {
 
     public void addBeachSection(Site site) {
 
-        logger.debug("Adding beach section for site "+site);
+        logger.debug("Adding beach section for site {}.", site);
 
         double x = site.getX();
         double directrix = site.getY();
@@ -55,7 +55,7 @@ public class BeachLine {
                 logger.trace("Right break point is {}.", dxr);
                 if (dxr > epsilon) {
                     // after the right edge of the beach section
-                    if (node.getRbRight() != null) {
+                    if (node.getRbRight() == null) {
                         lArc = node;
                         break;
                     }
@@ -77,6 +77,7 @@ public class BeachLine {
                     break;
                 }
             }
+            logger.trace("Calculating break points again.");
         }
 
         VoronoiNode newArc = new VoronoiNode(site);
@@ -182,6 +183,7 @@ public class BeachLine {
     }
 
     public void removeBeachSection(VoronoiNode beachSection) {
+
         CircleEvent circle = beachSection.getCircleEvent();
         double x = circle.getEventCoordinate().getX();
         double y = circle.getyCenter();
@@ -210,6 +212,7 @@ public class BeachLine {
         while (lArc.getCircleEvent() != null &&
                 Math.abs(x - lArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
                 Math.abs(y - lArc.getCircleEvent().getyCenter()) < 1e-9) {
+            logger.trace("Found beach section to the left - detaching {}.", lArc);
             previous = lArc.getRbPrevious();
             disappearingTransitions.push(lArc);
             detachBeachsection(lArc);
@@ -227,7 +230,8 @@ public class BeachLine {
         VoronoiNode rArc = next;
         while (rArc.getCircleEvent() != null &&
                 Math.abs(x - rArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
-                Math.abs(y - rArc.getCircleEvent().getEventCoordinate().getY()) < 1e-9) {
+                Math.abs(y - rArc.getCircleEvent().getyCenter()) < 1e-9) {
+            logger.trace("Found beach section to the left - detaching {}.", rArc);
             next = rArc.getRbNext();
             disappearingTransitions.offer(rArc);
             detachBeachsection(rArc);
@@ -244,6 +248,7 @@ public class BeachLine {
         // set the start point of their (implied) edge.
         int nArcs = disappearingTransitions.size();
         for (int iArc = 1; iArc < nArcs; iArc++) {
+            logger.trace("Removing transition {}", iArc);
             rArc = disappearingTransitions.get(iArc);
             lArc = disappearingTransitions.get(iArc - 1);
             rArc.getEdge().setEdgeStartPoint(lArc.getSite(), rArc.getSite(), vertex);

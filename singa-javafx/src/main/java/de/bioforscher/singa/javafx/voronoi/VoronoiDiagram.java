@@ -47,15 +47,21 @@ public class VoronoiDiagram implements Renderer {
     public void perform() {
         // get next site Event
         Site siteEvent = this.siteEvents.pop();
-        while (!this.siteEvents.isEmpty()) {
+        while (true) {
             // get next circle event
             CircleEvent circleEvent = this.beachLine.getFirstCircleEvent();
+
             if (circleEvent != null) {
                 logger.trace("Next circle event: {}", circleEvent.getEventCoordinate());
             } else {
                 logger.trace("No circle event pending.");
             }
-            logger.trace("Next site event: {}", siteEvent);
+
+            if (siteEvent != null) {
+                logger.trace("Next site event: {}", siteEvent);
+            } else {
+                logger.trace("No site event pending.");
+            }
 
             // add beach section
             if (siteEvent != null && (circleEvent == null || siteEventIsBeforeCircleEvent(siteEvent, circleEvent))) {
@@ -69,10 +75,16 @@ public class VoronoiDiagram implements Renderer {
                     this.beachLine.addBeachSection(siteEvent);
                     this.previousSite = siteEvent;
                 }
-                siteEvent = this.siteEvents.pop();
+                if (!this.siteEvents.isEmpty()) {
+                    siteEvent = this.siteEvents.pop();
+                } else {
+                    siteEvent = null;
+                }
             } else if (circleEvent != null) {
                 logger.trace("Processing circle event: {}", circleEvent);
                 this.beachLine.removeBeachSection(circleEvent.getArc());
+            } else {
+                break;
             }
 
         }
@@ -109,17 +121,15 @@ public class VoronoiDiagram implements Renderer {
         getGraphicsContext().setStroke(Color.TOMATO);
         getGraphicsContext().setFill(Color.TOMATO);
         getGraphicsContext().setLineWidth(4);
-        logger.trace("After clean up the following vertices and edges have been created.");
+        // logger.trace("After clean up the following vertices and edges have been created.");
         for (Vector2D vector : diagram.getVertices()) {
-            logger.trace("{}", vector);
+            // logger.trace("{}", vector);
             drawPoint(vector);
         }
         getGraphicsContext().setLineWidth(1);
         for (Edge edge : diagram.getEdges()) {
-
-                logger.trace("{}", edge);
-                drawStraight(edge.getVa(), edge.getVb());
-
+            // logger.trace("{}", edge);
+            drawStraight(edge.getVa(), edge.getVb());
         }
 
 

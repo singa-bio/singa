@@ -65,13 +65,10 @@ public class Edge {
         this.setEdgeStartPoint(rSite, lSite, vertex);
     }
 
-
     @Override
     public String toString() {
         return "Edge{" +
-                "lSite=" + this.lSite +
-                ", rSite=" + this.rSite +
-                ", va=" + this.va +
+                "va=" + this.va +
                 ", vb=" + this.vb +
                 '}';
     }

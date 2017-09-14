@@ -2,6 +2,8 @@ package de.bioforscher.singa.javafx.voronoi.representation;
 
 import de.bioforscher.singa.javafx.voronoi.Site;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,8 @@ import java.util.Map;
  * Created by Christoph on 20/05/2017.
  */
 public class Diagram {
+
+    private static final Logger logger = LoggerFactory.getLogger(Diagram.class);
 
     private Map<Integer, Cell> cells;
     private List<Edge> edges;
@@ -26,6 +30,7 @@ public class Diagram {
     public List<Edge> getEdges() {
         return this.edges;
     }
+
 
     public void setEdges(List<Edge> edges) {
         this.edges = edges;
@@ -85,18 +90,20 @@ public class Diagram {
 
         for (int iEdge = this.edges.size() - 1; iEdge >= 0; iEdge--) {
             Edge edge = this.edges.get(iEdge);
+            logger.trace("Post processing edge {}, starting at {}, ending at {}", iEdge, edge.getVa(), edge.getVb());
             // edge is removed if:
             //   it is wholly outside the bounding box
             //   it is looking more like a point than a line
-            connectEdge(edge, bbox);
-            clipEdge(edge, bbox);
-//            if (connectEdge(edge, bbox) ||
-//                    clipEdge(edge, bbox) ||
-//                    (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
-//                edge.setVa(null);
-//                edge.setVb(null);
-//                edges.remove(edge);
-//            }
+            if (!connectEdge(edge, bbox) ||
+                    !clipEdge(edge, bbox) ||
+                    (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
+                logger.trace(" Removing edge {}, starting at {}, ending at {}", iEdge, edge.getVa(), edge.getVb());
+                edge.setVa(null);
+                edge.setVb(null);
+                edges.remove(edge);
+            } else {
+                logger.trace(" Post processed edge: {}, starting at {}, ending at {}", iEdge, edge.getVa(), edge.getVb());
+            }
         }
     }
 
