@@ -57,7 +57,7 @@ public class StructureRepresentation {
      * @param structure The structure.
      * @return The string representing the structure in pdb format.
      */
-    public static String composePdbRepresentaiton(Structure structure) {
+    public static String composePdbRepresentation(Structure structure) {
         StringBuilder sb = new StringBuilder();
         // add preamble
         sb.append(getPreamble(structure.getPdbIdentifier(), structure.getTitle()));
@@ -85,7 +85,7 @@ public class StructureRepresentation {
      * @param leaves The leaves.
      * @return The string representing the structure in pdb format.
      */
-    public static String composePdbRepresentaiton(List<LeafSubstructure<?, ?>> leaves) {
+    public static String composePdbRepresentation(List<LeafSubstructure<?, ?>> leaves) {
         StringBuilder sb = new StringBuilder();
         LeafSubstructure<?, ?> first = leaves.iterator().next();
         // add preamble

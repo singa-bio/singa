@@ -32,7 +32,7 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -44,7 +44,7 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -56,7 +56,7 @@ public class StructureRepresentationTest {
         Structure structure = StructureParser.local()
                 .fileLocation(fileLocation)
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure);
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure);
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }
@@ -69,7 +69,7 @@ public class StructureRepresentationTest {
                 .fileLocation(fileLocation)
                 .everything()
                 .parse();
-        String pdbRepresentation = StructureRepresentation.composePdbRepresentaiton(structure.getAllLeafSubstructures());
+        String pdbRepresentation = StructureRepresentation.composePdbRepresentation(structure.getAllLeafSubstructures());
         List<String> actualLines = Arrays.asList(pdbRepresentation.split(System.lineSeparator()));
         assertPDBLinesEqual(expectedLines, actualLines);
     }

@@ -50,7 +50,7 @@ public class StructureWriter {
     public static void writeLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures, Path outputPath) throws IOException {
         logger.info("Writing {} leaf substructures to {}.", leafSubstructures.size(), outputPath);
         Files.createDirectories(outputPath.getParent());
-        Files.write(outputPath, StructureRepresentation.composePdbRepresentaiton(leafSubstructures).getBytes());
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures).getBytes());
     }
 
     /**
@@ -63,7 +63,7 @@ public class StructureWriter {
     public static void writeStructure(Structure structure, Path outputPath) throws IOException {
         logger.info("Writing structure {} to {}.", structure, outputPath);
         Files.createDirectories(outputPath.getParent());
-        Files.write(outputPath, StructureRepresentation.composePdbRepresentaiton(structure).getBytes());
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentation(structure).getBytes());
     }
 
 }
