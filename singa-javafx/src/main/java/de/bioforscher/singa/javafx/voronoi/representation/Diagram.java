@@ -78,16 +78,18 @@ public class Diagram {
         return cell;
     }
 
-    private void clipEdges(double[] bbox) {
+    public void clipEdges(double[] bbox) {
         // connect all dangling edges to bounding box
         // or get rid of them if it can't be done
         // iterate backward so we can splice safely
 
-        for (int iEdge = this.edges.size(); iEdge >= 0; iEdge--) {
+        for (int iEdge = this.edges.size() - 1; iEdge >= 0; iEdge--) {
             Edge edge = this.edges.get(iEdge);
             // edge is removed if:
             //   it is wholly outside the bounding box
             //   it is looking more like a point than a line
+
+
             if (connectEdge(edge, bbox) ||
                     clipEdge(edge, bbox) ||
                     (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
@@ -227,14 +229,14 @@ public class Diagram {
         return true;
     }
 
-    private boolean clipEdge(Edge edge, double[] bbox) {
+    public boolean clipEdge(Edge edge, double[] bbox) {
         double xl = bbox[0];
         double xr = bbox[2];
         double yt = bbox[1];
         double yb = bbox[3];
         // could use this in renderer
         double ax = edge.getVa().getX();
-        double ay = edge.getVb().getY();
+        double ay = edge.getVa().getY();
         double bx = edge.getVb().getX();
         double by = edge.getVb().getY();
 
@@ -351,13 +353,13 @@ public class Diagram {
         return true;
     }
 
-    private void closeCells(double[] bbox) {
+    public void closeCells(double[] bbox) {
         double xl = bbox[0];
         double xr = bbox[2];
         double yt = bbox[1];
         double yb = bbox[3];
 
-        for (int iCell = this.cells.size(); iCell >= 0; iCell--) {
+        for (int iCell = this.cells.size() - 1; iCell >= 0; iCell--) {
             Cell cell = cells.get(iCell);
             boolean lastBorderSegment = false;
             // prune, order halfedges counterclockwise, then add missing ones
@@ -400,26 +402,90 @@ public class Diagram {
                         va = vb;
                     }
 
-                    // walk upward along right side
-                    if (equalWithEpsilon(va.getX(), xr) && greaterThanWithEpsilon(va.getY(), yt)) {
-                        lastBorderSegment = equalWithEpsilon(vz.getX(), xr);
-                        Vector2D vb = this.createVertex(xr, lastBorderSegment ? vz.getY() : yt);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                    // walk rightward along bottom side
+                    if (equalWithEpsilon(va.getY(), yb) && lessThanWithEpsilon(va.getX(), xr)) {
+                        lastBorderSegment = equalWithEpsilon(vz.getY(), yb);
+                        Vector2D vb = this.createVertex(lastBorderSegment ? vz.getX() : xr, yb);
+                        Edge edge = this.createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
                         if (lastBorderSegment) {
                             break;
                         }
                         va = vb;
-                        // fall through
                     }
-                }
 
+                    // walk upward along right side
+                    if (equalWithEpsilon(va.getX(), xr) && greaterThanWithEpsilon(va.getY(), yt)) {
+                        lastBorderSegment = equalWithEpsilon(vz.getX(), xr);
+                        Vector2D vb = this.createVertex(xr, lastBorderSegment ? vz.getY() : yt);
+                        Edge edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        iLeft++;
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
+                        nHalfedges++;
+                        if (lastBorderSegment) {
+                            break;
+                        }
+                        va = vb;
+                    }
+
+                    // walk leftward along top side
+                    if (equalWithEpsilon(va.getY(), yt) && greaterThanWithEpsilon(va.getX(), xl)) {
+                        lastBorderSegment = equalWithEpsilon(vz.getY(), yt);
+                        Vector2D vb = this.createVertex(lastBorderSegment ? vz.getX() : xl, yt);
+                        Edge edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        iLeft++;
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
+                        nHalfedges++;
+                        if (lastBorderSegment) {
+                            break;
+                        }
+                        va = vb;
+
+                        // walk downward along left side
+                        lastBorderSegment = equalWithEpsilon(vz.getX(), xl);
+                        vb = this.createVertex(xl, lastBorderSegment ? vz.getY() : yb);
+                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        iLeft++;
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
+                        nHalfedges++;
+                        if (lastBorderSegment) {
+                            break;
+                        }
+                        va = vb;
+
+                        // walk rightward along bottom side
+                        lastBorderSegment = equalWithEpsilon(vz.getY(), yb);
+                        vb = this.createVertex(lastBorderSegment ? vz.getX() : xr, yb);
+                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        iLeft++;
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
+                        nHalfedges++;
+                        if (lastBorderSegment) {
+                            break;
+                        }
+                        va = vb;
+
+                        // walk upward along right side
+                        lastBorderSegment = equalWithEpsilon(vz.getX(), xr);
+                        vb = this.createVertex(xr, lastBorderSegment ? vz.getY() : yt);
+                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        iLeft++;
+                        halfEdges.add(iLeft, new HalfEdge(edge, cell.getSite(), null));
+                        nHalfedges++;
+                        if (lastBorderSegment) {
+                            break;
+                        }
+
+                    }
+
+                }
 
             }
 
         }
+
     }
 
     private static boolean equalWithEpsilon(double a, double b) {

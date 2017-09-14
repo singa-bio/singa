@@ -3,6 +3,8 @@ package de.bioforscher.singa.javafx.voronoi;
 import de.bioforscher.singa.javafx.voronoi.representation.Diagram;
 import de.bioforscher.singa.javafx.voronoi.representation.Edge;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -10,6 +12,7 @@ import java.util.TreeSet;
 
 public class BeachLine {
 
+    private static final Logger logger = LoggerFactory.getLogger(BeachLine.class);
     private static final double epsilon = 1E-9;
 
     private VoronoiNode beachline;
@@ -25,6 +28,8 @@ public class BeachLine {
 
     public void addBeachSection(Site site) {
 
+        logger.debug("Adding beach section for site "+site);
+
         double x = site.getX();
         double directrix = site.getY();
 
@@ -38,12 +43,16 @@ public class BeachLine {
 
         // determine left and right beach sections which will surround the newly created beach sections
         while (node != null) {
+            logger.trace("Calculating left break point.");
             dxl = leftBreakPoint(node, directrix) - x;
+            logger.trace("Left break point is {}.", dxl);
             if (dxl > epsilon) {
                 // before the left edge of the beach section
                 node = node.getRbLeft();
             } else {
+                logger.trace("Calculating right break point.");
                 dxr = x - rightBreakPoint(node, directrix);
+                logger.trace("Right break point is {}.", dxr);
                 if (dxr > epsilon) {
                     // after the right edge of the beach section
                     if (node.getRbRight() != null) {
@@ -156,7 +165,7 @@ public class BeachLine {
             double d = 2 * (bx * cy - by * cx);
             double hb = bx * bx + by * by;
             double hc = cx * cx + cy * cy;
-            Vector2D vertex = new Vector2D((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
+            Vector2D vertex = diagram.createVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
 
             // one transition disappear
             rArc.getEdge().setEdgeStartPoint(lSite, rSite, vertex);
@@ -169,7 +178,6 @@ public class BeachLine {
             // and if so create circle events, to handle the point of collapse.
             attachCircleEvent(lArc);
             attachCircleEvent(rArc);
-            return;
         }
     }
 
@@ -177,7 +185,7 @@ public class BeachLine {
         CircleEvent circle = beachSection.getCircleEvent();
         double x = circle.getEventCoordinate().getX();
         double y = circle.getyCenter();
-        Vector2D vertex = new Vector2D(x, y);
+        Vector2D vertex = diagram.createVertex(x, y);
         VoronoiNode previous = beachSection.getRbPrevious();
         VoronoiNode next = beachSection.getRbNext();
 
@@ -185,6 +193,7 @@ public class BeachLine {
         disappearingTransitions.push(beachSection);
 
         // remove collapsed beach section from beach line
+        logger.trace("Beach section {} collapsed, removing it.", beachSection);
         detachBeachsection(beachSection);
 
         // there could be more than one empty arc at the deletion point, this
@@ -261,6 +270,7 @@ public class BeachLine {
     }
 
     private double leftBreakPoint(VoronoiNode node, double directrix) {
+        logger.trace("Calculating break point for node "+node+" and directrix "+directrix);
         Site site = node.getSite();
         double rfocx = site.getX();
         double rfocy = site.getY();
@@ -274,6 +284,7 @@ public class BeachLine {
         // handle previous  beach line section
         VoronoiNode previousSection = node.getRbPrevious();
         if (previousSection == null) {
+            logger.trace("No beach section to the left.");
             return Double.NEGATIVE_INFINITY;
         }
         Site leftSite = previousSection.getSite();
@@ -299,10 +310,12 @@ public class BeachLine {
     private double rightBreakPoint(VoronoiNode node, double directrix) {
         VoronoiNode rArc = node.getRbNext();
         if (rArc != null) {
-            return this.leftBreakPoint(rArc, directrix);
+            return leftBreakPoint(rArc, directrix);
         }
         Site site = node.getSite();
-        return site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
+        double result = site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
+        logger.trace("No beach section to the right.", result);
+        return result;
     }
 
     private void detachCircleEvent(VoronoiNode arc) {
@@ -318,7 +331,6 @@ public class BeachLine {
         VoronoiNode rArc = arc.getRbNext();
 
         if (lArc == null || rArc == null) {
-            System.out.println("");
             return;
         }
 

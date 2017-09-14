@@ -398,4 +398,13 @@ public class VoronoiNode {
     public void setEdge(Edge edge) {
         this.edge = edge;
     }
+
+    @Override
+    public String toString() {
+        return "VoronoiNode{" +
+                "site=" + site +
+                ", leftSite=" + (rbLeft == null ? "none":rbLeft.site) +
+                ", rightSite=" + (rbRight == null ? "none":rbRight.site) +
+                '}';
+    }
 }
