@@ -6,12 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="benchmark" />
-        <module name="chemistry" />
-        <module name="core" />
-        <module name="javafx" />
-        <module name="mathematics" />
-        <module name="simulation" />
         <module name="singa-benchmark" />
         <module name="singa-chemistry" />
         <module name="singa-core" />
@@ -20,7 +14,6 @@
         <module name="singa-mathematics" />
         <module name="singa-simulation" />
         <module name="singa-units" />
-        <module name="units" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

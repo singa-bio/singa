@@ -2,13 +2,19 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureSelector;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
+import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
+import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
+import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
@@ -21,8 +27,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -188,6 +196,30 @@ public class Fit3DAlignmentTest {
                 .run();
 
         assertTrue(fit3d.getMatches().isEmpty());
+    }
+
+    @Test
+    public void shouldFindInteractionMotif() throws IOException {
+        InteractionContainer interactionContainer = PlipParser.parse("1k1i",
+                Resources.getResourceAsStream("plip/1k1i.xml"));
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("1k1i")
+                .chainIdentifier("A")
+                .parse();
+        interactionContainer.validateWithStructure(structure);
+        interactionContainer.mapToPseudoAtoms(structure);
+        StructuralMotif interactionMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("1k1i_interaction_motif.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(interactionMotif)
+                .target(structure.getFirstChain())
+                .atomFilter(AtomFilter.isArbitrary())
+                .run();
+
+        System.out.println();
     }
 
 //    @Test

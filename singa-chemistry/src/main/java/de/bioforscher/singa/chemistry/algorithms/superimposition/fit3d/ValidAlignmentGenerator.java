@@ -67,10 +67,7 @@ public class ValidAlignmentGenerator {
                             // clone path
                             .map(this::cloneList)
                             // append path by candidateResidue
-                            .map(path -> {
-                                path.add(candidateResidue);
-                                return path;
-                            })
+                            .peek(path -> path.add(candidateResidue))
                     )
                     // evaluate paths:
                     // - they are invalid, when they contain the same residue multiple times
@@ -80,7 +77,7 @@ public class ValidAlignmentGenerator {
                     .filter(path -> {
                         LeafSubstructure<?, ?> recentlyAddedResidue = path.get(path.size() - 1);
                         StructuralFamily recentlyAddedFamily = recentlyAddedResidue.getFamily();
-                        return recentlyAddedFamily == currentReference.getFamily()
+                        return recentlyAddedFamily.equals(currentReference.getFamily())
                                 || currentReference.getExchangeableFamilies().contains(recentlyAddedFamily);
                     })
                     .collect(Collectors.toList());
