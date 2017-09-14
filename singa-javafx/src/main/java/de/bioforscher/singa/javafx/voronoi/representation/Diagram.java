@@ -88,15 +88,15 @@ public class Diagram {
             // edge is removed if:
             //   it is wholly outside the bounding box
             //   it is looking more like a point than a line
-
-
-            if (connectEdge(edge, bbox) ||
-                    clipEdge(edge, bbox) ||
-                    (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
-                edge.setVa(null);
-                edge.setVb(null);
-                edges.remove(edge);
-            }
+            connectEdge(edge, bbox);
+            clipEdge(edge, bbox);
+//            if (connectEdge(edge, bbox) ||
+//                    clipEdge(edge, bbox) ||
+//                    (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
+//                edge.setVa(null);
+//                edge.setVb(null);
+//                edges.remove(edge);
+//            }
         }
     }
 

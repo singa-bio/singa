@@ -3,6 +3,8 @@ package de.bioforscher.singa.javafx.voronoi;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.javafx.voronoi.representation.Diagram;
 import de.bioforscher.singa.javafx.voronoi.representation.Edge;
+import de.bioforscher.singa.mathematics.graphs.voronoi.Voronoi;
+import de.bioforscher.singa.mathematics.graphs.voronoi.VoronoiFaceEdge;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -76,18 +78,9 @@ public class VoronoiDiagram implements Renderer {
         }
 
         Diagram diagram = this.beachLine.getDiagram();
-        logger.trace("Before clean up the following vertices and edges have been created.");
-        for (Vector2D vector : diagram.getVertices()) {
-            logger.trace("{}", vector);
-            getGraphicsContext().setFill(Color.TOMATO);
-            drawPoint(vector);
-        }
-        for (Edge edge : diagram.getEdges()) {
-            logger.trace("{}", edge);
-        }
 
         // bbox = [x, y, width, height]
-        double[] bbox = new double[] {0, 0, getDrawingWidth(), getDrawingHeight()};
+        double[] bbox = new double[]{0, 0, getDrawingWidth(), getDrawingHeight()};
 
         // wrapping-up:
         //   connect dangling edges to bounding box
@@ -98,6 +91,37 @@ public class VoronoiDiagram implements Renderer {
 
         //   add missing edges in order to close opened cells
         diagram.closeCells(bbox);
+
+        getGraphicsContext().setStroke(Color.SEAGREEN);
+        getGraphicsContext().setLineWidth(1);
+
+        // target
+        Voronoi voronoi = new Voronoi(0.01);
+
+        double[] xValuesIn = originalVectors.stream().mapToDouble(Vector2D::getX).toArray();
+        double[] yValuesIn = originalVectors.stream().mapToDouble(Vector2D::getY).toArray();
+
+        List<VoronoiFaceEdge> voronoiFaceEdges = voronoi.generateVoronoi(xValuesIn, yValuesIn, bbox[0], bbox[2], bbox[1], bbox[3]);
+        for (VoronoiFaceEdge voronoiFaceEdge : voronoiFaceEdges) {
+            drawStraight(new Vector2D(voronoiFaceEdge.x1, voronoiFaceEdge.y1), new Vector2D(voronoiFaceEdge.x2, voronoiFaceEdge.y2));
+        }
+
+        getGraphicsContext().setStroke(Color.TOMATO);
+        getGraphicsContext().setFill(Color.TOMATO);
+        getGraphicsContext().setLineWidth(4);
+        logger.trace("After clean up the following vertices and edges have been created.");
+        for (Vector2D vector : diagram.getVertices()) {
+            logger.trace("{}", vector);
+            drawPoint(vector);
+        }
+        getGraphicsContext().setLineWidth(1);
+        for (Edge edge : diagram.getEdges()) {
+
+                logger.trace("{}", edge);
+                drawStraight(edge.getVa(), edge.getVb());
+
+        }
+
 
     }
 
