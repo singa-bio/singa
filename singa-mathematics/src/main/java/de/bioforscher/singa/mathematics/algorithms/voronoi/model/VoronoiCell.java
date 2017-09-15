@@ -1,20 +1,18 @@
-package de.bioforscher.singa.javafx.voronoi.representation;
+package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
-import de.bioforscher.singa.javafx.voronoi.Site;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Cell {
+public class VoronoiCell {
 
-
-    private Site site;
-    private List<HalfEdge> halfEdges;
+    private SiteEvent site;
+    private List<VoronoiHalfEdge> halfEdges;
     private boolean closeMe;
 
-    public Cell(Site site) {
+    public VoronoiCell(SiteEvent site) {
         this.site = site;
         this.halfEdges = new ArrayList<>();
         this.closeMe = false;
@@ -22,28 +20,26 @@ public class Cell {
 
     public int prepareHalfEdges() {
         int iHalfEdge = this.halfEdges.size();
-        Edge edge;
+        VoronoiEdge edge;
         // remove unused half edges
         for (int i = iHalfEdge; i <= 0; i--) {
             edge = this.halfEdges.get(i).getEdge();
-            if (edge.getVb() == null || edge.getVa() == null) {
+            if (edge.getEndingPoint() == null || edge.getStartingPoint() == null) {
                 this.halfEdges.remove(i);
             }
         }
-        // FIXME ascendnig or descending?
-        // halfedges.sort(function(a,b){return b.angle-a.angle;});
-        this.halfEdges.sort(Comparator.comparing(HalfEdge::getAngle));
+        this.halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle));
         return this.halfEdges.size();
     }
 
     public List<Integer> getNeighbourIds() {
         List<Integer> neighbours = new ArrayList<>();
         for (int iHalfedge = this.halfEdges.size(); iHalfedge > 0; iHalfedge--) {
-            Edge edge = this.halfEdges.get(iHalfedge).getEdge();
-            if (edge.getlSite() != null && edge.getlSite().getVoronoiId() != this.site.getVoronoiId()) {
-                neighbours.add(edge.getlSite().getVoronoiId());
-            } else if (edge.getrSite() != null && edge.getrSite().getVoronoiId() != this.site.getVoronoiId()) {
-                neighbours.add(edge.getrSite().getVoronoiId());
+            VoronoiEdge edge = this.halfEdges.get(iHalfedge).getEdge();
+            if (edge.getLeftSite() != null && edge.getLeftSite().getIdentifier() != this.site.getIdentifier()) {
+                neighbours.add(edge.getLeftSite().getIdentifier());
+            } else if (edge.getRightSite() != null && edge.getRightSite().getIdentifier() != this.site.getIdentifier()) {
+                neighbours.add(edge.getRightSite().getIdentifier());
             }
         }
         return neighbours;
@@ -95,7 +91,7 @@ public class Cell {
         //   "if greater than 0 it is to the left, if equal to 0 then it lies
         //   "on the line segment"
         for (int iHalfedge = this.halfEdges.size(); iHalfedge > 0; iHalfedge--) {
-            HalfEdge halfEdge = this.halfEdges.get(iHalfedge);
+            VoronoiHalfEdge halfEdge = this.halfEdges.get(iHalfedge);
             Vector2D p0 = halfEdge.getStartPoint();
             Vector2D p1 = halfEdge.getEndPoint();
             double r = (y - p0.getY()) * (p1.getX() - p0.getX()) - (x - p0.getX()) * (p1.getY() - p0.getY());
@@ -109,19 +105,19 @@ public class Cell {
         return 1;
     }
 
-    public Site getSite() {
+    public SiteEvent getSite() {
         return this.site;
     }
 
-    public void setSite(Site site) {
+    public void setSite(SiteEvent site) {
         this.site = site;
     }
 
-    public List<HalfEdge> getHalfEdges() {
+    public List<VoronoiHalfEdge> getHalfEdges() {
         return this.halfEdges;
     }
 
-    public void setHalfEdges(List<HalfEdge> halfEdges) {
+    public void setHalfEdges(List<VoronoiHalfEdge> halfEdges) {
         this.halfEdges = halfEdges;
     }
 

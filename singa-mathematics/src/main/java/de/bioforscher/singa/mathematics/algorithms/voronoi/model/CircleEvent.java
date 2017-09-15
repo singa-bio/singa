@@ -1,4 +1,4 @@
-package de.bioforscher.singa.javafx.voronoi;
+package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
@@ -11,28 +11,28 @@ public class CircleEvent {
 
     public static final Comparator<CircleEvent> topToBottom = Comparator.comparingDouble((CircleEvent circle) -> circle.getEventCoordinate().getY());
 
-    // arc in beach line
-    private VoronoiNode arc;
+    // beachSection in beach line
+    private BeachSection beachSection;
     // site creating this event
-    private Site site;
+    private SiteEvent site;
     // the sorting in the event calling routine
     private Vector2D eventCoordinate;
     // the centre of the circle
     private double yCenter;
 
-    public VoronoiNode getArc() {
-        return arc;
+    public BeachSection getBeachSection() {
+        return beachSection;
     }
 
-    public void setArc(VoronoiNode arc) {
-        this.arc = arc;
+    public void setBeachSection(BeachSection beachSection) {
+        this.beachSection = beachSection;
     }
 
-    public Site getSite() {
+    public SiteEvent getSite() {
         return site;
     }
 
-    public void setSite(Site site) {
+    public void setSite(SiteEvent site) {
         this.site = site;
     }
 

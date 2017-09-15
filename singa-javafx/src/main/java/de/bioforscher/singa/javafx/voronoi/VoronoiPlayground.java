@@ -1,6 +1,8 @@
 package de.bioforscher.singa.javafx.voronoi;
 
 import de.bioforscher.singa.javafx.renderer.Renderer;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
@@ -21,7 +23,7 @@ import java.util.List;
 public class VoronoiPlayground extends Application implements Renderer {
 
     private Canvas canvas;
-    private VoronoiDiagram voronoiDiagram;
+    private Voronoi voronoiDiagram;
 
     public static void main(String[] args) {
         launch();
@@ -60,13 +62,6 @@ public class VoronoiPlayground extends Application implements Renderer {
 //        vectors.add( new Vector2D( 211.2341697614347, 241.23831556336904));
 //        vectors.add( new Vector2D( 148.00687851502775, 42.19159635139591));
 
-        // {x: 200, y: 200}, {x: 50, y: 250}, {x: 400, y: 100}
-        // vectors.forEach(vector -> System.out.print("{x: "+vector.getX()+", y:"+vector.getY()+"}, "));
-        // initialize voronoi diagram
-
-
-
-
         // setup root
         BorderPane root = new BorderPane();
         root.setCenter(this.canvas);
@@ -75,11 +70,14 @@ public class VoronoiPlayground extends Application implements Renderer {
         nextEventButton.setOnAction(event -> {
             getGraphicsContext().setFill(Color.WHITE);
             drawRectangle(new Vector2D(0,0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
-            List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(20, new Rectangle(500, 500));
+            List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(500, 500));
             getGraphicsContext().setFill(Color.BLACK);
             getGraphicsContext().setLineWidth(3);
             vectors.forEach(this::drawPoint);
-            this.voronoiDiagram = new VoronoiDiagram(vectors, this.canvas);
+            VoronoiDiagram voronoiDiagram = Voronoi.generateVoronoiDiagram(vectors, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
+            getGraphicsContext().setStroke(Color.TOMATO);
+            getGraphicsContext().setLineWidth(2);
+            voronoiDiagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
 
         });
         root.setBottom(nextEventButton);
