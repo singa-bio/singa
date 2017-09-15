@@ -3,8 +3,9 @@ package de.bioforscher.singa.chemistry.physical.families;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.singa.core.utility.Resources;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,11 +13,11 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.chemistry.physical.atoms.AtomName.*;
 
 /**
- * A {@link AminoAcidFamily} should contain the general data of an amino acid of the same type.
+ * A {@link AminoAcidFamily} contains the general information of a type of amino acid.
  *
  * @author cl
  */
-public enum AminoAcidFamily implements StructuralFamily {
+public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
 
     ALANINE("Alanine", "A", "Ala", ALANINE_ATOM_NAMES),
     ARGININE("Arginine", "R", "Arg", ARGININE_ATOM_NAMES),
@@ -40,7 +41,7 @@ public enum AminoAcidFamily implements StructuralFamily {
     VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES),
     UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
 
-    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "physical/leafs/prototypes/";
+    private static final String RESIDUE_PROTOTYPES_BASE_DIR = "de/bioforscher/singa/chemistry/physical/leaves/prototypes/";
     private String name;
     private String oneLetterCode;
     private String threeLetterCode;
@@ -108,9 +109,9 @@ public enum AminoAcidFamily implements StructuralFamily {
     public AminoAcid getPrototype() {
         // potentially replace with (AminoAcid) LigandParserService.parseLeafSubstructureById(getThreeLetterCode());
         return StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource(RESIDUE_PROTOTYPES_BASE_DIR + this.getName().replaceAll(" ", "_").toLowerCase() + ".pdb").getFile())
+                .inputStream(Resources.getResourceAsStream(RESIDUE_PROTOTYPES_BASE_DIR + getName().replaceAll(" ", "_").toLowerCase() + ".pdb"))
                 .parse()
-                .getAllResidues()
+                .getAllAminoAcids()
                 .get(0);
     }
 }

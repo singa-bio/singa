@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.rules;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;

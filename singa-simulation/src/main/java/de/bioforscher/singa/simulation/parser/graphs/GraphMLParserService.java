@@ -1,14 +1,16 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
-import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
+import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class GraphMLParserService extends AbstractXMLParser {
+public class GraphMLParserService extends AbstractXMLParser<AutomatonGraph> {
+
+    private static final Logger logger = LoggerFactory.getLogger(GraphMLParserService.class);
 
     public GraphMLParserService(String filePath) {
         getXmlReader().setContentHandler(new GraphMLContentHandler());
@@ -16,26 +18,14 @@ public class GraphMLParserService extends AbstractXMLParser {
     }
 
     @Override
-    public void fetchResource() {
+    public AutomatonGraph parse() {
+        logger.debug("Parsing graph from file {}.", getFetchResult());
         try {
             this.getXmlReader().parse(getResource());
         } catch (IOException | SAXException e) {
+            logger.error("No graph could be parsed from file {}.", getFetchResult());
             e.printStackTrace();
         }
+        return ((GraphMLContentHandler) this.getXmlReader().getContentHandler()).getGraph();
     }
-
-    @Override
-    public List<Object> parseObjects() {
-        List<Object> list = new ArrayList<>();
-        AutomatonGraph graph = ((GraphMLContentHandler) this.getXmlReader().getContentHandler()).getGraph();
-        list.add(graph);
-        return list;
-    }
-
-    public AutomatonGraph fetchGraph() {
-        fetchResource();
-        List<Object> list = parseObjects();
-        return (AutomatonGraph) list.get(0);
-    }
-
 }

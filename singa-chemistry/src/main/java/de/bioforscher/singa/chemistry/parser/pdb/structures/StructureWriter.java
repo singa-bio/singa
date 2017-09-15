@@ -1,22 +1,19 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntity;
+import de.bioforscher.singa.chemistry.physical.model.Structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A class to write {@link StructuralEntity} objects to PDB format.
- *
- * TODO write test
  *
  * @author fk
  */
@@ -25,38 +22,48 @@ public class StructureWriter {
     private static final Logger logger = LoggerFactory.getLogger(StructureWriter.class);
 
     /**
-     * prevent instantiation
+     * Prevent instantiation.
      */
     private StructureWriter() {
 
     }
 
     /**
-     * Writes a given {@link BranchSubstructure} to PDB format by getting the PDB lines of all {@link LeafSubstructure}s.
+     * Writes a given {@link BranchSubstructure} in PDB format.
      *
      * @param branchSubstructure The {@link BranchSubstructure} to be written.
-     * @param outputPath         The output {@link Path}.
+     * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
-    public static void writeBranchSubstructures(BranchSubstructure<?> branchSubstructure, Path outputPath) throws IOException {
-        logger.info("writing {} to {}", branchSubstructure, outputPath);
+    public static void writeBranchSubstructure(BranchSubstructure<?, ?> branchSubstructure, Path outputPath) throws IOException {
+        logger.info("Writing branch substructure {} to {}.", branchSubstructure, outputPath);
         writeLeafSubstructures(branchSubstructure.getLeafSubstructures(), outputPath);
     }
 
     /**
-     * Writes a given list of {@link LeafSubstructure}s to PDB format.
+     * Writes a given list of {@link LeafSubstructure}s in PDB format.
      *
      * @param leafSubstructures The list of {@link LeafSubstructure}s to be written.
-     * @param outputPath        The output {@link Path}.
+     * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
     public static void writeLeafSubstructures(List<LeafSubstructure<?, ?>> leafSubstructures, Path outputPath) throws IOException {
-        logger.info("writing {} LeafSubstructures to {}", leafSubstructures.size(), outputPath);
+        logger.info("Writing {} leaf substructures to {}.", leafSubstructures.size(), outputPath);
         Files.createDirectories(outputPath.getParent());
-        String pdbFileContent = leafSubstructures.stream()
-                .map(LeafSubstructure::getPdbLines)
-                .flatMap(Collection::stream)
-                .collect(Collectors.joining("\n"));
-        Files.write(outputPath, pdbFileContent.getBytes());
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentaiton(leafSubstructures).getBytes());
     }
+
+    /**
+     * Writes a {@link Structure} in PDB format.
+     *
+     * @param structure The structure to be written.
+     * @param outputPath The output {@link Path}.
+     * @throws IOException If the path cannot be written.
+     */
+    public static void writeStructure(Structure structure, Path outputPath) throws IOException {
+        logger.info("Writing structure {} to {}.", structure, outputPath);
+        Files.createDirectories(outputPath.getParent());
+        Files.write(outputPath, StructureRepresentation.composePdbRepresentaiton(structure).getBytes());
+    }
+
 }

@@ -1,11 +1,15 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.consensus;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,25 +34,51 @@ public class ConsensusAlignmentTest {
 
     @Before
     public void setUp() throws Exception {
-        this.input = Files.list(Paths.get("src/test/resources/consensus_alignment"))
+        StructureParserOptions structureParserOptions = new StructureParserOptions();
+        structureParserOptions.inferIdentifierFromFileName(true);
+        this.input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
+                        .everything()
+                        .setOptions(structureParserOptions)
                         .parse())
-                .map(Structure::getAllLeafs)
-                .map(leaves -> StructuralMotif.fromLeafs(0, leaves))
+                .map(Structure::getAllLeafSubstructures)
+                .map(StructuralMotif::fromLeafIdentifiers)
                 .collect(Collectors.toList());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ConsensusException.class)
     public void shouldFailWithInputOfDifferentSize() {
         this.input.get(0).addSubstructure(new AminoAcid(0, AminoAcidFamily.ALANINE));
-        new ConsensusAlignment(this.input);
+        ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .run();
     }
 
     @Test
     public void shouldCreateConsensusAlignment() throws IOException {
-        ConsensusAlignment consensusAlignment = new ConsensusAlignment(this.input, 0.6);
-        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData().getStructuralMotif().getLeafSubstructures();
+        ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
+                .clusterCutoff(0.6)
+                .run();
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getLeafSubstructures();
+        consensusAlignment.writeClusters(this.folder.getRoot().toPath());
+        assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
+    }
+
+    @Test
+    public void shouldCreateConsensusAlignmentWithRepresentationScheme() throws IOException {
+        ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
+                .inputStructuralMotifs(this.input)
+                .representationSchemeType(RepresentationSchemeType.CB)
+                .clusterCutoff(0.2)
+                .alignWithinClusters(true)
+                .idealSuperimposition(true)
+                .run();
+        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }

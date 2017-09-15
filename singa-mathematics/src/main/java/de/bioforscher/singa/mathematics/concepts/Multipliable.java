@@ -34,6 +34,7 @@ public interface Multipliable<NumberConcept extends Multipliable<NumberConcept>>
      * Multiplies all given Objects (called factors) and returns a new Object
      * (called product). None of the factors shall be changed.
      *
+     * @param <NumberConcept> The concept.
      * @param firstFactor The first factor.
      * @param moreFactors The other factors.
      * @return The product of all factors

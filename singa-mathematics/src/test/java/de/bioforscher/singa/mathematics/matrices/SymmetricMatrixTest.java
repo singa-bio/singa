@@ -109,7 +109,7 @@ public class SymmetricMatrixTest {
     }
 
     @Test
-    public void shouldRetrieveLabelsOfSymmetricMatrix(){
+    public void shouldRetrieveLabelsOfSymmetricMatrix() {
         LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
@@ -126,9 +126,9 @@ public class SymmetricMatrixTest {
     public void shouldCopy() {
         SymmetricMatrix copy1 = this.trueSymmetricMatrix.getCopy();
         SquareMatrix copy2 = this.trueSymmetricMatrix.getCopy();
-        copy1.getElements()[0][0] = Double.NaN;
+        copy1.getElements()[0][0] = Double.MIN_VALUE;
         assertTrue(SymmetricMatrix.isCompact(copy2.getElements()));
-        assertTrue(copy2.getElements()[0][0] != Double.NaN);
+        assertTrue(copy2.getElements()[0][0] != Double.MIN_VALUE);
     }
 
     @Test
@@ -141,5 +141,12 @@ public class SymmetricMatrixTest {
         assertTrue(column.equals(new RegularVector(1.0, 2.0, 3.0)));
         RegularVector row = lsm.getRowByLabel("L1");
         assertTrue(row.equals(new RegularVector(1.0, 2.0, 3.0)));
+    }
+
+    @Test
+    public void shouldGetRow() {
+        assertTrue(this.trueSymmetricMatrix.getRow(0).equals(new RegularVector(1.0, 2.0, 3.0)));
+        assertTrue(this.trueSymmetricMatrix.getRow(1).equals(new RegularVector(2.0, 4.0, 5.0)));
+        assertTrue(this.trueSymmetricMatrix.getRow(2).equals(new RegularVector(3.0, 5.0, 8.0)));
     }
 }

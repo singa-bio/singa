@@ -1,23 +1,24 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.parameters.UnitScaler;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.EntityDependentKineticParameter;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameter;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model.KineticParameterType;
-import de.bioforscher.singa.simulation.model.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.units.UnitScaler;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bioforscher.singa.units.UnitProvider.PER_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.PER_SECOND;
 
 /**
  * @author cl
@@ -55,10 +56,10 @@ public class MichaelisMentenWithKCat implements KineticLaw {
     }
 
     @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node) {
+    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
         // (KCAT * enzyme * substrate) / KM + substrate
-        double substrate = node.getConcentration(this.substrate).getValue().doubleValue();
-        double enzyme = node.getConcentration(this.enzyme).getValue().doubleValue();
+        double substrate = node.getAvailableConcentration(this.substrate, section).getValue().doubleValue();
+        double enzyme = node.getAvailableConcentration(this.enzyme, section).getValue().doubleValue();
         return Quantities.getQuantity(
                 (this.appliedKCat.getValue().doubleValue() * enzyme * substrate)
                         / (this.km.getValue().getValue().doubleValue() + substrate), PER_SECOND);

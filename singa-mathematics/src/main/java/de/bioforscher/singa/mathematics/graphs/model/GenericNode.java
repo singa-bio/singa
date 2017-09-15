@@ -1,6 +1,8 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
-import de.bioforscher.singa.mathematics.vectors.Vector;
+import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.mathematics.vectors.Vectors;
 
 /**
  * The generic node class is a container for the content, that is specified by the content type.
@@ -8,7 +10,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
  * @param <ContentType> The content of the node.
  * @author cl
  */
-public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentType>, Vector> {
+public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentType>, Vector2D, Integer> {
 
     /**
      * The content.
@@ -31,8 +33,13 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
      * @param content    The content.
      */
     public GenericNode(int identifier, ContentType content) {
-        super(identifier);
+        super(identifier, Vectors.generateRandom2DVector(new Rectangle(500, 500)));
         this.content = content;
+    }
+
+    public GenericNode(GenericNode<ContentType> node) {
+        super(node);
+        this.content = node.getContent();
     }
 
     /**

@@ -7,45 +7,110 @@ import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.AtomContainer;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.leafes.Nucleotide;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AtomContainer;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
 import de.bioforscher.singa.core.utility.Range;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * This static class bundles filters for {@link LeafSubstructure}s and {@link BranchSubstructure}s that can be concatenated by using the {@link Predicate}
- * interface.
+ * This static class bundles filters for {@link LeafSubstructure}s and {@link BranchSubstructure}s that can be
+ * concatenated by using the {@link Predicate} interface.
  *
  * @author cl
  * @see Predicate
  */
 public class StructuralEntityFilter {
 
+    public enum BranchFilterType {
+
+        CHAIN(BranchFilter.isChain()),
+        MODEL(BranchFilter.isModel()),
+        STRUCTURAL_MOTIF(BranchFilter.isStructuralMotif());
+
+        private final Predicate<BranchSubstructure<?, ?>> filter;
+
+        BranchFilterType(Predicate<BranchSubstructure<?, ?>> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<BranchSubstructure<?, ?>> getFilter() {
+            return this.filter;
+        }
+    }
+
+    /**
+     * Simple {@link LeafFilter} representation as functional Enum class.
+     */
+    public enum LeafFilterType {
+
+        AMINO_ACID(LeafFilter.isAminoAcid()),
+        ATOM_CONTAINER(LeafFilter.isAtomContainer()),
+        NUCLEOTIDE(LeafFilter.isNucleotide());
+
+        private final Predicate<LeafSubstructure<?, ?>> filter;
+
+        LeafFilterType(Predicate<LeafSubstructure<?, ?>> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<LeafSubstructure<?, ?>> getFilter() {
+            return this.filter;
+        }
+    }
+
+    /**
+     * Simple {@link AtomFilter} representation as functional Enum class.
+     */
+    public enum AtomFilterType {
+        ALPHA_CARBON(AtomFilter.isAlphaCarbon()),
+        ARBITRARY(AtomFilter.isArbitrary()),
+        BACKBONE(AtomFilter.isBackbone()),
+        BACKBONE_CARBON(AtomFilter.isBackboneCarbon()),
+        BACKBONE_NITROGEN(AtomFilter.isBackboneNitrogen()),
+        BACKBONE_OXYGEN(AtomFilter.isBackboneOxygen()),
+        BETA_CARBON(AtomFilter.isBetaCarbon()),
+        CARBON(AtomFilter.isCarbon()),
+        HYDROGEN(AtomFilter.isHydrogen()),
+        NITROGEN(AtomFilter.isNitrogen()),
+        OXYGEN(AtomFilter.isOxygen()),
+        PHOSPHORUS(AtomFilter.isPhosphorus()),
+        SIDE_CHAIN(AtomFilter.isSideChain());
+
+        private final Predicate<Atom> filter;
+
+        AtomFilterType(Predicate<Atom> filter) {
+            this.filter = filter;
+        }
+
+        public Predicate<Atom> getFilter() {
+            return this.filter;
+        }
+    }
+
     /**
      * Filters for {@link BranchSubstructure}s.
      */
     public static final class BranchFilter {
 
-        public static Predicate<BranchSubstructure<?>> hasId(int id) {
-            return branchSubstructure -> branchSubstructure.getIdentifier() == id;
+        public static Predicate<BranchSubstructure<?, ?>> hasIdentifier(Object identifier) {
+            return branchSubstructure -> branchSubstructure.getIdentifier().equals(identifier);
         }
 
-        public static Predicate<BranchSubstructure<?>> isChain() {
+        public static Predicate<BranchSubstructure<?, ?>> isChain() {
             return branch -> branch instanceof Chain;
         }
 
-        public static Predicate<BranchSubstructure<?>> isModel() {
+        public static Predicate<BranchSubstructure<?, ?>> isModel() {
             return branch -> branch instanceof StructuralModel;
         }
 
-        public static Predicate<BranchSubstructure<?>> isStructuralMotif() {
+        public static Predicate<BranchSubstructure<?, ?>> isStructuralMotif() {
             return branch -> branch instanceof StructuralMotif;
         }
-
     }
 
     /**
@@ -53,7 +118,7 @@ public class StructuralEntityFilter {
      */
     public static final class ChainFilter {
         public static Predicate<Chain> isInChain(String chainIdentifier) {
-            return chain -> chainIdentifier.equals(chain.getChainIdentifier());
+            return chain -> chainIdentifier.equals(chain.getIdentifier());
         }
     }
 
@@ -62,8 +127,8 @@ public class StructuralEntityFilter {
      */
     public static final class LeafFilter {
 
-        public static Predicate<LeafSubstructure<?, ?>> hasId(int id) {
-            return leafSubstructure -> leafSubstructure.getIdentifier() == id;
+        public static Predicate<LeafSubstructure<?, ?>> hasIdentifier(Object identifier) {
+            return leafSubstructure -> leafSubstructure.getIdentifier().equals(identifier);
         }
 
         public static Predicate<LeafSubstructure<?, ?>> isAminoAcid() {
@@ -78,9 +143,9 @@ public class StructuralEntityFilter {
             return leaf -> leaf instanceof Nucleotide;
         }
 
-        public static Predicate<LeafSubstructure<?, ?>> isWithinRange(int startId, int endId) {
-            Range<Integer> range = new Range<>(startId, endId);
-            return leaf -> range.isInRange(leaf.getIdentifier());
+        public static Predicate<LeafSubstructure<?, ?>> isWithinRange(int startIdentifier, int endIdentifier) {
+            Range<Integer> range = new Range<>(startIdentifier, endIdentifier);
+            return leaf -> range.isInRange(leaf.getIdentifier().getSerial());
         }
     }
 
@@ -95,6 +160,14 @@ public class StructuralEntityFilter {
 
         public static Predicate<Atom> hasAtomName(AtomName atomName) {
             return atom -> Objects.equals(atom.getAtomNameString(), atomName.getName());
+        }
+
+        public static Predicate<Atom> hasAtomNames(String... atomNames) {
+            Predicate<Atom> predicate = atom -> false;
+            for (String atomName : atomNames) {
+                predicate = predicate.or(hasAtomName(atomName));
+            }
+            return predicate;
         }
 
         public static Predicate<Atom> hasIdentifier(int identifier) {
@@ -152,7 +225,7 @@ public class StructuralEntityFilter {
             return atom -> Objects.equals(atom.getAtomNameString(), AtomName.P.getName());
         }
 
-        public static Predicate<Atom> isSidechain() {
+        public static Predicate<Atom> isSideChain() {
             return isBackbone().negate();
         }
 

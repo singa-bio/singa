@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 /**
  * @author cl
  */
-public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D> {
+public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> {
 
     private Element element;
 

@@ -22,9 +22,9 @@ public class JaccardMetric<Type> implements Metric<Collection<Type>> {
         if (first.isEmpty() || second.isEmpty()) {
             return 1.0;
         }
-        Set<Object> union = new HashSet<>(first);
+        Set<Type> union = new HashSet<>(first);
         union.addAll(second);
-        Set<Object> intersection = new HashSet<>(first);
+        Set<Type> intersection = new HashSet<>(first);
         intersection.retainAll(second);
         return (double) (union.size() - intersection.size()) / (double) union.size();
     }

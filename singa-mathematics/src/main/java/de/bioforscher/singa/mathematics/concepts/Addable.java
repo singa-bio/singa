@@ -18,7 +18,7 @@ public interface Addable<NumberConcept extends Addable<? extends NumberConcept>>
 
     /**
      * Adds all the given Objects (called summands) and returns a new Object (called sum). No summand shall be changed.
-     *
+     * @param <NumberConcept> The concept.
      * @param summands The summands.
      * @return The sum of all Objects.
      */

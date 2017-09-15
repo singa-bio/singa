@@ -13,13 +13,13 @@ import java.util.List;
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */
-public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, VectorType extends Vector>
-        implements Node<NodeType, VectorType> {
+public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType>
+        implements Node<NodeType, VectorType, IdentifierType> {
 
     /**
      * The identifier.
      */
-    private int identifier;
+    private IdentifierType identifier;
 
     /**
      * The neighbours.
@@ -36,7 +36,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      *
      * @param identifier The identifier.
      */
-    public AbstractNode(int identifier) {
+    public AbstractNode(IdentifierType identifier) {
         this.identifier = identifier;
         this.neighbours = new ArrayList<>();
     }
@@ -47,13 +47,17 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      * @param identifier The identifier
      * @param position The position
      */
-    public AbstractNode(int identifier, VectorType position) {
+    public AbstractNode(IdentifierType identifier, VectorType position) {
         this(identifier);
         this.position = position;
     }
 
+    public AbstractNode(NodeType node) {
+        this(node.getIdentifier(), node.getPosition().getCopy());
+    }
+
     @Override
-    public int getIdentifier() {
+    public IdentifierType getIdentifier() {
         return this.identifier;
     }
 
@@ -62,7 +66,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      *
      * @param identifier The identifier.
      */
-    public void setIdentifier(int identifier) {
+    public void setIdentifier(IdentifierType identifier) {
         this.identifier = identifier;
     }
 
@@ -90,7 +94,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      *
      * @param node The node to remove.
      */
-    public void removeNeighbour(RegularNode node) {
+    public void removeNeighbour(NodeType node) {
         this.neighbours.remove(node);
     }
 
@@ -100,9 +104,10 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
      * @param node The node.
      * @return true if the list of neighbors contains the given node.
      */
-    public boolean hasNeighbour(RegularNode node) {
+    public boolean hasNeighbour(NodeType node) {
         return this.neighbours.contains(node);
     }
+
 
     @Override
     public VectorType getPosition() {
@@ -120,27 +125,18 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType>, 
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.identifier;
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractNode<?, ?, ?> that = (AbstractNode<?, ?, ?>) o;
+
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
-        NodeType other = (NodeType) obj;
-        return this.identifier == other.getIdentifier();
+    public int hashCode() {
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     @Override

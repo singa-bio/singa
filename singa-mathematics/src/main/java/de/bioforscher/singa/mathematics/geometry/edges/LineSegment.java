@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * A line segment is a part of a line that is bounded by two distinct points and
  * "contains" every point on the line between and including its end points.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class LineSegment extends Line {
 

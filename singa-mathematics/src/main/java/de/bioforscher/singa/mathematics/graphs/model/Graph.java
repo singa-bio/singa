@@ -1,7 +1,10 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Optional;
 
 /**
  * The graph contains nodes connected by edges of a certain type.
@@ -10,7 +13,7 @@ import java.util.Set;
  * @param <EdgeType> The type of the edges in the graph.
  * @author cl
  */
-public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge<NodeType>> {
+public interface Graph<NodeType extends Node<NodeType, ? extends Vector, IdentifierType>, EdgeType extends Edge<NodeType>, IdentifierType> {
 
     /**
      * Returns all nodes.
@@ -25,7 +28,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * @param identifier The identifier of the node.
      * @return The node with the given identifier.
      */
-    NodeType getNode(int identifier);
+    NodeType getNode(IdentifierType identifier);
 
     /**
      * Adds a node to the graph.
@@ -33,21 +36,29 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * @param node The node to be added.
      * @return The identifier of the node.
      */
-    int addNode(NodeType node);
+    IdentifierType addNode(NodeType node);
 
     /**
-     * Removes the node with the given identifier from the node. Edges connected to this node will also be removed.
+     * Removes the node from the graph. Edges connected to this node will also be removed.
      *
-     * @param identifier The identifer of the node to be removed.
+     * @param node The node to be removed.
+     * @return The node that has been removed.
      */
-    void removeNode(int identifier);
+    NodeType removeNode(NodeType node);
+
+    /**
+     * Removes the node with the given identifier from the graph. Edges connected to this node will also be removed.
+     *
+     * @return The node that has been removed.
+     */
+    NodeType removeNode(IdentifierType identifier);
 
     /**
      * Returns all edges.
      *
      * @return All edges.
      */
-    Set<EdgeType> getEdges();
+    Collection<EdgeType> getEdges();
 
     /**
      * Returns the node with the given identifier.
@@ -62,8 +73,8 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * present in the graph it is overwritten.
      *
      * @param identifier The identifier of the edge to be inserted.
-     * @param source     The source node.
-     * @param target     The target node.
+     * @param source The source node.
+     * @param target The target node.
      * @return The identifier of the added edge.
      */
     int addEdgeBetween(int identifier, NodeType source, NodeType target);
@@ -72,7 +83,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * Adds the given edge to the graph setting the given source an target nodes. If an edge with the identifier is
      * already present in the graph it is overwritten.
      *
-     * @param edge   The edge to be added.
+     * @param edge The edge to be added.
      * @param source The source node.
      * @param target The target node.
      * @return The identifier of the added edge.
@@ -87,6 +98,12 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      * @return The identifier of the added edge.
      */
     int addEdgeBetween(NodeType source, NodeType target);
+
+    default Optional<EdgeType> getEdgeBetween(NodeType source, NodeType target) {
+        return getEdges().stream()
+                .filter(edge -> edge.containsNode(source) && edge.containsNode(target))
+                .findAny();
+    }
 
     /**
      * Returns true, if the graph contains the node and false otherwise.
@@ -109,12 +126,7 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
      *
      * @return The next free node identifier.
      */
-    default int nextNodeIdentifier() {
-        if (getNodes().isEmpty()) {
-            return 0;
-        }
-        return getEdges().size();
-    }
+    IdentifierType nextNodeIdentifier();
 
     /**
      * Returns the next free edge identifier.
@@ -128,5 +140,14 @@ public interface Graph<NodeType extends Node<NodeType, ?>, EdgeType extends Edge
         return getEdges().size() + 1;
     }
 
+    default <G extends Graph<NodeType, EdgeType, IdentifierType>> G getCopy() {
+        try {
+            return (G) getClass().getConstructor(getClass()).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
+        }
+    }
 
 }

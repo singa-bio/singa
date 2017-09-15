@@ -1,6 +1,11 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
-import java.util.*;
+
+import de.bioforscher.singa.mathematics.vectors.Vector;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a simple implementation of the graph interface, that handles the most common operations defined for adding
@@ -12,14 +17,9 @@ import java.util.*;
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */
-public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>, EdgeType extends
-        Edge<NodeType>, VectorType extends de.bioforscher.singa.mathematics.vectors.Vector>
-        implements Graph<NodeType, EdgeType> {
-
-    /**
-     * A iterating variable to add a new node.
-     */
-    private int nextNodeIdentifier;
+public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+        EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType>
+        implements Graph<NodeType, EdgeType, IdentifierType> {
 
     /**
      * A iterating variable to add a new edge.
@@ -29,7 +29,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
     /**
      * The nodes of the graph.
      */
-    private Map<Integer, NodeType> nodes;
+    private Map<IdentifierType, NodeType> nodes;
 
     /**
      * The edges of the graph.
@@ -55,32 +55,55 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
         this.edges = new HashMap<>(edgeCapacity);
     }
 
+
     @Override
-    public int nextNodeIdentifier() {
-        return this.nextNodeIdentifier++;
+    public Collection<NodeType> getNodes() {
+        return this.nodes.values();
     }
 
     @Override
-    public Set<NodeType> getNodes() {
-        return new HashSet<>(this.nodes.values());
-    }
-
-    @Override
-    public NodeType getNode(int identifier) {
+    public NodeType getNode(IdentifierType identifier) {
         return this.nodes.get(identifier);
     }
 
     @Override
-    public int addNode(NodeType node) {
+    public IdentifierType addNode(NodeType node) {
         this.nodes.put(node.getIdentifier(), node);
         return node.getIdentifier();
     }
 
     @Override
-    public void removeNode(int identifier) {
-        this.nodes.entrySet().removeIf(node -> node.getValue().getIdentifier() == identifier);
-        this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(identifier));
+    public NodeType removeNode(NodeType node) {
+        NodeType nodeToBeRemoved = this.nodes.values().stream()
+                .filter(entry -> entry.equals(node))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Could not remove node " + node + "."));
+
+        for (NodeType neighbor : nodeToBeRemoved.getNeighbours()) {
+            neighbor.getNeighbours().remove(nodeToBeRemoved);
+        }
+
+        this.nodes.remove(node.getIdentifier());
+        this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(node));
+        return nodeToBeRemoved;
     }
+
+    @Override
+    public NodeType removeNode(IdentifierType identifier) {
+        NodeType nodeToBeRemoved = this.nodes.values().stream()
+                .filter(entry -> entry.getIdentifier().equals(identifier))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Could not remove node with identifier" + identifier + "."));
+
+        for (NodeType neighbor : nodeToBeRemoved.getNeighbours()) {
+            neighbor.getNeighbours().remove(nodeToBeRemoved);
+        }
+
+        this.nodes.remove(identifier);
+        this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(nodeToBeRemoved));
+        return nodeToBeRemoved;
+    }
+
 
     @Override
     public int nextEdgeIdentifier() {
@@ -88,8 +111,8 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType>,
     }
 
     @Override
-    public Set<EdgeType> getEdges() {
-        return new HashSet<>(this.edges.values());
+    public Collection<EdgeType> getEdges() {
+        return this.edges.values();
     }
 
     @Override

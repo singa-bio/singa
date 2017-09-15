@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D> {
+public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D, Integer> {
 
     // TODO add a reference of this to Species
 
@@ -44,14 +44,13 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addNextAtom(Element element, int charge) {
-        Element ion = element.asIon(charge);
+        final Element ion = element.asIon(charge);
         return addNextAtom(ion);
     }
 
-    public int addNextAtom(Element element, int charge, int numberOfNeutrons) {
-        Element ion = element.asIon(charge);
-        ion.asIsotope(numberOfNeutrons);
-        return addNextAtom(ion);
+    public int addNextAtom(Element element, int charge, int massNumber) {
+        final Element modifiedElement = element.asIon(charge).asIsotope(massNumber);
+        return addNextAtom(modifiedElement);
     }
 
     @Override
@@ -65,16 +64,17 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int addEdgeBetween(MoleculeAtom source, MoleculeAtom target, MoleculeBondType bondType) {
-        MoleculeBond bond = new MoleculeBond(nextEdgeIdentifier());
+        final MoleculeBond bond = new MoleculeBond(nextEdgeIdentifier());
         bond.setType(bondType);
         return addEdgeBetween(bond, source, target);
     }
 
-    public MoleculeBond getEdgeBetween(MoleculeAtom source, MoleculeAtom target) {
-        return this.getEdges().stream()
-                .filter(bond -> bond.containsNode(source) && bond.containsNode(target))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find any edge connecting " + source + " and " + target + "."));
+    @Override
+    public Integer nextNodeIdentifier() {
+        if (getNodes().isEmpty()) {
+            return 0;
+        }
+        return getNodes().size();
     }
 
     public int countAtomsOfElement(Element element) {
@@ -97,7 +97,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
         // replace every second bond with a double bond
         for (List<MoleculeBond> path : aromaticPaths) {
             for (int i = 0; i < path.size(); i++) {
-                if (i % 2  == 0) {
+                if (i % 2 == 0) {
                     path.get(i).setType(MoleculeBondType.DOUBLE_BOND);
                 } else {
                     path.get(i).setType(MoleculeBondType.SINGLE_BOND);

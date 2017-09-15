@@ -4,8 +4,7 @@ package de.bioforscher.singa.mathematics.topology;
  * A metric space is a set for which distances between all members of the set
  * are defined. Those distances, taken together, are called a metric on the set.
  *
- * @author Christoph Leberecht
- * @version 0.0.1
+ * @author cl
  */
 public interface MetricSpace {
 

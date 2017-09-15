@@ -1,9 +1,8 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.Species;
-import de.bioforscher.singa.chemistry.parser.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
@@ -15,19 +14,20 @@ import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Currently supports parsing nodes and connecting them with the given edges.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class GraphMLContentHandler implements ContentHandler {
 
     private AutomatonGraph graph;
 
     private BioNode node;
-    private double[] currentPosition;
+    private double currentX;
+    private double currentY;
     private HashMap<String, ChemicalEntity> speciesMap;
 
     private String tag;
@@ -35,7 +35,6 @@ public class GraphMLContentHandler implements ContentHandler {
     public GraphMLContentHandler() {
         this.graph = new AutomatonGraph();
         this.speciesMap = new HashMap<>();
-        this.currentPosition = new double[2];
         this.tag = "";
     }
 
@@ -45,28 +44,20 @@ public class GraphMLContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-
+        // position
         switch (this.tag) {
             case "x":
-                double x = Double.parseDouble(new String(ch, start, length));
-                this.currentPosition[Vector2D.X_INDEX] = x;
+                this.currentX = Double.parseDouble(new String(ch, start, length));
                 break;
             case "y":
-                double y = Double.parseDouble(new String(ch, start, length));
-                this.currentPosition[Vector2D.X_INDEX] = y;
-                this.node.setPosition(new Vector2D(this.currentPosition));
-                this.currentPosition = new double[2];
+                this.currentY = Double.parseDouble(new String(ch, start, length));
                 break;
         }
-
+        // chemical entities
         if (this.tag.startsWith("CHEBI")) {
             Double value = Double.parseDouble(new String(ch, start, length));
             this.node.setConcentration(this.speciesMap.get(this.tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
-        } else if (this.tag.equals("P42212")) {
-            Double value = Double.parseDouble(new String(ch, start, length));
-            this.node.setConcentration(this.speciesMap.get(this.tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
         }
-
     }
 
     @Override
@@ -80,6 +71,7 @@ public class GraphMLContentHandler implements ContentHandler {
                 this.tag = "";
                 break;
             case "node":
+                this.node.setPosition(new Vector2D(this.currentX, this.currentY));
                 this.graph.addNode(this.node);
         }
     }
@@ -114,13 +106,11 @@ public class GraphMLContentHandler implements ContentHandler {
         switch (qName) {
             case "key":
                 String chebiId = atts.getValue("id");
+                // parse species that are present as keys
                 if (chebiId.startsWith("CHEBI")) {
                     ChEBIParserService service = new ChEBIParserService(chebiId);
                     Species entity = service.fetchSpecies();
                     this.speciesMap.put(chebiId, entity);
-                } else if (chebiId.equals("P42212")) {
-                    Enzyme gfp = new Enzyme.Builder("P42212").name("GFP").molarMass(26886.0).build();
-                    this.speciesMap.put("P42212", gfp);
                 }
                 break;
             case "data":

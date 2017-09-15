@@ -8,7 +8,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
  * or n-polytope. For example a two-dimensional polygon is a 2-polytope and a
  * three-dimensional polyhedron is a 3-polytope.
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public interface Polytope<VectorType extends Vector> {
 

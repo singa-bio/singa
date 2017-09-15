@@ -13,8 +13,7 @@ import java.util.Arrays;
  * The {@code RegularVector} class handles the general properties and operations of vectors. A vector is a composition
  * of elements (double values) that specify the position of a point in a multidimensional topology.
  *
- * @author Christoph Leberecht
- * @version 2.0.1
+ * @author cl
  */
 public class RegularVector implements Vector {
 
@@ -40,6 +39,7 @@ public class RegularVector implements Vector {
      * A factory method for the creation of a new specific vector. This method can be used when the dimensionality of
      * the resulting vector is known in advance.
      *
+     * @param <VectorDimension> The concrete implementation.
      * @param elements The elements of this vector.
      * @param typeClass The class of the resulting vector.
      * @return A new vector with the specified class and values.

@@ -1,12 +1,11 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
-import de.bioforscher.singa.units.UnitProvider;
-import de.bioforscher.singa.units.quantities.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 
-import static de.bioforscher.singa.units.UnitProvider.GRAM_PER_MOLE;
+import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
 
 /**
  * A chemical element or element is a species of atoms having the same number of protons. Generally no elements need
@@ -55,10 +54,11 @@ public class Element {
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight.
      *
-     * @param name         The name.
-     * @param symbol       The symbol.
-     * @param protonNumber The proton number.
-     * @param atomicWeight The atomic weight.
+     * @param name                  The name.
+     * @param symbol                The symbol.
+     * @param protonNumber          The proton number.
+     * @param atomicWeight          The atomic weight.
+     * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight, String electronConfiguration) {
         this.name = name;
@@ -72,12 +72,13 @@ public class Element {
 
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight in
-     * {@link UnitProvider#GRAM_PER_MOLE g/mol}.
+     * {@link MolarMass#GRAM_PER_MOLE g/mol}.
      *
-     * @param name         The name.
-     * @param symbol       The symbol.
-     * @param protonNumber The proton number.
-     * @param atomicWeight The atomic weight.
+     * @param name                  The name.
+     * @param symbol                The symbol.
+     * @param protonNumber          The proton number.
+     * @param atomicWeight          The atomic weight.
+     * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);
@@ -171,6 +172,7 @@ public class Element {
 
     /**
      * Estimates the Number of potential bonds this element forms.
+     *
      * @return The number of potential bonds this element forms
      */
     public int getNumberOfPotentialBonds() {
@@ -230,12 +232,13 @@ public class Element {
     /**
      * Converts this element into an isotope by adjusting its neutron count.
      *
-     * @param numberOfNeutrons The number of neutrons of the isotope.
+     * @param massNumber The mass number (number of protons + neutrons).
      * @return An isotope of this element.
      */
-    public Element asIsotope(int numberOfNeutrons) {
-        if (numberOfNeutrons != this.neutronNumber) {
-            return new Element(this, this.electronNumber, numberOfNeutrons);
+    public Element asIsotope(int massNumber) {
+        int neutronNumber = massNumber - this.protonNumber;
+        if (neutronNumber != this.neutronNumber) {
+            return new Element(this, this.electronNumber, neutronNumber);
         }
         return this;
     }
@@ -276,6 +279,10 @@ public class Element {
         return this.electronNumber - this.protonNumber;
     }
 
+    public int getMassNumber() {
+        return this.neutronNumber + this.protonNumber;
+    }
+
     /**
      * Returns {@code true} if this Element is an isotope and {@code false} otherwise.
      *
@@ -287,7 +294,7 @@ public class Element {
 
     @Override
     public String toString() {
-        return (this.neutronNumber != this.protonNumber ? this.neutronNumber : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
+        return (this.neutronNumber != this.protonNumber ? getMassNumber() : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
     }
 
     @Override

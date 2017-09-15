@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,15 +26,15 @@ public class Fit3DSiteAlignmentTest {
     @Before
     public void setUp() throws IOException {
         Structure bindingSiteStructure1 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("truncated_1asz_A_renum.pdb").getFile())
+                .fileLocation(Resources.getResourceAsFileLocation("truncated_1asz_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite1 = StructuralMotif.fromLeafs(1, bindingSiteStructure1.getAllLeafs());
+        this.bindingSite1 = StructuralMotif.fromLeafIdentifiers(bindingSiteStructure1.getAllLeafSubstructures());
         Structure bindingSiteStructure2 = StructureParser.local()
-                .fileLocation(Thread.currentThread().getContextClassLoader().getResource("truncated_3m4p_A_renum.pdb").getFile())
+                .fileLocation(Resources.getResourceAsFileLocation("truncated_3m4p_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite2 = StructuralMotif.fromLeafs(1, bindingSiteStructure2.getAllLeafs());
+        this.bindingSite2 = StructuralMotif.fromLeafIdentifiers(bindingSiteStructure2.getAllLeafSubstructures());
     }
 
     @Test
@@ -55,7 +56,7 @@ public class Fit3DSiteAlignmentTest {
     @Test
     public void shouldCreateGutteridgeBindingSiteAlignment() {
         // exchanges have only be added for one of the sites because they are transitive
-        StructuralMotifs.assignExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()
                 .site(this.bindingSite1)
                 .vs(this.bindingSite2)

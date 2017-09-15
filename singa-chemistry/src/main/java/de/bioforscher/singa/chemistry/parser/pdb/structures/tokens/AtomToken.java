@@ -4,8 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leafes.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.core.utility.Range;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
@@ -19,6 +18,9 @@ import java.util.regex.Pattern;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.LEFT;
 import static de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.Justification.RIGHT;
 
+/**
+ * The atom and hetatm token. Containing information of atoms.
+ */
 public enum AtomToken implements PDBToken {
 
     RECORD_TYPE(Range.of(1, 6), LEFT),
@@ -28,7 +30,7 @@ public enum AtomToken implements PDBToken {
     RESIDUE_NAME(Range.of(18, 20), RIGHT),
     CHAIN_IDENTIFIER(Range.of(22), LEFT),
     RESIDUE_SERIAL(Range.of(23, 26), RIGHT),
-    RESIDUE_INSERTION(Range.of(27), LEFT),
+    RESIDUE_INSERTION(Range.of(27, 30), LEFT),
     X_COORDINATE(Range.of(31, 38), RIGHT),
     Y_COORDINATE(Range.of(39, 46), RIGHT),
     Z_COORDINATE(Range.of(47, 54), RIGHT),
@@ -37,18 +39,10 @@ public enum AtomToken implements PDBToken {
     ELEMENT_SYMBOL(Range.of(77, 78), RIGHT),
     ELEMENT_CHARGE(Range.of(79, 80), LEFT);
 
-    /**
-     * @author cl
-     */
-    /**
-     * A pattern describing all record names associated with this token structure. Use this to filter for lines that are
-     * parsable with this token.
-     */
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
-    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000",
-            new DecimalFormatSymbols(Locale.US));
-    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00",
-            new DecimalFormatSymbols(Locale.US));
+
+    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+    private static DecimalFormat temperatureFormat = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final Range<Integer> columns;
     private final Justification justification;
@@ -78,10 +72,10 @@ public enum AtomToken implements PDBToken {
         List<String> lines = new ArrayList<>();
         for (Atom atom : leaf.getNodes()) {
             StringBuilder currentLine = new StringBuilder();
-            if (leaf instanceof AminoAcid) {
+            if (!leaf.isAnnotatedAsHetAtom()) {
                 currentLine.append(RECORD_TYPE.createTokenString("ATOM"));
             } else {
-                currentLine.append("HETATM");
+                currentLine.append(RECORD_TYPE.createTokenString("HETATM"));
             }
             currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getIdentifier())))
                     .append(" ")
@@ -90,8 +84,8 @@ public enum AtomToken implements PDBToken {
                     .append(RESIDUE_NAME.createTokenString(leaf.getName().toUpperCase()))
                     .append(" ")
                     .append(leaf.getChainIdentifier())
-                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier())))
-                    .append("    ") // RESIDUE_INSERTION not yet implemented + 3 spaces for coordinates
+                    .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
+                    .append(RESIDUE_INSERTION.createTokenString(String.valueOf(leaf.getInsertionCode())))
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
                     .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))

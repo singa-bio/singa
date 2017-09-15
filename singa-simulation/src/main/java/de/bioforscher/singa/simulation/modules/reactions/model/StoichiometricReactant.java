@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 
 /**
  * {@code StoichiometricReactant}s are {@link Reactant}s that are consumed or produced during the reaction. A

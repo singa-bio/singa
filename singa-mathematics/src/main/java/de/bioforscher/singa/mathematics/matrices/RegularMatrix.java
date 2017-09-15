@@ -7,14 +7,14 @@ import de.bioforscher.singa.mathematics.vectors.Vector;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
-import static de.bioforscher.singa.mathematics.matrices.FastMatrices.*;
+import static de.bioforscher.singa.mathematics.matrices.FastMatrices.createRegularMatrix;
 
 /**
  * The {@code RegularMatrix} class is the primary implementation of the {@link Matrix} interface. Using double arrays
  * to store values it provides the fundamental operations of linear algebra. This implementation declares all values
  * as final.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia: Matrix</a>
  */
 public class RegularMatrix implements Matrix, Serializable {
@@ -132,7 +132,7 @@ public class RegularMatrix implements Matrix, Serializable {
     @Override
     public String getDimensionAsString() {
         return String.valueOf(this.getRowDimension()) + "x"
-                + String.valueOf(this.getRowDimension());
+                + String.valueOf(this.getColumnDimension());
     }
 
     @Override
@@ -146,8 +146,8 @@ public class RegularMatrix implements Matrix, Serializable {
     }
 
     @Override
-    public RegularVector getRow(int rowNumber) {
-        return new RegularVector(this.elements[rowNumber]);
+    public RegularVector getRow(int rowIndex) {
+        return new RegularVector(this.elements[rowIndex]);
     }
 
     @Override
@@ -156,10 +156,10 @@ public class RegularMatrix implements Matrix, Serializable {
     }
 
     @Override
-    public RegularVector getColumn(int columnNumber) {
+    public RegularVector getColumn(int columnIndex) {
         double[] columnValues = new double[getRowDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
-            columnValues[rowIndex] = this.elements[rowIndex][columnNumber];
+            columnValues[rowIndex] = this.elements[rowIndex][columnIndex];
         }
         return new RegularVector(columnValues);
     }

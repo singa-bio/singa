@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.parser.sbml.converter;
 
-import de.bioforscher.singa.units.UnitPrefixes;
+import de.bioforscher.singa.features.units.UnitPrefixes;
 import org.sbml.jsbml.ListOf;
 import org.sbml.jsbml.UnitDefinition;
 import org.slf4j.Logger;

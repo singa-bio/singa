@@ -8,8 +8,7 @@ import java.util.Set;
  * The SpaceProvider class has some often used spaces predefined. It is also
  * possible to retrieve all predefined Spaces as a unmodifiable Set.
  *
- * @author Christoph Leberecht
- * @version 0.0.1
+ * @author cl
  */
 public class SpaceProvider {
 

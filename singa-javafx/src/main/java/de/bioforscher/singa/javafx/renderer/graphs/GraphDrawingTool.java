@@ -19,11 +19,10 @@ import java.util.HashMap;
  * (1991): 1129-1164.<br>
  * With some modifications.
  *
- * @author Christoph Leberecht
- * @version 1.0.1
+ * @author cl
  */
-public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeType extends Edge<NodeType>,
-        GraphType extends Graph<NodeType, EdgeType>> {
+public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
+        IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private DoubleProperty drawingWidth;
     private DoubleProperty drawingHeight;
@@ -41,6 +40,8 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D>, EdgeTyp
      *
      * @param totalIterations Number of total iterations
      * @param graph           The graph to arrange
+     * @param drawingHeight   The height property.
+     * @param drawingWidth    The width property.
      */
     public GraphDrawingTool(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
         this.drawingWidth = drawingWidth;

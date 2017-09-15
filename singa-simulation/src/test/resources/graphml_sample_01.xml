@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml>
+  <key attr.name="xCoordinate" attr.type="double" for="node" id="x"/>
+  <key attr.name="yCoordinate" attr.type="double" for="node" id="y"/>
+  <key attr.name="Concentration_CHEBI:30742" attr.type="double" for="node" id="CHEBI:30742">
+    <default>0.0</default>
+  </key>
+  <key attr.name="Concentration_CHEBI:17790" attr.type="double" for="node" id="CHEBI:17790">
+    <default>0.0</default>
+  </key>
+  <key attr.name="Concentration_CHEBI:27266" attr.type="double" for="node" id="CHEBI:27266">
+    <default>0.0</default>
+  </key>
+  <key attr.name="Concentration_CHEBI:17992" attr.type="double" for="node" id="CHEBI:17992">
+    <default>0.0</default>
+  </key>
+  <graph edgedefault="undirected" id="BioGraph">
+    <node id="0">
+      <data key="x">54.54545454545455</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="1">
+      <data key="x">109.0909090909091</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="2">
+      <data key="x">163.63636363636363</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="3">
+      <data key="x">218.1818181818182</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="4">
+      <data key="x">272.72727272727275</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="5">
+      <data key="x">327.27272727272725</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="6">
+      <data key="x">381.8181818181818</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="7">
+      <data key="x">436.3636363636364</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="8">
+      <data key="x">490.90909090909093</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="9">
+      <data key="x">545.4545454545455</data>
+      <data key="y">54.54545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="10">
+      <data key="x">54.54545454545455</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="11">
+      <data key="x">109.0909090909091</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="12">
+      <data key="x">163.63636363636363</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="13">
+      <data key="x">218.1818181818182</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="14">
+      <data key="x">272.72727272727275</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="15">
+      <data key="x">327.27272727272725</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="16">
+      <data key="x">381.8181818181818</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="17">
+      <data key="x">436.3636363636364</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="18">
+      <data key="x">490.90909090909093</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="19">
+      <data key="x">545.4545454545455</data>
+      <data key="y">109.0909090909091</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="20">
+      <data key="x">54.54545454545455</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="21">
+      <data key="x">109.0909090909091</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="22">
+      <data key="x">163.63636363636363</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="23">
+      <data key="x">218.1818181818182</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="24">
+      <data key="x">272.72727272727275</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="25">
+      <data key="x">327.27272727272725</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="26">
+      <data key="x">381.8181818181818</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="27">
+      <data key="x">436.3636363636364</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="28">
+      <data key="x">490.90909090909093</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="29">
+      <data key="x">545.4545454545455</data>
+      <data key="y">163.63636363636363</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="30">
+      <data key="x">54.54545454545455</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="31">
+      <data key="x">109.0909090909091</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="32">
+      <data key="x">163.63636363636363</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="33">
+      <data key="x">218.1818181818182</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="34">
+      <data key="x">272.72727272727275</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="35">
+      <data key="x">327.27272727272725</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="36">
+      <data key="x">381.8181818181818</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="37">
+      <data key="x">436.3636363636364</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="38">
+      <data key="x">490.90909090909093</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="39">
+      <data key="x">545.4545454545455</data>
+      <data key="y">218.1818181818182</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="40">
+      <data key="x">54.54545454545455</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="41">
+      <data key="x">109.0909090909091</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="42">
+      <data key="x">163.63636363636363</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="43">
+      <data key="x">218.1818181818182</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="44">
+      <data key="x">272.72727272727275</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="45">
+      <data key="x">327.27272727272725</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="46">
+      <data key="x">381.8181818181818</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="47">
+      <data key="x">436.3636363636364</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="48">
+      <data key="x">490.90909090909093</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="49">
+      <data key="x">545.4545454545455</data>
+      <data key="y">272.72727272727275</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="50">
+      <data key="x">54.54545454545455</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="51">
+      <data key="x">109.0909090909091</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="52">
+      <data key="x">163.63636363636363</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="53">
+      <data key="x">218.1818181818182</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="54">
+      <data key="x">272.72727272727275</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="55">
+      <data key="x">327.27272727272725</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="56">
+      <data key="x">381.8181818181818</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="57">
+      <data key="x">436.3636363636364</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="58">
+      <data key="x">490.90909090909093</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="59">
+      <data key="x">545.4545454545455</data>
+      <data key="y">327.27272727272725</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="60">
+      <data key="x">54.54545454545455</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="61">
+      <data key="x">109.0909090909091</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="62">
+      <data key="x">163.63636363636363</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="63">
+      <data key="x">218.1818181818182</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="64">
+      <data key="x">272.72727272727275</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="65">
+      <data key="x">327.27272727272725</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="66">
+      <data key="x">381.8181818181818</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="67">
+      <data key="x">436.3636363636364</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="68">
+      <data key="x">490.90909090909093</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="69">
+      <data key="x">545.4545454545455</data>
+      <data key="y">381.8181818181818</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="70">
+      <data key="x">54.54545454545455</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="71">
+      <data key="x">109.0909090909091</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="72">
+      <data key="x">163.63636363636363</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="73">
+      <data key="x">218.1818181818182</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="74">
+      <data key="x">272.72727272727275</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="75">
+      <data key="x">327.27272727272725</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="76">
+      <data key="x">381.8181818181818</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="77">
+      <data key="x">436.3636363636364</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="78">
+      <data key="x">490.90909090909093</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="79">
+      <data key="x">545.4545454545455</data>
+      <data key="y">436.3636363636364</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="80">
+      <data key="x">54.54545454545455</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="81">
+      <data key="x">109.0909090909091</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="82">
+      <data key="x">163.63636363636363</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="83">
+      <data key="x">218.1818181818182</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="84">
+      <data key="x">272.72727272727275</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="85">
+      <data key="x">327.27272727272725</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="86">
+      <data key="x">381.8181818181818</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="87">
+      <data key="x">436.3636363636364</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="88">
+      <data key="x">490.90909090909093</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="89">
+      <data key="x">545.4545454545455</data>
+      <data key="y">490.90909090909093</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="90">
+      <data key="x">54.54545454545455</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="91">
+      <data key="x">109.0909090909091</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="92">
+      <data key="x">163.63636363636363</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="93">
+      <data key="x">218.1818181818182</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="94">
+      <data key="x">272.72727272727275</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">1.0</data>
+      <data key="CHEBI:17790">1.0</data>
+      <data key="CHEBI:27266">1.0</data>
+      <data key="CHEBI:17992">1.0</data>
+    </node>
+    <node id="95">
+      <data key="x">327.27272727272725</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="96">
+      <data key="x">381.8181818181818</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="97">
+      <data key="x">436.3636363636364</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="98">
+      <data key="x">490.90909090909093</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <node id="99">
+      <data key="x">545.4545454545455</data>
+      <data key="y">545.4545454545455</data>
+      <data key="CHEBI:30742">0.0</data>
+      <data key="CHEBI:17790">0.0</data>
+      <data key="CHEBI:27266">0.0</data>
+      <data key="CHEBI:17992">0.0</data>
+    </node>
+    <edge id="0" source="0" target="1"/>
+    <edge id="1" source="1" target="2"/>
+    <edge id="2" source="2" target="3"/>
+    <edge id="3" source="3" target="4"/>
+    <edge id="4" source="4" target="5"/>
+    <edge id="5" source="5" target="6"/>
+    <edge id="6" source="6" target="7"/>
+    <edge id="7" source="7" target="8"/>
+    <edge id="8" source="8" target="9"/>
+    <edge id="10" source="10" target="11"/>
+    <edge id="11" source="11" target="12"/>
+    <edge id="12" source="12" target="13"/>
+    <edge id="13" source="13" target="14"/>
+    <edge id="14" source="14" target="15"/>
+    <edge id="15" source="15" target="16"/>
+    <edge id="16" source="16" target="17"/>
+    <edge id="17" source="17" target="18"/>
+    <edge id="18" source="18" target="19"/>
+    <edge id="20" source="20" target="21"/>
+    <edge id="21" source="21" target="22"/>
+    <edge id="22" source="22" target="23"/>
+    <edge id="23" source="23" target="24"/>
+    <edge id="24" source="24" target="25"/>
+    <edge id="25" source="25" target="26"/>
+    <edge id="26" source="26" target="27"/>
+    <edge id="27" source="27" target="28"/>
+    <edge id="28" source="28" target="29"/>
+    <edge id="30" source="30" target="31"/>
+    <edge id="31" source="31" target="32"/>
+    <edge id="32" source="32" target="33"/>
+    <edge id="33" source="33" target="34"/>
+    <edge id="34" source="34" target="35"/>
+    <edge id="35" source="35" target="36"/>
+    <edge id="36" source="36" target="37"/>
+    <edge id="37" source="37" target="38"/>
+    <edge id="38" source="38" target="39"/>
+    <edge id="40" source="40" target="41"/>
+    <edge id="41" source="41" target="42"/>
+    <edge id="42" source="42" target="43"/>
+    <edge id="43" source="43" target="44"/>
+    <edge id="44" source="44" target="45"/>
+    <edge id="45" source="45" target="46"/>
+    <edge id="46" source="46" target="47"/>
+    <edge id="47" source="47" target="48"/>
+    <edge id="48" source="48" target="49"/>
+    <edge id="50" source="50" target="51"/>
+    <edge id="51" source="51" target="52"/>
+    <edge id="52" source="52" target="53"/>
+    <edge id="53" source="53" target="54"/>
+    <edge id="54" source="54" target="55"/>
+    <edge id="55" source="55" target="56"/>
+    <edge id="56" source="56" target="57"/>
+    <edge id="57" source="57" target="58"/>
+    <edge id="58" source="58" target="59"/>
+    <edge id="60" source="60" target="61"/>
+    <edge id="61" source="61" target="62"/>
+    <edge id="62" source="62" target="63"/>
+    <edge id="63" source="63" target="64"/>
+    <edge id="64" source="64" target="65"/>
+    <edge id="65" source="65" target="66"/>
+    <edge id="66" source="66" target="67"/>
+    <edge id="67" source="67" target="68"/>
+    <edge id="68" source="68" target="69"/>
+    <edge id="70" source="70" target="71"/>
+    <edge id="71" source="71" target="72"/>
+    <edge id="72" source="72" target="73"/>
+    <edge id="73" source="73" target="74"/>
+    <edge id="74" source="74" target="75"/>
+    <edge id="75" source="75" target="76"/>
+    <edge id="76" source="76" target="77"/>
+    <edge id="77" source="77" target="78"/>
+    <edge id="78" source="78" target="79"/>
+    <edge id="80" source="80" target="81"/>
+    <edge id="81" source="81" target="82"/>
+    <edge id="82" source="82" target="83"/>
+    <edge id="83" source="83" target="84"/>
+    <edge id="84" source="84" target="85"/>
+    <edge id="85" source="85" target="86"/>
+    <edge id="86" source="86" target="87"/>
+    <edge id="87" source="87" target="88"/>
+    <edge id="88" source="88" target="89"/>
+    <edge id="90" source="90" target="91"/>
+    <edge id="91" source="91" target="92"/>
+    <edge id="92" source="92" target="93"/>
+    <edge id="93" source="93" target="94"/>
+    <edge id="94" source="94" target="95"/>
+    <edge id="95" source="95" target="96"/>
+    <edge id="96" source="96" target="97"/>
+    <edge id="97" source="97" target="98"/>
+    <edge id="98" source="98" target="99"/>
+    <edge id="101" source="0" target="10"/>
+    <edge id="102" source="1" target="11"/>
+    <edge id="103" source="2" target="12"/>
+    <edge id="104" source="3" target="13"/>
+    <edge id="105" source="4" target="14"/>
+    <edge id="106" source="5" target="15"/>
+    <edge id="107" source="6" target="16"/>
+    <edge id="108" source="7" target="17"/>
+    <edge id="109" source="8" target="18"/>
+    <edge id="110" source="9" target="19"/>
+    <edge id="111" source="10" target="20"/>
+    <edge id="112" source="11" target="21"/>
+    <edge id="113" source="12" target="22"/>
+    <edge id="114" source="13" target="23"/>
+    <edge id="115" source="14" target="24"/>
+    <edge id="116" source="15" target="25"/>
+    <edge id="117" source="16" target="26"/>
+    <edge id="118" source="17" target="27"/>
+    <edge id="119" source="18" target="28"/>
+    <edge id="120" source="19" target="29"/>
+    <edge id="121" source="20" target="30"/>
+    <edge id="122" source="21" target="31"/>
+    <edge id="123" source="22" target="32"/>
+    <edge id="124" source="23" target="33"/>
+    <edge id="125" source="24" target="34"/>
+    <edge id="126" source="25" target="35"/>
+    <edge id="127" source="26" target="36"/>
+    <edge id="128" source="27" target="37"/>
+    <edge id="129" source="28" target="38"/>
+    <edge id="130" source="29" target="39"/>
+    <edge id="131" source="30" target="40"/>
+    <edge id="132" source="31" target="41"/>
+    <edge id="133" source="32" target="42"/>
+    <edge id="134" source="33" target="43"/>
+    <edge id="135" source="34" target="44"/>
+    <edge id="136" source="35" target="45"/>
+    <edge id="137" source="36" target="46"/>
+    <edge id="138" source="37" target="47"/>
+    <edge id="139" source="38" target="48"/>
+    <edge id="140" source="39" target="49"/>
+    <edge id="141" source="40" target="50"/>
+    <edge id="142" source="41" target="51"/>
+    <edge id="143" source="42" target="52"/>
+    <edge id="144" source="43" target="53"/>
+    <edge id="145" source="44" target="54"/>
+    <edge id="146" source="45" target="55"/>
+    <edge id="147" source="46" target="56"/>
+    <edge id="148" source="47" target="57"/>
+    <edge id="149" source="48" target="58"/>
+    <edge id="150" source="49" target="59"/>
+    <edge id="151" source="50" target="60"/>
+    <edge id="152" source="51" target="61"/>
+    <edge id="153" source="52" target="62"/>
+    <edge id="154" source="53" target="63"/>
+    <edge id="155" source="54" target="64"/>
+    <edge id="156" source="55" target="65"/>
+    <edge id="157" source="56" target="66"/>
+    <edge id="158" source="57" target="67"/>
+    <edge id="159" source="58" target="68"/>
+    <edge id="160" source="59" target="69"/>
+    <edge id="161" source="60" target="70"/>
+    <edge id="162" source="61" target="71"/>
+    <edge id="163" source="62" target="72"/>
+    <edge id="164" source="63" target="73"/>
+    <edge id="165" source="64" target="74"/>
+    <edge id="166" source="65" target="75"/>
+    <edge id="167" source="66" target="76"/>
+    <edge id="168" source="67" target="77"/>
+    <edge id="169" source="68" target="78"/>
+    <edge id="170" source="69" target="79"/>
+    <edge id="171" source="70" target="80"/>
+    <edge id="172" source="71" target="81"/>
+    <edge id="173" source="72" target="82"/>
+    <edge id="174" source="73" target="83"/>
+    <edge id="175" source="74" target="84"/>
+    <edge id="176" source="75" target="85"/>
+    <edge id="177" source="76" target="86"/>
+    <edge id="178" source="77" target="87"/>
+    <edge id="179" source="78" target="88"/>
+    <edge id="180" source="79" target="89"/>
+    <edge id="181" source="80" target="90"/>
+    <edge id="182" source="81" target="91"/>
+    <edge id="183" source="82" target="92"/>
+    <edge id="184" source="83" target="93"/>
+    <edge id="185" source="84" target="94"/>
+    <edge id="186" source="85" target="95"/>
+    <edge id="187" source="86" target="96"/>
+    <edge id="188" source="87" target="97"/>
+    <edge id="189" source="88" target="98"/>
+    <edge id="190" source="89" target="99"/>
+  </graph>
+</graphml>

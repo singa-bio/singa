@@ -1,9 +1,10 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * A chemical reaction is a process that leads to the transformation of one set of chemical substances to another.
@@ -64,19 +65,20 @@ public abstract class Reaction {
     /**
      * Determines the concentration of reactants that influence the velocity of the reaction.
      *
-     * @param node The node, where the concentrations are collected.
-     * @param role The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
-     *             ReactantRole#DECREASING} for Substrates).
+     * @param node    The node, where the concentrations are collected.
+     * @param role    The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
+     *                ReactantRole#DECREASING} for Substrates).
+     * @param section The cell section.
      * @return The total concentration.
      */
-    protected Quantity<MolarConcentration> determineConcentration(BioNode node, ReactantRole role) {
+    protected Quantity<MolarConcentration> determineConcentration(BioNode node, CellSection section, ReactantRole role) {
         double product = 1.0;
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
                 if (isElementary()) {
-                    product *= node.getConcentration(reactant.getEntity()).getValue().doubleValue();
+                    product *= node.getAvailableConcentration(reactant.getEntity(), section).getValue().doubleValue();
                 } else {
-                    product *= Math.pow(node.getConcentration(reactant.getEntity()).getValue().doubleValue(),
+                    product *= Math.pow(node.getAvailableConcentration(reactant.getEntity(), section).getValue().doubleValue(),
                             reactant.getReactionOrder());
                 }
             }
@@ -88,10 +90,11 @@ public abstract class Reaction {
      * Determines the actual acceleration of concentration that would result in a change in concentration if the
      * reaction is occurring in the given {@link BioNode}.
      *
-     * @param node The node containing the concentrations of species subject to this reaction.
+     * @param node    The node containing the concentrations of species subject to this reaction.
+     * @param section The cell section.
      * @return The acceleration of concentration (change in reaction rate for the species of this reaction)
      */
-    public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node);
+    public abstract Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section);
 
     public abstract Set<ChemicalEntity<?>> collectAllReferencedEntities();
 
@@ -117,7 +120,7 @@ public abstract class Reaction {
         String substrates = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
                 .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        +  substrate.getEntity().getIdentifier())
+                        + substrate.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
         String products = this.stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)

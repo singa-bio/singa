@@ -1,24 +1,18 @@
 package de.bioforscher.singa.core.parser;
 
-import java.util.List;
-
 /**
  * Implements methods to fetch resource and parse articles into the right format.
  *
- * @author Christoph Leberecht
+ * @param <ResultType> The result of the parsing.
+ * @author cl
  */
-public interface Parser {
+public interface Parser<ResultType> {
 
     /**
-     * Fetches the resource.
-     */
-    void fetchResource();
-
-    /**
-     * Parses the result of {@code fetchResource()}.
+     * Returns the result of the parsing.
      *
-     * @return a list of Objects
+     * @return The result.
      */
-    List<Object> parseObjects();
+    ResultType parse();
 
 }

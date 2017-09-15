@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia: Dijkstra's algorithm</a>
  */
-public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> {
+public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType> {
 
     private Queue<NodeType> queue;
     private Map<NodeType, Integer> distances;
@@ -23,15 +23,7 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Private constructor to prevent external instantiation.
      */
-    private ShortestPathFinder() {
-
-    }
-
-    /**
-     * Initializes the Shortest path finder with a given source node.
-     * @param sourceNode the source node.
-     */
-    private void initialize(NodeType sourceNode) {
+    private ShortestPathFinder(NodeType sourceNode) {
         this.distances = new HashMap<>();
         this.predecessors = new HashMap<>();
         this.queue = new LinkedList<>();
@@ -42,22 +34,24 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Returns the shortest path originating from the source node. The target node is the first node that satisfies
      * target predicate. E.g. To to search for a specific node in the graph it is possible to use the identifier in the
-     * predicate. If no shortest path can be found null is returned.
+     * predicate. If no path can be found null is returned.
+     *
      * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
      * @param <VectorType> The type of the position of the node.
      * @param <NodeType> The type of the node.
+     * @param <IdentifierType> The type of the identifier.
      * @return The shortest path.
      */
-    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
-        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
-        pathfinder.initialize(sourceNode);
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            VectorType extends Vector, IdentifierType> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
+        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
-                if (path!= null) {
+                if (path != null) {
                     return path;
                 }
             }
@@ -68,24 +62,26 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
     /**
      * Returns the shortest path originating from the source node. The target node is the first node that satisfies
      * target predicate. Additionally all nodes on the path to the target predicate have to fulfill the track predicate.
-     * If no shortest path can be found null is returned.
+     * If no path can be found null is returned.
+     *
      * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
      * @param trackPredicate The predicate all nodes on the path have to fulfill.
      * @param <VectorType> The type of the position of the node.
      * @param <NodeType> The type of the node.
+     * @param <IdentifierType> The type of the identifier.
      * @return The shortest path.
      */
-    public static <VectorType extends Vector, NodeType extends Node<NodeType, VectorType>> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
-        ShortestPathFinder<VectorType, NodeType> pathfinder = new ShortestPathFinder<>();
-        pathfinder.initialize(sourceNode);
+    public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+            VectorType extends Vector, IdentifierType> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 if (trackPredicate.test(currentNode)) {
                     LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
-                    if (path!= null) {
+                    if (path != null) {
                         return path;
                     }
                 }
@@ -96,8 +92,8 @@ public class ShortestPathFinder<VectorType extends Vector, NodeType extends Node
 
     /**
      * Checks whether the current target fulfills the predicate. If this is the case the path from the source to the
-     * target is returned. Otherwise the target is added to the queue, it is referenced in the predecessors map and
-     * the distance is set in the distance map.
+     * target is returned. Otherwise the target is added to the queue, it is referenced in the predecessors map and the
+     * distance is set in the distance map.
      *
      * @param source The source node.
      * @param target The target node.

@@ -8,7 +8,7 @@ import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 
-public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeBond, MoleculeGraph> {
+public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeBond, Integer, MoleculeGraph> {
 
     private MoleculeRendererOptions moleculeOptions = new MoleculeRendererOptions();
 
@@ -28,7 +28,7 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
         circlePoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
-        drawTextCenteredOnPoint(atom.getElement().toString()+"."+atom.getIdentifier(), atom.getPosition());
+        drawTextCenteredOnPoint(atom.getElement().toString() + "." + atom.getIdentifier(), atom.getPosition());
     }
 
     @Override
@@ -45,17 +45,17 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
         LineSegment connectingSegment = new LineSegment(bond.getSource().getPosition(), bond.getTarget().getPosition());
         if (bond.getType() == MoleculeBondType.DOUBLE_BOND) {
             // draw upper parallel
-            LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter()/2.0)*0.5);
+            LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
             drawLineSegment(upperParallelSegment);
             // draw lower parallel
-            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter()/2.0)*0.5);
+            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
             drawLineSegment(lowerParallelSegment);
         } else if (bond.getType() == MoleculeBondType.AROMATIC_BOND) {
             // draw upper parallel
-            LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter()/2.0)*0.5);
+            LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
             drawLineSegment(upperParallelSegment);
             // draw lower parallel
-            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter()/2.0)*0.5);
+            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
             dashLineSegment(lowerParallelSegment, 2d, 4d);
         } else {
             // draw single bond

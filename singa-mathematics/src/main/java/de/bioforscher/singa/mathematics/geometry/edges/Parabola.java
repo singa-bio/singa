@@ -12,7 +12,7 @@ import java.util.*;
  * of points in that plane that are equidistant from both the directrix and the
  * focus.
  *
- * @author Christoph Leberecht
+ * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Parabola">Wikipedia: Parabola</a>
  */
 public class Parabola {

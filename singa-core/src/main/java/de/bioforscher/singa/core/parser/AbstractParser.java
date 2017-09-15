@@ -1,35 +1,54 @@
 package de.bioforscher.singa.core.parser;
 
+import java.io.InputStream;
+
 /**
  * The class allows definition of resource path and storage for the fetched result.
  *
- * @author Christoph Leberecht
+ * @param <ResultType> The result of the parsing.
+ * @author cl
  */
-public abstract class AbstractParser<ContainerType> implements Parser {
+public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 
     /**
-     * The resource - preferably URL or file path
+     * The resource - preferably the plain URL or file path.
      */
     private String resource;
 
     /**
-     * The result that is to be parsed.
+     * The result of any fetch operation that is to be parsed.
      */
-    private FetchResultContainer<ContainerType> fetchResult;
+    private InputStream fetchResult;
 
+    /**
+     * Returns the resource.
+     * @return The resource.
+     */
     public String getResource() {
         return this.resource;
     }
 
-    public void setResource(String resource) {
+    /**
+     * Sets the resource.
+     * @param resource The resource.
+     */
+    protected void setResource(String resource) {
         this.resource = resource;
     }
 
-    public FetchResultContainer<ContainerType> getFetchResult() {
+    /**
+     * After fetching the current resource, this returns the fetch result.
+     * @return The fetch result.
+     */
+    public InputStream getFetchResult() {
         return this.fetchResult;
     }
 
-    public void setFetchResult(FetchResultContainer<ContainerType> fetchResult) {
+    /**
+     * Sets the result of any fetch operation.
+     * @param fetchResult The fetch result.
+     */
+    protected void setFetchResult(InputStream fetchResult) {
         this.fetchResult = fetchResult;
     }
 

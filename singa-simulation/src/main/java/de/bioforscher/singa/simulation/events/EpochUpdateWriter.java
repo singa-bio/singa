@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 
@@ -14,9 +14,9 @@ import java.util.*;
 
 /**
  * This class can be used to write the concentrations of a node to a file while
- * simulating.
+ * simulating. This appends ech time
  *
- * @author Christoph Leberecht
+ * @author cl
  */
 public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 

@@ -1,22 +1,59 @@
 package de.bioforscher.singa.chemistry.parser.pdb.structures;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.core.utility.Resources;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
+import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StructureParserTest {
 
-    @Test
-    public void shouldParseUncomplicatedStructure() {
+    private static Structure hemoglobin;
+    private static Structure cyanase;
+
+    @BeforeClass
+    public static void parseUncomplicatedStructure() {
         // "normal" structure
-        Structure structure = StructureParser.online()
+        hemoglobin = StructureParser.online()
                 .pdbIdentifier("1BUW")
                 .parse();
+    }
+
+    @BeforeClass
+    public static void parseResiduesWithModifiedAminoAcids() {
+        cyanase = StructureParser.online()
+                .pdbIdentifier("1DW9")
+                .parse();
+    }
+
+    @Test
+    public void shouldParsePDBIdentifierFromHeader() {
+        assertEquals("1buw", hemoglobin.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseOneLineTitleFromHeader() {
+        assertEquals("CRYSTAL STRUCTURE OF S-NITROSO-NITROSYL HUMAN HEMOGLOBIN A", hemoglobin.getTitle());
+    }
+
+    @Test
+    public void shouldParseMultiLineTitleFromHeader() {
+        assertEquals("STRUCTURE OF CYANASE REVEALS THAT A NOVEL DIMERIC AND DECAMERIC ARRANGEMENT OF SUBUNITS IS REQUIRED FOR FORMATION OF THE ENZYME ACTIVE SITE", cyanase.getTitle());
     }
 
     @Test
@@ -27,43 +64,40 @@ public class StructureParserTest {
                 .model(2)
                 .allChains()
                 .parse();
+        assertEquals(1, structure.getAllModels().size());
+        assertEquals(new Integer(2), structure.getFirstModel().getIdentifier());
     }
 
     @Test
     public void shouldParseChain() {
-        // parse one chain of multi chain structure
+        // parse one chainIdentifier of multi chainIdentifier structure
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1BRR")
-                .chain("A")
+                .chainIdentifier("A")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals("A", structure.getFirstChain().getIdentifier());
     }
 
     @Test
     public void shouldParseModelAndChain() {
-        // parse one model of multi model structure and only a specific chain
+        // parse one model of multi model structure and only a specific chainIdentifier
         Structure structure = StructureParser.online()
                 .pdbIdentifier("2N5E")
                 .model(3)
-                .chain("B")
+                .chainIdentifier("B")
                 .parse();
+        assertEquals(1, structure.getAllChains().size());
+        assertEquals(new Integer(3), structure.getFirstModel().getIdentifier());
+        assertEquals("B", structure.getFirstChain().getIdentifier());
     }
 
     @Test
     public void shouldParseChainOfMultiModel() {
-        // parse only a specific chain of all models in a structure
+        // parse only a specific chainIdentifier of all models in a structure
         Structure structure = StructureParser.online()
                 .pdbIdentifier("2N5E")
-                .chain("B")
-                .parse();
-    }
-
-
-    // structure with modified amino acids
-    @Test
-    public void shouldParseResiduesWithModifiedAminoAcids() {
-        Structure structure = StructureParser.online()
-                .pdbIdentifier("1DW9")
-                .everything()
+                .chainIdentifier("B")
                 .parse();
     }
 
@@ -76,27 +110,64 @@ public class StructureParserTest {
                 .parse();
     }
 
-    // structure with modified nucleotides
     @Test
-    public void shouldParseResiduesWithModifiedNucleotides() {
-        // TODO some strange bonds between 620 and 621 issue #41
+    public void shouldParseStructureWithInsertionCodes() {
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
-    }
 
-    // structure with insertion codes
-    @Test
-    public void shouldParseStructureWithInsertionCodes() {
-        // TODO issue #35
+        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
+                .collect(Collectors.toList());
+
+        assertEquals(2, leavesWithInsertionCode.size());
+
     }
 
     @Test
     public void shouldParseFromLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         Structure structure = StructureParser.local()
                 .localPDB(localPdb, "1C0A")
+                .parse();
+    }
+
+    @Test
+    public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+        Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
+        List<Structure> structure = StructureParser.local()
+                .localPDB(localPdb)
+                .chainList(chainList, ":")
+                .parse();
+        assertTrue(structure.get(0).getAllLeafSubstructures().size() > 0);
+    }
+
+    @Test
+    public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+        assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
+    }
+
+    @Test
+    public void shouldAssignInformationFromFileName() {
+        StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
+        Structure structure = StructureParser.local()
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .everything()
+                .setOptions(options)
+                .parse();
+
+        assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
+        assertEquals("1gl0", structure.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseFromInputStream() {
+        InputStream inputStream = Resources.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
+        Structure structure = StructureParser.local()
+                .inputStream(inputStream)
                 .parse();
     }
 
@@ -108,5 +179,20 @@ public class StructureParserTest {
                 .parse();
     }
 
+    @Test(expected = UncheckedIOException.class)
+    public void shouldThrowErrorWhenFileDoesNotExist() {
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("schalalala")
+                .everything()
+                .parse();
+    }
+
+    @Test
+    public void shouldParseAllChainsFromLocalFile() {
+        StructureParser.local()
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .allChains()
+                .parse();
+    }
 
 }

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.model.rules;
 
-import de.bioforscher.singa.chemistry.descriptive.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.singa.units.quantities.MolarConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
@@ -12,7 +12,7 @@ import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.bioforscher.singa.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl

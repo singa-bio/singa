@@ -9,7 +9,14 @@ package de.bioforscher.singa.core.utility;
  */
 public class Pair<ValueType> {
 
+    /**
+     * The first value.
+     */
     private final ValueType first;
+
+    /**
+     * The second value.
+     */
     private final ValueType second;
 
     /**

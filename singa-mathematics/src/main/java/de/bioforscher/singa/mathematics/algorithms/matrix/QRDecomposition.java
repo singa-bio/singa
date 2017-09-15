@@ -6,17 +6,17 @@ import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Let {@code A} be a real matrix with dimensions {@code m x n (m >= n)} and {@code rank(A) = n}. {@code A} can be
  * decomposed into {@code A = Q * R}, where {@code Q} with dimensions {@code m x n} is orthogonal ({@code Q^T * Q = E})
  * and {@code R} is {@code n x n} and a upper triangular matrix. This so called {@code QR} decomposition or {@code QR}
  * factorization is often used to solve the linear least squares problem, and is the basis for a particular eigenvalue
- * algorithm, the QR algorithm.</br>
+ * algorithm, the QR algorithm.<br>
  * <p>
  * This class implements the modified Gram-Schmidt Algorithm, which uses the {@link
- * Vectors#orthonormalizeVectors(List)} method (see documentation there for more details). </br>
+ * Vectors#orthonormalizeVectors(List)} method (see documentation there for more details). <br>
  * <p>
  * Use the static method {@link #calculateQRDecomposition(Matrix)} to obtain a {@link QRDecomposition} that contains the
  * original matrix {@code A}, the orthogonal matrix {@code Q}, and the upper triangular matrix {@code R}.
@@ -78,6 +78,7 @@ public class QRDecomposition {
      * Calculates the QR decomposition of the given matrix, using the modified Graham-Schmidt algorithm.
      *
      * @param originalMatrix The matrix to be decomposed.
+     * @return The QR Decomposition
      */
     public static QRDecomposition calculateQRDecomposition(Matrix originalMatrix) {
         // initialize decomposition

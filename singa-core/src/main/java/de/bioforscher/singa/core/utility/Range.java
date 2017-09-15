@@ -1,31 +1,57 @@
 package de.bioforscher.singa.core.utility;
 
 /**
+ * The range defines any interval between two comparable objects.
+ *
  * @author cl
  */
-public class Range<Type extends Comparable<Type>> implements Bounded<Type> {
+public class Range<RangeType extends Comparable<RangeType>> implements Bounded<RangeType> {
 
-    private Pair<Type> values;
+    /**
+     * The bounds of this range.
+     */
+    private Pair<RangeType> values;
 
+    /**
+     * Creates a new Range.
+     * @param lowerBound The lower bond.
+     * @param upperBound The upper bond.
+     * @param <Type> The type of Comparable used.
+     * @return The new Range.
+     */
     public static <Type extends Comparable<Type>> Range<Type> of(Type lowerBound, Type upperBound) {
         return new Range<>(lowerBound, upperBound);
     }
 
+    /**
+     * Creates a new Range, where lower and upper bond are identical.
+     * @param bound The bond.
+     * @param <Type> The type of Comparable used.
+     * @return The new Range.
+     */
     public static <Type extends Comparable<Type>> Range<Type> of(Type bound) {
         return new Range<>(bound, bound);
     }
 
-    public Range(Type lowerBound, Type upperBound) {
+    /**
+     * Creates a new Range.
+     * @param lowerBound The lower bond.
+     * @param upperBound The upper bond.
+     */
+    public Range(RangeType lowerBound, RangeType upperBound) {
+        if (lowerBound.compareTo(upperBound) > 0) {
+            this.values = new Pair<>(upperBound, lowerBound);
+        }
         this.values = new Pair<>(lowerBound, upperBound);
     }
 
     @Override
-    public Type getLowerBound() {
+    public RangeType getLowerBound() {
         return this.values.getFirst();
     }
 
     @Override
-    public Type getUpperBound() {
+    public RangeType getUpperBound() {
         return this.values.getSecond();
     }
 

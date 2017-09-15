@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leafes.AminoAcid;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -46,16 +46,16 @@ public class RepresentationSchemeTest {
     @Test
     public void shouldRepresentLastHeavySidechain() throws IOException {
         AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
-        RepresentationScheme lastHavySidechainRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDECHAIN);
+        RepresentationScheme lastHavySidechainRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN);
         assertArrayEquals(tyrosine.getAtomByName(AtomName.OH).getPosition().getElements(),
                 lastHavySidechainRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
                 1E-6);
     }
 
     @Test
-    public void shouldRepresentSidechaiCentroid() throws IOException {
+    public void shouldRepresentSideChainCentroid() throws IOException {
         AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
-        RepresentationScheme sidechainCentroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDECHAIN_CENTROID);
+        RepresentationScheme sidechainCentroidRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID);
         assertArrayEquals(new double[]{-0.22149999999999997, 1.09525, -0.906125},
                 sidechainCentroidRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
                 1E-6);

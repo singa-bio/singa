@@ -1,7 +1,8 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.model;
 
+import de.bioforscher.singa.features.quantities.ReactionRate;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.units.quantities.ReactionRate;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface KineticLaw {
 
-    Quantity<ReactionRate> calculateAcceleration(BioNode node);
+    Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section);
 
     void prepareAppliedRateConstants();
 
