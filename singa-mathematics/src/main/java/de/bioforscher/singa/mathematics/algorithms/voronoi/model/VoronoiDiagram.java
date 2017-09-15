@@ -1,32 +1,65 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
+import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Created by Christoph on 20/05/2017.
+ * Contains all information about the voronoi diagram created by {@link Voronoi#generateVoronoiDiagram(Collection,
+ * Rectangle)}. Vertices are created for every point two edges meet and for intersections with the bounding box. Edges
+ * are splitting cells that are associated to each of the processed vectors.
  */
 public class VoronoiDiagram {
 
+    /**
+     * The logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(VoronoiDiagram.class);
 
+    /**
+     * The cells mapped by the identifier of the processed site.
+     */
     private Map<Integer, VoronoiCell> cells;
+
+    /**
+     * The edges splitting cells.
+     */
     private List<VoronoiEdge> edges;
+
+    /**
+     * All intersections of edges and bounding box.
+     */
     private List<Vector2D> vertices;
 
+    /**
+     * Left border of the bounding box
+     */
     private double leftBorder;
+
+    /**
+     * Right border of the bounding box
+     */
     private double rightBorder;
+
+    /**
+     * Top border of the bounding box.
+     */
     private double topBorder;
+
+    /**
+     * Bottom border of the bounding box.
+     */
     private double bottomBorder;
 
-    public VoronoiDiagram(Rectangle boundingBox) {
+    /**
+     * Creates a new Voronoi diagram with the bounding box.
+     * @param boundingBox The bounding box surrounding the voronoi diagram.
+     */
+    VoronoiDiagram(Rectangle boundingBox) {
         this.cells = new HashMap<>();
         this.edges = new ArrayList<>();
         this.vertices = new ArrayList<>();
@@ -37,62 +70,97 @@ public class VoronoiDiagram {
         this.bottomBorder = boundingBox.getTopMostYPosition();
     }
 
+    /**
+     * Gets all edges of the voronoi diagram.
+     * @return
+     */
     public List<VoronoiEdge> getEdges() {
         return this.edges;
     }
 
-
-    public void setEdges(List<VoronoiEdge> edges) {
-        this.edges = edges;
-    }
-
-    public VoronoiEdge createEdge(SiteEvent lSite, SiteEvent rSite, Vector2D va, Vector2D vb) {
-        VoronoiEdge edge = new VoronoiEdge(lSite, rSite);
+    /**
+     * Creates a new edge, adds it to the diagram and returns it.
+     * @param leftSite The site event on the left of this edge.
+     * @param rightSite The site event on the right of this edge.
+     * @param startingPoint The starting point.
+     * @param endingPoint The ending point.
+     * @return The edge.
+     */
+    VoronoiEdge createEdge(SiteEvent leftSite, SiteEvent rightSite, Vector2D startingPoint, Vector2D endingPoint) {
+        VoronoiEdge edge = new VoronoiEdge(leftSite, rightSite);
         this.edges.add(edge);
-        if (va != null) {
-            edge.setEdgeStartPoint(lSite, rSite, va);
+        if (startingPoint != null) {
+            edge.setStartingPoint(leftSite, rightSite, startingPoint);
         }
-        if (vb != null) {
-            edge.setEdgeEndPoint(lSite, rSite, vb);
+        if (endingPoint != null) {
+            edge.setEndingPoint(leftSite, rightSite, endingPoint);
         }
-        this.cells.get(lSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, lSite, rSite));
-        this.cells.get(rSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, rSite, lSite));
+        this.cells.get(leftSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, leftSite, rightSite));
+        this.cells.get(rightSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, rightSite, leftSite));
         return edge;
     }
 
-    public VoronoiEdge createEdge(SiteEvent lSite, SiteEvent rSite) {
-        return createEdge(lSite, rSite, null, null);
+    /**
+     * Creates a new edge, adds it to the diagram and returns it.
+     * @param leftSite The site event on the left of this edge.
+     * @param rightSite The site event on the right of this edge.
+     * @return The edge.
+     */
+    VoronoiEdge createEdge(SiteEvent leftSite, SiteEvent rightSite) {
+        return createEdge(leftSite, rightSite, null, null);
     }
 
-    public VoronoiEdge createBorderEdge(SiteEvent lSite, Vector2D va, Vector2D vb) {
-        VoronoiEdge edge = new VoronoiEdge(lSite, null);
-        edge.setStartingPoint(va);
-        edge.setEndingPoint(vb);
+    /**
+     * Creates a new edge associated with the border of the diagram, adds it to the diagram and returns it.
+     * @param leftSite The site event on the left of this edge.
+     * @param startingPoint The starting point.
+     * @param endingPoint The ending point.
+     * @return
+     */
+    private VoronoiEdge createBorderEdge(SiteEvent leftSite, Vector2D startingPoint, Vector2D endingPoint) {
+        VoronoiEdge edge = new VoronoiEdge(leftSite, null);
+        edge.setStartingPoint(startingPoint);
+        edge.setEndingPoint(endingPoint);
         this.edges.add(edge);
         return edge;
     }
 
+    /**
+     * Returns all vertices of the diagram.
+     * @return All vertices of the diagram.
+     */
     public List<Vector2D> getVertices() {
         return this.vertices;
     }
 
-    public void setVertices(List<Vector2D> vertices) {
-        this.vertices = vertices;
-    }
-
-    public Vector2D createVertex(double x, double y) {
+    /**
+     * Creates a new vertex, adds it to the diagram and returns it.
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @return The vertex.
+     */
+    Vector2D createVertex(double x, double y) {
         Vector2D vertex = new Vector2D(x, y);
         this.vertices.add(vertex);
         return vertex;
     }
 
-    public VoronoiCell createCell(int siteId, SiteEvent site) {
-        site.setIdentifier(siteId);
+    /**
+     * Creates a new cell, adds it to the diagram and returns it.
+     * @param siteIdentifier The identifier of the site.
+     * @param site The site.
+     * @return The cell.
+     */
+    public VoronoiCell createCell(int siteIdentifier, SiteEvent site) {
+        site.setIdentifier(siteIdentifier);
         VoronoiCell cell = new VoronoiCell(site);
-        this.cells.put(siteId, cell);
+        this.cells.put(siteIdentifier, cell);
         return cell;
     }
 
+    /**
+     * Clips all edges sticking out of the bounding box.
+     */
     public void clipEdges() {
         // connect all dangling edges to bounding box
         // or get rid of them if it can't be done
@@ -116,7 +184,13 @@ public class VoronoiDiagram {
         }
     }
 
-    public boolean connectEdge(int iEdge, VoronoiEdge edge) {
+    /**
+     * Connects the edge if it has no associated ending point.
+     * @param iEdge The identifier of the edge.
+     * @param edge The edge.
+     * @return True if the edge was connected, false if nothing could be done.
+     */
+    private boolean connectEdge(int iEdge, VoronoiEdge edge) {
         // skip if end point already connected
         Vector2D vb = edge.getEndingPoint();
         if (vb != null) {
@@ -148,14 +222,7 @@ public class VoronoiDiagram {
             fb = fy - fm * fx;
         }
 
-        // remember, direction of line (relative to left site):
-        // upward: left.x < right.x
-        // downward: left.x > right.x
-        // horizontal: left.x == right.x
-        // upward: left.x < right.x
-        // rightward: left.y < right.y
-        // leftward: left.y > right.y
-        // vertical: left.y == right.y
+
 
         // depending on the direction, find the best side of the
         // bounding box to use to determine a reasonable start point
@@ -240,8 +307,13 @@ public class VoronoiDiagram {
         return true;
     }
 
-    public boolean clipEdge(VoronoiEdge edge) {
-        // could use this in renderer
+    /**
+     * Clips the edge if it sticks out of the bounding box.
+     * @param edge The Edge.
+     * @return True if the edge was clipped, false if nothing was done.
+     */
+    private boolean clipEdge(VoronoiEdge edge) {
+
         double ax = edge.getStartingPoint().getX();
         double ay = edge.getStartingPoint().getY();
         double bx = edge.getEndingPoint().getX();
@@ -343,8 +415,7 @@ public class VoronoiDiagram {
 
         // if we reach this point, Voronoi edge is within bbox
 
-        // if t0 > 0, va needs to change
-        // rhill 2011-06-03: we need to create a new vertex rather
+        // we need to create a new vertex rather
         // than modifying the existing one, since the existing
         // one is likely shared with at least another edge
         if (t0 > 0) {
@@ -357,9 +428,13 @@ public class VoronoiDiagram {
             this.cells.get(edge.getLeftSite().getIdentifier()).setCloseMe(true);
             this.cells.get(edge.getRightSite().getIdentifier()).setCloseMe(true);
         }
+
         return true;
     }
 
+    /**
+     * Closes all cells that have not been closed until now.
+     */
     public void closeCells() {
         for (int iCell = this.cells.size() - 1; iCell >= 0; iCell--) {
             VoronoiCell cell = cells.get(iCell);
@@ -490,24 +565,34 @@ public class VoronoiDiagram {
 
     }
 
+    /**
+     * Returns true if a is equal to b withing range of epsilon.
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is equal to b withing range of epsilon.
+     */
     private static boolean equalWithEpsilon(double a, double b) {
         return Math.abs(a - b) < 1e-9;
     }
 
+    /**
+     * Returns true if a is greater than b withing range of epsilon.
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is greater than b withing range of epsilon.
+     */
     private static boolean greaterThanWithEpsilon(double a, double b) {
         return a - b > 1e-9;
     }
 
-    private static boolean greaterThanOrEqualWithEpsilon(double a, double b) {
-        return b - a < 1e-9;
-    }
-
+    /**
+     * Returns true if a is less than b withing range of epsilon.
+     * @param a The first value.
+     * @param b The second value.
+     * @return true if a is less than b withing range of epsilon.
+     */
     private static boolean lessThanWithEpsilon(double a, double b) {
         return b - a > 1e-9;
-    }
-
-    private static boolean lessThanOrEqualWithEpsilon(double a, double b) {
-        return a - b < 1e-9;
     }
 
 }

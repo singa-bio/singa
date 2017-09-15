@@ -168,7 +168,7 @@ public class BeachLine {
             Vector2D vertex = diagram.createVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
 
             // one transition disappear
-            rArc.getEdge().setEdgeStartPoint(lSite, rSite, vertex);
+            rArc.getEdge().setStartingPoint(lSite, rSite, vertex);
 
             // two new transitions appear at the new vertex location
             newArc.setEdge(this.diagram.createEdge(lSite, site, null, vertex));
@@ -250,7 +250,7 @@ public class BeachLine {
             logger.trace("Removing transition {}", iArc);
             rArc = disappearingTransitions.get(iArc);
             lArc = disappearingTransitions.get(iArc - 1);
-            rArc.getEdge().setEdgeStartPoint(lArc.getSite(), rArc.getSite(), vertex);
+            rArc.getEdge().setStartingPoint(lArc.getSite(), rArc.getSite(), vertex);
         }
 
         // create a new edge as we have now a new transition between
