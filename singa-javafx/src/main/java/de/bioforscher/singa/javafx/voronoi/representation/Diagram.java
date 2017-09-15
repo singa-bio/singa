@@ -94,7 +94,7 @@ public class Diagram {
             // edge is removed if:
             //   it is wholly outside the bounding box
             //   it is looking more like a point than a line
-            if (!connectEdge(edge, bbox) ||
+            if (!connectEdge(iEdge, edge, bbox) ||
                     !clipEdge(edge, bbox) ||
                     (Math.abs(edge.getVa().getX() - edge.getVb().getX()) < 1e-9 && Math.abs(edge.getVa().getY() - edge.getVb().getY()) < 1e-9)) {
                 logger.trace(" Removing edge {}, starting at {}, ending at {}", iEdge, edge.getVa(), edge.getVb());
@@ -107,7 +107,7 @@ public class Diagram {
         }
     }
 
-    public boolean connectEdge(Edge edge, double[] bbox) {
+    public boolean connectEdge(int iEdge, Edge edge, double[] bbox) {
         // skip if end point already connected
         Vector2D vb = edge.getVb();
         if (vb != null) {
@@ -121,7 +121,7 @@ public class Diagram {
         double yt = bbox[1];
         double yb = bbox[3];
         Site lSite = edge.getlSite();
-        Site rSite = edge.getlSite();
+        Site rSite = edge.getrSite();
         double lx = lSite.getX();
         double ly = lSite.getY();
         double rx = rSite.getX();
@@ -164,7 +164,6 @@ public class Diagram {
         // which does not do well sometimes due to loss of arithmetic
         // precision. The code here doesn't degrade if one of the vertex is
         // at a huge distance.
-
 
         if (Double.isInfinite(fm)) {
             // special case: vertical line
@@ -233,6 +232,7 @@ public class Diagram {
         // set points
         edge.setVa(va);
         edge.setVb(vb);
+        logger.trace("Connected edge {} to {} and {}.", iEdge, va, vb);
         return true;
     }
 

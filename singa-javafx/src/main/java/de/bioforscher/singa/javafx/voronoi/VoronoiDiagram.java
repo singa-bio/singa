@@ -3,8 +3,6 @@ package de.bioforscher.singa.javafx.voronoi;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.javafx.voronoi.representation.Diagram;
 import de.bioforscher.singa.javafx.voronoi.representation.Edge;
-import de.bioforscher.singa.mathematics.graphs.voronoi.Voronoi;
-import de.bioforscher.singa.mathematics.graphs.voronoi.VoronoiFaceEdge;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -42,6 +40,7 @@ public class VoronoiDiagram implements Renderer {
         this.siteEvents = new ArrayDeque<>();
         this.originalVectors.forEach(vector -> this.siteEvents.push(new Site(vector)));
         logger.trace("Sorted original vectors in queue: {}", this.siteEvents);
+        perform();
     }
 
     public void perform() {
@@ -104,20 +103,7 @@ public class VoronoiDiagram implements Renderer {
         //   add missing edges in order to close opened cells
         diagram.closeCells(bbox);
 
-        getGraphicsContext().setStroke(Color.SEAGREEN);
-        getGraphicsContext().setLineWidth(1);
-
         // target
-        Voronoi voronoi = new Voronoi(0.01);
-
-        double[] xValuesIn = originalVectors.stream().mapToDouble(Vector2D::getX).toArray();
-        double[] yValuesIn = originalVectors.stream().mapToDouble(Vector2D::getY).toArray();
-
-        List<VoronoiFaceEdge> voronoiFaceEdges = voronoi.generateVoronoi(xValuesIn, yValuesIn, bbox[0], bbox[2], bbox[1], bbox[3]);
-        for (VoronoiFaceEdge voronoiFaceEdge : voronoiFaceEdges) {
-            drawStraight(new Vector2D(voronoiFaceEdge.x1, voronoiFaceEdge.y1), new Vector2D(voronoiFaceEdge.x2, voronoiFaceEdge.y2));
-        }
-
         getGraphicsContext().setStroke(Color.TOMATO);
         getGraphicsContext().setFill(Color.TOMATO);
         getGraphicsContext().setLineWidth(4);
