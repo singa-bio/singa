@@ -112,7 +112,9 @@ public enum AtomToken implements PDBToken {
         } else if (name.length() == 3) {
             fullName = " " + name;
         } else if (name.length() == 2) {
-            if (element.equals("C") || element.equals("N") || element.equals("O") || element.equals("P") || element.equals("S")) {
+            if (element.equals("C") || element.equals("N") || element.equals("O") || element.equals("P") || element.equals("S")
+                    // this is for pseudo atoms that are labeled with CA and unknown Element
+                    || atom.getAtomNameString().equals("CA")) {
                 fullName = " " + name + " ";
             } else {
                 fullName = name + "  ";

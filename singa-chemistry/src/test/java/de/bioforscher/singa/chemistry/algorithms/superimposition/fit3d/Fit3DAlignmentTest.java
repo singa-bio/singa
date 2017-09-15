@@ -2,19 +2,15 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureSelector;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
 import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
 import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
 import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
-import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
@@ -27,10 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -219,7 +213,7 @@ public class Fit3DAlignmentTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .run();
 
-        System.out.println();
+        assertEquals(0.00, fit3d.getMatches().firstKey(), 1E-2);
     }
 
 //    @Test
