@@ -9,4 +9,6 @@ public interface StructureInterface {
 
     String getTitle();
 
+    ChainInterface getChain(String chainIdentifier);
+
 }
