@@ -48,7 +48,7 @@ public class InteractionContainer {
      * @return A list of interactions between both leaves.
      */
     public List<Interaction> getInteractionsBetween(LeafIdentifier first, LeafIdentifier second) {
-        return interactions.stream()
+        return this.interactions.stream()
                 .filter(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second))
                 .collect(Collectors.toList());
     }
@@ -61,7 +61,7 @@ public class InteractionContainer {
      * @return True, if any interaction between the two leaves is annotated.
      */
     public boolean hasInteractions(LeafIdentifier first, LeafIdentifier second) {
-        return interactions.stream()
+        return this.interactions.stream()
                 .anyMatch(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second));
     }
 
@@ -85,11 +85,11 @@ public class InteractionContainer {
      * @return All interactions.
      */
     public List<Interaction> getInteractions() {
-        return interactions;
+        return this.interactions;
     }
 
     public List<Interaction> getLigandInteractions() {
-        return ligandInteractions;
+        return this.ligandInteractions;
     }
 
     /**
@@ -193,9 +193,9 @@ public class InteractionContainer {
                             logger.trace("The pi stack (id {}) is not the symmetric version of the pi stack (id {}).", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
                             logger.trace("Present : {}", presentInteraction);
                         }
-                    } else if (interaction instanceof PiCationInteraction) {
-                        final PiCationInteraction iPresent = (PiCationInteraction) presentInteraction;
-                        final PiCationInteraction iNew = (PiCationInteraction) interaction;
+                    } else if (interaction instanceof PiCation) {
+                        final PiCation iPresent = (PiCation) presentInteraction;
+                        final PiCation iNew = (PiCation) interaction;
                         if (iPresent.getAtoms2().equals(iNew.getAtoms2())) {
                             logger.trace("The pi-cation interaction (id {}) is the identical version of the already added pi-cation interaction  {}.", iNew.getPlipIdentifier(), iPresent.getPlipIdentifier());
                             logger.trace("Present : {}", presentInteraction);
@@ -245,7 +245,7 @@ public class InteractionContainer {
 
     public void validateWithStructure(Structure structure) {
 
-        ListIterator<Interaction> interactionListIterator = interactions.listIterator();
+        ListIterator<Interaction> interactionListIterator = this.interactions.listIterator();
 
         while (interactionListIterator.hasNext()) {
             Interaction interaction = interactionListIterator.next();
@@ -281,7 +281,7 @@ public class InteractionContainer {
             }
 
             if (targetIsLigand || sourceIsLigand) {
-                ligandInteractions.add(interaction);
+                this.ligandInteractions.add(interaction);
                 interactionListIterator.remove();
             }
 
@@ -291,7 +291,8 @@ public class InteractionContainer {
 
     private void fixBrokenSourceIdentifier(Interaction interaction, Structure structure) {
         // try to retrieve first referenced atom
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getAtom(interaction.getFirstSourceAtom());
+        int firstSourceAtom = interaction.getFirstSourceAtom();
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getAtom(firstSourceAtom);
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifer atomIdentifer = sourceEntry.get().getKey();

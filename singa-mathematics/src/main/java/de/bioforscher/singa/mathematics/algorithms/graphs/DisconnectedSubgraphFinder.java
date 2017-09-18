@@ -70,8 +70,8 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
      * @return The next node, that has not already ben processed.
      */
     private Optional<NodeType> getNextSubgraphOrigin() {
-        if (!unprocessedNodes.isEmpty()) {
-            return Optional.of(unprocessedNodes.iterator().next());
+        if (!this.unprocessedNodes.isEmpty()) {
+            return Optional.of(this.unprocessedNodes.iterator().next());
         }
         return Optional.empty();
     }
@@ -98,7 +98,7 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
                     // add to que and subgraph, remove from unprocessed nodes
                     processNode(neighbor);
                     // remember edge
-                    currentEdges.add(graph.getEdgeBetween(currentNode, neighbor).get());
+                    currentEdges.add(this.graph.getEdgeBetween(currentNode, neighbor).get());
                 }
             }
         }
@@ -133,7 +133,7 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
             // create a new graph
             GraphType subgraph;
             try {
-                subgraph = (GraphType) graph.getClass().newInstance();
+                subgraph = (GraphType) this.graph.getClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException("Failed to create a new graph.");
             }

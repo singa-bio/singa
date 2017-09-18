@@ -156,13 +156,13 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldSkipAlphaCarbonStructureInBatch() {
-        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        this.queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
-        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+        Fit3D fit3d = Fit3DBuilder.create().query(this.queryMotif)
                 .targets(multiParser)
                 .skipAlphaCarbonTargets()
                 .maximalParallelism()
@@ -175,13 +175,13 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldSkipBackboneStructureInBatch() {
-        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        this.queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
-        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
+        Fit3D fit3d = Fit3DBuilder.create().query(this.queryMotif)
                 .targets(multiParser)
                 .skipBackboneTargets()
                 .maximalParallelism()

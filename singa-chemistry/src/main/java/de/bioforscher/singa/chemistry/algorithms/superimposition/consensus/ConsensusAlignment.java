@@ -130,7 +130,7 @@ public class ConsensusAlignment {
     }
 
     public List<Double> getAlignmentTrace() {
-        return alignmentTrace;
+        return this.alignmentTrace;
     }
 
     public List<BinaryTree<ConsensusContainer>> getClusters() {

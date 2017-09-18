@@ -131,12 +131,12 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
         AbstractNode<?, ?, ?> that = (AbstractNode<?, ?, ?>) o;
 
-        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
+        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return identifier != null ? identifier.hashCode() : 0;
+        return this.identifier != null ? this.identifier.hashCode() : 0;
     }
 
     @Override

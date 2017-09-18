@@ -89,7 +89,7 @@ public class Vector3D implements Vector {
             return (VectorType) this;
         }
         if (vectorClass.equals(RegularVector.class)) {
-            return (VectorType) new RegularVector(this.x, y, z);
+            return (VectorType) new RegularVector(this.x, this.y, this.z);
         }
         throw new IllegalArgumentException("Can not convert Vector3D to " + vectorClass.getSimpleName());
     }
@@ -388,6 +388,6 @@ public class Vector3D implements Vector {
 
     @Override
     public String toString() {
-        return "Vector3D (" + x + ", " + y + ", " + z + ')';
+        return "Vector3D (" + this.x + ", " + this.y + ", " + this.z + ')';
     }
 }

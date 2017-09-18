@@ -59,7 +59,7 @@ public class MultiplicationExpressionNode extends SequenceExpressionNode {
      */
     public double getValue() {
         double prod = 1.0;
-        for (Term t : terms) {
+        for (Term t : this.terms) {
             if (t.positive)
                 prod *= t.expression.getValue();
             else
@@ -77,7 +77,7 @@ public class MultiplicationExpressionNode extends SequenceExpressionNode {
      */
     public void accept(ExpressionNodeVisitor visitor) {
         visitor.visit(this);
-        for (Term t : terms)
+        for (Term t : this.terms)
             t.expression.accept(visitor);
     }
 }

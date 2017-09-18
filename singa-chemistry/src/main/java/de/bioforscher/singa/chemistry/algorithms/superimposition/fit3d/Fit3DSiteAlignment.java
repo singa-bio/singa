@@ -68,10 +68,10 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.site1 = builder.site1.getCopy();
         this.site2 = builder.site2.getCopy();
 
-        this.containsNonAminoAcids = site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily)) ||
-                site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
+        this.containsNonAminoAcids = this.site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily)) ||
+                this.site1.getLeafSubstructures().stream().anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
 
-        if (containsNonAminoAcids) {
+        if (this.containsNonAminoAcids) {
             logger.info("sites contain non-amino acid residues, no Xie score can be calculated");
         }
 
@@ -144,7 +144,7 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         if (this.currentBestSuperimposition != null) {
             this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
-            if (!containsNonAminoAcids) {
+            if (!this.containsNonAminoAcids) {
                 calculateXieScore();
             }
             outputSummary();

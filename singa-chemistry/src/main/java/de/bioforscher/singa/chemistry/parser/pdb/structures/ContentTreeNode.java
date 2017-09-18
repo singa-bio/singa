@@ -139,7 +139,7 @@ class ContentTreeNode {
      * @return The insertion code if any is associated to this node.
      */
     public char getInsertionCode() {
-        return insertionCode;
+        return this.insertionCode;
     }
 
     /**

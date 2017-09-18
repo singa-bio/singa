@@ -31,7 +31,7 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
 
     @Override
     public int compareTo(LigandFamily o) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.getThreeLetterCode(), o.getThreeLetterCode());
+        return String.CASE_INSENSITIVE_ORDER.compare(getThreeLetterCode(), o.getThreeLetterCode());
     }
 
     @Override
@@ -41,19 +41,19 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
 
         LigandFamily that = (LigandFamily) o;
 
-        return threeLetterCode != null ? threeLetterCode.equals(that.threeLetterCode) : that.threeLetterCode == null;
+        return this.threeLetterCode != null ? this.threeLetterCode.equals(that.threeLetterCode) : that.threeLetterCode == null;
     }
 
     @Override
     public int hashCode() {
-        return threeLetterCode != null ? threeLetterCode.hashCode() : 0;
+        return this.threeLetterCode != null ? this.threeLetterCode.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "LigandFamily{" +
-                "oneLetterCode='" + oneLetterCode + '\'' +
-                ", threeLetterCode='" + threeLetterCode + '\'' +
+                "oneLetterCode='" + this.oneLetterCode + '\'' +
+                ", threeLetterCode='" + this.threeLetterCode + '\'' +
                 '}';
     }
 }

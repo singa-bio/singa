@@ -9,7 +9,7 @@ public enum InteractionType {
     HYDROGEN_BOND(HydrogenBond.class, "HYB"),
     HYDROPHOBIC_INTERACTION(HydrophobicInteraction.class, "HYP"),
     METAL_COMPLEX(MetalComplex.class, "MEC"),
-    PI_CATION_INTERACTION(PiCationInteraction.class, "PIC"),
+    PI_CATION_INTERACTION(PiCation.class, "PIC"),
     PI_STACKING(PiStacking.class, "PIS"),
     SALT_BRIDGE(SaltBridge.class, "SAB"),
     WATER_BRIDGE(WaterBridge.class, "WAB");
@@ -23,11 +23,11 @@ public enum InteractionType {
     }
 
     public Class<? extends Interaction> getInteractionClass() {
-        return interactionClass;
+        return this.interactionClass;
     }
 
     public String getThreeLetterCode() {
-        return threeLetterCode;
+        return this.threeLetterCode;
     }
 
     public static String getThreeLetterCode(Class<? extends Interaction> interactionClass) {

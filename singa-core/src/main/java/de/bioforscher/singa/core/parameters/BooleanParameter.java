@@ -10,7 +10,7 @@ public final class BooleanParameter implements Parameter<Boolean> {
 
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override

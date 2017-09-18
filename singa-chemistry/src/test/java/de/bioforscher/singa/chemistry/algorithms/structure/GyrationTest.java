@@ -15,20 +15,20 @@ public class GyrationTest {
 
     @Before
     public void setUp() {
-        structure = StructureParser.online()
+        this.structure = StructureParser.online()
                 .pdbIdentifier("2q6n")
                 .parse();
     }
 
     @Test
     public void shouldCalculateGyrationOfStructuralModel() {
-        Gyration gyration = Gyration.of(structure.getFirstModel());
+        Gyration gyration = Gyration.of(this.structure.getFirstModel());
         assertEquals(48.74, gyration.getRadius(), 1E-2);
     }
 
     @Test
     public void shouldCalculateGyrationOfChain() {
-        Gyration gyration = Gyration.of(structure.getFirstModel().getFirstChain());
+        Gyration gyration = Gyration.of(this.structure.getFirstModel().getFirstChain());
         assertEquals(22.19, gyration.getRadius(), 1E-2);
     }
 

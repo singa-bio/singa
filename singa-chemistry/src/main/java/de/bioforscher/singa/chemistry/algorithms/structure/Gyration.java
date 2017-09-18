@@ -48,11 +48,11 @@ public class Gyration {
     }
 
     public List<Atom> getAtoms() {
-        return atoms;
+        return this.atoms;
     }
 
     public Vector3D getCentroid() {
-        return centroid;
+        return this.centroid;
     }
 
     public double getRadius() {
@@ -70,7 +70,7 @@ public class Gyration {
         for (int i = 0; i < this.atoms.size(); i++) {
             Atom atom = this.atoms.get(i);
             sumOfSquaredDistances += atom.getElement().getAtomicMass().getValue().doubleValue()
-                    * VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(atom.getPosition(), centroid);
+                    * VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(atom.getPosition(), this.centroid);
             sumOfMolecularMass += atom.getElement().getAtomicMass().getValue().doubleValue();
         }
         this.radius = Math.sqrt(sumOfSquaredDistances / sumOfMolecularMass);

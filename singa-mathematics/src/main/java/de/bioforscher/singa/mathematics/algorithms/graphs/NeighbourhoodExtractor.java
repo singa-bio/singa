@@ -99,35 +99,35 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
     private void extractNeighborhood(int shell, boolean onlyShell) {
         // initialize with given node
         if (!onlyShell) {
-            nodesOfSubgraph.add(referenceNode);
+            this.nodesOfSubgraph.add(this.referenceNode);
         }
-        currentWave.offer(referenceNode);
+        this.currentWave.offer(this.referenceNode);
         // reduce the remaining depth with each wave
         while (shell > 0) {
             // process current wave
-            while (!currentWave.isEmpty()) {
-                NodeType currentNode = currentWave.poll();
-                visitedNodes.add(currentNode);
+            while (!this.currentWave.isEmpty()) {
+                NodeType currentNode = this.currentWave.poll();
+                this.visitedNodes.add(currentNode);
                 // process neighbors of the current wave
                 for (NodeType neighbour : currentNode.getNeighbours()) {
                     // if this neighbor has not already been processed
-                    if (!visitedNodes.contains(neighbour)) {
+                    if (!this.visitedNodes.contains(neighbour)) {
                         if (!onlyShell) {
-                            nodesOfSubgraph.add(neighbour);
-                            edgesOfSubgraph.add(graph.getEdgeBetween(currentNode, neighbour).get());
+                            this.nodesOfSubgraph.add(neighbour);
+                            this.edgesOfSubgraph.add(this.graph.getEdgeBetween(currentNode, neighbour).get());
                             addConnectionsToVisitedNodes(neighbour);
                         }
-                        nextWave.add(neighbour);
-                        visitedNodes.add(neighbour);
+                        this.nextWave.add(neighbour);
+                        this.visitedNodes.add(neighbour);
                     }
                 }
             }
             // current wave has been processed and is updated with the nodes that have been found
-            currentWave = nextWave;
+            this.currentWave = this.nextWave;
             if (onlyShell && shell == 1) {
-                nodesOfSubgraph.addAll(nextWave);
+                this.nodesOfSubgraph.addAll(this.nextWave);
             }
-            nextWave = new ArrayDeque<>();
+            this.nextWave = new ArrayDeque<>();
             shell--;
         }
     }
@@ -137,10 +137,10 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
      * @param neighbour The neighbour to add edges to.
      */
     private void addConnectionsToVisitedNodes(NodeType neighbour) {
-        for (NodeType visitedNode : visitedNodes) {
+        for (NodeType visitedNode : this.visitedNodes) {
             Optional<EdgeType> edge;
-            if ((edge = graph.getEdgeBetween(neighbour, visitedNode)).isPresent()) {
-                edgesOfSubgraph.add(edge.get());
+            if ((edge = this.graph.getEdgeBetween(neighbour, visitedNode)).isPresent()) {
+                this.edgesOfSubgraph.add(edge.get());
             }
         }
     }

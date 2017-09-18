@@ -114,8 +114,6 @@ public class Fit3DAlignmentBatch implements Fit3D {
      */
     private class Fit3DCalculator implements Callable<TreeMap<Double, SubstructureSuperimposition>> {
 
-        private String targetStructure;
-
         @Override
         public TreeMap<Double, SubstructureSuperimposition> call() throws Exception {
             // FIXME here we are dealing only with the first model
@@ -123,11 +121,11 @@ public class Fit3DAlignmentBatch implements Fit3D {
             if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
                 try {
                     Structure structure = Fit3DAlignmentBatch.this.multiParser.next();
-                    if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
+                    if (Fit3DAlignmentBatch.this.skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
                         logger.info("ignored alpha carbon only structure {}", structure);
                         return null;
                     }
-                    if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
+                    if (Fit3DAlignmentBatch.this.skipBackboneTargets && Structures.isBackboneStructure(structure)) {
                         logger.info("ignored backbone only structure {}", structure);
                         return null;
                     }

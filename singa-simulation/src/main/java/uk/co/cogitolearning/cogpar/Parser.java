@@ -84,13 +84,13 @@ public class Parser {
     public ExpressionNode parse(LinkedList<Token> tokens) {
         // implementing a recursive descent parser
         this.tokens = (LinkedList<Token>) tokens.clone();
-        lookahead = this.tokens.getFirst();
+        this.lookahead = this.tokens.getFirst();
 
         // top level non-terminal is expression
         ExpressionNode expr = expression();
 
-        if (lookahead.token != Token.EPSILON)
-            throw new ParserException("Unexpected symbol %s found", lookahead);
+        if (this.lookahead.token != Token.EPSILON)
+            throw new ParserException("Unexpected symbol %s found", this.lookahead);
 
         return expr;
     }
@@ -107,7 +107,7 @@ public class Parser {
     /** handles the non-terminal sum_op */
     private ExpressionNode sumOp(ExpressionNode expr) {
         // sum_op -> PLUSMINUS term sum_op
-        if (lookahead.token == Token.PLUSMINUS) {
+        if (this.lookahead.token == Token.PLUSMINUS) {
             AdditionExpressionNode sum;
             // This means we are actually dealing with a sum
             // If expr is not already a sum, we have to create one
@@ -117,7 +117,7 @@ public class Parser {
                 sum = new AdditionExpressionNode(expr, true);
 
             // reduce the input and recursively call sum_op
-            boolean positive = lookahead.sequence.equals("+");
+            boolean positive = this.lookahead.sequence.equals("+");
             nextToken();
             ExpressionNode t = term();
             sum.add(t, positive);
@@ -132,8 +132,8 @@ public class Parser {
     /** handles the non-terminal signed_term */
     private ExpressionNode signedTerm() {
         // signed_term -> PLUSMINUS term
-        if (lookahead.token == Token.PLUSMINUS) {
-            boolean positive = lookahead.sequence.equals("+");
+        if (this.lookahead.token == Token.PLUSMINUS) {
+            boolean positive = this.lookahead.sequence.equals("+");
             nextToken();
             ExpressionNode t = term();
             if (positive)
@@ -156,7 +156,7 @@ public class Parser {
     /** handles the non-terminal term_op */
     private ExpressionNode termOp(ExpressionNode expression) {
         // term_op -> MULTDIV factor term_op
-        if (lookahead.token == Token.MULTDIV) {
+        if (this.lookahead.token == Token.MULTDIV) {
             MultiplicationExpressionNode prod;
 
             // This means we are actually dealing with a product
@@ -167,7 +167,7 @@ public class Parser {
                 prod = new MultiplicationExpressionNode(expression, true);
 
             // reduce the input and recursively call sum_op
-            boolean positive = lookahead.sequence.equals("*");
+            boolean positive = this.lookahead.sequence.equals("*");
             nextToken();
             ExpressionNode f = signedFactor();
             prod.add(f, positive);
@@ -182,8 +182,8 @@ public class Parser {
     /** handles the non-terminal signed_factor */
     private ExpressionNode signedFactor() {
         // signed_factor -> PLUSMINUS factor
-        if (lookahead.token == Token.PLUSMINUS) {
-            boolean positive = lookahead.sequence.equals("+");
+        if (this.lookahead.token == Token.PLUSMINUS) {
+            boolean positive = this.lookahead.sequence.equals("+");
             nextToken();
             ExpressionNode t = factor();
             if (positive)
@@ -207,7 +207,7 @@ public class Parser {
     /** handles the non-terminal factor_op */
     private ExpressionNode factorOp(ExpressionNode expr) {
         // factor_op -> RAISED expression
-        if (lookahead.token == Token.RAISED) {
+        if (this.lookahead.token == Token.RAISED) {
             nextToken();
             ExpressionNode exponent = signedFactor();
 
@@ -221,18 +221,18 @@ public class Parser {
     /** handles the non-terminal argument */
     private ExpressionNode argument() {
         // argument -> FUNCTION argument
-        if (lookahead.token == Token.FUNCTION) {
-            int function = FunctionExpressionNode.stringToFunction(lookahead.sequence);
+        if (this.lookahead.token == Token.FUNCTION) {
+            int function = FunctionExpressionNode.stringToFunction(this.lookahead.sequence);
             nextToken();
             ExpressionNode expr = argument();
             return new FunctionExpressionNode(function, expr);
         }
         // argument -> OPEN_BRACKET sum CLOSE_BRACKET
-        else if (lookahead.token == Token.OPEN_BRACKET) {
+        else if (this.lookahead.token == Token.OPEN_BRACKET) {
             nextToken();
             ExpressionNode expr = expression();
-            if (lookahead.token != Token.CLOSE_BRACKET)
-                throw new ParserException("Closing brackets expected", lookahead);
+            if (this.lookahead.token != Token.CLOSE_BRACKET)
+                throw new ParserException("Closing brackets expected", this.lookahead);
             nextToken();
             return expr;
         }
@@ -244,34 +244,34 @@ public class Parser {
     /** handles the non-terminal value */
     private ExpressionNode value() {
         // argument -> NUMBER
-        if (lookahead.token == Token.NUMBER) {
-            ExpressionNode expr = new ConstantExpressionNode(lookahead.sequence);
+        if (this.lookahead.token == Token.NUMBER) {
+            ExpressionNode expr = new ConstantExpressionNode(this.lookahead.sequence);
             nextToken();
             return expr;
         }
 
         // argument -> VARIABLE
-        if (lookahead.token == Token.VARIABLE) {
-            ExpressionNode expr = new VariableExpressionNode(lookahead.sequence);
+        if (this.lookahead.token == Token.VARIABLE) {
+            ExpressionNode expr = new VariableExpressionNode(this.lookahead.sequence);
             nextToken();
             return expr;
         }
 
-        if (lookahead.token == Token.EPSILON)
+        if (this.lookahead.token == Token.EPSILON)
             throw new ParserException("Unexpected end of input");
         else
-            throw new ParserException("Unexpected symbol %s found", lookahead);
+            throw new ParserException("Unexpected symbol %s found", this.lookahead);
     }
 
     /**
      * Remove the first token from the list and store the next token in lookahead
      */
     private void nextToken() {
-        tokens.pop();
+        this.tokens.pop();
         // at the end of input we return an epsilon token
-        if (tokens.isEmpty())
-            lookahead = new Token(Token.EPSILON, "", -1);
+        if (this.tokens.isEmpty())
+            this.lookahead = new Token(Token.EPSILON, "", -1);
         else
-            lookahead = tokens.getFirst();
+            this.lookahead = this.tokens.getFirst();
     }
 }

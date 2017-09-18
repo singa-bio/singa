@@ -40,7 +40,7 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
     }
 
     public char getLeafInsertionCode() {
-        return leafInsertionCode;
+        return this.leafInsertionCode;
     }
 
     public int getAtomSerial() {
@@ -54,22 +54,22 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
 
         UniqueAtomIdentifer that = (UniqueAtomIdentifer) o;
 
-        if (atomSerial != that.atomSerial) return false;
-        if (modelIdentifer != that.modelIdentifer) return false;
-        if (leafSerial != that.leafSerial) return false;
-        if (leafInsertionCode != that.leafInsertionCode) return false;
-        if (pdbIdentifer != null ? !pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
-        return chainIdentifer != null ? chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
+        if (this.atomSerial != that.atomSerial) return false;
+        if (this.modelIdentifer != that.modelIdentifer) return false;
+        if (this.leafSerial != that.leafSerial) return false;
+        if (this.leafInsertionCode != that.leafInsertionCode) return false;
+        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
+        return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 
     @Override
     public int hashCode() {
-        int result = pdbIdentifer != null ? pdbIdentifer.hashCode() : 0;
-        result = 31 * result + modelIdentifer;
-        result = 31 * result + (chainIdentifer != null ? chainIdentifer.hashCode() : 0);
-        result = 31 * result + leafSerial;
-        result = 31 * result + (int) leafInsertionCode;
-        result = 31 * result + atomSerial;
+        int result = this.pdbIdentifer != null ? this.pdbIdentifer.hashCode() : 0;
+        result = 31 * result + this.modelIdentifer;
+        result = 31 * result + (this.chainIdentifer != null ? this.chainIdentifer.hashCode() : 0);
+        result = 31 * result + this.leafSerial;
+        result = 31 * result + (int) this.leafInsertionCode;
+        result = 31 * result + this.atomSerial;
         return result;
     }
 
@@ -78,7 +78,7 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
         return this.pdbIdentifer + "-" +
                 this.modelIdentifer + "-" +
                 this.chainIdentifer + "-" +
-                this.leafSerial + (leafInsertionCode != 32 ? leafInsertionCode : "") + "-" +
+                this.leafSerial + (this.leafInsertionCode != 32 ? this.leafInsertionCode : "") + "-" +
                 this.atomSerial;
     }
 

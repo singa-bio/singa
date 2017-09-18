@@ -47,7 +47,7 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     public String getCurrentPdbIdentifier() {
-        return currentPdbIdentifier;
+        return this.currentPdbIdentifier;
     }
 
     public void setCurrentPdbIdentifier(String currentPdbIdentifier) {
@@ -55,7 +55,7 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     public InteractionContainer getInteractionContainer() {
-        return interactions;
+        return this.interactions;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PlipContentHandler implements ContentHandler {
                 this.interactionType = PI_STACKING;
                 break;
             case "pi_cation_interaction":
-                this.currentInteraction = new PiCationInteraction(Integer.valueOf(atts.getValue("id")));
+                this.currentInteraction = new PiCation(Integer.valueOf(atts.getValue("id")));
                 this.interactionType = PI_CATION_INTERACTION;
                 break;
             case "metal_complex":
@@ -165,24 +165,24 @@ public class PlipContentHandler implements ContentHandler {
                 this.secondLeafChain = new String(ch, start, length);
                 break;
             case "x":
-                if (ligcoo) {
-                    c1x = asDouble(ch, start, length);
+                if (this.ligcoo) {
+                    this.c1x = asDouble(ch, start, length);
                 } else {
-                    c2x = asDouble(ch, start, length);
+                    this.c2x = asDouble(ch, start, length);
                 }
                 break;
             case "y":
-                if (ligcoo) {
-                    c1y = asDouble(ch, start, length);
+                if (this.ligcoo) {
+                    this.c1y = asDouble(ch, start, length);
                 } else {
-                    c2y = asDouble(ch, start, length);
+                    this.c2y = asDouble(ch, start, length);
                 }
                 break;
             case "z":
-                if (ligcoo) {
-                    c1z = asDouble(ch, start, length);
+                if (this.ligcoo) {
+                    this.c1z = asDouble(ch, start, length);
                 } else {
-                    c2z = asDouble(ch, start, length);
+                    this.c2z = asDouble(ch, start, length);
                 }
                 break;
             case "dist":
@@ -197,7 +197,7 @@ public class PlipContentHandler implements ContentHandler {
                         as(HydrophobicInteraction.class).setDistance(asDouble(ch, start, length));
                         break;
                     case PI_CATION_INTERACTION:
-                        as(PiCationInteraction.class).setDistance(asDouble(ch, start, length));
+                        as(PiCation.class).setDistance(asDouble(ch, start, length));
                         break;
                     case PI_STACKING:
                         as(PiStacking.class).setDistance(asDouble(ch, start, length));
@@ -296,7 +296,7 @@ public class PlipContentHandler implements ContentHandler {
             case "idx":
                 switch (this.interactionType) {
                     case PI_CATION_INTERACTION:
-                        as(PiCationInteraction.class).getAtoms2().add(asInteger(ch, start, length));
+                        as(PiCation.class).getAtoms2().add(asInteger(ch, start, length));
                         break;
                     case PI_STACKING:
                         as(PiStacking.class).getAtoms2().add(asInteger(ch, start, length));
@@ -315,7 +315,7 @@ public class PlipContentHandler implements ContentHandler {
             case "offset":
                 switch (this.interactionType) {
                     case PI_CATION_INTERACTION:
-                        as(PiCationInteraction.class).setOffset(asDouble(ch, start, length));
+                        as(PiCation.class).setOffset(asDouble(ch, start, length));
                         break;
                     case PI_STACKING:
                         as(PiStacking.class).setOffset(asDouble(ch, start, length));
@@ -326,12 +326,12 @@ public class PlipContentHandler implements ContentHandler {
                 as(PiStacking.class).setType(new String(ch, start, length));
                 break;
             case "protcharged":
-                as(PiCationInteraction.class).setProtcharged(asBoolean(ch, start, length));
+                as(PiCation.class).setProtcharged(asBoolean(ch, start, length));
                 break;
             case "lig_group":
                 switch (this.interactionType) {
                     case PI_CATION_INTERACTION:
-                        as(PiCationInteraction.class).setLigandGroup(new String(ch, start, length));
+                        as(PiCation.class).setLigandGroup(new String(ch, start, length));
                         break;
                     case SALT_BRIDGE:
                         as(SaltBridge.class).setLigandGroup(new String(ch, start, length));
@@ -369,14 +369,14 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     private <InteractionClass extends Interaction> InteractionClass as(Class<InteractionClass> interactionType) {
-        return interactionType.cast(currentInteraction);
+        return interactionType.cast(this.currentInteraction);
     }
 
     private void addInteraction() {
         // skip all interactions that are not between standard amino acids
         // TODO This may be going down for amino acid ligands or modified amino acids
-        if (noResidueInteraction) {
-            noResidueInteraction = false;
+        if (this.noResidueInteraction) {
+            this.noResidueInteraction = false;
             return;
         }
         // TODO sometimes there are impossible leaf indices
@@ -393,8 +393,8 @@ public class PlipContentHandler implements ContentHandler {
         final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 0, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
         this.currentInteraction.setTarget(target);
-        this.currentInteraction.setLigandCoordinate(new double[] {c1x, c1y, c1z});
-        this.currentInteraction.setProteinCoordinate(new double[] {c2x, c2y, c2z});
+        this.currentInteraction.setLigandCoordinate(new double[] {this.c1x, this.c1y, this.c1z});
+        this.currentInteraction.setProteinCoordinate(new double[] {this.c2x, this.c2y, this.c2z});
         // add the container to interactions
         this.interactions.addInteraction(this.currentInteraction);
 

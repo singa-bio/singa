@@ -16,7 +16,7 @@ public class HydrophobicInteraction extends Interaction {
     }
 
     public double getDistance() {
-        return distance;
+        return this.distance;
     }
 
     public void setDistance(double distance) {
@@ -24,7 +24,7 @@ public class HydrophobicInteraction extends Interaction {
     }
 
     public int getAtom1() {
-        return atom1;
+        return this.atom1;
     }
 
     public void setAtom1(int atom1) {
@@ -32,7 +32,7 @@ public class HydrophobicInteraction extends Interaction {
     }
 
     public int getAtom2() {
-        return atom2;
+        return this.atom2;
     }
 
     public void setAtom2(int atom2) {
@@ -41,24 +41,24 @@ public class HydrophobicInteraction extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return atom1;
+        return this.atom1;
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return atom2;
+        return this.atom2;
     }
 
     @Override
     public String toString() {
         return "HydrophobicInteraction{" +
-                "atom1=" + atom1 +
-                ", atom2=" + atom2 +
-                ", plipIdentifier=" + plipIdentifier +
-                ", source=" + source +
-                ", target=" + target +
-                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
+                "atom1=" + this.atom1 +
+                ", atom2=" + this.atom2 +
+                ", plipIdentifier=" + this.plipIdentifier +
+                ", source=" + this.source +
+                ", target=" + this.target +
+                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
                 '}';
     }
 }

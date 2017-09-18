@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class PiCationInteraction extends Interaction {
+public class PiCation extends Interaction {
 
     private List<Integer> atoms1;
     private List<Integer> atoms2;
@@ -16,14 +16,14 @@ public class PiCationInteraction extends Interaction {
     private boolean protcharged;
     private String ligandGroup;
 
-    public PiCationInteraction(int plipIdentifier) {
+    public PiCation(int plipIdentifier) {
         super(plipIdentifier);
         this.atoms1 = new ArrayList<>();
         this.atoms2 = new ArrayList<>();
     }
 
     public List<Integer> getAtoms1() {
-        return atoms1;
+        return this.atoms1;
     }
 
     public void setAtoms1(List<Integer> atoms1) {
@@ -31,7 +31,7 @@ public class PiCationInteraction extends Interaction {
     }
 
     public List<Integer> getAtoms2() {
-        return atoms2;
+        return this.atoms2;
     }
 
     public void setAtoms2(List<Integer> atoms2) {
@@ -39,7 +39,7 @@ public class PiCationInteraction extends Interaction {
     }
 
     public double getDistance() {
-        return distance;
+        return this.distance;
     }
 
     public void setDistance(double distance) {
@@ -47,7 +47,7 @@ public class PiCationInteraction extends Interaction {
     }
 
     public double getOffset() {
-        return offset;
+        return this.offset;
     }
 
     public void setOffset(double offset) {
@@ -55,7 +55,7 @@ public class PiCationInteraction extends Interaction {
     }
 
     public boolean isProtcharged() {
-        return protcharged;
+        return this.protcharged;
     }
 
     public void setProtcharged(boolean protcharged) {
@@ -63,7 +63,7 @@ public class PiCationInteraction extends Interaction {
     }
 
     public String getLigandGroup() {
-        return ligandGroup;
+        return this.ligandGroup;
     }
 
     public void setLigandGroup(String ligandGroup) {
@@ -72,24 +72,32 @@ public class PiCationInteraction extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return atoms1.iterator().next();
+        if (this.atoms1.iterator().hasNext()) {
+            return this.atoms1.iterator().next();
+        } else {
+            return -1;
+        }
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return atoms2.iterator().next();
+        if (this.atoms2.iterator().hasNext()) {
+            return this.atoms2.iterator().next();
+        } else {
+            return -1;
+        }
     }
 
     @Override
     public String toString() {
-        return "PiCationInteraction{" +
-                "atoms1=" + atoms1 +
-                ", atoms2=" + atoms2 +
-                ", plipIdentifier=" + plipIdentifier +
-                ", source=" + source +
-                ", target=" + target +
-                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
+        return "PiCation{" +
+                "atoms1=" + this.atoms1 +
+                ", atoms2=" + this.atoms2 +
+                ", plipIdentifier=" + this.plipIdentifier +
+                ", source=" + this.source +
+                ", target=" + this.target +
+                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
                 '}';
     }
 }

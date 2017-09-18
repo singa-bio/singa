@@ -23,7 +23,7 @@ public class PiStacking extends Interaction {
     }
 
     public List<Integer> getAtoms1() {
-        return atoms1;
+        return this.atoms1;
     }
 
     public void setAtoms1(List<Integer> atoms1) {
@@ -31,7 +31,7 @@ public class PiStacking extends Interaction {
     }
 
     public List<Integer> getAtoms2() {
-        return atoms2;
+        return this.atoms2;
     }
 
     public void setAtoms2(List<Integer> atoms2) {
@@ -39,7 +39,7 @@ public class PiStacking extends Interaction {
     }
 
     public double getDistance() {
-        return distance;
+        return this.distance;
     }
 
     public void setDistance(double distance) {
@@ -47,7 +47,7 @@ public class PiStacking extends Interaction {
     }
 
     public double getOffset() {
-        return offset;
+        return this.offset;
     }
 
     public void setOffset(double offset) {
@@ -55,7 +55,7 @@ public class PiStacking extends Interaction {
     }
 
     public double getAngle() {
-        return angle;
+        return this.angle;
     }
 
     public void setAngle(double angle) {
@@ -63,7 +63,7 @@ public class PiStacking extends Interaction {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(String type) {
@@ -72,24 +72,32 @@ public class PiStacking extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return atoms1.iterator().next();
+        if (this.atoms1.iterator().hasNext()) {
+            return this.atoms1.iterator().next();
+        } else {
+            return -1;
+        }
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return atoms2.iterator().next();
+        if (this.atoms2.iterator().hasNext()) {
+            return this.atoms2.iterator().next();
+        } else {
+            return -1;
+        }
     }
 
     @Override
     public String toString() {
         return "PiStacking{" +
-                "atoms1=" + atoms1 +
-                ", atoms2=" + atoms2 +
-                ", plipIdentifier=" + plipIdentifier +
-                ", source=" + source +
-                ", target=" + target +
-                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
+                "atoms1=" + this.atoms1 +
+                ", atoms2=" + this.atoms2 +
+                ", plipIdentifier=" + this.plipIdentifier +
+                ", source=" + this.source +
+                ", target=" + this.target +
+                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
                 '}';
     }
 }

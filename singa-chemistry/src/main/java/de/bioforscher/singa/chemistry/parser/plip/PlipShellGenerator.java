@@ -38,44 +38,44 @@ public class PlipShellGenerator {
     }
 
     private void computeShells() {
-        GenericNode<LeafSubstructure<?, ?>> referenceNode = graph.getNodeWithContent(reference)
+        GenericNode<LeafSubstructure<?, ?>> referenceNode = this.graph.getNodeWithContent(this.reference)
                 .orElseThrow(() -> new IllegalArgumentException("No such reference node in interaction graph."));
         for (InteractionShell interactionShell : InteractionShell.values()) {
-            shells.put(interactionShell, interactionShell.from(graph, referenceNode));
+            this.shells.put(interactionShell, interactionShell.from(this.graph, referenceNode));
         }
     }
 
     public Map<InteractionShell, List<LeafSubstructure<?, ?>>> getShells() {
-        return shells;
+        return this.shells;
     }
 
     private void generateInteractionGraph() {
         // compute first shell (directly interacting with reference)
-        Set<LeafSubstructure<?, ?>> firstShell = referenceInteractions.getInteractions().stream()
-                .filter(interaction -> interaction.getTarget().equals(reference.getIdentifier()))
+        Set<LeafSubstructure<?, ?>> firstShell = this.referenceInteractions.getInteractions().stream()
+                .filter(interaction -> interaction.getTarget().equals(this.reference.getIdentifier()))
                 .map(Interaction::getSource)
-                .map(leafIdentifier -> chain.getLeafSubstructures().stream()
+                .map(leafIdentifier -> this.chain.getLeafSubstructures().stream()
                         .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
                         .findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
         // add reference and its interactions to graph
-        graph.addNode(reference);
+        this.graph.addNode(this.reference);
         for (LeafSubstructure<?, ?> leafSubstructure : firstShell) {
-            graph.addNode(leafSubstructure);
-            graph.addEdgeBetween(reference, leafSubstructure);
+            this.graph.addNode(leafSubstructure);
+            this.graph.addEdgeBetween(this.reference, leafSubstructure);
         }
         // generate interaction graph from inter chain interactions
-        for (Interaction interaction : interChainInteractions.getInteractions()) {
-            LeafSubstructure<?, ?> source = chain.getLeafSubstructure(interaction.getSource());
-            LeafSubstructure<?, ?> target = chain.getLeafSubstructure(interaction.getTarget());
-            graph.addEdgeBetween(source, target);
+        for (Interaction interaction : this.interChainInteractions.getInteractions()) {
+            LeafSubstructure<?, ?> source = this.chain.getLeafSubstructure(interaction.getSource());
+            LeafSubstructure<?, ?> target = this.chain.getLeafSubstructure(interaction.getTarget());
+            this.graph.addEdgeBetween(source, target);
         }
     }
 
     public GenericGraph<LeafSubstructure<?, ?>> getGraph() {
-        return graph;
+        return this.graph;
     }
 
     public enum InteractionShell {

@@ -47,12 +47,12 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         GraphType graph;
         while ((graph = this.graphQueue.poll()) != null) {
             fillBackground();
-            if (renderBeforeFunction != null) {
-                renderBeforeFunction.apply(graph);
+            if (this.renderBeforeFunction != null) {
+                this.renderBeforeFunction.apply(graph);
             }
             render(graph);
-            if (renderAfterFunction != null) {
-                renderAfterFunction.apply(graph);
+            if (this.renderAfterFunction != null) {
+                this.renderAfterFunction.apply(graph);
             }
         }
     }

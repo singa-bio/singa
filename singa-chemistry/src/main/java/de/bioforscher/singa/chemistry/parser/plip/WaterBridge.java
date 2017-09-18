@@ -20,7 +20,7 @@ public class WaterBridge extends Interaction {
     }
 
     public int getDonor() {
-        return donor;
+        return this.donor;
     }
 
     public void setDonor(int donor) {
@@ -28,7 +28,7 @@ public class WaterBridge extends Interaction {
     }
 
     public int getAcceptor() {
-        return acceptor;
+        return this.acceptor;
     }
 
     public void setAcceptor(int acceptor) {
@@ -36,7 +36,7 @@ public class WaterBridge extends Interaction {
     }
 
     public double getDistanceAW() {
-        return distanceAW;
+        return this.distanceAW;
     }
 
     public void setDistanceAW(double distanceAW) {
@@ -44,7 +44,7 @@ public class WaterBridge extends Interaction {
     }
 
     public double getDistanceDW() {
-        return distanceDW;
+        return this.distanceDW;
     }
 
     public void setDistanceDW(double distanceDW) {
@@ -52,7 +52,7 @@ public class WaterBridge extends Interaction {
     }
 
     public double getDonorAngle() {
-        return donorAngle;
+        return this.donorAngle;
     }
 
     public void setDonorAngle(double donorAngle) {
@@ -60,7 +60,7 @@ public class WaterBridge extends Interaction {
     }
 
     public double getWaterAngle() {
-        return waterAngle;
+        return this.waterAngle;
     }
 
     public void setWaterAngle(double waterAngle) {
@@ -68,7 +68,7 @@ public class WaterBridge extends Interaction {
     }
 
     public boolean isProtIsDon() {
-        return protIsDon;
+        return this.protIsDon;
     }
 
     public void setProtIsDon(boolean protIsDon) {
@@ -77,24 +77,24 @@ public class WaterBridge extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return donor;
+        return this.donor;
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return acceptor;
+        return this.acceptor;
     }
 
     @Override
     public String toString() {
         return "WaterBridge{" +
-                "donor=" + donor +
-                ", acceptor=" + acceptor +
-                ", plipIdentifier=" + plipIdentifier +
-                ", source=" + source +
-                ", target=" + target +
-                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
+                "donor=" + this.donor +
+                ", acceptor=" + this.acceptor +
+                ", plipIdentifier=" + this.plipIdentifier +
+                ", source=" + this.source +
+                ", target=" + this.target +
+                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
                 '}';
     }
 }

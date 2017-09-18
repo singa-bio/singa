@@ -179,7 +179,7 @@ public class StructureRepresentation {
      * @return The string representing the consecutive part of this structural representation.
      */
     private String getConsecutiveRepresentation() {
-        return consecutiveRecords.stream()
+        return this.consecutiveRecords.stream()
                 .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
     }
 
@@ -189,7 +189,7 @@ public class StructureRepresentation {
      * @return The terminating record for this representation.
      */
     private String getTerminateRecord() {
-        return terminateRecord + System.lineSeparator();
+        return this.terminateRecord + System.lineSeparator();
     }
 
     /**
@@ -198,7 +198,7 @@ public class StructureRepresentation {
      * @return The actual leaves of the nonconsecutive part.
      */
     private List<LeafSubstructure<?, ?>> getNonConsecutiveLeafSubstructures() {
-        return nonConsecutiveLeafs;
+        return this.nonConsecutiveLeafs;
     }
 
     /**

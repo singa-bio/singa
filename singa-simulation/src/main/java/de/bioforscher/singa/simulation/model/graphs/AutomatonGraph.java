@@ -45,7 +45,7 @@ public class AutomatonGraph extends AbstractGraph<BioNode, BioEdge, Vector2D, In
 
     @Override
     public Integer nextNodeIdentifier() {
-        return nextNodeIdentifier++;
+        return this.nextNodeIdentifier++;
     }
 
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {

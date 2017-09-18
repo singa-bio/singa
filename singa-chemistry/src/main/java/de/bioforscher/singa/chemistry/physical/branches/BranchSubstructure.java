@@ -460,7 +460,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
         }
         this.nextLeafIdentifier = new LeafIdentifier(last.getPdbIdentifier(), last.getModelIdentifier(),
                 last.getChainIdentifier(), last.getSerial() + 1);
-        return nextLeafIdentifier;
+        return this.nextLeafIdentifier;
     }
 
     /**
@@ -494,13 +494,13 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     public String flatToString() {
-        return getClass().getSimpleName() + " " + identifier + ": " + getSubstructures().stream()
+        return getClass().getSimpleName() + " " + this.identifier + ": " + getSubstructures().stream()
                 .map(branch -> branch.getClass().getSimpleName() + " " + branch.getIdentifier())
                 .collect(Collectors.joining(", "));
     }
 
     public String deepToString() {
-        return getClass().getSimpleName() + " " + identifier + " with Branches: {" + getSubstructures().stream()
+        return getClass().getSimpleName() + " " + this.identifier + " with Branches: {" + getSubstructures().stream()
                 .map(Substructure::flatToString)
                 .collect(Collectors.joining(", ")) + "}";
     }

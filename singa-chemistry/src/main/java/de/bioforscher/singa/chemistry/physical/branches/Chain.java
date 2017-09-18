@@ -130,12 +130,12 @@ public class Chain extends BranchSubstructure<Chain, String> {
 
     @Override
     public String flatToString() {
-        return "Chain " + identifier + " containing " + this.getSubstructures().size() + " LeafSubstructures";
+        return "Chain " + this.identifier + " containing " + this.getSubstructures().size() + " LeafSubstructures";
     }
 
     @Override
     public String deepToString() {
-        return "Chain " + identifier + ", with Leaves: {" + getLeafSubstructures().stream()
+        return "Chain " + this.identifier + ", with Leaves: {" + getLeafSubstructures().stream()
                 .map(leaf -> leaf.getFamily().getThreeLetterCode() + "-" + leaf.getIdentifier().getSerial())
                 .collect(Collectors.joining(", ")) + "}";
     }
@@ -152,12 +152,12 @@ public class Chain extends BranchSubstructure<Chain, String> {
 
         Chain that = (Chain) o;
 
-        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
+        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return identifier != null ? identifier.hashCode() : 0;
+        return this.identifier != null ? this.identifier.hashCode() : 0;
     }
 
 
