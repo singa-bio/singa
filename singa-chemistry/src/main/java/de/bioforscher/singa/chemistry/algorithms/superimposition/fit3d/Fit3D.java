@@ -1,7 +1,8 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.PsScore;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +33,28 @@ public interface Fit3D {
      *
      * @return The fractions of matches that were aligned.
      */
-    double getFraction();
+    default double getFraction() {
+        throw new UnsupportedOperationException("Fraction of aligned residues is only available for the Fit3D site " +
+                "alignment algorithm and always 1.0 for Fit3D");
+    }
 
     /**
-     * Returns the Xie-score of aligned residues.
+     * Returns the {@link XieScore} of aligned residues (only available for {@link Fit3DSiteAlignment}.
      *
-     * @return The Xie-score that were aligned.
+     * @return The {@link XieScore} of residues that were aligned.
      */
-    XieScore getXieScore();
+    default XieScore getXieScore() {
+        throw new UnsupportedOperationException("Xie score only available for the Fit3D site alignment algorithm.");
+    }
+
+    /**
+     * Returns the {@link PsScore} of aligned residues (only available for {@link Fit3DSiteAlignment}.
+     *
+     * @return The {@link PsScore} of residues that were aligned.
+     */
+    default PsScore getPsScore() {
+        throw new UnsupportedOperationException("PS-score only available for the Fit3D site alignment algorithm.");
+    }
 
     /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to

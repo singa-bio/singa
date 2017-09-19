@@ -2,7 +2,6 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserException;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -102,11 +101,6 @@ public class Fit3DAlignmentBatch implements Fit3D {
     @Override
     public double getFraction() {
         return 1.0;
-    }
-
-    @Override
-    public XieScore getXieScore() {
-        throw new UnsupportedOperationException("not implemented");
     }
 
     /**

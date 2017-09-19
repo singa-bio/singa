@@ -1,5 +1,6 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition;
+package de.bioforscher.singa.chemistry.algorithms.superimposition.scores;
 
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
