@@ -43,9 +43,9 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeaves(motifContainingStructure,
+        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
         this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
@@ -79,11 +79,11 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         List<Path> targetStructures = Files.list(
-                Paths.get(Resources.getResourceAsFilepath("RF00167")))
+                Paths.get(Resources.getResourceAsFileLocation("RF00167")))
                 .collect(Collectors.toList());
         StructureParser.MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)
@@ -102,7 +102,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(target,
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
                 LeafIdentifiers.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -123,7 +123,7 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
-        StructuralMotif nucleotideMotif = StructuralMotif.fromLeaves(nucleotideTarget,
+        StructuralMotif nucleotideMotif = StructuralMotif.fromLeafIdentifiers(nucleotideTarget,
                 LeafIdentifiers.of("A-22", "A-51", "A-52", "A-74"));
         nucleotideMotif.addExchangeableFamily(LeafIdentifier.fromString("A-74"), NucleotideFamily.URIDINE);
         Fit3D fit3d = Fit3DBuilder.create()
@@ -141,7 +141,7 @@ public class Fit3DAlignmentTest {
                 .everything()
                 .parse();
 
-        StructuralMotif queryMotif = StructuralMotif.fromLeaves(queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(queryStructure, LeafIdentifiers.of("A-84", "A-330", "A-999"));
 
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -197,7 +197,7 @@ public class Fit3DAlignmentTest {
 //
 //        // KDEEH template motif
 //        Structure motifContainingStructure = PDBParserService.parsePDBFile("motif_KDEEH.pdb");
-//        StructuralMotif motif = StructuralMotif.fromLeaves(1, motifContainingStructure,
+//        StructuralMotif motif = StructuralMotif.fromLeafIdentifiers(1, motifContainingStructure,
 //                LeafIdentifiers.of("A-164", "A-195", "A-221", "A-247", "A-297"));
 //        motif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
 //        motif.addExchangeableFamily(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARTIC_ACID);

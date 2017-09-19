@@ -5,7 +5,7 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>de.bioforscher.singa</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
     </dependencies>
     <build>

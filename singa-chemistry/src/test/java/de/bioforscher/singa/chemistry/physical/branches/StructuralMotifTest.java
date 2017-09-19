@@ -22,10 +22,10 @@ public class StructuralMotifTest {
     @Before
     public void setup() throws Exception {
         Structure motifStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("Asn_3m4p.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeaves(motifStructure.getAllLeaves());
+        this.structuralMotif = StructuralMotif.fromLeafIdentifiers(motifStructure.getAllLeafSubstructures());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class StructuralMotifTest {
         List<LeafSubstructure<?, ?>> aminoAcids = new ArrayList<>();
         aminoAcids.add(aminoAcid1);
         aminoAcids.add(aminoAcid2);
-        StructuralMotif motif = StructuralMotif.fromLeaves(aminoAcids);
+        StructuralMotif motif = StructuralMotif.fromLeafIdentifiers(aminoAcids);
         assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
                 > motif.getLeafSubstructures().get(0).getIdentifier().getSerial());
         assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()

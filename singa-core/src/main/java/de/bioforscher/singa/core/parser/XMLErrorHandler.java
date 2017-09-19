@@ -1,4 +1,4 @@
-package de.bioforscher.singa.core.parser.xml;
+package de.bioforscher.singa.core.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class XMLErrorHandler implements ErrorHandler {
 
     @Override
     public void warning(SAXParseException exception) throws SAXException {
-        logger.error("Warning {} in line {} : {}", exception.getSystemId(), exception.getLineNumber(), exception.getMessage());
+        logger.warn("Warning {} in line {} : {}", exception.getSystemId(), exception.getLineNumber(), exception.getMessage());
         throw exception;
     }
 

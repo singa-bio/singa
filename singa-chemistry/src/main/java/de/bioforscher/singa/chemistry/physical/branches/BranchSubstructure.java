@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
-import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
@@ -44,6 +44,8 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      * The substructures of this substructure.
      */
     protected Map<Object, Substructure<?, ?>> substructures;
+
+    private LeafIdentifier nextLeafIdentifier;
 
     /**
      * A iterating variable to add a new edge.
@@ -116,7 +118,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     @Override
     public Vector3D getPosition() {
-        return Vectors3D.getCentroid(this.getAllAtoms().stream()
+        return Vectors3D.getCentroid(getAllAtoms().stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()));
     }
@@ -128,7 +130,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
      */
     @Override
     public void setPosition(Vector3D position) {
-        this.getAllAtoms().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
+        getAllAtoms().forEach(atom -> atom.setPosition(atom.getPosition().add(position)));
     }
 
     /**
@@ -236,8 +238,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
 
     /**
      * Removes the substructure with the given identifier from this {@link Substructure}. This removes all {@link Atom}s
-     * and {@link Bond}s as well
-     * <p>
+     * and {@link Bond}s as well <p>
      *
      * @param identifier The identifier of the atom to remove.
      */
@@ -294,7 +295,7 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all atom-containing substructures (@{@link LeafSubstructure}s) of this {@link BranchSubstructure}.
+     * Returns all atom-containing {@link LeafSubstructure}s of this {@link BranchSubstructure}.
      *
      * @return list of atom-containing substructures
      */
@@ -383,7 +384,6 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
 
-
     @Override
     public int nextEdgeIdentifier() {
         return this.nextEdgeIdentifier++;
@@ -432,7 +432,8 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
     }
 
     /**
-     * Returns all atoms of this BranchSubstructure and all SubStructures that are contained in this BranchSubstructure.
+     * Returns all atoms of this BranchSubstructure and all SubStructures that are contained in this
+     * BranchSubstructure.
      *
      * @return All atoms.
      */
@@ -442,6 +443,24 @@ public abstract class BranchSubstructure<SubstructureType extends Substructure<S
             atoms.addAll(substructure.getAllAtoms());
         }
         return atoms;
+    }
+
+    public LeafIdentifier getNextLeafIdentifier() {
+        // lazily determine
+        LeafIdentifier last;
+        if (this.nextLeafIdentifier == null) {
+            last = getLeafSubstructures().stream()
+                    .map(LeafSubstructure::getIdentifier)
+                    .max(LeafIdentifier::compareTo)
+                    .orElseThrow(() -> new IllegalStateException("Could not find any largest leaf identifier, " +
+                            "possibly this structure does not contain any elements."));
+
+        } else {
+            last = this.nextLeafIdentifier;
+        }
+        this.nextLeafIdentifier = new LeafIdentifier(last.getPdbIdentifier(), last.getModelIdentifier(),
+                last.getChainIdentifier(), last.getSerial() + 1);
+        return nextLeafIdentifier;
     }
 
     /**

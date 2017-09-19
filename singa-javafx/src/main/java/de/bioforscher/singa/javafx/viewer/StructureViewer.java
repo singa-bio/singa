@@ -3,8 +3,8 @@ package de.bioforscher.singa.javafx.viewer;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.branches.Chain;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
@@ -144,7 +144,7 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeaves().forEach(this::addLeaf);
+        this.displayStructure.getAllLeafSubstructures().forEach(this::addLeafSubstructure);
         // edges in chains (backbone connections)
         this.displayStructure.getAllChains().forEach(this::addChainConnections);
         // add the created molecule to the world
@@ -152,7 +152,7 @@ public class StructureViewer extends Application {
 
     }
 
-    private void addLeaf(LeafSubstructure<?, ?> leafSubstructure) {
+    private void addLeafSubstructure(LeafSubstructure<?, ?> leafSubstructure) {
         leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
         leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }

@@ -9,7 +9,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     public static final String DEFAULT_PDB_IDENTIFIER = "0000";
     public static final int DEFAULT_MODEL_IDENTIFIER = 0;
-    public static final String DEFAULT_CHAIN_IDENTIFER = "X";
+    public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
     public static final char DEFAULT_INSERTION_CODE = ' ';
 
     private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
@@ -42,7 +42,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     public LeafIdentifier(int serial) {
-        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFER, serial);
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFIER, serial);
     }
 
     public static LeafIdentifier fromString(String identifier) {

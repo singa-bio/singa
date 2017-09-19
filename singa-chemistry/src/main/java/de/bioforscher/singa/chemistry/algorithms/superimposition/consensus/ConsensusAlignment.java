@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.consensus;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -179,18 +179,18 @@ public class ConsensusAlignment {
                 SubstructureSuperimposition superimposition;
                 if (this.representationScheme == null) {
                     superimposition = this.idealSuperimposition ?
-                            SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference.getStructuralMotif(),
                                     consensusContainer.getStructuralMotif(), this.atomFilter) :
-                            SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getStructuralMotif().getOrderedLeafSubstructures(),
                                     consensusContainer.getStructuralMotif().getOrderedLeafSubstructures(), this.atomFilter);
                 } else {
                     superimposition = this.idealSuperimposition ?
-                            SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference.getStructuralMotif(),
                                     consensusContainer.getStructuralMotif(), this.representationScheme) :
-                            SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getStructuralMotif().getOrderedLeafSubstructures(),
                                     consensusContainer.getStructuralMotif().getOrderedLeafSubstructures(), this.representationScheme);
                 }
@@ -351,18 +351,18 @@ public class ConsensusAlignment {
             SubstructureSuperimposition superimposition;
             if (this.representationScheme == null) {
                 superimposition = this.idealSuperimposition ?
-                        SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                        SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                 this.currentConsensus.getStructuralMotif(),
                                 inputStructure.getStructuralMotif(), this.atomFilter) :
-                        SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                        SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                 this.currentConsensus.getStructuralMotif().getOrderedLeafSubstructures(),
                                 inputStructure.getStructuralMotif().getOrderedLeafSubstructures(), this.atomFilter);
             } else {
                 superimposition = this.idealSuperimposition ?
-                        SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                        SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                 this.currentConsensus.getStructuralMotif(),
                                 inputStructure.getStructuralMotif(), this.representationScheme) :
-                        SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                        SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                 this.currentConsensus.getStructuralMotif().getOrderedLeafSubstructures(),
                                 inputStructure.getStructuralMotif().getOrderedLeafSubstructures(), this.representationScheme);
             }
@@ -480,7 +480,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(atomContainer);
             leaveCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeaves(consensusLeaveSubstructures), true);
+        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafIdentifiers(consensusLeaveSubstructures), true);
 
         // create tree node
         BinaryTreeNode<ConsensusContainer> leftNode;
@@ -606,18 +606,18 @@ public class ConsensusAlignment {
                 SubstructureSuperimposition superimposition;
                 if (this.representationScheme == null) {
                     superimposition = this.idealSuperimposition ?
-                            SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
                                     candidate, this.atomFilter) :
-                            SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getOrderedLeafSubstructures(),
                                     candidate.getOrderedLeafSubstructures(), this.atomFilter);
                 } else {
                     superimposition = this.idealSuperimposition ?
-                            SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
                                     candidate, this.representationScheme) :
-                            SubStructureSuperimposer.calculateSubstructureSuperimposition(
+                            SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getOrderedLeafSubstructures(),
                                     candidate.getOrderedLeafSubstructures(), this.representationScheme);
                 }

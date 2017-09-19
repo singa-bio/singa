@@ -4,7 +4,12 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.AtomToken;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
-import de.bioforscher.singa.chemistry.physical.model.*;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
+import de.bioforscher.singa.chemistry.physical.interactions.BondType;
+import de.bioforscher.singa.chemistry.physical.model.Exchangeable;
+import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
@@ -413,6 +418,11 @@ public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstruc
     public String getPdbIdentifier() {
         return this.leafIdentifier.getPdbIdentifier();
     }
+
+    public char getInsertionCode() {
+        return this.leafIdentifier.getInsertionCode();
+    }
+
 
     /**
      * Assembles a list of strings, where each sting represents a atom of this leaf in PDBFormat.

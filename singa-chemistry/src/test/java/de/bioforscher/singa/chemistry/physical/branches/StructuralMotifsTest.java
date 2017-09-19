@@ -28,10 +28,10 @@ public class StructuralMotifsTest {
     @Before
     public void setUp() throws Exception {
         Structure motifStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("Asn_3m4p.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeaves(motifStructure.getAllLeaves());
+        this.structuralMotif = StructuralMotif.fromLeafIdentifiers(motifStructure.getAllLeafSubstructures());
     }
 
     @Test
@@ -49,12 +49,12 @@ public class StructuralMotifsTest {
 
     @Test
     public void shouldCalculateRmsdMatrix() throws IOException {
-        List<StructuralMotif> input = Files.list(Paths.get(Resources.getResourceAsFilepath("consensus_alignment")))
+        List<StructuralMotif> input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .parse())
-                .map(Structure::getAllLeaves)
-                .map(StructuralMotif::fromLeaves)
+                .map(Structure::getAllLeafSubstructures)
+                .map(StructuralMotif::fromLeafIdentifiers)
                 .collect(Collectors.toList());
         assertEquals(StructuralMotifs.calculateRmsdMatrix(input, false).getRowDimension(), input.size());
     }

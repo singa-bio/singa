@@ -1,7 +1,5 @@
-package de.bioforscher.singa.mathematics.graphs;
+package de.bioforscher.singa.mathematics.graphs.trees;
 
-import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
-import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
 import org.junit.Assert;
 import org.junit.Test;
 

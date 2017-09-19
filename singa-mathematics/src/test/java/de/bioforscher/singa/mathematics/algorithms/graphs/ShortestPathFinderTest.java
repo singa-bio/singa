@@ -23,7 +23,7 @@ public class ShortestPathFinderTest {
     private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
 
     @Before
-    public void initObjects() {
+    public void initialize() {
         this.linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
     }
 

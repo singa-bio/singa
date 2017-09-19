@@ -31,13 +31,13 @@ public class ECNumberTest {
 
     @Test
     public void testECNumber06() {
-        Identifier ecNumber = new ECNumber("1.23.4");
+        Identifier ecNumber = new ECNumber("1.23.4.-");
         assertNotNull(ecNumber);
     }
 
     @Test
     public void testECNumber07() {
-        Identifier ecNumber = new ECNumber("1.23.45");
+        Identifier ecNumber = new ECNumber("1.23.45.-");
         assertNotNull(ecNumber);
     }
 

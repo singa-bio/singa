@@ -21,8 +21,6 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
         EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType>
         implements Graph<NodeType, EdgeType, IdentifierType> {
 
-
-
     /**
      * A iterating variable to add a new edge.
      */

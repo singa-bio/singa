@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.Loca
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -22,12 +23,37 @@ import static org.junit.Assert.assertTrue;
 
 public class StructureParserTest {
 
-    @Test
-    public void shouldParseUncomplicatedStructure() {
+    private static Structure hemoglobin;
+    private static Structure cyanase;
+
+    @BeforeClass
+    public static void parseUncomplicatedStructure() {
         // "normal" structure
-        Structure structure = StructureParser.online()
+        hemoglobin = StructureParser.online()
                 .pdbIdentifier("1BUW")
                 .parse();
+    }
+
+    @BeforeClass
+    public static void parseResiduesWithModifiedAminoAcids() {
+        cyanase = StructureParser.online()
+                .pdbIdentifier("1DW9")
+                .parse();
+    }
+
+    @Test
+    public void shouldParsePDBIdentifierFromHeader() {
+        assertEquals("1buw", hemoglobin.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldParseOneLineTitleFromHeader() {
+        assertEquals("CRYSTAL STRUCTURE OF S-NITROSO-NITROSYL HUMAN HEMOGLOBIN A", hemoglobin.getTitle());
+    }
+
+    @Test
+    public void shouldParseMultiLineTitleFromHeader() {
+        assertEquals("STRUCTURE OF CYANASE REVEALS THAT A NOVEL DIMERIC AND DECAMERIC ARRANGEMENT OF SUBUNITS IS REQUIRED FOR FORMATION OF THE ENZYME ACTIVE SITE", cyanase.getTitle());
     }
 
     @Test
@@ -39,7 +65,7 @@ public class StructureParserTest {
                 .allChains()
                 .parse();
         assertEquals(1, structure.getAllModels().size());
-        assertEquals(new Integer(2), structure.getFirstModel().get().getIdentifier());
+        assertEquals(new Integer(2), structure.getFirstModel().getIdentifier());
     }
 
     @Test
@@ -50,7 +76,7 @@ public class StructureParserTest {
                 .chainIdentifier("A")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals("A", structure.getFirstChain().get().getIdentifier());
+        assertEquals("A", structure.getFirstChain().getIdentifier());
     }
 
     @Test
@@ -62,8 +88,8 @@ public class StructureParserTest {
                 .chainIdentifier("B")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals(new Integer(3), structure.getFirstModel().get().getIdentifier());
-        assertEquals("B", structure.getFirstChain().get().getIdentifier());
+        assertEquals(new Integer(3), structure.getFirstModel().getIdentifier());
+        assertEquals("B", structure.getFirstChain().getIdentifier());
     }
 
     @Test
@@ -72,16 +98,6 @@ public class StructureParserTest {
         Structure structure = StructureParser.online()
                 .pdbIdentifier("2N5E")
                 .chainIdentifier("B")
-                .parse();
-    }
-
-
-    // structure with modified amino acids
-    @Test
-    public void shouldParseResiduesWithModifiedAminoAcids() {
-        Structure structure = StructureParser.online()
-                .pdbIdentifier("1DW9")
-                .everything()
                 .parse();
     }
 
@@ -94,16 +110,14 @@ public class StructureParserTest {
                 .parse();
     }
 
-    // structure with modified nucleotides
     @Test
     public void shouldParseStructureWithInsertionCodes() {
-        // TODO some strange bonds between 620 and 621 issue #41
         Structure structure = StructureParser.online()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
 
-        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeaves().stream()
+        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
                 .collect(Collectors.toList());
 
@@ -113,7 +127,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseFromLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         Structure structure = StructureParser.local()
                 .localPDB(localPdb, "1C0A")
                 .parse();
@@ -121,18 +135,18 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
-        Path chainList = Paths.get(Thread.currentThread().getContextClassLoader().getResource("chain_list.txt").toURI());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+        Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = StructureParser.local()
                 .localPDB(localPdb)
                 .chainList(chainList, ":")
                 .parse();
-        assertTrue(structure.get(0).getAllLeaves().size() > 0);
+        assertTrue(structure.get(0).getAllLeafSubstructures().size() > 0);
     }
 
     @Test
     public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Paths.get(Thread.currentThread().getContextClassLoader().getResource("pdb").toURI()).toString());
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
     }
 
@@ -140,7 +154,7 @@ public class StructureParserTest {
     public void shouldAssignInformationFromFileName() {
         StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
         Structure structure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
                 .parse();
@@ -176,7 +190,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseAllChainsFromLocalFile() {
         StructureParser.local()
-                .fileLocation(Resources.getResourceAsFilepath("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
     }

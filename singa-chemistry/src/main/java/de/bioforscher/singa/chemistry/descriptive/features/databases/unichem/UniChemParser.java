@@ -5,7 +5,7 @@ import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.InChIKey;
 import de.bioforscher.singa.core.identifier.PubChemIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
-import de.bioforscher.singa.core.parser.rest.AbstractHTMLParser;
+import de.bioforscher.singa.core.parser.AbstractHTMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

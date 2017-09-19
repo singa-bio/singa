@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -134,11 +134,11 @@ public class Fit3DAlignment implements Fit3D {
             // apply representation scheme if defined
             SubstructureSuperimposition superimposition;
             if (this.representationScheme != null) {
-                superimposition = SubStructureSuperimposer
+                superimposition = SubstructureSuperimposer
                         .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
                                 alignmentCandidate, this.representationScheme);
             } else {
-                superimposition = SubStructureSuperimposer
+                superimposition = SubstructureSuperimposer
                         .calculateSubstructureSuperimposition(this.queryMotif.getLeafSubstructures(),
                                 alignmentCandidate, this.atomFilter);
             }

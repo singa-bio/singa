@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.atoms.representations;
 
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubStructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -40,7 +40,7 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
             // superimpose alanine based on backbone
             // TODO add convenience functionality to superimpose single LeafSubstructures
             AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
-            SubstructureSuperimposition superimposition = SubStructureSuperimposer.calculateIdealSubstructureSuperimposition(
+            SubstructureSuperimposition superimposition = SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                     Stream.of(leafSubstructure).collect(Collectors.toList()),
                     Stream.of(alanine).collect(Collectors.toList()),
                     AtomFilter.isBackbone());

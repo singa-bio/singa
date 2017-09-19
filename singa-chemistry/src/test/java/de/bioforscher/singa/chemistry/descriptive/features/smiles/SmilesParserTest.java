@@ -54,10 +54,10 @@ public class SmilesParserTest {
         assertTrue(neighboursOfP2.stream()
                 .anyMatch(atom -> atom.getIdentifier() == 5 && atom.getElement().equals(OXYGEN)));
         // where one is a double bond and the rest are single bonds
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(4)).getType(), MoleculeBondType.DOUBLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(1)).getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(3)).getType(), MoleculeBondType.SINGLE_BOND);
-        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(5)).getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(4)).get().getType(), MoleculeBondType.DOUBLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(1)).get().getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(3)).get().getType(), MoleculeBondType.SINGLE_BOND);
+        assertEquals(moleculeGraph.getEdgeBetween(moleculeGraph.getNode(2),moleculeGraph.getNode(5)).get().getType(), MoleculeBondType.SINGLE_BOND);
     }
 
 

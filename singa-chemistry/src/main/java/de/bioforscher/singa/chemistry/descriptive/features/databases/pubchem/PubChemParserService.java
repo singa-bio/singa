@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.core.identifier.PubChemIdentifier;
-import de.bioforscher.singa.core.parser.xml.AbstractXMLParser;
+import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.physical.branches;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.BranchFilter.isChain;
@@ -26,11 +26,12 @@ public class StructuralModel extends BranchSubstructure<StructuralModel, Integer
         super(structuralModel);
     }
 
-    public Optional<Chain> getFirstChain() {
+    public Chain getFirstChain() {
         return getBranchSubstructures().stream()
                 .filter(isChain())
                 .map(Chain.class::cast)
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("The model " + this + " does not contain a chain."));
     }
 
     public List<Chain> getAllChains() {

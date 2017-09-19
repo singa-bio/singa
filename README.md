@@ -2,16 +2,35 @@
 
 [![Build Status](https://travis-ci.org/cleberecht/singa.svg?branch=master)](https://travis-ci.org/cleberecht/singa)
 
-SiNGA (**Si**mulation of **N**atural **S**ystems using **G**raph **A**utomata) is an open-source library containing
+SiNGA (**Si**mulation of **N**atural Systems using **G**raph **A**utomata) is an open-source library containing
 tools especially for structural bioinformatics and systems biology.
 
-Many aspects are under development. API changes might be frequent, never the less we try to keep them minimal.
+Many aspects are under development. API changes are frequent, never the less we try to keep them minimal.
 
 ## Our tenets
 * explicit is better than implicit
 * good code is better than good documentation
 * flat is better than nested
 * readability is more important than performance
+
+## Quick start
+SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/de.bioforscher.singa). Simply add the desired modules to your ```pom.xml```:
+
+```
+<dependencies>
+    <dependency>
+        <groupId>de.bioforscher.singa</groupId>
+        <artifactId>singa-core</artifactId>
+        <version>0.2.1</version>
+    </dependency>
+    <dependency>
+        <groupId>de.bioforscher.singa</groupId>
+        <artifactId>singa-chemistry</artifactId>
+        <version>0.2.1</version>
+    </dependency>
+    <!-- more dependencies -->
+</dependencies>
+```
 
 ## Current structure
 SiNGA is currently divided into six modules intended for different areas of application.
@@ -89,7 +108,7 @@ Chemical entities can be parsed from the ChEBI Database and imported from PubChe
 The physical representations of chemical entities approaches the problem from a graph theoretic side 
 ([see here](https://github.com/cleberecht/singa/wiki/Structure-model-(Chemistry))).
 You are able to fetch structures from the pdb database 
-([see here](https://github.com/cleberecht/singa/wiki/Structure-model-(Chemistry))), align structures and seach for
+([see here](https://github.com/cleberecht/singa/wiki/Structure-parsing-(Chemistry))), align structures and seach for
 structural motifs ([see here](https://github.com/cleberecht/singa/wiki/Structure-Alignments-(Chemistry))).
 
 ### Module: Simulation
@@ -105,7 +124,7 @@ can be applied to change those concentrations.
 ### Module: Features
 The features package provides the possibility to automatically retrieve certain *Features* from databases. Additionally
 [Units of Measurement](https://github.com/unitsofmeasurement) project is used to attach correct units to features if
-necessary. Some systems biology specific units are defined and some Utilities are implemented.
+necessary.
 
 ### Module: Javafx
 The javafx package contains a renderer based interface, that provides default implementations to draw the

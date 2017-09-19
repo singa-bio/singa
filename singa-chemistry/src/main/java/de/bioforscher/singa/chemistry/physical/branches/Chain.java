@@ -2,10 +2,10 @@ package de.bioforscher.singa.chemistry.physical.branches;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
-import de.bioforscher.singa.chemistry.physical.model.Bond;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 
@@ -13,9 +13,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The chainIdentifier is one of the grouping elements that should contain primarily residues and are connected to form a single
- * molecule. This model is adopted from the classical PDB structure files. Since this also implements the nameable
- * interface, the name of a chin is its chainIdentifier pdbIdentifier (a single letter).
+ * The chainIdentifier is one of the grouping elements that should contain primarily residues and are connected to form
+ * a single molecule. This model is adopted from the classical PDB structure files. Since this also implements the
+ * nameable interface, the name of a chin is its chainIdentifier pdbIdentifier (a single letter).
  *
  * @author cl
  * @see AminoAcid
@@ -25,8 +25,8 @@ public class Chain extends BranchSubstructure<Chain, String> {
     private Set<LeafIdentifier> consecutiveIdentifiers;
 
     /**
-     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chainIdentifier identifier, but the
-     * reference for the placement in the graph.
+     * Creates a new Chain with the given graph pdbIdentifier. This is not the single character chainIdentifier
+     * identifier, but the reference for the placement in the graph.
      *
      * @param identifier The identifier in the graph.
      */
@@ -53,16 +53,16 @@ public class Chain extends BranchSubstructure<Chain, String> {
     }
 
     /**
-     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chainIdentifier and nothing
-     * more on this level in a structure.</b>
+     * Creates a new Chain with the graph identifier 0. <b>Use this method only if there is only one chainIdentifier and
+     * nothing more on this level in a structure.</b>
      */
     public Chain() {
-        super(LeafIdentifier.DEFAULT_CHAIN_IDENTIFER);
+        super(LeafIdentifier.DEFAULT_CHAIN_IDENTIFIER);
     }
 
     /**
-     * Connects the all residues, that are currently in the chainIdentifier, in order of their appearance in the
-     * List of AminoAcids ({@link BranchSubstructure#getAminoAcids()}).
+     * Connects the all residues, that are currently in the chainIdentifier, in order of their appearance in the List of
+     * AminoAcids ({@link BranchSubstructure#getAminoAcids()}).
      */
     public void connectChainBackbone() {
         LeafSubstructure<?, ?> lastSubstructure = null;
@@ -79,9 +79,8 @@ public class Chain extends BranchSubstructure<Chain, String> {
     }
 
     /**
-     * Connects two residues, using the Backbone Carbon ({@link AtomName#C C})
-     * of the source residue and the Backbone Nitrogen ({@link AtomName#N N})
-     * of the target residue.
+     * Connects two residues, using the Backbone Carbon ({@link AtomName#C C}) of the source residue and the Backbone
+     * Nitrogen ({@link AtomName#N N}) of the target residue.
      *
      * @param source AminoAcid with Backbone Carbon.
      * @param target AminoAcid with Backbone Nitrogen.
@@ -131,13 +130,13 @@ public class Chain extends BranchSubstructure<Chain, String> {
 
     @Override
     public String flatToString() {
-        return "Chain " + identifier + " containing "+this.getSubstructures().size()+" LeafSubstructures";
+        return "Chain " + identifier + " containing " + this.getSubstructures().size() + " LeafSubstructures";
     }
 
     @Override
     public String deepToString() {
         return "Chain " + identifier + ", with Leaves: {" + getLeafSubstructures().stream()
-                .map(leaf -> leaf.getFamily().getThreeLetterCode()+"-"+ leaf.getIdentifier().getSerial())
+                .map(leaf -> leaf.getFamily().getThreeLetterCode() + "-" + leaf.getIdentifier().getSerial())
                 .collect(Collectors.joining(", ")) + "}";
     }
 
@@ -160,7 +159,6 @@ public class Chain extends BranchSubstructure<Chain, String> {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
-
 
 
 }

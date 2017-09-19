@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <groupId>de.bioforscher.singa</groupId>
     <artifactId>singa-all</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
     <name>singa-all</name>
     <description>
         SiNGA (Simulation of Natural Systems using Graph Automata) is an open-source library containing tools especially

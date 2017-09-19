@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.physical.model;
 
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.interactions.Bond;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 
 import java.util.List;
