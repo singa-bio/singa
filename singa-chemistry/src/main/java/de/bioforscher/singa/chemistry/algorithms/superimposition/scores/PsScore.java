@@ -45,9 +45,9 @@ public class PsScore {
     private double score;
     private double significance;
 
-    private PsScore(SubstructureSuperimposition substructureSuperimposition, int referencecLength, int queryLength) {
+    private PsScore(SubstructureSuperimposition substructureSuperimposition, int referenceLength, int queryLength) {
         this.substructureSuperimposition = substructureSuperimposition;
-        this.referenceLength = referencecLength;
+        this.referenceLength = referenceLength;
         this.queryLength = queryLength;
         this.alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
         this.betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
