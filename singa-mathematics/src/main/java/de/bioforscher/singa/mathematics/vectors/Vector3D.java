@@ -388,6 +388,6 @@ public class Vector3D implements Vector {
 
     @Override
     public String toString() {
-        return "Vector3D (" + this.x + ", " + this.y + ", " + this.z + ')';
+        return "(" + this.x + ", " + this.y + ", " + this.z + ')';
     }
 }

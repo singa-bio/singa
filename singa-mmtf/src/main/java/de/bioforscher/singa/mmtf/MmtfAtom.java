@@ -1,12 +1,15 @@
 package de.bioforscher.singa.mmtf;
 
+import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.singa.chemistry.physical.interfaces.Atom;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
  * @author cl
  */
-public class MmtfAtom implements AtomInterface {
+public class MmtfAtom implements Atom {
 
     private StructureDataInterface data;
 
@@ -25,11 +28,17 @@ public class MmtfAtom implements AtomInterface {
      */
     private int internalAtomIndex;
 
-    public MmtfAtom(StructureDataInterface data, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
+
+    MmtfAtom(StructureDataInterface data, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
         this.data = data;
         this.internalGroupIndex = internalGroupIndex;
         this.internalAtomIndex = internalAtomIndex;
         this.groupPositionIndex = groupPositionIndex;
+    }
+
+    @Override
+    public int getIdentifier() {
+        return internalAtomIndex+1;
     }
 
     @Override
@@ -42,5 +51,16 @@ public class MmtfAtom implements AtomInterface {
     public Vector3D getPosition() {
         // assemble position from internal atom identifier
         return new Vector3D(data.getxCoords()[internalAtomIndex], data.getyCoords()[internalAtomIndex], data.getzCoords()[internalAtomIndex]);
+    }
+
+    @Override
+    public Element getElement() {
+        return ElementProvider.getElementBySymbol(data.getGroupElementNames(data.getGroupTypeIndices()[internalGroupIndex])[groupPositionIndex])
+                .orElse(ElementProvider.UNKOWN);
+    }
+
+    @Override
+    public String toString() {
+        return flatToString();
     }
 }
