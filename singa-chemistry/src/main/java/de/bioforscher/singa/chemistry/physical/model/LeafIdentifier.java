@@ -3,6 +3,9 @@ package de.bioforscher.singa.chemistry.physical.model;
 import java.util.Comparator;
 
 /**
+ * The leaf identifier consists of the PDB identifer, the model identifier, the chain identifier, the serial of a leaf
+ * substructure and optionally its insertion code.
+ *
  * @author cl
  */
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
@@ -90,7 +93,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         if (this.serial != that.serial) return false;
         if (this.modelIdentifer != that.modelIdentifer) return false;
         if (this.insertionCode != that.insertionCode) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
+        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+            return false;
         return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 
