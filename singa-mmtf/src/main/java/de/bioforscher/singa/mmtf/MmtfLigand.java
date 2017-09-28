@@ -9,8 +9,12 @@ import org.rcsb.mmtf.api.StructureDataInterface;
  */
 public class MmtfLigand extends MmtfLeafSubstructure<Ligand> implements Ligand {
 
-    public MmtfLigand(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, leafIdentifier, internalIndex, atomStartIndex, atomEndIndex);
+    MmtfLigand(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    }
+
+    private MmtfLigand(MmtfLeafSubstructure mmtfLeafSubstructure) {
+        super(mmtfLeafSubstructure);
     }
 
     @Override
@@ -23,4 +27,8 @@ public class MmtfLigand extends MmtfLeafSubstructure<Ligand> implements Ligand {
         return flatToString();
     }
 
+    @Override
+    public Ligand getCopy() {
+        return new MmtfLigand(this);
+    }
 }

@@ -1,6 +1,9 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.*;
+import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
+import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.interfaces.Model;
+import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
@@ -46,7 +49,7 @@ public class MmtfStructure implements Structure {
     @Override
     public Optional<Model> getModel(int modelIdentifier) {
         try {
-            return Optional.of(new MmtfModel(data, modelIdentifier));
+            return Optional.of(new MmtfModel(data, modelIdentifier-1));
         } catch (IllegalArgumentException exception) {
             return Optional.empty();
         }
@@ -96,96 +99,8 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public List<AminoAcid> getAllAminoAcids() {
-        List<AminoAcid> aminoAcids = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : getAllLeafSubstructures()) {
-                if (leafSubstructure instanceof  AminoAcid) {
-                    aminoAcids.add((AminoAcid) leafSubstructure);
-                }
-        }
-        return aminoAcids;
-    }
-
-    @Override
-    public Optional<AminoAcid> getAminoAcid(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
-        if (!leafSubstructureOptional.isPresent()) {
-            return Optional.empty();
-        }
-        final LeafSubstructure<?> leafSubstructure = leafSubstructureOptional.get();
-        if (!(leafSubstructure instanceof AminoAcid)) {
-            return Optional.empty();
-        }
-        return Optional.of((AminoAcid) leafSubstructure);
-    }
-
-    @Override
-    public List<Nucleotide> getAllNucleotides() {
-        List<Nucleotide> nucleotides = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : getAllLeafSubstructures()) {
-            if (leafSubstructure instanceof  Nucleotide) {
-                nucleotides.add((Nucleotide) leafSubstructure);
-            }
-        }
-        return nucleotides;
-    }
-
-    @Override
-    public Optional<Nucleotide> getNucleotide(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
-        if (!leafSubstructureOptional.isPresent()) {
-            return Optional.empty();
-        }
-        final LeafSubstructure<?> leafSubstructure = leafSubstructureOptional.get();
-        if (!(leafSubstructure instanceof Nucleotide)) {
-            return Optional.empty();
-        }
-        return Optional.of((Nucleotide) leafSubstructure);
-    }
-
-    @Override
-    public List<Ligand> getAllLigands() {
-        List<Ligand> ligands = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : getAllLeafSubstructures()) {
-            if (leafSubstructure instanceof  Ligand) {
-                ligands.add((Ligand) leafSubstructure);
-            }
-        }
-        return ligands;
-    }
-
-    @Override
-    public Optional<Ligand> getLigand(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
-        if (!leafSubstructureOptional.isPresent()) {
-            return Optional.empty();
-        }
-        final LeafSubstructure<?> leafSubstructure = leafSubstructureOptional.get();
-        if (!(leafSubstructure instanceof Ligand)) {
-            return Optional.empty();
-        }
-        return Optional.of((Ligand) leafSubstructure);
-    }
-
-    @Override
-    public List<Atom> getAllAtoms() {
-        List<Atom> atoms = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : getAllLeafSubstructures()) {
-            atoms.addAll(leafSubstructure.getAllAtoms());
-        }
-        return atoms;
-    }
-
-    @Override
-    public Optional<Atom> getAtom(int atomIdentifier) {
-        for (LeafSubstructure<?> leafSubstructure : getAllLeafSubstructures()) {
-            for (Atom atom : leafSubstructure.getAllAtoms()) {
-                if (atom.getIdentifier() == atomIdentifier) {
-                    return Optional.of(atom);
-                }
-            }
-        }
-        return Optional.empty();
+    public Structure getCopy() {
+        return new MmtfStructure(data);
     }
 
 }

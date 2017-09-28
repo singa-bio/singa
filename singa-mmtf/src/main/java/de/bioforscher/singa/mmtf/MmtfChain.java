@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.*;
+import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
+import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.core.utility.Range;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -40,7 +41,7 @@ public class MmtfChain implements Chain {
             if (internalIdentifiers.contains(groupsPerChainIndex)) {
                 for (int groupIndex = currentGroupIndex; groupIndex <= endRange - 1; groupIndex++) {
                     relevantGroups.add(groupIndex);
-                    leafIdentifiers.add(new LeafIdentifier(data.getStructureId(), modelIdentifier, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
+                    leafIdentifiers.add(new LeafIdentifier(data.getStructureId(), modelIdentifier+1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
                 }
             }
             currentGroupIndex = endRange;
@@ -56,6 +57,14 @@ public class MmtfChain implements Chain {
             currentAtomIndex = lastAtom;
         }
 
+    }
+
+    private MmtfChain(MmtfChain mmtfChain) {
+        this.data = mmtfChain.data;
+        this.chainIdentifier = mmtfChain.chainIdentifier;
+        this.relevantGroups = new ArrayList<>(mmtfChain.relevantGroups);
+        this.leafIdentifiers = new ArrayList<>(mmtfChain.leafIdentifiers);
+        this.atomRanges = new ArrayList<>(mmtfChain.atomRanges);
     }
 
     @Override
@@ -84,47 +93,7 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public List<AminoAcid> getAllAminoAcids() {
-        return null;
-    }
-
-    @Override
-    public Optional<AminoAcid> getAminoAcid(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Nucleotide> getAllNucleotides() {
-        return null;
-    }
-
-    @Override
-    public Optional<Nucleotide> getNucleotide(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Ligand> getAllLigands() {
-        return null;
-    }
-
-    @Override
-    public Optional<Ligand> getLigand(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Atom> getAllAtoms() {
-        return null;
-    }
-
-    @Override
-    public Optional<Atom> getAtom(int atomIdentifier) {
-        return null;
-    }
-
-    @Override
     public Chain getCopy() {
-        return null;
+        return new MmtfChain(this);
     }
 }

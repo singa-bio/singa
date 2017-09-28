@@ -53,7 +53,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstModel() throws Exception {
         Model model = structure2N5E.getFirstModel();
-        assertEquals(0, model.getIdentifier());
+        assertEquals(1, model.getIdentifier());
     }
 
     @Test
@@ -94,12 +94,12 @@ public class MmtfStructureTest {
 
     @Test
     public void getLeafSubstructure() throws Exception {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 4, "A", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
         final LeafIdentifier identifier = leafSubstructure.get().getIdentifier();
-        assertEquals(4, identifier.getModelIdentifier());
+        assertEquals(5, identifier.getModelIdentifier());
         assertEquals("A", identifier.getChainIdentifier());
         assertEquals(64, identifier.getSerial());
     }
@@ -112,7 +112,7 @@ public class MmtfStructureTest {
 
     @Test
     public void getAminoAcid() throws Exception {
-        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new LeafIdentifier("1c0a", 0, "A", 98));
+        final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new LeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -130,7 +130,7 @@ public class MmtfStructureTest {
 
     @Test
     public void getNucleotide() throws Exception {
-        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new LeafIdentifier("1c0a", 0, "B", 617));
+        final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new LeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
@@ -143,13 +143,12 @@ public class MmtfStructureTest {
     @Test
     public void getAllLigands() throws Exception {
         final List<Ligand> ligands = structure1C0A.getAllLigands();
-        System.out.println(ligands);
         assertEquals(526, ligands.size());
     }
 
     @Test
     public void getLigand() throws Exception {
-        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new LeafIdentifier("1c0a", 0, "A", 831));
+        final Optional<Ligand> nucleotide = structure1C0A.getLigand(new LeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

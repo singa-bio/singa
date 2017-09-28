@@ -1,6 +1,8 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.*;
+import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
+import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.interfaces.Model;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
@@ -13,9 +15,7 @@ public class MmtfModel implements Model {
 
     private StructureDataInterface data;
     private int modelIdentifier;
-    private Map<String,List<Integer>> chainMap;
-
-    private List<Chain> chains;
+    private Map<String, List<Integer>> chainMap;
 
     MmtfModel(StructureDataInterface data, int modelIdentifier) {
         this.data = data;
@@ -48,9 +48,15 @@ public class MmtfModel implements Model {
 
     }
 
+    private MmtfModel(MmtfModel mmtfModel) {
+        this.data = mmtfModel.data;
+        this.modelIdentifier = mmtfModel.modelIdentifier;
+        this.chainMap = new HashMap<>(mmtfModel.chainMap);
+    }
+
     @Override
     public int getIdentifier() {
-        return modelIdentifier;
+        return modelIdentifier+1;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class MmtfModel implements Model {
     @Override
     public Chain getFirstChain() {
         final Map.Entry<String, List<Integer>> first = chainMap.entrySet().iterator().next();
-        return new MmtfChain(data,first.getKey(), first.getValue(), modelIdentifier);
+        return new MmtfChain(data, first.getKey(), first.getValue(), modelIdentifier);
     }
 
     @Override
@@ -88,46 +94,16 @@ public class MmtfModel implements Model {
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        return null;
+        Optional<Chain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
+        if (!chainOptional.isPresent()) {
+            return Optional.empty();
+        }
+        return chainOptional.get().getLeafSubstructure(leafIdentifier);
     }
 
     @Override
-    public List<AminoAcid> getAllAminoAcids() {
-        return null;
+    public Model getCopy() {
+        return new MmtfModel(this);
     }
 
-    @Override
-    public Optional<AminoAcid> getAminoAcid(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Nucleotide> getAllNucleotides() {
-        return null;
-    }
-
-    @Override
-    public Optional<Nucleotide> getNucleotide(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Ligand> getAllLigands() {
-        return null;
-    }
-
-    @Override
-    public Optional<Ligand> getLigand(LeafIdentifier leafIdentifier) {
-        return null;
-    }
-
-    @Override
-    public List<Atom> getAllAtoms() {
-        return null;
-    }
-
-    @Override
-    public Optional<Atom> getAtom(int atomIdentifier) {
-        return null;
-    }
 }

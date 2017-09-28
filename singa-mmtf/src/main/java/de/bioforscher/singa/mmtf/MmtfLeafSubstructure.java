@@ -7,6 +7,7 @@ import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cl
@@ -16,22 +17,28 @@ public abstract class MmtfLeafSubstructure<LeafType extends LeafSubstructure> im
     private StructureDataInterface data;
 
     /**
-     * Position of this group in data array
+     * Position of this leaf (group) in data array
      */
-    private int internalIndex;
+    private int internalGroupIndex;
     private LeafIdentifier leafIdentifier;
 
     private int atomStartIndex;
     private int atomEndIndex;
 
-    MmtfLeafSubstructure(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfLeafSubstructure(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         this.data = data;
         this.leafIdentifier = leafIdentifier;
-        this.internalIndex = internalIndex;
+        this.internalGroupIndex = internalGroupIndex;
         this.atomStartIndex = atomStartIndex;
         this.atomEndIndex = atomEndIndex;
     }
 
+    protected MmtfLeafSubstructure(MmtfLeafSubstructure mmtfLeafSubstructure) {
+        this.data = mmtfLeafSubstructure.data;
+        this.leafIdentifier = mmtfLeafSubstructure.leafIdentifier;
+        this.atomStartIndex = mmtfLeafSubstructure.atomStartIndex;
+        this.atomEndIndex = mmtfLeafSubstructure.atomEndIndex;
+    }
 
     @Override
     public LeafIdentifier getIdentifier() {
@@ -40,7 +47,7 @@ public abstract class MmtfLeafSubstructure<LeafType extends LeafSubstructure> im
 
     @Override
     public String getThreeLetterCode() {
-        return data.getGroupName(data.getGroupTypeIndices()[internalIndex]);
+        return data.getGroupName(data.getGroupTypeIndices()[internalGroupIndex]);
     }
 
     @Override
@@ -48,14 +55,17 @@ public abstract class MmtfLeafSubstructure<LeafType extends LeafSubstructure> im
         // terminate records are fucking the numbering up
         List<Atom> results = new ArrayList<>();
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
-            results.add(new MmtfAtom(data, internalIndex, internalAtomIndex-atomStartIndex, internalAtomIndex));
+            results.add(new MmtfAtom(data, internalGroupIndex, internalAtomIndex-atomStartIndex, internalAtomIndex));
         }
         return results;
     }
 
     @Override
-    public LeafType getCopy() {
-        return null;
+    public Optional<Atom> getAtom(int atomIdentifier) {
+        if (atomIdentifier < atomStartIndex || atomIdentifier > atomEndIndex) {
+            return Optional.empty();
+        }
+        return Optional.of(new MmtfAtom(data, internalGroupIndex, atomIdentifier-atomStartIndex, atomIdentifier));
     }
 
 }

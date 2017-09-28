@@ -9,8 +9,12 @@ import org.rcsb.mmtf.api.StructureDataInterface;
  */
 public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcid> implements AminoAcid {
 
-    public MmtfAminoAcid(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, leafIdentifier, internalIndex, atomStartIndex, atomEndIndex);
+    MmtfAminoAcid(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    }
+
+    private MmtfAminoAcid(MmtfLeafSubstructure mmtfLeafSubstructure) {
+        super(mmtfLeafSubstructure);
     }
 
     @Override
@@ -21,5 +25,10 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcid> implements Am
     @Override
     public String toString() {
         return flatToString();
+    }
+
+    @Override
+    public AminoAcid getCopy() {
+        return new MmtfAminoAcid(this);
     }
 }
