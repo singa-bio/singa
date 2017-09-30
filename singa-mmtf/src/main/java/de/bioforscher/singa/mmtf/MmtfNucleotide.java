@@ -5,9 +5,11 @@ import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
+ * The implementation of {@link Nucleotide}s for mmtf structures.
+ *
  * @author cl
  */
-public class MmtfNucleotide extends MmtfLeafSubstructure<Nucleotide> implements Nucleotide {
+public class MmtfNucleotide extends MmtfLeafSubstructure implements Nucleotide {
 
     MmtfNucleotide(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         super(data, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);

@@ -1,6 +1,9 @@
 package de.bioforscher.singa.chemistry.physical.interfaces;
 
 /**
+ * {@link Chain}s that represent one continuous macro molecule (most often the biggest macro molecules and its ligands
+ * are collected in one model). Chains contain {@link LeafSubstructure}s that in tun contain {@link Atom}s.
+ *
  * @author cl
  */
 public interface Chain extends LeafSubstructureContainer {

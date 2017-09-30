@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * The implementation of {@link Structure}s for mmtf structures.
+ *
  * @author cl
  */
 public class MmtfStructure implements Structure {
@@ -80,8 +82,8 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
-        List<LeafSubstructure<?>> leafSubstructures = new ArrayList<>();
+    public List<LeafSubstructure> getAllLeafSubstructures() {
+        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
         List<Chain> allChains = getAllChains();
         for (Chain chain : allChains) {
             leafSubstructures.addAll(chain.getAllLeafSubstructures());
@@ -90,7 +92,7 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         if (!chainOptional.isPresent()) {
             return Optional.empty();

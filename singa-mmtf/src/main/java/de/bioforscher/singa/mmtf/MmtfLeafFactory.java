@@ -17,7 +17,7 @@ public class MmtfLeafFactory {
 
     }
 
-    static LeafSubstructure<?> createLeaf(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalIndex, int atomStartIndex, int atomEndIndex) {
+    static LeafSubstructure createLeaf(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalIndex, int atomStartIndex, int atomEndIndex) {
         final String threeLetterCode = data.getGroupName(data.getGroupTypeIndices()[internalIndex]);
         Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
         if (aminoAcidFamily.isPresent()) {

@@ -8,7 +8,7 @@ import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
  *
  * @author cl
  */
-public interface LeafSubstructure<LeafSubstructureType extends LeafSubstructure> extends AtomContainer {
+public interface LeafSubstructure extends AtomContainer {
 
     /**
      * Returns the complete leaf identifier. The leaf identifier consists of the PDB identifer, the model identifier,
@@ -29,7 +29,7 @@ public interface LeafSubstructure<LeafSubstructureType extends LeafSubstructure>
      * Returns a copy of this leaf substructure.
      * @return A copy of this leaf substructure.
      */
-    LeafSubstructureType getCopy();
+    LeafSubstructure getCopy();
 
     /**
      * Returns the flat String representation of this leaf substructure in the form:
@@ -42,7 +42,7 @@ public interface LeafSubstructure<LeafSubstructureType extends LeafSubstructure>
      *     AminoAcid (ARG) 1C0A-1-A-78
      *     Ligand (HOH) 1C0A-1-A-1048
      * </pre>
-     * @return The flat String representation of this leaf substructure
+     * @return The flat String representation of this leaf substructure.
      */
     default String flatToString() {
         return getClass().getSimpleName() + " (" + getThreeLetterCode() + ") " + getIdentifier();

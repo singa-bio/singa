@@ -23,8 +23,8 @@ import static org.junit.Assert.fail;
  */
 public class MmtfLeafSubstructureTest {
 
-    private static LeafSubstructure<?> leaf162;
-    private static LeafSubstructure<?> leaf620A;
+    private static LeafSubstructure leaf162;
+    private static LeafSubstructure leaf620A;
 
     @BeforeClass
     public static void prepareData() throws IOException {

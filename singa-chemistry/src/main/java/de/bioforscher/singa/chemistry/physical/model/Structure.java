@@ -85,7 +85,7 @@ public class Structure {
     /**
      * Sets the last added atom identifier.
      *
-     * @param lastAddedAtomIdentifier
+     * @param lastAddedAtomIdentifier The last atom.
      */
     public void setLastAddedAtomIdentifier(int lastAddedAtomIdentifier) {
         this.lastAddedAtomIdentifier = lastAddedAtomIdentifier;

@@ -7,28 +7,41 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
+ * The implementation of {@link Atom} for mmtf structures. Remembers the internal group index (parent reference), the
+ * group position index and the index for the atom data array.
+ *
  * @author cl
  */
 public class MmtfAtom implements Atom {
 
+    /**
+     * The original mmtf data.
+     */
     private StructureDataInterface data;
 
     /**
-     * Position of this atom in the associated group (e.g. N = 0, CA = 1, ...)
-     */
-    private int groupPositionIndex;
-
-    /**
-     * Position of associated group in data array.
+     * The index of the parent leaf in the group data arrays.
      */
     private int internalGroupIndex;
 
     /**
-     * Position in data array (e.g. coordinates)
+     * Index of this atom in the associated group (e.g. N = 0, CA = 1, ...)
+     */
+    private int groupPositionIndex;
+
+    /**
+     * Index in atom data arrays (e.g. coordinates).
      */
     private int internalAtomIndex;
 
-
+    /**
+     * Creates a new {@link MmtfAtom}.
+     *
+     * @param data The original mmtf data.
+     * @param internalGroupIndex Index of associated group in data array.
+     * @param groupPositionIndex Index of this atom in the associated group.
+     * @param internalAtomIndex Index in atom data arrays.
+     */
     MmtfAtom(StructureDataInterface data, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
         this.data = data;
         this.internalGroupIndex = internalGroupIndex;
@@ -38,7 +51,7 @@ public class MmtfAtom implements Atom {
 
     @Override
     public int getIdentifier() {
-        return internalAtomIndex+1;
+        return internalAtomIndex + 1;
     }
 
     @Override

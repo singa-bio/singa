@@ -88,13 +88,13 @@ public class MmtfStructureTest {
 
     @Test
     public void getAllLeafSubstructures() throws Exception {
-        List<LeafSubstructure<?>> leafSubstructures = structure2N5E.getAllLeafSubstructures();
+        List<LeafSubstructure> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
     public void getLeafSubstructure() throws Exception {
-        Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
+        Optional<LeafSubstructure> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
