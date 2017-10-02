@@ -9,21 +9,42 @@ import org.rcsb.mmtf.api.StructureDataInterface;
 import java.util.*;
 
 /**
+ * The implementation of {@link Chain} for mmtf structures. Remembers the index of the model and a mapping of chain
+ * identifiers relevant for this model, as well as their respective identifiers in the chain data arrays.
+ *
  * @author cl
  */
 public class MmtfModel implements Model {
 
+    /**
+     * The original data.
+     */
     private StructureDataInterface data;
-    private int modelIdentifier;
+
+    /**
+     * The index of this model in the model data array (the model identifier is the model index + 1).
+     */
+    private int modelIndex;
+
+    /**
+     * A mapping of chain identifiers relevant for this model, and their respective identifiers in the chain data
+     * arrays.
+     */
     private Map<String, List<Integer>> chainMap;
 
-    MmtfModel(StructureDataInterface data, int modelIdentifier) {
+    /**
+     * Creates a new {@link MmtfModel}.
+     *
+     * @param data The original data.
+     * @param modelIndex The index of the model in the model data array.
+     */
+    MmtfModel(StructureDataInterface data, int modelIndex) {
         this.data = data;
-        this.modelIdentifier = modelIdentifier;
+        this.modelIndex = modelIndex;
         this.chainMap = new TreeMap<>();
 
-        if (modelIdentifier > data.getNumModels() - 1) {
-            throw new IllegalArgumentException("Unable to access model with identifier: " + modelIdentifier);
+        if (modelIndex > data.getNumModels() - 1) {
+            throw new IllegalArgumentException("Unable to access model with identifier: " + modelIndex);
         }
 
         // number of chains per model (soring according to assignment)
@@ -32,7 +53,7 @@ public class MmtfModel implements Model {
         // get group indices relevant for this chain
         for (int chainsPerModelIndex = 0; chainsPerModelIndex < chainsPerModel.length; chainsPerModelIndex++) {
             int endRange = currentChainIndex + chainsPerModel[chainsPerModelIndex];
-            if (chainsPerModelIndex == modelIdentifier) {
+            if (chainsPerModelIndex == modelIndex) {
                 for (int groupIndex = currentChainIndex; groupIndex <= endRange - 1; groupIndex++) {
                     final String chainName = data.getChainNames()[groupIndex];
                     if (!chainMap.containsKey(chainName)) {
@@ -48,22 +69,27 @@ public class MmtfModel implements Model {
 
     }
 
+    /**
+     * A copy constructor that passes all attributes of the given {@link MmtfModel} to a new instance.
+     *
+     * @param mmtfModel The {@link MmtfModel} to copy.
+     */
     private MmtfModel(MmtfModel mmtfModel) {
         this.data = mmtfModel.data;
-        this.modelIdentifier = mmtfModel.modelIdentifier;
+        this.modelIndex = mmtfModel.modelIndex;
         this.chainMap = new HashMap<>(mmtfModel.chainMap);
     }
 
     @Override
     public int getIdentifier() {
-        return modelIdentifier+1;
+        return modelIndex + 1;
     }
 
     @Override
     public List<Chain> getAllChains() {
         List<Chain> chains = new ArrayList<>();
         for (String chain : chainMap.keySet()) {
-            chains.add(new MmtfChain(data, chain, chainMap.get(chain), modelIdentifier));
+            chains.add(new MmtfChain(data, chain, chainMap.get(chain), modelIndex));
         }
         return chains;
     }
@@ -71,7 +97,7 @@ public class MmtfModel implements Model {
     @Override
     public Chain getFirstChain() {
         final Map.Entry<String, List<Integer>> first = chainMap.entrySet().iterator().next();
-        return new MmtfChain(data, first.getKey(), first.getValue(), modelIdentifier);
+        return new MmtfChain(data, first.getKey(), first.getValue(), modelIndex);
     }
 
     @Override
@@ -79,12 +105,12 @@ public class MmtfModel implements Model {
         if (!chainMap.containsKey(chainIdentifier)) {
             return Optional.empty();
         }
-        return Optional.of(new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIdentifier));
+        return Optional.of(new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex));
     }
 
     @Override
-    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
-        List<LeafSubstructure<?>> leafSubstructures = new ArrayList<>();
+    public List<LeafSubstructure> getAllLeafSubstructures() {
+        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
         List<Chain> allChains = getAllChains();
         for (Chain chain : allChains) {
             leafSubstructures.addAll(chain.getAllLeafSubstructures());
@@ -93,7 +119,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         Optional<Chain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
         if (!chainOptional.isPresent()) {
             return Optional.empty();
