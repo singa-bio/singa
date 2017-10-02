@@ -9,7 +9,7 @@ import org.rcsb.mmtf.api.StructureDataInterface;
 import java.util.*;
 
 /**
- * The implementation of {@link Chain} for mmtf structures. Remembers the index of the model and a mapping of chain
+ * The implementation of {@link Model} for mmtf structures. Remembers the index of the model and a mapping of chain
  * identifiers relevant for this model, as well as their respective identifiers in the chain data arrays.
  *
  * @author cl

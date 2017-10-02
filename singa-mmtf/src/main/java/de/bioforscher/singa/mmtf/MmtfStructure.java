@@ -18,8 +18,15 @@ import java.util.Optional;
  */
 public class MmtfStructure implements Structure {
 
+    /**
+     * The original mmtf data.
+     */
     private StructureDataInterface data;
 
+    /**
+     * Creates a new {@link MmtfStructure}
+     * @param data The original mmtf data.
+     */
     public MmtfStructure(StructureDataInterface data) {
         this.data = data;
     }
