@@ -25,7 +25,6 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  */
 public class StructuralMotif extends BranchSubstructure<StructuralMotif, String> {
 
-
     public LinkedHashMap<Object, Substructure<?, ?>> orderedSubstructures;
 
     private StructuralMotif(String identifier) {

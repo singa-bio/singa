@@ -22,6 +22,11 @@ public class MmtfModel implements Model {
     private StructureDataInterface data;
 
     /**
+     * The chains that have already been requested.
+     */
+    private HashMap<String, MmtfChain> cachedChains;
+
+    /**
      * The index of this model in the model data array (the model identifier is the model index + 1).
      */
     private int modelIndex;
@@ -42,6 +47,7 @@ public class MmtfModel implements Model {
         this.data = data;
         this.modelIndex = modelIndex;
         this.chainMap = new TreeMap<>();
+        this.cachedChains = new HashMap<>();
 
         if (modelIndex > data.getNumModels() - 1) {
             throw new IllegalArgumentException("Unable to access model with identifier: " + modelIndex);
@@ -88,8 +94,15 @@ public class MmtfModel implements Model {
     @Override
     public List<Chain> getAllChains() {
         List<Chain> chains = new ArrayList<>();
-        for (String chain : chainMap.keySet()) {
-            chains.add(new MmtfChain(data, chain, chainMap.get(chain), modelIndex));
+        for (String chainIdentifier : chainMap.keySet()) {
+            // cache
+            if (cachedChains.containsKey(chainIdentifier)) {
+                chains.add(cachedChains.get(chainIdentifier));
+            } else {
+                MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
+                cachedChains.put(chainIdentifier, mmtfChain);
+                chains.add(mmtfChain);
+            }
         }
         return chains;
     }
@@ -97,7 +110,14 @@ public class MmtfModel implements Model {
     @Override
     public Chain getFirstChain() {
         final Map.Entry<String, List<Integer>> first = chainMap.entrySet().iterator().next();
-        return new MmtfChain(data, first.getKey(), first.getValue(), modelIndex);
+        String chainIdentifier = first.getKey();
+        if (cachedChains.containsKey(chainIdentifier)) {
+            return cachedChains.get(chainIdentifier);
+        } else {
+            MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, first.getValue(), modelIndex);
+            cachedChains.put(chainIdentifier, mmtfChain);
+            return mmtfChain;
+        }
     }
 
     @Override
@@ -105,7 +125,13 @@ public class MmtfModel implements Model {
         if (!chainMap.containsKey(chainIdentifier)) {
             return Optional.empty();
         }
-        return Optional.of(new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex));
+        if (cachedChains.containsKey(chainIdentifier)) {
+            return Optional.of(cachedChains.get(chainIdentifier));
+        } else {
+            MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
+            cachedChains.put(chainIdentifier, mmtfChain);
+            return Optional.of(mmtfChain);
+        }
     }
 
     @Override
@@ -131,5 +157,6 @@ public class MmtfModel implements Model {
     public Model getCopy() {
         return new MmtfModel(this);
     }
+
 
 }

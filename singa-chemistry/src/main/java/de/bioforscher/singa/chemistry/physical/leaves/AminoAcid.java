@@ -149,14 +149,4 @@ public class AminoAcid extends LeafSubstructure<AminoAcid, AminoAcidFamily> {
         return new AminoAcid(this);
     }
 
-    /**
-     * Returns the name (i.e. the three letter code) of this AminoAcid.
-     *
-     * @return The three letter code.
-     */
-    @Override
-    public String getName() {
-        return this.getThreeLetterCode();
-    }
-
 }

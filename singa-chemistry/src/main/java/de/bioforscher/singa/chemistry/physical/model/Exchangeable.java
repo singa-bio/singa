@@ -15,14 +15,14 @@ import java.util.stream.Stream;
  *
  * @author fk
  */
-public interface Exchangeable<R extends StructuralFamily> {
+public interface Exchangeable<FamilyType extends StructuralFamily> {
 
     /**
      * Returns the {@link StructuralFamily} of the {@link StructuralEntity}.
      *
      * @return the {@link StructuralFamily}
      */
-    R getFamily();
+    FamilyType getFamily();
 
     /**
      * Returns the {@link StructuralFamily}s to which this {@link StructuralEntity} is exchangeable.
@@ -30,7 +30,7 @@ public interface Exchangeable<R extends StructuralFamily> {
      *
      * @return a set of exchangeable types
      */
-    default Set<R> getExchangeableFamilies() {
+    default Set<FamilyType> getExchangeableFamilies() {
         return Stream.of(getFamily()).collect(Collectors.toSet());
     }
 
@@ -40,8 +40,8 @@ public interface Exchangeable<R extends StructuralFamily> {
      *
      * @return a set of containing types (own type + exchangeable types)
      */
-    default Set<R> getContainingFamilies() {
-        Set<R> types = new HashSet<>();
+    default Set<FamilyType> getContainingFamilies() {
+        Set<FamilyType> types = new HashSet<>();
         types.add(getFamily());
         types.addAll(getExchangeableFamilies());
         return types;
@@ -52,7 +52,7 @@ public interface Exchangeable<R extends StructuralFamily> {
      *
      * @param exchangeableFamily the {@link StructuralFamily} to be added
      */
-    default void addExchangeableFamily(R exchangeableFamily) {
+    default void addExchangeableFamily(FamilyType exchangeableFamily) {
         getExchangeableFamilies().add(exchangeableFamily);
     }
 }

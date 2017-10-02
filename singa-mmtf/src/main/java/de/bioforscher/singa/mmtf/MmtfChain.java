@@ -7,6 +7,7 @@ import de.bioforscher.singa.core.utility.Range;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,11 @@ public class MmtfChain implements Chain {
      * The identifier of this chain.
      */
     private String chainIdentifier;
+
+    /**
+     * The leaves that have already been requested.
+     */
+    private HashMap<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
 
     /**
      * The indices of the relevant leaves in the group data arrays.
@@ -57,6 +63,7 @@ public class MmtfChain implements Chain {
         this.relevantGroups = new ArrayList<>();
         this.leafIdentifiers = new ArrayList<>();
         this.atomRanges = new ArrayList<>();
+        this.cachedLeaves = new HashMap<>();
 
         // number of groups (leaves) per chain
         int[] groupsPerChain = data.getGroupsPerChain();
@@ -106,9 +113,13 @@ public class MmtfChain implements Chain {
     @Override
     public List<LeafSubstructure> getAllLeafSubstructures() {
         List<LeafSubstructure> results = new ArrayList<>();
-        for (int i = 0; i < atomRanges.size(); i++) {
-            final Range<Integer> atomRange = atomRanges.get(i);
-            results.add(MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(i), relevantGroups.get(i), atomRange.getLowerBound(), atomRange.getUpperBound()));
+        for (int internalIndex = 0; internalIndex < atomRanges.size(); internalIndex++) {
+            if (cachedLeaves.containsKey(internalIndex)) {
+                results.add(cachedLeaves.get(internalIndex));
+            } else {
+                final Range<Integer> atomRange = atomRanges.get(internalIndex);
+                results.add(MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound()));
+            }
         }
         return results;
     }

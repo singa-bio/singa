@@ -10,7 +10,6 @@ import de.bioforscher.singa.chemistry.physical.model.Exchangeable;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
-import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 
@@ -31,7 +30,7 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  */
 public abstract class LeafSubstructure<LeafSubstructureType extends LeafSubstructure<LeafSubstructureType, FamilyType>,
         FamilyType extends StructuralFamily>
-        implements Substructure<LeafSubstructureType, LeafIdentifier>, Exchangeable<FamilyType>, Nameable {
+        implements Substructure<LeafSubstructureType, LeafIdentifier>, Exchangeable<FamilyType> {
 
     /**
      * The unique leaf identifer;

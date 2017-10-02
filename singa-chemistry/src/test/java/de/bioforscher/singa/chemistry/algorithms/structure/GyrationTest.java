@@ -4,31 +4,31 @@ import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class GyrationTest {
 
-    private Structure structure;
+    private static Structure structure;
 
-    @Before
-    public void setUp() {
-        this.structure = StructureParser.online()
+    @BeforeClass
+    public static void setup() {
+        structure = StructureParser.online()
                 .pdbIdentifier("2q6n")
                 .parse();
     }
 
     @Test
     public void shouldCalculateGyrationOfStructuralModel() {
-        Gyration gyration = Gyration.of(this.structure.getFirstModel());
+        Gyration gyration = Gyration.of(structure.getFirstModel());
         assertEquals(48.74, gyration.getRadius(), 1E-2);
     }
 
     @Test
     public void shouldCalculateGyrationOfChain() {
-        Gyration gyration = Gyration.of(this.structure.getFirstModel().getFirstChain());
+        Gyration gyration = Gyration.of(structure.getFirstModel().getFirstChain());
         assertEquals(22.19, gyration.getRadius(), 1E-2);
     }
 

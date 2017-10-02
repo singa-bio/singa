@@ -37,11 +37,6 @@ public class Nucleotide extends LeafSubstructure<Nucleotide, NucleotideFamily> {
         return new Nucleotide(this);
     }
 
-    @Override
-    public String getName() {
-        return this.modified ? this.modifiedName : getFamily().getThreeLetterCode();
-    }
-
     public boolean isModified() {
         return this.modified;
     }

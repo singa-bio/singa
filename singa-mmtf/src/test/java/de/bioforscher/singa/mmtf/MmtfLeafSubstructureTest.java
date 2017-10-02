@@ -42,7 +42,7 @@ public class MmtfLeafSubstructureTest {
 
     @Test
     public void getThreeLetterCode() throws Exception {
-        assertEquals("THR", leaf162.getThreeLetterCode());
+        assertEquals("Thr", leaf162.getThreeLetterCode());
         assertEquals("H2U", leaf620A.getThreeLetterCode());
     }
 

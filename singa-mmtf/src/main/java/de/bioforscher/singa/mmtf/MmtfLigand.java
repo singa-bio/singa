@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mmtf;
 
+import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
 import de.bioforscher.singa.chemistry.physical.interfaces.Ligand;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
@@ -9,19 +10,20 @@ import org.rcsb.mmtf.api.StructureDataInterface;
  *
  * @author cl
  */
-public class MmtfLigand extends MmtfLeafSubstructure implements Ligand {
+public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Ligand {
 
     /**
      * Creates a new {@link MmtfLigand}.
      *
      * @param data The original data.
+     * @param family The leaf family.
      * @param leafIdentifier The leaf identifier.
      * @param internalGroupIndex The index of this leaf in the data array.
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLigand(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    MmtfLigand(StructureDataInterface data, LigandFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 
     /**

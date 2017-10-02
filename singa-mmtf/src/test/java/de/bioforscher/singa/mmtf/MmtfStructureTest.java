@@ -119,7 +119,7 @@ public class MmtfStructureTest {
         final LeafIdentifier identifier = aminoAcid.get().getIdentifier();
         assertEquals("A", identifier.getChainIdentifier());
         assertEquals(98, identifier.getSerial());
-        assertEquals("SER", aminoAcid.get().getThreeLetterCode());
+        assertEquals("Ser", aminoAcid.get().getThreeLetterCode());
     }
 
     @Test

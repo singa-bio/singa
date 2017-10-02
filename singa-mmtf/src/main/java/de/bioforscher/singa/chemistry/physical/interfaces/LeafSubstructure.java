@@ -1,6 +1,8 @@
 package de.bioforscher.singa.chemistry.physical.interfaces;
 
+import de.bioforscher.singa.chemistry.physical.model.Exchangeable;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
 
 /**
  * A leaf substructure is a collection of atoms with meta data assigned to it. A leaf substructure can be part of a
@@ -8,7 +10,7 @@ import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
  *
  * @author cl
  */
-public interface LeafSubstructure extends AtomContainer {
+public interface LeafSubstructure<FamilyType extends StructuralFamily> extends AtomContainer, Exchangeable<FamilyType> {
 
     /**
      * Returns the complete leaf identifier. The leaf identifier consists of the PDB identifer, the model identifier,

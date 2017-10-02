@@ -61,13 +61,9 @@ public class AtomContainer<StructuralFamilyType extends StructuralFamily>
         return new AtomContainer<>(this);
     }
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
     /**
      * Sets the name of this container.
+     *
      * @param name The name.
      */
     public void setName(String name) {
