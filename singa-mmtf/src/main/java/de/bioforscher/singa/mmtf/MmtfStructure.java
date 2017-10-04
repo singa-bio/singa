@@ -7,9 +7,7 @@ import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
 import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The implementation of {@link Structure}s for mmtf structures.
@@ -24,11 +22,17 @@ public class MmtfStructure implements Structure {
     private StructureDataInterface data;
 
     /**
+     * The models that have already been requested.
+     */
+    private Map<Integer, MmtfModel> cachedModels;
+
+    /**
      * Creates a new {@link MmtfStructure}
      * @param data The original mmtf data.
      */
     public MmtfStructure(StructureDataInterface data) {
         this.data = data;
+        this.cachedModels = new HashMap<>();
     }
 
     @Override
@@ -44,23 +48,41 @@ public class MmtfStructure implements Structure {
     @Override
     public List<Model> getAllModels() {
         List<Model> models = new ArrayList<>();
-        for (int modelIdentifier = 0; modelIdentifier < data.getNumModels(); modelIdentifier++) {
-            models.add(new MmtfModel(data, modelIdentifier));
+        for (int internalModelIndex = 0; internalModelIndex < data.getNumModels(); internalModelIndex++) {
+            if (cachedModels.containsKey(internalModelIndex)) {
+                models.add(cachedModels.get(internalModelIndex));
+            } else {
+                MmtfModel mmtfModel = new MmtfModel(data, internalModelIndex);
+                cachedModels.put(internalModelIndex, mmtfModel);
+                models.add(mmtfModel);
+            }
         }
         return models;
     }
 
     @Override
     public Model getFirstModel() {
-        return new MmtfModel(data, 0);
+        if (cachedModels.containsKey(0)) {
+            return cachedModels.get(0);
+        } else {
+            MmtfModel mmtfModel = new MmtfModel(data, 0);
+            cachedModels.put(0, mmtfModel);
+            return mmtfModel;
+        }
     }
 
     @Override
     public Optional<Model> getModel(int modelIdentifier) {
-        try {
-            return Optional.of(new MmtfModel(data, modelIdentifier-1));
-        } catch (IllegalArgumentException exception) {
+        if (modelIdentifier > 0 && modelIdentifier <= data.getNumModels()) {
             return Optional.empty();
+        }
+        int modelIndex = modelIdentifier - 1;
+        if (cachedModels.containsKey(modelIndex)) {
+            return Optional.of(cachedModels.get(modelIndex));
+        } else {
+            MmtfModel mmtfModel = new MmtfModel(data, modelIndex);
+            cachedModels.put(modelIndex, mmtfModel);
+            return Optional.of(mmtfModel);
         }
     }
 

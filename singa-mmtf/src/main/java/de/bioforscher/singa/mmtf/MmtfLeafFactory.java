@@ -39,7 +39,7 @@ class MmtfLeafFactory {
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      * @return A instance of {@link LeafSubstructure}.
      */
-    static LeafSubstructure createLeaf(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    static MmtfLeafSubstructure<?> createLeaf(StructureDataInterface data, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         final String threeLetterCode = data.getGroupName(data.getGroupTypeIndices()[internalGroupIndex]);
         Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode);
         if (aminoAcidFamily.isPresent()) {

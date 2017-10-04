@@ -118,7 +118,9 @@ public class MmtfChain implements Chain {
                 results.add(cachedLeaves.get(internalIndex));
             } else {
                 final Range<Integer> atomRange = atomRanges.get(internalIndex);
-                results.add(MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound()));
+                MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
+                cachedLeaves.put(internalIndex, leaf);
+                results.add(leaf);
             }
         }
         return results;
@@ -126,12 +128,17 @@ public class MmtfChain implements Chain {
 
     @Override
     public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        int internalIdentifier = leafIdentifiers.indexOf(leafIdentifier);
-        if (internalIdentifier == -1) {
+        int internalIndex = leafIdentifiers.indexOf(leafIdentifier);
+        if (internalIndex == -1) {
             return Optional.empty();
         }
-        final Range<Integer> atomRange = atomRanges.get(internalIdentifier);
-        return Optional.of(MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIdentifier), relevantGroups.get(internalIdentifier), atomRange.getLowerBound(), atomRange.getUpperBound()));
+        if (cachedLeaves.containsKey(internalIndex)) {
+            return Optional.of(cachedLeaves.get(internalIndex));
+        } else {
+            final Range<Integer> atomRange = atomRanges.get(internalIndex);
+            MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
+            return Optional.of(leaf);
+        }
     }
 
     @Override

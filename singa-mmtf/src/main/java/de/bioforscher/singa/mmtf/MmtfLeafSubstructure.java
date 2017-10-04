@@ -32,6 +32,11 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     private LeafIdentifier leafIdentifier;
 
     /**
+     * The atoms that have already been requested.
+     */
+    private Map<Integer, MmtfAtom> cachedAtoms;
+
+    /**
      * The index of the first atom that belong to this leaf.
      */
     private int atomStartIndex;
@@ -69,6 +74,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         this.atomStartIndex = atomStartIndex;
         this.atomEndIndex = atomEndIndex;
         this.exchangeableFamilies = new HashSet<>();
+        this.cachedAtoms = new HashMap<>();
     }
 
     /**
@@ -98,17 +104,29 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         // terminate records are fucking the numbering up
         List<Atom> results = new ArrayList<>();
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
-            results.add(new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex));
+            if (cachedAtoms.containsKey(internalAtomIndex)) {
+                results.add(cachedAtoms.get(internalAtomIndex));
+            } else {
+                MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+                cachedAtoms.put(internalAtomIndex, mmtfAtom);
+                results.add(mmtfAtom);
+            }
         }
         return results;
     }
 
     @Override
-    public Optional<Atom> getAtom(int atomIdentifier) {
-        if (atomIdentifier < atomStartIndex || atomIdentifier > atomEndIndex) {
+    public Optional<Atom> getAtom(int internalAtomIndex) {
+        if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex) {
             return Optional.empty();
         }
-        return Optional.of(new MmtfAtom(data, internalGroupIndex, atomIdentifier - atomStartIndex, atomIdentifier));
+        if (cachedAtoms.containsKey(internalAtomIndex)) {
+            return Optional.of(cachedAtoms.get(internalAtomIndex));
+        } else {
+            MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+            cachedAtoms.put(internalAtomIndex, mmtfAtom);
+            return Optional.of(mmtfAtom);
+        }
     }
 
     @Override
@@ -120,4 +138,5 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     public Set<FamilyType> getExchangeableFamilies() {
         return this.exchangeableFamilies;
     }
+
 }
