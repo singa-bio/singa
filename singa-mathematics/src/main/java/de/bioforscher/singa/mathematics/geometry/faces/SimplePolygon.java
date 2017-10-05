@@ -1,12 +1,12 @@
 package de.bioforscher.singa.mathematics.geometry.faces;
 
-import de.bioforscher.singa.mathematics.geometry.model.Polytope;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 
 import java.util.ArrayList;
 
-public class SimplePolygon implements Polytope<Vector2D> {
+public class SimplePolygon implements Polygon {
 
     private final Vector2D[] vertices;
 

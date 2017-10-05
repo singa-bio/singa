@@ -57,6 +57,7 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new Voronoi diagram with the bounding box.
+     *
      * @param boundingBox The bounding box surrounding the voronoi diagram.
      */
     VoronoiDiagram(Rectangle boundingBox) {
@@ -72,6 +73,7 @@ public class VoronoiDiagram {
 
     /**
      * Gets all edges of the voronoi diagram.
+     *
      * @return
      */
     public List<VoronoiEdge> getEdges() {
@@ -80,6 +82,7 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new edge, adds it to the diagram and returns it.
+     *
      * @param leftSite The site event on the left of this edge.
      * @param rightSite The site event on the right of this edge.
      * @param startingPoint The starting point.
@@ -102,6 +105,7 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new edge, adds it to the diagram and returns it.
+     *
      * @param leftSite The site event on the left of this edge.
      * @param rightSite The site event on the right of this edge.
      * @return The edge.
@@ -112,10 +116,11 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new edge associated with the border of the diagram, adds it to the diagram and returns it.
+     *
      * @param leftSite The site event on the left of this edge.
      * @param startingPoint The starting point.
      * @param endingPoint The ending point.
-     * @return
+     * @return The edge.
      */
     private VoronoiEdge createBorderEdge(SiteEvent leftSite, Vector2D startingPoint, Vector2D endingPoint) {
         VoronoiEdge edge = new VoronoiEdge(leftSite, null);
@@ -127,6 +132,7 @@ public class VoronoiDiagram {
 
     /**
      * Returns all vertices of the diagram.
+     *
      * @return All vertices of the diagram.
      */
     public List<Vector2D> getVertices() {
@@ -135,6 +141,7 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new vertex, adds it to the diagram and returns it.
+     *
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @return The vertex.
@@ -147,6 +154,7 @@ public class VoronoiDiagram {
 
     /**
      * Creates a new cell, adds it to the diagram and returns it.
+     *
      * @param siteIdentifier The identifier of the site.
      * @param site The site.
      * @return The cell.
@@ -156,6 +164,14 @@ public class VoronoiDiagram {
         VoronoiCell cell = new VoronoiCell(site);
         this.cells.put(siteIdentifier, cell);
         return cell;
+    }
+
+    /**
+     * Returns all cells.
+     * @return All cells.
+     */
+    public Collection<VoronoiCell> getCells() {
+        return this.cells.values();
     }
 
     /**
@@ -175,8 +191,6 @@ public class VoronoiDiagram {
                     !clipEdge(edge) ||
                     (Math.abs(edge.getStartingPoint().getX() - edge.getEndingPoint().getX()) < 1e-9 && Math.abs(edge.getStartingPoint().getY() - edge.getEndingPoint().getY()) < 1e-9)) {
                 logger.trace(" Removing edge {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
-                edge.setStartingPoint(null);
-                edge.setEndingPoint(null);
                 edges.remove(edge);
             } else {
                 logger.trace(" Post processed edge: {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
@@ -186,6 +200,7 @@ public class VoronoiDiagram {
 
     /**
      * Connects the edge if it has no associated ending point.
+     *
      * @param iEdge The identifier of the edge.
      * @param edge The edge.
      * @return True if the edge was connected, false if nothing could be done.
@@ -210,8 +225,8 @@ public class VoronoiDiagram {
         // if we reach here, this means cells which use this edge will need
         // to be closed, whether because the edge was removed, or because it
         // was connected to the bounding box.
-        this.cells.get(lSite.getIdentifier()).setCloseMe(true);
-        this.cells.get(rSite.getIdentifier()).setCloseMe(true);
+        this.cells.get(lSite.getIdentifier()).setUnclosed(true);
+        this.cells.get(rSite.getIdentifier()).setUnclosed(true);
 
         // get the line equation of the bisector if line is not vertical
         double fm = 0.0;
@@ -222,20 +237,8 @@ public class VoronoiDiagram {
             fb = fy - fm * fx;
         }
 
-
-
         // depending on the direction, find the best side of the
         // bounding box to use to determine a reasonable start point
-
-        // rhill 2013-12-02:
-        // While at it, since we have the values which define the line,
-        // clip the end of va if it is outside the bbox.
-        // https://github.com/gorhill/Javascript-Voronoi/issues/15
-        // TODO: Do all the clipping here rather than rely on Liang-Barsky
-        // which does not do well sometimes due to loss of arithmetic
-        // precision. The code here doesn't degrade if one of the vertex is
-        // at a huge distance.
-
         if (Double.isInfinite(fm)) {
             // special case: vertical line
             if (fx < leftBorder || fx >= rightBorder) {
@@ -309,6 +312,7 @@ public class VoronoiDiagram {
 
     /**
      * Clips the edge if it sticks out of the bounding box.
+     *
      * @param edge The Edge.
      * @return True if the edge was clipped, false if nothing was done.
      */
@@ -425,8 +429,8 @@ public class VoronoiDiagram {
         // va and/or vb were clipped, thus we will need to close
         // cells which use this edge.
         if (t0 > 0 || t1 < 1) {
-            this.cells.get(edge.getLeftSite().getIdentifier()).setCloseMe(true);
-            this.cells.get(edge.getRightSite().getIdentifier()).setCloseMe(true);
+            this.cells.get(edge.getLeftSite().getIdentifier()).setUnclosed(true);
+            this.cells.get(edge.getRightSite().getIdentifier()).setUnclosed(true);
         }
 
         return true;
@@ -438,13 +442,13 @@ public class VoronoiDiagram {
     public void closeCells() {
         for (int iCell = this.cells.size() - 1; iCell >= 0; iCell--) {
             VoronoiCell cell = cells.get(iCell);
-            boolean lastBorderSegment = false;
+            boolean lastBorderSegment;
             // prune, order halfedges counterclockwise, then add missing ones
             // required to close cells
             if (cell.prepareHalfEdges() != 0) {
                 continue;
             }
-            if (!cell.isCloseMe()) {
+            if (!cell.isUnclosed()) {
                 continue;
             }
             // find first 'unclosed' point.
@@ -460,11 +464,7 @@ public class VoronoiDiagram {
                 // if end point is not equal to start point, we need to add the missing
                 // halfedge(s) up to vz
                 if (Math.abs(va.getX() - vz.getX()) >= 1e-9 || Math.abs(va.getY() - vz.getY()) >= 1e-9) {
-                    // rhill 2013-12-02:
-                    // "Holes" in the halfedges are not necessarily always adjacent.
-                    // https://github.com/gorhill/Javascript-Voronoi/issues/16
 
-                    // find entry point:
                     // walk downward along left side
                     if (equalWithEpsilon(va.getX(), leftBorder) && lessThanWithEpsilon(va.getY(), bottomBorder)) {
                         lastBorderSegment = equalWithEpsilon(vz.getX(), leftBorder);
@@ -567,6 +567,7 @@ public class VoronoiDiagram {
 
     /**
      * Returns true if a is equal to b withing range of epsilon.
+     *
      * @param a The first value.
      * @param b The second value.
      * @return true if a is equal to b withing range of epsilon.
@@ -577,6 +578,7 @@ public class VoronoiDiagram {
 
     /**
      * Returns true if a is greater than b withing range of epsilon.
+     *
      * @param a The first value.
      * @param b The second value.
      * @return true if a is greater than b withing range of epsilon.
@@ -587,6 +589,7 @@ public class VoronoiDiagram {
 
     /**
      * Returns true if a is less than b withing range of epsilon.
+     *
      * @param a The first value.
      * @param b The second value.
      * @return true if a is less than b withing range of epsilon.
