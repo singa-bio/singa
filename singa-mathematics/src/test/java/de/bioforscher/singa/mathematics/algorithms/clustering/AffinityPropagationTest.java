@@ -5,6 +5,9 @@ import de.bioforscher.singa.mathematics.matrices.Matrices;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class AffinityPropagationTest {
 
@@ -12,8 +15,29 @@ public class AffinityPropagationTest {
     public void shouldRunClustering() throws IOException {
         LabeledMatrix<String> rmsdMatrix = Matrices.readLabeledMatrixFromCSV(Thread.currentThread()
                 .getContextClassLoader().getResourceAsStream("clustering/rmsd_distances.csv"));
-        AffinityPropagation<String> affinityPropagation = new AffinityPropagation<>(rmsdMatrix.getRowLabels(),
-                rmsdMatrix, true);
-        affinityPropagation.run();
+        AffinityPropagation<String> affinityPropagation = AffinityPropagation.<String>create()
+                .dataPoints(rmsdMatrix.getRowLabels())
+                .matrix(rmsdMatrix)
+                .isDistance(true)
+                .selfSimilarity(0.3)
+                .maximalEpochs(100)
+                .run();
+        assertEquals(3, affinityPropagation.getClusters().size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWithWrongInput() throws IOException {
+        LabeledMatrix<String> rmsdMatrix = Matrices.readLabeledMatrixFromCSV(Thread.currentThread()
+                .getContextClassLoader().getResourceAsStream("clustering/rmsd_distances.csv"));
+        rmsdMatrix.getRowLabels().remove(0);
+        List<String> data = rmsdMatrix.getRowLabels();
+        data.remove(0);
+        AffinityPropagation.<String>create()
+                .dataPoints(data)
+                .matrix(rmsdMatrix)
+                .isDistance(true)
+                .selfSimilarity(0.3)
+                .maximalEpochs(100)
+                .run();
     }
 }

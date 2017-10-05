@@ -35,7 +35,7 @@ public final class Matrices {
      * For example the call:
      * <pre>
      * Matrices.generateIdentityMatrix(4) </pre>
-     * result in the matrix:
+     * results in the matrix:
      * <pre>
      * 1.0 0.0 0.0 0.0
      * 0.0 1.0 0.0 0.0

@@ -169,7 +169,7 @@ public class Vectors {
      * @param vector The vector.
      * @return The index of the absolute maximal element.
      */
-    public static int getIndexWithAbsolutMaximalElement(Vector vector) {
+    public static int getIndexWithAbsoluteMaximalElement(Vector vector) {
         int maximalIndex = -1;
         double maximalValue = -Double.MAX_VALUE;
         for (int index = 0; index < vector.getDimension(); index++) {
