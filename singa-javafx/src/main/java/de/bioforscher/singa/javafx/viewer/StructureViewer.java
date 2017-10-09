@@ -170,7 +170,7 @@ public class StructureViewer extends Application {
 
         // add tooltip
         Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomNameString()) + ":" +
-                atom.getIdentifier() + ") of " + origin.getName() + ":" + origin.getIdentifier());
+                atom.getIdentifier() + ") of " + origin.getFamily().getThreeLetterCode() + ":" + origin.getIdentifier());
         Tooltip.install(atomShape, tooltip);
 
         this.moleculeGroup.getChildren().add(atomShape);
