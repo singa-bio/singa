@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * An implementation of the score to assess the similarity of aligned ligand binding site environments:
  * <pre>
- *     Gao, M., & Skolnick, J. (2013). APoc: large-scale identification of similar protein pockets.
+ *     Gao, M., and Skolnick, J. (2013). APoc: large-scale identification of similar protein pockets.
  *     Bioinformatics, 29(5), 597-604.
  * </pre>
  *

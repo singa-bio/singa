@@ -1,16 +1,20 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition;
+package de.bioforscher.singa.chemistry.algorithms.superimposition.affinity;
 
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
 import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
+import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +41,21 @@ public class AffinityAlignmentTest {
     }
 
     @Test
-    public void shouldRunAffinityAlignment() {
-        AffinityAlignment affinityAlignment = new AffinityAlignment(this.input, null, true, StructuralEntityFilter.AtomFilter.isArbitrary());
+    public void shouldRunAffinityAlignment() throws IOException {
+        AffinityAlignment affinityAlignment = AffinityAlignment.create()
+                .inputStructuralMotifs(this.input)
+                .run();
+        Assert.assertEquals(3, affinityAlignment.getClusters().size());
+        Assert.assertEquals(this.input.size(), affinityAlignment.getClusters().values().stream()
+                .mapToInt(Collection::size)
+                .sum());
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailWithInputOfDifferentSize() {
+        this.input.get(0).addSubstructure(new AminoAcid(0, AminoAcidFamily.ALANINE));
+        AffinityAlignment.create()
+                .inputStructuralMotifs(this.input)
+                .run();
     }
 }

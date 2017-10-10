@@ -3,6 +3,7 @@ package de.bioforscher.singa.mathematics.algorithms.clustering;
 import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
+import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import org.slf4j.Logger;
@@ -20,19 +21,17 @@ import java.util.*;
  * @param <DataType> The type of the data used for clustering.
  * @author fk
  */
-public class AffinityPropagation<DataType> {
+public class AffinityPropagation<DataType> implements Clustering<DataType> {
 
     private static final Logger logger = LoggerFactory.getLogger(AffinityPropagation.class);
     private static final int MIN_STABLE_EPOCHS = 10;
-
     private final List<DataType> dataPoints;
     private final int dataSize;
     private final int maximalEpochs;
-
+    private final LabeledMatrix<DataType> distanceMatrix;
     private LabeledMatrix<DataType> similarityMatrix;
     private LabeledMatrix<DataType> availabilityMatrix;
     private LabeledMatrix<DataType> responsibilityMatrix;
-
     private int epoch;
     private double lambda;
     private List<List<DataType>> exemplarDecisions;
@@ -47,15 +46,20 @@ public class AffinityPropagation<DataType> {
         double selfSimilarity = builder.selfSimilarity;
         this.maximalEpochs = builder.maximalEpochs;
         checkInput(this.dataPoints, this.similarityMatrix);
-        double[][] invertedValues = new double[this.dataSize][this.dataSize];
+        double[][] invertedValues;
         // convert to similarity matrix if distance matrix provided
         if (builder.distance) {
+            this.distanceMatrix = this.similarityMatrix;
             invertedValues = this.similarityMatrix.additivelyInvert().getElements();
             // assign inverted self similarities
             for (int i = 0; i < invertedValues.length; i++) {
                 invertedValues[i][i] = -selfSimilarity;
             }
         } else {
+            invertedValues = this.similarityMatrix.getElements();
+            this.distanceMatrix = new LabeledRegularMatrix<>(new RegularMatrix(invertedValues).additivelyInvert().getElements());
+            this.distanceMatrix.setRowLabels(this.dataPoints);
+            this.distanceMatrix.setColumnLabels(this.dataPoints);
             // assign self similarities
             for (int i = 0; i < invertedValues.length; i++) {
                 invertedValues[i][i] = selfSimilarity;
@@ -70,6 +74,21 @@ public class AffinityPropagation<DataType> {
 
     public static <DataType> DataStep<DataType> create() {
         return new Builder<>();
+    }
+
+    @Override
+    public List<DataType> getDataPoints() {
+        return this.dataPoints;
+    }
+
+    @Override
+    public LabeledMatrix<DataType> getDistanceMatrix() {
+        return this.distanceMatrix;
+    }
+
+    @Override
+    public Map<DataType, List<DataType>> getClusters() {
+        return this.clusters;
     }
 
     private void initialize() {
@@ -259,9 +278,6 @@ public class AffinityPropagation<DataType> {
         return converged;
     }
 
-    public Map<DataType, List<DataType>> getClusters() {
-        return this.clusters;
-    }
 
     public LabeledMatrix<DataType> getSimilarityMatrix() {
         return this.similarityMatrix;

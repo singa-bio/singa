@@ -22,6 +22,7 @@ public class AffinityPropagationTest {
                 .selfSimilarity(0.3)
                 .maximalEpochs(100)
                 .run();
+        affinityPropagation.getSilhouetteCoefficient();
         assertEquals(3, affinityPropagation.getClusters().size());
     }
 
