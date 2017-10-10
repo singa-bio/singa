@@ -61,6 +61,7 @@ public class ConsensusAlignment {
     private ConsensusContainer currentConsensus;
     private double clusterCutoff;
     private List<BinaryTree<ConsensusContainer>> clusters;
+
     ConsensusAlignment(ConsensusBuilder.Builder builder) {
 
         // convert given input structures to data model
