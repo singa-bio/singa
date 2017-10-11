@@ -3,6 +3,8 @@ package de.bioforscher.singa.core.identifier;
 import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 
+import java.util.Collection;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -30,6 +32,21 @@ public class InChIKey extends AbstractIdentifier {
      */
     public InChIKey(String identifier) throws IllegalArgumentException {
         super(identifier, PATTERN);
+    }
+
+    /**
+     * Searches a valid  InChIKey in a collection of identifiers and returns it.
+     *
+     * @param identifiers A collection of identifiers.
+     * @return The first  InChIKey or an empty optional if no identifier could be found.
+     */
+    public static Optional<Identifier> find(Collection<Identifier> identifiers) {
+        for (Identifier identifier : identifiers) {
+            if (InChIKey.check(identifier)) {
+                return Optional.of(identifier);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
