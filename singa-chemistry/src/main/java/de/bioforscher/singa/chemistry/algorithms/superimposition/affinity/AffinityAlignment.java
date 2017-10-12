@@ -46,8 +46,9 @@ public class AffinityAlignment {
 
     private RepresentationScheme representationScheme;
     private LabeledSymmetricMatrix<StructuralMotif> distanceMatrix;
-    private double selfSimilarity;
+    private double selfDissimilarity;
     private Map<StructuralMotif, List<StructuralMotif>> clusters;
+    private double silhouetteCoefficient;
 
     private AffinityAlignment(Builder builder) {
 
@@ -91,6 +92,14 @@ public class AffinityAlignment {
         return new Builder();
     }
 
+    public double getSelfDissimilarity() {
+        return this.selfDissimilarity;
+    }
+
+    public double getSilhouetteCoefficient() {
+        return this.silhouetteCoefficient;
+    }
+
     public Map<StructuralMotif, List<StructuralMotif>> getClusters() {
         return this.clusters;
     }
@@ -126,8 +135,8 @@ public class AffinityAlignment {
     }
 
     private void determineSelfSimilarity() {
-        this.selfSimilarity = Vectors.getMedian(new RegularVector(this.distanceMatrix.streamElements().toArray()));
-        logger.info("self-similarity of input structures (median of RMSD values) is {}", this.selfSimilarity);
+        this.selfDissimilarity = Vectors.getMedian(new RegularVector(this.distanceMatrix.streamElements().toArray()));
+        logger.info("self-dissimilarity of input structures (median of RMSD values) is {}", this.selfDissimilarity);
     }
 
     private void computeClustering() {
@@ -135,10 +144,11 @@ public class AffinityAlignment {
                 .dataPoints(this.input)
                 .matrix(this.distanceMatrix)
                 .isDistance(true)
-                .selfSimilarity(this.selfSimilarity)
+                .selfSimilarity(this.selfDissimilarity)
                 .maximalEpochs(MAXIMAL_EPOCHS)
                 .lambda(LAMBDA)
                 .run();
+        this.silhouetteCoefficient = affinityPropagation.getSilhouetteCoefficient();
         this.clusters = affinityPropagation.getClusters();
         logger.info("found {} clusters", this.clusters.size());
     }
@@ -214,6 +224,13 @@ public class AffinityAlignment {
         ParameterStep idealSuperimposition(boolean idealSuperimposition);
 
         ParameterStep alignWithinClusters(boolean alignWithinClusters);
+
+        /**
+         * Creates a new {@link ConsensusAlignment} and starts the calculation.
+         *
+         * @return A new {@link ConsensusAlignment} once calculation has finished.
+         */
+        AffinityAlignment run();
     }
 
     public interface AtomStep {
