@@ -52,6 +52,8 @@ pv <- function(d, x, rmsd_min, rmsd_cutoff, pwt){
         return(0);
     }
 
+    print(x)
+
     # cumulative distribution function F
     # calculate integral
     A <- (1 - pwt) * integrate.xy(d$x, d$y, rmsd_min, x)
@@ -69,7 +71,7 @@ cat("Reading data...\n")
 data <- read.csv(input_file, sep = ",", header = T)
 
 # get RMSD values
-rmsd <- data$RMSD
+rmsd <- data$rmsd
 
 # sampling data
 cat("Sampling data...\n")

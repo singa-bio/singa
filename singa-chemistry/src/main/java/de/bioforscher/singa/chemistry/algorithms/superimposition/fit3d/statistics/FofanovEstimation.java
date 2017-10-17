@@ -55,6 +55,11 @@ public class FofanovEstimation implements StatisticalModel {
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private TreeMap<Double, SubstructureSuperimposition> pvalueMatches;
 
+    public FofanovEstimation(double rmsdCutoff, int referenceSize) {
+        this.rmsdCutoff = rmsdCutoff;
+        this.referenceSize = referenceSize;
+    }
+
     public FofanovEstimation(double rmsdCutoff) {
         checkRequirements();
         this.rmsdCutoff = rmsdCutoff;
@@ -96,6 +101,7 @@ public class FofanovEstimation implements StatisticalModel {
         int counter = 0;
         for (Map.Entry<Double, SubstructureSuperimposition> entry : matches.entrySet()) {
             this.pvalueMatches.put(this.pvalues.getElement(counter), entry.getValue());
+            counter++;
         }
     }
 
@@ -105,7 +111,7 @@ public class FofanovEstimation implements StatisticalModel {
         df.applyPattern("0.0000");
         String formattedRmsdValues = this.matches.keySet().stream()
                 .map(df::format)
-                .collect(Collectors.joining("\n", "RMSD", ""));
+                .collect(Collectors.joining("\n", "rmsd\n", ""));
         Files.write(this.rmsdValuesPath,
                 formattedRmsdValues.getBytes());
         logger.info("rmsd values written to {}", this.rmsdValuesPath);
