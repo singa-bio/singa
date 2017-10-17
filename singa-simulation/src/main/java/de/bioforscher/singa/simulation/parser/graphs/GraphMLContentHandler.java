@@ -105,12 +105,11 @@ public class GraphMLContentHandler implements ContentHandler {
 
         switch (qName) {
             case "key":
-                String chebiId = atts.getValue("id");
+                String chEBIIdentifier = atts.getValue("id");
                 // parse species that are present as keys
-                if (chebiId.startsWith("CHEBI")) {
-                    ChEBIParserService service = new ChEBIParserService(chebiId);
-                    Species entity = service.fetchSpecies();
-                    this.speciesMap.put(chebiId, entity);
+                if (chEBIIdentifier.startsWith("CHEBI")) {
+                    Species entity = ChEBIParserService.parse(chEBIIdentifier);
+                    this.speciesMap.put(chEBIIdentifier, entity);
                 }
                 break;
             case "data":
