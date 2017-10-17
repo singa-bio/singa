@@ -2,6 +2,8 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.FofanovEstimation;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
@@ -35,6 +37,7 @@ public class Fit3DAlignment implements Fit3D {
     private final BranchSubstructure<?, ?> target;
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
+    private final StatisticalModel statisticalModel;
     private double squaredQueryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?, ?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?, ?>>> environments;
@@ -53,6 +56,7 @@ public class Fit3DAlignment implements Fit3D {
         this.squaredDistanceTolerance = builder.distanceTolerance * builder.distanceTolerance;
         this.atomFilter = builder.atomFilter;
         this.representationScheme = builder.representationScheme;
+        this.statisticalModel = builder.statisticalModel;
 
         if (this.queryMotif.size() > this.target.getLeafSubstructures().size()) {
             throw new Fit3DException("search target " + this.target + " must contain at least as many atom-containing substructures " +
@@ -83,6 +87,27 @@ public class Fit3DAlignment implements Fit3D {
         composeEnvironments();
         generateCandidates();
         computeMatches();
+        calculateStatistics();
+    }
+
+    /**
+     * Calculates statistics for the given {@link StatisticalModel} if any.
+     */
+    private void calculateStatistics() {
+        if (this.statisticalModel != null) {
+            // if Fofanov statistical model is used
+            if (this.statisticalModel instanceof FofanovEstimation) {
+                if (!this.matches.isEmpty()) {
+                    // increase GS if matches were found
+                    logger.debug("match found, increasing GS count for Fofanov model");
+                    ((FofanovEstimation) this.statisticalModel).incrementGs();
+                } else if (!this.candidates.isEmpty()) {
+                    // increase NS if matches were not found but could have been found
+                    logger.debug("no match found, but theoretically possible, increasing NS");
+                    ((FofanovEstimation) this.statisticalModel).incrementNs();
+                }
+            }
+        }
     }
 
     /**
@@ -150,7 +175,9 @@ public class Fit3DAlignment implements Fit3D {
             Set<Set<LeafSubstructure<?, ?>>> currentCandidates = new ValidCandidateGenerator(
                     this.queryMotif.getLeafSubstructures(),
                     environment).getValidCandidates();
-            this.candidates.put(environment, currentCandidates);
+            if (!currentCandidates.isEmpty()) {
+                this.candidates.put(environment, currentCandidates);
+            }
         }
     }
 

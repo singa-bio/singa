@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserException;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
@@ -39,6 +40,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final StructureParser.MultiParser multiParser;
     private final boolean skipAlphaCarbonTargets;
     private final boolean skipBackboneTargets;
+    private final StatisticalModel statisticalModel;
     private TreeMap<Double, SubstructureSuperimposition> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
@@ -52,6 +54,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
         this.representationScheme = builder.representationScheme;
         this.rmsdCutoff = builder.rmsdCutoff;
         this.distanceTolerance = builder.distanceTolerance;
+        this.statisticalModel = builder.statisticalModel;
         logger.info("Fit3D alignment batch initialized with {} target structures", this.multiParser.getNumberOfQueuedStructures());
         computeAlignments();
         logger.info("found {} matches in {} target structures", this.allMatches.size(), this.multiParser.getNumberOfQueuedStructures());
@@ -82,6 +85,15 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     .collect(TreeMap::new, Map::putAll, Map::putAll);
         } catch (InterruptedException e) {
             logger.error("Ft3D parallel execution failed", e);
+        }
+
+        // calculate statistics
+        if (this.statisticalModel != null) {
+            try {
+                this.statisticalModel.calculatePvalues(this.allMatches);
+            } catch (Exception e) {
+                throw new Fit3DException("failed to calculate p-values");
+            }
         }
     }
 
@@ -133,6 +145,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .atomFilter(Fit3DAlignmentBatch.this.atomFilter)
                                 .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
                                 .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
                                 .run();
                     } else {
                         fit3d = Fit3DBuilder.create()
@@ -141,6 +154,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .representationScheme(Fit3DAlignmentBatch.this.representationScheme.getType())
                                 .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
                                 .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
                                 .run();
                     }
                     return fit3d.getMatches();

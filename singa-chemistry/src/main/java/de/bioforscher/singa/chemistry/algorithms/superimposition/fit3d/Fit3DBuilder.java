@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.MultiParser;
 import de.bioforscher.singa.chemistry.physical.atoms.Atom;
 import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
@@ -162,7 +163,7 @@ public class Fit3DBuilder {
          * Sets the option to skip all targets that consist of only alpha carbon atoms to avoid a lot of noise in the
          * results.
          *
-         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
          */
         BatchParameterStep skipAlphaCarbonTargets();
 
@@ -171,7 +172,7 @@ public class Fit3DBuilder {
          * Sets the option to skip all targets that consist of only backbone atoms to avoid a lot of noise in the
          * results.
          *
-         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
          */
         BatchParameterStep skipBackboneTargets();
     }
@@ -228,6 +229,15 @@ public class Fit3DBuilder {
          * @return The {@link ParameterStep} that can be used to define optional parameters.
          */
         ParameterStep distanceTolerance(double distanceTolerance);
+
+        /**
+         * Adds the specified {@link StatisticalModel} to the search to calculate significance of matches. <b>This may
+         * only be used when running a batch alignment.</b>
+         *
+         * @param statisticalModel The {@link StatisticalModel} to be used.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep statisticalModel(StatisticalModel statisticalModel);
     }
 
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
@@ -248,6 +258,7 @@ public class Fit3DBuilder {
         SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
         boolean skipAlphaCarbonTargets;
         boolean skipBackboneTargets;
+        StatisticalModel statisticalModel;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -346,6 +357,12 @@ public class Fit3DBuilder {
         @Override
         public BatchParameterStep skipBackboneTargets() {
             this.skipBackboneTargets = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep statisticalModel(StatisticalModel statisticalModel) {
+            this.statisticalModel = statisticalModel;
             return this;
         }
 
