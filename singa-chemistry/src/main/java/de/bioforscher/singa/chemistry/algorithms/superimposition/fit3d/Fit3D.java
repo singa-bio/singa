@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents an instance of the Fit3D algorithm. This can either be a one target one alignment ({@link Fit3DAlignment})
@@ -70,6 +72,19 @@ public interface Fit3D {
                 logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
             }
         });
+    }
+
+    /**
+     * Writes a CSV summary file of the matches obtained by {@link Fit3D}i.
+     *
+     * @param summaryFilePath The {@link Path} to which the file should be written.
+     */
+    default void writeSummaryFile(Path summaryFilePath) throws IOException {
+        String summaryFileContent = getMatches().stream()
+                .map(Fit3DMatch::toCsv)
+                .collect(Collectors.joining("\n", Fit3DMatch.CSV_HEADER, ""));
+        Files.createDirectories(summaryFilePath.getParent());
+        Files.write(summaryFilePath, summaryFileContent.getBytes());
     }
 
     /**

@@ -11,6 +11,8 @@ import java.util.StringJoiner;
  */
 public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
+    public static final String CSV_HEADER = "match,rmsd,p-value\n";
+
     private SubstructureSuperimposition substructureSuperimposition;
     private double rmsd;
     private double pvalue;
@@ -32,9 +34,9 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     @Override
     public String toString() {
         return "Fit3DMatch{" +
-                "substructureSuperimposition=" + substructureSuperimposition +
-                ", rmsd=" + rmsd +
-                ", pvalue=" + pvalue +
+                "substructureSuperimposition=" + this.substructureSuperimposition +
+                ", rmsd=" + this.rmsd +
+                ", pvalue=" + this.pvalue +
                 '}';
     }
 
