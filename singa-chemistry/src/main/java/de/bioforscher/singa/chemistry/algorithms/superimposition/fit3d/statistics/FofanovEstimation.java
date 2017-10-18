@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.Fit3DMatch;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vector;
@@ -13,8 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -52,8 +52,7 @@ public class FofanovEstimation implements StatisticalModel {
     private Path rmsdValuesPath;
     private Path pvaluesPath;
     private Vector pvalues;
-    private TreeMap<Double, SubstructureSuperimposition> matches;
-    private TreeMap<Double, SubstructureSuperimposition> pvalueMatches;
+    private List<Fit3DMatch> matches;
 
     public FofanovEstimation(double rmsdCutoff, int referenceSize) {
         this.rmsdCutoff = rmsdCutoff;
@@ -65,13 +64,6 @@ public class FofanovEstimation implements StatisticalModel {
         this.rmsdCutoff = rmsdCutoff;
         this.gs = new AtomicInteger(0);
         this.ns = new AtomicInteger(0);
-    }
-
-    public TreeMap<Double, SubstructureSuperimposition> getPvalueMatches() {
-        if (this.pvalueMatches == null) {
-            throw new UnsupportedOperationException("p-values are not available");
-        }
-        return this.pvalueMatches;
     }
 
     private void checkRequirements() {
@@ -92,24 +84,24 @@ public class FofanovEstimation implements StatisticalModel {
     }
 
     @Override
-    public void calculatePvalues(TreeMap<Double, SubstructureSuperimposition> matches) throws IOException, InterruptedException {
+    public void calculatePvalues(List<Fit3DMatch> matches) throws IOException, InterruptedException {
         this.matches = matches;
-        this.pvalueMatches = new TreeMap<>();
         createTemporaryDirectory();
         writeRmsdValues();
         runScript();
         int counter = 0;
-        for (Map.Entry<Double, SubstructureSuperimposition> entry : matches.entrySet()) {
-            this.pvalueMatches.put(this.pvalues.getElement(counter), entry.getValue());
-            counter++;
+        for (int i = 0; i < matches.size(); i++) {
+            Fit3DMatch match = matches.get(i);
+            match.setPvalue(this.pvalues.getElement(i));
         }
     }
 
     private void writeRmsdValues() throws IOException {
-        NumberFormat nf = NumberFormat.getInstance();
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern("0.0000");
-        String formattedRmsdValues = this.matches.keySet().stream()
+        String formattedRmsdValues = this.matches.stream()
+                .map(Fit3DMatch::getRmsd)
                 .map(df::format)
                 .collect(Collectors.joining("\n", "rmsd\n", ""));
         Files.write(this.rmsdValuesPath,

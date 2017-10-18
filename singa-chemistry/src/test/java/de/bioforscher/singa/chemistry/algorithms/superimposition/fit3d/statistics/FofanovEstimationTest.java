@@ -53,6 +53,6 @@ public class FofanovEstimationTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .statisticalModel(fofanovEstimation)
                 .run();
-        assertEquals(fit3dBatch.getMatches().size(), fofanovEstimation.getPvalueMatches().size());
+        assertEquals(fit3dBatch.getMatches().size(), 0);
     }
 }

@@ -1,14 +1,14 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.Fit3DMatch;
 
 import java.io.IOException;
-import java.util.TreeMap;
+import java.util.List;
 
 /**
  * @author fk
  */
 public interface StatisticalModel {
 
-    void calculatePvalues(TreeMap<Double, SubstructureSuperimposition> matches) throws IOException, InterruptedException;
+    void calculatePvalues(List<Fit3DMatch> matches) throws IOException, InterruptedException;
 }

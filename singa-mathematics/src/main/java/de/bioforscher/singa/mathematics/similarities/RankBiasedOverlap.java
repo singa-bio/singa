@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author fk
  */
-public class RboScore {
+public class RankBiasedOverlap {
 
     private final List<?> list1;
     private final List<?> list2;
@@ -21,7 +21,7 @@ public class RboScore {
 
     private double rbo;
 
-    public RboScore(List<?> list1, List<?> list2, int limit, double p) {
+    public RankBiasedOverlap(List<?> list1, List<?> list2, int limit, double p) {
         this.list1 = list1;
         this.list2 = list2;
         this.limit = limit;

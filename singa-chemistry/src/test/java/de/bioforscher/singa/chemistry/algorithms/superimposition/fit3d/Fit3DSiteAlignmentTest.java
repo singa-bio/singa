@@ -47,7 +47,7 @@ public class Fit3DSiteAlignmentTest {
                 .exhaustive()
                 .atomFilter(StructuralEntityFilter.AtomFilter.isBackbone())
                 .run();
-        assertEquals(0.29745276335597537, fit3d.getMatches().firstKey(), 1E-6);
+        assertEquals(0.29745276335597537, fit3d.getMatches().get(0).getRmsd(), 1E-6);
         assertEquals(7.459982645433789, fit3d.getXieScore().getScore(), 1E-6);
         assertEquals(0.05689220664553862, fit3d.getXieScore().getNormalizedScore(), 1E-6);
         assertEquals(0.019884604882031143, fit3d.getXieScore().getSignificance(), 1E-6);
@@ -65,7 +65,7 @@ public class Fit3DSiteAlignmentTest {
                 .restrictToSpecifiedExchanges()
                 .atomFilter(StructuralEntityFilter.AtomFilter.isBackbone())
                 .run();
-        assertEquals(0.5517396481341506, fit3d.getMatches().firstKey(), 1E-6);
+        assertEquals(0.5517396481341506, fit3d.getMatches().get(0).getRmsd(), 1E-6);
         assertEquals(53.99934784373183, fit3d.getXieScore().getScore(), 1E-6);
         assertEquals(0.37573008273142394, fit3d.getXieScore().getNormalizedScore(), 1E-6);
         assertEquals(0.0, fit3d.getXieScore().getSignificance(), 1E-6);

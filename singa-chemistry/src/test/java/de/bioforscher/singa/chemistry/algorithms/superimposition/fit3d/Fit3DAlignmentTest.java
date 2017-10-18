@@ -1,6 +1,5 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
 import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
@@ -23,7 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -58,8 +56,8 @@ public class Fit3DAlignmentTest {
                 .query(this.queryMotif)
                 .target(this.target.getAllChains().get(0))
                 .run();
-        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0005, matches.firstKey(), 1E-4);
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0005, matches.get(0).getRmsd(), 1E-4);
     }
 
     @Test
@@ -71,8 +69,8 @@ public class Fit3DAlignmentTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .rmsdCutoff(1.0)
                 .run();
-        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0005, matches.firstKey(), 1E-4);
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0005, matches.get(0).getRmsd(), 1E-4);
     }
 
     @Test
@@ -95,7 +93,7 @@ public class Fit3DAlignmentTest {
                 .targets(multiParser)
                 .maximalParallelism()
                 .run();
-        assertEquals(fit3dBatch.getMatches().size(), 14);
+        assertEquals(14, fit3dBatch.getMatches().size());
     }
 
     @Test
@@ -110,8 +108,8 @@ public class Fit3DAlignmentTest {
                 .query(queryMotif)
                 .target(target.getAllModels().get(0))
                 .run();
-        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0000, matches.firstKey(), 1E-6);
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test
@@ -132,8 +130,8 @@ public class Fit3DAlignmentTest {
                 .query(nucleotideMotif)
                 .target(nucleotideTarget.getAllChains().get(0))
                 .run();
-        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0, matches.firstKey(), 1E-6);
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test
@@ -150,8 +148,8 @@ public class Fit3DAlignmentTest {
                 .target(queryStructure.getAllModels().get(0))
                 .run();
 
-        TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
-        assertEquals(0.0, matches.firstKey(), 1E-6);
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test
@@ -213,7 +211,7 @@ public class Fit3DAlignmentTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .run();
 
-        assertEquals(0.00, fit3d.getMatches().firstKey(), 1E-2);
+        assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-2);
     }
 
 //    @Test

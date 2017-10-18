@@ -43,7 +43,7 @@ public class Fit3DAlignment implements Fit3D {
     private List<List<LeafSubstructure<?, ?>>> environments;
     private HashMap<List<LeafSubstructure<?, ?>>, Set<Set<LeafSubstructure<?, ?>>>> candidates;
     private double rmsdCutoff;
-    private TreeMap<Double, SubstructureSuperimposition> matches;
+    private List<Fit3DMatch> matches;
     private Predicate<Atom> atomFilter;
 
     Fit3DAlignment(Fit3DBuilder.Builder builder) {
@@ -65,7 +65,7 @@ public class Fit3DAlignment implements Fit3D {
 
         // initialize
         this.environments = new ArrayList<>();
-        this.matches = new TreeMap<>();
+        this.matches = new ArrayList<>();
         this.candidates = new HashMap<>();
 
         logger.debug("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
@@ -116,7 +116,7 @@ public class Fit3DAlignment implements Fit3D {
      * @return The matches of this search.
      */
     @Override
-    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
+    public List<Fit3DMatch> getMatches() {
         return this.matches;
     }
 
@@ -135,6 +135,7 @@ public class Fit3DAlignment implements Fit3D {
         this.candidates.values().stream()
                 .flatMap(Collection::stream)
                 .forEach(this::computeAlignments);
+        Collections.sort(this.matches);
     }
 
     /**
@@ -143,6 +144,13 @@ public class Fit3DAlignment implements Fit3D {
      * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
      */
     private void computeAlignments(Set<LeafSubstructure<?, ?>> leafSubstructures) {
+
+        boolean redundant = this.matches.stream()
+                .anyMatch(match -> match.getSubstructureSuperimposition().getCandidate().containsAll(leafSubstructures));
+        if (redundant) {
+            logger.trace("redundant candidate {} skipped", leafSubstructures);
+            return;
+        }
         ValidAlignmentGenerator validAlignmentGenerator =
                 new ValidAlignmentGenerator(this.queryMotif.getLeafSubstructures(), new ArrayList<>(leafSubstructures));
         List<List<Pair<LeafSubstructure<?, ?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
@@ -162,7 +170,7 @@ public class Fit3DAlignment implements Fit3D {
                                 alignmentCandidate, this.atomFilter);
             }
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
-                this.matches.put(superimposition.getRmsd(), superimposition);
+                this.matches.add(Fit3DMatch.of(superimposition, superimposition.getRmsd()));
             }
         }
     }

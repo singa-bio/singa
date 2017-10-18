@@ -60,7 +60,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     private double currentBestScore;
     private SubstructureSuperimposition currentBestSuperimposition;
 
-    private TreeMap<Double, SubstructureSuperimposition> matches;
+    private List<Fit3DMatch> matches;
     private String alignmentString;
     private boolean cutoffScoreReached;
     private XieScore xieScore;
@@ -103,13 +103,15 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.substitutionMatrix = builder.substitutionMatrix;
 
         // initialize
-        this.matches = new TreeMap<>();
+        this.matches = new ArrayList<>();
 
         logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {}) with cutoff score {}", this.site1,
                 this.site1.size(), this.site2, this.site2.size(), this.cutoffScore);
 
         calculateSimilarities();
         extendAlignment();
+
+        Collections.sort(this.matches);
     }
 
     @Override
@@ -150,7 +152,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
 
         if (this.currentBestSuperimposition != null) {
-            this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
+            this.matches.add(Fit3DMatch.of(this.currentBestSuperimposition, this.currentBestScore));
             if (!this.containsNonAminoAcids) {
                 calculateXieScore();
                 calculatePsScore();
@@ -326,11 +328,12 @@ public class Fit3DSiteAlignment implements Fit3D {
                     if (fit3d.getMatches().isEmpty()) {
                         temporarySimilarityMatrix[i][j] = Double.MAX_VALUE;
                     } else {
-                        double rmsd = fit3d.getMatches().firstKey();
+                        Fit3DMatch bestMatch = fit3d.getMatches().get(0);
+                        double rmsd = bestMatch.getRmsd();
                         temporarySimilarityMatrix[i][j] = rmsd;
                         // test if current score is new global winner and cutoff is not exceeded
                         if (rmsd < localBestScore) {
-                            localBestSuperimposition = fit3d.getMatches().firstEntry().getValue();
+                            localBestSuperimposition = bestMatch.getSubstructureSuperimposition();
                             localBestScore = rmsd;
                         }
                     }
@@ -431,7 +434,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         if (this.matches.isEmpty()) {
             throw new Fit3DException("cannot write matches as they are currently empty");
         }
-        SubstructureSuperimposition bestSuperimposition = this.matches.firstEntry().getValue();
+        SubstructureSuperimposition bestSuperimposition = this.matches.get(0).getSubstructureSuperimposition();
         List<LeafSubstructure<?, ?>> mappedSite2 = bestSuperimposition.applyTo(this.site2.getCopy().getLeafSubstructures());
         try {
             StructureWriter.writeLeafSubstructures(this.site1.getLeafSubstructures(),
@@ -456,7 +459,7 @@ public class Fit3DSiteAlignment implements Fit3D {
     }
 
     @Override
-    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
+    public List<Fit3DMatch> getMatches() {
         return this.matches;
     }
 

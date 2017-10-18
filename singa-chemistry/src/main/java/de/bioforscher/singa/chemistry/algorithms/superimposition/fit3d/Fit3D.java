@@ -1,6 +1,5 @@
 package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.PsScore;
 import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.XieScore;
 import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
@@ -9,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.TreeMap;
+import java.util.List;
 
 /**
  * Represents an instance of the Fit3D algorithm. This can either be a one target one alignment ({@link Fit3DAlignment})
@@ -26,7 +25,7 @@ public interface Fit3D {
      *
      * @return The matches found in the target structure(s).
      */
-    TreeMap<Double, SubstructureSuperimposition> getMatches();
+    List<Fit3DMatch> getMatches();
 
     /**
      * Returns the fraction of residues that were aligned.
@@ -63,12 +62,12 @@ public interface Fit3D {
      * @param outputDirectory The directory where the matches should be written.
      */
     default void writeMatches(Path outputDirectory) {
-        getMatches().values().forEach(substructureSuperimposition -> {
+        getMatches().forEach(match -> {
             try {
-                StructureWriter.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
-                        outputDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
+                StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
+                        outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
             } catch (IOException e) {
-                logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);
+                logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
             }
         });
     }
