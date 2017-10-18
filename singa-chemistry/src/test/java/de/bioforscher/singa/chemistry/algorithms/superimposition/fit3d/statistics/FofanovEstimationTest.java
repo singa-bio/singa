@@ -10,6 +10,7 @@ import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.Atom
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
+    @Ignore("this test can only complete if R is installed and the permissions to install new packages is available")
     public void shouldCalculatePvalues() throws IOException, InterruptedException {
         StructureParserOptions structureParserOptions = StructureParserOptions.withSettings(
                 StructureParserOptions.Setting.OMIT_EDGES,
