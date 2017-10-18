@@ -10,13 +10,12 @@ import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.Atom
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author fk
@@ -35,7 +34,6 @@ public class FofanovEstimationTest {
     }
 
     @Test
-    @Ignore("does only work with R installed and permissions to install new packages")
     public void shouldCalculatePvalues() throws IOException, InterruptedException {
         StructureParserOptions structureParserOptions = StructureParserOptions.withSettings(
                 StructureParserOptions.Setting.OMIT_EDGES,
@@ -53,6 +51,7 @@ public class FofanovEstimationTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .statisticalModel(fofanovEstimation)
                 .run();
-        assertEquals(fit3dBatch.getMatches().size(), 0);
+        assertTrue(fit3dBatch.getMatches().stream()
+                .noneMatch(match -> match.getPvalue() == Double.NaN));
     }
 }

@@ -12,6 +12,7 @@ import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
 import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
 import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -232,7 +233,9 @@ public class Fit3DBuilder {
 
         /**
          * Adds the specified {@link StatisticalModel} to the search to calculate significance of matches. <b>This may
-         * only be used when running a batch alignment.</b>
+         * only be used when running a batch alignment. When running individual alignments the instance of the model
+         * should be passed to all individual Fit3D runs. After all runs completed call
+         * {@link StatisticalModel#calculatePvalues(List)}</b>
          *
          * @param statisticalModel The {@link StatisticalModel} to be used.
          * @return The {@link BatchParameterStep} that can be used to define optional parameters.

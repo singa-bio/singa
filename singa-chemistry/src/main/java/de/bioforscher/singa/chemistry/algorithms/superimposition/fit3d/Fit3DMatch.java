@@ -56,7 +56,8 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
     public String toCsv() {
         StringJoiner stringJoiner = new StringJoiner(",");
-        stringJoiner.add(this.substructureSuperimposition.getStringRepresentation());
+        String stringRepresentation = this.substructureSuperimposition.getStringRepresentation();
+        stringJoiner.add(stringRepresentation.replaceFirst("\\d+\\.\\d+_", ""));
         stringJoiner.add(String.valueOf(this.rmsd));
         stringJoiner.add(String.valueOf(this.pvalue));
         return stringJoiner.toString();
