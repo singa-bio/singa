@@ -29,6 +29,7 @@ before_install:
 
 install:
   - sudo apt-get install r-base
+  - sudo Rscript -e 'install.packages("sfsmisc", repos="https://cran.rstudio.com/", lib="/usr/lib/R/library")'
   - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script: mvn test -P !build-extras -B
