@@ -1,6 +1,7 @@
 language: java
 jdk: oraclejdk8
 dist: trusty
+sudo: required
 addons:
   apt:
     packages:
@@ -20,9 +21,15 @@ env:
     - secure: "hGo6DfgIuhOyFi6iuv6aA5sOVsQXFQmE7t3eDCn93xc6ic8icxGeixx+v/+PWVcTUjgSlX5bYOwsNrc+vsnz/qi4t1LEsQTdM0f3+6luwhnUel/O89Qk4GV3SA7TW5i4edhSw5EYYchybjfBhQ3BFJkBFxLvqEBN9GL/mkUW/6pCfa/mUBvjK3QjbAju6iydKX7bXiK/Yt1Dfpu4XoufkTf7MlWeQB5rkNZQzm1xaa7zP2iMlvc5sR8UY2qkXhhWqScfAZkKEyc297FP9yuqudNbkn8f9ilZfpBwFlEw0R+MGF2hTdqnx+OiHYmiHNB56AnMY5d0pM5ZmFy8AEjFmWFrS0KO6GkpskuhMgalCt2HCpOV3+13d7NPqEb3NHGvv4EZTc8aYGfeGdTWSTKfmK1FjryP+ytT57wMROVJgmLRh6mTC8v9hQ46GVz6pj9wty+zol9Ul6JXAykoEHSo95YUkhplSHKf7TaqwEgTJcAXblb71ZQ1NnrSc8Iqmndyq4t9NnWRrbRvim86CDFnqOsTN4oWbwtaplbBqxqWw/HQ66c4Q/SkFSvmzphlW+5MN6eQbGijHNmMUD0OS1TN1BFLNT7ntaHxCJw+H6UPIiM6MsE6hWaTYlRwpZfYHsEcCxzkCCfJfMVbOZZ+Tx2poQ5P2BpszOZo98jfE2n5M0Q="
     - # ^^ GITHUB_DOC_TOKEN
 
-before_install: cd singa-all
+before_install:
+  - sudo sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu trusty/" >> /etc/apt/sources.list'
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  - sudo apt-get update
+  - cd singa-all
 
-install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+install:
+  - sudo apt-get install r-base
+  - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script: mvn test -P !build-extras -B
 

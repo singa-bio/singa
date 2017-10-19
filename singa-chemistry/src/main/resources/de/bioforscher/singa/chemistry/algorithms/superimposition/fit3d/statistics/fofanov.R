@@ -15,15 +15,16 @@ NS <- as.numeric(args[2])
 GS <- as.numeric(args[3])
 rmsd_from <- as.numeric(args[4])
 rmsd_to <- as.numeric(args[5])
+model_correctness_cutoff <- as.numeric(args[6])
 
 # sample size
-sample_size <- as.numeric(args[6])
+sample_size <- as.numeric(args[7])
 
 # file names
-input_file <- args[7]
-output_file <- args[8]
+input_file <- args[8]
+output_file <- args[9]
 
-print("program arguments")
+cat("program arguments\n")
 print(args)
 
 # calculate point-weight, pwt
@@ -76,7 +77,7 @@ rmsd <- data$rmsd
 # sampling data
 cat("Sampling data...\n")
 rmsd_sampled <- rmsd;
-if (length(rmsd) > 100000) {
+if (length(rmsd) > sample_size) {
     rmsd_sampled = sample(rmsd, sample_size)
 }
 
@@ -90,18 +91,17 @@ pwt <- calc_pwt(N, NS, GS)
 
 # calculate p-values
 cat("Calculating p-values...\n")
-pv_results <- vector("numeric", length(1 : length(rmsd)))
-for (i in 1 : length(rmsd)) {
+pv_results <- vector("numeric", length(rmsd))
+for (i in (1 : length(rmsd))) {
+    if (rmsd[i] > model_correctness_cutoff) {
+        cat("Model correctness cutoff reached...\n")
+        break
+    }
     pv_results[i] <- pv(d, rmsd[i], rmsd_from, rmsd_to, pwt)
 }
 
-# cbind data
-#cat("Binding data...\n")
-#final_data <- cbind.data.frame(data$RMSD,pv_results,data$PDB.ID,data$occ,data$seq,data$motif,data$title)
-
 # writing data
 cat("Writing data...\n")
-#write.table(final_data, file=output_file,row.names=F, col.names=c("RMSD","p-value","PDB-ID","occ","seq","motif","title"), sep=',')
 write.table(pv_results, file = output_file, row.names = F, col.names = F);
 
 cat("Finished.\n")

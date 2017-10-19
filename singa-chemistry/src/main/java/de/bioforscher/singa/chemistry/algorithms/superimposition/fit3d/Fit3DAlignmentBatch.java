@@ -98,8 +98,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
             try {
                 this.statisticalModel.calculatePvalues(this.allMatches);
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new Fit3DException("failed to calculate p-values");
+                logger.warn("failed to calculate p-values", e);
             }
         }
     }

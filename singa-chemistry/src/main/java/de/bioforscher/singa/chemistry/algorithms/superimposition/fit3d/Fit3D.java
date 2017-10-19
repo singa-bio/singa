@@ -59,6 +59,26 @@ public interface Fit3D {
 
     /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
+     * the query motif. Only matches up to the specified RMSD cutoff are reported.
+     *
+     * @param outputDirectory The directory where the matches should be written.
+     * @param rmsdCutoff The cutoff up to which matches should be written.
+     */
+    default void writeMatches(Path outputDirectory, double rmsdCutoff) {
+        getMatches().stream()
+                .filter(match -> match.getRmsd() <= rmsdCutoff)
+                .forEach(match -> {
+                    try {
+                        StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
+                                outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
+                    } catch (IOException e) {
+                        logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
+                    }
+                });
+    }
+
+    /**
+     * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
      * the query motif.
      *
      * @param outputDirectory The directory where the matches should be written.

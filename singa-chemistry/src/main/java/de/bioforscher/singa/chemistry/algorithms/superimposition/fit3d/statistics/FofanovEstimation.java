@@ -53,15 +53,17 @@ public class FofanovEstimation implements StatisticalModel {
     private Path pvaluesPath;
     private Vector pvalues;
     private List<Fit3DMatch> matches;
-
-    public FofanovEstimation(double rmsdCutoff, int referenceSize) {
-        this.rmsdCutoff = rmsdCutoff;
-        this.referenceSize = referenceSize;
-    }
+    private double modelCorrectnessCutoff;
 
     public FofanovEstimation(double rmsdCutoff) {
+        this(rmsdCutoff, DEFAULT_REFERENCE_SIZE, rmsdCutoff);
+    }
+
+    public FofanovEstimation(double rmsdCutoff, int referenceSize, double modelCorrectnessCutoff) {
         checkRequirements();
         this.rmsdCutoff = rmsdCutoff;
+        this.referenceSize = referenceSize;
+        this.modelCorrectnessCutoff = modelCorrectnessCutoff;
         this.gs = new AtomicInteger(0);
         this.ns = new AtomicInteger(0);
     }
@@ -91,6 +93,9 @@ public class FofanovEstimation implements StatisticalModel {
         runScript();
         for (int i = 0; i < matches.size(); i++) {
             Fit3DMatch match = matches.get(i);
+            if (match.getRmsd() > this.modelCorrectnessCutoff) {
+                match.setPvalue(Double.NaN);
+            }
             match.setPvalue(this.pvalues.getElement(i));
         }
     }
@@ -118,11 +123,12 @@ public class FofanovEstimation implements StatisticalModel {
                 String.valueOf(this.gs.get()),
                 String.valueOf(START_RMSD),
                 String.valueOf(this.rmsdCutoff),
+                String.valueOf(this.modelCorrectnessCutoff),
                 String.valueOf(SAMPLE_SIZE),
                 this.rmsdValuesPath.toString(),
                 this.pvaluesPath.toString());
         Process process;
-        if (logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
             process = processBuilder.inheritIO().start();
         } else {
             process = processBuilder.start();
