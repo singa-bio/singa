@@ -128,11 +128,11 @@ public class FofanovEstimation implements StatisticalModel {
                 this.rmsdValuesPath.toString(),
                 this.pvaluesPath.toString());
         Process process;
-        if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
+//        if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
             process = processBuilder.inheritIO().start();
-        } else {
+//        } else {
             process = processBuilder.start();
-        }
+//        }
         int exitStatus = process.waitFor();
         if (exitStatus != 0) {
             logger.error("p-value calculation failed");

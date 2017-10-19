@@ -52,6 +52,8 @@ public class FofanovEstimationTest {
                 .statisticalModel(fofanovEstimation)
                 .run();
         assertTrue(fit3dBatch.getMatches().stream()
-                .noneMatch(match -> match.getPvalue() == Double.NaN));
+                .anyMatch(match -> match.getPvalue() != 0.0));
+        assertTrue(fit3dBatch.getMatches().stream()
+                .anyMatch(match -> match.getPvalue() != Double.NaN));
     }
 }
