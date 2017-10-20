@@ -95,6 +95,7 @@ public class FofanovEstimation implements StatisticalModel {
             Fit3DMatch match = matches.get(i);
             if (match.getRmsd() > this.modelCorrectnessCutoff) {
                 match.setPvalue(Double.NaN);
+                continue;
             }
             match.setPvalue(this.pvalues.getElement(i));
         }
