@@ -206,6 +206,7 @@
         <module>../singa-chemistry</module>
         <module>../singa-javafx</module>
         <module>../singa-simulation</module>
+        <module>../singa-structure</module>
     </modules>
 
 </project>

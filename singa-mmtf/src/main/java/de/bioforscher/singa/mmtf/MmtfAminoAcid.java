@@ -1,8 +1,8 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.interfaces.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
@@ -22,8 +22,8 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfAminoAcid(StructureDataInterface data, AminoAcidFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    MmtfAminoAcid(StructureDataInterface data, byte[] bytes, AminoAcidFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 
     /**
@@ -33,6 +33,11 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      */
     private MmtfAminoAcid(MmtfLeafSubstructure mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
+    }
+
+    @Override
+    public boolean isAnnotatedAsHeteroAtom() {
+        return false;
     }
 
     @Override

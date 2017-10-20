@@ -1,15 +1,13 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.core.utility.Range;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The implementation of {@link Chain} for mmtf structures. Remembers the chain identifier, the leaf relevant for this
@@ -18,6 +16,11 @@ import java.util.Optional;
  * @author cl
  */
 public class MmtfChain implements Chain {
+
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
 
     /**
      * The original data.
@@ -32,7 +35,7 @@ public class MmtfChain implements Chain {
     /**
      * The leaves that have already been requested.
      */
-    private HashMap<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
+    private Map<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
 
     /**
      * The indices of the relevant leaves in the group data arrays.
@@ -42,12 +45,12 @@ public class MmtfChain implements Chain {
     /**
      * The generated leaf identifiers for all relevant leaves.
      */
-    private List<LeafIdentifier> leafIdentifiers;
+    private Map<Integer, LeafIdentifier> leafIdentifiers;
 
     /**
      * Contains the relevant atom ranges for all relevant leaves.
      */
-    private List<Range<Integer>> atomRanges;
+    private Map<Integer, Range<Integer>> atomRanges;
 
     /**
      * Creates a new {@link MmtfChain}.
@@ -57,12 +60,13 @@ public class MmtfChain implements Chain {
      * @param internalChainIndices All internal chain indices relevant for this chain.
      * @param modelIndex The index of the parent model (the model identifier is the model index + 1).
      */
-    MmtfChain(StructureDataInterface data, String chainIdentifier, List<Integer> internalChainIndices, int modelIndex) {
+    MmtfChain(StructureDataInterface data, byte[] bytes, String chainIdentifier, List<Integer> internalChainIndices, int modelIndex) {
         this.data = data;
+        this.bytes = bytes;
         this.chainIdentifier = chainIdentifier;
         this.relevantGroups = new ArrayList<>();
-        this.leafIdentifiers = new ArrayList<>();
-        this.atomRanges = new ArrayList<>();
+        this.leafIdentifiers = new HashMap<>();
+        this.atomRanges = new HashMap<>();
         this.cachedLeaves = new HashMap<>();
 
         // number of groups (leaves) per chain
@@ -74,7 +78,7 @@ public class MmtfChain implements Chain {
             if (internalChainIndices.contains(groupsPerChainIndex)) {
                 for (int groupIndex = currentGroupIndex; groupIndex <= endRange - 1; groupIndex++) {
                     relevantGroups.add(groupIndex);
-                    leafIdentifiers.add(new LeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
+                    leafIdentifiers.put(groupIndex, new LeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
                 }
             }
             currentGroupIndex = endRange;
@@ -85,7 +89,7 @@ public class MmtfChain implements Chain {
             // get number of relevant atoms for the current group type
             int lastAtom = currentAtomIndex + data.getNumAtomsInGroup(data.getGroupTypeIndices()[groupIndex]);
             if (relevantGroups.contains(groupIndex)) {
-                atomRanges.add(new Range<>(currentAtomIndex, lastAtom - 1));
+                atomRanges.put(groupIndex, new Range<>(currentAtomIndex, lastAtom - 1));
             }
             currentAtomIndex = lastAtom;
         }
@@ -98,11 +102,12 @@ public class MmtfChain implements Chain {
      * @param mmtfChain The {@link MmtfChain} to copy.
      */
     private MmtfChain(MmtfChain mmtfChain) {
-        this.data = mmtfChain.data;
+        this.bytes = mmtfChain.bytes;
+        this.data = MmtfStructure.bytesToStructureData(bytes);
         this.chainIdentifier = mmtfChain.chainIdentifier;
         this.relevantGroups = new ArrayList<>(mmtfChain.relevantGroups);
-        this.leafIdentifiers = new ArrayList<>(mmtfChain.leafIdentifiers);
-        this.atomRanges = new ArrayList<>(mmtfChain.atomRanges);
+        this.leafIdentifiers = new HashMap<>(mmtfChain.leafIdentifiers);
+        this.atomRanges = new HashMap<>(mmtfChain.atomRanges);
     }
 
     @Override
@@ -118,7 +123,7 @@ public class MmtfChain implements Chain {
                 results.add(cachedLeaves.get(internalIndex));
             } else {
                 final Range<Integer> atomRange = atomRanges.get(internalIndex);
-                MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
+                MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
                 cachedLeaves.put(internalIndex, leaf);
                 results.add(leaf);
             }
@@ -128,7 +133,7 @@ public class MmtfChain implements Chain {
 
     @Override
     public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        int internalIndex = leafIdentifiers.indexOf(leafIdentifier);
+        final int internalIndex = getInternalIndexForLeafIdentifier(leafIdentifier);
         if (internalIndex == -1) {
             return Optional.empty();
         }
@@ -136,13 +141,57 @@ public class MmtfChain implements Chain {
             return Optional.of(cachedLeaves.get(internalIndex));
         } else {
             final Range<Integer> atomRange = atomRanges.get(internalIndex);
-            MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
+            MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(internalIndex), relevantGroups.get(internalIndex), atomRange.getLowerBound(), atomRange.getUpperBound());
             return Optional.of(leaf);
+        }
+    }
+
+    @Override
+    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        final int internalIndex = getInternalIndexForLeafIdentifier(leafIdentifier);
+        if (internalIndex == -1) {
+            return false;
+        }
+        this.leafIdentifiers.remove(internalIndex);
+        this.cachedLeaves.remove(internalIndex);
+        this.relevantGroups.remove(internalIndex);
+        this.atomRanges.remove(internalIndex);
+        return true;
+    }
+
+    @Override
+    public Optional<Atom> getAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                return optionalAtom;
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void removeAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                leafSubstructure.removeAtom(atomIdentifier);
+            }
         }
     }
 
     @Override
     public Chain getCopy() {
         return new MmtfChain(this);
+    }
+
+
+    private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
+        for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : this.leafIdentifiers.entrySet()) {
+            if (leafIdentifierEntry.getValue().equals(leafIdentifier)) {
+                return leafIdentifierEntry.getKey();
+            }
+        }
+        return -1;
     }
 }

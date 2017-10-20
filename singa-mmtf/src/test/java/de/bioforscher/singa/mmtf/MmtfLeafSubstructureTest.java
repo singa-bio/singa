@@ -1,14 +1,12 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Atom;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rcsb.mmtf.api.StructureDataInterface;
-import org.rcsb.mmtf.decoder.GenericDecoder;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
@@ -28,8 +26,7 @@ public class MmtfLeafSubstructureTest {
 
     @BeforeClass
     public static void prepareData() throws IOException {
-        StructureDataInterface data1C0A = new GenericDecoder(ReaderUtils.getDataFromUrl("1C0A"));
-        Structure structure1C0A = new MmtfStructure(data1C0A);
+        Structure structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
         leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
         leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
     }

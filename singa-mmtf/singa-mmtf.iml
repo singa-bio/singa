@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="singa-structure" />
     <orderEntry type="module" module-name="singa-chemistry" />
     <orderEntry type="module" module-name="singa-core" />
     <orderEntry type="module" module-name="singa-features" />

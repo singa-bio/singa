@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-chemistry</artifactId>
+            <artifactId>singa-structure</artifactId>
             <version>0.2.2</version>
         </dependency>
         <dependency>

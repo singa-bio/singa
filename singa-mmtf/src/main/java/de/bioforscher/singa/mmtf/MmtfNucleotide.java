@@ -1,8 +1,8 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.interfaces.Nucleotide;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Nucleotide;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
@@ -22,8 +22,8 @@ public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> imple
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfNucleotide(StructureDataInterface data, NucleotideFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    MmtfNucleotide(StructureDataInterface data, byte[] bytes, NucleotideFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 
     /**
@@ -33,6 +33,11 @@ public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> imple
      */
     private MmtfNucleotide(MmtfLeafSubstructure mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
+    }
+
+    @Override
+    public boolean isAnnotatedAsHeteroAtom() {
+        return false;
     }
 
     @Override

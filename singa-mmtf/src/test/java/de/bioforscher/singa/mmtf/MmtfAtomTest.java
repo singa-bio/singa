@@ -1,13 +1,11 @@
 package de.bioforscher.singa.mmtf;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.singa.chemistry.physical.interfaces.Atom;
-import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rcsb.mmtf.api.StructureDataInterface;
-import org.rcsb.mmtf.decoder.GenericDecoder;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
@@ -24,8 +22,7 @@ public class MmtfAtomTest {
 
     @BeforeClass
     public static void prepareData() throws IOException {
-        StructureDataInterface data1C0A = new GenericDecoder(ReaderUtils.getDataFromUrl("1C0A"));
-        Structure structure1C0A = new MmtfStructure(data1C0A);
+        Structure structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
         // no offset to regular pdb file
         atom412 = structure1C0A.getAtom(412).get();
         // one offset to regular pdb file
@@ -34,8 +31,8 @@ public class MmtfAtomTest {
 
     @Test
     public void getIdentifier() throws Exception {
-        assertEquals(412, atom412.getIdentifier());
-        assertEquals(5444, atom5444.getIdentifier());
+        assertEquals(412, (int)atom412.getIdentifier());
+        assertEquals(5444, (int)atom5444.getIdentifier());
     }
 
     @Test

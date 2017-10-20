@@ -1,13 +1,11 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rcsb.mmtf.api.StructureDataInterface;
-import org.rcsb.mmtf.decoder.GenericDecoder;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
@@ -26,8 +24,7 @@ public class MmtfChainTest {
 
     @BeforeClass
     public static void prepareData() throws IOException {
-        StructureDataInterface data2N5E = new GenericDecoder(ReaderUtils.getDataFromUrl("2N5E"));
-        Structure structure2N5E = new MmtfStructure(data2N5E);
+        Structure structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
         firstChain = structure2N5E.getFirstChain();
     }
 

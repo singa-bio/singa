@@ -1,12 +1,10 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.*;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rcsb.mmtf.api.StructureDataInterface;
-import org.rcsb.mmtf.decoder.GenericDecoder;
 import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
@@ -26,10 +24,8 @@ public class MmtfStructureTest {
 
     @BeforeClass
     public static void prepareData() throws IOException {
-        StructureDataInterface data2N5E = new GenericDecoder(ReaderUtils.getDataFromUrl("2N5E"));
-        structure2N5E = new MmtfStructure(data2N5E);
-        StructureDataInterface data1C0A = new GenericDecoder(ReaderUtils.getDataFromUrl("1C0A"));
-        structure1C0A = new MmtfStructure(data1C0A);
+        structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
+        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
     }
 
     @Test
@@ -53,7 +49,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstModel() throws Exception {
         Model model = structure2N5E.getFirstModel();
-        assertEquals(1, model.getIdentifier());
+        assertEquals(1, (int)model.getIdentifier());
     }
 
     @Test
@@ -62,7 +58,7 @@ public class MmtfStructureTest {
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
-        assertEquals(2, model.get().getIdentifier());
+        assertEquals(2, (int)model.get().getIdentifier());
     }
 
     @Test

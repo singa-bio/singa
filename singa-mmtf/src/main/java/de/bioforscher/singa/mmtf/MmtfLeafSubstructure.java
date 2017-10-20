@@ -1,9 +1,9 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Atom;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.chemistry.physical.model.StructuralFamily;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.model.StructuralFamily;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -15,6 +15,11 @@ import java.util.*;
  * @author cl
  */
 public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> implements LeafSubstructure<FamilyType> {
+
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
 
     /**
      * The original mmtf data.
@@ -47,6 +52,11 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     private int atomEndIndex;
 
     /**
+     * The set of atoms anot available
+     */
+    private Set<Integer> removedAtoms;
+
+    /**
      * The structural family of this entity
      */
     private FamilyType family;
@@ -66,8 +76,9 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLeafSubstructure(StructureDataInterface data, FamilyType family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+    MmtfLeafSubstructure(StructureDataInterface data, byte[] bytes, FamilyType family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
         this.data = data;
+        this.bytes = bytes;
         this.family = family;
         this.leafIdentifier = leafIdentifier;
         this.internalGroupIndex = internalGroupIndex;
@@ -82,11 +93,13 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      *
      * @param mmtfLeafSubstructure The {@link MmtfLeafSubstructure} to copy.
      */
-    protected MmtfLeafSubstructure(MmtfLeafSubstructure mmtfLeafSubstructure) {
-        this.data = mmtfLeafSubstructure.data;
+    protected MmtfLeafSubstructure(MmtfLeafSubstructure<?> mmtfLeafSubstructure) {
+        this.bytes = mmtfLeafSubstructure.bytes;
+        this.data = MmtfStructure.bytesToStructureData(bytes);
         this.leafIdentifier = mmtfLeafSubstructure.leafIdentifier;
         this.atomStartIndex = mmtfLeafSubstructure.atomStartIndex;
         this.atomEndIndex = mmtfLeafSubstructure.atomEndIndex;
+        this.removedAtoms = mmtfLeafSubstructure.removedAtoms;
     }
 
     @Override
@@ -104,10 +117,15 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         // terminate records are fucking the numbering up
         List<Atom> results = new ArrayList<>();
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
+            // skip removed atoms
+            if (removedAtoms.contains(internalAtomIndex)) {
+                continue;
+            }
+            // cache atoms
             if (cachedAtoms.containsKey(internalAtomIndex)) {
                 results.add(cachedAtoms.get(internalAtomIndex));
             } else {
-                MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+                MmtfAtom mmtfAtom = new MmtfAtom(data, bytes, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
                 cachedAtoms.put(internalAtomIndex, mmtfAtom);
                 results.add(mmtfAtom);
             }
@@ -116,17 +134,42 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     }
 
     @Override
-    public Optional<Atom> getAtom(int internalAtomIndex) {
-        if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex) {
+    public Optional<Atom> getAtom(Integer internalAtomIndex) {
+        if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex || removedAtoms.contains(internalAtomIndex)) {
             return Optional.empty();
         }
         if (cachedAtoms.containsKey(internalAtomIndex)) {
             return Optional.of(cachedAtoms.get(internalAtomIndex));
         } else {
-            MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+            MmtfAtom mmtfAtom = new MmtfAtom(data, bytes, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
             cachedAtoms.put(internalAtomIndex, mmtfAtom);
             return Optional.of(mmtfAtom);
         }
+    }
+
+    @Override
+    public void removeAtom(Integer atomIdentifier) {
+        this.removedAtoms.add(atomIdentifier);
+    }
+
+    @Override
+    public boolean containsAtomWithName(String atomName) {
+        for (Atom atom : getAllAtoms()) {
+            if (atom.getAtomName().equals(atomName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Optional<Atom> getAtomByName(String atomName) {
+        for (Atom atom : getAllAtoms()) {
+            if (atom.getAtomName().equals(atomName)) {
+                return Optional.of(atom);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

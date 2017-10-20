@@ -2,7 +2,6 @@ package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -138,16 +137,6 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
             return 0;
         }
         return getEdges().size() + 1;
-    }
-
-    default <G extends Graph<NodeType, EdgeType, IdentifierType>> G getCopy() {
-        try {
-            return (G) getClass().getConstructor(getClass()).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
-        }
     }
 
 }

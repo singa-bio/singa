@@ -1,8 +1,8 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.families.LigandFamily;
-import de.bioforscher.singa.chemistry.physical.interfaces.Ligand;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Ligand;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
@@ -22,8 +22,8 @@ public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Li
      * @param atomStartIndex The index of the first atom that belong to this leaf.
      * @param atomEndIndex The index of the last atom that belong to this leaf.
      */
-    MmtfLigand(StructureDataInterface data, LigandFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
-        super(data, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
+    MmtfLigand(StructureDataInterface data, byte[] bytes, LigandFamily family, LeafIdentifier leafIdentifier, int internalGroupIndex, int atomStartIndex, int atomEndIndex) {
+        super(data, bytes, family, leafIdentifier, internalGroupIndex, atomStartIndex, atomEndIndex);
     }
 
     /**
@@ -33,6 +33,11 @@ public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Li
      */
     private MmtfLigand(MmtfLeafSubstructure mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
+    }
+
+    @Override
+    public boolean isAnnotatedAsHeteroAtom() {
+        return false;
     }
 
     @Override

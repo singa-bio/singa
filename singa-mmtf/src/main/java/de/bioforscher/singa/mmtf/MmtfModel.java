@@ -1,9 +1,11 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.interfaces.Model;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Model;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -15,6 +17,12 @@ import java.util.*;
  * @author cl
  */
 public class MmtfModel implements Model {
+
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
+
 
     /**
      * The original data.
@@ -43,8 +51,9 @@ public class MmtfModel implements Model {
      * @param data The original data.
      * @param modelIndex The index of the model in the model data array.
      */
-    MmtfModel(StructureDataInterface data, int modelIndex) {
+    MmtfModel(StructureDataInterface data, byte[] bytes, int modelIndex) {
         this.data = data;
+        this.bytes = bytes;
         this.modelIndex = modelIndex;
         this.chainMap = new TreeMap<>();
         this.cachedChains = new HashMap<>();
@@ -81,13 +90,15 @@ public class MmtfModel implements Model {
      * @param mmtfModel The {@link MmtfModel} to copy.
      */
     private MmtfModel(MmtfModel mmtfModel) {
+        this.bytes = mmtfModel.bytes;
+        this.data = MmtfStructure.bytesToStructureData(bytes);
         this.data = mmtfModel.data;
         this.modelIndex = mmtfModel.modelIndex;
         this.chainMap = new HashMap<>(mmtfModel.chainMap);
     }
 
     @Override
-    public int getIdentifier() {
+    public Integer getIdentifier() {
         return modelIndex + 1;
     }
 
@@ -99,7 +110,7 @@ public class MmtfModel implements Model {
             if (cachedChains.containsKey(chainIdentifier)) {
                 chains.add(cachedChains.get(chainIdentifier));
             } else {
-                MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
+                MmtfChain mmtfChain = new MmtfChain(data, bytes, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
                 cachedChains.put(chainIdentifier, mmtfChain);
                 chains.add(mmtfChain);
             }
@@ -114,7 +125,7 @@ public class MmtfModel implements Model {
         if (cachedChains.containsKey(chainIdentifier)) {
             return cachedChains.get(chainIdentifier);
         } else {
-            MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, first.getValue(), modelIndex);
+            MmtfChain mmtfChain = new MmtfChain(data, bytes, chainIdentifier, first.getValue(), modelIndex);
             cachedChains.put(chainIdentifier, mmtfChain);
             return mmtfChain;
         }
@@ -128,7 +139,7 @@ public class MmtfModel implements Model {
         if (cachedChains.containsKey(chainIdentifier)) {
             return Optional.of(cachedChains.get(chainIdentifier));
         } else {
-            MmtfChain mmtfChain = new MmtfChain(data, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
+            MmtfChain mmtfChain = new MmtfChain(data, bytes, chainIdentifier, chainMap.get(chainIdentifier), modelIndex);
             cachedChains.put(chainIdentifier, mmtfChain);
             return Optional.of(mmtfChain);
         }
@@ -151,6 +162,37 @@ public class MmtfModel implements Model {
             return Optional.empty();
         }
         return chainOptional.get().getLeafSubstructure(leafIdentifier);
+    }
+
+    @Override
+    public Optional<Atom> getAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                return optionalAtom;
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void removeAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                leafSubstructure.removeAtom(atomIdentifier);
+            }
+        }
+    }
+
+    @Override
+    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        for (Chain chain : getAllChains()) {
+            if (chain.removeLeafSubstructure(leafIdentifier)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

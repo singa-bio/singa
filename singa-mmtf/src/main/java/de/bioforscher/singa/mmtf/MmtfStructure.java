@@ -1,12 +1,15 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.chemistry.physical.interfaces.Chain;
-import de.bioforscher.singa.chemistry.physical.interfaces.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.interfaces.Model;
-import de.bioforscher.singa.chemistry.physical.interfaces.Structure;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import org.rcsb.mmtf.api.StructureDataInterface;
+import org.rcsb.mmtf.decoder.GenericDecoder;
+import org.rcsb.mmtf.decoder.ReaderUtils;
+import org.rcsb.mmtf.serialization.MessagePackSerialization;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 
 /**
@@ -15,6 +18,11 @@ import java.util.*;
  * @author cl
  */
 public class MmtfStructure implements Structure {
+
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
 
     /**
      * The original mmtf data.
@@ -28,11 +36,21 @@ public class MmtfStructure implements Structure {
 
     /**
      * Creates a new {@link MmtfStructure}
-     * @param data The original mmtf data.
+     *
+     * @param bytes The original undecoded bytes.
      */
-    public MmtfStructure(StructureDataInterface data) {
-        this.data = data;
+    public MmtfStructure(byte[] bytes) {
+        this.bytes = bytes;
+        this.data = bytesToStructureData(bytes);
         this.cachedModels = new HashMap<>();
+    }
+
+    /**
+     * Creates a copy by re-decoding the original bytes.
+     * @param mmtfStructure The structure to be copied.
+     */
+    private MmtfStructure(MmtfStructure mmtfStructure) {
+        this(mmtfStructure.bytes);
     }
 
     @Override
@@ -52,7 +70,7 @@ public class MmtfStructure implements Structure {
             if (cachedModels.containsKey(internalModelIndex)) {
                 models.add(cachedModels.get(internalModelIndex));
             } else {
-                MmtfModel mmtfModel = new MmtfModel(data, internalModelIndex);
+                MmtfModel mmtfModel = new MmtfModel(data, bytes, internalModelIndex);
                 cachedModels.put(internalModelIndex, mmtfModel);
                 models.add(mmtfModel);
             }
@@ -65,7 +83,7 @@ public class MmtfStructure implements Structure {
         if (cachedModels.containsKey(0)) {
             return cachedModels.get(0);
         } else {
-            MmtfModel mmtfModel = new MmtfModel(data, 0);
+            MmtfModel mmtfModel = new MmtfModel(data, bytes, 0);
             cachedModels.put(0, mmtfModel);
             return mmtfModel;
         }
@@ -73,14 +91,14 @@ public class MmtfStructure implements Structure {
 
     @Override
     public Optional<Model> getModel(int modelIdentifier) {
-        if (modelIdentifier > 0 && modelIdentifier <= data.getNumModels()) {
+        int modelIndex = modelIdentifier - 1;
+        if (modelIdentifier < 0 ^ modelIdentifier > data.getNumModels()) {
             return Optional.empty();
         }
-        int modelIndex = modelIdentifier - 1;
         if (cachedModels.containsKey(modelIndex)) {
             return Optional.of(cachedModels.get(modelIndex));
         } else {
-            MmtfModel mmtfModel = new MmtfModel(data, modelIndex);
+            MmtfModel mmtfModel = new MmtfModel(data, bytes, modelIndex);
             cachedModels.put(modelIndex, mmtfModel);
             return Optional.of(mmtfModel);
         }
@@ -130,8 +148,49 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
-    public Structure getCopy() {
-        return new MmtfStructure(data);
+    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        for (Chain chain : getAllChains()) {
+            if (chain.removeLeafSubstructure(leafIdentifier)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    @Override
+    public Optional<Atom> getAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                return optionalAtom;
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void removeAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
+            if (optionalAtom.isPresent()) {
+                leafSubstructure.removeAtom(atomIdentifier);
+            }
+        }
+    }
+
+    @Override
+    public Structure getCopy() {
+        return new MmtfStructure(this);
+    }
+
+    static StructureDataInterface bytesToStructureData(byte[] bytes) {
+        MessagePackSerialization mmtfBeanSeDeMessagePackImpl = new MessagePackSerialization();
+        try {
+            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(ReaderUtils.deflateGzip(bytes))));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 
 }

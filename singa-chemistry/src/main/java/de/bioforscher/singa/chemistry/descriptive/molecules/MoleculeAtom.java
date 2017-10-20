@@ -26,6 +26,11 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
         this.element = element;
     }
 
+    private MoleculeAtom(MoleculeAtom moleculeAtom) {
+        super(moleculeAtom);
+        this.element = moleculeAtom.element;
+    }
+
     public Element getElement() {
         return this.element;
     }
@@ -37,5 +42,10 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
     @Override
     public String toString() {
         return this.element.toString() + ":" + this.getIdentifier();
+    }
+
+    @Override
+    public MoleculeAtom getCopy() {
+        return new MoleculeAtom(this);
     }
 }

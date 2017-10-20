@@ -2,8 +2,8 @@ package de.bioforscher.singa.mmtf;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
-import de.bioforscher.singa.chemistry.physical.interfaces.Atom;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 /**
@@ -13,6 +13,11 @@ import org.rcsb.mmtf.api.StructureDataInterface;
  * @author cl
  */
 public class MmtfAtom implements Atom {
+
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
 
     /**
      * The original mmtf data.
@@ -42,15 +47,16 @@ public class MmtfAtom implements Atom {
      * @param groupPositionIndex Index of this atom in the associated group.
      * @param internalAtomIndex Index in atom data arrays.
      */
-    MmtfAtom(StructureDataInterface data, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
-        this.data = data;
+    MmtfAtom(StructureDataInterface data, byte[] bytes, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
+        this.bytes = bytes;
+        this.data = MmtfStructure.bytesToStructureData(bytes);
         this.internalGroupIndex = internalGroupIndex;
         this.internalAtomIndex = internalAtomIndex;
         this.groupPositionIndex = groupPositionIndex;
     }
 
     @Override
-    public int getIdentifier() {
+    public Integer getIdentifier() {
         return internalAtomIndex + 1;
     }
 
@@ -67,6 +73,13 @@ public class MmtfAtom implements Atom {
     }
 
     @Override
+    public void setPosition(Vector3D position) {
+        data.getxCoords()[internalAtomIndex] = (float) position.getX();
+        data.getyCoords()[internalAtomIndex] = (float) position.getY();
+        data.getzCoords()[internalAtomIndex] = (float) position.getZ();
+    }
+
+    @Override
     public Element getElement() {
         return ElementProvider.getElementBySymbol(data.getGroupElementNames(data.getGroupTypeIndices()[internalGroupIndex])[groupPositionIndex])
                 .orElse(ElementProvider.UNKOWN);
@@ -76,4 +89,5 @@ public class MmtfAtom implements Atom {
     public String toString() {
         return flatToString();
     }
+
 }

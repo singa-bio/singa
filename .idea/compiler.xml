@@ -14,6 +14,7 @@
         <module name="singa-mathematics" />
         <module name="singa-mmtf" />
         <module name="singa-simulation" />
+        <module name="singa-structure" />
         <module name="singa-units" />
       </profile>
     </annotationProcessing>
@@ -33,6 +34,7 @@
       <module name="singa-mathematics" target="1.8" />
       <module name="singa-mmtf" target="1.9" />
       <module name="singa-simulation" target="1.8" />
+      <module name="singa-structure" target="1.9" />
       <module name="singa-units" target="1.8" />
       <module name="units" target="1.8" />
     </bytecodeTargetLevel>
