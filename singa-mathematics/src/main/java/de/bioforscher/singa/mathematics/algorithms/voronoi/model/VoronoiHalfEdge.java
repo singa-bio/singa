@@ -106,6 +106,4 @@ public class VoronoiHalfEdge {
         return this.angle;
     }
 
-
-
 }
