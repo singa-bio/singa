@@ -7,6 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.interfaces.AtomContainer;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,21 +17,21 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
-public class SubstructureSuperimposition implements Superimposition<LeafSubstructure> {
+public class SubstructureSuperimposition implements Superimposition<LeafSubstructure<?>> {
 
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<LeafSubstructure> reference;
-    private final List<LeafSubstructure> candidate;
-    private final List<LeafSubstructure> mappedCandidate;
-    private final List<LeafSubstructure> mappedFullCandidate;
+    private final List<LeafSubstructure<?>> reference;
+    private final List<LeafSubstructure<?>> candidate;
+    private final List<LeafSubstructure<?>> mappedCandidate;
+    private final List<LeafSubstructure<?>> mappedFullCandidate;
 
     public SubstructureSuperimposition(double rmsd, Vector translation, Matrix rotation,
-                                       List<LeafSubstructure> reference,
-                                       List<LeafSubstructure> candidate,
-                                       List<LeafSubstructure> mappedCandidate,
-                                       List<LeafSubstructure> mappedFullCandidate) {
+                                       List<LeafSubstructure<?>> reference,
+                                       List<LeafSubstructure<?>> candidate,
+                                       List<LeafSubstructure<?>> mappedCandidate,
+                                       List<LeafSubstructure<?>> mappedFullCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
@@ -41,12 +42,12 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
-    public List<LeafSubstructure> getReference() {
+    public List<LeafSubstructure<?>> getReference() {
         return this.reference;
     }
 
     @Override
-    public List<LeafSubstructure> getCandidate() {
+    public List<LeafSubstructure<?>> getCandidate() {
         return this.candidate;
     }
 
@@ -90,20 +91,22 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     }
 
     @Override
-    public List<LeafSubstructure> getMappedCandidate() {
+    public List<LeafSubstructure<?>> getMappedCandidate() {
         return this.mappedCandidate;
     }
 
     @Override
-    public List<LeafSubstructure> getMappedFullCandidate() {
+    public List<LeafSubstructure<?>> getMappedFullCandidate() {
         return this.mappedFullCandidate;
     }
 
     @Override
-    public List<LeafSubstructure> applyTo(List<LeafSubstructure> candidate) {
-        List<LeafSubstructure> copyOfCandidate = candidate.stream()
-                .map(LeafSubstructure::getCopy)
-                .collect(Collectors.toList());
+    public List<LeafSubstructure<?>> applyTo(List<LeafSubstructure<?>> candidate) {
+        List<LeafSubstructure<?>> copyOfCandidate = new ArrayList<>();
+        for (LeafSubstructure<?> leafSubstructure : candidate) {
+            copyOfCandidate.add(leafSubstructure.getCopy());
+        }
+
         // apply superimposition to every atom of every substructure of the candidate
         copyOfCandidate.stream()
                 .map(AtomContainer::getAllAtoms)

@@ -1,7 +1,12 @@
 package chemistry.physical.leaves;
 
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
+
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.oak.AminoAcids;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * @author fk

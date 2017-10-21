@@ -5,7 +5,6 @@ import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
@@ -17,8 +16,7 @@ import java.util.*;
 
 /**
  * Chemical Entity is an abstract class that provides the common features of all chemical substances on a descriptive
- * level. It does not contain the exact chemical structure, to handle chemical structures have a look at
- * {@link Structure Structure}. Each chemical entity should be identifiable by an
+ * level. Each chemical entity should be identifiable by an
  * {@link Identifier}. Chemical entities can be annotated, posses a {@link MolarMass} and a name.
  *
  * @param <IdentifierType> The Type of the {@link Identifier}, that identifies this entity.

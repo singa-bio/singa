@@ -1,11 +1,15 @@
 package chemistry.physical.atoms.representations;
 
-import de.bioforscher.singa.chemistry.physical.atoms.AtomName;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * @author fk
@@ -16,7 +20,7 @@ public class RepresentationSchemeTest {
     public void shouldRepresentAsAlphaCarbon() throws IOException {
         AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
         RepresentationScheme alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
-        assertArrayEquals(alanine.getAlphaCarbon().getPosition().getElements(),
+        assertArrayEquals(alanine.getAtomByName("CA").get().getPosition().getElements(),
                 alphaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
                 1E-6);
 
@@ -26,7 +30,7 @@ public class RepresentationSchemeTest {
     public void shouldRepresentBetaCarbon() throws IOException {
         AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
         RepresentationScheme betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
-        assertArrayEquals(alanine.getBetaCarbon().getPosition().getElements(),
+        assertArrayEquals(alanine.getAtomByName("CB").get().getPosition().getElements(),
                 betaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
                 1E-6);
 
@@ -45,7 +49,7 @@ public class RepresentationSchemeTest {
     public void shouldRepresentLastHeavySidechain() throws IOException {
         AminoAcid tyrosine = AminoAcidFamily.TYROSINE.getPrototype();
         RepresentationScheme lastHavySidechainRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN);
-        assertArrayEquals(tyrosine.getAtomByName(AtomName.OH).getPosition().getElements(),
+        assertArrayEquals(tyrosine.getAtomByName("OH").get().getPosition().getElements(),
                 lastHavySidechainRepresentation.determineRepresentingAtom(tyrosine).getPosition().getElements(),
                 1E-6);
     }

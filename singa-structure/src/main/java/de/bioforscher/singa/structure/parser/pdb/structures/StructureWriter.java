@@ -49,7 +49,7 @@ public class StructureWriter {
      * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
-    public static void writeLeafSubstructures(List<LeafSubstructure> leafSubstructures, Path outputPath) throws IOException {
+    public static void writeLeafSubstructures(List<LeafSubstructure<?>> leafSubstructures, Path outputPath) throws IOException {
         logger.info("Writing {} leaf substructures to {}.", leafSubstructures.size(), outputPath);
         Files.createDirectories(outputPath.getParent());
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(leafSubstructures).getBytes());

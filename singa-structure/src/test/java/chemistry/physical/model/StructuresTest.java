@@ -1,6 +1,8 @@
 package chemistry.physical.model;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.Structures;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

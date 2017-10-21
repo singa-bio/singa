@@ -2,13 +2,13 @@ package de.bioforscher.singa.structure.algorithms.superimposition.consensus;
 
 
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import de.bioforscher.singa.structure.model.graph.branches.StructuralMotif;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-import static de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter.AtomFilter;
+import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 
 /**
  * A builder that guides through the creation of a {@link ConsensusAlignment}.

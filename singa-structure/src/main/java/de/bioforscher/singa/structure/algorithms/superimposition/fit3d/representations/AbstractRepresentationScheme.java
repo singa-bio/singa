@@ -3,10 +3,10 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.represen
 
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
-import de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.oak.OakAtom;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

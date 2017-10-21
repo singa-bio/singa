@@ -1,12 +1,13 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
+import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author cl
@@ -107,8 +108,8 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> allLeafSubstructures = new ArrayList<>();
+    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
+        List<LeafSubstructure<?>> allLeafSubstructures = new ArrayList<>();
         for (OakModel model : models.values()) {
             allLeafSubstructures.addAll(model.getAllLeafSubstructures());
         }
@@ -116,7 +117,7 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         final Optional<Chain> chain = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
         if (chain.isPresent()) {
             return chain.get().getLeafSubstructure(leafIdentifier);
@@ -146,6 +147,37 @@ public class OakStructure implements Structure {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<Map.Entry<UniqueAtomIdentifer, Atom>> getUniqueAtomEntry(int atomSerial) {
+        for (Model model : getAllModels()) {
+            for (Chain chain : model.getAllChains()) {
+                for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        if (atom.getIdentifier().equals(atomSerial)) {
+                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(this.pdbIdentifier, model.getIdentifier(),
+                                    chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
+                                    atomSerial);
+                            return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public void addAtom(String chainIdentifier, String threeLetterCode, Vector3D position) {
+        Optional<Chain> optionalChain = getFirstModel().getChain(chainIdentifier);
+        if (optionalChain.isPresent()) {
+            OakChain chain = (OakChain) optionalChain.get();
+            OakLigand leafSubstructure = new OakLigand(chain.getNextLeafIdentifier(), new LigandFamily(threeLetterCode));
+            this.lastAddedAtomIdentifier++;
+            leafSubstructure.addAtom(new OakAtom(this.lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
+            chain.addLeafSubstructure(leafSubstructure);
+        } else {
+            throw new IllegalStateException("Unable to add atom to chain "+chainIdentifier+", chain could not be found.");
+        }
     }
 
     @Override

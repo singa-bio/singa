@@ -1,17 +1,21 @@
 package chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotifs;
-import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
+import de.bioforscher.singa.structure.algorithms.superimposition.scoring.SubstitutionMatrix;
+import de.bioforscher.singa.structure.model.families.MatcherFamily;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.model.oak.StructuralMotifs;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author fk
@@ -45,6 +49,7 @@ public class Fit3DSiteAlignmentTest {
                 .exhaustive()
                 .atomFilter(StructuralEntityFilter.AtomFilter.isBackbone())
                 .run();
+
         assertEquals(0.29745276335597537, fit3d.getMatches().firstKey(), 1E-6);
         assertEquals(7.459982645433789, fit3d.getXieScore().getScore(), 1E-6);
         assertEquals(0.05689220664553862, fit3d.getXieScore().getNormalizedScore(), 1E-6);

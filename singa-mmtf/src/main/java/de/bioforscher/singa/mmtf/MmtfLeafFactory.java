@@ -1,9 +1,9 @@
 package de.bioforscher.singa.mmtf;
 
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
-import de.bioforscher.singa.structure.model.graph.families.NucleotideFamily;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import org.rcsb.mmtf.api.StructureDataInterface;
 

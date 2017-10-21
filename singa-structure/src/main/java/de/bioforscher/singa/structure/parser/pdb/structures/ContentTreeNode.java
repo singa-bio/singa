@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.pdb.structures;
 
-import de.bioforscher.singa.structure.model.graph.model.UniqueAtomIdentifer;
+import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.oak.OakAtom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

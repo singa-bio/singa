@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.parser.plip;
 
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;

@@ -1,11 +1,12 @@
 package chemistry.physical.branches;
 
-
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.model.families.MatcherFamily;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.model.oak.StructuralMotifs;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,7 +41,7 @@ public class StructuralMotifsTest {
         assertTrue(MatcherFamily.GUTTERIDGE.stream()
                 .map(MatcherFamily::getMembers)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toSet()).containsAll(this.structuralMotif.getAminoAcids()
+                .collect(Collectors.toSet()).containsAll(this.structuralMotif.getAllAminoAcids()
                         .stream()
                         .map(AminoAcid::getExchangeableFamilies)
                         .flatMap(Collection::stream)

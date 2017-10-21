@@ -1,11 +1,9 @@
 package chemistry.parser.pdb.structures;
 
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.branches.Chain;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leaves.Nucleotide;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
+import de.bioforscher.singa.structure.model.interfaces.*;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureSelector;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +19,7 @@ public class StructureSelectorTest {
         Structure structure = StructureParser.online()
                 .pdbIdentifier("4CHA")
                 .parse();
-        StructuralModel structuralModel = StructureSelector.selectFrom(structure)
+        Model structuralModel = StructureSelector.selectFrom(structure)
                 .model(0)
                 .selectModel();
         assertNotNull(structuralModel);

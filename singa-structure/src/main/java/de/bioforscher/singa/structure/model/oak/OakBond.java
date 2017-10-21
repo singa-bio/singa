@@ -1,7 +1,5 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.structure.model.graph.interactions.BondType;
-
 /**
  * @author cl
  */

@@ -1,9 +1,10 @@
 package chemistry.physical.branches;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,21 +31,21 @@ public class StructuralMotifTest {
 
     @Test
     public void shouldRetainSubstructureOrdering() {
-        LeafSubstructure<?, ?> aminoAcid1 = this.structuralMotif.getLeafSubstructures().get(this.structuralMotif.getLeafSubstructures().size() - 1);
-        LeafSubstructure<?, ?> aminoAcid2 = this.structuralMotif.getLeafSubstructures().get(0);
-        List<LeafSubstructure<?, ?>> aminoAcids = new ArrayList<>();
+        LeafSubstructure<?> aminoAcid1 = this.structuralMotif.getAllLeafSubstructures().get(this.structuralMotif.getAllLeafSubstructures().size() - 1);
+        LeafSubstructure<?> aminoAcid2 = this.structuralMotif.getAllLeafSubstructures().get(0);
+        List<LeafSubstructure<?>> aminoAcids = new ArrayList<>();
         aminoAcids.add(aminoAcid1);
         aminoAcids.add(aminoAcid2);
         StructuralMotif motif = StructuralMotif.fromLeafSubstructures(aminoAcids);
-        assertTrue(motif.getLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
-                > motif.getLeafSubstructures().get(0).getIdentifier().getSerial());
-        assertTrue(motif.getOrderedLeafSubstructures().get(motif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
-                < motif.getOrderedLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(motif.getAllLeafSubstructures().get(motif.getAllLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                > motif.getAllLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(motif.getAllLeafSubstructures().get(motif.getAllLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                < motif.getAllLeafSubstructures().get(0).getIdentifier().getSerial());
         StructuralMotif copiedMotif = motif.getCopy();
-        assertTrue(copiedMotif.getLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
-                > copiedMotif.getLeafSubstructures().get(0).getIdentifier().getSerial());
-        assertTrue(copiedMotif.getOrderedLeafSubstructures().get(copiedMotif.getLeafSubstructures().size() - 1).getIdentifier().getSerial()
-                < copiedMotif.getOrderedLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(copiedMotif.getAllLeafSubstructures().get(copiedMotif.getAllLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                > copiedMotif.getAllLeafSubstructures().get(0).getIdentifier().getSerial());
+        assertTrue(copiedMotif.getAllLeafSubstructures().get(copiedMotif.getAllLeafSubstructures().size() - 1).getIdentifier().getSerial()
+                < copiedMotif.getAllLeafSubstructures().get(0).getIdentifier().getSerial());
     }
 
 

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.structure.parser.pdb.structures;
 
 
-import de.bioforscher.singa.structure.model.graph.branches.StructuralMotif;
 import de.bioforscher.singa.structure.model.interfaces.*;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 
 import java.util.NoSuchElementException;
 
@@ -39,7 +39,7 @@ public class StructureSelector {
         return new Selector(nucleotide);
     }
 
-    public static AtomStep selectFrom(AtomContainer atomContainer) {
+    public static AtomStep selectFrom(Ligand atomContainer) {
         return new Selector(atomContainer);
     }
 
@@ -73,7 +73,7 @@ public class StructureSelector {
     }
 
     public interface AtomContainerAtomStep extends AtomStep {
-        AtomContainer selectAtomContainer();
+        Ligand selectAtomContainer();
     }
 
     public interface AtomStep {
@@ -92,7 +92,7 @@ public class StructureSelector {
         private StructuralMotif structuralMotif;
         private AminoAcid aminoAcid;
         private Nucleotide nucleotide;
-        private AtomContainer atomContainer;
+        private Ligand atomContainer;
         private Atom atom;
 
         public Selector(Structure structure) {
@@ -115,7 +115,7 @@ public class StructureSelector {
             this.nucleotide = nucleotide;
         }
 
-        public Selector(AtomContainer atomContainer) {
+        public Selector(Ligand atomContainer) {
             this.atomContainer = atomContainer;
         }
 
@@ -187,8 +187,8 @@ public class StructureSelector {
         @Override
         public AtomContainerAtomStep atomContainer(int identifier) {
             this.atomContainer = this.chain.getAllLeafSubstructures().stream()
-                    .filter(AtomContainer.class::isInstance)
-                    .map(AtomContainer.class::cast)
+                    .filter(Ligand.class::isInstance)
+                    .map(Ligand.class::cast)
                     .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no atom container with ID " + identifier));
@@ -196,7 +196,7 @@ public class StructureSelector {
         }
 
         @Override
-        public AtomContainer selectAtomContainer() {
+        public Ligand selectAtomContainer() {
             return this.atomContainer;
         }
 

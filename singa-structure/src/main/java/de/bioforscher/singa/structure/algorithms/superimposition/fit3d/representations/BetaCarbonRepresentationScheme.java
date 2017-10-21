@@ -4,7 +4,7 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.represen
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter.AtomFilter;
+import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 
 /**
  * An implementation to represent a given {@link LeafSubstructure} by its beta carbon. This is only available for

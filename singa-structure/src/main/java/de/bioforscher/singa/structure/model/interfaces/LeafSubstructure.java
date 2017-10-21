@@ -2,9 +2,9 @@ package de.bioforscher.singa.structure.model.interfaces;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
-import de.bioforscher.singa.structure.model.graph.model.Exchangeable;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
-import de.bioforscher.singa.structure.model.graph.model.StructuralFamily;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.oak.Exchangeable;
 import de.bioforscher.singa.structure.parser.pdb.structures.tokens.AtomToken;
 
 import java.util.List;

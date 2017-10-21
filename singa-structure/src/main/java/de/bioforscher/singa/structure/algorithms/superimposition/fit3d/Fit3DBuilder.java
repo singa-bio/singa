@@ -4,11 +4,11 @@ import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSup
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
-import de.bioforscher.singa.structure.model.graph.branches.StructuralMotif;
-import de.bioforscher.singa.structure.model.graph.families.substitution.matrices.SubstitutionMatrix;
-import de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter;
+import de.bioforscher.singa.structure.algorithms.superimposition.scoring.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 
 import java.util.Objects;
 import java.util.function.Predicate;

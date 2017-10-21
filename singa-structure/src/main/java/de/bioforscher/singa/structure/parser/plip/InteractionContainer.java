@@ -1,13 +1,14 @@
 package de.bioforscher.singa.structure.parser.plip;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
-import de.bioforscher.singa.structure.model.graph.model.UniqueAtomIdentifer;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.OakChain;
 import de.bioforscher.singa.structure.model.oak.OakStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,7 +245,7 @@ public class InteractionContainer {
 
     }
 
-    public void validateWithStructure(Structure structure) {
+    public void validateWithStructure(OakStructure structure) {
 
         ListIterator<Interaction> interactionListIterator = this.interactions.listIterator();
 
@@ -254,7 +255,7 @@ public class InteractionContainer {
             boolean targetIsLigand = false;
             // handle insertion codes for source
             LeafIdentifier source = interaction.getSource();
-            Optional<LeafSubstructure> optionalSourceLeaf = structure.getLeafSubstructure(source);
+            Optional<LeafSubstructure<?>> optionalSourceLeaf = structure.getLeafSubstructure(source);
             if (!optionalSourceLeaf.isPresent()) {
                 // source could not be retrieved
                 logger.debug("Bad leaf reference for source {} in {}.", source, interaction);
@@ -268,7 +269,7 @@ public class InteractionContainer {
 
             // handle insertion codes for target
             LeafIdentifier target = interaction.getTarget();
-            Optional<LeafSubstructure> optionalTargetLeaf = structure.getLeafSubstructure(target);
+            Optional<LeafSubstructure<?>> optionalTargetLeaf = structure.getLeafSubstructure(target);
             if (!optionalTargetLeaf.isPresent()) {
                 // target could not be retrieved
                 logger.debug("Bad leaf reference for target {} in {}.", target, interaction);
@@ -290,10 +291,10 @@ public class InteractionContainer {
 
     }
 
-    private void fixBrokenSourceIdentifier(Interaction interaction, Structure structure) {
+    private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
         int firstSourceAtom = interaction.getFirstSourceAtom();
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getAtom(firstSourceAtom);
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> sourceEntry = structure.getUniqueAtomEntry(firstSourceAtom);
         if (sourceEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifer atomIdentifer = sourceEntry.get().getKey();
@@ -306,9 +307,9 @@ public class InteractionContainer {
         }
     }
 
-    private void fixBrokenTargetIdentifier(Interaction interaction, Structure structure) {
+    private void fixBrokenTargetIdentifier(Interaction interaction, OakStructure structure) {
         // try to retrieve first referenced atom
-        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> targetEntry = structure.getAtom(interaction.getFirstTargetAtom());
+        Optional<Map.Entry<UniqueAtomIdentifer, Atom>> targetEntry = structure.getUniqueAtomEntry(interaction.getFirstTargetAtom());
         if (targetEntry.isPresent()) {
             // use the atom identifier to remap leaf
             UniqueAtomIdentifer atomIdentifer = targetEntry.get().getKey();
@@ -323,9 +324,9 @@ public class InteractionContainer {
 
     private boolean determineLigandInteraction(LeafSubstructure leafSubstructure, Structure structure) {
         if (leafSubstructure.getFamily() instanceof LigandFamily) {
-            Optional<Chain> optionalChain = structure.getChain(leafSubstructure.getIdentifier().getChainIdentifier());
+            Optional<Chain> optionalChain = structure.getFirstModel().getChain(leafSubstructure.getIdentifier().getChainIdentifier());
             if (optionalChain.isPresent()) {
-                Chain chain = optionalChain.get();
+                OakChain chain = (OakChain) optionalChain.get();
                 if (!chain.getConsecutivePart().contains(leafSubstructure)) {
                     logger.debug("{} is an interaction to a ligand", leafSubstructure);
                     return true;

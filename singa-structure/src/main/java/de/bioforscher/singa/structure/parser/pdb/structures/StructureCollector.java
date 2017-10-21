@@ -1,12 +1,11 @@
 package de.bioforscher.singa.structure.parser.pdb.structures;
 
-import de.bioforscher.singa.core.identifier.PDBIdentifier;
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
-import de.bioforscher.singa.structure.model.graph.families.LeafFactory;
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
-import de.bioforscher.singa.structure.model.graph.families.NucleotideFamily;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
-import de.bioforscher.singa.structure.model.graph.model.UniqueAtomIdentifer;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.PDBIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.*;
@@ -427,7 +426,7 @@ public class StructureCollector {
      * @return The amino acid.
      */
     private OakAminoAcid createAminoAcid(LeafIdentifier identifier, AminoAcidFamily family, Map<String, OakAtom> atoms) {
-        return LeafFactory.createAminoAcidFromAtoms(identifier, family, atoms, this.reducer.options);
+        return LeafSubstructureFactory.createAminoAcidFromAtoms(identifier, family, atoms, this.reducer.options);
     }
 
     /**
@@ -440,7 +439,7 @@ public class StructureCollector {
      */
 
     private OakNucleotide createNucleotide(LeafIdentifier identifier, NucleotideFamily family, Map<String, OakAtom> atoms) {
-        return LeafFactory.createNucleotideFromAtoms(identifier, family, atoms, this.reducer.options);
+        return LeafSubstructureFactory.createNucleotideFromAtoms(identifier, family, atoms, this.reducer.options);
     }
 
     /**

@@ -1,15 +1,20 @@
 package chemistry.algorithms.superimposition.consensus;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.algorithms.superimposition.consensus.ConsensusAlignment;
+import de.bioforscher.singa.structure.algorithms.superimposition.consensus.ConsensusBuilder;
+import de.bioforscher.singa.structure.algorithms.superimposition.consensus.ConsensusException;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.OakAminoAcid;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author fk
@@ -47,7 +54,7 @@ public class ConsensusAlignmentTest {
 
     @Test(expected = ConsensusException.class)
     public void shouldFailWithInputOfDifferentSize() {
-        this.input.get(0).addSubstructure(new AminoAcid(0, AminoAcidFamily.ALANINE));
+        this.input.get(0).addSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
         ConsensusBuilder.create()
                 .inputStructuralMotifs(this.input)
                 .run();
@@ -60,8 +67,8 @@ public class ConsensusAlignmentTest {
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .clusterCutoff(0.6)
                 .run();
-        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
-                .getStructuralMotif().getLeafSubstructures();
+        List<LeafSubstructure<?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getAllLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }
@@ -75,8 +82,8 @@ public class ConsensusAlignmentTest {
                 .alignWithinClusters(true)
                 .idealSuperimposition(true)
                 .run();
-        List<LeafSubstructure<?, ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
-                .getStructuralMotif().getLeafSubstructures();
+        List<LeafSubstructure< ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+                .getStructuralMotif().getAllLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }

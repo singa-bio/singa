@@ -1,13 +1,16 @@
 package chemistry.algorithms.superimposition;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
-import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,7 +19,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter.*;
+import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * A test class for the {@link SubstructureSuperimposer} implementation.
@@ -25,8 +31,8 @@ import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilt
  */
 public class SubstructureSuperimposerTest {
 
-    private static BranchSubstructure<?, ?> candidate;
-    private static BranchSubstructure<?, ?> reference;
+    private static Chain candidate;
+    private static Chain reference;
 
     @BeforeClass
     public static void setup() throws IOException {
@@ -60,36 +66,36 @@ public class SubstructureSuperimposerTest {
     public void shouldCalculateCaSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, isAlphaCarbon());
-        List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(candidate.getLeafSubstructures());
+        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+                superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 3);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
     }
 
     @Test
     public void shouldCalculateBackboneSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, isBackbone());
-        List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(candidate.getLeafSubstructures());
+        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+                superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 12);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
     }
 
     @Test
     public void shouldCalculateSidechainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, isSideChain());
-        List<LeafSubstructure<?, ?>> reconstructedAndMappedCandidate =
-                superimposition.applyTo(candidate.getLeafSubstructures());
+        List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
+                superimposition.applyTo(candidate.getAllLeafSubstructures());
         assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum());
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
     }
 
     @Test
@@ -115,11 +121,11 @@ public class SubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate);
         assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
-        List<LeafSubstructure<?, ?>> mappedCandidate = superimposition.applyTo(candidate.getLeafSubstructures());
+        List<LeafSubstructure<?>> mappedCandidate = superimposition.applyTo(candidate.getAllLeafSubstructures());
 
-        List<AminoAcid> aminoAcids = candidate.getAminoAcids();
+        List<AminoAcid> aminoAcids = candidate.getAllAminoAcids();
         for (int i = 0; i < aminoAcids.size(); i++) {
-            assertArrayEquals(candidate.getAminoAcids().get(i).getPosition().getElements(), mappedCandidate.get(i).getPosition().getElements(), 1E-3);
+            assertArrayEquals(candidate.getAllAminoAcids().get(i).getPosition().getElements(), mappedCandidate.get(i).getPosition().getElements(), 1E-3);
         }
     }
 

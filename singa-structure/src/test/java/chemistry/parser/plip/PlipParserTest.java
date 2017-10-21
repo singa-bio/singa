@@ -1,5 +1,10 @@
 package chemistry.parser.plip;
 
+import de.bioforscher.singa.structure.model.oak.OakStructure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.plip.Interaction;
+import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
+import de.bioforscher.singa.structure.parser.plip.PlipParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +27,7 @@ public class PlipParserTest {
     public void shouldParseInterChainInteractions() {
         InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
-        Structure structure = StructureParser.online()
+        OakStructure structure = (OakStructure) StructureParser.online()
                 .pdbIdentifier("1c0a")
                 .chainIdentifier("A")
                 .parse();
@@ -43,7 +48,7 @@ public class PlipParserTest {
     public void shouldParseInteractionsWithInsertionCodes() {
         InputStream inputStream = getResourceAsStream("plip/1k1i.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1k1i", inputStream);
-        Structure structure = StructureParser.online()
+        OakStructure structure = (OakStructure) StructureParser.online()
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();

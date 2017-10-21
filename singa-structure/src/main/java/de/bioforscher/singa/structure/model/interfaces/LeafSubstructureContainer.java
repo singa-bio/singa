@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.interfaces;
 
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      *
      * @return All {@link LeafSubstructure}s.
      */
-    List<LeafSubstructure> getAllLeafSubstructures();
+    List<LeafSubstructure<?>> getAllLeafSubstructures();
 
     /**
      * Returns an {@link Optional} of the {@link LeafSubstructure} with the given identifier. If no LeafSubstructure
@@ -28,7 +28,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @param leafIdentifier The identifier of the leaf.
      * @return An {@link Optional} encapsulating the {@link LeafSubstructure}.
      */
-    Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier);
+    Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier);
 
     /**
      * Removes a {@link LeafSubstructure} from this container.
@@ -63,7 +63,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link AminoAcid}.
      */
     default Optional<AminoAcid> getAminoAcid(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }
@@ -97,7 +97,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link Nucleotide}.
      */
     default Optional<Nucleotide> getNucleotide(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }
@@ -131,7 +131,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * @return An {@link Optional} encapsulating the {@link Ligand}.
      */
     default Optional<Ligand> getLigand(LeafIdentifier leafIdentifier) {
-        Optional<LeafSubstructure> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = getLeafSubstructure(leafIdentifier);
         if (!leafSubstructureOptional.isPresent()) {
             return Optional.empty();
         }

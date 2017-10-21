@@ -1,12 +1,11 @@
 package chemistry.physical.model;
 
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.atoms.RegularAtom;
-import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.branches.Chain;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.oak.OakAminoAcid;
+import de.bioforscher.singa.structure.model.oak.OakAtom;
+import de.bioforscher.singa.structure.model.oak.OakChain;
 import org.junit.Test;
 
 import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.CARBON;
@@ -25,21 +24,21 @@ public class BranchSubstructureTest {
         // crate substructure with other substructures and atoms
         // first implement other copy methods
 
-        Atom a1 = new RegularAtom(0, NITROGEN, "N", new Vector3D(0.0,1.0,2.0));
-        Atom a2 = new RegularAtom(1, CARBON, "CA", new Vector3D(0.0,1.0,2.0));
-        Atom a3 = new RegularAtom(2, CARBON, "C", new Vector3D(0.0,1.0,2.0));
+        OakAtom a1 = new OakAtom(0, NITROGEN, "N", new Vector3D(0.0,1.0,2.0));
+        OakAtom a2 = new OakAtom(1, CARBON, "CA", new Vector3D(0.0,1.0,2.0));
+        OakAtom a3 = new OakAtom(2, CARBON, "C", new Vector3D(0.0,1.0,2.0));
 
-        AminoAcid r1 = new AminoAcid(0, AminoAcidFamily.ALANINE);
-        r1.addNode(a1);
-        r1.addNode(a2);
-        r1.addNode(a3);
-        r1.addEdgeBetween(a1,a2);
-        r1.addEdgeBetween(a2,a3);
+        OakAminoAcid r1 = new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE);
+        r1.addAtom(a1);
+        r1.addAtom(a2);
+        r1.addAtom(a3);
+        r1.addBondBetween(a1,a2);
+        r1.addBondBetween(a2,a3);
 
-        BranchSubstructure chain = new Chain("A");
-        chain.addSubstructure(r1);
+        OakChain chain = new OakChain("A");
+        chain.addLeafSubstructure(r1);
 
-        Chain chainCopy = (Chain)chain.getCopy();
+        OakChain chainCopy = chain.getCopy();
         // by contract
         // class is the same
         assertTrue(chain.getClass() == chainCopy.getClass());

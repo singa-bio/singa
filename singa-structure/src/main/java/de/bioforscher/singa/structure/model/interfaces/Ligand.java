@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.interfaces;
 
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
 
 /**
  * A specific type of {@link LeafSubstructure}, representing ligands.

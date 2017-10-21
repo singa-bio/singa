@@ -6,14 +6,14 @@ import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.structure.algorithms.superimposition.XieScore;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import de.bioforscher.singa.structure.model.graph.branches.StructuralMotif;
-import de.bioforscher.singa.structure.model.graph.model.StructuralFamily;
+import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
-import de.bioforscher.singa.structure.model.interfaces.Structures;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.model.oak.Structures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +37,9 @@ public class Fit3DAlignment implements Fit3D {
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
     private double squaredQueryExtent;
-    private LabeledSymmetricMatrix<LeafSubstructure> squaredDistanceMatrix;
-    private List<List<LeafSubstructure>> environments;
-    private HashMap<List<LeafSubstructure>, Set<Set<LeafSubstructure>>> candidates;
+    private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
+    private List<List<LeafSubstructure<?>>> environments;
+    private HashMap<List<LeafSubstructure<?>>, Set<Set<LeafSubstructure<?>>>> candidates;
     private double rmsdCutoff;
     private TreeMap<Double, SubstructureSuperimposition> matches;
     private Predicate<Atom> atomFilter;
@@ -122,13 +122,13 @@ public class Fit3DAlignment implements Fit3D {
      *
      * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
      */
-    private void computeAlignments(Set<LeafSubstructure> leafSubstructures) {
+    private void computeAlignments(Set<LeafSubstructure<?>> leafSubstructures) {
         ValidAlignmentGenerator validAlignmentGenerator =
                 new ValidAlignmentGenerator(this.queryMotif.getAllLeafSubstructures(), new ArrayList<>(leafSubstructures));
-        List<List<Pair<LeafSubstructure>>> validAlignments = validAlignmentGenerator.getValidAlignments();
-        for (List<Pair<LeafSubstructure>> validAlignment : validAlignments) {
+        List<List<Pair<LeafSubstructure<?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
+        for (List<Pair<LeafSubstructure<?>>> validAlignment : validAlignments) {
             // create candidate for alignment
-            List<LeafSubstructure> alignmentCandidate = validAlignment.stream()
+            List<LeafSubstructure<?>> alignmentCandidate = validAlignment.stream()
                     .map(Pair::getSecond).collect(Collectors.toList());
             // apply representation scheme if defined
             SubstructureSuperimposition superimposition;
@@ -151,15 +151,15 @@ public class Fit3DAlignment implements Fit3D {
      * Generates all candidates based on the pre-computed environments.
      */
     private void generateCandidates() {
-        for (List<LeafSubstructure> environment : this.environments) {
-            Set<Set<LeafSubstructure>> currentCandidates = new ValidCandidateGenerator(
+        for (List<LeafSubstructure<?>> environment : this.environments) {
+            Set<Set<LeafSubstructure<?>>> currentCandidates = new ValidCandidateGenerator(
                     this.queryMotif.getAllLeafSubstructures(),
                     environment).getValidCandidates();
             this.candidates.put(environment, currentCandidates);
         }
     }
 
-    public List<List<LeafSubstructure>> getEnvironments() {
+    public List<List<LeafSubstructure<?>>> getEnvironments() {
         return this.environments;
     }
 
@@ -167,7 +167,7 @@ public class Fit3DAlignment implements Fit3D {
      * Determines the maximal spatial extent of the query motif, measured on the centroid of all atoms.
      */
     private void calculateMotifExtent() {
-        LabeledSymmetricMatrix<LeafSubstructure> queryDistanceMatrix =
+        LabeledSymmetricMatrix<LeafSubstructure<?>> queryDistanceMatrix =
                 Structures.calculateSquaredDistanceMatrix(this.queryMotif);
         // position of maximal element is always symmetric, hence we consider the first
         Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix).stream()
@@ -185,7 +185,7 @@ public class Fit3DAlignment implements Fit3D {
      */
     private void reduceTargetStructure() {
         // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
-        Set<StructuralFamily> containingTypes = this.queryMotif.getLeafSubstructures().stream()
+        Set<Object> containingTypes = this.queryMotif.getAllLeafSubstructures().stream()
                 .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -203,7 +203,7 @@ public class Fit3DAlignment implements Fit3D {
         for (LeafSubstructure currentSubstructure : this.target.getAllLeafSubstructures()) {
             // collect environments within the bounds if the motif extent
             RegularVector distanceToOthers = this.squaredDistanceMatrix.getColumnByLabel(currentSubstructure);
-            List<LeafSubstructure> environment = new ArrayList<>();
+            List<LeafSubstructure<?>> environment = new ArrayList<>();
             for (int i = 0; i < distanceToOthers.getElements().length; i++) {
                 double currentDistance = distanceToOthers.getElement(i);
                 if (currentDistance <= this.squaredQueryExtent + this.squaredDistanceTolerance) {

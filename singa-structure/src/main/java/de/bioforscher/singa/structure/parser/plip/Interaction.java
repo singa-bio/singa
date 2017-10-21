@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.parser.plip;
 
 
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 
 /**
  * @author cl

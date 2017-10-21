@@ -3,18 +3,20 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.represen
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
-import de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.oak.OakAtom;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its sidechain centroid. This is only available for
- * {@link GraphAminoAcid}s. For glycine this defaults to {@link BetaCarbonRepresentationScheme}.
+ * An implementation to represent a given {@link LeafSubstructure} by its sidechain centroid. This is only available for
+ * {@link AminoAcid}s. For glycine this defaults to {@link BetaCarbonRepresentationScheme}.
  *
  * @author fk
  */
@@ -27,7 +29,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
         if (optionalSC.isPresent()) {
             return optionalSC.get();
         }
-        if (!(leafSubstructure instanceof GraphAminoAcid)) {
+        if (!(leafSubstructure instanceof AminoAcid)) {
             return determineCentroid(leafSubstructure);
         }
         if (leafSubstructure.getFamily() == AminoAcidFamily.GLYCINE) {
@@ -44,7 +46,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
                         .negate()))
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
-        return new UncertainAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.SIDE_CHAIN_CENTROID.getAtomNameString(),
                 Vectors3D.getCentroid(atomPositions));

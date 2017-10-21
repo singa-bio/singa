@@ -1,11 +1,13 @@
 package chemistry.physical.atoms;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.AminoAcid;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.AtomName;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -45,16 +47,16 @@ public class AtomFilterTest {
 
         // check backbone atoms
         assertTrue(backboneAtoms.size() == 4);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.N.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CA.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.C.getName())).count() == 1);
-        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.O.getName())).count() == 1);
+        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.N.getName())).count() == 1);
+        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count() == 1);
+        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.C.getName())).count() == 1);
+        assertTrue(backboneAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.O.getName())).count() == 1);
 
         // check sidechain atoms
         assertTrue(sideChainAtoms.size() == 3);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CB.getName())).count() == 1);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG1.getName())).count() == 1);
-        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CG2.getName())).count() == 1);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CB.getName())).count() == 1);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG1.getName())).count() == 1);
+        assertTrue(sideChainAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CG2.getName())).count() == 1);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class AtomFilterTest {
                 .filter(atomFilter)
                 .collect(Collectors.toList());
         assertTrue(filteredAtoms.size() == 2);
-        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.CA.getName())).count() == 1);
-        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomNameString(), AtomName.SD.getName())).count() == 1);
+        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.CA.getName())).count() == 1);
+        assertTrue(filteredAtoms.stream().filter(atom -> Objects.equals(atom.getAtomName(), AtomName.SD.getName())).count() == 1);
     }
 }

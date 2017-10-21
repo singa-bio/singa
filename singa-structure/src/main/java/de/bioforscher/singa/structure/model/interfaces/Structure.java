@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.interfaces;
 
-import de.bioforscher.singa.core.identifier.PDBIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.PDBIdentifier;
 
 import java.util.List;
 import java.util.Optional;

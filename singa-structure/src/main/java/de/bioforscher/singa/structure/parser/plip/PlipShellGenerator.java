@@ -68,8 +68,8 @@ public class PlipShellGenerator {
         }
         // generate interaction graph from inter chain interactions
         for (Interaction interaction : this.interChainInteractions.getInteractions()) {
-            Optional<LeafSubstructure> source = this.chain.getLeafSubstructure(interaction.getSource());
-            Optional<LeafSubstructure> target = this.chain.getLeafSubstructure(interaction.getTarget());
+            Optional<LeafSubstructure<?>> source = this.chain.getLeafSubstructure(interaction.getSource());
+            Optional<LeafSubstructure<?>> target = this.chain.getLeafSubstructure(interaction.getTarget());
             if (source.isPresent() && target.isPresent()) {
                 this.graph.addEdgeBetween(source.get(), target.get());
             }

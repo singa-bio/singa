@@ -1,9 +1,9 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations;
 
-import de.bioforscher.singa.structure.model.graph.model.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 
 import java.util.Optional;
 

@@ -1,9 +1,10 @@
 package chemistry.parser.pdb.structures;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.LocalPDB;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,8 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
-import static de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.*;
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -29,14 +31,14 @@ public class StructureParserTest {
     @BeforeClass
     public static void parseUncomplicatedStructure() {
         // "normal" structure
-        hemoglobin = StructureParser.online()
+        hemoglobin = online()
                 .pdbIdentifier("1BUW")
                 .parse();
     }
 
     @BeforeClass
     public static void parseResiduesWithModifiedAminoAcids() {
-        cyanase = StructureParser.online()
+        cyanase = online()
                 .pdbIdentifier("1DW9")
                 .parse();
     }
@@ -59,7 +61,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseModel() {
         // parse one model of multi model structure
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("1PQS")
                 .model(2)
                 .allChains()
@@ -71,7 +73,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseChain() {
         // parse one chainIdentifier of multi chainIdentifier structure
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("1BRR")
                 .chainIdentifier("A")
                 .parse();
@@ -82,7 +84,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseModelAndChain() {
         // parse one model of multi model structure and only a specific chainIdentifier
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("2N5E")
                 .model(3)
                 .chainIdentifier("B")
@@ -95,7 +97,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseChainOfMultiModel() {
         // parse only a specific chainIdentifier of all models in a structure
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("2N5E")
                 .chainIdentifier("B")
                 .parse();
@@ -104,7 +106,7 @@ public class StructureParserTest {
     // structure with dna or rna
     @Test
     public void shouldParseStructureWithNucleotides() {
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("5T3L")
                 .everything()
                 .parse();
@@ -112,12 +114,12 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseStructureWithInsertionCodes() {
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .parse();
 
-        List<LeafSubstructure<?, ?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
+        List<LeafSubstructure<?>> leavesWithInsertionCode = structure.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == 620)
                 .collect(Collectors.toList());
 
@@ -128,7 +130,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseFromLocalPDB() throws URISyntaxException {
         LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
-        Structure structure = StructureParser.local()
+        Structure structure = local()
                 .localPDB(localPdb, "1C0A")
                 .parse();
     }
@@ -137,7 +139,7 @@ public class StructureParserTest {
     public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
         LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
-        List<Structure> structure = StructureParser.local()
+        List<Structure> structure = local()
                 .localPDB(localPdb)
                 .chainList(chainList, ":")
                 .parse();
@@ -153,7 +155,7 @@ public class StructureParserTest {
     @Test
     public void shouldAssignInformationFromFileName() {
         StructureParserOptions options = StructureParserOptions.withSettings(GET_TITLE_FROM_FILENAME, GET_IDENTIFIER_FROM_FILENAME);
-        Structure structure = StructureParser.local()
+        Structure structure = local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .everything()
                 .setOptions(options)
@@ -166,7 +168,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseFromInputStream() {
         InputStream inputStream = Resources.getResourceAsStream("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb");
-        Structure structure = StructureParser.local()
+        Structure structure = local()
                 .inputStream(inputStream)
                 .parse();
     }
@@ -174,14 +176,14 @@ public class StructureParserTest {
     @Test
     public void shouldParseMultipleStructures() {
         // all have the ligand SO4
-        List<Structure> structures = StructureParser.online()
+        List<Structure> structures = online()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
     }
 
     @Test(expected = UncheckedIOException.class)
     public void shouldThrowErrorWhenFileDoesNotExist() {
-        Structure structure = StructureParser.online()
+        Structure structure = online()
                 .pdbIdentifier("schalalala")
                 .everything()
                 .parse();
@@ -189,7 +191,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParseAllChainsFromLocalFile() {
-        StructureParser.local()
+        local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();

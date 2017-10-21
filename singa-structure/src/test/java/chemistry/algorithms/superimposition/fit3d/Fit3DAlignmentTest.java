@@ -1,19 +1,21 @@
 package chemistry.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
-import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.MatcherFamily;
+import de.bioforscher.singa.structure.model.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.OakStructure;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
+import de.bioforscher.singa.structure.parser.plip.PlipParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -116,7 +119,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldGenerateCombinations() {
-        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif.getLeafSubstructures()).count());
+        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif.getAllLeafSubstructures()).count());
     }
 
     @Test
@@ -200,8 +203,8 @@ public class Fit3DAlignmentTest {
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
-        interactionContainer.validateWithStructure(structure);
-        interactionContainer.mapToPseudoAtoms(structure);
+        interactionContainer.validateWithStructure((OakStructure) structure);
+        interactionContainer.mapToPseudoAtoms((OakStructure) structure);
         StructuralMotif interactionMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
                 .inputStream(Resources.getResourceAsStream("1k1i_interaction_motif.pdb"))
                 .parse()
@@ -216,23 +219,4 @@ public class Fit3DAlignmentTest {
         assertEquals(0.00, fit3d.getMatches().firstKey(), 1E-2);
     }
 
-//    @Test
-//    public void shouldAlignKDEEH() throws IOException {
-//
-//        Structure target1 = PDBParserService.parseProteinById("1BKH", "A");
-//
-//        // KDEEH template motif
-//        Structure motifContainingStructure = PDBParserService.parsePDBFile("motif_KDEEH.pdb");
-//        StructuralMotif motif = StructuralMotif.fromLeafIdentifiers(1, motifContainingStructure,
-//                LeafIdentifiers.of("A-164", "A-195", "A-221", "A-247", "A-297"));
-//        motif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
-//        motif.addExchangeableFamily(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARTIC_ACID);
-//        motif.addExchangeableFamily(LeafIdentifier.fromString("E-247"), AminoAcidFamily.ASPARAGINE);
-//        motif.addExchangeableFamily(LeafIdentifier.fromString("H-297"), AminoAcidFamily.LYSINE);
-//
-//        Fit3D fit3d = Fit3DBuilder.create()
-//                .query(motif)
-//                .target(target1.getAllChains().get(0))
-//                .run();
-//    }
 }

@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
  */
 public class ValidCandidateGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<LeafSubstructure> queryMotif;
-    private List<LeafSubstructure> environment;
+    private List<LeafSubstructure<?>> queryMotif;
+    private List<LeafSubstructure<?>> environment;
 
-    private List<List<LeafSubstructure>> acceptedElementsAtEachPosition;
-    private Set<Set<LeafSubstructure>> candidates;
+    private List<List<LeafSubstructure<?>>> acceptedElementsAtEachPosition;
+    private Set<Set<LeafSubstructure<?>>> candidates;
 
-    public ValidCandidateGenerator(List<LeafSubstructure> queryMotif, List<LeafSubstructure> environment) {
+    public ValidCandidateGenerator(List<LeafSubstructure<?>> queryMotif, List<LeafSubstructure<?>> environment) {
         this.queryMotif = queryMotif;
         this.environment = environment;
         if (environment.size() < queryMotif.size()) {
@@ -49,13 +49,13 @@ public class ValidCandidateGenerator {
     }
 
     // TODO this is the current bottleneck of the Fit3D algorithm
-    public Set<Set<LeafSubstructure>> getValidCandidates() {
+    public Set<Set<LeafSubstructure<?>>> getValidCandidates() {
         this.acceptedElementsAtEachPosition = new ArrayList<>();
         // handle each position of query motif and each of its exchanges
-        for (LeafSubstructure currentLeafSubstructure : this.queryMotif) {
+        for (LeafSubstructure<?> currentLeafSubstructure : this.queryMotif) {
             Set<?> typesAtPosition = currentLeafSubstructure.getContainingFamilies();
 
-            List<LeafSubstructure> validLeafSubstructures = this.environment.stream()
+            List<LeafSubstructure<?>> validLeafSubstructures = this.environment.stream()
                     .filter(leafSubstructure -> typesAtPosition.contains(leafSubstructure.getFamily()))
                     .collect(Collectors.toList());
 
@@ -75,7 +75,7 @@ public class ValidCandidateGenerator {
             this.candidates = this.candidates.stream()
                     .flatMap(candidate -> this.acceptedElementsAtEachPosition.get(currentPosition).stream()
                             .map(acceptedElement -> {
-                                Set<LeafSubstructure> newCandidate = cloneSet(candidate);
+                                Set<LeafSubstructure<?>> newCandidate = cloneSet(candidate);
                                 newCandidate.add(acceptedElement);
                                 return newCandidate;
                             })
@@ -102,9 +102,11 @@ public class ValidCandidateGenerator {
      * @param leafSubstructures The {@link LeafSubstructure}s to be cloned.
      * @return A {@link Set} of cloned {@link LeafSubstructure}s.
      */
-    private Set<LeafSubstructure> cloneSet(Set<LeafSubstructure> leafSubstructures) {
-        return leafSubstructures.stream()
-                .map(LeafSubstructure::getCopy)
-                .collect(Collectors.toSet());
+    private Set<LeafSubstructure<?>> cloneSet(Set<LeafSubstructure<?>> leafSubstructures) {
+        Set<LeafSubstructure<?>> copies = new HashSet<>();
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures) {
+            copies.add(leafSubstructure.getCopy());
+        }
+        return copies;
     }
 }

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.Ligand;
 
 /**

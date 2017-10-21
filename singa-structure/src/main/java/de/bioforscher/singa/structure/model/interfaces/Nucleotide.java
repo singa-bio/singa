@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.interfaces;
 
-import de.bioforscher.singa.structure.model.graph.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.families.NucleotideFamily;
 
 /**
  * A specific type of {@link LeafSubstructure}, representing nucleotides.

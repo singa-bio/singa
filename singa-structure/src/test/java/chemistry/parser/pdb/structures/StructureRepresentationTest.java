@@ -1,11 +1,15 @@
 package chemistry.parser.pdb.structures;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.AtomToken;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.ChainTerminatorToken;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.HeaderToken;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.tokens.TitleToken;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureCollector;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureRepresentation;
+import de.bioforscher.singa.structure.parser.pdb.structures.tokens.AtomToken;
+import de.bioforscher.singa.structure.parser.pdb.structures.tokens.ChainTerminatorToken;
+import de.bioforscher.singa.structure.parser.pdb.structures.tokens.HeaderToken;
+import de.bioforscher.singa.structure.parser.pdb.structures.tokens.TitleToken;
 import org.junit.Test;
 
 import java.io.IOException;

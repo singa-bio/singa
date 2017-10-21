@@ -1,7 +1,7 @@
 package de.bioforscher.singa.mmtf;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.*;
 import org.junit.BeforeClass;
 import org.junit.Test;

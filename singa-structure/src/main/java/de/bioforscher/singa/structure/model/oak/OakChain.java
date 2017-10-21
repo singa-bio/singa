@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
 import java.util.*;
@@ -13,7 +13,7 @@ public class OakChain implements Chain {
 
     private String identifier;
 
-    private Map<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
+    private TreeMap<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
 
     private Set<LeafIdentifier> consecutiveIdentifiers;
 
@@ -38,12 +38,12 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
+    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
         return new ArrayList<>(this.leafSubstructures.values());
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         if (this.leafSubstructures.containsKey(leafIdentifier)) {
             return Optional.of(this.leafSubstructures.get(leafIdentifier));
         }
@@ -116,8 +116,8 @@ public class OakChain implements Chain {
     }
 
     /**
-     * Connects two residues, using the Backbone Carbon (C) of the source residue and the Backbone
-     * Nitrogen (N) of the target residue.
+     * Connects two residues, using the Backbone Carbon (C) of the source residue and the Backbone Nitrogen (N) of the
+     * target residue.
      *
      * @param source AminoAcid with Backbone Carbon.
      * @param target AminoAcid with Backbone Nitrogen.
@@ -141,8 +141,8 @@ public class OakChain implements Chain {
         return new OakChain(this);
     }
 
-    public List<LeafSubstructure> getConsecutivePart() {
-        List<LeafSubstructure> consecutivePart = new ArrayList<>();
+    public List<LeafSubstructure<?>> getConsecutivePart() {
+        List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
         for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
             if (consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
@@ -151,13 +151,19 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    public List<LeafSubstructure> getNonConsecutivePart() {
-        List<LeafSubstructure> consecutivePart = new ArrayList<>();
+    public List<LeafSubstructure<?>> getNonConsecutivePart() {
+        List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
         for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
             if (!consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
         }
         return consecutivePart;
+    }
+
+    public LeafIdentifier getNextLeafIdentifier() {
+        LeafIdentifier lastLeafIdentifier = this.leafSubstructures.lastEntry().getKey();
+        return new LeafIdentifier(lastLeafIdentifier.getPdbIdentifier(), lastLeafIdentifier.getModelIdentifier(),
+                lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
     }
 }

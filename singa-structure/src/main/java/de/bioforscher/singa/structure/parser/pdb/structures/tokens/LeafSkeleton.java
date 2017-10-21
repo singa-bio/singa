@@ -1,11 +1,10 @@
 package de.bioforscher.singa.structure.parser.pdb.structures.tokens;
 
 import de.bioforscher.singa.core.utility.Pair;
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
-import de.bioforscher.singa.structure.model.graph.families.LigandFamily;
-import de.bioforscher.singa.structure.model.graph.families.NucleotideFamily;
-import de.bioforscher.singa.structure.model.graph.interactions.BondType;
-import de.bioforscher.singa.structure.model.graph.model.LeafIdentifier;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.LigandFamily;
+import de.bioforscher.singa.structure.model.families.NucleotideFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.oak.*;
 
 import java.util.Map;

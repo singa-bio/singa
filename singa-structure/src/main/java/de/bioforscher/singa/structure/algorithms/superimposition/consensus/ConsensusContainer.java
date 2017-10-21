@@ -2,7 +2,7 @@ package de.bioforscher.singa.structure.algorithms.superimposition.consensus;
 
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.structure.model.graph.branches.StructuralMotif;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 
 /**
  * A container encapsulating a {@link StructuralMotif} with a {@link BinaryTree} that represents its associated

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Pair;
-import de.bioforscher.singa.structure.model.graph.model.StructuralFamily;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +35,17 @@ import java.util.stream.IntStream;
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<LeafSubstructure> reference;
-    private List<LeafSubstructure> candidate;
+    private List<LeafSubstructure<?>> reference;
+    private List<LeafSubstructure<?>> candidate;
 
-    private List<List<LeafSubstructure>> pathsThroughSecondMotif;
+    private List<List<LeafSubstructure<?>>> pathsThroughSecondMotif;
 
-    public ValidAlignmentGenerator(List<LeafSubstructure> reference, List<LeafSubstructure> candidate) {
+    public ValidAlignmentGenerator(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate) {
         this.reference = reference;
         this.candidate = candidate;
     }
 
-    public List<List<Pair<LeafSubstructure>>> getValidAlignments() {
+    public List<List<Pair<LeafSubstructure<?>>>> getValidAlignments() {
 
         // initialize paths
         this.pathsThroughSecondMotif = new ArrayList<>();
@@ -90,9 +90,11 @@ public class ValidAlignmentGenerator {
                 .collect(Collectors.toList());
     }
 
-    private List<LeafSubstructure> cloneList(List<LeafSubstructure> motif) {
-        return motif.stream()
-                .map(LeafSubstructure::getCopy)
-                .collect(Collectors.toList());
+    private List<LeafSubstructure<?>> cloneList(List<LeafSubstructure<?>> motif) {
+        List<LeafSubstructure<?>> copies = new ArrayList<>();
+        for (LeafSubstructure<?> leafSubstructure : motif) {
+            copies.add(leafSubstructure.getCopy());
+        }
+        return copies;
     }
 }

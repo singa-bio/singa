@@ -1,7 +1,7 @@
 package chemistry.algorithms.structure;
 
 import de.bioforscher.singa.structure.algorithms.gyration.Gyration;
-import de.bioforscher.singa.structure.model.graph.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;

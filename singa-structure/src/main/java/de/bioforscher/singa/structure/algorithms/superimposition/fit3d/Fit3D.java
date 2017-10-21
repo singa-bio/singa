@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.structure.algorithms.superimposition.XieScore;
+import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
