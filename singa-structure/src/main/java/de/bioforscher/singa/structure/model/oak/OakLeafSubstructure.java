@@ -132,7 +132,10 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public String getThreeLetterCode() {
-        return this.family.getThreeLetterCode();
+        if (this.divergingThreeLetterCode.isEmpty()) {
+            return this.family.getThreeLetterCode();
+        }
+        return this.divergingThreeLetterCode;
     }
 
     @Override
@@ -204,4 +207,8 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         return bond.getIdentifier();
     }
 
+    @Override
+    public String toString() {
+        return flatToString();
+    }
 }

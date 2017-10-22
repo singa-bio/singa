@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 public class OakChain implements Chain {
 
-    private String identifier;
+    private final String identifier;
 
     private TreeMap<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
 
@@ -136,11 +136,6 @@ public class OakChain implements Chain {
         }
     }
 
-    @Override
-    public OakChain getCopy() {
-        return new OakChain(this);
-    }
-
     public List<LeafSubstructure<?>> getConsecutivePart() {
         List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
         for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
@@ -161,9 +156,32 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    public LeafIdentifier getNextLeafIdentifier() {
+    LeafIdentifier getNextLeafIdentifier() {
         LeafIdentifier lastLeafIdentifier = this.leafSubstructures.lastEntry().getKey();
         return new LeafIdentifier(lastLeafIdentifier.getPdbIdentifier(), lastLeafIdentifier.getModelIdentifier(),
                 lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
+    }
+
+    @Override
+    public OakChain getCopy() {
+        return new OakChain(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OakChain oakChain = (OakChain) o;
+
+        if (!identifier.equals(oakChain.identifier)) return false;
+        return leafSubstructures != null ? leafSubstructures.equals(oakChain.leafSubstructures) : oakChain.leafSubstructures == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = identifier.hashCode();
+        result = 31 * result + (leafSubstructures != null ? leafSubstructures.hashCode() : 0);
+        return result;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Comparator;
 public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     public static final String DEFAULT_PDB_IDENTIFIER = "0000";
-    public static final int DEFAULT_MODEL_IDENTIFIER = 0;
+    public static final int DEFAULT_MODEL_IDENTIFIER = 1;
     public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
     public static final char DEFAULT_INSERTION_CODE = '\u0000';
 

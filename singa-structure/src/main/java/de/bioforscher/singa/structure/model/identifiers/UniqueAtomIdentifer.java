@@ -78,7 +78,7 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
         return this.pdbIdentifer + "-" +
                 this.modelIdentifer + "-" +
                 this.chainIdentifer + "-" +
-                this.leafSerial + (this.leafInsertionCode != 32 ? this.leafInsertionCode : "") + "-" +
+                this.leafSerial + (this.leafInsertionCode != LeafIdentifier.DEFAULT_INSERTION_CODE ? this.leafInsertionCode : "") + "-" +
                 this.atomSerial;
     }
 

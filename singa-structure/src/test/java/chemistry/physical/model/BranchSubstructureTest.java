@@ -19,10 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class BranchSubstructureTest {
 
     @Test
-    public void shouldCreateCopyOfSubStructure() {
-        // TODO 16/11/16
-        // crate substructure with other substructures and atoms
-        // first implement other copy methods
+    public void shouldCreateCopy() {
 
         OakAtom a1 = new OakAtom(0, NITROGEN, "N", new Vector3D(0.0,1.0,2.0));
         OakAtom a2 = new OakAtom(1, CARBON, "CA", new Vector3D(0.0,1.0,2.0));

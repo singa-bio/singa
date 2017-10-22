@@ -45,7 +45,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParsePDBIdentifierFromHeader() {
-        assertEquals("1buw", hemoglobin.getPdbIdentifier());
+        assertEquals("1BUW", hemoglobin.getPdbIdentifier());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class StructureParserTest {
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
-        assertEquals("1gl0", structure.getPdbIdentifier());
+        assertEquals("1GL0", structure.getPdbIdentifier());
     }
 
     @Test

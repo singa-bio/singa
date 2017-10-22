@@ -1,31 +1,33 @@
-package de.bioforscher.singa.mmtf;
+package de.bioforscher.singa.structure.model.oak;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.interfaces.*;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rcsb.mmtf.decoder.ReaderUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @author cl
- */
-public class MmtfStructureTest {
+public class OakStructureTest {
 
-    private static Structure structure2N5E;
-    private static Structure structure1C0A;
+    private static OakStructure structure2N5E;
+    private static OakStructure structure1C0A;
+    private static OakStructure structureToModify;
+
 
     @BeforeClass
     public static void prepareData() throws IOException {
-        structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
-        structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+        structure2N5E = (OakStructure) StructureParser.online().pdbIdentifier("2N5E").parse();
+        structure1C0A = (OakStructure) StructureParser.online().pdbIdentifier("1C0A").parse();
+        structureToModify = (OakStructure) StructureParser.online().pdbIdentifier("1BRR").parse();
     }
 
     @Test
@@ -35,9 +37,23 @@ public class MmtfStructureTest {
     }
 
     @Test
+    public void setPdbIdentifier() throws Exception {
+        structureToModify.setPdbIdentifier("5ING");
+        String actual = structureToModify.getPdbIdentifier();
+        assertEquals("5ING", actual);
+    }
+
+    @Test
     public void getTitle() throws Exception {
         String actual = structure2N5E.getTitle();
-        assertEquals("The 3D solution structure of discoidal high-density lipoprotein particles", actual);
+        assertEquals("THE 3D SOLUTION STRUCTURE OF DISCOIDAL HIGH-DENSITY LIPOPROTEIN PARTICLES", actual);
+    }
+
+    @Test
+    public void setTitle() throws Exception {
+        structureToModify.setTitle("Test Title");
+        String actual = structureToModify.getTitle();
+        assertEquals("Test Title", actual);
     }
 
     @Test
@@ -49,7 +65,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstModel() throws Exception {
         Model model = structure2N5E.getFirstModel();
-        assertEquals(1, (int)model.getIdentifier());
+        assertEquals(1, (int) model.getIdentifier());
     }
 
     @Test
@@ -58,7 +74,14 @@ public class MmtfStructureTest {
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
-        assertEquals(2, (int)model.get().getIdentifier());
+        assertEquals(2, (int) model.get().getIdentifier());
+    }
+
+    @Test
+    public void addModel() throws Exception {
+        structureToModify.addModel(new OakModel(2));
+        int actualSize = structureToModify.getAllModels().size();
+        assertEquals(2, actualSize);
     }
 
     @Test
@@ -101,6 +124,19 @@ public class MmtfStructureTest {
     }
 
     @Test
+    public void removeLeafSubstructure() throws Exception {
+        LeafIdentifier leafIdentifier = new LeafIdentifier("1BRR", 1, "A", 176);
+        Optional<LeafSubstructure<?>> leafSubstructure = structureToModify.getLeafSubstructure(leafIdentifier);
+        if (leafSubstructure.isPresent()) {
+            structureToModify.removeLeafSubstructure(leafIdentifier);
+            Optional<LeafSubstructure<?>> removed = structureToModify.getLeafSubstructure(leafIdentifier);
+            if (removed.isPresent()) {
+                fail("The leaf should have been removed and therefore the optional should be empty.");
+            }
+        }
+    }
+
+    @Test
     public void getAllAminoAcids() throws Exception {
         final List<AminoAcid> aminoAcids = structure1C0A.getAllAminoAcids();
         assertEquals(585, aminoAcids.size());
@@ -121,7 +157,8 @@ public class MmtfStructureTest {
     @Test
     public void getAllNucleotides() throws Exception {
         final List<Nucleotide> nucleotides = structure1C0A.getAllNucleotides();
-        assertEquals(68, nucleotides.size());
+        // recognizes modified nucleotides as nucleotides nevertheless
+        assertEquals(77, nucleotides.size());
     }
 
     @Test
@@ -139,7 +176,7 @@ public class MmtfStructureTest {
     @Test
     public void getAllLigands() throws Exception {
         final List<Ligand> ligands = structure1C0A.getAllLigands();
-        assertEquals(526, ligands.size());
+        assertEquals(517, ligands.size());
     }
 
     @Test
@@ -167,7 +204,40 @@ public class MmtfStructureTest {
             fail("Optional atom was empty.");
         }
         assertEquals("C8", atom.get().getAtomName());
-        assertEquals(new Vector3D(46.50600051879883, 18.077999114990234, -5.64900016784668), atom.get().getPosition());
+        assertEquals(new Vector3D(46.506, 18.078, -5.649), atom.get().getPosition());
+    }
+
+    @Test
+    public void getUniqueAtomEntry() throws Exception {
+        final Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atom = structure1C0A.getUniqueAtomEntry(15);
+        if (!atom.isPresent()) {
+            fail("Optional atom was empty.");
+        }
+        UniqueAtomIdentifer identifier = atom.get().getKey();
+        assertEquals("1C0A", identifier.getPdbIdentifier());
+        assertEquals(1, identifier.getModelIdentifier());
+        assertEquals("B", identifier.getChainIdentifier());
+        assertEquals(601, identifier.getLeafSerial());
+    }
+
+    @Test
+    public void addAtom() throws Exception {
+        fail();
+    }
+
+    @Test
+    public void removeAtom() throws Exception {
+        fail();
+    }
+
+    @Test
+    public void getLastAddedAtomIdentifier() throws Exception {
+        fail();
+    }
+
+    @Test
+    public void getCopy() throws Exception {
+        fail();
     }
 
 }

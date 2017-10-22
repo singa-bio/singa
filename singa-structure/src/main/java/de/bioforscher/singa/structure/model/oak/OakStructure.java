@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.families.LigandFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.PDBIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.UniqueAtomIdentifer;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
@@ -50,7 +51,11 @@ public class OakStructure implements Structure {
     }
 
     public void setPdbIdentifier(String pdbIdentifier) {
-        this.pdbIdentifier = pdbIdentifier;
+        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches()) {
+            this.pdbIdentifier = pdbIdentifier;
+        } else {
+            throw new IllegalArgumentException("The pdb identifier must match to the pdb identifier pattern.");
+        }
     }
 
     @Override
@@ -176,7 +181,7 @@ public class OakStructure implements Structure {
             leafSubstructure.addAtom(new OakAtom(this.lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
             chain.addLeafSubstructure(leafSubstructure);
         } else {
-            throw new IllegalStateException("Unable to add atom to chain "+chainIdentifier+", chain could not be found.");
+            throw new IllegalStateException("Unable to add atom to chain " + chainIdentifier + ", chain could not be found.");
         }
     }
 
