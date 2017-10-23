@@ -19,8 +19,8 @@ import java.util.List;
  */
 public enum SubstitutionMatrix {
 
-    BLOSUM_45("de/bioforscher/singa/chemistry/physical/families/substitution/matrices/blosum45.csv"),
-    MC_LACHLAN("de/bioforscher/singa/chemistry/physical/families/substitution/matrices/mclachlan.csv");
+    BLOSUM_45("de/bioforscher/singa/structure/algorithms/superimposition/scoring/blosum45.csv"),
+    MC_LACHLAN("de/bioforscher/singa/structure/algorithms/superimposition/scoring/mclachlan.csv");
 
     private LabeledSymmetricMatrix<StructuralFamily> matrix;
 

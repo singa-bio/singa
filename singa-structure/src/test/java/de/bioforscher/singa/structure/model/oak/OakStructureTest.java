@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class OakStructureTest {
 
@@ -222,22 +221,31 @@ public class OakStructureTest {
 
     @Test
     public void addAtom() throws Exception {
-        fail();
+        final int expected = structureToModify.getAllAtoms().size()+1;
+        structureToModify.addAtom("A", "ADD", new Vector3D(1.0, 2.0, 3.0));
+        final int actual = structureToModify.getAllAtoms().size();
+        assertEquals(expected, actual);
     }
 
     @Test
     public void removeAtom() throws Exception {
-        fail();
+        final int expected = structureToModify.getAllAtoms().size()-1;
+        structureToModify.removeAtom(17);
+        final int actual = structureToModify.getAllAtoms().size();
+        assertEquals(expected, actual);
     }
 
     @Test
     public void getLastAddedAtomIdentifier() throws Exception {
-        fail();
+        final int lastAddedAtomIdentifier = structure1C0A.getLastAddedAtomIdentifier();
+        assertEquals(6822, lastAddedAtomIdentifier);
     }
 
     @Test
     public void getCopy() throws Exception {
-        fail();
+        final Structure structure2N5ECopy = structure2N5E.getCopy();
+        assertTrue(structure2N5E != structure2N5ECopy);
+        assertTrue(structure2N5E.equals(structure2N5ECopy));
     }
 
 }

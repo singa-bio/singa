@@ -40,6 +40,7 @@ public class OakStructure implements Structure {
         this.pdbIdentifier = structure.getPdbIdentifier();
         this.title = structure.title;
         this.models = new TreeMap<>();
+        this.lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
         for (OakModel model : structure.models.values()) {
             this.models.put(model.getIdentifier(), model.getCopy());
         }
@@ -209,4 +210,18 @@ public class OakStructure implements Structure {
         return new OakStructure(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OakStructure that = (OakStructure) o;
+
+        return pdbIdentifier != null ? pdbIdentifier.equals(that.pdbIdentifier) : that.pdbIdentifier == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return pdbIdentifier != null ? pdbIdentifier.hashCode() : 0;
+    }
 }

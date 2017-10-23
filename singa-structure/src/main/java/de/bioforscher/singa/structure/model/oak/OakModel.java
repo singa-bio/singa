@@ -24,7 +24,7 @@ public class OakModel implements Model {
     /**
      * The substructures of this substructure.
      */
-    private TreeMap<String , OakChain> chains;
+    private TreeMap<String, OakChain> chains;
 
     /**
      * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
@@ -136,18 +136,22 @@ public class OakModel implements Model {
     }
 
     @Override
+    public String toString() {
+        return "Model " + this.identifier;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OakModel that = (OakModel) o;
+        OakModel model = (OakModel) o;
 
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+        return identifier != null ? identifier.equals(model.identifier) : model.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
-
 }

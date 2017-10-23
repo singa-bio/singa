@@ -60,13 +60,13 @@ public class MmtfModelTest {
 
     @Test
     public void getAllLeafSubstructures() throws Exception {
-        final List<LeafSubstructure> leafSubstructures = secondModel.getAllLeafSubstructures();
+        final List<LeafSubstructure<?>> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
     public void getLeafSubstructure() throws Exception {
-        Optional<LeafSubstructure> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

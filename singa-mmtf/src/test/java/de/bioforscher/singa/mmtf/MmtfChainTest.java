@@ -35,13 +35,13 @@ public class MmtfChainTest {
 
     @Test
     public void getAllLeafSubstructures() throws Exception {
-        final List<LeafSubstructure> leafSubstructures = firstChain.getAllLeafSubstructures();
+        final List<LeafSubstructure<?>> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
     @Test
     public void getLeafSubstructure() throws Exception {
-        Optional<LeafSubstructure> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
+        Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }

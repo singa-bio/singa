@@ -168,20 +168,22 @@ public class OakChain implements Chain {
     }
 
     @Override
+    public String toString() {
+        return " Chain " + this.identifier;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         OakChain oakChain = (OakChain) o;
 
-        if (!identifier.equals(oakChain.identifier)) return false;
-        return leafSubstructures != null ? leafSubstructures.equals(oakChain.leafSubstructures) : oakChain.leafSubstructures == null;
+        return identifier != null ? identifier.equals(oakChain.identifier) : oakChain.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        int result = identifier.hashCode();
-        result = 31 * result + (leafSubstructures != null ? leafSubstructures.hashCode() : 0);
-        return result;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 }
