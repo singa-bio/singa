@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents an instance of the Fit3D algorithm. This can either be a one target one alignment ({@link Fit3DAlignment})
@@ -25,21 +27,55 @@ public interface Fit3D {
      *
      * @return The matches found in the target structure(s).
      */
-    TreeMap<Double, SubstructureSuperimposition> getMatches();
+    List<Fit3DMatch> getMatches();
 
     /**
      * Returns the fraction of residues that were aligned.
      *
      * @return The fractions of matches that were aligned.
      */
-    double getFraction();
+    default double getFraction() {
+        throw new UnsupportedOperationException("Fraction of aligned residues is only available for the Fit3D site " +
+                "alignment algorithm and always 1.0 for Fit3D");
+    }
 
     /**
-     * Returns the Xie-score of aligned residues.
+     * Returns the {@link XieScore} of aligned residues (only available for {@link Fit3DSiteAlignment}.
      *
-     * @return The Xie-score that were aligned.
+     * @return The {@link XieScore} of residues that were aligned.
      */
-    XieScore getXieScore();
+    default XieScore getXieScore() {
+        throw new UnsupportedOperationException("Xie score only available for the Fit3D site alignment algorithm.");
+    }
+
+    /**
+     * Returns the {@link PsScore} of aligned residues (only available for {@link Fit3DSiteAlignment}.
+     *
+     * @return The {@link PsScore} of residues that were aligned.
+     */
+    default PsScore getPsScore() {
+        throw new UnsupportedOperationException("PS-score only available for the Fit3D site alignment algorithm.");
+    }
+
+    /**
+     * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
+     * the query motif. Only matches up to the specified RMSD cutoff are reported.
+     *
+     * @param outputDirectory The directory where the matches should be written.
+     * @param rmsdCutoff The cutoff up to which matches should be written.
+     */
+    default void writeMatches(Path outputDirectory, double rmsdCutoff) {
+        getMatches().stream()
+                .filter(match -> match.getRmsd() <= rmsdCutoff)
+                .forEach(match -> {
+                    try {
+                        StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
+                                outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
+                    } catch (IOException e) {
+                        logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
+                    }
+                });
+    }
 
     /**
      * Writes the matches that were found by this Fit3D search to the specified directory. All matches are aligned to
@@ -48,14 +84,27 @@ public interface Fit3D {
      * @param outputDirectory The directory where the matches should be written.
      */
     default void writeMatches(Path outputDirectory) {
-        getMatches().values().forEach(substructureSuperimposition -> {
+        getMatches().forEach(match -> {
             try {
-                StructureWriter.writeLeafSubstructures(substructureSuperimposition.getMappedFullCandidate(),
-                        outputDirectory.resolve(substructureSuperimposition.getStringRepresentation() + ".pdb"));
+                StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
+                        outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
             } catch (IOException e) {
-                logger.error("could not write match {}", substructureSuperimposition.getStringRepresentation(), e);
+                logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
             }
         });
+    }
+
+    /**
+     * Writes a CSV summary file of the matches obtained by {@link Fit3D}i.
+     *
+     * @param summaryFilePath The {@link Path} to which the file should be written.
+     */
+    default void writeSummaryFile(Path summaryFilePath) throws IOException {
+        String summaryFileContent = getMatches().stream()
+                .map(Fit3DMatch::toCsv)
+                .collect(Collectors.joining("\n", Fit3DMatch.CSV_HEADER, ""));
+        Files.createDirectories(summaryFilePath.getParent());
+        Files.write(summaryFilePath, summaryFileContent.getBytes());
     }
 
     /**

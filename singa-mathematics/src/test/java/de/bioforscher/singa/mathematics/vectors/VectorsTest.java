@@ -24,6 +24,14 @@ public class VectorsTest {
     }
 
     @Test
+    public void getMedian() throws Exception {
+        assertEquals((0.6 + 0.7) / 2, Vectors.getMedian(this.vector), 0.0);
+        double[] doubles = {0.5, 0.6, 0.7, 0.8, 0.9};
+        RegularVector oddVector = new RegularVector(doubles);
+        assertEquals(0.7, Vectors.getMedian(oddVector), 0.0);
+    }
+
+    @Test
     public void getStandardDeviation() throws Exception {
         assertEquals(0.12909, Vectors.getStandardDeviation(this.vector), 1E-4);
     }

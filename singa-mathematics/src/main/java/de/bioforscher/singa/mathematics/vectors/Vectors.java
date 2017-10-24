@@ -84,6 +84,22 @@ public class Vectors {
     }
 
     /**
+     * Returns the median value for a given {@link Vector}. That is the middle element if vector size is odd and the
+     * average of the two middle elements of vector is even.
+     *
+     * @param vector The {@link Vector} that holds the values.
+     * @return The median value of all {@link Vector} elements.
+     */
+    public static double getMedian(Vector vector) {
+        double[] elements = vector.getCopy().getElements();
+        Arrays.sort(elements);
+        if (elements.length % 2 == 0) {
+            return (elements[(elements.length / 2) - 1] + elements[elements.length / 2]) / 2.0;
+        }
+        return elements[elements.length / 2];
+    }
+
+    /**
      * Returns the standard deviation of an {@link Vector}s elements.
      *
      * @param vector The {@link Vector} that holds the values.
@@ -113,7 +129,7 @@ public class Vectors {
     /**
      * Compares all values of the given index for all given vectors and returns the largest value found.
      *
-     * @param index   The index of the value, that is to be compared.
+     * @param index The index of the value, that is to be compared.
      * @param vectors A collection of Vectors.
      * @return The maximal value of the given index.
      */
@@ -130,7 +146,7 @@ public class Vectors {
     /**
      * Compares all values of the given index for all given vectors and returns the smallest value found.
      *
-     * @param index   The index of the value, that is to be compared.
+     * @param index The index of the value, that is to be compared.
      * @param vectors A collection of Vectors.
      * @return The minimal value of the given index.
      */
@@ -169,7 +185,7 @@ public class Vectors {
      * @param vector The vector.
      * @return The index of the absolute maximal element.
      */
-    public static int getIndexWithAbsolutMaximalElement(Vector vector) {
+    public static int getIndexWithAbsoluteMaximalElement(Vector vector) {
         int maximalIndex = -1;
         double maximalValue = -Double.MAX_VALUE;
         for (int index = 0; index < vector.getDimension(); index++) {
@@ -257,13 +273,10 @@ public class Vectors {
     /**
      * The projection for the Graham-Schmidt process. This operator projects the first vector (v) orthogonally onto the
      * line spanned by the second vector (u). If u is the zero vector the projection will be also the zero vector. The
-     * projection is calculated by:
-     * <p>
-     * proj(u,v) = ((v . u) / (u . u)) * u
-     * <p>
-     * with ( . ) denoting the inner product (generally the dot product)
+     * projection is calculated by: <p> proj(u,v) = ((v . u) / (u . u)) * u <p> with ( . ) denoting the inner product
+     * (generally the dot product)
      *
-     * @param first  The vector (v) to be projected.
+     * @param first The vector (v) to be projected.
      * @param second The vector (u) to project with.
      * @return The projected vector.
      */
@@ -276,11 +289,11 @@ public class Vectors {
     }
 
     /**
-     * Accumulates the {@link Vectors#gramSchmidtProjection(Vector, Vector) Graham-Schmidt projection} for each
-     * vector in the given list of Vectors. This orthonormalizes the vector to every vector and increases the numerical
+     * Accumulates the {@link Vectors#gramSchmidtProjection(Vector, Vector) Graham-Schmidt projection} for each vector
+     * in the given list of Vectors. This orthonormalizes the vector to every vector and increases the numerical
      * stability of the orthonormalization.
      *
-     * @param vector                The vector to be projected.
+     * @param vector The vector to be projected.
      * @param orthogonalizedVectors The vectors to project with.
      * @return The projected vector.
      */

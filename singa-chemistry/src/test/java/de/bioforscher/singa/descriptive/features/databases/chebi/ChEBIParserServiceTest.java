@@ -8,7 +8,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -20,21 +19,9 @@ public class ChEBIParserServiceTest {
 
     @Test
     public void shouldParseMethanolFromChEBIOnline() {
-        ChEBIParserService parser = new ChEBIParserService("CHEBI:17790");
-        Species methanol = parser.fetchSpecies();
+        Species methanol = ChEBIParserService.parse("CHEBI:17790");
         assertEquals("methanol", methanol.getName().toLowerCase());
         assertEquals(32.04186, methanol.getFeature(MolarMass.class).getValue().doubleValue(), 0.0);
-    }
-
-    @Test
-    public void shouldSearchMethanolInChEBIDatabase() {
-        ChEBISearchService service = new ChEBISearchService();
-        service.setSearchTerm("Methanol");
-        List<Species> searchResult = service.search();
-        assertEquals(20, searchResult.size());
-        for (Species species : searchResult) {
-            assertTrue(species != null);
-        }
     }
 
     @Test

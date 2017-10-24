@@ -9,7 +9,19 @@ import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser.MultiParser;
+import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
+import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
+import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -161,7 +173,7 @@ public class Fit3DBuilder {
          * Sets the option to skip all targets that consist of only alpha carbon atoms to avoid a lot of noise in the
          * results.
          *
-         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
          */
         BatchParameterStep skipAlphaCarbonTargets();
 
@@ -170,7 +182,7 @@ public class Fit3DBuilder {
          * Sets the option to skip all targets that consist of only backbone atoms to avoid a lot of noise in the
          * results.
          *
-         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
          */
         BatchParameterStep skipBackboneTargets();
     }
@@ -227,6 +239,17 @@ public class Fit3DBuilder {
          * @return The {@link ParameterStep} that can be used to define optional parameters.
          */
         ParameterStep distanceTolerance(double distanceTolerance);
+
+        /**
+         * Adds the specified {@link StatisticalModel} to the search to calculate significance of matches. <b>This may
+         * only be used when running a batch alignment. When running individual alignments the instance of the model
+         * should be passed to all individual Fit3D runs. After all runs completed call
+         * {@link StatisticalModel#calculatePvalues(List)}</b>
+         *
+         * @param statisticalModel The {@link StatisticalModel} to be used.
+         * @return The {@link BatchParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep statisticalModel(StatisticalModel statisticalModel);
     }
 
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
@@ -247,6 +270,7 @@ public class Fit3DBuilder {
         SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
         boolean skipAlphaCarbonTargets;
         boolean skipBackboneTargets;
+        StatisticalModel statisticalModel;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -345,6 +369,12 @@ public class Fit3DBuilder {
         @Override
         public BatchParameterStep skipBackboneTargets() {
             this.skipBackboneTargets = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep statisticalModel(StatisticalModel statisticalModel) {
+            this.statisticalModel = statisticalModel;
             return this;
         }
 

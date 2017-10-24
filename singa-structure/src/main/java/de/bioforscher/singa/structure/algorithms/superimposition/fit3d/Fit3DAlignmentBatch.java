@@ -1,5 +1,15 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserException;
+import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
+import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
+import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.chemistry.physical.model.Structures;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
@@ -15,12 +25,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UncheckedIOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * A parallel version of the {@link Fit3DAlignment} for substructure search in a set of target structures.
@@ -40,7 +54,8 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final StructureParser.MultiParser multiParser;
     private final boolean skipAlphaCarbonTargets;
     private final boolean skipBackboneTargets;
-    private TreeMap<Double, SubstructureSuperimposition> allMatches;
+    private final StatisticalModel statisticalModel;
+    private List<Fit3DMatch> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
         this.queryMotif = builder.queryMotif;
@@ -53,6 +68,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
         this.representationScheme = builder.representationScheme;
         this.rmsdCutoff = builder.rmsdCutoff;
         this.distanceTolerance = builder.distanceTolerance;
+        this.statisticalModel = builder.statisticalModel;
         logger.info("Fit3D alignment batch initialized with {} target structures", this.multiParser.getNumberOfQueuedStructures());
         computeAlignments();
         logger.info("found {} matches in {} target structures", this.allMatches.size(), this.multiParser.getNumberOfQueuedStructures());
@@ -80,9 +96,21 @@ public class Fit3DAlignmentBatch implements Fit3D {
                         }
                     })
                     .filter(Objects::nonNull)
-                    .collect(TreeMap::new, Map::putAll, Map::putAll);
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
         } catch (InterruptedException e) {
             logger.error("Ft3D parallel execution failed", e);
+        }
+
+        Collections.sort(this.allMatches);
+
+        // calculate statistics
+        if (this.statisticalModel != null) {
+            try {
+                this.statisticalModel.calculatePvalues(this.allMatches);
+            } catch (Exception e) {
+                logger.warn("failed to calculate p-values", e);
+            }
         }
     }
 
@@ -92,7 +120,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
      * @return The matches in all target structures.
      */
     @Override
-    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
+    public List<Fit3DMatch> getMatches() {
         return this.allMatches;
     }
 
@@ -104,18 +132,13 @@ public class Fit3DAlignmentBatch implements Fit3D {
         return 1.0;
     }
 
-    @Override
-    public XieScore getXieScore() {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
     /**
      * Internal class for parallel calculation of {@link Fit3DAlignment}s.
      */
-    private class Fit3DCalculator implements Callable<TreeMap<Double, SubstructureSuperimposition>> {
+    private class Fit3DCalculator implements Callable<List<Fit3DMatch>> {
 
         @Override
-        public TreeMap<Double, SubstructureSuperimposition> call() throws Exception {
+        public List<Fit3DMatch> call() throws Exception {
             // FIXME here we are dealing only with the first model
             Fit3D fit3d;
             if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
@@ -139,6 +162,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .atomFilter(Fit3DAlignmentBatch.this.atomFilter)
                                 .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
                                 .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
                                 .run();
                     } else {
                         fit3d = Fit3DBuilder.create()
@@ -147,6 +171,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .representationScheme(Fit3DAlignmentBatch.this.representationScheme.getType())
                                 .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
                                 .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
+                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
                                 .run();
                     }
                     return fit3d.getMatches();

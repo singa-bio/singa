@@ -6,12 +6,12 @@ import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
 import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.model.oak.Structures;
 import org.slf4j.Logger;
@@ -36,12 +36,13 @@ public class Fit3DAlignment implements Fit3D {
     private final LeafSubstructureContainer target;
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
+    private final StatisticalModel statisticalModel;
     private double squaredQueryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?>>> environments;
     private HashMap<List<LeafSubstructure<?>>, Set<Set<LeafSubstructure<?>>>> candidates;
     private double rmsdCutoff;
-    private TreeMap<Double, SubstructureSuperimposition> matches;
+    private List<Fit3DMatch> matches;
     private Predicate<Atom> atomFilter;
 
     Fit3DAlignment(Fit3DBuilder.Builder builder) {
@@ -53,6 +54,7 @@ public class Fit3DAlignment implements Fit3D {
         this.squaredDistanceTolerance = builder.distanceTolerance * builder.distanceTolerance;
         this.atomFilter = builder.atomFilter;
         this.representationScheme = builder.representationScheme;
+        this.statisticalModel = builder.statisticalModel;
 
         if (this.queryMotif.size() > this.target.getAllLeafSubstructures().size()) {
             throw new Fit3DException("search target " + this.target + " must contain at least as many atom-containing substructures " +
@@ -61,7 +63,7 @@ public class Fit3DAlignment implements Fit3D {
 
         // initialize
         this.environments = new ArrayList<>();
-        this.matches = new TreeMap<>();
+        this.matches = new ArrayList<>();
         this.candidates = new HashMap<>();
 
         logger.debug("computing Fit3D alignment of motif {} against {}", this.queryMotif, this.target);
@@ -83,6 +85,27 @@ public class Fit3DAlignment implements Fit3D {
         composeEnvironments();
         generateCandidates();
         computeMatches();
+        calculateStatistics();
+    }
+
+    /**
+     * Calculates statistics for the given {@link StatisticalModel} if any.
+     */
+    private void calculateStatistics() {
+        if (this.statisticalModel != null) {
+            // if Fofanov statistical model is used
+            if (this.statisticalModel instanceof FofanovEstimation) {
+                if (!this.matches.isEmpty()) {
+                    // increase GS if matches were found
+                    logger.debug("match found, increasing GS count for Fofanov model");
+                    ((FofanovEstimation) this.statisticalModel).incrementGs();
+                } else if (!this.candidates.isEmpty()) {
+                    // increase NS if matches were not found but could have been found
+                    logger.debug("no match found, but theoretically possible, increasing NS");
+                    ((FofanovEstimation) this.statisticalModel).incrementNs();
+                }
+            }
+        }
     }
 
     /**
@@ -91,7 +114,7 @@ public class Fit3DAlignment implements Fit3D {
      * @return The matches of this search.
      */
     @Override
-    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
+    public List<Fit3DMatch> getMatches() {
         return this.matches;
     }
 
@@ -103,11 +126,6 @@ public class Fit3DAlignment implements Fit3D {
         return 1.0;
     }
 
-    @Override
-    public XieScore getXieScore() {
-        throw new UnsupportedOperationException("Xie score can only be calculate for Fit3DSiteAlignment");
-    }
-
     /**
      * Computes all matches of the generated candidates.
      */
@@ -115,6 +133,7 @@ public class Fit3DAlignment implements Fit3D {
         this.candidates.values().stream()
                 .flatMap(Collection::stream)
                 .forEach(this::computeAlignments);
+        Collections.sort(this.matches);
     }
 
     /**
@@ -123,6 +142,13 @@ public class Fit3DAlignment implements Fit3D {
      * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
      */
     private void computeAlignments(Set<LeafSubstructure<?>> leafSubstructures) {
+
+        boolean redundant = this.matches.stream()
+                .anyMatch(match -> match.getSubstructureSuperimposition().getCandidate().containsAll(leafSubstructures));
+        if (redundant) {
+            logger.trace("redundant candidate {} skipped", leafSubstructures);
+            return;
+        }
         ValidAlignmentGenerator validAlignmentGenerator =
                 new ValidAlignmentGenerator(this.queryMotif.getAllLeafSubstructures(), new ArrayList<>(leafSubstructures));
         List<List<Pair<LeafSubstructure<?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
@@ -142,7 +168,7 @@ public class Fit3DAlignment implements Fit3D {
                                 alignmentCandidate, this.atomFilter);
             }
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
-                this.matches.put(superimposition.getRmsd(), superimposition);
+                this.matches.add(Fit3DMatch.of(superimposition, superimposition.getRmsd()));
             }
         }
     }
@@ -155,7 +181,9 @@ public class Fit3DAlignment implements Fit3D {
             Set<Set<LeafSubstructure<?>>> currentCandidates = new ValidCandidateGenerator(
                     this.queryMotif.getAllLeafSubstructures(),
                     environment).getValidCandidates();
-            this.candidates.put(environment, currentCandidates);
+            if (!currentCandidates.isEmpty()) {
+                this.candidates.put(environment, currentCandidates);
+            }
         }
     }
 

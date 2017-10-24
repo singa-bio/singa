@@ -36,8 +36,6 @@ import java.util.stream.IntStream;
  * geometric similarity in a multi-structure alignment manner as described in:
  * <pre>to be published</pre>
  *
- * TODO this has to be rewritten as soon as equals of {@link StructuralMotif} is implemented
- *
  * <b>NOTE:</b> Copies of given {@link StructuralMotif}s will be used, so original structures are not altered.
  *
  * @author fk

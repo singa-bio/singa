@@ -1,5 +1,17 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.PsScore;
+import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.XieScore;
+import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
+import de.bioforscher.singa.chemistry.physical.atoms.Atom;
+import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
+import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
+import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
+import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
+import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
@@ -59,10 +71,11 @@ public class Fit3DSiteAlignment implements Fit3D {
     private double currentBestScore;
     private SubstructureSuperimposition currentBestSuperimposition;
 
-    private TreeMap<Double, SubstructureSuperimposition> matches;
+    private List<Fit3DMatch> matches;
     private String alignmentString;
     private boolean cutoffScoreReached;
     private XieScore xieScore;
+    private PsScore psScore;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubstructureSuperimpositionException {
         this.site1 = builder.site1.getCopy();
@@ -74,7 +87,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                         .anyMatch(leafSubstructure -> !(leafSubstructure.getFamily() instanceof AminoAcidFamily));
 
         if (this.containsNonAminoAcids) {
-            logger.info("sites contain non-amino acid residues, no Xie score can be calculated");
+            logger.info("sites contain non-amino acid residues, no Xie and PS-scores can be calculated");
         }
 
         this.exhaustive = builder.exhaustive;
@@ -103,13 +116,20 @@ public class Fit3DSiteAlignment implements Fit3D {
         this.substitutionMatrix = builder.substitutionMatrix;
 
         // initialize
-        this.matches = new TreeMap<>();
+        this.matches = new ArrayList<>();
 
         logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {}) with cutoff score {}", this.site1,
                 this.site1.size(), this.site2, this.site2.size(), this.cutoffScore);
 
         calculateSimilarities();
         extendAlignment();
+
+        Collections.sort(this.matches);
+    }
+
+    @Override
+    public PsScore getPsScore() {
+        return this.psScore;
     }
 
     @Override
@@ -145,14 +165,20 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
 
         if (this.currentBestSuperimposition != null) {
-            this.matches.put(this.currentBestScore, this.currentBestSuperimposition);
+            this.matches.add(Fit3DMatch.of(this.currentBestSuperimposition, this.currentBestScore));
             if (!this.containsNonAminoAcids) {
                 calculateXieScore();
+                calculatePsScore();
             }
             outputSummary();
         } else {
             logger.info("no suitable alignment could be found");
         }
+    }
+
+    private void calculatePsScore() {
+        this.psScore = PsScore.of(this.currentBestSuperimposition, this.site1.getLeafSubstructures().size(),
+                this.site2.getLeafSubstructures().size());
     }
 
     /**
@@ -186,6 +212,8 @@ public class Fit3DSiteAlignment implements Fit3D {
                 String.format("%-7s", "frac") + "|" + getAlignedResidueFraction() + "\n" +
                 String.format("%-7s", "XieS") + "|" + (this.containsNonAminoAcids ? "NaN" : getXieScore().getScore()) + "\n" +
                 String.format("%-7s", "XieExp") + "|" + (this.containsNonAminoAcids ? "NaN" : getXieScore().getSignificance()) + "\n" +
+                String.format("%-7s", "PsS") + "|" + (this.containsNonAminoAcids ? "NaN" : getPsScore().getScore()) + "\n" +
+                String.format("%-7s", "PsExp") + "|" + (this.containsNonAminoAcids ? "NaN" : getPsScore().getSignificance()) + "\n" +
                 String.format("%-7s", "s1algn") + site1Joiner.toString() + "\n" + String.format("%-7s", "s2algn") + site2Joiner.toString();
         logger.info("aligned {} residues (site 1 contains {} residues and site 2 contains {} residues)\n{}",
                 this.currentAlignmentSize, this.site1.size(), this.site2.size(), this.alignmentString);
@@ -251,8 +279,8 @@ public class Fit3DSiteAlignment implements Fit3D {
     }
 
     /**
-     * Calculates the similarity scores of the current round, either by naive superimposition or with a
-     * {@link Fit3DAlignment} if exchanges are defined.
+     * Calculates the similarity scores of the current round, either by naive superimposition or with a {@link
+     * Fit3DAlignment} if exchanges are defined.
      */
     private void calculateSimilarities() throws SubstructureSuperimpositionException {
 
@@ -313,11 +341,12 @@ public class Fit3DSiteAlignment implements Fit3D {
                     if (fit3d.getMatches().isEmpty()) {
                         temporarySimilarityMatrix[i][j] = Double.MAX_VALUE;
                     } else {
-                        double rmsd = fit3d.getMatches().firstKey();
+                        Fit3DMatch bestMatch = fit3d.getMatches().get(0);
+                        double rmsd = bestMatch.getRmsd();
                         temporarySimilarityMatrix[i][j] = rmsd;
                         // test if current score is new global winner and cutoff is not exceeded
                         if (rmsd < localBestScore) {
-                            localBestSuperimposition = fit3d.getMatches().firstEntry().getValue();
+                            localBestSuperimposition = bestMatch.getSubstructureSuperimposition();
                             localBestScore = rmsd;
                         }
                     }
@@ -418,7 +447,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         if (this.matches.isEmpty()) {
             throw new Fit3DException("cannot write matches as they are currently empty");
         }
-        SubstructureSuperimposition bestSuperimposition = this.matches.firstEntry().getValue();
+        SubstructureSuperimposition bestSuperimposition = this.matches.get(0).getSubstructureSuperimposition();
         List<LeafSubstructure<?>> mappedSite2 = bestSuperimposition.applyTo(this.site2.getCopy().getAllLeafSubstructures());
         try {
             StructureWriter.writeLeafSubstructures(this.site1.getAllLeafSubstructures(),
@@ -436,14 +465,14 @@ public class Fit3DSiteAlignment implements Fit3D {
                                     + leafSubstructure.getIdentifier().getSerial())
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
                                     + this.site2.getAllLeafSubstructures().get(0).getPdbIdentifier()
-                                    + "|", "")) + "_site2.pdb"));
+                                    + "_", "")) + "_site2.pdb"));
         } catch (IOException e) {
             logger.error("error writing Fit3DSite results", e);
         }
     }
 
     @Override
-    public TreeMap<Double, SubstructureSuperimposition> getMatches() {
+    public List<Fit3DMatch> getMatches() {
         return this.matches;
     }
 

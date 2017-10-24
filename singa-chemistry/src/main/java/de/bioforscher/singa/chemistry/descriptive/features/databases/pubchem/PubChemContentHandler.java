@@ -1,7 +1,5 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
-import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
-import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
@@ -52,24 +50,17 @@ class PubChemContentHandler implements ContentHandler {
     }
 
     public Species getSpecies() {
-
-        Species result = new Species.Builder(this.chebiIdentifier)
+        return new Species.Builder(this.chebiIdentifier)
                 .name(this.name)
                 .assignFeature(new MolarMass(this.molarMass, PubChemDatabase.origin))
                 .assignFeature(new Smiles(this.smilesRepresentation, PubChemDatabase.origin))
                 .assignFeature(new LogP(this.logP, PubChemDatabase.origin))
+                .additionalIdentifier(new PubChemIdentifier("CID:" + this.pubChemIdentifier))
                 .build();
-
-        Annotation<PubChemIdentifier> pubChemIdentifierAnnotation = new Annotation<>(AnnotationType.ADDITIONAL_IDENTIFIER,
-                new PubChemIdentifier("CID:" + this.pubChemIdentifier));
-        result.addAnnotation(pubChemIdentifierAnnotation);
-
-        return result;
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
 
         switch (this.currentTag) {
             case "RecordNumber": {
@@ -111,7 +102,7 @@ class PubChemContentHandler implements ContentHandler {
                     this.inCanonicalSMILESInformation = false;
                 } else if (this.inComputedProperties) {
                     // set logP
-                    if ("Molecular Weight" .equals(new String(ch, start, length))) {
+                    if ("Molecular Weight".equals(new String(ch, start, length))) {
                         this.inMolecularWeightInformation = true;
                     }
                 } else if (this.inLogP && this.inLogPInformation) {

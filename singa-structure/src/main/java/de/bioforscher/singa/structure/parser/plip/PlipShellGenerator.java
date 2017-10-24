@@ -9,6 +9,16 @@ import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Calculates the shell of residues in indirect contact with the ligand utilizing PLIP interaction data. According to:
+ * <pre>
+ * Brodkin, HR, DeLateur, NA, Somarowthu, S, Mills, CL, Novak, WR, Beuning, PJ, Ringe, D, Ondrechen, MJ (2015).
+ * Prediction of distal residue participation in enzyme catalysis.
+ * Protein Sci., 24, 5:762-78.
+ * </pre>
+ *
+ * @author fk
+ */
 public class PlipShellGenerator {
 
     private final Chain chain;
