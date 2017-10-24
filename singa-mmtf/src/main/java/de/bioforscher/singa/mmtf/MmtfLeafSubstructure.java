@@ -86,6 +86,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         this.atomEndIndex = atomEndIndex;
         this.exchangeableFamilies = new HashSet<>();
         this.cachedAtoms = new HashMap<>();
+        this.removedAtoms = new HashSet<>();
     }
 
     /**

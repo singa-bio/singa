@@ -51,7 +51,7 @@ public class ConsensusAlignmentTest {
 
     @Test(expected = ConsensusException.class)
     public void shouldFailWithInputOfDifferentSize() {
-        this.input.get(0).addSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
+        this.input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
         ConsensusBuilder.create()
                 .inputStructuralMotifs(this.input)
                 .run();

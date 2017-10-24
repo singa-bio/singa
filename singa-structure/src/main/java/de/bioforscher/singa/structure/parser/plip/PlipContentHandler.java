@@ -387,8 +387,8 @@ public class PlipContentHandler implements ContentHandler {
             return;
         }
         // generate identifiers
-        final LeafIdentifier source = new LeafIdentifier(this.currentPdbIdentifier, 0, this.firstLeafChain, Integer.valueOf(this.firstLeafSerial));
-        final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 0, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
+        final LeafIdentifier source = new LeafIdentifier(this.currentPdbIdentifier, 1, this.firstLeafChain, Integer.valueOf(this.firstLeafSerial));
+        final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 1, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
         this.currentInteraction.setTarget(target);
         this.currentInteraction.setLigandCoordinate(new double[] {this.c1x, this.c1y, this.c1z});

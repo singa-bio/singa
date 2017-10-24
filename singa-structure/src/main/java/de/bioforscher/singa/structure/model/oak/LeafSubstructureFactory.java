@@ -9,8 +9,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptio
 
 import java.util.Map;
 
-import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilterType;
-
 /**
  * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the atoms
  * in the residues, where possible. No distance criterion is used but the knowledge of the residues and the usually
@@ -36,10 +34,9 @@ public class LeafSubstructureFactory {
         if (options.isOmittingHydrogen()) {
             // without hydrogens
             atoms.values().stream()
-                    .filter(AtomFilterType.HYDROGEN.getFilter())
+                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
                     .forEach(nucleotide::addAtom);
         } else {
-            // aasdasdasdasdasd
             atoms.values().forEach(nucleotide::addAtom);
         }
 
@@ -153,7 +150,7 @@ public class LeafSubstructureFactory {
         if (options.isOmittingHydrogen()) {
             // without hydrogens
             atoms.values().stream()
-                    .filter(AtomFilterType.HYDROGEN.getFilter())
+                    .filter(atom -> atom.getElement().getProtonNumber() != 1)
                     .forEach(aminoAcid::addAtom);
         } else {
             // all

@@ -1,11 +1,9 @@
-package de.bioforscher.singa.structure.physical.branches;
+package de.bioforscher.singa.structure.model.oak;
 
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
-import de.bioforscher.singa.structure.model.oak.StructuralMotif;
-import de.bioforscher.singa.structure.model.oak.StructuralMotifs;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Test;

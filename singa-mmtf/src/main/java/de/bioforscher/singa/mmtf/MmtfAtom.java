@@ -49,7 +49,7 @@ public class MmtfAtom implements Atom {
      */
     MmtfAtom(StructureDataInterface data, byte[] bytes, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
         this.bytes = bytes;
-        this.data = MmtfStructure.bytesToStructureData(bytes);
+        this.data = data;
         this.internalGroupIndex = internalGroupIndex;
         this.internalAtomIndex = internalAtomIndex;
         this.groupPositionIndex = groupPositionIndex;

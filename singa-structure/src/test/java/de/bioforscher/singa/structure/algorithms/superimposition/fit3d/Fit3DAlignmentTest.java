@@ -109,7 +109,7 @@ public class Fit3DAlignmentTest {
                 LeafIdentifiers.of("B-57", "B-102", "C-195"));
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
-                .target(target.getAllModels().get(0))
+                .target(target.getFirstModel())
                 .run();
         TreeMap<Double, SubstructureSuperimposition> matches = fit3d.getMatches();
         assertEquals(0.0000, matches.firstKey(), 1E-6);

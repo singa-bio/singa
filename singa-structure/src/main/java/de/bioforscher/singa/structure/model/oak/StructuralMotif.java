@@ -26,14 +26,15 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     private StructuralMotif(String identifier, List<LeafSubstructure<?>> leafSubstructures) {
         this(identifier);
-        leafSubstructures.forEach(this::addSubstructure);
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures) {
+            addLeafSubstructure(leafSubstructure);
+        }
     }
 
     private StructuralMotif(StructuralMotif structuralMotif) {
-        this.identifier = structuralMotif.identifier;
-        this.leafSubstructures = new LinkedHashMap<>();
+        this(structuralMotif.identifier);
         for (LeafSubstructure leafSubstructure : structuralMotif.leafSubstructures.values()) {
-            this.leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
+            addLeafSubstructure(leafSubstructure);
         }
     }
 
@@ -79,12 +80,12 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     @Override
     public List<LeafSubstructure<?>> getAllLeafSubstructures() {
-        return new ArrayList<>(leafSubstructures.values());
+        return new LinkedList<>(leafSubstructures.values());
     }
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final LeafSubstructure leafSubstructure = leafSubstructures.get(leafIdentifier);
+        final LeafSubstructure<?> leafSubstructure = leafSubstructures.get(leafIdentifier);
         if (leafSubstructure != null) {
             return Optional.of(leafSubstructure);
         }
@@ -98,9 +99,8 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
 
-    public void addSubstructure(LeafSubstructure leafSubstructure) {
+    public void addLeafSubstructure(LeafSubstructure leafSubstructure) {
         this.leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
-        this.leafSubstructures.put(leafSubstructure.getIdentifier(), (LeafSubstructure) leafSubstructure);
     }
 
 
@@ -224,7 +224,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     @Override
     public String toString() {
-        return this.identifier;
+        return generateMotifIdentifier(getAllLeafSubstructures());
     }
 
     @Override

@@ -1,11 +1,9 @@
-package de.bioforscher.singa.structure.physical.atoms;
+package de.bioforscher.singa.structure.model.oak;
 
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
-import de.bioforscher.singa.structure.model.oak.AtomName;
-import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Test;

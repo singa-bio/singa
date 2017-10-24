@@ -149,7 +149,8 @@ public interface LeafSubstructureContainer extends AtomContainer {
      */
     default List<Atom> getAllAtoms() {
         List<Atom> atoms = new ArrayList<>();
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+        final List<LeafSubstructure<?>> allLeafSubstructures = getAllLeafSubstructures();
+        for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
             atoms.addAll(leafSubstructure.getAllAtoms());
         }
         return atoms;

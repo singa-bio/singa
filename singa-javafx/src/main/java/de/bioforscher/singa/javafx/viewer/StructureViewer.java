@@ -1,13 +1,8 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.branches.Chain;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralModel;
-import de.bioforscher.singa.chemistry.physical.interactions.Bond;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.SplitPane;
@@ -27,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.ChainFilter;
 
 /**
  * @author cl

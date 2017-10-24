@@ -6,6 +6,7 @@ import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -208,7 +209,49 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     @Override
-    public String toString() {
-        return flatToString();
+    public Set<FamilyType> getExchangeableFamilies() {
+        return this.exchangeableFamilies;
     }
+
+    @Override
+    public void addExchangeableFamily(FamilyType exchangeableType) {
+        this.exchangeableFamilies.add(exchangeableType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OakLeafSubstructure<?> that = (OakLeafSubstructure<?>) o;
+
+        if (leafIdentifier != null ? !leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
+            return false;
+        return family != null ? family.equals(that.family) : that.family == null;
+    }
+
+    @Override
+    public String toString() {
+        return this.leafIdentifier.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
+        result = 31 * result + (family != null ? family.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String flatToString() {
+        return getClass().getSimpleName()+": "+getFamily().getThreeLetterCode()+" "+getIdentifier();
+    }
+
+    public String deepToString() {
+        return flatToString() + ", with Atoms: {"+getAllAtoms().stream()
+                .map(atom -> atom.getAtomName() + "-"+atom.getIdentifier())
+                .collect(Collectors.joining(", "))+"}";
+    }
+
+
 }

@@ -146,8 +146,8 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public List<LeafSubstructure> getAllLeafSubstructures() {
-        List<LeafSubstructure> leafSubstructures = new ArrayList<>();
+    public List<LeafSubstructure<?>> getAllLeafSubstructures() {
+        List<LeafSubstructure<?>> leafSubstructures = new ArrayList<>();
         List<Chain> allChains = getAllChains();
         for (Chain chain : allChains) {
             leafSubstructures.addAll(chain.getAllLeafSubstructures());
@@ -156,7 +156,7 @@ public class MmtfModel implements Model {
     }
 
     @Override
-    public Optional<LeafSubstructure> getLeafSubstructure(LeafIdentifier leafIdentifier) {
+    public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         Optional<Chain> chainOptional = getChain(leafIdentifier.getChainIdentifier());
         if (!chainOptional.isPresent()) {
             return Optional.empty();

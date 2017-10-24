@@ -41,14 +41,18 @@ public class MmtfChainTest {
 
     @Test
     public void getLeafSubstructure() throws Exception {
-        Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
-        if (!leafSubstructure.isPresent()) {
+        // ATOM    154  N   LEU A  64      13.596   6.125 -14.412  1.00  0.00           N
+        // ..
+        // ATOM    172 HD23 LEU A  64      11.462   1.727 -16.563  1.00  0.00           H
+        Optional<LeafSubstructure<?>> optionalLeafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
+        if (!optionalLeafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
         }
-        final LeafIdentifier identifier = leafSubstructure.get().getIdentifier();
-        assertEquals(1, identifier.getModelIdentifier());
-        assertEquals("A", identifier.getChainIdentifier());
-        assertEquals(64, identifier.getSerial());
+        final LeafSubstructure<?> leafSubstructure = optionalLeafSubstructure.get();
+        assertEquals(1, leafSubstructure.getIdentifier().getModelIdentifier());
+        assertEquals("A", leafSubstructure.getIdentifier().getChainIdentifier());
+        assertEquals("Leu", leafSubstructure.getThreeLetterCode());
+        assertEquals(64, leafSubstructure.getIdentifier().getSerial());
     }
 
 }

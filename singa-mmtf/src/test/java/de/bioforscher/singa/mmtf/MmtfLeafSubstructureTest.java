@@ -27,6 +27,9 @@ public class MmtfLeafSubstructureTest {
     @BeforeClass
     public static void prepareData() throws IOException {
         Structure structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+        // ATOM   2967  N   THR A 162      44.461  51.348  -6.215  1.00 13.02           N
+        // ...
+        // ATOM   2973  CG2 THR A 162      44.646  50.871  -9.169  1.00 11.44           C
         leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
         leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
     }
