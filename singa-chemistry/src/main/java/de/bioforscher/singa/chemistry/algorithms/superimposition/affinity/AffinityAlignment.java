@@ -49,7 +49,6 @@ public class AffinityAlignment {
     private double selfDissimilarity;
     private Map<StructuralMotif, List<StructuralMotif>> clusters;
     private double silhouetteCoefficient;
-
     private AffinityAlignment(Builder builder) {
 
         // get copy of input structural motifs
@@ -90,6 +89,10 @@ public class AffinityAlignment {
 
     public static InputStep create() {
         return new Builder();
+    }
+
+    public LabeledSymmetricMatrix<StructuralMotif> getDistanceMatrix() {
+        return this.distanceMatrix;
     }
 
     public double getSelfDissimilarity() {
@@ -201,7 +204,6 @@ public class AffinityAlignment {
         int clusterCounter = 0;
         for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : this.clusters.entrySet()) {
             String clusterBaseLocation = "cluster_" + (clusterCounter + 1) + "/";
-            List<StructuralMotif> currentCluster = entry.getValue();
             // write exemplar
             StructureWriter.writeLeafSubstructures(entry.getKey().getLeafSubstructures(),
                     outputPath.resolve(clusterBaseLocation + "exemplar_" + (clusterCounter + 1) + "_" + entry.getKey() + ".pdb"));
