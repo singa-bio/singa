@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Resources;
-import de.bioforscher.singa.structure.algorithms.superimposition.scoring.SubstitutionMatrix;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;

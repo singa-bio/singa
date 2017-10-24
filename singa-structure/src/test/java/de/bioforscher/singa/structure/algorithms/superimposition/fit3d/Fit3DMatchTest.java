@@ -1,12 +1,12 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
+package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

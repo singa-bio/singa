@@ -31,7 +31,7 @@ public class StructuresTest {
     @Test
     public void IsAlphaCarbonStructure() throws Exception {
         Structure alphaCarbonStructure = StructureParser.online()
-                .pdbIdentifier("1zlg")
+                .pdbIdentifier("1hrb")
                 .parse();
         assertTrue(Structures.isAlphaCarbonStructure(alphaCarbonStructure));
     }

@@ -28,8 +28,12 @@
         <option value="$PROJECT_DIR$/singa-all/pom.xml" />
         <option value="$PROJECT_DIR$/core/pom.xml" />
         <option value="$PROJECT_DIR$/benchmark/pom.xml" />
-        <option value="$PROJECT_DIR$/singa-mmtf/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/singa-benchmark/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="false" project-jdk-name="9-oracle" project-jdk-type="JavaSDK" />

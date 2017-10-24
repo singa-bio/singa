@@ -1,16 +1,17 @@
 package de.bioforscher.singa.javafx.renderer.graphs;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureSelector;
-import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
-import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
-import de.bioforscher.singa.chemistry.parser.plip.PlipShellGenerator;
-import de.bioforscher.singa.chemistry.physical.branches.Chain;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+
 import de.bioforscher.singa.mathematics.algorithms.graphs.NeighbourhoodExtractor;
 import de.bioforscher.singa.mathematics.graphs.model.GenericGraph;
 import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureSelector;
+import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
+import de.bioforscher.singa.structure.parser.plip.PlipParser;
+import de.bioforscher.singa.structure.parser.plip.PlipShellGenerator;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
 
@@ -31,7 +32,7 @@ public class GraphViewerPlayground {
 
         Chain chain = structure.getFirstChain();
 
-        LeafSubstructure<?, ?> reference = StructureSelector.selectFrom(chain)
+        LeafSubstructure<?> reference = StructureSelector.selectFrom(chain)
                 .atomContainer(831)
                 .selectAtomContainer();
 
@@ -40,13 +41,13 @@ public class GraphViewerPlayground {
 
         PlipShellGenerator plipShellGenerator = PlipShellGenerator.getInteractionShellsForLigand(chain, reference, interInteractions, ligandInteractions);
 
-        GenericGraph<LeafSubstructure<?, ?>> graph = plipShellGenerator.getGraph();
-        GenericNode<LeafSubstructure<?, ?>> referenceNode = graph.getNodeWithContent(reference).get();
+        GenericGraph<LeafSubstructure<?>> graph = plipShellGenerator.getGraph();
+        GenericNode<LeafSubstructure<?>> referenceNode = graph.getNodeWithContent(reference).get();
 
-        GenericGraph<LeafSubstructure<?, ?>> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 3);
-        List<GenericNode<LeafSubstructure<?, ?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
-        List<GenericNode<LeafSubstructure<?, ?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
-        List<GenericNode<LeafSubstructure<?, ?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
+        GenericGraph<LeafSubstructure<?>> subgraph = NeighbourhoodExtractor.extractNeighborhood(graph, referenceNode, 3);
+        List<GenericNode<LeafSubstructure<?>>> firstShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 1);
+        List<GenericNode<LeafSubstructure<?>>> secondShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 2);
+        List<GenericNode<LeafSubstructure<?>>> thirdShell = NeighbourhoodExtractor.extractShell(graph, referenceNode, 3);
 
         GraphDisplayApplication.graph = subgraph;
         LeafShellRenderer renderer = new LeafShellRenderer();
@@ -54,15 +55,15 @@ public class GraphViewerPlayground {
 
         renderer.setRenderBefore((currentGraph) -> {
             renderer.getGraphicsContext().setStroke(Color.DARKBLUE);
-            for (GenericNode<LeafSubstructure<?, ?>> shellNode : firstShell) {
+            for (GenericNode<LeafSubstructure<?>> shellNode : firstShell) {
                 renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             renderer.getGraphicsContext().setStroke(Color.RED);
-            for (GenericNode<LeafSubstructure<?, ?>> shellNode : secondShell) {
+            for (GenericNode<LeafSubstructure<?>> shellNode : secondShell) {
                 renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             renderer.getGraphicsContext().setStroke(Color.YELLOW);
-            for (GenericNode<LeafSubstructure<?, ?>> shellNode : thirdShell) {
+            for (GenericNode<LeafSubstructure<?>> shellNode : thirdShell) {
                 renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             return null;

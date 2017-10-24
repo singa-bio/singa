@@ -2,7 +2,11 @@ package de.bioforscher.singa.javafx.viewer;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
-import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.interfaces.Chain;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Model;
+import de.bioforscher.singa.structure.model.oak.*;
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.control.SplitPane;
@@ -40,14 +44,14 @@ public class StructureViewer extends Application {
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.3;
 
-    public static Structure structure;
+    public static OakStructure structure;
     public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
     private final Group displayGroup = new Group();
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final XForm XYRotate = new XForm();
     private final XForm XYTranslate = new XForm();
     private final XForm ZRotate = new XForm();
-    private Structure displayStructure;
+    private OakStructure displayStructure;
     private Map<String, PhongMaterial> chainMaterials;
     private XForm world = new XForm();
     private XForm moleculeGroup = new XForm();
@@ -82,8 +86,8 @@ public class StructureViewer extends Application {
 
         if (structure.getAllModels().size() > 1) {
             // add leafs
-            this.displayStructure = new Structure();
-            this.displayStructure.addBranchSubstructure(structure.getAllModels().get(0));
+            this.displayStructure = new OakStructure();
+            this.displayStructure.addModel((OakModel) structure.getAllModels().get(0));
         } else {
             this.displayStructure = structure;
         }
@@ -138,24 +142,20 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeafSubstructures().forEach(this::addLeafSubstructure);
-        // edges in chains (backbone connections)
-        this.displayStructure.getAllChains().forEach(this::addChainConnections);
+        this.displayStructure.getAllLeafSubstructures().stream()
+                .map(OakLeafSubstructure.class::cast)
+                .forEach(this::addLeafSubstructure);
         // add the created molecule to the world
         this.world.getChildren().addAll(this.moleculeGroup);
 
     }
 
-    private void addLeafSubstructure(LeafSubstructure<?, ?> leafSubstructure) {
-        leafSubstructure.getNodes().forEach(atom -> addAtom(leafSubstructure, atom));
-        leafSubstructure.getEdges().forEach(bond -> addLeafBond(leafSubstructure, bond));
+    private void addLeafSubstructure(OakLeafSubstructure<?> leafSubstructure) {
+        leafSubstructure.getAllAtoms().forEach(atom -> addAtom(leafSubstructure, atom));
+        leafSubstructure.getBonds().forEach(bond -> addLeafBond(leafSubstructure, bond));
     }
 
-    private void addChainConnections(Chain chain) {
-        chain.getEdges().forEach(bond -> addChainBond(chain, bond));
-    }
-
-    private void addAtom(LeafSubstructure<?, ?> origin, Atom atom) {
+    private void addAtom(LeafSubstructure<?> origin, Atom atom) {
         Sphere atomShape = new Sphere(1.0);
         atomShape.setMaterial(getMaterial(origin, atom));
         atomShape.setTranslateX(atom.getPosition().getX());
@@ -163,7 +163,7 @@ public class StructureViewer extends Application {
         atomShape.setTranslateZ(atom.getPosition().getZ());
 
         // add tooltip
-        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomNameString()) + ":" +
+        Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomName()) + ":" +
                 atom.getIdentifier() + ") of " + origin.getFamily().getThreeLetterCode() + ":" + origin.getIdentifier());
         Tooltip.install(atomShape, tooltip);
 
@@ -173,7 +173,7 @@ public class StructureViewer extends Application {
     private void fillTree() {
         TreeItem<String> rootItem = new TreeItem<>(structure.getPdbIdentifier());
 
-        for (StructuralModel model : structure.getAllModels()) {
+        for (Model model : structure.getAllModels()) {
             TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getIdentifier()));
             model.getAllChains().stream()
                     .sorted(Comparator.comparing(Chain::getIdentifier))
@@ -196,36 +196,38 @@ public class StructureViewer extends Application {
     }
 
     private void displayModel(final String identifier) {
-        this.displayStructure = new Structure();
+        this.displayStructure = new OakStructure();
         this.world = new XForm();
         this.moleculeGroup = new XForm();
-        this.displayStructure.addBranchSubstructure(structure.getAllModels().get(Integer.valueOf(identifier.replace("Model: ", ""))));
+        this.displayStructure.addModel((OakModel) structure.getAllModels().get(Integer.valueOf(identifier.replace("Model: ", ""))));
         buildDisplayedStructure();
         this.displayGroup.getChildren().retainAll();
         this.displayGroup.getChildren().add(this.world);
     }
 
     private void displayChain(final String identifier) {
-        this.displayStructure = new Structure();
+        this.displayStructure = new OakStructure();
         this.world = new XForm();
         this.moleculeGroup = new XForm();
-        Chain chain = structure.getAllChains().stream()
-                .filter(ChainFilter.isInChain(identifier.replace("Chain: ", "")))
+        OakChain chain = (OakChain) structure.getAllChains().stream()
+                .filter(aChain -> aChain.getIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
-        this.displayStructure.addBranchSubstructure(chain);
+        final OakModel model = new OakModel(1);
+        model.addChain(chain);
+        this.displayStructure.addModel(model);
         buildDisplayedStructure();
         this.displayGroup.getChildren().retainAll();
         this.displayGroup.getChildren().add(this.world);
     }
 
-    private void addLeafBond(LeafSubstructure origin, Bond bond) {
+    private void addLeafBond(LeafSubstructure origin, OakBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         this.moleculeGroup.getChildren().add(bondShape);
     }
 
-    private void addChainBond(Chain origin, Bond bond) {
+    private void addChainBond(Chain origin, OakBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
         this.moleculeGroup.getChildren().add(bondShape);
@@ -267,7 +269,7 @@ public class StructureViewer extends Application {
 
     }
 
-    private PhongMaterial getMaterial(LeafSubstructure origin, Bond edge) {
+    private PhongMaterial getMaterial(LeafSubstructure origin, OakBond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else if (colorScheme == ColorScheme.BY_FAMILY) {
@@ -277,7 +279,7 @@ public class StructureViewer extends Application {
         }
     }
 
-    private PhongMaterial getMaterial(Chain origin, Bond edge) {
+    private PhongMaterial getMaterial(Chain origin, OakBond edge) {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {

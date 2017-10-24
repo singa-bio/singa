@@ -1,9 +1,9 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics;
+package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.Fit3DMatch;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vector;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,7 @@ public class FofanovEstimation implements StatisticalModel {
     private void createTemporaryDirectory() throws IOException {
         this.temporaryDirectoryPath = Files.createTempDirectory("fit3d_");
         this.rmsdValuesPath = this.temporaryDirectoryPath.resolve("rmsd.csv");
-        InputStream resourceAsStream = Resources.getResourceAsStream("de/bioforscher/singa/chemistry/algorithms/superimposition/fit3d/statistics/fofanov.R");
+        InputStream resourceAsStream = Resources.getResourceAsStream("de/bioforscher/singa/structure/algorithms/superimposition/fit3d/statistics/statistics/fofanov.R");
         this.scriptPath = this.temporaryDirectoryPath.resolve("fofanov.R");
         Files.copy(resourceAsStream, this.scriptPath);
         logger.debug("script fofanov.R copied to {}", this.scriptPath);

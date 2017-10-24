@@ -3,13 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/singa-all/singa-all.iml" filepath="$PROJECT_DIR$/singa-all/singa-all.iml" />
-      <module fileurl="file://$PROJECT_DIR$/singa-benchmark/singa-benchmark.iml" filepath="$PROJECT_DIR$/singa-benchmark/singa-benchmark.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-chemistry/singa-chemistry.iml" filepath="$PROJECT_DIR$/singa-chemistry/singa-chemistry.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-core/singa-core.iml" filepath="$PROJECT_DIR$/singa-core/singa-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-features/singa-features.iml" filepath="$PROJECT_DIR$/singa-features/singa-features.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-javafx/singa-javafx.iml" filepath="$PROJECT_DIR$/singa-javafx/singa-javafx.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" filepath="$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" />
-      <module fileurl="file://$PROJECT_DIR$/singa-mmtf/singa-mmtf.iml" filepath="$PROJECT_DIR$/singa-mmtf/singa-mmtf.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-simulation/singa-simulation.iml" filepath="$PROJECT_DIR$/singa-simulation/singa-simulation.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-structure/singa-structure.iml" filepath="$PROJECT_DIR$/singa-structure/singa-structure.iml" />
     </modules>

@@ -1,19 +1,8 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics.StatisticalModel;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserException;
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
-import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
-import de.bioforscher.singa.chemistry.physical.model.Structures;
-import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Model;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
@@ -104,7 +93,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
         Collections.sort(this.allMatches);
 
-        // calculate statistics
+        // calculate de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.statistics
         if (this.statisticalModel != null) {
             try {
                 this.statisticalModel.calculatePvalues(this.allMatches);

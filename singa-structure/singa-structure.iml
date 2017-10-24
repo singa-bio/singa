@@ -19,23 +19,18 @@
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />
     <orderEntry type="module" module-name="singa-mathematics" />
-    <orderEntry type="library" name="Maven: uk.ac.ebi.chebi.webapps.chebiWS.client:chebiWS-client:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.ws:jaxws-rt:2.1.7" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.1.11" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.stream.buffer:streambuffer:0.9" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.woodstox:wstx-asl:3.2.3" level="project" />
-    <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.jvnet.staxex:stax-ex:1.2" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.stream:stax-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.org.apache.xml.internal:resolver:20050927" level="project" />
-    <orderEntry type="library" name="Maven: org.jvnet:mimepull:1.3" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.ws:jaxws-api:2.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.ws:jaxws-tools:2.1.3" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-xjc:2.1.6" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.xml.messaging.saaj:saaj-impl:1.3.2" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.soap:saaj-api:1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.msgpack:jackson-dataformat-msgpack:0.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.msgpack:msgpack-core:0.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.6.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-api:2.6.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-core:2.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />

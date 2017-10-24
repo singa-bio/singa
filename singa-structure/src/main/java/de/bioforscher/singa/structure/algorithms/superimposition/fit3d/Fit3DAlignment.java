@@ -6,12 +6,13 @@ import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.FofanovEstimation;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.model.oak.Structures;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class Fit3DAlignment implements Fit3D {
     }
 
     /**
-     * Calculates statistics for the given {@link StatisticalModel} if any.
+     * Calculates de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.statistics for the given {@link StatisticalModel} if any.
      */
     private void calculateStatistics() {
         if (this.statisticalModel != null) {

@@ -1,19 +1,7 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
-import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.families.MatcherFamily;
-import de.bioforscher.singa.chemistry.physical.families.NucleotideFamily;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
-import de.bioforscher.singa.chemistry.physical.model.LeafIdentifiers;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.AtomFilter;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
-import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;

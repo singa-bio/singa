@@ -1,6 +1,7 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d;
+package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
+
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 
 import java.util.StringJoiner;
 

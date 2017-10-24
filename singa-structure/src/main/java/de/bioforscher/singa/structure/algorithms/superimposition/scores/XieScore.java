@@ -1,4 +1,4 @@
-package de.bioforscher.singa.structure.algorithms.superimposition.scoring;
+package de.bioforscher.singa.structure.algorithms.superimposition.scores;
 
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;

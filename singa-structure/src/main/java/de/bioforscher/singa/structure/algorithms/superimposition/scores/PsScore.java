@@ -1,14 +1,14 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.scores;
+package de.bioforscher.singa.structure.algorithms.superimposition.scores;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class PsScore {
 
-    private static final List<EnumSet<AminoAcidFamily>> AMINO_ACID_GROUPS;
+    private static final List<EnumSet<?>> AMINO_ACID_GROUPS;
 
     static {
         AMINO_ACID_GROUPS = new ArrayList<>();
@@ -55,7 +55,7 @@ public class PsScore {
         calculateSignificance();
     }
 
-    private static boolean belongToSameGroup(Pair<LeafSubstructure<?, ?>> leafSubstructurePair) {
+    private static boolean belongToSameGroup(Pair<LeafSubstructure<?>> leafSubstructurePair) {
         return AMINO_ACID_GROUPS.stream()
                 .anyMatch(group -> group.contains(leafSubstructurePair.getFirst().getFamily())
                         && group.contains(leafSubstructurePair.getSecond().getFamily()));
@@ -93,8 +93,8 @@ public class PsScore {
 
         double sumValue = 0.0;
         for (int i = 0; i < this.substructureSuperimposition.getReference().size(); i++) {
-            LeafSubstructure<?, ?> referenceLeafSubstructure = this.substructureSuperimposition.getReference().get(i);
-            LeafSubstructure<?, ?> queryLeafSubstructure = this.substructureSuperimposition.getMappedCandidate().get(i);
+            LeafSubstructure<?> referenceLeafSubstructure = this.substructureSuperimposition.getReference().get(i);
+            LeafSubstructure<?> queryLeafSubstructure = this.substructureSuperimposition.getMappedCandidate().get(i);
 
             double distance = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(referenceLeafSubstructure.getPosition(), queryLeafSubstructure.getPosition());
             double distanceScalingFactor = 0.70 * Math.pow((this.queryLength - 5), 0.25) - 0.2;
@@ -106,12 +106,12 @@ public class PsScore {
         return (1.0 / this.queryLength) * sumValue;
     }
 
-    private double calculateR(LeafSubstructure<?, ?> referenceLeafSubstructure, LeafSubstructure<?, ?> querylLeafSubstructure) {
+    private double calculateR(LeafSubstructure<?> referenceLeafSubstructure, LeafSubstructure<?> querylLeafSubstructure) {
         boolean belongToSameGroup = belongToSameGroup(new Pair<>(referenceLeafSubstructure, querylLeafSubstructure));
         return Math.max(0.8, belongToSameGroup ? 1.0 : 0.0);
     }
 
-    private double calculateP(LeafSubstructure<?, ?> referenceLeafSubstructure, LeafSubstructure<?, ?> querylLeafSubstructure) {
+    private double calculateP(LeafSubstructure<?> referenceLeafSubstructure, LeafSubstructure<?> querylLeafSubstructure) {
         if (referenceLeafSubstructure.getFamily() != AminoAcidFamily.GLYCINE
                 && querylLeafSubstructure.getFamily() != AminoAcidFamily.GLYCINE) {
             double theta = determineAlphaBetaVector(referenceLeafSubstructure).angleTo(determineAlphaBetaVector(querylLeafSubstructure));
@@ -128,7 +128,7 @@ public class PsScore {
         }
     }
 
-    private Vector3D determineAlphaBetaVector(LeafSubstructure<?, ?> leafSubstructure) {
+    private Vector3D determineAlphaBetaVector(LeafSubstructure<?> leafSubstructure) {
         return this.alphaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition()
                 .subtract(this.betaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition());
     }

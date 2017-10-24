@@ -1,4 +1,4 @@
-package de.bioforscher.singa.mmtf;
+package de.bioforscher.singa.structure.model.mmtf;
 
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;

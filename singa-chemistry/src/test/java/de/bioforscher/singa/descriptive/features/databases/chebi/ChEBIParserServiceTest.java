@@ -3,7 +3,6 @@ package de.bioforscher.singa.descriptive.features.databases.chebi;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIImageService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBISearchService;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import org.junit.Test;
 

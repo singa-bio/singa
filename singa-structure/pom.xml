@@ -18,6 +18,16 @@
             <artifactId>singa-chemistry</artifactId>
             <version>0.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>mmtf-codec</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>mmtf-api</artifactId>
+            <version>1.0.7</version>
+        </dependency>
     </dependencies>
 
 </project>

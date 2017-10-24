@@ -1,4 +1,4 @@
-package de.bioforscher.singa.mmtf;
+package de.bioforscher.singa.structure.model.mmtf;
 
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.*;

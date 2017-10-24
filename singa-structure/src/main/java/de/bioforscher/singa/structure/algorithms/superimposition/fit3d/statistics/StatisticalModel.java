@@ -1,6 +1,7 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.statistics;
+package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.fit3d.Fit3DMatch;
+
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DMatch;
 
 import java.io.IOException;
 import java.util.List;

@@ -175,7 +175,7 @@ public class StructureParserTest {
     @Test
     public void shouldParseMultipleStructures() {
         // all have the ligand SO4
-        List<Structure> structures = online()
+        List<Structure> structures = mmtf()
                 .pdbIdentifiers(Arrays.asList("5F3P", "5G5T", "5J6Q", "5MAT"))
                 .parse();
     }

@@ -1,4 +1,4 @@
-package de.bioforscher.singa.structure.algorithms.superimposition.scoring;
+package de.bioforscher.singa.structure.algorithms.superimposition.scores;
 
 import org.junit.Test;
 

@@ -114,7 +114,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public Optional<Atom> getAtomByName(String atomName) {
-        for (OakAtom graphAtom : atoms.values()) {
+        for (OakAtom graphAtom : this.atoms.values()) {
             if (graphAtom.getAtomName().equals(atomName)) {
                 return Optional.of(graphAtom);
             }
@@ -174,6 +174,10 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         }
     }
 
+    public Collection<OakBond> getBonds() {
+        return this.bonds.values();
+    }
+
     /**
      * Adds a bond connecting the the given atoms. The order of the given atoms does not matter, but is retained. The
      * bond type can be specified beforehand and the pdbIdentifier of the edge is used as the identifer in the leaf.
@@ -199,7 +203,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         if (source == null || target == null) {
             return -1;
         }
-        OakBond bond = new OakBond(nextEdgeIdentifier++);
+        OakBond bond = new OakBond(this.nextEdgeIdentifier++);
         bond.setSource(source);
         bond.setTarget(target);
         this.bonds.put(bond.getIdentifier(), bond);
@@ -225,9 +229,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
         OakLeafSubstructure<?> that = (OakLeafSubstructure<?>) o;
 
-        if (leafIdentifier != null ? !leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
+        if (this.leafIdentifier != null ? !this.leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
             return false;
-        return family != null ? family.equals(that.family) : that.family == null;
+        return this.family != null ? this.family.equals(that.family) : that.family == null;
     }
 
     @Override
@@ -237,8 +241,8 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public int hashCode() {
-        int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
-        result = 31 * result + (family != null ? family.hashCode() : 0);
+        int result = this.leafIdentifier != null ? this.leafIdentifier.hashCode() : 0;
+        result = 31 * result + (this.family != null ? this.family.hashCode() : 0);
         return result;
     }
 

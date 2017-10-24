@@ -1,20 +1,21 @@
-package de.bioforscher.singa.chemistry.algorithms.superimposition.affinity;
+package de.bioforscher.singa.structure.algorithms.superimposition.affinity;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.consensus.ConsensusAlignment;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.consensus.ConsensusBuilder;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeFactory;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationSchemeType;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter;
+
 import de.bioforscher.singa.mathematics.algorithms.clustering.AffinityPropagation;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.algorithms.superimposition.consensus.ConsensusAlignment;
+import de.bioforscher.singa.structure.algorithms.superimposition.consensus.ConsensusBuilder;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class AffinityAlignment {
 
         // check if all substructures are of the same size
         if (this.input.stream()
-                .map(StructuralMotif::getLeafSubstructures)
+                .map(StructuralMotif::getAllLeafSubstructures)
                 .map(List::size)
                 .collect(Collectors.toSet()).size() != 1) {
             throw new IllegalArgumentException("all substructures must contain the same number of leaf structures to " +
@@ -117,16 +118,16 @@ public class AffinityAlignment {
                                     reference,
                                     structuralMotif, this.atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getOrderedLeafSubstructures(),
-                                    structuralMotif.getOrderedLeafSubstructures(), this.atomFilter);
+                                    reference.getAllLeafSubstructures(),
+                                    structuralMotif.getAllLeafSubstructures(), this.atomFilter);
                 } else {
                     superimposition = this.idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
                                     structuralMotif, this.representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getOrderedLeafSubstructures(),
-                                    structuralMotif.getOrderedLeafSubstructures(), this.representationScheme);
+                                    reference.getAllLeafSubstructures(),
+                                    structuralMotif.getAllLeafSubstructures(), this.representationScheme);
                 }
                 alignedCluster.add(StructuralMotif.fromLeafSubstructures(superimposition.getMappedFullCandidate()));
             }
@@ -169,16 +170,16 @@ public class AffinityAlignment {
                                     reference,
                                     candidate, this.atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getOrderedLeafSubstructures(),
-                                    candidate.getOrderedLeafSubstructures(), this.atomFilter);
+                                    reference.getAllLeafSubstructures(),
+                                    candidate.getAllLeafSubstructures(), this.atomFilter);
                 } else {
                     superimposition = this.idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
                                     candidate, this.representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                    reference.getOrderedLeafSubstructures(),
-                                    candidate.getOrderedLeafSubstructures(), this.representationScheme);
+                                    reference.getAllLeafSubstructures(),
+                                    candidate.getAllLeafSubstructures(), this.representationScheme);
                 }
 
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();
@@ -203,11 +204,11 @@ public class AffinityAlignment {
             String clusterBaseLocation = "cluster_" + (clusterCounter + 1) + "/";
             List<StructuralMotif> currentCluster = entry.getValue();
             // write exemplar
-            StructureWriter.writeLeafSubstructures(entry.getKey().getLeafSubstructures(),
+            StructureWriter.writeLeafSubstructures(entry.getKey().getAllLeafSubstructures(),
                     outputPath.resolve(clusterBaseLocation + "exemplar_" + (clusterCounter + 1) + "_" + entry.getKey() + ".pdb"));
             // write cluster members
             for (StructuralMotif structuralMotif : entry.getValue()) {
-                StructureWriter.writeLeafSubstructures(structuralMotif.getLeafSubstructures(),
+                StructureWriter.writeLeafSubstructures(structuralMotif.getAllLeafSubstructures(),
                         outputPath.resolve(clusterBaseLocation + structuralMotif + ".pdb"));
             }
             clusterCounter++;

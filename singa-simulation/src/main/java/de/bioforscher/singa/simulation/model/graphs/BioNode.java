@@ -121,4 +121,8 @@ public class BioNode extends AbstractNode<BioNode, Vector2D, Integer> {
         return "BioNode [id=" + this.getIdentifier() + "]";
     }
 
+    @Override
+    public BioNode getCopy() {
+        return null;
+    }
 }

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation.*;
+
 /**
  * This iterator administers each structure that should be parsed and its origin.
  *
@@ -37,8 +39,8 @@ class StructureContentIterator implements Iterator<List<String>> {
     /**
      * The location the files should be parsed from.
      */
-    private enum SourceLocation {
-        ONLINE, OFFLINE
+    enum SourceLocation {
+        ONLINE_PDB, ONLINE_MMTF, OFFLINE
     }
 
     /**
@@ -116,8 +118,8 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param identifier The identifier that is to be parsed.
      */
-    StructureContentIterator(String identifier) {
-        this(String.class, Collections.singletonList(identifier));
+    StructureContentIterator(String identifier, SourceLocation sourceLocation) {
+        this(String.class, Collections.singletonList(identifier), sourceLocation);
     }
 
     /**
@@ -126,7 +128,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param path The path of a file that is to be parsed.
      */
     StructureContentIterator(Path path) {
-        this(Path.class, Collections.singletonList(path));
+        this(Path.class, Collections.singletonList(path), OFFLINE);
     }
 
     /**
@@ -135,7 +137,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param file The  file that is to be parsed.
      */
     StructureContentIterator(File file) {
-        this(File.class, Collections.singletonList(file));
+        this(File.class, Collections.singletonList(file), OFFLINE);
     }
 
     /**
@@ -184,12 +186,12 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param mapping The pdb identifier - chain identifier mapping.
      */
-    StructureContentIterator(List<Pair<String>> mapping) {
+    StructureContentIterator(List<Pair<String>> mapping, SourceLocation sourceLocation) {
         this.paths = new ArrayList<>();
         this.identifiers = new ArrayList<>();
         this.pdbIdentifiers = new ArrayList<>();
         this.chains = new ArrayList<>();
-        prepareMappedIdentifiers(mapping);
+        prepareMappedIdentifiers(mapping, sourceLocation);
     }
 
     /**
@@ -199,7 +201,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param identifiers The identifiers to parse
      */
     @SuppressWarnings("unchecked")
-    StructureContentIterator(Class<?> context, List<?> identifiers) {
+    StructureContentIterator(Class<?> context, List<?> identifiers, SourceLocation sourceLocation) {
         this.paths = new ArrayList<>();
         this.identifiers = new ArrayList<>();
         this.pdbIdentifiers = new ArrayList<>();
@@ -207,7 +209,7 @@ class StructureContentIterator implements Iterator<List<String>> {
 
         if (context.equals(String.class)) {
             // pdbIdentifiers for pdb online
-            prepareIdentifiers((List<String>) identifiers);
+            prepareIdentifiers((List<String>) identifiers, sourceLocation);
         } else if (context.equals(Path.class)) {
             // paths
             prepareOfflinePaths((List<Path>) identifiers);
@@ -222,10 +224,12 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param identifiers The identifiers to be parsed.
      */
-    private void prepareIdentifiers(List<String> identifiers) {
+    private void prepareIdentifiers(List<String> identifiers, SourceLocation sourceLocation) {
         for (String identifier : identifiers) {
             try {
-                this.identifiers.add(new URL(String.format(PDB_FETCH_URL, identifier)));
+                if (sourceLocation == ONLINE_PDB) {
+                    this.identifiers.add(new URL(String.format(PDB_FETCH_URL, identifier)));
+                }
                 this.pdbIdentifiers.add(identifier);
             } catch (MalformedURLException e) {
                 throw new UncheckedIOException("Malformed URL to PDB for identifier " + identifier, e);
@@ -233,7 +237,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
         this.currentURL = this.identifiers.iterator();
         this.pdbIdentifierIterator = this.pdbIdentifiers.iterator();
-        this.location = SourceLocation.ONLINE;
+        this.location = sourceLocation;
     }
 
     /**
@@ -244,7 +248,7 @@ class StructureContentIterator implements Iterator<List<String>> {
     private void prepareOfflinePaths(List<Path> paths) {
         this.paths = paths;
         this.currentPath = this.paths.iterator();
-        this.location = SourceLocation.OFFLINE;
+        this.location = OFFLINE;
     }
 
     /**
@@ -257,7 +261,7 @@ class StructureContentIterator implements Iterator<List<String>> {
             this.paths.add(file.toPath());
         }
         this.currentPath = this.paths.iterator();
-        this.location = SourceLocation.OFFLINE;
+        this.location = OFFLINE;
     }
 
     /**
@@ -272,7 +276,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
         this.currentPath = this.paths.iterator();
         this.pdbIdentifierIterator = this.pdbIdentifiers.iterator();
-        this.location = SourceLocation.OFFLINE;
+        this.location = OFFLINE;
     }
 
     /**
@@ -289,7 +293,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         this.currentPath = this.paths.iterator();
         this.pdbIdentifierIterator = this.pdbIdentifiers.iterator();
         this.chainIdentifierIterator = this.chains.iterator();
-        this.location = SourceLocation.OFFLINE;
+        this.location = OFFLINE;
     }
 
     /**
@@ -297,10 +301,12 @@ class StructureContentIterator implements Iterator<List<String>> {
      *
      * @param mapping The pdb identifier - chain identifier mapping.
      */
-    private void prepareMappedIdentifiers(List<Pair<String>> mapping) {
+    private void prepareMappedIdentifiers(List<Pair<String>> mapping, SourceLocation sourceLocation) {
         for (Pair<String> pair : mapping) {
             try {
-                this.identifiers.add(new URL(String.format(PDB_FETCH_URL, pair.getFirst())));
+                if (sourceLocation == ONLINE_PDB) {
+                    this.identifiers.add(new URL(String.format(PDB_FETCH_URL, pair.getFirst())));
+                }
                 this.pdbIdentifiers.add(pair.getFirst());
                 this.chains.add(pair.getSecond());
             } catch (MalformedURLException e) {
@@ -310,7 +316,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         this.currentURL = this.identifiers.iterator();
         this.pdbIdentifierIterator = this.pdbIdentifiers.iterator();
         this.chainIdentifierIterator = this.chains.iterator();
-        this.location = SourceLocation.ONLINE;
+        this.location = sourceLocation;
     }
 
     /**
@@ -342,8 +348,8 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @return The the number of enqueued structures to parse.
      */
     int getNumberOfQueuedStructures() {
-        if (this.location == SourceLocation.ONLINE) {
-            return this.identifiers.size();
+        if (this.location == ONLINE_PDB) {
+            return this.pdbIdentifiers.size();
         } else {
             return this.paths.size();
         }
@@ -355,8 +361,8 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @return The the number of structures still to be parsed.
      */
     int getNumberOfRemainingStructures() {
-        if (this.location == SourceLocation.ONLINE) {
-            return this.identifiers.size() - this.progressCounter;
+        if (this.location == ONLINE_PDB) {
+            return this.pdbIdentifiers.size() - this.progressCounter;
         } else {
             return this.paths.size() - this.progressCounter;
         }
@@ -399,8 +405,10 @@ class StructureContentIterator implements Iterator<List<String>> {
 
     @Override
     public boolean hasNext() {
-        if (this.location == SourceLocation.ONLINE) {
+        if (this.location == ONLINE_PDB) {
             return this.currentURL.hasNext();
+        } else if (this.location == ONLINE_MMTF) {
+            return this.pdbIdentifierIterator.hasNext();
         } else {
             return this.currentPath.hasNext();
         }
@@ -417,7 +425,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                 logger.debug("Parsing structure {}.", this.currentPdbIdentifier);
             }
         }
-        if (this.location == SourceLocation.OFFLINE) {
+        if (this.location == OFFLINE) {
             try {
                 final Path path = this.currentPath.next();
                 // remove extension
@@ -432,7 +440,7 @@ class StructureContentIterator implements Iterator<List<String>> {
             } finally {
                 this.progressCounter++;
             }
-        } else {
+        } else if (this.location == ONLINE_PDB) {
             try {
                 URL url = this.currentURL.next();
                 this.currentSource = url.getFile();
@@ -443,6 +451,8 @@ class StructureContentIterator implements Iterator<List<String>> {
             } finally {
                 this.progressCounter++;
             }
+        } else {
+            return Collections.singletonList(this.currentPdbIdentifier);
         }
 
     }

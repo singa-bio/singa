@@ -1,4 +1,4 @@
-package de.bioforscher.singa.structure.algorithms.superimposition.scoring;
+package de.bioforscher.singa.structure.algorithms.superimposition.scores;
 
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
@@ -19,8 +19,8 @@ import java.util.List;
  */
 public enum SubstitutionMatrix {
 
-    BLOSUM_45("de/bioforscher/singa/structure/algorithms/superimposition/scoring/blosum45.csv"),
-    MC_LACHLAN("de/bioforscher/singa/structure/algorithms/superimposition/scoring/mclachlan.csv");
+    BLOSUM_45("de/bioforscher/singa/structure/algorithms/superimposition/scores/blosum45.csv"),
+    MC_LACHLAN("de/bioforscher/singa/structure/algorithms/superimposition/scores/mclachlan.csv");
 
     private LabeledSymmetricMatrix<StructuralFamily> matrix;
 

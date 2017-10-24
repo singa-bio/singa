@@ -1,17 +1,5 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposer;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimposition;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.SubstructureSuperimpositionException;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.PsScore;
-import de.bioforscher.singa.chemistry.algorithms.superimposition.scores.XieScore;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureWriter;
-import de.bioforscher.singa.chemistry.physical.atoms.Atom;
-import de.bioforscher.singa.chemistry.physical.atoms.representations.RepresentationScheme;
-import de.bioforscher.singa.chemistry.physical.branches.StructuralMotif;
-import de.bioforscher.singa.chemistry.physical.families.AminoAcidFamily;
-import de.bioforscher.singa.chemistry.physical.families.substitution.matrices.SubstitutionMatrix;
-import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
@@ -20,8 +8,9 @@ import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSup
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
-import de.bioforscher.singa.structure.algorithms.superimposition.scoring.SubstitutionMatrix;
-import de.bioforscher.singa.structure.algorithms.superimposition.scoring.XieScore;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.PsScore;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.XieScore;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
@@ -177,8 +166,8 @@ public class Fit3DSiteAlignment implements Fit3D {
     }
 
     private void calculatePsScore() {
-        this.psScore = PsScore.of(this.currentBestSuperimposition, this.site1.getLeafSubstructures().size(),
-                this.site2.getLeafSubstructures().size());
+        this.psScore = PsScore.of(this.currentBestSuperimposition, this.site1.getAllLeafSubstructures().size(),
+                this.site2.getAllLeafSubstructures().size());
     }
 
     /**

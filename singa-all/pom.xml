@@ -199,7 +199,6 @@
     </profiles>
 
     <modules>
-        <module>../singa-benchmark</module>
         <module>../singa-core</module>
         <module>../singa-mathematics</module>
         <module>../singa-features</module>

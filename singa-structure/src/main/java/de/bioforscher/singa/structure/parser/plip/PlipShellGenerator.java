@@ -27,7 +27,7 @@ public class PlipShellGenerator {
     private final InteractionContainer referenceInteractions;
     private final Map<InteractionShell, List<LeafSubstructure>> shells;
 
-    private GenericGraph<LeafSubstructure> graph;
+    private GenericGraph<LeafSubstructure<?>> graph;
 
     private PlipShellGenerator(Chain chain, LeafSubstructure reference, InteractionContainer interChainInteractions,
                                InteractionContainer referenceInteractions) {
@@ -48,7 +48,7 @@ public class PlipShellGenerator {
     }
 
     private void computeShells() {
-        GenericNode<LeafSubstructure> referenceNode = this.graph.getNodeWithContent(this.reference)
+        GenericNode<LeafSubstructure<?>> referenceNode = this.graph.getNodeWithContent(this.reference)
                 .orElseThrow(() -> new IllegalArgumentException("No such reference node in interaction graph."));
         for (InteractionShell interactionShell : InteractionShell.values()) {
             this.shells.put(interactionShell, interactionShell.from(this.graph, referenceNode));
@@ -86,7 +86,7 @@ public class PlipShellGenerator {
         }
     }
 
-    public GenericGraph<LeafSubstructure> getGraph() {
+    public GenericGraph<LeafSubstructure<?>> getGraph() {
         return this.graph;
     }
 
@@ -94,8 +94,8 @@ public class PlipShellGenerator {
 
         FIRST, SECOND, THIRD;
 
-        public List<LeafSubstructure> from(GenericGraph<LeafSubstructure> graph,
-                                           GenericNode<LeafSubstructure> referenceNode) {
+        public List<LeafSubstructure> from(GenericGraph<LeafSubstructure<?>> graph,
+                                           GenericNode<LeafSubstructure<?>> referenceNode) {
             return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal() + 1).stream()
                     .map(GenericNode::getContent)
                     .collect(Collectors.toList());
