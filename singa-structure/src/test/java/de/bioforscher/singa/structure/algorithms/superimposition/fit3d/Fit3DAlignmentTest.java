@@ -98,6 +98,22 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
+    public void shouldRunFit3DAlignmentBatchWithChainList() {
+        Structure motifContainingStructure = StructureParser.local()
+                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+                .parse();
+        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
+                LeafIdentifiers.of("E-57", "E-102", "E-195"));
+        StructureParser.MultiParser multiParser = StructureParser.mmtf()
+                .chainList(Paths.get("/home/fkaiser/Workspace/git/gmlvq_main/data/csa_new/nrpdb_BLAST_10e80.txt"), "_");
+        Fit3DBuilder.create()
+                .query(this.queryMotif)
+                .targets(multiParser)
+                .maximalParallelism()
+                .run();
+    }
+
+    @Test
     public void shouldFindInterMolecularMatches() throws IOException {
         Structure target = StructureParser.online()
                 .pdbIdentifier("4CHA")

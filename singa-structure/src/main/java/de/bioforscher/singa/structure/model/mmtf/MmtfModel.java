@@ -28,17 +28,14 @@ public class MmtfModel implements Model {
      * The original data.
      */
     private StructureDataInterface data;
-
     /**
      * The chains that have already been requested.
      */
     private HashMap<String, MmtfChain> cachedChains;
-
     /**
      * The index of this model in the model data array (the model identifier is the model index + 1).
      */
     private int modelIndex;
-
     /**
      * A mapping of chain identifiers relevant for this model, and their respective identifiers in the chain data
      * arrays.
@@ -95,6 +92,12 @@ public class MmtfModel implements Model {
         this.data = mmtfModel.data;
         this.modelIndex = mmtfModel.modelIndex;
         this.chainMap = new HashMap<>(mmtfModel.chainMap);
+        this.cachedChains = new HashMap<>();
+    }
+
+    @Override
+    public String toString() {
+        return "MmtfModel{" + this.data.getStructureId() + "," + getIdentifier() + "}";
     }
 
     @Override

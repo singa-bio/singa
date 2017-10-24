@@ -348,7 +348,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @return The the number of enqueued structures to parse.
      */
     int getNumberOfQueuedStructures() {
-        if (this.location == ONLINE_PDB) {
+        if (this.location == ONLINE_PDB || this.location == ONLINE_MMTF) {
             return this.pdbIdentifiers.size();
         } else {
             return this.paths.size();
@@ -361,7 +361,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @return The the number of structures still to be parsed.
      */
     int getNumberOfRemainingStructures() {
-        if (this.location == ONLINE_PDB) {
+        if (this.location == ONLINE_PDB || this.location == ONLINE_MMTF) {
             return this.pdbIdentifiers.size() - this.progressCounter;
         } else {
             return this.paths.size() - this.progressCounter;
