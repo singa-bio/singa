@@ -152,7 +152,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
 
         if (this.currentBestSuperimposition != null) {
-            this.matches.add(Fit3DMatch.of(this.currentBestSuperimposition, this.currentBestScore));
+            this.matches.add(Fit3DMatch.of(this.currentBestScore, this.currentBestSuperimposition));
             if (!this.containsNonAminoAcids) {
                 calculateXieScore();
                 calculatePsScore();

@@ -144,8 +144,9 @@ public class Fit3DAlignment implements Fit3D {
      * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
      */
     private void computeAlignments(Set<LeafSubstructure<?, ?>> leafSubstructures) {
-
+        // check if the match is redundant on residue level
         boolean redundant = this.matches.stream()
+                .filter(match -> match.getSubstructureSuperimposition() != null)
                 .anyMatch(match -> match.getSubstructureSuperimposition().getCandidate().containsAll(leafSubstructures));
         if (redundant) {
             logger.trace("redundant candidate {} skipped", leafSubstructures);
@@ -170,7 +171,21 @@ public class Fit3DAlignment implements Fit3D {
                                 alignmentCandidate, this.atomFilter);
             }
             if (superimposition.getRmsd() <= this.rmsdCutoff) {
-                this.matches.add(Fit3DMatch.of(superimposition, superimposition.getRmsd()));
+                // decide if match RMSD is beyond statistical model correctness cutoff
+                if (this.statisticalModel != null && this.statisticalModel instanceof FofanovEstimation) {
+                    if (superimposition.getRmsd() <= ((FofanovEstimation) this.statisticalModel).getModelCorrectnessCutoff()) {
+                        this.matches.add(Fit3DMatch.of(superimposition.getRmsd(), superimposition));
+                    } else {
+                        // only store RMSD values if match RMSD is beyond model correctness cutoff and which were not already sampled
+                        boolean redundantRmsd = this.matches.stream()
+                                .anyMatch(match -> match.getRmsd() == superimposition.getRmsd());
+                        if (!redundantRmsd) {
+                            this.matches.add(Fit3DMatch.of(superimposition.getRmsd()));
+                        }
+                    }
+                } else {
+                    this.matches.add(Fit3DMatch.of(superimposition.getRmsd(), superimposition));
+                }
             }
         }
     }

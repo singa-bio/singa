@@ -294,6 +294,14 @@ public class Structure {
         return Optional.empty();
     }
 
+    @Override
+    public String toString() {
+        return "Structure{" +
+                "pdbIdentifier='" + this.pdbIdentifier + '\'' +
+                ", title='" + this.title + '\'' +
+                '}';
+    }
+
     /**
      * Adds a pseudo atom (preferably for interactions) to the first model of this structure.
      *
