@@ -1,92 +1,71 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.unichem.UniChemParser;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.InChIKey;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.chebi.webapps.chebiWS.client.ChebiWebServiceClient;
-import uk.ac.ebi.chebi.webapps.chebiWS.model.Entity;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
-public class ChEBIParserService {
+public class ChEBIParserService extends AbstractXMLParser<Species> {
 
     private static final Logger logger = LoggerFactory.getLogger(ChEBIParserService.class);
+    private static final String CHEBI_FETCH_URL = "https://www.ebi.ac.uk/webservices/chebi/2.0/test/getCompleteEntity?chebiId=%s";
 
-    private String primaryIdentifier;
-    private String chebiIdentifier;
 
-    private Entity entity;
-
-    public ChEBIParserService() {
-
+    public ChEBIParserService(ChEBIIdentifier identifier) {
+        getXmlReader().setContentHandler(new ChEBIContentHandler());
+        setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));
     }
 
-    public ChEBIParserService(String chebiIdentifier) {
-        this.chebiIdentifier = chebiIdentifier;
+    public ChEBIParserService(ChEBIIdentifier identifier, String primaryIdentifier) {
+        getXmlReader().setContentHandler(new ChEBIContentHandler(primaryIdentifier));
+        setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));
     }
 
-    public static Species parse(String chebiIdentifier) {
-        ChEBIParserService parser = new ChEBIParserService(chebiIdentifier);
-        return parser.fetchSpecies();
+    public static Species parse(String chEBIIdentifier) {
+        return ChEBIParserService.parse(new ChEBIIdentifier(chEBIIdentifier));
     }
 
-    public static Species parse(String chebiIdentifier, String primaryIdentifier) {
-        ChEBIParserService parser = new ChEBIParserService(chebiIdentifier);
-        parser.primaryIdentifier = primaryIdentifier;
-        return parser.fetchSpecies();
+    public static Species parse(String chEBIIdentifier, String primaryIdentifier) {
+        logger.info("Parsing chemical entity with identifier " + chEBIIdentifier + " from " + ChEBIDatabase.origin.getName());
+        ChEBIParserService parser = new ChEBIParserService(new ChEBIIdentifier(chEBIIdentifier), primaryIdentifier);
+        return parser.parse();
     }
 
-    public void fetch() {
-        ChebiWebServiceClient client = new ChebiWebServiceClient();
-        logger.debug("Fetching information {} from ChEBI using the ChEBIWebServiceClient.", this.chebiIdentifier);
+
+    public static Species parse(ChEBIIdentifier identifier) {
+        logger.info("Parsing chemical entity with identifier " + identifier + " from " + ChEBIDatabase.origin.getName());
+        ChEBIParserService parser = new ChEBIParserService(identifier);
+        return parser.parse();
+    }
+
+    private void parseXML() {
+        fetchResource();
+        // parse xml
         try {
-            this.entity = client.getCompleteEntity(this.chebiIdentifier);
-        } catch (Exception e) {
-            logger.warn("Can not reach Chemical Entities of Biological Interest (ChEBI) Database. Species {} can not be fetched.", this.chebiIdentifier);
+            this.getXmlReader().parse(new InputSource(getFetchResult()));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
+        } catch (SAXException e) {
             e.printStackTrace();
         }
     }
 
+    @Override
     public Species parse() {
-        logger.debug("Creating {} from retrieved information ... ", this.entity.getChebiAsciiName());
-        Species species;
-        // if no primary identifier is given use the ChEBI identifier
-        if (this.primaryIdentifier == null) {
-            species = new Species.Builder(this.entity.getChebiId()).build();
-        } else {
-            species = new Species.Builder(this.primaryIdentifier).build();
-            species.addAdditionalIdentifier(new ChEBIIdentifier(this.entity.getChebiId()));
-        }
-        // default attributes
-        species.setName(this.entity.getChebiAsciiName());
-        species.setFeature(new MolarMass(handleWeight(this.entity.getMass()), ChEBIDatabase.origin));
-        species.setFeature(new Smiles(this.entity.getSmiles(), ChEBIDatabase.origin));
-        // resolve identifiers if possible
-        if (this.entity.getInchiKey() != null) {
-            InChIKey inChIKey = new InChIKey(this.entity.getInchiKey());
-            List<Identifier> identifiers = UniChemParser.parse(inChIKey);
-            species.addAdditionalIdentifier(inChIKey);
-            species.addAdditionalIdentifiers(identifiers);
-        }
-        return species;
+        parseXML();
+        return ((ChEBIContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
     }
 
-    private double handleWeight(String massAsString) {
-        if (massAsString != null) {
-            return Double.valueOf(massAsString);
-        }
-        return Double.NaN;
+    public static void main(String[] args) {
+        final Species species = ChEBIParserService.parse("CHEBI:17790");
+        System.out.println(species);
     }
 
-    public Species fetchSpecies() {
-        fetch();
-        return parse();
-    }
 
 }

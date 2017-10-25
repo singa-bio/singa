@@ -15,15 +15,6 @@
     <version>0.2.2</version>
     <packaging>jar</packaging>
 
-    <repositories>
-        <repository>
-            <id>ebi-repo</id>
-            <name>The EBI repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-            <!-- releases><enabled>true</enabled></releases-->
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- singa dependencies -->
         <dependency>
@@ -40,12 +31,6 @@
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-mathematics</artifactId>
             <version>0.2.2</version>
-        </dependency>
-        <!-- external dependencies -->
-        <dependency>
-            <groupId>uk.ac.ebi.chebi.webapps.chebiWS.client</groupId>
-            <artifactId>chebiWS-client</artifactId>
-            <version>2.3.1</version>
         </dependency>
     </dependencies>
 
