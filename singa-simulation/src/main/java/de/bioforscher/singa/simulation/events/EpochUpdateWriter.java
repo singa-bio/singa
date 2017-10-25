@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.events;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+
+import static tec.units.ri.unit.MetricPrefix.MILLI;
+import static tec.units.ri.unit.Units.SECOND;
 
 /**
  * This class can be used to write the concentrations of a node to a file while
@@ -27,7 +30,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     private Path workspacePath;
     private Path folder;
     private boolean printEntityInformation;
-    private Map<BioNode, BufferedWriter> registeredWriters;
+    private Map<AutomatonNode, BufferedWriter> registeredWriters;
     private List<ChemicalEntity<?>> observedEntities;
 
     public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) {
@@ -48,7 +51,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return new ArrayList<>(unorderedEntities);
     }
 
-    public void addNodeToObserve(BioNode node) throws IOException {
+    public void addNodeToObserve(AutomatonNode node) throws IOException {
         Path file = createFile("node_" + node.getIdentifier() + ".csv");
         BufferedWriter writer = Files.newBufferedWriter(file, StandardOpenOption.APPEND);
         this.registeredWriters.put(node, writer);
@@ -74,7 +77,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return file;
     }
 
-    private void writeHeader(BioNode node) throws IOException {
+    private void writeHeader(AutomatonNode node) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(COMMENT_CHARACTER)
                 .append(" Node ")
@@ -118,14 +121,14 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return sb.toString();
     }
 
-    private void appendContent(BioNode node, String content) throws IOException {
+    private void appendContent(AutomatonNode node, String content) throws IOException {
         this.registeredWriters.get(node).write(content);
     }
 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toString(event.getEpoch())).append(SEPARATOR_CHARACTER);
+        sb.append(event.getTime().to(MILLI(SECOND)).getValue()).append(SEPARATOR_CHARACTER);
         int count = 0;
         for (ChemicalEntity entity : this.observedEntities) {
             if (count < this.observedEntities.size() - 1) {

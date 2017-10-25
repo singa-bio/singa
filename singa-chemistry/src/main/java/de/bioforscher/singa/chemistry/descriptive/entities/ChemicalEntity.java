@@ -117,6 +117,11 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     @Override
+    public Collection<Feature<?>> getFeatures() {
+        return this.features.getAllFeatures();
+    }
+
+    @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
         return this.features.getFeature(featureTypeClass);
     }
@@ -159,13 +164,15 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ChemicalEntity<?> that = (ChemicalEntity<?>) o;
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {
@@ -188,6 +195,11 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         }
 
         public BuilderType assignFeature(Feature feature) {
+            this.topLevelObject.setFeature(feature);
+            return this.builderObject;
+        }
+
+        public BuilderType assignFeature(Class<? extends Feature> feature) {
             this.topLevelObject.setFeature(feature);
             return this.builderObject;
         }

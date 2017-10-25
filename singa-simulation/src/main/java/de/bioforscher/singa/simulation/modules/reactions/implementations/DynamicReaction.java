@@ -1,19 +1,13 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.quantities.ReactionRate;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.kineticLaws.implementations.DynamicKineticLaw;
+import de.bioforscher.singa.simulation.features.scale.AppliedScale;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 
-import javax.measure.Quantity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -23,10 +17,25 @@ public class DynamicReaction extends Reaction {
     private List<CatalyticReactant> catalyticReactants;
     private DynamicKineticLaw kineticLaw;
 
+    public DynamicReaction(Simulation simulation, DynamicKineticLaw kineticLaw) {
+        super(simulation);
+        initialize(kineticLaw);
+    }
+
     public DynamicReaction(DynamicKineticLaw kineticLaw) {
+        super();
+        initialize(kineticLaw);
+    }
+
+    private void initialize(DynamicKineticLaw kineticLaw) {
         this.kineticLaw = kineticLaw;
         this.catalyticReactants = new ArrayList<>();
-        this.kineticLaw.prepareAppliedRateConstants();
+        // features
+        this.availableFeatures.add(AppliedScale.class);
+        setFeature(new AppliedScale());
+        // deltas
+        applyAlways();
+        addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
     public DynamicKineticLaw getKineticLaw() {
@@ -46,14 +55,10 @@ public class DynamicReaction extends Reaction {
     }
 
     @Override
-    public Quantity<ReactionRate> calculateAcceleration(BioNode node, CellSection section) {
-        return this.kineticLaw.calculateAcceleration(node, section);
+    public double calculateVelocity(ConcentrationContainer concentrationContainer) {
+        kineticLaw.setCurrentCellSection(getCurrentCellSection());
+        kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class));
+        return this.kineticLaw.calculateVelocity(concentrationContainer);
     }
 
-    @Override
-    public Set<ChemicalEntity<?>> collectAllReferencedEntities() {
-        return this.getStoichiometricReactants().stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toSet());
-    }
 }
