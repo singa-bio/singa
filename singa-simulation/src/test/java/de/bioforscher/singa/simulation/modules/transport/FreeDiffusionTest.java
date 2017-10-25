@@ -11,7 +11,7 @@ import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,10 +100,10 @@ public class FreeDiffusionTest {
 
     private Simulation setUpSimulation(int numberOfNodes, Quantity<Time> timeStep, Species species) {
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, boundingBox, false));
         // initialize species in graph with desired concentration leaving the right "half" empty
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
                 node.setConcentration(species, 1.0);
             } else {

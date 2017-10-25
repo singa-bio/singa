@@ -80,6 +80,10 @@ public interface ConcentrationContainer {
      */
     Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations();
 
-    ConcentrationContainer copy();
+    /**
+     * Returns a copy of this concentration container.
+     * @return A copy of this concentration container.
+     */
+    ConcentrationContainer getCopy();
 
 }

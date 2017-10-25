@@ -17,12 +17,6 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     private Set<ChemicalEntity<?>> referencedEntities;
     private Map<CellSection, Map<ChemicalEntity<?>, Quantity<MolarConcentration>>> concentrations;
 
-    public MultiConcentrationContainer(CellSection cellSection) {
-        this.referencedEntities = new HashSet<>();
-        this.concentrations = new HashMap<>();
-        this.concentrations.put(cellSection, new HashMap<>());
-    }
-
     public MultiConcentrationContainer(Set<CellSection> cellSections) {
         this.referencedEntities = new HashSet<>();
         this.concentrations = new HashMap<>();
@@ -90,7 +84,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public MultiConcentrationContainer copy() {
+    public MultiConcentrationContainer getCopy() {
         return new MultiConcentrationContainer(this);
     }
 }

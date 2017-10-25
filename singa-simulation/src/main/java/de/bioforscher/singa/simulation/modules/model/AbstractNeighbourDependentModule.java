@@ -7,7 +7,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.*;
@@ -23,17 +23,17 @@ public abstract class AbstractNeighbourDependentModule implements Module {
 
     class DeltaIdentifier {
 
-        private final BioNode node;
+        private final AutomatonNode node;
         private final CellSection section;
         private final ChemicalEntity<?> entity;
 
-        public DeltaIdentifier(BioNode node, CellSection section, ChemicalEntity<?> entity) {
+        public DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity<?> entity) {
             this.node = node;
             this.section = section;
             this.entity = entity;
         }
 
-        public BioNode getNode() {
+        public AutomatonNode getNode() {
             return node;
         }
 
@@ -71,17 +71,17 @@ public abstract class AbstractNeighbourDependentModule implements Module {
     private final Simulation simulation;
     private List<Function<ConcentrationContainer, Delta>> deltaFunctions;
 
-    private Predicate<BioNode> conditionalApplication;
+    private Predicate<AutomatonNode> conditionalApplication;
 
     private LocalError largestLocalError;
 
-    private BioNode currentNode;
+    private AutomatonNode currentNode;
     private ChemicalEntity currentChemicalEntity;
     private CellSection currentCellSection;
 
     private Map<DeltaIdentifier, Delta> currentFullDeltas;
     private Map<DeltaIdentifier, Delta> currentHalfDeltas;
-    private Map<BioNode, ConcentrationContainer> halfConcentrations;
+    private Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
 
 
     public AbstractNeighbourDependentModule(Simulation simulation) {
@@ -97,7 +97,7 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         this.deltaFunctions.add(deltaFunction);
     }
 
-    public BioNode getCurrentNode() {
+    public AutomatonNode getCurrentNode() {
         return this.currentNode;
     }
 
@@ -109,7 +109,7 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         return this.currentCellSection;
     }
 
-    public void onlyApplyIf(Predicate<BioNode> predicate) {
+    public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
         this.conditionalApplication = predicate;
     }
 
@@ -129,17 +129,17 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         AutomatonGraph graph = this.simulation.getGraph();
         // determine full deltas
         this.halfTime = false;
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (this.conditionalApplication.test(node)) {
                 this.currentNode = node;
-                determineFullDeltas(node.getConcentrations());
+                determineFullDeltas(node.getConcentrationContainer());
             }
         }
         // half step concentrations
         determineHalfStepConcentration();
         // half step deltas
         this.halfTime = true;
-        for (Map.Entry<BioNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
+        for (Map.Entry<AutomatonNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
                 this.currentNode = entry.getKey();
                 determineHalfStepDeltas(entry.getValue());
 
@@ -150,7 +150,7 @@ public abstract class AbstractNeighbourDependentModule implements Module {
 
     }
 
-    public LocalError determineDeltasForNode(BioNode node) {
+    public LocalError determineDeltasForNode(AutomatonNode node) {
         // using neighbor dependent modules you need to calculate all changes
         determineAllDeltas();
         return this.largestLocalError;
@@ -197,7 +197,7 @@ public abstract class AbstractNeighbourDependentModule implements Module {
             final double halfStepConcentration = fullConcentration + 0.5 * value.getQuantity().getValue().doubleValue();
             ConcentrationContainer halfConcentration;
             if (!this.halfConcentrations.containsKey(key.getNode())) {
-                halfConcentration = key.getNode().getConcentrations().copy();
+                halfConcentration = key.getNode().getConcentrationContainer().getCopy();
                 halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
                 this.halfConcentrations.put(key.getNode(), halfConcentration);
             } else {

@@ -118,6 +118,10 @@ public class Graphs {
         return graph;
     }
 
+    public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
+        return buildGridGraph(columns, rows, boundingBox, false);
+    }
+
     /**
      * Generates a grid graph with columns and rows.
      *

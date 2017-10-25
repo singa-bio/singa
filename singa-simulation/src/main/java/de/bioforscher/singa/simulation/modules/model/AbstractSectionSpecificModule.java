@@ -6,7 +6,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ public class AbstractSectionSpecificModule implements Module {
     private Simulation simulation;
     private Map<Function<ConcentrationContainer, List<Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
 
-    private Predicate<BioNode> conditionalApplication;
+    private Predicate<AutomatonNode> conditionalApplication;
 
     private LocalError largestLocalError;
 
-    private BioNode currentNode;
+    private AutomatonNode currentNode;
     private CellSection currentCellSection;
     private List<Delta> currentFullDeltas;
     private List<Delta> currentHalfDeltas;
@@ -62,7 +62,7 @@ public class AbstractSectionSpecificModule implements Module {
         this.deltaFunctions.put(deltaFunction, predicate);
     }
 
-    public BioNode getCurrentNode() {
+    public AutomatonNode getCurrentNode() {
         return this.currentNode;
     }
 
@@ -70,7 +70,7 @@ public class AbstractSectionSpecificModule implements Module {
         return this.currentCellSection;
     }
 
-    public void onlyApplyIf(Predicate<BioNode> predicate) {
+    public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
         this.conditionalApplication = predicate;
     }
 
@@ -89,17 +89,17 @@ public class AbstractSectionSpecificModule implements Module {
     public void determineAllDeltas() {
         AutomatonGraph graph = this.simulation.getGraph();
         // determine deltas
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (this.conditionalApplication.test(node)) {
                 determineDeltasForNode(node);
             }
         }
     }
 
-    public LocalError determineDeltasForNode(BioNode node) {
+    public LocalError determineDeltasForNode(AutomatonNode node) {
         this.currentNode = node;
-        ConcentrationContainer fullConcentrations = node.getConcentrations();
-        this.currentHalfConcentrations = fullConcentrations.copy();
+        ConcentrationContainer fullConcentrations = node.getConcentrationContainer();
+        this.currentHalfConcentrations = fullConcentrations.getCopy();
         return determineDeltas(fullConcentrations);
     }
 
@@ -129,7 +129,7 @@ public class AbstractSectionSpecificModule implements Module {
                 for (Delta fullDelta : fullDeltas) {
                     setHalfStepConcentration(fullDelta);
                     this.currentFullDeltas.add(fullDelta);
-                    unchangedEntities.remove(fullDelta.getEntity());
+                    unchangedEntities.remove(fullDelta.getChemicalEntity());
                 }
                 for (ChemicalEntity<?> unchangedEntity : unchangedEntities) {
                     this.currentHalfConcentrations.setAvailableConcentration(currentCellSection, unchangedEntity,
@@ -140,9 +140,9 @@ public class AbstractSectionSpecificModule implements Module {
     }
 
     private void setHalfStepConcentration(Delta fullDelta) {
-        final double fullConcentration = this.currentNode.getAvailableConcentration(fullDelta.getEntity(), fullDelta.getCellSection()).getValue().doubleValue();
+        final double fullConcentration = this.currentNode.getAvailableConcentration(fullDelta.getChemicalEntity(), fullDelta.getCellSection()).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
-        this.currentHalfConcentrations.setAvailableConcentration(fullDelta.getCellSection(), fullDelta.getEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
+        this.currentHalfConcentrations.setAvailableConcentration(fullDelta.getCellSection(), fullDelta.getChemicalEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
     }
 
     private void determineHalfDeltas(ConcentrationContainer concentrationContainer) {
@@ -175,7 +175,7 @@ public class AbstractSectionSpecificModule implements Module {
             }
             // determine the largest error in the current deltas
             if (temporaryLargestLocalError.getValue() < localErrorValue) {
-                temporaryLargestLocalError = new LocalError(this.currentNode, fullDelta.getEntity(), localErrorValue);
+                temporaryLargestLocalError = new LocalError(this.currentNode, fullDelta.getChemicalEntity(), localErrorValue);
             }
         }
         // compare to current maximum

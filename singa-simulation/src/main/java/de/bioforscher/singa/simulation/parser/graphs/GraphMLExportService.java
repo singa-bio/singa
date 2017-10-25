@@ -1,10 +1,10 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioEdge;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -90,7 +90,7 @@ public class GraphMLExportService {
             rootElement.appendChild(graphElement);
 
             // Nodes
-            for (BioNode node : graph.getNodes()) {
+            for (AutomatonNode node : graph.getNodes()) {
                 Element nodeElement = doc.createElement("node");
                 nodeElement.setAttribute("id", String.valueOf(node.getIdentifier()));
                 graphElement.appendChild(nodeElement);
@@ -113,7 +113,7 @@ public class GraphMLExportService {
             }
 
             // Edges
-            for (BioEdge edge : graph.getEdges()) {
+            for (AutomatonEdge edge : graph.getEdges()) {
                 Element edgeElement = doc.createElement("edge");
                 edgeElement.setAttribute("id", String.valueOf(edge.getIdentifier()));
                 edgeElement.setAttribute("source", String.valueOf(edge.getSource().getIdentifier()));

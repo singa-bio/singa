@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -64,9 +64,9 @@ public class PassiveMembraneTransportTest {
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
         Membrane membrane = Membrane.forCompartment(left);
         // create node
-        BioNode node = new BioNode(0);
+        AutomatonNode node = new AutomatonNode(0);
         node.setCellSection(membrane);
-        node.setConcentrations(new MembraneContainer(right, left, membrane));
+        node.setConcentrationContainer(new MembraneContainer(right, left, membrane));
         // create graph and assign node
         AutomatonGraph graph = new AutomatonGraph();
         graph.addNode(node);
@@ -109,7 +109,7 @@ public class PassiveMembraneTransportTest {
             this.logContent.clear();
             EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
             Simulation simulation = setupSimulation(entity);
-            BioNode node = simulation.getGraph().getNode(0);
+            AutomatonNode node = simulation.getGraph().getNode(0);
             logger.info("Calculating passive membrane diffusion for {}.", entity.getName());
             double previousConcentration = 0.0;
             double currentConcentration;

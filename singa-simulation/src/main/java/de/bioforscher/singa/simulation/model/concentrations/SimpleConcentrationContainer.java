@@ -67,7 +67,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public SimpleConcentrationContainer copy() {
+    public SimpleConcentrationContainer getCopy() {
         return new SimpleConcentrationContainer(this.cellSection);
     }
 

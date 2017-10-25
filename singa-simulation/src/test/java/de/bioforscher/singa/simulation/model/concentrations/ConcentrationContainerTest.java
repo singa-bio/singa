@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -29,7 +29,7 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfSimpleConcentration() {
         // by default with simple concentration set
-        BioNode n1 = new BioNode(0);
+        AutomatonNode n1 = new AutomatonNode(0);
         // initialize value
         n1.setConcentration(this.entity, 0.3);
         // retrieve value
@@ -39,13 +39,13 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfMultiConcentration() {
         // and with multi concentration set
-        BioNode node = new BioNode(1);
+        AutomatonNode node = new AutomatonNode(1);
         // create set of sections
         Set<CellSection> sections = new HashSet<>();
         sections.add(this.innerSection);
         sections.add(this.outerSection);
         // and initialize node as multi section container
-        node.setConcentrations(new MultiConcentrationContainer(sections));
+        node.setConcentrationContainer(new MultiConcentrationContainer(sections));
         // initialize values
         node.setAvailableConcentration(this.entity, this.innerSection, Quantities.getQuantity(0.3, MOLE_PER_LITRE));
         node.setAvailableConcentration(this.entity, this.outerSection, Quantities.getQuantity(0.5, MOLE_PER_LITRE));
@@ -59,9 +59,9 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfMembraneConcentration() {
         // and with membrane concentration set
-        BioNode node = new BioNode(1);
+        AutomatonNode node = new AutomatonNode(1);
         // and initialize node as multi section container
-        node.setConcentrations(new MembraneContainer(this.outerSection, this.innerSection, this.membrane));
+        node.setConcentrationContainer(new MembraneContainer(this.outerSection, this.innerSection, this.membrane));
         // initialize values
         node.setAvailableConcentration(this.entity, this.innerSection, Quantities.getQuantity(0.3, MOLE_PER_LITRE));
         node.setAvailableConcentration(this.entity, this.outerSection, Quantities.getQuantity(0.5, MOLE_PER_LITRE));

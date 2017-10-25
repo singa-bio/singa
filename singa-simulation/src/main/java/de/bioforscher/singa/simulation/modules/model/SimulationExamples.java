@@ -21,8 +21,7 @@ import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioEdge;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -78,8 +77,7 @@ public class SimulationExamples {
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
@@ -119,8 +117,7 @@ public class SimulationExamples {
         Species octatriene = ChEBIParserService.parse("CHEBI:77504");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
@@ -165,8 +162,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
@@ -219,8 +215,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
@@ -267,11 +262,10 @@ public class SimulationExamples {
         sucrose.setFeature(Diffusivity.class);
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
-                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, defaultBoundingBox));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
                 node.setConcentration(methanol, 1);
                 node.setConcentration(ethyleneGlycol, 1);
@@ -283,13 +277,6 @@ public class SimulationExamples {
                 node.setConcentration(valine, 0);
                 node.setConcentration(sucrose, 0);
             }
-        }
-
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(methanol, 1);
-            edge.addPermeability(ethyleneGlycol, 1);
-            edge.addPermeability(valine, 1);
-            edge.addPermeability(sucrose, 1);
         }
 
         // setup time step size as given
@@ -341,7 +328,7 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
                 Graphs.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
@@ -408,14 +395,14 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
                 Graphs.buildLinearGraph(1, defaultBoundingBox));
 
-        model.getCompartments().keySet().forEach(graph::addSection);
+        model.getCompartments().keySet().forEach(graph::addCellSection);
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        BioNode bioNode = graph.getNodes().iterator().next();
+        AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
             bioNode.setConcentration(entity, value);
@@ -443,7 +430,7 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
         int numberOfNodes = 50;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
         // setup simulation
         logger.debug("Composing simulation ... ");
@@ -498,7 +485,7 @@ public class SimulationExamples {
 
         // set concentrations
         // only 5 left most nodes
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % converter.getNumberOfColumns() < 5) {
                 for (Species species : allSpecies) {
                     node.setConcentration(species, 1.0);
@@ -544,14 +531,14 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
         GridCoordinateConverter gcc = new GridCoordinateConverter(30, 20);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 20, 30, defaultBoundingBox, false));
         // create compartments and membrane
         EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
         EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
         Membrane membrane = Membrane.forCompartment(inner);
         // initialize species in graph with desired concentration
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             Vector2D coordinate = gcc.convert(node.getIdentifier());
             if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
                     (coordinate.getX() == 27 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
@@ -559,7 +546,7 @@ public class SimulationExamples {
                     (coordinate.getY() == 17 && coordinate.getX() > 1 && coordinate.getX() < 28)) {
                 // setup membrane
                 node.setCellSection(membrane);
-                node.setConcentrations(new MembraneContainer(outer, inner, membrane));
+                node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
                 node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
             } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 27 && coordinate.getY() < 17) {
                 node.setCellSection(inner);

@@ -205,7 +205,7 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     @Override
-    public MembraneContainer copy() {
+    public MembraneContainer getCopy() {
         return new MembraneContainer(this);
     }
 

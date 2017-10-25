@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.utility.Nameable;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +33,7 @@ public abstract class CellSection implements Nameable {
     /**
      * The nodes belonging to this section.
      */
-    private Set<BioNode> content;
+    private Set<AutomatonNode> content;
 
     /**
      * Creates a new CellSection with the given identifier and name.
@@ -64,7 +64,7 @@ public abstract class CellSection implements Nameable {
      * Returns the nodes belonging to this cell section.
      * @return The nodes belonging to this section.
      */
-    public Set<BioNode> getContent() {
+    public Set<AutomatonNode> getContent() {
         return this.content;
     }
 
@@ -72,7 +72,7 @@ public abstract class CellSection implements Nameable {
      * Sets the content of this cell section.
      * @param content The nodes contained in this cell section.
      */
-    public void setContent(Set<BioNode> content) {
+    public void setContent(Set<AutomatonNode> content) {
         this.content = content;
     }
 
@@ -80,14 +80,22 @@ public abstract class CellSection implements Nameable {
      * Adds a node to the section, without altering the state of the node.
      * @param node The node to add.
      */
-    public void addNode(BioNode node) {
+    public void addNode(AutomatonNode node) {
         this.content.add(node);
     }
 
+    /**
+     * Returns {@code true} if this cell section is a subsection of another section.
+     * @return {@code true} if this cell section is a subsection of another section.
+     */
     public boolean isSubsection() {
         return isSubsection;
     }
 
+    /**
+     * Set {@code true} if this cell section is a subsection of another section.
+     * @param subsection {@code true} if this cell section is a subsection of another section.
+     */
     public void setSubsection(boolean subsection) {
         isSubsection = subsection;
     }

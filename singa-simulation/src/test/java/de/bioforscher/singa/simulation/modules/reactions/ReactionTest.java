@@ -11,7 +11,7 @@ import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
@@ -72,7 +72,7 @@ public class ReactionTest {
                 .build();
 
         // set concentrations
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             node.setConcentration(fp, 0.1);
             node.setConcentration(aldolase, 0.2);
             node.setConcentration(ga, 0);
@@ -92,7 +92,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        BioNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(200.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -134,7 +134,7 @@ public class ReactionTest {
                 .build();
 
         // set concentrations
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             node.setConcentration(speciesA, 1.0);
             node.setConcentration(speciesB, 0.0);
         }
@@ -155,7 +155,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        BioNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(25.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -192,7 +192,7 @@ public class ReactionTest {
         Species ndo = ChEBIParserService.parse("CHEBI:33101");
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             node.setConcentration(dpo, 0.020);
             node.setConcentration(ndo, 0.0);
             node.setConcentration(oxygen, 0.0);
@@ -214,7 +214,7 @@ public class ReactionTest {
         // add the reaction
         simulation.getModules().add(reaction);
 
-        BioNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(500.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -245,7 +245,7 @@ public class ReactionTest {
         Simulation simulation = SimulationExamples.createSimulationFromSBML();
 
         Species x = new Species.Builder("X").build();
-        BioNode node = simulation.getGraph().getNodes().iterator().next();
+        AutomatonNode node = simulation.getGraph().getNodes().iterator().next();
         logger.info("Starting simulation ...");
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(169.0, MILLI(SECOND));
@@ -268,7 +268,7 @@ public class ReactionTest {
 
 
     private AutomatonGraph prepareGraph() {
-        return AutomatonGraphs.copyStructureToBioGraph(Graphs.buildLinearGraph(1,
+        return AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1,
                 new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
     }
 

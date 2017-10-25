@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,17 +44,17 @@ public class Membrane extends CellSection {
 
     public void initializeNodes(AutomatonGraph automatonGraph) {
         // reinitialize MultiConcentrationContainer
-        for (BioNode node: getContent()) {
+        for (AutomatonNode node: getContent()) {
             // get adjacent compartments that are not the inner compartment and not the membrane itself
             Set<CellSection> sections = node.getNeighbours().stream()
-                    .map(BioNode::getCellSection)
+                    .map(AutomatonNode::getCellSection)
                     .filter(cellSection -> !cellSection.equals(this.innerCompartment) && !cellSection.equals(this))
                     .collect(Collectors.toSet());
             if (sections.size() != 1) {
                 throw new IllegalStateException("The node "+node+" is considered as a membrane node but has neighbours " +
                         "in more than 3 states (inner section, outer section, membrane section)");
             }
-            node.setConcentrations(new MembraneContainer(sections.iterator().next(), this.innerCompartment, this));
+            node.setConcentrationContainer(new MembraneContainer(sections.iterator().next(), this.innerCompartment, this));
         }
     }
 

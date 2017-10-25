@@ -7,7 +7,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.units.ri.quantity.Quantities;
@@ -19,7 +19,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
- * concentration. This module defines the diffusion between {@link BioNode}s in a {@link AutomatonGraph}, as described
+ * concentration. This module defines the diffusion between {@link AutomatonNode}s in a {@link AutomatonGraph}, as described
  * by Fick's laws of diffusion.
  *
  * @author cl
@@ -43,7 +43,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         int numberOfNeighbors = 0;
         double concentration = 0;
         // traverse each neighbouring cells
-        for (BioNode neighbour : getCurrentNode().getNeighbours()) {
+        for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
             Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations = neighbour.getAllConcentrationsForSection(currentCellSection);
             if (!concentrations.isEmpty()) {
                 numberOfNeighbors++;

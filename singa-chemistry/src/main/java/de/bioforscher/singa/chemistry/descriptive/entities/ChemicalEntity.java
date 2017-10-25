@@ -164,13 +164,15 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ChemicalEntity<?> that = (ChemicalEntity<?>) o;
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {

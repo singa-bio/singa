@@ -60,8 +60,9 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldConvertCoordinateToIdentifier() {
         GridCoordinateConverter rgc = new GridCoordinateConverter(7, 7);
-        Assert.assertEquals(38, rgc.convert(new Vector2D(3, 5)));
-        assertArrayEquals(new Vector2D(3, 5).getElements(), rgc.convert(26).getElements(), 0.0);
+        final Vector2D coordinate = new Vector2D(5, 3);
+        Assert.assertEquals(26, rgc.convert(coordinate));
+        assertArrayEquals(coordinate.getElements(), rgc.convert(26).getElements(), 0.0);
     }
 
 }

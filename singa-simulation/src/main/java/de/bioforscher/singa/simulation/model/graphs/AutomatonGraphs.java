@@ -33,7 +33,7 @@ public class AutomatonGraphs {
      */
     public static Map<String, ChemicalEntity<?>> generateMapOfEntities(AutomatonGraph graph) {
         Map<String, ChemicalEntity<?>> results = new HashMap<>();
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             for (ChemicalEntity<?> entity : node.getAllReferencedEntities()) {
                 // TODO check entity equals
                 results.put(entity.getIdentifier().toString(), entity);
@@ -43,7 +43,7 @@ public class AutomatonGraphs {
     }
 
     public static AutomatonGraph createRectangularAutomatonGraph(int numberOfColumns, int numberOfRows) {
-        return AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(numberOfColumns, numberOfRows, defaultBoundingBox, false));
+        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows, defaultBoundingBox, false));
     }
 
     /**
@@ -53,12 +53,12 @@ public class AutomatonGraphs {
      * @param undirectedGraph The graph to be cast
      * @return The generated automaton graph.
      */
-    public static AutomatonGraph copyStructureToBioGraph(UndirectedGraph undirectedGraph) {
+    public static AutomatonGraph useStructureFrom(UndirectedGraph undirectedGraph) {
         AutomatonGraph bioGraph = new AutomatonGraph();
         // getCopy nodes
         for (RegularNode regularNode : undirectedGraph.getNodes()) {
             int id = regularNode.getIdentifier();
-            BioNode bioNode = new BioNode(id);
+            AutomatonNode bioNode = new AutomatonNode(id);
             bioNode.setPosition(regularNode.getPosition());
             bioGraph.addNode(bioNode);
         }
@@ -80,7 +80,7 @@ public class AutomatonGraphs {
         // create Membrane for enclosed compartment
         Membrane membrane = Membrane.forCompartment(innerSection);
         // distribute nodes to sections
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (converter.convert(node.getIdentifier()).getY() < (numberOfColumns / 2)) {
                 // left half is outer
                 node.setCellSection(outerSection);
@@ -93,9 +93,9 @@ public class AutomatonGraphs {
             }
         }
         // reference sections in graph
-        graph.addSection(outerSection);
-        graph.addSection(innerSection);
-        graph.addSection(membrane);
+        graph.addCellSection(outerSection);
+        graph.addCellSection(innerSection);
+        graph.addCellSection(membrane);
         // membrane has to be initialized after every node knows its section
         membrane.initializeNodes(graph);
 

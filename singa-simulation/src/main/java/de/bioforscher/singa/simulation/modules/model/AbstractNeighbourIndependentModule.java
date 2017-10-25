@@ -6,7 +6,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ public abstract class AbstractNeighbourIndependentModule implements Module {
     private Simulation simulation;
     private Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
 
-    private Predicate<BioNode> conditionalApplication;
+    private Predicate<AutomatonNode> conditionalApplication;
 
     private LocalError largestLocalError;
 
-    private BioNode currentNode;
+    private AutomatonNode currentNode;
     private ChemicalEntity currentChemicalEntity;
     private CellSection currentCellSection;
     private List<Delta> currentFullDeltas;
@@ -63,7 +63,7 @@ public abstract class AbstractNeighbourIndependentModule implements Module {
         this.deltaFunctions.put(deltaFunction, predicate);
     }
 
-    public BioNode getCurrentNode() {
+    public AutomatonNode getCurrentNode() {
         return this.currentNode;
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractNeighbourIndependentModule implements Module {
         return this.currentCellSection;
     }
 
-    public void onlyApplyIf(Predicate<BioNode> predicate) {
+    public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
         this.conditionalApplication = predicate;
     }
 
@@ -94,17 +94,17 @@ public abstract class AbstractNeighbourIndependentModule implements Module {
     public void determineAllDeltas() {
         AutomatonGraph graph = this.simulation.getGraph();
         // determine deltas
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (this.conditionalApplication.test(node)) {
                 determineDeltasForNode(node);
             }
         }
     }
 
-    public LocalError determineDeltasForNode(BioNode node) {
+    public LocalError determineDeltasForNode(AutomatonNode node) {
         this.currentNode = node;
-        ConcentrationContainer fullConcentrations = node.getConcentrations();
-        this.currentHalfConcentrations = fullConcentrations.copy();
+        ConcentrationContainer fullConcentrations = node.getConcentrationContainer();
+        this.currentHalfConcentrations = fullConcentrations.getCopy();
         return determineDeltas(fullConcentrations);
     }
 

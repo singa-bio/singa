@@ -26,25 +26,25 @@ public class AutomatonGraphsTest {
         AutomatonGraphs.splitRectangularGraphWithMembrane(rectangularAutomatonGraph, converter, innerSection, outerSection);
         // check correct assignment
         // right part
-        CellSection right = rectangularAutomatonGraph.getSection("Right");
+        CellSection right = rectangularAutomatonGraph.getCellSection("Right");
         assertEquals(55, right.getContent().size());
-        for (BioNode bioNode : right.getContent()) {
+        for (AutomatonNode bioNode : right.getContent()) {
             assertEquals(bioNode.getState(), NodeState.AQUEOUS);
-            assertTrue(bioNode.getConcentrations() instanceof SimpleConcentrationContainer);
+            assertTrue(bioNode.getConcentrationContainer() instanceof SimpleConcentrationContainer);
         }
         // left part
-        CellSection left = rectangularAutomatonGraph.getSection("Left");
+        CellSection left = rectangularAutomatonGraph.getCellSection("Left");
         assertEquals(55, left.getContent().size());
-        for (BioNode bioNode : left.getContent()) {
+        for (AutomatonNode bioNode : left.getContent()) {
             assertEquals(bioNode.getState(), NodeState.AQUEOUS);
-            assertTrue(bioNode.getConcentrations() instanceof SimpleConcentrationContainer);
+            assertTrue(bioNode.getConcentrationContainer() instanceof SimpleConcentrationContainer);
         }
         // left part
-        CellSection membrane = rectangularAutomatonGraph.getSection("Right-M");
+        CellSection membrane = rectangularAutomatonGraph.getCellSection("Right-M");
         assertEquals(11, membrane.getContent().size());
-        for (BioNode bioNode : membrane.getContent()) {
+        for (AutomatonNode bioNode : membrane.getContent()) {
             assertEquals(bioNode.getState(), NodeState.MEMBRANE);
-            assertTrue(bioNode.getConcentrations() instanceof MembraneContainer);
+            assertTrue(bioNode.getConcentrationContainer() instanceof MembraneContainer);
         }
 
 

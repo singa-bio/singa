@@ -14,7 +14,7 @@ import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
@@ -43,14 +43,14 @@ public class CombinedTransportTest {
         Simulation simulation = new Simulation();
         GridCoordinateConverter gcc = new GridCoordinateConverter(40, 30);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 30, 40, boundingBox, false));
         // create compartments and membrane
         EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
         EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
         Membrane membrane = Membrane.forCompartment(inner);
         // initialize species in graph with desired concentration
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             Vector2D coordinate = gcc.convert(node.getIdentifier());
             if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
                     (coordinate.getX() == 37 && coordinate.getY() > 2 && coordinate.getY() < 27) ||
@@ -58,7 +58,7 @@ public class CombinedTransportTest {
                     (coordinate.getY() == 27 && coordinate.getX() > 1 && coordinate.getX() < 38)) {
                 // setup membrane
                 node.setCellSection(membrane);
-                node.setConcentrations(new MembraneContainer(outer, inner, membrane));
+                node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
                 node.setAvailableConcentration(domperidone, inner, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
                 System.out.print('=');
             } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 37 && coordinate.getY() < 27) {

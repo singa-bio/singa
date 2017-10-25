@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +17,7 @@ public class TimeStepHarmonizer {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
 
-    private static double epsilon = 0.01;
-    private static double tolerance = 0.005;
+    private double epsilon = 0.01;
 
     private Simulation simulation;
     private Quantity<Time> currentTimeStep;
@@ -48,7 +47,7 @@ public class TimeStepHarmonizer {
             // if time step changed
             if (this.timeStepChanged) {
                 // clear previously assigned deltas
-                for (BioNode bioNode : this.simulation.getGraph().getNodes()) {
+                for (AutomatonNode bioNode : this.simulation.getGraph().getNodes()) {
                     bioNode.clearPotentialDeltas();
                 }
                 // update deltas
@@ -75,7 +74,7 @@ public class TimeStepHarmonizer {
     }
 
     private void finalizeDeltas() {
-        for (BioNode node : this.simulation.getGraph().getNodes()) {
+        for (AutomatonNode node : this.simulation.getGraph().getNodes()) {
             node.shiftDeltas();
         }
     }
@@ -137,4 +136,11 @@ public class TimeStepHarmonizer {
         return false;
     }
 
+    public double getEpsilon() {
+        return epsilon;
+    }
+
+    public void setEpsilon(double epsilon) {
+        this.epsilon = epsilon;
+    }
 }
