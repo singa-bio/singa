@@ -97,20 +97,21 @@ public class Fit3DAlignmentTest {
         assertEquals(14, fit3dBatch.getMatches().size());
     }
 
+
     @Test
-    public void shouldRunFit3DAlignmentBatchWithChainList() {
-        Structure motifContainingStructure = StructureParser.local()
-                .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
+    public void shouldRunFit3DAlignmentWithMMTF() {
+        Structure target = StructureParser.mmtf()
+                .pdbIdentifier("4CHA")
+                .everything()
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
-                LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        StructureParser.MultiParser multiParser = StructureParser.mmtf()
-                .chainList(Paths.get("/home/fkaiser/Workspace/git/gmlvq_main/data/csa_new/nrpdb_BLAST_10e80.txt"), "_");
-        Fit3DBuilder.create()
-                .query(this.queryMotif)
-                .targets(multiParser)
-                .maximalParallelism()
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
+                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstModel())
                 .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test

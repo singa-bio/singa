@@ -5,6 +5,8 @@ import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
+import java.util.HashSet;
+
 /**
  * The implementation of {@link AminoAcid}s for mmtf structures.
  *
@@ -31,8 +33,10 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      *
      * @param mmtfLeafSubstructure The {@link MmtfLeafSubstructure} to copy.
      */
-    private MmtfAminoAcid(MmtfLeafSubstructure mmtfLeafSubstructure) {
+    private MmtfAminoAcid(MmtfAminoAcid mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
+        this.family = mmtfLeafSubstructure.family;
+        this.exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

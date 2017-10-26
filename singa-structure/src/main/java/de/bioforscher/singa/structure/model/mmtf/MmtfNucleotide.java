@@ -5,6 +5,8 @@ import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.Nucleotide;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
+import java.util.HashSet;
+
 /**
  * The implementation of {@link Nucleotide}s for mmtf structures.
  *
@@ -31,8 +33,10 @@ public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> imple
      *
      * @param mmtfLeafSubstructure The {@link MmtfLeafSubstructure} to copy.
      */
-    private MmtfNucleotide(MmtfLeafSubstructure mmtfLeafSubstructure) {
+    private MmtfNucleotide(MmtfNucleotide mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
+        this.family = mmtfLeafSubstructure.family;
+        this.exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

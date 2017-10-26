@@ -190,8 +190,9 @@ public class MmtfModel implements Model {
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        for (Chain chain : getAllChains()) {
-            if (chain.removeLeafSubstructure(leafIdentifier)) {
+        final Optional<Chain> chain = getChain(leafIdentifier.getChainIdentifier());
+        if (chain.isPresent()) {
+            if (chain.get().removeLeafSubstructure(leafIdentifier)) {
                 return true;
             }
         }

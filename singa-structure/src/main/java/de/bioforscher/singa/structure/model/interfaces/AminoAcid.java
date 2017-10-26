@@ -10,5 +10,4 @@ import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 public interface AminoAcid extends LeafSubstructure<AminoAcidFamily> {
 
 
-
 }

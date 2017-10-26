@@ -77,8 +77,8 @@ public class MmtfChain implements Chain {
             int endRange = currentGroupIndex + groupsPerChain[groupsPerChainIndex];
             if (internalChainIndices.contains(groupsPerChainIndex)) {
                 for (int groupIndex = currentGroupIndex; groupIndex <= endRange - 1; groupIndex++) {
-                    relevantGroups.add(groupIndex);
-                    leafIdentifiers.put(groupIndex, new LeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
+                    this.relevantGroups.add(groupIndex);
+                    this.leafIdentifiers.put(groupIndex, new LeafIdentifier(data.getStructureId(), modelIndex + 1, chainIdentifier, data.getGroupIds()[groupIndex], data.getInsCodes()[groupIndex]));
                 }
             }
             currentGroupIndex = endRange;
@@ -88,8 +88,8 @@ public class MmtfChain implements Chain {
         for (int groupIndex = 0; groupIndex < data.getNumGroups(); groupIndex++) {
             // get number of relevant atoms for the current group type
             int lastAtom = currentAtomIndex + data.getNumAtomsInGroup(data.getGroupTypeIndices()[groupIndex]);
-            if (relevantGroups.contains(groupIndex)) {
-                atomRanges.put(groupIndex, new Range<>(currentAtomIndex, lastAtom - 1));
+            if (this.relevantGroups.contains(groupIndex)) {
+                this.atomRanges.put(groupIndex, new Range<>(currentAtomIndex, lastAtom - 1));
             }
             currentAtomIndex = lastAtom;
         }
@@ -103,7 +103,7 @@ public class MmtfChain implements Chain {
      */
     private MmtfChain(MmtfChain mmtfChain) {
         this.bytes = mmtfChain.bytes;
-        this.data = MmtfStructure.bytesToStructureData(bytes);
+        this.data = MmtfStructure.bytesToStructureData(this.bytes);
         this.chainIdentifier = mmtfChain.chainIdentifier;
         this.relevantGroups = new ArrayList<>(mmtfChain.relevantGroups);
         this.leafIdentifiers = new HashMap<>(mmtfChain.leafIdentifiers);
@@ -112,19 +112,19 @@ public class MmtfChain implements Chain {
 
     @Override
     public String getIdentifier() {
-        return chainIdentifier;
+        return this.chainIdentifier;
     }
 
     @Override
     public List<LeafSubstructure<?>> getAllLeafSubstructures() {
         List<LeafSubstructure<?>> results = new ArrayList<>();
-        for (Integer relevantGroup : relevantGroups) {
-            if (cachedLeaves.containsKey(relevantGroup)) {
-                results.add(cachedLeaves.get(relevantGroup));
+        for (Integer relevantGroup : this.relevantGroups) {
+            if (this.cachedLeaves.containsKey(relevantGroup)) {
+                results.add(this.cachedLeaves.get(relevantGroup));
             } else {
-                final Range<Integer> atomRange = atomRanges.get(relevantGroup);
-                MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(relevantGroup), relevantGroup, atomRange.getLowerBound(), atomRange.getUpperBound());
-                cachedLeaves.put(relevantGroup, leaf);
+                final Range<Integer> atomRange = this.atomRanges.get(relevantGroup);
+                MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(this.data, this.bytes, this.leafIdentifiers.get(relevantGroup), relevantGroup, atomRange.getLowerBound(), atomRange.getUpperBound());
+                this.cachedLeaves.put(relevantGroup, leaf);
                 results.add(leaf);
             }
         }
@@ -137,11 +137,11 @@ public class MmtfChain implements Chain {
         if (internalIndex == -1) {
             return Optional.empty();
         }
-        if (cachedLeaves.containsKey(internalIndex)) {
-            return Optional.of(cachedLeaves.get(internalIndex));
+        if (this.cachedLeaves.containsKey(internalIndex)) {
+            return Optional.of(this.cachedLeaves.get(internalIndex));
         } else {
-            final Range<Integer> atomRange = atomRanges.get(internalIndex);
-            MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(internalIndex), internalIndex, atomRange.getLowerBound(), atomRange.getUpperBound());
+            final Range<Integer> atomRange = this.atomRanges.get(internalIndex);
+            MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(this.data, this.bytes, this.leafIdentifiers.get(internalIndex), internalIndex, atomRange.getLowerBound(), atomRange.getUpperBound());
             return Optional.of(leaf);
         }
     }
@@ -154,7 +154,7 @@ public class MmtfChain implements Chain {
         }
         this.leafIdentifiers.remove(internalIndex);
         this.cachedLeaves.remove(internalIndex);
-        this.relevantGroups.remove(internalIndex);
+        this.relevantGroups.remove((Integer)internalIndex);
         this.atomRanges.remove(internalIndex);
         return true;
     }
