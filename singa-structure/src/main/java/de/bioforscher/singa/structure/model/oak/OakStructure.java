@@ -197,6 +197,7 @@ public class OakStructure implements Structure {
         }
     }
 
+
     public int getLastAddedAtomIdentifier() {
         return lastAddedAtomIdentifier;
     }
@@ -208,6 +209,14 @@ public class OakStructure implements Structure {
     @Override
     public Structure getCopy() {
         return new OakStructure(this);
+    }
+
+    @Override
+    public String toString() {
+        return "OakStructure{" +
+                "pdbIdentifier='" + pdbIdentifier + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 
     @Override

@@ -47,10 +47,20 @@ public class MmtfStructure implements Structure {
 
     /**
      * Creates a copy by re-decoding the original bytes.
+     *
      * @param mmtfStructure The structure to be copied.
      */
     private MmtfStructure(MmtfStructure mmtfStructure) {
         this(mmtfStructure.bytes);
+    }
+
+    static StructureDataInterface bytesToStructureData(byte[] bytes) {
+        MessagePackSerialization mmtfBeanSeDeMessagePackImpl = new MessagePackSerialization();
+        try {
+            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(ReaderUtils.deflateGzip(bytes))));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
@@ -183,14 +193,11 @@ public class MmtfStructure implements Structure {
         return new MmtfStructure(this);
     }
 
-    static StructureDataInterface bytesToStructureData(byte[] bytes) {
-        MessagePackSerialization mmtfBeanSeDeMessagePackImpl = new MessagePackSerialization();
-        try {
-            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(ReaderUtils.deflateGzip(bytes))));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    @Override
+    public String toString() {
+        return "MmtfStructure{" +
+                "pdbIdentifier='" + data.getStructureId() + '\'' +
+                ", title='" + data.getTitle() + '\'' +
+                '}';
     }
-
-
 }

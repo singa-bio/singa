@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
  */
 public class StructuralMotif implements LeafSubstructureContainer {
 
-    private String identifier;
-
     public LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
+    private String identifier;
 
     private StructuralMotif(String identifier) {
         this.identifier = identifier;
@@ -74,7 +73,10 @@ public class StructuralMotif implements LeafSubstructureContainer {
     private static String generateMotifIdentifier(List<LeafSubstructure<?>> substructures) {
         String pdbIdentifier = substructures.iterator().next().getIdentifier().getPdbIdentifier();
         return substructures.stream()
-                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-" + leafSubstructure.getIdentifier().getSerial())
+                .map(leafSubstructure -> leafSubstructure.getIdentifier().getChainIdentifier() + "-"
+                        + leafSubstructure.getIdentifier().getSerial()
+                        + (leafSubstructure.getIdentifier().getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
+                        ? "" : leafSubstructure.getIdentifier().getInsertionCode()))
                 .collect(Collectors.joining("_", pdbIdentifier + "_", ""));
     }
 
