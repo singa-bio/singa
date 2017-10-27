@@ -86,8 +86,11 @@ public class Voronoi {
 
         }
 
-        VoronoiDiagram diagram = this.beachLine.getDiagram();
+        postProcess(this.beachLine.getDiagram());
 
+    }
+
+    private void postProcess(VoronoiDiagram diagram) {
         // wrapping-up:
         //   connect dangling edges to bounding box
         //   cut edges as per bounding box
@@ -96,8 +99,8 @@ public class Voronoi {
         diagram.clipEdges();
 
         //   add missing edges in order to close opened cells
-        diagram.closeCells();
-
+        // diagram.closeCells();
+        diagram.closeBorderCells();
     }
 
     private boolean siteEventIsBeforeCircleEvent(SiteEvent siteEvent, CircleEvent circleEvent) {

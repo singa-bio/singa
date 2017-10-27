@@ -61,8 +61,16 @@ public class VoronoiHalfEdge {
     public Vector2D getStartPoint() {
         if (this.edge.getLeftSite().equals(this.site)) {
             return this.edge.getStartingPoint();
+        }
+        return this.edge.getEndingPoint();
+
+    }
+
+    public void setStartPoint(Vector2D startPoint) {
+        if (this.edge.getLeftSite().equals(this.site)) {
+            this.edge.setStartingPoint(startPoint);
         } else {
-            return this.edge.getEndingPoint();
+            this.edge.setEndingPoint(startPoint);
         }
     }
 
@@ -74,8 +82,15 @@ public class VoronoiHalfEdge {
     public Vector2D getEndPoint() {
         if (this.edge.getLeftSite().equals(this.site)) {
             return this.edge.getEndingPoint();
+        }
+        return this.edge.getStartingPoint();
+    }
+
+    public void setEndPoint(Vector2D endPoint) {
+        if (this.edge.getLeftSite().equals(this.site)) {
+            this.edge.setEndingPoint(endPoint);
         } else {
-            return this.edge.getStartingPoint();
+            this.edge.setStartingPoint(endPoint);
         }
     }
 

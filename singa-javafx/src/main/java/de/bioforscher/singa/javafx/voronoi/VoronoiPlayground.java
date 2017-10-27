@@ -4,6 +4,7 @@ import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiHalfEdge;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
@@ -57,14 +58,29 @@ public class VoronoiPlayground extends Application implements Renderer {
         // setup root
         BorderPane root = new BorderPane();
         this.canvas = new Canvas(500, 500);
-        this.canvas.setOnMouseClicked( event -> {
-            Vector2D clickPosition = new Vector2D(event.getSceneX(), event.getSceneY());
+        this.canvas.setOnMouseClicked(event -> {
+            Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
             for (VoronoiCell voronoiCell : diagram.getCells()) {
                 if (voronoiCell.evaluatePointPosition(clickPosition) == VoronoiCell.INSIDE) {
-                    getGraphicsContext().setFill(Color.DARKSEAGREEN);
+                    if (voronoiCell.isOpen()) {
+                        System.out.println("This cell is open.");
+                        getGraphicsContext().setFill(Color.TOMATO);
+                    } else {
+                        getGraphicsContext().setFill(Color.DARKSEAGREEN);
+                        System.out.println("This cell is closed.");
+                    }
+                    for (VoronoiHalfEdge voronoiHalfEdge : voronoiCell.getHalfEdges()) {
+                        System.out.println("Start:"+voronoiHalfEdge.getStartPoint()+" End:"+voronoiHalfEdge.getEndPoint());
+                    }
+
                     fillPolygon(voronoiCell);
+                    getGraphicsContext().setFill(Color.BLACK);
+                    final Vector2D[] vertices = voronoiCell.getVertices();
+                    for (int i = 0; i < vertices.length; i++) {
+                        drawTextCenteredOnPoint(String.valueOf(i), vertices[i]);
+                    }
                     // TODO cells bordering on the bounding box are sometimes not closed correctly
-                    System.out.println(voronoiCell.getSite());
+                    // System.out.println(voronoiCell.getSite());
                     break;
                 }
             }
@@ -73,7 +89,7 @@ public class VoronoiPlayground extends Application implements Renderer {
         root.setCenter(this.canvas);
 
         Button nextEventButton = new Button("Reinitialize");
-        nextEventButton.setOnAction( event -> {
+        nextEventButton.setOnAction(event -> {
             getGraphicsContext().setFill(Color.WHITE);
             drawRectangle(new Vector2D(0, 0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
             List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(500, 500));

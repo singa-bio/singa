@@ -31,7 +31,7 @@ public class VoronoiCell implements Polygon {
     /**
      * A flag that remembers whether this cell can be closed.
      */
-    private boolean unclosed;
+    private boolean closed;
 
     /**
      * Creates a new cell for the given site.
@@ -41,7 +41,7 @@ public class VoronoiCell implements Polygon {
     VoronoiCell(SiteEvent site) {
         this.site = site;
         this.halfEdges = new ArrayList<>();
-        this.unclosed = false;
+        this.closed = true;
     }
 
     /**
@@ -169,19 +169,23 @@ public class VoronoiCell implements Polygon {
     }
 
     /**
-     * Returns true, if this cell is unclosed and false otherwise.
-     * @return true, if this cell is unclosed and false otherwise.
+     * Returns true, if this cell is closed and false otherwise.
+     * @return true, if this cell is closed and false otherwise.
      */
-    boolean isUnclosed() {
-        return this.unclosed;
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+    public boolean isOpen() {
+        return !this.closed;
     }
 
     /**
-     * Sets whether this cell is considered as unclosed or not.
-     * @param closeMe true, if this cell is unclosed and false otherwise.
+     * Sets whether this cell is considered as closed or not.
+     * @param closed true, if this cell is closed and false otherwise.
      */
-    void setUnclosed(boolean closeMe) {
-        this.unclosed = closeMe;
+    void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
     @Override

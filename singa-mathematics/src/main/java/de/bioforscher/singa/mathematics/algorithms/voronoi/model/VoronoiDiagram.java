@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
 import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
+import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
@@ -54,6 +55,11 @@ public class VoronoiDiagram {
      * Bottom border of the bounding box.
      */
     private double bottomBorder;
+
+    Line top = new Line(0, 0, 500, 0);
+    Line bottom = new Line(0, 500, 500, 500);
+    Line left = new Line(0, 0, 0, 500);
+    Line right = new Line(500, 0, 500, 500);
 
     /**
      * Creates a new Voronoi diagram with the bounding box.
@@ -147,10 +153,20 @@ public class VoronoiDiagram {
      * @return The vertex.
      */
     Vector2D createVertex(double x, double y) {
-        Vector2D vertex = new Vector2D(x, y);
+        return createVertex(new Vector2D(x, y));
+    }
+
+    /**
+     * Creates a new vertex, adds it to the diagram and returns it.
+     *
+     * @param vertex The vertex.
+     * @return The vertex.
+     */
+    Vector2D createVertex(Vector2D vertex) {
         this.vertices.add(vertex);
         return vertex;
     }
+
 
     /**
      * Creates a new cell, adds it to the diagram and returns it.
@@ -168,6 +184,7 @@ public class VoronoiDiagram {
 
     /**
      * Returns all cells.
+     *
      * @return All cells.
      */
     public Collection<VoronoiCell> getCells() {
@@ -225,8 +242,8 @@ public class VoronoiDiagram {
         // if we reach here, this means cells which use this edge will need
         // to be closed, whether because the edge was removed, or because it
         // was connected to the bounding box.
-        this.cells.get(lSite.getIdentifier()).setUnclosed(true);
-        this.cells.get(rSite.getIdentifier()).setUnclosed(true);
+        this.cells.get(lSite.getIdentifier()).setClosed(false);
+        this.cells.get(rSite.getIdentifier()).setClosed(false);
 
         // get the line equation of the bisector if line is not vertical
         double fm = 0.0;
@@ -429,8 +446,8 @@ public class VoronoiDiagram {
         // va and/or vb were clipped, thus we will need to close
         // cells which use this edge.
         if (t0 > 0 || t1 < 1) {
-            this.cells.get(edge.getLeftSite().getIdentifier()).setUnclosed(true);
-            this.cells.get(edge.getRightSite().getIdentifier()).setUnclosed(true);
+            this.cells.get(edge.getLeftSite().getIdentifier()).setClosed(false);
+            this.cells.get(edge.getRightSite().getIdentifier()).setClosed(false);
         }
 
         return true;
@@ -440,15 +457,14 @@ public class VoronoiDiagram {
      * Closes all cells that have not been closed until now.
      */
     public void closeCells() {
-        for (int iCell = this.cells.size() - 1; iCell >= 0; iCell--) {
-            VoronoiCell cell = cells.get(iCell);
-            boolean lastBorderSegment;
+        boolean lastBorderSegment;
+        for (VoronoiCell cell : cells.values()) {
             // prune, order halfedges counterclockwise, then add missing ones
             // required to close cells
             if (cell.prepareHalfEdges() != 0) {
                 continue;
             }
-            if (!cell.isUnclosed()) {
+            if (cell.isClosed()) {
                 continue;
             }
             // find first 'unclosed' point.
@@ -460,7 +476,7 @@ public class VoronoiDiagram {
             int iLeft = 0;
             while (iLeft < nHalfedges) {
                 Vector2D va = halfEdges.get(iLeft).getEndPoint();
-                Vector2D vz = halfEdges.get((iLeft + 1) % nHalfedges).getEndPoint();
+                Vector2D vz = halfEdges.get((iLeft + 1) % nHalfedges).getStartPoint();
                 // if end point is not equal to start point, we need to add the missing
                 // halfedge(s) up to vz
                 if (Math.abs(va.getX() - vz.getX()) >= 1e-9 || Math.abs(va.getY() - vz.getY()) >= 1e-9) {
@@ -562,7 +578,78 @@ public class VoronoiDiagram {
             }
 
         }
+    }
 
+
+    public void closeBorderCells() {
+
+
+        for (VoronoiCell cell : cells.values()) {
+            // prepare all half edges
+            cell.prepareHalfEdges();
+            // if
+            if (cell.isOpen()) {
+                final ListIterator<VoronoiHalfEdge> halfEdgeIterator = cell.getHalfEdges().listIterator();
+                while (halfEdgeIterator.hasNext()) {
+                    VoronoiHalfEdge current = halfEdgeIterator.next();
+                    Vector2D startPoint = current.getStartPoint();
+                    Vector2D endPoint = current.getEndPoint();
+
+                    // check start
+                    Vector2D newStart = getIntersectionWithBorder(startPoint, endPoint);
+                    if (newStart != null) {
+                        current.setStartPoint(newStart);
+
+                        // add vertex
+                        // createVertex(newStart);
+                        // add edge
+                        // replace half edge
+                    }
+
+                    // check end
+                    Vector2D newEnd = getIntersectionWithBorder(endPoint,startPoint);
+                    if (newEnd != null) {
+                        current.setEndPoint(endPoint);
+                        // add vertex
+                        // createVertex(newEnd);
+                        // add edge
+                        // replace half edge
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Returns the intersection with a border, if there is no intersection {@code null} is returned.
+     * @param pointToCheck The point that is checked for misplacement.
+     * @param fixedPoint The point that is used as a fixed reference.
+     * @return Ihe intersection with a border, if there is no intersection {@code null} is returned.
+     */
+    public Vector2D getIntersectionWithBorder(Vector2D pointToCheck, Vector2D fixedPoint) {
+        if (pointToCheck.getX() < leftBorder) {
+            // calculate intersection with left border
+            Line edgeLine = new Line(fixedPoint, pointToCheck);
+            return left.getInterceptWithLine(edgeLine);
+        }
+        if (pointToCheck.getX() > rightBorder) {
+            // calculate intersection with right border
+            Line edgeLine = new Line(fixedPoint, pointToCheck);
+            return right.getInterceptWithLine(edgeLine);
+        }
+        if (pointToCheck.getY() < topBorder) {
+            // calculate intersection with top border
+            Line edgeLine = new Line(fixedPoint, pointToCheck);
+            return top.getInterceptWithLine(edgeLine);
+        }
+        if (pointToCheck.getY() > bottomBorder) {
+            // calculate intersection with bottom border
+            Line edgeLine = new Line(fixedPoint, pointToCheck);
+            return bottom.getInterceptWithLine(edgeLine);
+        }
+        return null;
     }
 
     /**
