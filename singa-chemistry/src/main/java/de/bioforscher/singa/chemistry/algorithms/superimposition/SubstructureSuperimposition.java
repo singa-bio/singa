@@ -2,6 +2,7 @@ package de.bioforscher.singa.chemistry.algorithms.superimposition;
 
 import de.bioforscher.singa.chemistry.physical.branches.BranchSubstructure;
 import de.bioforscher.singa.chemistry.physical.leaves.LeafSubstructure;
+import de.bioforscher.singa.chemistry.physical.model.LeafIdentifier;
 import de.bioforscher.singa.chemistry.physical.model.Substructure;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.Superimposition;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
@@ -62,7 +63,9 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
         return this.mappedCandidate.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
-                        + leafSubstructure.getIdentifier().getSerial())
+                        + leafSubstructure.getIdentifier().getSerial()
+                        + (leafSubstructure.getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE ? "" : leafSubstructure.getInsertionCode())
+                )
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
                         + this.mappedCandidate.get(0).getPdbIdentifier()
                         + "_", ""));

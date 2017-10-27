@@ -37,6 +37,10 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         this(pdbIdentifer, modelIdentifer, chainIdentifer, serial, DEFAULT_INSERTION_CODE);
     }
 
+    public LeafIdentifier(String chainIdentifier, int serial, char insertionCode) {
+        this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifier, serial, insertionCode);
+    }
+
     public LeafIdentifier(String chainIdentifer, int serial) {
         this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, chainIdentifer, serial);
     }
@@ -45,9 +49,23 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         this(DEFAULT_PDB_IDENTIFIER, DEFAULT_MODEL_IDENTIFIER, DEFAULT_CHAIN_IDENTIFIER, serial);
     }
 
+    /**
+     * Constructs a {@link LeafIdentifier} from the given simple string. Only chain-ID, residue number and optional
+     * insertion code is required.
+     *
+     * @param identifier The identifier in string format (e.g. A-62 or A-62B).
+     * @return The {@link LeafIdentifier}.
+     */
     public static LeafIdentifier fromString(String identifier) {
         String[] split = identifier.split("-");
-        return new LeafIdentifier(split[0], Integer.valueOf(split[1]));
+        // decide whether insertion code was specified
+        String firstPart = split[0];
+        String secondPart = split[1];
+        if (secondPart.substring(secondPart.length() - 1).matches("[A-Z]")) {
+            char insertionCode = secondPart.charAt(secondPart.length() - 1);
+            return new LeafIdentifier(firstPart, Integer.valueOf(secondPart.substring(0, secondPart.length() - 1)), insertionCode);
+        }
+        return new LeafIdentifier(firstPart, Integer.valueOf(secondPart));
     }
 
     public String getPdbIdentifier() {
@@ -90,7 +108,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
         if (this.serial != that.serial) return false;
         if (this.modelIdentifer != that.modelIdentifer) return false;
         if (this.insertionCode != that.insertionCode) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
+        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+            return false;
         return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 

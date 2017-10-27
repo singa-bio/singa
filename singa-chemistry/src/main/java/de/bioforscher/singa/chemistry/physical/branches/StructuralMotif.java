@@ -61,7 +61,8 @@ public class StructuralMotif extends BranchSubstructure<StructuralMotif, String>
         leafIdentifiers.forEach(leafIdentifer -> {
             LeafSubstructure<?, ?> subStructure = structure.getAllLeafSubstructures().stream()
                     .filter(leaf -> leaf.getChainIdentifier().equals(leafIdentifer.getChainIdentifier())
-                            && leaf.getIdentifier().getSerial() == leafIdentifer.getSerial())
+                            && leaf.getIdentifier().getSerial() == leafIdentifer.getSerial()
+                            && leaf.getInsertionCode() == leafIdentifer.getInsertionCode())
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
             leaves.add(subStructure);
