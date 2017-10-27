@@ -66,6 +66,7 @@ public interface Fit3D {
      */
     default void writeMatches(Path outputDirectory, double rmsdCutoff) {
         getMatches().stream()
+                .filter(match -> match.getSubstructureSuperimposition() != null)
                 .filter(match -> match.getRmsd() <= rmsdCutoff)
                 .forEach(match -> {
                     try {
@@ -84,14 +85,16 @@ public interface Fit3D {
      * @param outputDirectory The directory where the matches should be written.
      */
     default void writeMatches(Path outputDirectory) {
-        getMatches().forEach(match -> {
-            try {
-                StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
-                        outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
-            } catch (IOException e) {
-                logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
-            }
-        });
+        getMatches().stream()
+                .filter(match -> match.getSubstructureSuperimposition() != null)
+                .forEach(match -> {
+                    try {
+                        StructureWriter.writeLeafSubstructures(match.getSubstructureSuperimposition().getMappedFullCandidate(),
+                                outputDirectory.resolve(match.getSubstructureSuperimposition().getStringRepresentation() + ".pdb"));
+                    } catch (IOException e) {
+                        logger.error("could not write match {}", match.getSubstructureSuperimposition().getStringRepresentation(), e);
+                    }
+                });
     }
 
     /**
@@ -101,7 +104,8 @@ public interface Fit3D {
      */
     default void writeSummaryFile(Path summaryFilePath) throws IOException {
         String summaryFileContent = getMatches().stream()
-                .map(Fit3DMatch::toCsv)
+                .filter(match -> match.getSubstructureSuperimposition() != null)
+                .map(Fit3DMatch::toCsvLine)
                 .collect(Collectors.joining("\n", Fit3DMatch.CSV_HEADER, ""));
         Files.createDirectories(summaryFilePath.getParent());
         Files.write(summaryFilePath, summaryFileContent.getBytes());

@@ -68,6 +68,43 @@ public class FofanovEstimation implements StatisticalModel {
         this.ns = new AtomicInteger(0);
     }
 
+    /**
+     * This calculates the cutoff epsilon up to which the RMSD distribution should be sampled for a desired model
+     * correctness.
+     * <pre>
+     * epsilon = model_correctness * sqrt(n_atoms(query))
+     * </pre>
+     *
+     * @param queryMotif The {@link StructuralMotif} used as query for the {@link Fit3D} alignment.
+     * @param modelCorrectnessCutoff The desired model correctness.
+     * @return The epsilon up to which RMSD distribution should be sampled to guarantee model correctness (the RMSD
+     * cutoff that should be used for {@link Fit3D}).
+     */
+    public static double determineEpsilon(StructuralMotif queryMotif, double modelCorrectnessCutoff) {
+        int numberOfAtoms = queryMotif.getAllAtoms().size();
+        return determineEpsilon(numberOfAtoms, modelCorrectnessCutoff);
+    }
+
+    /**
+     * This calculates the cutoff epsilon up to which the RMSD distribution should be sampled for a desired model
+     * correctness.
+     * <pre>
+     * epsilon = model_correctness * sqrt(n_atoms(query))
+     * </pre>
+     *
+     * @param numberOfAtoms The number of atoms used to represent the query for the {@link Fit3D} alignment.
+     * @param modelCorrectnessCutoff The desired model correctness.
+     * @return The epsilon up to which RMSD distribution should be sampled to guarantee model correctness (the RMSD
+     * cutoff that should be used for {@link Fit3D}).
+     */
+    public static double determineEpsilon(int numberOfAtoms, double modelCorrectnessCutoff) {
+        return modelCorrectnessCutoff * Math.sqrt(numberOfAtoms);
+    }
+
+    public double getModelCorrectnessCutoff() {
+        return this.modelCorrectnessCutoff;
+    }
+
     private void checkRequirements() {
         try {
             Runtime.getRuntime().exec(BINARY_NAME);

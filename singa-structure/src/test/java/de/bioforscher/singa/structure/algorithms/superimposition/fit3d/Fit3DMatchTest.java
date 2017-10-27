@@ -48,7 +48,7 @@ public class Fit3DMatchTest {
                 .query(this.queryMotif)
                 .target(this.target.getFirstChain())
                 .run();
-        assertEquals("1gl0_E-57_E-102_E-195,4.6807102570267135E-4,NaN", fit3d.getMatches().get(0).toCsv());
+        assertEquals("1gl0_E-57_E-102_E-195,4.6807102570267135E-4,NaN", fit3d.getMatches().get(0).toCsvLine());
     }
 
     @Test

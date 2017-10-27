@@ -232,4 +232,27 @@ public class Fit3DAlignmentTest {
         assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-2);
     }
 
+    @Test
+    public void shouldHandleInsertionCodeMotifs() {
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("2w0l")
+                .parse();
+
+        List<LeafIdentifier> leafIdentifiers = LeafIdentifiers.of("A-95A", "A-98", "A-100");
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(structure.getFirstChain())
+                .run();
+        assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-6);
+
+        leafIdentifiers = LeafIdentifiers.of("A-95", "A-98", "A-100");
+        structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
+        fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(structure.getFirstChain())
+                .run();
+        assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-6);
+    }
 }

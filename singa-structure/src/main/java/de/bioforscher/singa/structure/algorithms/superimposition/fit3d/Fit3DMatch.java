@@ -18,18 +18,22 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     private double rmsd;
     private double pvalue;
 
-    private Fit3DMatch(SubstructureSuperimposition substructureSuperimposition, double rmsd, double pvalue) {
-        this.substructureSuperimposition = substructureSuperimposition;
+    private Fit3DMatch(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
         this.rmsd = rmsd;
+        this.substructureSuperimposition = substructureSuperimposition;
         this.pvalue = pvalue;
     }
 
-    public static Fit3DMatch of(SubstructureSuperimposition substructureSuperimposition, double rmsd) {
-        return new Fit3DMatch(substructureSuperimposition, rmsd, Double.NaN);
+    public static Fit3DMatch of(double rmsd) {
+        return new Fit3DMatch(rmsd, null, Double.NaN);
     }
 
-    public static Fit3DMatch of(SubstructureSuperimposition substructureSuperimposition, double rmsd, double pvalue) {
-        return new Fit3DMatch(substructureSuperimposition, rmsd, pvalue);
+    public static Fit3DMatch of(double rmsd, SubstructureSuperimposition substructureSuperimposition) {
+        return new Fit3DMatch(rmsd, substructureSuperimposition, Double.NaN);
+    }
+
+    public static Fit3DMatch of(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
+        return new Fit3DMatch(rmsd, substructureSuperimposition, pvalue);
     }
 
     @Override
@@ -57,7 +61,7 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
         this.pvalue = pvalue;
     }
 
-    public String toCsv() {
+    public String toCsvLine() {
         StringJoiner stringJoiner = new StringJoiner(",");
         String stringRepresentation = this.substructureSuperimposition.getStringRepresentation();
         stringJoiner.add(stringRepresentation.replaceFirst("\\d+\\.\\d+_", ""));
