@@ -13,16 +13,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * This class constructs valid alignments for the Fit3D algorithm.
- * <p>
- * Consider Q=(K,D,E,E,H) to be the query motif. Further, we allow exchanges that are:
+ * This class constructs valid alignments for the Fit3D algorithm. <p> Consider Q=(K,D,E,E,H) to be the query motif.
+ * Further, we allow exchanges that are:
  * <pre>
  *  E(K1) = (H)
  *  E(E2) = (D,N)
  *  E(H)  = (K)
  * </pre>
- * If we now consider T=(H,E,N,D,H) to be a target of unknown order to which Q should be matched,
- * there are exactly two valid alignments:
+ * If we now consider T=(H,E,N,D,H) to be a target of unknown order to which Q should be matched, there are exactly two
+ * valid alignments:
  * <pre>
  *  Q =   K | D | E | E | H
  *  T =   H1| D | E | N | H2
@@ -31,6 +30,7 @@ import java.util.stream.IntStream;
  *  Q =   K | D | E | E | H
  *  T =   H2| D | E | N | H1
  * </pre>
+ *
  * @author sb
  */
 public class ValidAlignmentGenerator {

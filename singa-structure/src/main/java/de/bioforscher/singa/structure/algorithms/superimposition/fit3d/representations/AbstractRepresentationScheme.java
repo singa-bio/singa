@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * This abstract implementation provide a fallback solution to compute the centroid of a {@link LeafSubstructure},
- * iff the specified representation fails.
+ * This abstract implementation provide a fallback solution to compute the centroid of a {@link LeafSubstructure}, iff
+ * the specified representation fails.
  *
  * @author fk
  */

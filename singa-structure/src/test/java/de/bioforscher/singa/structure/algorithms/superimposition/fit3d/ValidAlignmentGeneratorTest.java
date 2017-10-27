@@ -49,11 +49,11 @@ public class ValidAlignmentGeneratorTest {
         this.motif1.add(motif1Histidine1);
 
         // compose residues 2
-        AminoAcid motif2Histidine1 = new  OakAminoAcid(new LeafIdentifier(6), AminoAcidFamily.HISTIDINE);
-        AminoAcid motif2GlutamicAcid1 = new  OakAminoAcid(new LeafIdentifier(7), AminoAcidFamily.GLUTAMIC_ACID);
-        AminoAcid motif2Asparagine1 = new  OakAminoAcid(new LeafIdentifier(8), AminoAcidFamily.ASPARAGINE);
-        AminoAcid motif2AsparticAcid1 = new  OakAminoAcid(new LeafIdentifier(9), AminoAcidFamily.ASPARTIC_ACID);
-        AminoAcid motif2Histidine2 = new  OakAminoAcid(new LeafIdentifier(10), AminoAcidFamily.HISTIDINE);
+        AminoAcid motif2Histidine1 = new OakAminoAcid(new LeafIdentifier(6), AminoAcidFamily.HISTIDINE);
+        AminoAcid motif2GlutamicAcid1 = new OakAminoAcid(new LeafIdentifier(7), AminoAcidFamily.GLUTAMIC_ACID);
+        AminoAcid motif2Asparagine1 = new OakAminoAcid(new LeafIdentifier(8), AminoAcidFamily.ASPARAGINE);
+        AminoAcid motif2AsparticAcid1 = new OakAminoAcid(new LeafIdentifier(9), AminoAcidFamily.ASPARTIC_ACID);
+        AminoAcid motif2Histidine2 = new OakAminoAcid(new LeafIdentifier(10), AminoAcidFamily.HISTIDINE);
 
         // compose motif 2
         this.motif2 = new ArrayList<>();

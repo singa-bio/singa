@@ -49,7 +49,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstModel() throws Exception {
         Model model = structure2N5E.getFirstModel();
-        assertEquals(1, (int)model.getIdentifier());
+        assertEquals(1, (int) model.getIdentifier());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class MmtfStructureTest {
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
-        assertEquals(2, (int)model.get().getIdentifier());
+        assertEquals(2, (int) model.get().getIdentifier());
     }
 
     @Test

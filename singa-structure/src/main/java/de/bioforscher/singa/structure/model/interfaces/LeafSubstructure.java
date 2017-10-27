@@ -93,7 +93,7 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
      * @return The flat String representation of this leaf substructure.
      */
     default String flatToString() {
-        return  getThreeLetterCode() + "-" +getIdentifier().getChainIdentifier()+ "-" + getIdentifier().getSerial();
+        return getThreeLetterCode() + "-" + getIdentifier().getChainIdentifier() + "-" + getIdentifier().getSerial();
     }
 
 }

@@ -30,7 +30,7 @@ public class StructuralMotifs {
      * Assigns the given {@link EnumSet} of exchanges to the specified {@link StructuralMotif}.
      *
      * @param structuralMotif The {@link StructuralMotif} to which the exchanges should be assigned.
-     * @param familyGroup     The group of {@link MatcherFamily} to be assigned.
+     * @param familyGroup The group of {@link MatcherFamily} to be assigned.
      */
     public static void assignComplexExchanges(StructuralMotif structuralMotif, EnumSet<MatcherFamily> familyGroup) {
         for (LeafSubstructure leafSubstructure : structuralMotif.getAllLeafSubstructures()) {
@@ -45,7 +45,7 @@ public class StructuralMotifs {
      * Performs a superimposition of given {@link StructuralMotif}s using arbitrary atoms and returns the RMSD distance
      * matrix between all elements.
      *
-     * @param structuralMotifs     The input structural motifs.
+     * @param structuralMotifs The input structural motifs.
      * @param idealSuperimposition If ideal superimposition should be performed.
      * @return A {@link LabeledSymmetricMatrix} that contains all-against-all RMSD values.
      */
@@ -55,11 +55,11 @@ public class StructuralMotifs {
     }
 
     /**
-     * Performs a superimposition of given {@link StructuralMotif}s using the specified {@link StructuralEntityFilter.AtomFilter}
-     * and returns the RMSD distance matrix between all elements.
+     * Performs a superimposition of given {@link StructuralMotif}s using the specified {@link
+     * StructuralEntityFilter.AtomFilter} and returns the RMSD distance matrix between all elements.
      *
-     * @param structuralMotifs     The input structural motifs.
-     * @param atomFilter           The {@link StructuralEntityFilter.AtomFilter} used for the superimposition.
+     * @param structuralMotifs The input structural motifs.
+     * @param atomFilter The {@link StructuralEntityFilter.AtomFilter} used for the superimposition.
      * @param idealSuperimposition If ideal superimposition should be performed.
      * @return A {@link LabeledSymmetricMatrix} that contains all-against-all RMSD values.
      */

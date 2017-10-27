@@ -11,6 +11,7 @@ public interface ChainContainer {
 
     /**
      * Returns all {@link Chain}s.
+     *
      * @return All {@link Chain}s.
      */
     List<Chain> getAllChains();

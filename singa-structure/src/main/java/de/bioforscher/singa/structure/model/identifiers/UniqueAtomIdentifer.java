@@ -58,7 +58,8 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
         if (this.modelIdentifer != that.modelIdentifer) return false;
         if (this.leafSerial != that.leafSerial) return false;
         if (this.leafInsertionCode != that.leafInsertionCode) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null) return false;
+        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+            return false;
         return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 

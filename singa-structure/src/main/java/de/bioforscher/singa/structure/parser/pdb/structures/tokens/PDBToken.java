@@ -13,28 +13,8 @@ import java.util.regex.Pattern;
 public interface PDBToken {
 
     /**
-     * Returns the record name for this token.
-     * @return The record name for this token.
-     */
-    Pattern getRecordNamePattern();
-
-    /**
-     * Gets the columns (the staring and ending index) where a value can be extracted.
-     * @return The columns where a value can be extracted.
-     */
-    Range<Integer> getColumns();
-
-    /**
-     * Extracts a value from pdb line.
-     * @param line The line to extract from.
-     * @return The trimmed value.
-     */
-    default String extract(String line) {
-        return extractValueFromPDBLine(line, this);
-    }
-
-    /**
      * Extracts a value from a pdb line, given a token and line to extract from.
+     *
      * @param line The line to extract from.
      * @param token The value for the token to extract.
      * @return The trimmed value.
@@ -52,12 +32,35 @@ public interface PDBToken {
 
     static String endLine(String content) {
         StringBuilder filler = new StringBuilder();
-        for (int i = 0; i < 80-content.length(); i++) {
+        for (int i = 0; i < 80 - content.length(); i++) {
             filler.append(" ");
         }
-        return content+filler+System.lineSeparator();
+        return content + filler + System.lineSeparator();
     }
 
+    /**
+     * Returns the record name for this token.
+     *
+     * @return The record name for this token.
+     */
+    Pattern getRecordNamePattern();
+
+    /**
+     * Gets the columns (the staring and ending index) where a value can be extracted.
+     *
+     * @return The columns where a value can be extracted.
+     */
+    Range<Integer> getColumns();
+
+    /**
+     * Extracts a value from pdb line.
+     *
+     * @param line The line to extract from.
+     * @return The trimmed value.
+     */
+    default String extract(String line) {
+        return extractValueFromPDBLine(line, this);
+    }
 
 
 }

@@ -21,25 +21,6 @@ public enum TitleToken implements PDBToken {
         this.columns = columns;
     }
 
-    @Override
-    public Pattern getRecordNamePattern() {
-        return RECORD_PATTERN;
-    }
-
-    @Override
-    public Range<Integer> getColumns() {
-        return this.columns;
-    }
-
-    @Override
-    public String extract(String line) {
-        if (line.length() >= this.getColumns().getUpperBound()) {
-            return line.substring(this.getColumns().getLowerBound() - 1, this.getColumns().getUpperBound());
-        } else {
-            return line.substring(this.getColumns().getLowerBound() - 1);
-        }
-    }
-
     public static List<String> assemblePDBLines(String title) {
         title = title.toUpperCase();
         ArrayList<String> titleLines = new ArrayList<>();
@@ -65,6 +46,25 @@ public enum TitleToken implements PDBToken {
             titleLines.add("TITLE    " + continuation + title);
         }
         return titleLines;
+    }
+
+    @Override
+    public Pattern getRecordNamePattern() {
+        return RECORD_PATTERN;
+    }
+
+    @Override
+    public Range<Integer> getColumns() {
+        return this.columns;
+    }
+
+    @Override
+    public String extract(String line) {
+        if (line.length() >= this.getColumns().getUpperBound()) {
+            return line.substring(this.getColumns().getLowerBound() - 1, this.getColumns().getUpperBound());
+        } else {
+            return line.substring(this.getColumns().getLowerBound() - 1);
+        }
     }
 
 

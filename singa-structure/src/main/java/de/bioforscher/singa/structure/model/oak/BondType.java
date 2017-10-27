@@ -9,18 +9,18 @@ public enum BondType {
 
     private String cifName;
 
-    BondType (String cifName) {
+    BondType(String cifName) {
         this.cifName = cifName;
-    }
-
-    public String getCifName() {
-        return this.cifName;
     }
 
     public static Optional<BondType> getBondTypeByCifName(String cifName) {
         return Arrays.stream(values())
                 .filter(type -> cifName.equals(type.cifName))
                 .findAny();
+    }
+
+    public String getCifName() {
+        return this.cifName;
     }
 
 }

@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * This static class bundles filters for {@link LeafSubstructure}s and {@link Atom}s that can be
- * concatenated by using the {@link Predicate} interface.
+ * This static class bundles filters for {@link LeafSubstructure}s and {@link Atom}s that can be concatenated by using
+ * the {@link Predicate} interface.
  *
  * @author cl
  * @see Predicate

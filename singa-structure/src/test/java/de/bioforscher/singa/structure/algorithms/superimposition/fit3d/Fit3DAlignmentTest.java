@@ -109,6 +109,7 @@ public class Fit3DAlignmentTest {
         Fit3D fit3d = Fit3DBuilder.create()
                 .query(queryMotif)
                 .target(target.getFirstModel())
+                .atomFilter(AtomFilter.isArbitrary())
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);

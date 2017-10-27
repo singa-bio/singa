@@ -17,54 +17,45 @@ import java.util.*;
 public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> implements LeafSubstructure<FamilyType> {
 
     /**
-     * The original bytes kept to copy.
-     */
-    private byte[] bytes;
-
-    /**
-     * The original mmtf data.
-     */
-    private StructureDataInterface data;
-
-    /**
-     * The index of this leaf in the group data arrays.
-     */
-    private int internalGroupIndex;
-
-    /**
-     * The generated leaf identifier.
-     */
-    private LeafIdentifier leafIdentifier;
-
-    /**
-     * The atoms that have already been requested.
-     */
-    private Map<Integer, MmtfAtom> cachedAtoms;
-
-    /**
-     * The index of the first atom that belong to this leaf.
-     */
-    private int atomStartIndex;
-
-    /**
-     * The index of the last atom that belong to this leaf.
-     */
-    private int atomEndIndex;
-
-    /**
-     * The set of atoms anot available
-     */
-    private Set<Integer> removedAtoms;
-
-    /**
      * The structural family of this entity
      */
     protected FamilyType family;
-
     /**
      * The families to which the {@link LeafSubstructure} can be exchanged.
      */
     protected Set<FamilyType> exchangeableFamilies;
+    /**
+     * The original bytes kept to copy.
+     */
+    private byte[] bytes;
+    /**
+     * The original mmtf data.
+     */
+    private StructureDataInterface data;
+    /**
+     * The index of this leaf in the group data arrays.
+     */
+    private int internalGroupIndex;
+    /**
+     * The generated leaf identifier.
+     */
+    private LeafIdentifier leafIdentifier;
+    /**
+     * The atoms that have already been requested.
+     */
+    private Map<Integer, MmtfAtom> cachedAtoms;
+    /**
+     * The index of the first atom that belong to this leaf.
+     */
+    private int atomStartIndex;
+    /**
+     * The index of the last atom that belong to this leaf.
+     */
+    private int atomEndIndex;
+    /**
+     * The set of atoms anot available
+     */
+    private Set<Integer> removedAtoms;
 
     /**
      * Creates a new {@link MmtfLeafSubstructure}.
@@ -152,7 +143,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        this.removedAtoms.add(atomIdentifier);
+        this.removedAtoms.add(atomIdentifier - 1);
     }
 
     @Override

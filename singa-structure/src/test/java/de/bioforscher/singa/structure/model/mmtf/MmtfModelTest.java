@@ -33,8 +33,8 @@ public class MmtfModelTest {
 
     @Test
     public void getIdentifier() throws Exception {
-        assertEquals(1, (int)firstModel.getIdentifier());
-        assertEquals(2, (int)secondModel.getIdentifier());
+        assertEquals(1, (int) firstModel.getIdentifier());
+        assertEquals(2, (int) secondModel.getIdentifier());
     }
 
     @Test

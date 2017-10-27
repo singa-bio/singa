@@ -37,7 +37,7 @@ public class StructureWriter {
      * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
-    public static void writeBranchSubstructure(LeafSubstructureContainer leafSubstructureContainer, Path outputPath) throws IOException {
+    public static void writeLeafSubstructureContainer(LeafSubstructureContainer leafSubstructureContainer, Path outputPath) throws IOException {
         logger.info("Writing branch substructure {} to {}.", leafSubstructureContainer, outputPath);
         writeLeafSubstructures(leafSubstructureContainer.getAllLeafSubstructures(), outputPath);
     }

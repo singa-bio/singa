@@ -25,7 +25,7 @@ public class PlipShellGenerator {
     private final LeafSubstructure reference;
     private final InteractionContainer interChainInteractions;
     private final InteractionContainer referenceInteractions;
-    private final Map<InteractionShell, List<LeafSubstructure>> shells;
+    private final Map<InteractionShell, List<LeafSubstructure<?>>> shells;
 
     private GenericGraph<LeafSubstructure<?>> graph;
 
@@ -41,7 +41,7 @@ public class PlipShellGenerator {
         computeShells();
     }
 
-    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure reference,
+    public static PlipShellGenerator getInteractionShellsForLigand(Chain chain, LeafSubstructure<?> reference,
                                                                    InteractionContainer interChainInteractions,
                                                                    InteractionContainer referenceInteractions) {
         return new PlipShellGenerator(chain, reference, interChainInteractions, referenceInteractions);
@@ -55,7 +55,7 @@ public class PlipShellGenerator {
         }
     }
 
-    public Map<InteractionShell, List<LeafSubstructure>> getShells() {
+    public Map<InteractionShell, List<LeafSubstructure<?>>> getShells() {
         return this.shells;
     }
 
@@ -94,8 +94,8 @@ public class PlipShellGenerator {
 
         FIRST, SECOND, THIRD;
 
-        public List<LeafSubstructure> from(GenericGraph<LeafSubstructure<?>> graph,
-                                           GenericNode<LeafSubstructure<?>> referenceNode) {
+        public List<LeafSubstructure<?>> from(GenericGraph<LeafSubstructure<?>> graph,
+                                              GenericNode<LeafSubstructure<?>> referenceNode) {
             return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal() + 1).stream()
                     .map(GenericNode::getContent)
                     .collect(Collectors.toList());

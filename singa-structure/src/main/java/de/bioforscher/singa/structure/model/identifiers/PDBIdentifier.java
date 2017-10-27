@@ -6,10 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This identifier is used by the <a href="http://www.rcsb.org">Protein Database</a> to identify structures.
- * <p>
- * The identifier is a 4 character code, where the first character is any number followed by three alphanumeric
- * characters.
+ * This identifier is used by the <a href="http://www.rcsb.org">Protein Database</a> to identify structures. <p> The
+ * identifier is a 4 character code, where the first character is any number followed by three alphanumeric characters.
  *
  * @author cl
  * @see <a href="http://www.rcsb.org/pdb/staticHelp.do?p=help/advancedsearch/pdbIDs.html">PDB identifier</a>

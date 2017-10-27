@@ -32,10 +32,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * A consensus alignment of same-sized {@link StructuralMotif}s can be used to cluster them according their
- * geometric similarity in a multi-structure alignment manner as described in:
+ * A consensus alignment of same-sized {@link StructuralMotif}s can be used to cluster them according their geometric
+ * similarity in a multi-structure alignment manner as described in:
  * <pre>to be published</pre>
- *
  * <b>NOTE:</b> Copies of given {@link StructuralMotif}s will be used, so original structures are not altered.
  *
  * @author fk
@@ -532,7 +531,8 @@ public class ConsensusAlignment {
     }
 
     /**
-     * Searches in all existing alignment trees to find the node containing the given list of {@link LeafSubstructure}s.
+     * Searches in all existing alignment trees to find the node containing the given list of {@link
+     * LeafSubstructure}s.
      *
      * @param consensusContainer the list of {@link LeafSubstructure}s for which a node should be found
      * @return the node containing the given list of {@link LeafSubstructure}s or null if it was not found

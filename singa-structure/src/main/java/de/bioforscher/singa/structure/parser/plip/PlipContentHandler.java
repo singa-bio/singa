@@ -391,8 +391,8 @@ public class PlipContentHandler implements ContentHandler {
         final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 1, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
         this.currentInteraction.setSource(source);
         this.currentInteraction.setTarget(target);
-        this.currentInteraction.setLigandCoordinate(new double[] {this.c1x, this.c1y, this.c1z});
-        this.currentInteraction.setProteinCoordinate(new double[] {this.c2x, this.c2y, this.c2z});
+        this.currentInteraction.setLigandCoordinate(new double[]{this.c1x, this.c1y, this.c1z});
+        this.currentInteraction.setProteinCoordinate(new double[]{this.c2x, this.c2y, this.c2z});
         // add the container to interactions
         this.interactions.addInteraction(this.currentInteraction);
 

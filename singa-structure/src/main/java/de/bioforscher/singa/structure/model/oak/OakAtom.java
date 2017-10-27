@@ -56,8 +56,8 @@ public class OakAtom implements Atom {
     /**
      * This is a copy constructor. Creates a new atom with the same attributes as the given atom. The neighbours of this
      * atom are NOT copied. Due to the nature of this operation it would be bad to keep a part of the relations to the
-     * lifecycle of the atom to copy. If you want to keep the neighbouring atoms, copy the superordinate
-     * substructure that contains this atom and it will also traverse and copy the neighbouring atoms.
+     * lifecycle of the atom to copy. If you want to keep the neighbouring atoms, copy the superordinate substructure
+     * that contains this atom and it will also traverse and copy the neighbouring atoms.
      *
      * @param atom The atom to copy.
      */

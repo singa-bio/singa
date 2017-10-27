@@ -20,34 +20,22 @@ class ContentTreeNode {
      * The logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(ContentTreeNode.class);
-
-    /**
-     * The level of any atom in the tree.
-     */
-    public enum StructureLevel {
-        STRUCTURE, MODEL, CHAIN, LEAF, ATOM
-    }
-
     /**
      * The level of this node.
      */
     private StructureLevel level;
-
     /**
      * The identifying string of this node.
      */
     private String identifier;
-
     /**
      * The insertion code if this node is on leaf level.
      */
     private char insertionCode;
-
     /**
      * The actual atom.
      */
     private OakAtom atom;
-
     /**
      * The children of this node.
      */
@@ -259,6 +247,13 @@ class ContentTreeNode {
             }
             iterator.previous().appendAtom(atom, identifer);
         }
+    }
+
+    /**
+     * The level of any atom in the tree.
+     */
+    public enum StructureLevel {
+        STRUCTURE, MODEL, CHAIN, LEAF, ATOM
     }
 
 }

@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 
 /**
- * An implementation to represent a given {@link LeafSubstructure} by its beta carbon. This is only available for
- * {@link AminoAcid}s. For glycine a virtual beta carbon is calculated by superimposing alanine.
+ * An implementation to represent a given {@link LeafSubstructure} by its beta carbon. This is only available for {@link
+ * AminoAcid}s. For glycine a virtual beta carbon is calculated by superimposing alanine.
  *
  * @author fk
  */

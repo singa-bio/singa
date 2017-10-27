@@ -57,6 +57,7 @@ public interface Atom {
      *     5444: CA (70.31099700927734, 35.60300064086914, -10.967000007629395)
      *     412: N2 (62.20399856567383, -8.505999565124512, 22.573999404907227)
      * </pre>
+     *
      * @return The flat String representation of this atom.
      */
     default String flatToString() {

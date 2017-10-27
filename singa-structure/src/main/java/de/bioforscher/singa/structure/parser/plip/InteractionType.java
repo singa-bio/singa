@@ -22,20 +22,20 @@ public enum InteractionType {
         this.threeLetterCode = threeLetterCode;
     }
 
+    public static String getThreeLetterCode(Class<? extends Interaction> interactionClass) {
+        for (InteractionType interactionType : values()) {
+            if (interactionType.getInteractionClass().equals(interactionClass)) {
+                return interactionType.getThreeLetterCode();
+            }
+        }
+        return "";
+    }
+
     public Class<? extends Interaction> getInteractionClass() {
         return this.interactionClass;
     }
 
     public String getThreeLetterCode() {
         return this.threeLetterCode;
-    }
-
-    public static String getThreeLetterCode(Class<? extends Interaction> interactionClass) {
-        for (InteractionType interactionType: values()) {
-            if (interactionType.getInteractionClass().equals(interactionClass)) {
-                return interactionType.getThreeLetterCode();
-            }
-        }
-        return "";
     }
 }

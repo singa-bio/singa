@@ -10,9 +10,9 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptio
 import java.util.Map;
 
 /**
- * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the atoms
- * in the residues, where possible. No distance criterion is used but the knowledge of the residues and the usually
- * connected atoms. Different options can be set.
+ * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the
+ * atoms in the residues, where possible. No distance criterion is used but the knowledge of the residues and the
+ * usually connected atoms. Different options can be set.
  */
 public class LeafSubstructureFactory {
 
@@ -299,6 +299,7 @@ public class LeafSubstructureFactory {
 
     /**
      * Connects the backbone atoms N-to-CA-to-C-to-O.
+     *
      * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
@@ -310,6 +311,7 @@ public class LeafSubstructureFactory {
 
     /**
      * Connects the N terminal Hydrogens N-to-H and N-to-H2.
+     *
      * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */
@@ -322,6 +324,7 @@ public class LeafSubstructureFactory {
 
     /**
      * Connects the C terminal AtomFilter C-to-OXT-to-HXT.
+     *
      * @param aminoAcid The aminoAcid to connect in.
      * @param atoms The atoms to take from.
      */

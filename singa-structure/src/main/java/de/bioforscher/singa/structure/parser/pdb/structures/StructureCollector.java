@@ -120,6 +120,21 @@ public class StructureCollector {
     }
 
     /**
+     * Removes trailing whitespaces.
+     *
+     * @param source The original string.
+     * @return The original string without trailing white spaces.
+     */
+    public static String trimEnd(String source) {
+        int pos = source.length() - 1;
+        while ((pos >= 0) && Character.isWhitespace(source.charAt(pos))) {
+            pos--;
+        }
+        pos++;
+        return (pos < source.length()) ? source.substring(0, pos) : source;
+    }
+
+    /**
      * Reduces the lines as described in the {@link StructureParser.Reducer}.
      *
      * @throws StructureParserException if any problem occur during reducing.
@@ -185,22 +200,6 @@ public class StructureCollector {
             }
         }
     }
-
-    /**
-     * Removes trailing whitespaces.
-     *
-     * @param source The original string.
-     * @return The original string without trailing white spaces.
-     */
-    public static String trimEnd(String source) {
-        int pos = source.length() - 1;
-        while ((pos >= 0) && Character.isWhitespace(source.charAt(pos))) {
-            pos--;
-        }
-        pos++;
-        return (pos < source.length()) ? source.substring(0, pos) : source;
-    }
-
 
     /**
      * Keeps only lines, that belong to a certain model.

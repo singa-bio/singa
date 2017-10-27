@@ -172,10 +172,9 @@ public class SubstructureSuperimposer {
     }
 
     /**
-     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of {@link LeafSubstructure}.
-     * <p>
-     * <b>NOTE:</b> The superimposition is not necessarily the best. When matching incompatible residues one can obtain
-     * a pseudo-better RMSD due to reduction of atoms.
+     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of {@link LeafSubstructure}. <p> <b>NOTE:</b> The
+     * superimposition is not necessarily the best. When matching incompatible residues one can obtain a pseudo-better
+     * RMSD due to reduction of atoms.
      *
      * @return the pseudo-ideal superimposition
      */
@@ -299,15 +298,15 @@ public class SubstructureSuperimposer {
             }
         }
 
-        // TODO: FLO IS THIS CORRECT?
-        // i think this should be done for the structure but not for every leaf
-        // previously
-
         // apply superimposition to copy of the candidate
-        mappedCandidate.forEach(subStructure -> subStructure.getAllAtoms()
-                .forEach(atom -> atom.setPosition(mappedPositions
-                        .get(positionMapping.get(atom.getIdentifier()))
-                        .as(Vector3D.class))));
+        for (LeafSubstructure<?> subStructure : mappedCandidate) {
+            for (Atom atom : subStructure.getAllAtoms()) {
+                Vector newPosition = mappedPositions.get(positionMapping.get(atom.getIdentifier()));
+                // FIXME provide class for 3d vector superimposition
+                Vector3D v3 = newPosition.as(Vector3D.class);
+                atom.setPosition(v3);
+            }
+        }
 
         // apply superimposition to full all-atom copy of the candidate
         mappedFullCandidate.stream()

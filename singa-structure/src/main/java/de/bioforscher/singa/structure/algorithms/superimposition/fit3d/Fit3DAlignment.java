@@ -233,7 +233,7 @@ public class Fit3DAlignment implements Fit3D {
                 .map(LeafSubstructure::getContainingFamilies)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        List<LeafSubstructure<?, ?>> toBeRemoved = this.target.getLeafSubstructures().stream()
+        List<LeafSubstructure<?>> toBeRemoved = this.target.getAllLeafSubstructures().stream()
                 .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
                 .collect(Collectors.toList());
         toBeRemoved.forEach(this.target::removeLeafSubstructure);

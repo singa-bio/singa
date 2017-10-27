@@ -4,8 +4,8 @@ import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its centroid <b>EXCLUDING</b> hydrogen.
- * This is the same as {@link AbstractRepresentationScheme#determineCentroid(GraphLeafSubstructure)}.
+ * An implementation to represent a given {@link GraphLeafSubstructure} by its centroid <b>EXCLUDING</b> hydrogen. This
+ * is the same as {@link AbstractRepresentationScheme#determineCentroid(GraphLeafSubstructure)}.
  *
  * @author fk
  */

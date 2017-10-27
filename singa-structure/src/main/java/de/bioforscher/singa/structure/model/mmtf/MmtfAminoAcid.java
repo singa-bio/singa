@@ -46,7 +46,7 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
 
     @Override
     public String flatToString() {
-        return "AminoAcid ("+getThreeLetterCode()+") "+getIdentifier();
+        return "AminoAcid (" + getThreeLetterCode() + ") " + getIdentifier();
     }
 
     @Override

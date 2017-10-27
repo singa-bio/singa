@@ -5,12 +5,11 @@ import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DBuilder;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
-import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -42,11 +41,6 @@ public class FofanovEstimationTest {
 
     @Test
     public void shouldCalculatePvalues() throws IOException, InterruptedException {
-        StructureParserOptions structureParserOptions = StructureParserOptions.withSettings(
-                StructureParserOptions.Setting.OMIT_EDGES,
-                StructureParserOptions.Setting.OMIT_HYDROGENS,
-                StructureParserOptions.Setting.OMIT_LIGAND_INFORMATION,
-                StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
@@ -55,7 +49,7 @@ public class FofanovEstimationTest {
                 .query(this.queryMotif)
                 .targets(multiParser)
                 .maximalParallelism()
-                .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
+                .atomFilter(AtomFilter.isArbitrary())
                 .statisticalModel(fofanovEstimation)
                 .run();
         assertTrue(fit3dBatch.getMatches().stream()

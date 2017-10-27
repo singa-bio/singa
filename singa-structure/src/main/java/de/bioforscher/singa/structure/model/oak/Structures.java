@@ -42,8 +42,7 @@ public class Structures {
     }
 
     /**
-     * Returns the distance matrix of the given {@link Atom}s.
-     * <p>
+     * Returns the distance matrix of the given {@link Atom}s. <p>
      *
      * @param atomContainer A atom container with the atoms.
      * @return The squared distance matrix.
@@ -53,8 +52,7 @@ public class Structures {
     }
 
     /**
-     * Returns the distance matrix of the given {@link Atom}s.
-     * <p>
+     * Returns the distance matrix of the given {@link Atom}s. <p>
      *
      * @param atoms A atom container with the atoms.
      * @return The squared distance matrix.

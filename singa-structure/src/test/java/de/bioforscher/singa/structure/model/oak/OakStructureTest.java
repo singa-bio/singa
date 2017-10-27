@@ -221,7 +221,7 @@ public class OakStructureTest {
 
     @Test
     public void addAtom() throws Exception {
-        final int expected = structureToModify.getAllAtoms().size()+1;
+        final int expected = structureToModify.getAllAtoms().size() + 1;
         structureToModify.addAtom("A", "ADD", new Vector3D(1.0, 2.0, 3.0));
         final int actual = structureToModify.getAllAtoms().size();
         assertEquals(expected, actual);
@@ -229,7 +229,7 @@ public class OakStructureTest {
 
     @Test
     public void removeAtom() throws Exception {
-        final int expected = structureToModify.getAllAtoms().size()-1;
+        final int expected = structureToModify.getAllAtoms().size() - 1;
         structureToModify.removeAtom(17);
         final int actual = structureToModify.getAllAtoms().size();
         assertEquals(expected, actual);

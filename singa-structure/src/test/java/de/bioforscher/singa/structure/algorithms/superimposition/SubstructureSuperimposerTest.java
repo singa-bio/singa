@@ -4,10 +4,13 @@ package de.bioforscher.singa.structure.algorithms.superimposition;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -125,6 +128,24 @@ public class SubstructureSuperimposerTest {
         for (int i = 0; i < aminoAcids.size(); i++) {
             assertArrayEquals(candidate.getAllAminoAcids().get(i).getPosition().getElements(), mappedCandidate.get(i).getPosition().getElements(), 1E-3);
         }
+    }
+
+    @Test
+    public void shouldCorrectlyAlignWithMMTF() {
+        Structure first = StructureParser.mmtf()
+                .pdbIdentifier("1cd9")
+                .parse();
+        List<LeafIdentifier> firstIdentifiers = LeafIdentifiers.of("C-68", "C-70");
+        StructuralMotif firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
+
+        Structure second = StructureParser.mmtf()
+                .pdbIdentifier("1cn4")
+                .parse();
+        List<LeafIdentifier> secondIdentifiers = LeafIdentifiers.of("A-58", "A-59");
+        StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
+
+        SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
+
     }
 
     @Test

@@ -31,8 +31,8 @@ public class MmtfAtomTest {
 
     @Test
     public void getIdentifier() throws Exception {
-        assertEquals(412, (int)atom412.getIdentifier());
-        assertEquals(5444, (int)atom5444.getIdentifier());
+        assertEquals(412, (int) atom412.getIdentifier());
+        assertEquals(5444, (int) atom5444.getIdentifier());
     }
 
     @Test

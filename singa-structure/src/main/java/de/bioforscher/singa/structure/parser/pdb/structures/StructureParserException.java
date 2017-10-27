@@ -11,6 +11,7 @@ public class StructureParserException extends RuntimeException {
 
     /**
      * Creates a new structure parser exception.
+     *
      * @param message The message to display.
      */
     public StructureParserException(String message) {

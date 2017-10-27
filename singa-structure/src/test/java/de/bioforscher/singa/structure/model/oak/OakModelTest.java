@@ -35,8 +35,8 @@ public class OakModelTest {
 
     @Test
     public void getIdentifier() throws Exception {
-        assertEquals(1, (int)firstModel.getIdentifier());
-        assertEquals(2, (int)secondModel.getIdentifier());
+        assertEquals(1, (int) firstModel.getIdentifier());
+        assertEquals(2, (int) secondModel.getIdentifier());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class OakModelTest {
 
     @Test
     public void addChain() throws Exception {
-        final int expected = modelToModify.getAllChains().size()+1;
+        final int expected = modelToModify.getAllChains().size() + 1;
         modelToModify.addChain(new OakChain("C"));
         final int actual = modelToModify.getAllChains().size();
         assertEquals(expected, actual);
@@ -90,7 +90,7 @@ public class OakModelTest {
 
     @Test
     public void removeLeafSubstructure() throws Exception {
-        final int expected = modelToModify.getAllLeafSubstructures().size()-1;
+        final int expected = modelToModify.getAllLeafSubstructures().size() - 1;
         final boolean response = modelToModify.removeLeafSubstructure(new LeafIdentifier("2N5E", 3, "B", 64));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
@@ -112,7 +112,7 @@ public class OakModelTest {
 
     @Test
     public void removeAtom() throws Exception {
-        final int expected = modelToModify.getAllAtoms().size()-1;
+        final int expected = modelToModify.getAllAtoms().size() - 1;
         modelToModify.removeAtom(17);
         final int actual = modelToModify.getAllAtoms().size();
         assertEquals(expected, actual);

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations;
 
 /**
- * Defines the types for which adequately {@link RepresentationScheme}s are defined.
- * <p>
+ * Defines the types for which adequately {@link RepresentationScheme}s are defined. <p>
+ *
  * @author fk
  */
 public enum RepresentationSchemeType {

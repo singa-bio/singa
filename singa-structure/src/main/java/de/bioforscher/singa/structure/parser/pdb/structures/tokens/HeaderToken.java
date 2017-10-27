@@ -20,6 +20,11 @@ public enum HeaderToken implements PDBToken {
         this.columns = columns;
     }
 
+    public static String assemblePDBLine(String pdbIdentifier) {
+        return "HEADER" +
+                String.format("%" + (ID_CODE.getColumns().getLowerBound() - pdbIdentifier.length() + 1) + "s", pdbIdentifier.toUpperCase());
+    }
+
     @Override
     public Pattern getRecordNamePattern() {
         return RECORD_PATTERN;
@@ -28,10 +33,5 @@ public enum HeaderToken implements PDBToken {
     @Override
     public Range<Integer> getColumns() {
         return this.columns;
-    }
-
-    public static String assemblePDBLine(String pdbIdentifier) {
-        return "HEADER" +
-                String.format("%" + (ID_CODE.getColumns().getLowerBound() - pdbIdentifier.length() + 1) + "s", pdbIdentifier.toUpperCase());
     }
 }

@@ -35,79 +35,58 @@ class StructureContentIterator implements Iterator<List<String>> {
      * The URL the where pdb files are parsed from.
      */
     private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
-
-    /**
-     * The location the files should be parsed from.
-     */
-    enum SourceLocation {
-        ONLINE_PDB, ONLINE_MMTF, OFFLINE
-    }
-
     /**
      * The local pdb, if there is any.
      */
     private StructureParser.LocalPDB localPdb;
-
     /**
      * The urls that are to be parsed.
      */
     private List<URL> identifiers;
-
     /**
      * The iterator that traverses the urls.
      */
     private Iterator<URL> currentURL;
-
     /**
      * The paths the structures are supplied from.
      */
     private List<Path> paths;
-
     /**
      * The iterator that traverses the paths.
      */
     private Iterator<Path> currentPath;
-
     /**
      * The pdb identifiers that are to be parsed, if they can be inferred.
      */
     private List<String> pdbIdentifiers;
-
     /**
      * The iterator that traverses the pdb identifiers.
      */
     private Iterator<String> pdbIdentifierIterator;
-
     /**
      * The pdb identifier that is to be parsed next.
      */
     private String currentPdbIdentifier;
-
     /**
      * The chains that are to be parsed for specific pdb files.
      */
     private List<String> chains;
-
     /**
      * The iterator that traverses the chain identifiers
      */
     private Iterator<String> chainIdentifierIterator;
-
     /**
      * The chain identifier that is to be parsed next.
      */
     private String currentChainIdentifier;
-
     /**
      * The general location of the source files.
      */
     private SourceLocation location;
-
     /**
      * The current source.
      */
     private String currentSource;
-
     /**
      * The number of structures that have already be processed.
      */
@@ -470,6 +449,13 @@ class StructureContentIterator implements Iterator<List<String>> {
                 return bufferedReader.lines().collect(Collectors.toList());
             }
         }
+    }
+
+    /**
+     * The location the files should be parsed from.
+     */
+    enum SourceLocation {
+        ONLINE_PDB, ONLINE_MMTF, OFFLINE
     }
 
 }

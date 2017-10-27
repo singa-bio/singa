@@ -68,6 +68,7 @@ public class CifFileParser {
 
     /**
      * Collect all relevant lines that are later required for extracting information.
+     *
      * @param skipAtoms True, if no atom lines should be parsed.
      */
     private void collectLines(boolean skipAtoms) {
@@ -119,7 +120,7 @@ public class CifFileParser {
             Element element = ElementProvider.getElementBySymbol(splitLine[3]).orElse(ElementProvider.UNKOWN);
             String atomName = splitLine[1];
             Vector3D coordinates = new Vector3D(Double.valueOf(splitLine[9]), Double.valueOf(splitLine[10]), Double.valueOf(splitLine[11]));
-            OakAtom atom = new  OakAtom(identifier, element, atomName, coordinates);
+            OakAtom atom = new OakAtom(identifier, element, atomName, coordinates);
             this.atoms.put(atomName, atom);
         }
     }
@@ -139,6 +140,7 @@ public class CifFileParser {
 
     /**
      * Extracts information about the ligand.
+     *
      * @param line The line.
      */
     private void extractInformation(String line) {
@@ -166,6 +168,7 @@ public class CifFileParser {
 
     /**
      * Parses a leaf from scratch using only information provided in the cif file.
+     *
      * @return A leaf.
      */
     private OakLeafSubstructure<?> parseCompleteLeafSubstructure() {
@@ -177,6 +180,7 @@ public class CifFileParser {
 
     /**
      * Creates a complete {@link LeafSubstructure} using the information collected until the call of this method.
+     *
      * @param leafIdentifier The identifier this leaf should have.
      * @return A complete {@link LeafSubstructure} using the information collected until the call of this method.
      */
@@ -184,7 +188,7 @@ public class CifFileParser {
         OakLeafSubstructure<?> leafSubstructure;
         if (isNucleotide()) {
             // check for nucleotides
-                Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);
+            Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);
             leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, this.threeLetterCode))
                     .orElseGet(() -> new OakNucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(this.threeLetterCode).orElseThrow(() ->
                             new IllegalArgumentException("Could not create Nucleotide with three letter code" + this.threeLetterCode))));
@@ -208,6 +212,7 @@ public class CifFileParser {
 
     /**
      * Creates a leaf skeleton to be used to create complete leafs from.
+     *
      * @return A leaf skeleton.
      */
     private LeafSkeleton parseLeafSkeleton() {
@@ -218,6 +223,7 @@ public class CifFileParser {
 
     /**
      * Creates a leaf skeleton only containing the information required to build a new leaf.
+     *
      * @return A leaf skeleton.
      */
     private LeafSkeleton createLeafSkeleton() {
@@ -227,7 +233,7 @@ public class CifFileParser {
             // check for nucleotides
             if (!this.parent.equals("?")) {
                 assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
-            }else{
+            } else {
                 // TODO fix this fallback solution
                 assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
             }
@@ -242,8 +248,8 @@ public class CifFileParser {
     }
 
     /**
-     * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either
-     * {@code RNA LINKING} or {@code DNA LINKING}.
+     * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either {@code
+     * RNA LINKING} or {@code DNA LINKING}.
      *
      * @return
      */
@@ -252,8 +258,8 @@ public class CifFileParser {
     }
 
     /**
-     * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is
-     * {@code L-PEPTIDE LINKING} and a valid parent is specified.
+     * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is {@code
+     * L-PEPTIDE LINKING} and a valid parent is specified.
      *
      * @return
      */

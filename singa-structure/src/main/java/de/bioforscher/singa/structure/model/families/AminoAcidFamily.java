@@ -86,7 +86,7 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     /**
      * Returns true if the set of AtomFilter contains only Atom names, that can occur in the given residue type.
      *
-     * @param atoms         The atoms to be checked.
+     * @param atoms The atoms to be checked.
      * @param aminoAcidFamily The expected type of residue.
      * @return True, if the set of AtomFilter contains only Atom names, that can occur in the given residue type.
      */

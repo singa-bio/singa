@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * @author cl
  */
-public enum ChainTerminatorToken implements PDBToken{
+public enum ChainTerminatorToken implements PDBToken {
 
     RECORD_TYPE(Range.of(1, 6), Justification.LEFT),
     ATOM_SERIAL(Range.of(7, 11), Justification.RIGHT),

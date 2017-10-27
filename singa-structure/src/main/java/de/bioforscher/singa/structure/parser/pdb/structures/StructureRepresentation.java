@@ -40,8 +40,7 @@ public class StructureRepresentation {
     private final List<LeafSubstructure<?>> nonConsecutiveLeafs;
 
     /**
-     * Creates a representation of the given chain. For multiple chains, use the {@link Model} to encapsulate
-     * them.
+     * Creates a representation of the given chain. For multiple chains, use the {@link Model} to encapsulate them.
      *
      * @param chain The chain.
      */
@@ -168,6 +167,35 @@ public class StructureRepresentation {
     }
 
     /**
+     * The title and header line for this structure.
+     *
+     * @return The title and header line for this structure.
+     */
+    private static String getPreamble(String pdbIdentifier, String title) {
+        StringBuilder sb = new StringBuilder();
+        if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
+            sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
+            sb.append(System.lineSeparator());
+        }
+        if (title != null && !title.isEmpty()) {
+            for (String titleLine : TitleToken.assemblePDBLines(title)) {
+                sb.append(titleLine);
+                sb.append(System.lineSeparator());
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * The closing lines.
+     *
+     * @return The closing lines.
+     */
+    private static String getPostamble() {
+        return "END" + System.lineSeparator() + System.lineSeparator();
+    }
+
+    /**
      * Returns a list of pdb lines from any collection of leaves.
      *
      * @param leafSubstructures The laves to convert.
@@ -206,34 +234,5 @@ public class StructureRepresentation {
      */
     private List<LeafSubstructure<?>> getNonConsecutiveLeafSubstructures() {
         return this.nonConsecutiveLeafs;
-    }
-
-    /**
-     * The title and header line for this structure.
-     *
-     * @return The title and header line for this structure.
-     */
-    private static String getPreamble(String pdbIdentifier, String title) {
-        StringBuilder sb = new StringBuilder();
-        if (pdbIdentifier != null && !pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
-            sb.append(HeaderToken.assemblePDBLine(pdbIdentifier));
-            sb.append(System.lineSeparator());
-        }
-        if (title != null && !title.isEmpty()) {
-            for (String titleLine : TitleToken.assemblePDBLines(title)) {
-                sb.append(titleLine);
-                sb.append(System.lineSeparator());
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * The closing lines.
-     *
-     * @return The closing lines.
-     */
-    private static String getPostamble() {
-        return "END" + System.lineSeparator() + System.lineSeparator();
     }
 }

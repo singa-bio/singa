@@ -35,7 +35,7 @@ public class LigandParserService {
         try {
             return parseLeafSkeleton(new URL(String.format(CIF_FETCH_URL, ligandId)).openStream());
         } catch (IOException e) {
-            throw new UncheckedIOException("Could not parse cif file for ligand "+ligandId+".",e);
+            throw new UncheckedIOException("Could not parse cif file for ligand " + ligandId + ".", e);
         }
     }
 

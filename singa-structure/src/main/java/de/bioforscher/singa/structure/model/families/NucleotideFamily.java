@@ -8,15 +8,15 @@ import java.util.Optional;
  */
 public enum NucleotideFamily implements StructuralFamily<NucleotideFamily> {
 
-    ADENOSINE("A","A"),
+    ADENOSINE("A", "A"),
     DESOXYADENOSINE("A", "dA"),
-    GUANOSINE("G","G"),
+    GUANOSINE("G", "G"),
     DESOXYGUANOSINE("G", "dG"),
-    THYMIDINE("T","T"),
+    THYMIDINE("T", "T"),
     DESOXYTHYMIDINE("T", "dT"),
-    URIDINE("U","U"),
+    URIDINE("U", "U"),
     DESOXYURIDINE("U", "dU"),
-    CYTIDINE("C","C"),
+    CYTIDINE("C", "C"),
     DESOXYCYTIDINE("C", "dC"),
     UNKNOWN("X", "UNK");
 

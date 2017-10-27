@@ -3,7 +3,9 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statisti
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vector;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3D;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DMatch;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

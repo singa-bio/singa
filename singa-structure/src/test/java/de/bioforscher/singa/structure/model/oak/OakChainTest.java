@@ -59,7 +59,7 @@ public class OakChainTest {
 
     @Test
     public void addLeafSubstructure() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size()+1;
+        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
         chainToModify.addLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
         final int actual = chainToModify.getAllLeafSubstructures().size();
         assertEquals(expected, actual);
@@ -67,7 +67,7 @@ public class OakChainTest {
 
     @Test
     public void addLeafSubstructureToConsecutive() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size()+1;
+        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
         final OakAminoAcid newAminoAcid = new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
         final int actual = chainToModify.getAllLeafSubstructures().size();
@@ -77,7 +77,7 @@ public class OakChainTest {
 
     @Test
     public void removeLeafSubstructure() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size()-1;
+        final int expected = chainToModify.getAllLeafSubstructures().size() - 1;
         final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
@@ -99,7 +99,7 @@ public class OakChainTest {
 
     @Test
     public void removeAtom() throws Exception {
-        final int expected = chainToModify.getAllAtoms().size()-1;
+        final int expected = chainToModify.getAllAtoms().size() - 1;
         chainToModify.removeAtom(5272);
         final int actual = chainToModify.getAllAtoms().size();
         assertEquals(expected, actual);
@@ -139,7 +139,7 @@ public class OakChainTest {
     @Test
     public void getNextLeafIdentifier() throws Exception {
         final LeafIdentifier actual = anotherChain.getNextLeafIdentifier();
-        assertEquals(new LeafIdentifier("1brr",1, "A", 1004), actual);
+        assertEquals(new LeafIdentifier("1brr", 1, "A", 1004), actual);
     }
 
     @Test

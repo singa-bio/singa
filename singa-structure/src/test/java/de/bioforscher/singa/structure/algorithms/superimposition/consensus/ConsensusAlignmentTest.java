@@ -79,7 +79,7 @@ public class ConsensusAlignmentTest {
                 .alignWithinClusters(true)
                 .idealSuperimposition(true)
                 .run();
-        List<LeafSubstructure< ?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
+        List<LeafSubstructure<?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
                 .getStructuralMotif().getAllLeafSubstructures();
         consensusAlignment.writeClusters(this.folder.getRoot().toPath());
         assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());

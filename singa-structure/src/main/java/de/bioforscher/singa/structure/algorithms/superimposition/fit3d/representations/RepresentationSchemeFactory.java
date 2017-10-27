@@ -23,7 +23,7 @@ public abstract class RepresentationSchemeFactory {
      * Creates a {@link RepresentationScheme} for the given {@link RepresentationSchemeType}.
      *
      * @param representationSchemeType The {@link RepresentationSchemeType} for which a {@link RepresentationScheme}
-     *                                 should be calculated.
+     * should be calculated.
      * @return The {@link RepresentationScheme} (defaults to {@link AbstractRepresentationScheme}) for unknown types.
      */
     public static RepresentationScheme createRepresentationScheme(RepresentationSchemeType representationSchemeType) {

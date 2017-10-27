@@ -42,6 +42,42 @@ public class InteractionContainer {
     }
 
     /**
+     * Tests if two pairs of {@link LeafIdentifier}s contain the same entries. This method considers source and target
+     * swappable.
+     *
+     * @param firstSource The source of the first leaf.
+     * @param firstTarget The target of the first leaf.
+     * @param secondSource The source of the second leaf.
+     * @param secondTarget The target of the second leaf.
+     * @return True, if first source equals second source and first target equals second target or first source equals
+     * second target and first target equals second source.
+     */
+    private static boolean interactionPairEquals(LeafIdentifier firstSource, LeafIdentifier firstTarget, LeafIdentifier secondSource, LeafIdentifier secondTarget) {
+        if (firstSource.equals(secondSource)) {
+            return firstTarget.equals(secondTarget);
+        }
+        return firstSource.equals(secondTarget) && firstTarget.equals(secondSource);
+    }
+
+    /**
+     * Tests if two sets of integers (atom identifiers in this context) overlap.
+     *
+     * @param firstList The first list of integers.
+     * @param secondList The second lst of integers.
+     * @return True, if at least one integer is contained in both sets.
+     */
+    private static boolean atomsOverlap(List<Integer> firstList, List<Integer> secondList) {
+        for (int first : firstList) {
+            for (int second : secondList) {
+                if (first == second) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns all Interactions between two leaves (i.e. two residues.). If no interactions are present an empty list is
      * returned. The order in which the {@link LeafIdentifier}s are given is irrelevant.
      *
@@ -332,43 +368,6 @@ public class InteractionContainer {
                     return true;
                 } else {
                     logger.debug("{} seems to be a ligand but is in the consecutive part of the chain", leafSubstructure);
-                }
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Tests if two pairs of {@link LeafIdentifier}s contain the same entries. This method considers source and target
-     * swappable.
-     *
-     * @param firstSource The source of the first leaf.
-     * @param firstTarget The target of the first leaf.
-     * @param secondSource The source of the second leaf.
-     * @param secondTarget The target of the second leaf.
-     * @return True, if first source equals second source and first target equals second target or first source equals
-     * second target and first target equals second source.
-     */
-    private static boolean interactionPairEquals(LeafIdentifier firstSource, LeafIdentifier firstTarget, LeafIdentifier secondSource, LeafIdentifier secondTarget) {
-        if (firstSource.equals(secondSource)) {
-            return firstTarget.equals(secondTarget);
-        }
-        return firstSource.equals(secondTarget) && firstTarget.equals(secondSource);
-    }
-
-    /**
-     * Tests if two sets of integers (atom identifiers in this context) overlap.
-     *
-     * @param firstList The first list of integers.
-     * @param secondList The second lst of integers.
-     * @return True, if at least one integer is contained in both sets.
-     */
-    private static boolean atomsOverlap(List<Integer> firstList, List<Integer> secondList) {
-        for (int first : firstList) {
-            for (int second : secondList) {
-                if (first == second) {
-                    return true;
                 }
             }
         }

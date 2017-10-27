@@ -28,6 +28,7 @@ public interface AtomContainer {
 
     /**
      * Removes an atom from this container.
+     *
      * @param atomIdentifier The identifier of the atom to be removed.
      */
     void removeAtom(Integer atomIdentifier);

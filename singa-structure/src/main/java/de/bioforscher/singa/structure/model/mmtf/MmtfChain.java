@@ -154,7 +154,7 @@ public class MmtfChain implements Chain {
         }
         this.leafIdentifiers.remove(internalIndex);
         this.cachedLeaves.remove(internalIndex);
-        this.relevantGroups.remove((Integer)internalIndex);
+        this.relevantGroups.remove((Integer) internalIndex);
         this.atomRanges.remove(internalIndex);
         return true;
     }

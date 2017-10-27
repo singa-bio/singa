@@ -50,6 +50,7 @@ public class AffinityAlignment {
     private double selfDissimilarity;
     private Map<StructuralMotif, List<StructuralMotif>> clusters;
     private double silhouetteCoefficient;
+
     private AffinityAlignment(Builder builder) {
 
         // get copy of input structural motifs

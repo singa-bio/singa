@@ -46,7 +46,7 @@ public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> imple
 
     @Override
     public String flatToString() {
-        return "Nucleotide ("+getThreeLetterCode()+") "+getIdentifier();
+        return "Nucleotide (" + getThreeLetterCode() + ") " + getIdentifier();
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.elements.Element;
 import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.core.utility.Range;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.oak.OakAtom;
@@ -82,7 +83,9 @@ public enum AtomToken implements PDBToken {
                     .append(" ")
                     .append(leaf.getChainIdentifier())
                     .append(RESIDUE_SERIAL.createTokenString(String.valueOf(leaf.getIdentifier().getSerial())))
-                    .append(RESIDUE_INSERTION.createTokenString(String.valueOf(leaf.getInsertionCode())))
+                    .append(RESIDUE_INSERTION.createTokenString(String.valueOf(
+                            leaf.getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE
+                                    ? " " : leaf.getInsertionCode())))
                     .append(X_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getX())))
                     .append(Y_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getY())))
                     .append(Z_COORDINATE.createTokenString(coordinateFormat.format(atom.getPosition().getZ())))

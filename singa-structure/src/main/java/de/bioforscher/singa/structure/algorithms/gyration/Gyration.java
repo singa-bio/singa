@@ -12,8 +12,7 @@ import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvide
 
 /**
  * An implementation of the gyration radius measurement for the compactness of molecules. The gyration uses atoms and
- * can be applied on any {@link AtomContainer}.
- * Calculation is performed according to:
+ * can be applied on any {@link AtomContainer}. Calculation is performed according to:
  * <pre>
  *     Stockwell, GR, Thornton, JM (2006). Conformational diversity of ligands bound to proteins.
  *     J. Mol. Biol., 356, 4:928-44.

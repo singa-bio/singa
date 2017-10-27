@@ -4,6 +4,7 @@ import de.bioforscher.singa.mathematics.algorithms.superimposition.Superimpositi
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AtomContainer;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 

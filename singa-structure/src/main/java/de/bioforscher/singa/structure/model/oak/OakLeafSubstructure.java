@@ -248,13 +248,13 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public String flatToString() {
-        return getClass().getSimpleName()+": "+getFamily().getThreeLetterCode()+" "+getIdentifier();
+        return getClass().getSimpleName() + ": " + getFamily().getThreeLetterCode() + " " + getIdentifier();
     }
 
     public String deepToString() {
-        return flatToString() + ", with Atoms: {"+getAllAtoms().stream()
-                .map(atom -> atom.getAtomName() + "-"+atom.getIdentifier())
-                .collect(Collectors.joining(", "))+"}";
+        return flatToString() + ", with Atoms: {" + getAllAtoms().stream()
+                .map(atom -> atom.getAtomName() + "-" + atom.getIdentifier())
+                .collect(Collectors.joining(", ")) + "}";
     }
 
 
