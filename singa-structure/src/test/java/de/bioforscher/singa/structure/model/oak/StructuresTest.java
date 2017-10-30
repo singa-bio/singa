@@ -1,11 +1,15 @@
 package de.bioforscher.singa.structure.model.oak;
 
+import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
-import de.bioforscher.singa.structure.model.interfaces.Chain;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
-import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.mathematics.matrices.Matrices;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,7 +33,22 @@ public class StructuresTest {
     }
 
     @Test
-    public void IsAlphaCarbonStructure() throws Exception {
+    public void calculateAtomDistanceMatrix() {
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("5kqr")
+                .chainIdentifier("A")
+                .parse();
+        List<Atom> atoms = structure.getAllLeafSubstructures().stream().filter(AminoAcid.class::isInstance)
+                .map(LeafSubstructure::getAllAtoms)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        LabeledSymmetricMatrix<Atom> atomDistanceMatrix = Structures.calculateAtomDistanceMatrix(atoms);
+        Pair<Integer> maximalElement = Matrices.getPositionsOfMaximalElement(atomDistanceMatrix).get(0);
+        assertEquals(59.2191915, atomDistanceMatrix.getElement(maximalElement.getFirst(), maximalElement.getSecond()), 1E-6);
+    }
+
+    @Test
+    public void isAlphaCarbonStructure() throws Exception {
         Structure alphaCarbonStructure = StructureParser.online()
                 .pdbIdentifier("1hrb")
                 .parse();
@@ -37,7 +56,7 @@ public class StructuresTest {
     }
 
     @Test
-    public void IsBackboneOnlyStructure() {
+    public void isBackboneOnlyStructure() {
         Structure alphaCarbonStructure = StructureParser.online()
                 .pdbIdentifier("2plp")
                 .parse();
