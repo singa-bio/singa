@@ -206,6 +206,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Adds a delta that will be applied at the end of a epoch.
+     *
      * @param delta Tha delta.
      */
     private void addDelta(Delta delta) {
@@ -225,6 +226,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns all referenced sections in this node.
+     *
      * @return all referenced sections in this node.
      */
     public Set<CellSection> getAllReferencedSections() {
@@ -233,6 +235,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns all chemical entities referenced in this node.
+     *
      * @return All chemical entities referenced in this node.
      */
     public Set<ChemicalEntity<?>> getAllReferencedEntities() {
@@ -241,6 +244,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns the node state.
+     *
      * @return The node state.
      */
     public NodeState getState() {
@@ -249,6 +253,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Sets the state.
+     *
      * @param state The node state.
      */
     public void setState(NodeState state) {
@@ -257,6 +262,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns {@code true} if this node is observed.
+     *
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
@@ -265,6 +271,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Sets the observed state of this node.
+     *
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
@@ -273,6 +280,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns the primary cell section of this node (Membrane nodes may belong to multiple sections).
+     *
      * @return The primary cell section of this node.
      */
     public CellSection getCellSection() {
@@ -281,6 +289,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Sets the cell section of this node and references the node in the corresponding section.
+     *
      * @param cellSection The cell section.
      */
     public void setCellSection(CellSection cellSection) {
@@ -295,6 +304,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Returns the {@link ConcentrationContainer} used by this node.
+     *
      * @return The {@link ConcentrationContainer} used by this node.
      */
     public ConcentrationContainer getConcentrationContainer() {
@@ -303,6 +313,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     /**
      * Sets the {@link ConcentrationContainer} for this node.
+     *
      * @param concentrationContainer The {@link ConcentrationContainer} for this node.
      */
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
@@ -314,4 +325,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
         return "BioNode [id=" + this.getIdentifier() + "]";
     }
 
+    @Override
+    public AutomatonNode getCopy() {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

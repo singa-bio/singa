@@ -186,6 +186,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the modules.
+     *
      * @return The modules.
      */
     public Set<Module> getModules() {
@@ -228,6 +229,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the current epoch number.
+     *
      * @return The current epoch number
      */
     public long getEpoch() {
@@ -244,6 +246,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Emits the {@link NodeUpdatedEvent} to all listeners.
+     *
      * @param node The observed node.
      */
     public void emitNextEpochEvent(AutomatonNode node) {

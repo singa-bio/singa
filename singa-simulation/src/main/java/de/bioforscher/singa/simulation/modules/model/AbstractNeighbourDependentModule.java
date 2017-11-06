@@ -21,68 +21,17 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public abstract class AbstractNeighbourDependentModule implements Module {
 
-    class DeltaIdentifier {
-
-        private final AutomatonNode node;
-        private final CellSection section;
-        private final ChemicalEntity<?> entity;
-
-        public DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity<?> entity) {
-            this.node = node;
-            this.section = section;
-            this.entity = entity;
-        }
-
-        public AutomatonNode getNode() {
-            return node;
-        }
-
-        public CellSection getSection() {
-            return section;
-        }
-
-        public ChemicalEntity<?> getEntity() {
-            return entity;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            DeltaIdentifier that = (DeltaIdentifier) o;
-
-            if (node != null ? !node.equals(that.node) : that.node != null) return false;
-            if (section != null ? !section.equals(that.section) : that.section != null) return false;
-            return entity != null ? entity.equals(that.entity) : that.entity == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = node != null ? node.hashCode() : 0;
-            result = 31 * result + (section != null ? section.hashCode() : 0);
-            result = 31 * result + (entity != null ? entity.hashCode() : 0);
-            return result;
-        }
-    }
-
-    protected boolean halfTime;
-
     private final Simulation simulation;
+    protected boolean halfTime;
     private List<Function<ConcentrationContainer, Delta>> deltaFunctions;
-
     private Predicate<AutomatonNode> conditionalApplication;
-
     private LocalError largestLocalError;
-
     private AutomatonNode currentNode;
     private ChemicalEntity currentChemicalEntity;
     private CellSection currentCellSection;
-
     private Map<DeltaIdentifier, Delta> currentFullDeltas;
     private Map<DeltaIdentifier, Delta> currentHalfDeltas;
     private Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
-
 
     public AbstractNeighbourDependentModule(Simulation simulation) {
         this.simulation = simulation;
@@ -140,8 +89,8 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         // half step deltas
         this.halfTime = true;
         for (Map.Entry<AutomatonNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
-                this.currentNode = entry.getKey();
-                determineHalfStepDeltas(entry.getValue());
+            this.currentNode = entry.getKey();
+            determineHalfStepDeltas(entry.getValue());
 
         }
 
@@ -234,7 +183,6 @@ public abstract class AbstractNeighbourDependentModule implements Module {
         this.largestLocalError = new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
     }
 
-
     @Override
     public LocalError getLargestLocalError() {
         return this.largestLocalError;
@@ -243,6 +191,51 @@ public abstract class AbstractNeighbourDependentModule implements Module {
     @Override
     public void resetLargestLocalError() {
         this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+    }
+
+    class DeltaIdentifier {
+
+        private final AutomatonNode node;
+        private final CellSection section;
+        private final ChemicalEntity<?> entity;
+
+        public DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity<?> entity) {
+            this.node = node;
+            this.section = section;
+            this.entity = entity;
+        }
+
+        public AutomatonNode getNode() {
+            return node;
+        }
+
+        public CellSection getSection() {
+            return section;
+        }
+
+        public ChemicalEntity<?> getEntity() {
+            return entity;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DeltaIdentifier that = (DeltaIdentifier) o;
+
+            if (node != null ? !node.equals(that.node) : that.node != null) return false;
+            if (section != null ? !section.equals(that.section) : that.section != null) return false;
+            return entity != null ? entity.equals(that.entity) : that.entity == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = node != null ? node.hashCode() : 0;
+            result = 31 * result + (section != null ? section.hashCode() : 0);
+            result = 31 * result + (entity != null ? entity.hashCode() : 0);
+            return result;
+        }
     }
 
 }

@@ -69,7 +69,7 @@ public class DynamicKineticLaw implements KineticLaw {
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = concentrationContainer.getAvailableConcentration(currentCellSection,entry.getKey());
+            final Quantity<MolarConcentration> concentration = concentrationContainer.getAvailableConcentration(currentCellSection, entry.getKey());
             final String parameterName = this.entityReference.get(entry.getKey());
             this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }

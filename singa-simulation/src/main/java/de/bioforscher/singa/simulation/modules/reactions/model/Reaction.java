@@ -27,8 +27,8 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     private List<StoichiometricReactant> stoichiometricReactants;
     private boolean elementary;
 
-    private FeatureContainer features;
     protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    private FeatureContainer features;
 
     public Reaction(Simulation simulation) {
         super(simulation);

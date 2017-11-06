@@ -20,9 +20,9 @@ public class Membrane extends CellSection {
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
-        this.innerLayer = new EnclosedCompartment(identifier+"I", name+ " Inner Layer");
+        this.innerLayer = new EnclosedCompartment(identifier + "I", name + " Inner Layer");
         this.innerLayer.setSubsection(true);
-        this.outerLayer = new EnclosedCompartment(identifier+"O", name+ " Outer Layer");
+        this.outerLayer = new EnclosedCompartment(identifier + "O", name + " Outer Layer");
         this.innerLayer.setSubsection(true);
     }
 
@@ -44,7 +44,7 @@ public class Membrane extends CellSection {
 
     public void initializeNodes(AutomatonGraph automatonGraph) {
         // reinitialize MultiConcentrationContainer
-        for (AutomatonNode node: getContent()) {
+        for (AutomatonNode node : getContent()) {
             // get adjacent compartments that are not the inner compartment and not the membrane itself
             Set<CellSection> sections = node.getNeighbours().stream()
                     .map(AutomatonNode::getCellSection)

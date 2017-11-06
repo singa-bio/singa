@@ -22,7 +22,7 @@ public class UnitScaler {
      * @return The scaled reaction rate.
      */
     public static Quantity<Frequency> rescaleReactionRate(Quantity<Frequency> unscaledQuantity,
-                                                             Quantity<Time> targetScale) {
+                                                          Quantity<Time> targetScale) {
         // transform to specified unit
         Quantity<Frequency> scaledQuantity = unscaledQuantity
                 .to(new ProductUnit<>(ONE.divide(targetScale.getUnit())));

@@ -31,6 +31,7 @@ public class Delta {
 
     /**
      * Creates a new delta for a specific {@link ChemicalEntity} in a specific {@link CellSection}.
+     *
      * @param cellSection The cell section.
      * @param chemicalEntity The chemical entity.
      * @param quantity The change in concentration.
@@ -43,6 +44,7 @@ public class Delta {
 
     /**
      * Returns the cell section.
+     *
      * @return The cell section.
      */
     public CellSection getCellSection() {
@@ -51,6 +53,7 @@ public class Delta {
 
     /**
      * Returns the chemical entity.
+     *
      * @return The chemical entity.
      */
     public ChemicalEntity getChemicalEntity() {
@@ -59,6 +62,7 @@ public class Delta {
 
     /**
      * Returns the quantity of the change.
+     *
      * @return The quantity of the change.
      */
     public Quantity<MolarConcentration> getQuantity() {
@@ -67,6 +71,7 @@ public class Delta {
 
     /**
      * Multiplies (modifies) this delta .
+     *
      * @param multiplicand The scalar that the delta is multiplied with.
      * @return This multiplied delta.
      */
@@ -77,6 +82,7 @@ public class Delta {
 
     /**
      * Merges (adds) two deltas an returns a new delta.
+     *
      * @param anotherDelta The other delta.
      * @return A new delta with the accumulated changes.
      */

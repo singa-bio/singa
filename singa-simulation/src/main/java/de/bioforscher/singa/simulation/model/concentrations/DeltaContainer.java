@@ -29,6 +29,7 @@ public class DeltaContainer {
 
     /**
      * Adds a delta to the container.
+     *
      * @param delta The delta.
      */
     public void addDelta(Delta delta) {
@@ -46,6 +47,7 @@ public class DeltaContainer {
 
     /**
      * Returns all deltas.
+     *
      * @return All deltas.
      */
     public List<Delta> getDeltas() {

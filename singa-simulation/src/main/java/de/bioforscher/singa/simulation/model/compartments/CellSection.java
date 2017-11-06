@@ -86,6 +86,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Returns {@code true} if this cell section is a subsection of another section.
+     *
      * @return {@code true} if this cell section is a subsection of another section.
      */
     public boolean isSubsection() {
@@ -94,6 +95,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Set {@code true} if this cell section is a subsection of another section.
+     *
      * @param subsection {@code true} if this cell section is a subsection of another section.
      */
     public void setSubsection(boolean subsection) {
