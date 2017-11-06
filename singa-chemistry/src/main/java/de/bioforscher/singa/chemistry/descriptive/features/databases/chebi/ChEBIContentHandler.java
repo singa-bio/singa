@@ -112,8 +112,10 @@ public class ChEBIContentHandler implements ContentHandler {
     public void characters(char[] ch, int start, int length) throws SAXException {
         switch (this.currentTag) {
             case "chebiId": {
-                final String precursorString = new String(ch, start, length);
-                this.identifier = new SimpleStringIdentifier(precursorString);
+                if (identifier == null) {
+                    final String precursorString = new String(ch, start, length);
+                    this.identifier = new SimpleStringIdentifier(precursorString);
+                }
                 break;
             }
             case "chebiAsciiName": {

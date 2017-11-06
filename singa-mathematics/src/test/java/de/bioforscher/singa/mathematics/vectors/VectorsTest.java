@@ -40,4 +40,24 @@ public class VectorsTest {
     public void getVariance() throws Exception {
         assertEquals(0.01666, Vectors.getVariance(this.vector), 1E-4);
     }
+
+    @Test
+    public void getIndexOfMinimalElement() {
+        assertEquals(0, Vectors.getIndexWithMinimalElement(this.vector));
+    }
+
+    @Test
+    public void getIndexOfAbsoluteMinimalElement() {
+        assertEquals(0, Vectors.getIndexWithAbsoluteMinimalElement(this.vector));
+    }
+
+    @Test
+    public void getIndexOfMaximalElement() {
+        assertEquals(3, Vectors.getIndexWithMaximalElement(this.vector));
+    }
+
+    @Test
+    public void getIndexOfAbsoluteMaximalElement() {
+        assertEquals(3, Vectors.getIndexWithAbsoluteMaximalElement(this.vector));
+    }
 }

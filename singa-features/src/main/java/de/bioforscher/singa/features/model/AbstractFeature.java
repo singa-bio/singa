@@ -27,4 +27,5 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
     public String toString() {
         return this.getClass().getSimpleName() + ": " + this.featureContent + " from " + this.featureOrigin;
     }
+
 }

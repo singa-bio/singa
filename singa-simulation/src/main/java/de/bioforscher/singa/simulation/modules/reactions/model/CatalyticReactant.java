@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.modules.reactions.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 
 /**
- * {@code CatalyticReactant}s are {@link Reactant}s that are not consumed or produced during {@link Reactions}, but
+ * {@code CatalyticReactant}s are {@link Reactant}s that are not consumed or produced during Reactions, but
  * influence its velocity (reaction rate). An {@link ReactantRole#INCREASING} role is associated with an increase in
  * velocity. {@link ReactantRole#DECREASING} associates an inhibition of the reaction.
  */

@@ -1,22 +1,25 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+
+import javax.measure.Quantity;
+import javax.measure.quantity.Time;
 
 public class NodeUpdatedEvent {
 
-    private final int epoch;
-    private final BioNode node;
+    private final Quantity<Time> time;
+    private final AutomatonNode node;
 
-    public NodeUpdatedEvent(int epoch, BioNode node) {
-        this.epoch = epoch;
+    public NodeUpdatedEvent(Quantity<Time> time, AutomatonNode node) {
+        this.time = time;
         this.node = node;
     }
 
-    public int getEpoch() {
-        return this.epoch;
+    public Quantity<Time> getTime() {
+        return this.time;
     }
 
-    public BioNode getNode() {
+    public AutomatonNode getNode() {
         return this.node;
     }
 

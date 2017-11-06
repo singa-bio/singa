@@ -30,9 +30,8 @@ public class GridCoordinateConverter {
                             ") of a rectangular grid graph with " + this.numberOfRows + " numberOfRows and " + this.numberOfColumns +
                             " numberOfColumns.");
         }
-        // TODO maybe reversed
-        int x = (int) (nodeIdentifier / (double) this.numberOfColumns);
-        double y = nodeIdentifier % this.numberOfColumns;
+        int y = (int) (nodeIdentifier / (double) this.numberOfColumns);
+        double x = nodeIdentifier % this.numberOfColumns;
         return new Vector2D(x, y);
     }
 

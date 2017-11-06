@@ -180,6 +180,25 @@ public class Vectors {
     }
 
     /**
+     * Gets the first index with the minimal element in this vector.
+     *
+     * @param vector The vector.
+     * @return The index of the minimal element
+     */
+    public static int getIndexWithMinimalElement(Vector vector) {
+        int minimalIndex = -1;
+        double minimalValue = Double.MAX_VALUE;
+        for (int index = 0; index < vector.getDimension(); index++) {
+            double currentValue = vector.getElement(index);
+            if (currentValue < minimalValue) {
+                minimalValue = currentValue;
+                minimalIndex = index;
+            }
+        }
+        return minimalIndex;
+    }
+
+    /**
      * Gets the first index with the absolute maximal element in this vector.
      *
      * @param vector The vector.
@@ -196,6 +215,25 @@ public class Vectors {
             }
         }
         return maximalIndex;
+    }
+
+    /**
+     * Gets the first index with the absolute minimal element in this vector.
+     *
+     * @param vector The vector.
+     * @return The index of the minimal element
+     */
+    public static int getIndexWithAbsoluteMinimalElement(Vector vector) {
+        int minimalIndex = -1;
+        double minimalValue = Double.MAX_VALUE;
+        for (int index = 0; index < vector.getDimension(); index++) {
+            double currentValue = Math.abs(vector.getElement(index));
+            if (currentValue < minimalValue) {
+                minimalValue = currentValue;
+                minimalIndex = index;
+            }
+        }
+        return minimalIndex;
     }
 
     public static <VectorType extends Vector> List<VectorType> getVectorsWithMinimalValueForIndex(List<VectorType> vectors, int index) {

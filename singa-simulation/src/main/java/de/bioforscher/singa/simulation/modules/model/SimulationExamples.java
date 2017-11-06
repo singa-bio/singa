@@ -4,30 +4,31 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.BioEdge;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
-import de.bioforscher.singa.simulation.modules.diffusion.FreeDiffusion;
-import de.bioforscher.singa.simulation.modules.membranetransport.PassiveMembraneTransport;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.BiochemicalReaction;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.Reactions;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.transport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import org.slf4j.Logger;
@@ -41,8 +42,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
-import static de.bioforscher.singa.features.units.UnitProvider.*;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.MetricPrefix.NANO;
 import static tec.units.ri.unit.Units.METRE;
@@ -60,21 +63,21 @@ public class SimulationExamples {
     private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
 
     /**
-     * This simulation simulates the thermal decomposition of dinitrogen pentaoxide.
-     * From: Brauer, G. (2012). Handbook of preparative inorganic chemistry, volume 2. Elsevier. 489–491.
+     * This simulation simulates the thermal decomposition of dinitrogen pentaoxide. From: Brauer, G. (2012). Handbook
+     * of preparative inorganic chemistry, volume 2. Elsevier. 489–491.
      *
      * @return The ready to go simulation.
      */
     public static Simulation createDecompositionReactionExample() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species dinitrogenPentaoxide = ChEBIParserService.parse("CHEBI:29802");
         Species nitrogenDioxide = ChEBIParserService.parse("CHEBI:33101");
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
@@ -84,11 +87,8 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions();
-
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.07, UnitProvider.PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(dinitrogenPentaoxide, ReactantRole.DECREASING, 2),
@@ -96,17 +96,10 @@ public class SimulationExamples {
                 new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
+        // add the reaction
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -117,14 +110,14 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createSynthesisReactionExample() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species butadiene = ChEBIParserService.parse("CHEBI:39478");
         Species octatriene = ChEBIParserService.parse("CHEBI:77504");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
@@ -133,28 +126,19 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
-        // create reactions module
-        Reactions reactions = new Reactions();
-
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(Quantities.getQuantity(0.614, PER_SECOND));
+        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.614, PER_SECOND));
         reaction.setElementary(false);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(butadiene, ReactantRole.DECREASING, 2, 2),
                 new StoichiometricReactant(octatriene, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -165,6 +149,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createEquilibriumReactionExample() {
+        // setup simulation
+        Simulation simulation = new Simulation();
 
         // set up arbitrary species
         Species speciesA = new Species.Builder("CHEBI:00001")
@@ -176,8 +162,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
@@ -186,11 +171,8 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions();
-
         // create reaction
-        EquilibriumReaction reaction = new EquilibriumReaction(Quantities.getQuantity(10, PER_SECOND),
+        EquilibriumReaction reaction = new EquilibriumReaction(simulation, Quantities.getQuantity(10, PER_SECOND),
                 Quantities.getQuantity(10, PER_SECOND));
         reaction.setElementary(true);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
@@ -198,32 +180,26 @@ public class SimulationExamples {
                 new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
+        // add the reaction module
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
 
     /**
-     * This simulation simulates a {@link BiochemicalReaction}, where D-Fructose 1-phosphate is convertet to glycerone
-     * phosphate and D-glyceraldehyde using fructose bisphosphate aldolase.
-     * From: Callens, M. et al. (1991). Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei
-     * compared to aldolase from rabbit muscle and Staphylococcus aureus.
-     * Sabio-RK pdbIdentifier: 28851
+     * This simulation simulates a {@link MichaelisMentenReaction}, where D-Fructose 1-phosphate is convertet to
+     * glycerone phosphate and D-glyceraldehyde using fructose bisphosphate aldolase. From: Callens, M. et al. (1991).
+     * Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei compared to aldolase from rabbit
+     * muscle and Staphylococcus aureus. Sabio-RK pdbIdentifier: 28851
      *
      * @return The ready to go simulation.
      */
     public static Simulation createMichaelisMentenReactionExample() {
 
+        // setup simulation
+        Simulation simulation = new Simulation();
         // get required species
         Species fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
         Species glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
@@ -232,15 +208,14 @@ public class SimulationExamples {
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
-                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
                 .addSubstrate(fructosePhosphate)
-                .michaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE))
-                .turnoverNumber(Quantities.getQuantity(76, PER_MINUTE))
+                .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
+                .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
@@ -251,28 +226,18 @@ public class SimulationExamples {
         // setup time step size
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
-        // create reactions module
-        Reactions reactions = new Reactions();
-
         // create reaction using the properties of the enzyme
-        BiochemicalReaction reaction = new BiochemicalReaction(aldolase);
+        MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(fructosePhosphate, ReactantRole.DECREASING),
                 new StoichiometricReactant(glyceronePhosphate, ReactantRole.INCREASING),
                 new StoichiometricReactant(glyceraldehyde, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().add(reaction);
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
+        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -281,23 +246,26 @@ public class SimulationExamples {
      * This simulation simulates a diffusion of small molecules in a rectangular gird graph.
      *
      * @param numberOfNodes The number of nodes on one "side" of the rectangle.
-     * @param timeStep      The size of the time step.
+     * @param timeStep The size of the time step.
      * @return The ready to go simulation.
      */
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
 
         // get required species
         Species methanol = ChEBIParserService.parse("CHEBI:17790");
+        methanol.setFeature(Diffusivity.class);
         Species ethyleneGlycol = ChEBIParserService.parse("CHEBI:30742");
+        ethyleneGlycol.setFeature(Diffusivity.class);
         Species valine = ChEBIParserService.parse("CHEBI:27266");
+        valine.setFeature(Diffusivity.class);
         Species sucrose = ChEBIParserService.parse("CHEBI:17992");
+        sucrose.setFeature(Diffusivity.class);
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
-                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, defaultBoundingBox));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
-        for (BioNode node : graph.getNodes()) {
+        for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
                 node.setConcentration(methanol, 1);
                 node.setConcentration(ethyleneGlycol, 1);
@@ -311,13 +279,6 @@ public class SimulationExamples {
             }
         }
 
-        for (BioEdge edge : graph.getEdges()) {
-            edge.addPermeability(methanol, 1);
-            edge.addPermeability(ethyleneGlycol, 1);
-            edge.addPermeability(valine, 1);
-            edge.addPermeability(sucrose, 1);
-        }
-
         // setup time step size as given
         EnvironmentalParameters.getInstance().setTimeStep(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
@@ -329,7 +290,7 @@ public class SimulationExamples {
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion());
+        simulation.getModules().add(new FreeDiffusion(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
 
@@ -342,6 +303,9 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createIodineMultiReactionExample() {
+
+        // setup simulation
+        Simulation simulation = new Simulation();
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
         logger.debug("Importing species ...");
@@ -364,7 +328,7 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
                 Graphs.buildLinearGraph(1, defaultBoundingBox));
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
@@ -375,11 +339,9 @@ public class SimulationExamples {
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         logger.debug("Composing simulation ... ");
-        // create reactions module
-        Reactions reactions = new Reactions();
 
         // create first reaction
-        NthOrderReaction firstReaction = new NthOrderReaction(Quantities.getQuantity(1.43e3, PER_SECOND));
+        NthOrderReaction firstReaction = new NthOrderReaction(simulation, Quantities.getQuantity(1.43e3, PER_SECOND));
         firstReaction.setElementary(true);
         firstReaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(hydron, ReactantRole.DECREASING, 2),
@@ -390,7 +352,7 @@ public class SimulationExamples {
         ));
 
         // create second reaction
-        NthOrderReaction secondReaction = new NthOrderReaction(Quantities.getQuantity(2.0e4, PER_SECOND));
+        NthOrderReaction secondReaction = new NthOrderReaction(simulation, Quantities.getQuantity(2.0e4, PER_SECOND));
         secondReaction.setElementary(true);
         secondReaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(hydron, ReactantRole.DECREASING),
@@ -400,7 +362,7 @@ public class SimulationExamples {
         ));
 
         // create second reaction
-        EquilibriumReaction thirdReaction = new EquilibriumReaction(Quantities.getQuantity(3.1e4, PER_SECOND),
+        EquilibriumReaction thirdReaction = new EquilibriumReaction(simulation, Quantities.getQuantity(3.1e4, PER_SECOND),
                 Quantities.getQuantity(2.2, PER_SECOND));
         thirdReaction.setElementary(true);
         thirdReaction.getStoichiometricReactants().addAll(Arrays.asList(
@@ -411,23 +373,19 @@ public class SimulationExamples {
                 new StoichiometricReactant(water, ReactantRole.INCREASING)
         ));
 
-        // add reaction to the reactions used in the simulation
-        reactions.getReactions().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
+        // add reactions
+        simulation.getModules().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
 
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
         // add the reactions module
-        simulation.getModules().add(reactions);
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
 
     public static Simulation createSimulationFromSBML() {
-
+        // setup simulation
+        Simulation simulation = new Simulation();
         // BIOMD0000000023
         // BIOMD0000000064
         // BIOMD0000000184 for ca oscillations
@@ -437,14 +395,14 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
                 Graphs.buildLinearGraph(1, defaultBoundingBox));
 
-        model.getCompartments().keySet().forEach(graph::addSection);
+        model.getCompartments().keySet().forEach(graph::addCellSection);
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        BioNode bioNode = graph.getNodes().iterator().next();
+        AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
             bioNode.setConcentration(entity, value);
@@ -454,23 +412,14 @@ public class SimulationExamples {
         logger.debug("Adjusting time step size ... ");
         EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
-        // create reactions module
-        Reactions reactions = new Reactions();
-
-        // add reaction to the reactions used in the simulations
-        reactions.getReactions().addAll(model.getReactions());
-
-        // setup simulation
-        Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reactions);
+        // add reaction to the reactions used in the simulations
+        model.getReactions().forEach(reaction -> reaction.setSimulation(simulation));
+        simulation.getModules().addAll(model.getReactions());
         // add, sort and apply assignment rules
         simulation.setAssignmentRules(new ArrayList<>(model.getAssignmentRules()));
         simulation.applyAssignmentRules();
-        // add all referenced species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(simulation.collectAllReferencedEntities());
 
         return simulation;
     }
@@ -481,7 +430,7 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
         int numberOfNodes = 50;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, defaultBoundingBox, false));
         // setup simulation
         logger.debug("Composing simulation ... ");
@@ -526,46 +475,23 @@ public class SimulationExamples {
 
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
-        int numberOfNodes = 11;
-        AutomatonGraph graph = AutomatonGraphs.copyStructureToBioGraph(Graphs.buildGridGraph(
-                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
-        Membrane membrane = new Membrane("LC-M", "Left-Membrane", left);
 
-        // compartments have to be set before concentrations can be set
-        logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        for (BioNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < (numberOfNodes / 2)) {
-                // FIXME currently cell sections are assigned in both directions
-                node.setCellSection(left);
-                left.addNode(node);
-            } else if (node.getIdentifier() % numberOfNodes == (numberOfNodes / 2)) {
-                node.setState(NodeState.MEMBRANE);
-                node.setCellSection(membrane);
-                membrane.addNode(node);
-            } else {
-                node.setCellSection(right);
-                right.addNode(node);
-            }
-        }
-
-        // setup compartments
-        graph.addSection(left);
-        graph.addSection(right);
-        graph.addSection(membrane);
-        membrane.initializeNodes(graph);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, right, left);
 
         // set concentrations
-        // only 4 left most nodes
-        for (BioNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < 4) {
-                for (Species species: allSpecies) {
+        // only 5 left most nodes
+        for (AutomatonNode node : graph.getNodes()) {
+            if (node.getIdentifier() % converter.getNumberOfColumns() < 5) {
+                for (Species species : allSpecies) {
                     node.setConcentration(species, 1.0);
                 }
             } else {
-                for (Species species: allSpecies) {
+                for (Species species : allSpecies) {
                     node.setConcentration(species, 0.0);
                 }
             }
@@ -577,7 +503,7 @@ public class SimulationExamples {
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
         EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
+                Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
 
         // setup simulation
         logger.debug("Composing simulation ... ");
@@ -585,11 +511,60 @@ public class SimulationExamples {
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion());
+        simulation.getModules().add(new FreeDiffusion(simulation));
         // add transmembrane transport
-        simulation.getModules().add(new PassiveMembraneTransport());
+        simulation.getModules().add(new PassiveMembraneTransport(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(allSpecies);
+        return simulation;
+    }
+
+    public static Simulation createDiffusionAndMembraneTransportExample() {
+        Species domperidone = new Species.Builder("CHEBI:31515")
+                .name("domperidone")
+                .assignFeature(Diffusivity.class)
+                .assignFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED))
+                .assignFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED))
+                .assignFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED))
+                .build();
+
+        Simulation simulation = new Simulation();
+        GridCoordinateConverter gcc = new GridCoordinateConverter(30, 20);
+        // setup rectangular graph with number of nodes
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
+                20, 30, defaultBoundingBox, false));
+        // create compartments and membrane
+        EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
+        EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
+        Membrane membrane = Membrane.forCompartment(inner);
+        // initialize species in graph with desired concentration
+        for (AutomatonNode node : graph.getNodes()) {
+            Vector2D coordinate = gcc.convert(node.getIdentifier());
+            if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
+                    (coordinate.getX() == 27 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
+                    (coordinate.getY() == 2 && coordinate.getX() > 1 && coordinate.getX() < 28) ||
+                    (coordinate.getY() == 17 && coordinate.getX() > 1 && coordinate.getX() < 28)) {
+                // setup membrane
+                node.setCellSection(membrane);
+                node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
+                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+            } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 27 && coordinate.getY() < 17) {
+                node.setCellSection(inner);
+                node.setConcentration(domperidone, 0.0);
+            } else {
+                node.setCellSection(outer);
+                node.setConcentration(domperidone, 1.0);
+            }
+        }
+
+        simulation.setGraph(graph);
+
+        FreeDiffusion diffusion = new FreeDiffusion(simulation);
+        PassiveMembraneTransport membraneTransport = new PassiveMembraneTransport(simulation);
+
+        simulation.getModules().add(diffusion);
+        simulation.getModules().add(membraneTransport);
+
         return simulation;
     }
 

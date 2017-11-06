@@ -2,10 +2,10 @@ package de.bioforscher.singa.simulation.model.parameters;
 
 
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.features.quantities.ReactionRate;
 import tec.units.ri.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
@@ -21,10 +21,10 @@ public class UnitScaler {
      * @param targetScale      The required time step.
      * @return The scaled reaction rate.
      */
-    public static Quantity<ReactionRate> rescaleReactionRate(Quantity<ReactionRate> unscaledQuantity,
+    public static Quantity<Frequency> rescaleReactionRate(Quantity<Frequency> unscaledQuantity,
                                                              Quantity<Time> targetScale) {
         // transform to specified unit
-        Quantity<ReactionRate> scaledQuantity = unscaledQuantity
+        Quantity<Frequency> scaledQuantity = unscaledQuantity
                 .to(new ProductUnit<>(ONE.divide(targetScale.getUnit())));
         // transform to specified amount
         scaledQuantity = scaledQuantity.multiply(targetScale.getValue());

@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.model.rules;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class AssignmentRule {
         this.entityReference = entityReference;
     }
 
-    public void applyRule(BioNode node) {
+    public void applyRule(AutomatonNode node) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
             final Quantity<MolarConcentration> concentration = node.getConcentration(entry.getKey());

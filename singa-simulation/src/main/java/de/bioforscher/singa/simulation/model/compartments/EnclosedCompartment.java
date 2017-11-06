@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +43,18 @@ public class EnclosedCompartment extends CellSection {
         // TODO fix all the other problems :(
 
         // the nodes of the membrane
-        LinkedList<BioNode> nodes = new LinkedList<>();
+        LinkedList<AutomatonNode> nodes = new LinkedList<>();
         // set the internal node state to cytosol
         getContent().forEach(node -> node.setState(NodeState.CYTOSOL));
         // find starting point
-        BioNode first = getContent().stream()
+        AutomatonNode first = getContent().stream()
                 .filter(bioNode -> bioNode.getNeighbours().stream()
                         .anyMatch(neighbour -> neighbour.getCellSection().getIdentifier().equals(this.getIdentifier())))
                 .findAny().get();
         // add first node
         nodes.add(first);
         // the iterating node
-        BioNode step = first;
+        AutomatonNode step = first;
         // remembers if a connection around the compartment could be made
         boolean notConnected = true;
         // as lon as no connection could be found
@@ -62,7 +62,7 @@ public class EnclosedCompartment extends CellSection {
 
             boolean foundNeighbour = false;
             // search neighbours
-            for (BioNode neighbour : step.getNeighbours()) {
+            for (AutomatonNode neighbour : step.getNeighbours()) {
                 if (isNewBorder(nodes, neighbour)) {
                     foundNeighbour = true;
                     nodes.add(neighbour);
@@ -74,7 +74,7 @@ public class EnclosedCompartment extends CellSection {
 
             // check if border can be closed
             if (!foundNeighbour) {
-                for (BioNode neighbour : step.getNeighbours()) {
+                for (AutomatonNode neighbour : step.getNeighbours()) {
                     if (nodes.getFirst().equals(neighbour)) {
                         notConnected = false;
                         foundNeighbour = true;
@@ -86,10 +86,10 @@ public class EnclosedCompartment extends CellSection {
 
             // try to traverse bridge
             if (!foundNeighbour) {
-                LinkedList<BioNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
+                LinkedList<AutomatonNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
                         currentNode -> this.isNewBorder(nodes, currentNode), this::isInThisCompartment);
                 if (nextBest != null) {
-                    for (BioNode node : nextBest) {
+                    for (AutomatonNode node : nextBest) {
                         if (!nodes.contains(node)) {
                             nodes.add(node);
                             node.setState(NodeState.MEMBRANE);
@@ -110,12 +110,12 @@ public class EnclosedCompartment extends CellSection {
         return this.enclosingMembrane;
     }
 
-    private boolean isInThisCompartment(BioNode node) {
+    private boolean isInThisCompartment(AutomatonNode node) {
         return node.getCellSection().getIdentifier().equals(this.getIdentifier());
     }
 
-    private boolean hasNeighbourInOtherCompartment(BioNode node) {
-        for (BioNode neighbour : node.getNeighbours()) {
+    private boolean hasNeighbourInOtherCompartment(AutomatonNode node) {
+        for (AutomatonNode neighbour : node.getNeighbours()) {
             if (!isInThisCompartment(neighbour)) {
                 return true;
             }
@@ -123,7 +123,7 @@ public class EnclosedCompartment extends CellSection {
         return false;
     }
 
-    private boolean isNewBorder(LinkedList<BioNode> oldNodes, BioNode currentNode) {
+    private boolean isNewBorder(LinkedList<AutomatonNode> oldNodes, AutomatonNode currentNode) {
         return isInThisCompartment(currentNode) &&
                 !oldNodes.contains(currentNode) &&
                 hasNeighbourInOtherCompartment(currentNode);

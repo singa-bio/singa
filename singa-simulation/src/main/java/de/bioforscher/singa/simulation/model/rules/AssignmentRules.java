@@ -15,9 +15,9 @@ public final class AssignmentRules {
     }
 
     /**
-     * It is possible, that certain {@link AssignmentRule}s depend on each other. So they have to be executed in a
-     * certain order. This method checks the dependencies of the AssignmentRules in the supplied list and returns a
-     * sorted list that is ordered by calculation priority. So the rules on top of the list should be calculated first.
+     * It is possible, that {@link AssignmentRule}s depend on each other. So they have to be executed in a certain
+     * order. This method checks the dependencies of the AssignmentRules in the supplied list and returns a sorted list
+     * that is ordered by calculation priority. So the rules on top of the list should be calculated first.
      *
      * @param assignmentRules The AssignmentRules to sort.
      * @return A list of AssignmentRules sorted by the calculation priority.

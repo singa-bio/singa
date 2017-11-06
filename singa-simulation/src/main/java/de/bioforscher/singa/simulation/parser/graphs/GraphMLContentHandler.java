@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.BioNode;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -25,7 +25,7 @@ public class GraphMLContentHandler implements ContentHandler {
 
     private AutomatonGraph graph;
 
-    private BioNode node;
+    private AutomatonNode node;
     private double currentX;
     private double currentY;
     private HashMap<String, ChemicalEntity> speciesMap;
@@ -117,16 +117,13 @@ public class GraphMLContentHandler implements ContentHandler {
                 break;
             case "node":
                 int nodeId = Integer.parseInt(atts.getValue("id"));
-                this.node = new BioNode(nodeId);
+                this.node = new AutomatonNode(nodeId);
                 break;
             case "edge":
                 int edgeId = Integer.parseInt(atts.getValue("id"));
-                BioNode source = this.graph.getNode(Integer.parseInt(atts.getValue("source")));
-                BioNode target = this.graph.getNode(Integer.parseInt(atts.getValue("target")));
+                AutomatonNode source = this.graph.getNode(Integer.parseInt(atts.getValue("source")));
+                AutomatonNode target = this.graph.getNode(Integer.parseInt(atts.getValue("target")));
                 this.graph.addEdgeBetween(edgeId, source, target);
-                for (ChemicalEntity entity : this.speciesMap.values()) {
-                    this.graph.getEdge(edgeId).addPermeability(entity, 1.0);
-                }
                 break;
         }
 

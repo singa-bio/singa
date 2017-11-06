@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.FeatureRegistry;
+import de.bioforscher.singa.features.model.ScalableFeature;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.ProductUnit;
 
@@ -21,11 +22,12 @@ import static tec.units.ri.unit.Units.SECOND;
  *
  * @author cl
  */
-public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity> {
+public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity>, ScalableFeature<Quantity<Diffusivity>> {
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
 
     private Quantity<Diffusivity> scaledQuantity;
+    private Quantity<Diffusivity> halfScaledQuantity;
 
     /**
      * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
@@ -43,17 +45,26 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETER_PER_SECOND), origin);
     }
 
+    @Override
     public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
         // transform to specified unit
         Quantity<Diffusivity> scaledQuantity = getFeatureContent()
                 .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+        // denominator
+        Quantity<Diffusivity> denominator = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue());
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue())
-                .multiply(targetTimeScale.getValue());
+        this.scaledQuantity = denominator.multiply(targetTimeScale.getValue());
+        // and half of it
+        this.halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
     public Quantity<Diffusivity> getScaledQuantity() {
         return this.scaledQuantity;
+    }
+
+    @Override
+    public Quantity<Diffusivity> getHalfScaledQuantity() {
+        return this.halfScaledQuantity;
     }
 
     @Override
