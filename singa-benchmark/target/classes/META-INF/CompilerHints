@@ -1,0 +1,10 @@
+dontinline,*.*_all_jmhStub
+dontinline,*.*_avgt_jmhStub
+dontinline,*.*_sample_jmhStub
+dontinline,*.*_ss_jmhStub
+dontinline,*.*_thrpt_jmhStub
+inline,de/bioforscher/singa/benchmark/algorithms/superimposition/Fit3DAlignmentBenchmark.benchmarkFit3DAlignment
+inline,de/bioforscher/singa/benchmark/algorithms/superimposition/Fit3DAlignmentBenchmark.setUp
+inline,de/bioforscher/singa/benchmark/mathematics/MatrixBenchmark.benchmarkFastSymmetricInitialization
+inline,de/bioforscher/singa/benchmark/mathematics/MatrixBenchmark.benchmarkRegularSymmetricInitialization
+inline,de/bioforscher/singa/benchmark/mathematics/MatrixBenchmark.setUp
