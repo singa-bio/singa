@@ -35,8 +35,8 @@ public class PlipShellGenerator {
         this.reference = reference;
         this.interChainInteractions = interChainInteractions;
         this.referenceInteractions = referenceInteractions;
-        this.shells = new TreeMap<>();
-        this.graph = new GenericGraph<>();
+        shells = new TreeMap<>();
+        graph = new GenericGraph<>();
         generateInteractionGraph();
         computeShells();
     }
@@ -48,46 +48,46 @@ public class PlipShellGenerator {
     }
 
     private void computeShells() {
-        GenericNode<LeafSubstructure<?>> referenceNode = this.graph.getNodeWithContent(this.reference)
+        GenericNode<LeafSubstructure<?>> referenceNode = graph.getNodeWithContent(reference)
                 .orElseThrow(() -> new IllegalArgumentException("No such reference node in interaction graph."));
         for (InteractionShell interactionShell : InteractionShell.values()) {
-            this.shells.put(interactionShell, interactionShell.from(this.graph, referenceNode));
+            shells.put(interactionShell, interactionShell.from(graph, referenceNode));
         }
     }
 
     public Map<InteractionShell, List<LeafSubstructure<?>>> getShells() {
-        return this.shells;
+        return shells;
     }
 
     private void generateInteractionGraph() {
         // compute first shell (directly interacting with reference)
-        Set<LeafSubstructure> firstShell = this.referenceInteractions.getInteractions().stream()
-                .filter(interaction -> interaction.getTarget().equals(this.reference.getIdentifier()))
+        Set<LeafSubstructure> firstShell = referenceInteractions.getInteractions().stream()
+                .filter(interaction -> interaction.getTarget().equals(reference.getIdentifier()))
                 .map(Interaction::getSource)
-                .map(leafIdentifier -> this.chain.getAllLeafSubstructures().stream()
+                .map(leafIdentifier -> chain.getAllLeafSubstructures().stream()
                         .filter(leafSubstructure -> leafSubstructure.getIdentifier().equals(leafIdentifier))
                         .findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
         // add reference and its interactions to graph
-        this.graph.addNode(this.reference);
+        graph.addNode(reference);
         for (LeafSubstructure leafSubstructure : firstShell) {
-            this.graph.addNode(leafSubstructure);
-            this.graph.addEdgeBetween(this.reference, leafSubstructure);
+            graph.addNode(leafSubstructure);
+            graph.addEdgeBetween(reference, leafSubstructure);
         }
         // generate interaction graph from inter chain interactions
-        for (Interaction interaction : this.interChainInteractions.getInteractions()) {
-            Optional<LeafSubstructure<?>> source = this.chain.getLeafSubstructure(interaction.getSource());
-            Optional<LeafSubstructure<?>> target = this.chain.getLeafSubstructure(interaction.getTarget());
+        for (Interaction interaction : interChainInteractions.getInteractions()) {
+            Optional<LeafSubstructure<?>> source = chain.getLeafSubstructure(interaction.getSource());
+            Optional<LeafSubstructure<?>> target = chain.getLeafSubstructure(interaction.getTarget());
             if (source.isPresent() && target.isPresent()) {
-                this.graph.addEdgeBetween(source.get(), target.get());
+                graph.addEdgeBetween(source.get(), target.get());
             }
         }
     }
 
     public GenericGraph<LeafSubstructure<?>> getGraph() {
-        return this.graph;
+        return graph;
     }
 
     public enum InteractionShell {
@@ -96,7 +96,7 @@ public class PlipShellGenerator {
 
         public List<LeafSubstructure<?>> from(GenericGraph<LeafSubstructure<?>> graph,
                                               GenericNode<LeafSubstructure<?>> referenceNode) {
-            return NeighbourhoodExtractor.extractShell(graph, referenceNode, this.ordinal() + 1).stream()
+            return NeighbourhoodExtractor.extractShell(graph, referenceNode, ordinal() + 1).stream()
                     .map(GenericNode::getContent)
                     .collect(Collectors.toList());
         }

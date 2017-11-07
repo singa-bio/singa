@@ -33,8 +33,8 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
      */
     protected Species(SimpleStringIdentifier identifier) {
         super(identifier);
-        this.availableFeatures.add(Smiles.class);
-        this.availableFeatures.add(LogP.class);
+        availableFeatures.add(Smiles.class);
+        availableFeatures.add(LogP.class);
     }
 
     /**

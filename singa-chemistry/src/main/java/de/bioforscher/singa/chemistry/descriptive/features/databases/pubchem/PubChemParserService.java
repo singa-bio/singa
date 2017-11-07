@@ -35,14 +35,14 @@ public class PubChemParserService extends AbstractXMLParser<Species> {
     @Override
     public Species parse() {
         parseXML();
-        return ((PubChemContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
+        return ((PubChemContentHandler) getXmlReader().getContentHandler()).getSpecies();
     }
 
     private void parseXML() {
         fetchResource();
         // parse xml
         try {
-            this.getXmlReader().parse(new InputSource(getFetchResult()));
+            getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {

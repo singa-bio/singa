@@ -46,108 +46,108 @@ class PubChemContentHandler implements ContentHandler {
     private boolean inLogPInformation;
 
     PubChemContentHandler() {
-        this.currentTag = "";
+        currentTag = "";
     }
 
     public Species getSpecies() {
-        return new Species.Builder(this.chebiIdentifier)
-                .name(this.name)
-                .assignFeature(new MolarMass(this.molarMass, PubChemDatabase.origin))
-                .assignFeature(new Smiles(this.smilesRepresentation, PubChemDatabase.origin))
-                .assignFeature(new LogP(this.logP, PubChemDatabase.origin))
-                .additionalIdentifier(new PubChemIdentifier("CID:" + this.pubChemIdentifier))
+        return new Species.Builder(chebiIdentifier)
+                .name(name)
+                .assignFeature(new MolarMass(molarMass, PubChemDatabase.origin))
+                .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.origin))
+                .assignFeature(new LogP(logP, PubChemDatabase.origin))
+                .additionalIdentifier(new PubChemIdentifier("CID:" + pubChemIdentifier))
                 .build();
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
 
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
-                this.pubChemIdentifier = new String(ch, start, length);
+                pubChemIdentifier = new String(ch, start, length);
                 break;
             }
             case "TOCHeading": {
                 String value = new String(ch, start, length);
                 switch (value) {
                     case "Record Title":
-                        this.inRecordTitle = true;
+                        inRecordTitle = true;
                         break;
                     case "Canonical SMILES":
-                        this.inCanonicalSMILES = true;
+                        inCanonicalSMILES = true;
                         break;
                     case "Computed Properties":
-                        this.inComputedProperties = true;
+                        inComputedProperties = true;
                         break;
                     case "Depositor-Supplied Synonyms":
-                        this.inSynonyms = true;
+                        inSynonyms = true;
                         break;
                     case "LogP":
-                        this.inLogP = true;
+                        inLogP = true;
                         break;
                 }
                 break;
             }
             case "StringValue": {
-                if (this.inRecordTitle && this.inRecordTitleInformation) {
+                if (inRecordTitle && inRecordTitleInformation) {
                     // set name
-                    this.name = new String(ch, start, length);
-                    this.inRecordTitle = false;
-                    this.inRecordTitleInformation = false;
-                } else if (this.inCanonicalSMILES && this.inCanonicalSMILESInformation) {
+                    name = new String(ch, start, length);
+                    inRecordTitle = false;
+                    inRecordTitleInformation = false;
+                } else if (inCanonicalSMILES && inCanonicalSMILESInformation) {
                     // set smiles
-                    this.smilesRepresentation = new String(ch, start, length);
-                    this.inCanonicalSMILES = false;
-                    this.inCanonicalSMILESInformation = false;
-                } else if (this.inComputedProperties) {
+                    smilesRepresentation = new String(ch, start, length);
+                    inCanonicalSMILES = false;
+                    inCanonicalSMILESInformation = false;
+                } else if (inComputedProperties) {
                     // set logP
                     if ("Molecular Weight".equals(new String(ch, start, length))) {
-                        this.inMolecularWeightInformation = true;
+                        inMolecularWeightInformation = true;
                     }
-                } else if (this.inLogP && this.inLogPInformation) {
+                } else if (inLogP && inLogPInformation) {
                     // set logP
                     String logPString = new String(ch, start, length);
                     // explicitly stated as log KOW
                     if (logPString.contains("log Kow")) {
                         // remove "non double characters" (very simple for now)
                         String cleanedString = logPString.replaceAll("[^0-9.]", "");
-                        this.logP = Double.parseDouble(cleanedString);
-                        this.inLogP = false;
-                        this.inLogPInformation = false;
+                        logP = Double.parseDouble(cleanedString);
+                        inLogP = false;
+                        inLogPInformation = false;
                     } else if (logPString.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-                        this.logP = Double.parseDouble(logPString);
-                        this.inLogP = false;
-                        this.inLogPInformation = false;
+                        logP = Double.parseDouble(logPString);
+                        inLogP = false;
+                        inLogPInformation = false;
                     }
                 }
                 break;
             }
             case "StringValueList": {
-                if (this.inSynonyms && this.inSynonymsInformation) {
+                if (inSynonyms && inSynonymsInformation) {
                     String potentialChebiIdentifier = new String(ch, start, length);
                     if (ChEBIIdentifier.PATTERN.matcher(potentialChebiIdentifier).matches()) {
                         // set chebi identifier
-                        this.chebiIdentifier = new SimpleStringIdentifier(potentialChebiIdentifier);
-                        this.inSynonyms = false;
-                        this.inSynonymsInformation = false;
+                        chebiIdentifier = new SimpleStringIdentifier(potentialChebiIdentifier);
+                        inSynonyms = false;
+                        inSynonymsInformation = false;
                     }
                 }
                 break;
             }
             case "NumValue": {
-                if (this.inComputedProperties && this.inMolecularWeightInformation) {
+                if (inComputedProperties && inMolecularWeightInformation) {
                     // set molecular weight
-                    this.molarMass = Double.parseDouble(new String(ch, start, length));
-                    this.inMolecularWeightInformation = false;
-                    this.inComputedProperties = false;
-                } else if (this.inLogP && this.inLogPInformation) {
+                    molarMass = Double.parseDouble(new String(ch, start, length));
+                    inMolecularWeightInformation = false;
+                    inComputedProperties = false;
+                } else if (inLogP && inLogPInformation) {
                     // set logP
                     String logPString = new String(ch, start, length);
                     // explicitly stated as log KOW
-                    this.logP = Double.parseDouble(logPString);
-                    this.inLogP = false;
-                    this.inLogPInformation = false;
+                    logP = Double.parseDouble(logPString);
+                    inLogP = false;
+                    inLogPInformation = false;
                 }
                 break;
             }
@@ -162,13 +162,13 @@ class PubChemContentHandler implements ContentHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
 
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "RecordNumber":
             case "TOCHeading":
             case "StringValue":
             case "NumValue":
             case "StringValueList":
-                this.currentTag = "";
+                currentTag = "";
                 break;
         }
 
@@ -210,19 +210,19 @@ class PubChemContentHandler implements ContentHandler {
             case "StringValue":
             case "NumValue":
             case "StringValueList":
-                this.currentTag = qName;
+                currentTag = qName;
                 break;
             case "Information":
-                if (this.inRecordTitle) {
-                    this.inRecordTitleInformation = true;
-                } else if (this.inCanonicalSMILES) {
-                    this.inCanonicalSMILESInformation = true;
+                if (inRecordTitle) {
+                    inRecordTitleInformation = true;
+                } else if (inCanonicalSMILES) {
+                    inCanonicalSMILESInformation = true;
                 }
-                if (this.inSynonyms) {
-                    this.inSynonymsInformation = true;
+                if (inSynonyms) {
+                    inSynonymsInformation = true;
                 }
-                if (this.inLogP) {
-                    this.inLogPInformation = true;
+                if (inLogP) {
+                    inLogPInformation = true;
                 }
                 break;
         }

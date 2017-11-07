@@ -25,15 +25,15 @@ public class Cell {
     }
 
     public short getQ() {
-        return this.q;
+        return q;
     }
 
     public short getR() {
-        return this.r;
+        return r;
     }
 
     public CellState getState() {
-        return this.state;
+        return state;
     }
 
     public void setState(CellState state) {
@@ -42,7 +42,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        return "Cell [q=" + this.q + ", r=" + this.r + "]";
+        return "Cell [q=" + q + ", r=" + r + "]";
     }
 
 }

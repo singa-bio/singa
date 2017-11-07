@@ -26,18 +26,18 @@ public class AbstractIdentifier implements Identifier {
             this.identifier = identifier;
         } else {
             throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " +
-                    this.getClass().getSimpleName() + ".");
+                    getClass().getSimpleName() + ".");
         }
     }
 
     @Override
     public String getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public String toString() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
@@ -45,11 +45,11 @@ public class AbstractIdentifier implements Identifier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractIdentifier that = (AbstractIdentifier) o;
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 }

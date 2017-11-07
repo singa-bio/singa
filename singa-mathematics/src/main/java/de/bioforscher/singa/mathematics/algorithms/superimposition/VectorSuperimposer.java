@@ -57,36 +57,36 @@ public class VectorSuperimposer {
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-        return new VectorSuperimposition(this.rmsd, this.translation, this.rotation, this.reference, this.candidate,
-                this.mappedCandidate);
+        return new VectorSuperimposition(rmsd, translation, rotation, reference, candidate,
+                mappedCandidate);
     }
 
     private void calculateRMSD() {
-        this.rmsd = 0.0;
-        int referenceSize = this.reference.size();
+        rmsd = 0.0;
+        int referenceSize = reference.size();
         for (int i = 0; i < referenceSize; i++) {
-            Vector referenceEntity = this.reference.get(i);
-            Vector candidateEntity = this.mappedCandidate.get(i);
-            this.rmsd += VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
+            Vector referenceEntity = reference.get(i);
+            Vector candidateEntity = mappedCandidate.get(i);
+            rmsd += VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
                     .calculateDistance(referenceEntity, candidateEntity);
         }
-        this.rmsd = Math.sqrt(this.rmsd / referenceSize);
+        rmsd = Math.sqrt(rmsd / referenceSize);
     }
 
     private void applyMapping() {
-        this.mappedCandidate = this.candidate.stream()
-                        .map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
+        mappedCandidate = candidate.stream()
+                .map(vector -> rotation.transpose().multiply(vector).add(translation))
                         .collect(Collectors.toList());
     }
 
     private void calculateTranslation() {
         // calculate translation vector t = ca - R' * cb
-        this.translation = this.referenceCentroid.subtract(this.rotation.transpose().multiply(this.candidateCentroid));
+        translation = referenceCentroid.subtract(rotation.transpose().multiply(candidateCentroid));
     }
 
     private void calculateRotation() {
-        Matrix referenceMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedReference);
-        Matrix candidateMatrix = FastMatrices.assembleMatrixFromRows(this.shiftedCandidate);
+        Matrix referenceMatrix = FastMatrices.assembleMatrixFromRows(shiftedReference);
+        Matrix candidateMatrix = FastMatrices.assembleMatrixFromRows(shiftedCandidate);
 
         // calculate covariance
         Matrix covarianceMatrix = Matrices.calculateCovarianceMatrix(referenceMatrix, candidateMatrix);
@@ -98,10 +98,10 @@ public class VectorSuperimposer {
         Matrix ut = u.transpose();
 
         // calculate actual rotation matrix
-        this.rotation = v.multiply(ut).transpose();
+        rotation = v.multiply(ut).transpose();
 
         // check for possible reflection
-        if (this.rotation.as(SquareMatrix.class).determinant() < 0) {
+        if (rotation.as(SquareMatrix.class).determinant() < 0) {
 
             // get copy of V matrix
             Matrix matrixV = svd.getMatrixV().getCopy().transpose();
@@ -109,18 +109,18 @@ public class VectorSuperimposer {
             matrixV.getElements()[2][1] = 0 - matrixV.getElement(2, 1);
             matrixV.getElements()[2][2] = 0 - matrixV.getElement(2, 2);
 
-            this.rotation = matrixV.transpose().multiply(ut).transpose();
+            rotation = matrixV.transpose().multiply(ut).transpose();
         }
     }
 
     private void center() {
-        this.referenceCentroid = Vectors.getCentroid(this.reference);
-        this.shiftedReference = this.reference.stream()
-                .map(vector -> vector.subtract(this.referenceCentroid))
+        referenceCentroid = Vectors.getCentroid(reference);
+        shiftedReference = reference.stream()
+                .map(vector -> vector.subtract(referenceCentroid))
                 .collect(Collectors.toList());
-        this.candidateCentroid = Vectors.getCentroid(this.candidate);
-        this.shiftedCandidate = this.candidate.stream()
-                .map(vector -> vector.subtract(this.candidateCentroid))
+        candidateCentroid = Vectors.getCentroid(candidate);
+        shiftedCandidate = candidate.stream()
+                .map(vector -> vector.subtract(candidateCentroid))
                 .collect(Collectors.toList());
     }
 
@@ -131,10 +131,10 @@ public class VectorSuperimposer {
      */
     private VectorSuperimposition calculateIdealSuperimposition() {
         Optional<VectorSuperimposition> optionalSuperimposition = StreamPermutations.of(
-                this.candidate.toArray(new Vector[this.candidate.size()]))
+                candidate.toArray(new Vector[candidate.size()]))
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
-                .map(permutedCandidates -> new VectorSuperimposer(this.reference, permutedCandidates)
+                .map(permutedCandidates -> new VectorSuperimposer(reference, permutedCandidates)
                         .calculateSuperimposition())
                 .reduce((VectorSuperimposition s1, VectorSuperimposition s2) ->
                         s1.getRmsd() < s2.getRmsd() ? s1 : s2);

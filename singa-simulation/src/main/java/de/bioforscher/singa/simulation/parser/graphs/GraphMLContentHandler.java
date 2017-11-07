@@ -33,30 +33,30 @@ public class GraphMLContentHandler implements ContentHandler {
     private String tag;
 
     public GraphMLContentHandler() {
-        this.graph = new AutomatonGraph();
-        this.speciesMap = new HashMap<>();
-        this.tag = "";
+        graph = new AutomatonGraph();
+        speciesMap = new HashMap<>();
+        tag = "";
     }
 
     public AutomatonGraph getGraph() {
-        return this.graph;
+        return graph;
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         // position
-        switch (this.tag) {
+        switch (tag) {
             case "x":
-                this.currentX = Double.parseDouble(new String(ch, start, length));
+                currentX = Double.parseDouble(new String(ch, start, length));
                 break;
             case "y":
-                this.currentY = Double.parseDouble(new String(ch, start, length));
+                currentY = Double.parseDouble(new String(ch, start, length));
                 break;
         }
         // chemical entities
-        if (this.tag.startsWith("CHEBI")) {
+        if (tag.startsWith("CHEBI")) {
             Double value = Double.parseDouble(new String(ch, start, length));
-            this.node.setConcentration(this.speciesMap.get(this.tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
+            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
         }
     }
 
@@ -68,11 +68,11 @@ public class GraphMLContentHandler implements ContentHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case "data":
-                this.tag = "";
+                tag = "";
                 break;
             case "node":
-                this.node.setPosition(new Vector2D(this.currentX, this.currentY));
-                this.graph.addNode(this.node);
+                node.setPosition(new Vector2D(currentX, currentY));
+                graph.addNode(node);
         }
     }
 
@@ -109,21 +109,21 @@ public class GraphMLContentHandler implements ContentHandler {
                 // parse species that are present as keys
                 if (chEBIIdentifier.startsWith("CHEBI")) {
                     Species entity = ChEBIParserService.parse(chEBIIdentifier);
-                    this.speciesMap.put(chEBIIdentifier, entity);
+                    speciesMap.put(chEBIIdentifier, entity);
                 }
                 break;
             case "data":
-                this.tag = atts.getValue("key");
+                tag = atts.getValue("key");
                 break;
             case "node":
                 int nodeId = Integer.parseInt(atts.getValue("id"));
-                this.node = new AutomatonNode(nodeId);
+                node = new AutomatonNode(nodeId);
                 break;
             case "edge":
                 int edgeId = Integer.parseInt(atts.getValue("id"));
-                AutomatonNode source = this.graph.getNode(Integer.parseInt(atts.getValue("source")));
-                AutomatonNode target = this.graph.getNode(Integer.parseInt(atts.getValue("target")));
-                this.graph.addEdgeBetween(edgeId, source, target);
+                AutomatonNode source = graph.getNode(Integer.parseInt(atts.getValue("source")));
+                AutomatonNode target = graph.getNode(Integer.parseInt(atts.getValue("target")));
+                graph.addEdgeBetween(edgeId, source, target);
                 break;
         }
 

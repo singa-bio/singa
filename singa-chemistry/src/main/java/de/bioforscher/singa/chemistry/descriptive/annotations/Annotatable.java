@@ -26,7 +26,7 @@ public interface Annotatable {
      * @param annotation The annotation.
      */
     default void addAnnotation(Annotation annotation) {
-        this.getAnnotations().add(annotation);
+        getAnnotations().add(annotation);
     }
 
     /**

@@ -39,35 +39,35 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
 
     private AffinityPropagation(Builder<DataType> builder) {
         logger.info("affinity propagation initialized with {} data points", builder.dataPoints.size());
-        this.dataPoints = builder.dataPoints;
-        this.dataSize = this.dataPoints.size();
-        this.similarityMatrix = builder.matrix;
-        this.lambda = builder.lambda;
+        dataPoints = builder.dataPoints;
+        dataSize = dataPoints.size();
+        similarityMatrix = builder.matrix;
+        lambda = builder.lambda;
         double selfSimilarity = builder.selfSimilarity;
-        this.maximalEpochs = builder.maximalEpochs;
-        checkInput(this.dataPoints, this.similarityMatrix);
+        maximalEpochs = builder.maximalEpochs;
+        checkInput(dataPoints, similarityMatrix);
         double[][] invertedValues;
         // convert to similarity matrix if distance matrix provided
         if (builder.distance) {
-            this.distanceMatrix = this.similarityMatrix;
-            invertedValues = this.similarityMatrix.additivelyInvert().getElements();
+            distanceMatrix = similarityMatrix;
+            invertedValues = similarityMatrix.additivelyInvert().getElements();
             // assign inverted self similarities
             for (int i = 0; i < invertedValues.length; i++) {
                 invertedValues[i][i] = -selfSimilarity;
             }
         } else {
-            invertedValues = this.similarityMatrix.getElements();
-            this.distanceMatrix = new LabeledRegularMatrix<>(new RegularMatrix(invertedValues).additivelyInvert().getElements());
-            this.distanceMatrix.setRowLabels(this.dataPoints);
-            this.distanceMatrix.setColumnLabels(this.dataPoints);
+            invertedValues = similarityMatrix.getElements();
+            distanceMatrix = new LabeledRegularMatrix<>(new RegularMatrix(invertedValues).additivelyInvert().getElements());
+            distanceMatrix.setRowLabels(dataPoints);
+            distanceMatrix.setColumnLabels(dataPoints);
             // assign self similarities
             for (int i = 0; i < invertedValues.length; i++) {
                 invertedValues[i][i] = selfSimilarity;
             }
         }
-        this.similarityMatrix = new LabeledRegularMatrix<>(invertedValues);
-        this.similarityMatrix.setRowLabels(this.dataPoints);
-        this.similarityMatrix.setColumnLabels(this.dataPoints);
+        similarityMatrix = new LabeledRegularMatrix<>(invertedValues);
+        similarityMatrix.setRowLabels(dataPoints);
+        similarityMatrix.setColumnLabels(dataPoints);
         initialize();
         run();
     }
@@ -78,31 +78,31 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
 
     @Override
     public List<DataType> getDataPoints() {
-        return this.dataPoints;
+        return dataPoints;
     }
 
     @Override
     public LabeledMatrix<DataType> getDistanceMatrix() {
-        return this.distanceMatrix;
+        return distanceMatrix;
     }
 
     @Override
     public Map<DataType, List<DataType>> getClusters() {
-        return this.clusters;
+        return clusters;
     }
 
     private void initialize() {
         // initialize responsibility matrix with zeros
-        this.responsibilityMatrix = new LabeledRegularMatrix<>(new double[this.dataSize][this.dataSize]);
-        this.responsibilityMatrix.setRowLabels(this.dataPoints);
-        this.responsibilityMatrix.setColumnLabels(this.dataPoints);
+        responsibilityMatrix = new LabeledRegularMatrix<>(new double[dataSize][dataSize]);
+        responsibilityMatrix.setRowLabels(dataPoints);
+        responsibilityMatrix.setColumnLabels(dataPoints);
 
         // initialize availability matrix with zeros
-        this.availabilityMatrix = new LabeledRegularMatrix<>(new double[this.dataSize][this.dataSize]);
-        this.availabilityMatrix.setRowLabels(this.dataPoints);
-        this.availabilityMatrix.setColumnLabels(this.dataPoints);
+        availabilityMatrix = new LabeledRegularMatrix<>(new double[dataSize][dataSize]);
+        availabilityMatrix.setRowLabels(dataPoints);
+        availabilityMatrix.setColumnLabels(dataPoints);
 
-        this.exemplarDecisions = new ArrayList<>();
+        exemplarDecisions = new ArrayList<>();
     }
 
     /**
@@ -123,7 +123,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
      * Starts affinity propagation clustering until convergence or maximal epochs are reached.
      */
     private void run() {
-        while (this.epoch < this.maximalEpochs) {
+        while (epoch < maximalEpochs) {
             updateResponsibilities();
             updateAvailabilities();
             assignExemplars();
@@ -131,39 +131,39 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
             if (isConverged()) {
                 break;
             }
-            this.epoch++;
-            if (this.epoch == this.maximalEpochs) {
+            epoch++;
+            if (epoch == maximalEpochs) {
                 logger.info("terminating after reaching maximal epoch limit");
             }
         }
-        logger.info("obtained {} clusters", this.clusters.size());
+        logger.info("obtained {} clusters", clusters.size());
     }
 
     /**
      * Assigns cluster members of exemplars of last round, that is finding the closest exemplar for each data point.
      */
     private void assignClusters() {
-        this.clusters = new HashMap<>();
-        for (DataType currentDataPoint : this.dataPoints) {
+        clusters = new HashMap<>();
+        for (DataType currentDataPoint : dataPoints) {
             double bestSimilarity = -Double.MAX_VALUE;
             DataType bestExemplar = null;
-            for (DataType exemplar : this.exemplarDecisions.get(this.exemplarDecisions.size() - 1)) {
+            for (DataType exemplar : exemplarDecisions.get(exemplarDecisions.size() - 1)) {
                 if (exemplar.equals(currentDataPoint)) {
                     bestExemplar = currentDataPoint;
                     break;
                 }
-                double similarity = this.similarityMatrix.getValueForLabel(currentDataPoint, exemplar);
+                double similarity = similarityMatrix.getValueForLabel(currentDataPoint, exemplar);
                 if (similarity > bestSimilarity) {
                     bestSimilarity = similarity;
                     bestExemplar = exemplar;
                 }
             }
-            if (this.clusters.containsKey(bestExemplar)) {
-                this.clusters.get(bestExemplar).add(currentDataPoint);
+            if (clusters.containsKey(bestExemplar)) {
+                clusters.get(bestExemplar).add(currentDataPoint);
             } else {
                 List<DataType> cluster = new ArrayList<>();
                 cluster.add(currentDataPoint);
-                this.clusters.put(bestExemplar, cluster);
+                clusters.put(bestExemplar, cluster);
             }
         }
     }
@@ -171,48 +171,48 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     private void assignExemplars() {
         List<DataType> exemplars = new ArrayList<>();
         // calculate R+A
-        LabeledMatrix<DataType> ra = new LabeledRegularMatrix<>(this.responsibilityMatrix.add(this.availabilityMatrix).getElements());
-        ra.setRowLabels(this.dataPoints);
-        ra.setColumnLabels(this.dataPoints);
+        LabeledMatrix<DataType> ra = new LabeledRegularMatrix<>(responsibilityMatrix.add(availabilityMatrix).getElements());
+        ra.setRowLabels(dataPoints);
+        ra.setColumnLabels(dataPoints);
         // obtain exemplars from RA (all positive values on principal diagonal)
         for (int i = 0; i < ra.getRowDimension(); i++) {
             if (ra.getElement(i, i) > 0) {
-                exemplars.add(this.dataPoints.get(i));
+                exemplars.add(dataPoints.get(i));
             }
         }
         // store RA of each round for convergence check
-        this.exemplarDecisions.add(exemplars);
+        exemplarDecisions.add(exemplars);
     }
 
     /**
      * Updates the responsibilities of the current round.
      */
     private void updateResponsibilities() {
-        double[][] updatedResponsibilities = new double[this.dataSize][this.dataSize];
-        Matrix as = this.similarityMatrix.add(this.availabilityMatrix);
-        for (int i = 0; i < this.dataPoints.size(); i++) {
-            for (int j = 0; j < this.dataPoints.size(); j++) {
+        double[][] updatedResponsibilities = new double[dataSize][dataSize];
+        Matrix as = similarityMatrix.add(availabilityMatrix);
+        for (int i = 0; i < dataPoints.size(); i++) {
+            for (int j = 0; j < dataPoints.size(); j++) {
                 double[] row = Arrays.copyOf(as.getRow(i).getElements(), as.getRow(i).getElements().length);
                 row[j] = -Double.MAX_VALUE;
                 RegularVector rowVector = new RegularVector(row);
                 int positionOfMax = Vectors.getIndexWithMaximalElement(rowVector);
                 double maxValue = rowVector.getElement(positionOfMax);
-                double finalValue = this.similarityMatrix.getElement(i, j) - maxValue;
+                double finalValue = similarityMatrix.getElement(i, j) - maxValue;
                 updatedResponsibilities[i][j] = finalValue;
             }
         }
         LabeledMatrix<DataType> updatedResponsibilityMatrix = new LabeledRegularMatrix<>(updatedResponsibilities);
-        this.responsibilityMatrix = applyLambda(updatedResponsibilityMatrix, this.responsibilityMatrix);
+        responsibilityMatrix = applyLambda(updatedResponsibilityMatrix, responsibilityMatrix);
     }
 
     /**
      * Updates the availabilities of the current round.
      */
     private void updateAvailabilities() {
-        double[][] updatedAvailabilities = new double[this.dataSize][this.dataSize];
-        for (int i = 0; i < this.dataSize; i++) {
-            for (int j = 0; j < this.dataSize; j++) {
-                double[] column = this.responsibilityMatrix.getColumn(i).getElements();
+        double[][] updatedAvailabilities = new double[dataSize][dataSize];
+        for (int i = 0; i < dataSize; i++) {
+            for (int j = 0; j < dataSize; j++) {
+                double[] column = responsibilityMatrix.getColumn(i).getElements();
                 double sum = 0.0;
                 for (int k = 0; k < column.length; k++) {
                     if (k == i || k == j) {
@@ -225,7 +225,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
                 if (i == j) {
                     updatedAvailabilities[j][i] = sum;
                 } else {
-                    sum += this.responsibilityMatrix.getElement(i, i);
+                    sum += responsibilityMatrix.getElement(i, i);
                     if (sum < 0) {
                         updatedAvailabilities[j][i] = sum;
                     } else {
@@ -235,7 +235,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
             }
         }
         LabeledMatrix<DataType> updatedAvailabilityMatrix = new LabeledRegularMatrix<>(updatedAvailabilities);
-        this.availabilityMatrix = applyLambda(updatedAvailabilityMatrix, this.availabilityMatrix);
+        availabilityMatrix = applyLambda(updatedAvailabilityMatrix, availabilityMatrix);
     }
 
     /**
@@ -246,9 +246,9 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
      * @return The updated matrix with dampening factor applied.
      */
     private LabeledMatrix<DataType> applyLambda(LabeledMatrix<DataType> updatedMatrix, LabeledMatrix<DataType> oldMatrix) {
-        LabeledMatrix<DataType> dampenedMatrix = new LabeledRegularMatrix<>(updatedMatrix.multiply(1 - this.lambda).add(oldMatrix.multiply(this.lambda)).getElements());
-        dampenedMatrix.setRowLabels(this.dataPoints);
-        dampenedMatrix.setColumnLabels(this.dataPoints);
+        LabeledMatrix<DataType> dampenedMatrix = new LabeledRegularMatrix<>(updatedMatrix.multiply(1 - lambda).add(oldMatrix.multiply(lambda)).getElements());
+        dampenedMatrix.setRowLabels(dataPoints);
+        dampenedMatrix.setColumnLabels(dataPoints);
         return dampenedMatrix;
     }
 
@@ -259,28 +259,28 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
      */
     private boolean isConverged() {
         boolean converged;
-        if (this.exemplarDecisions.size() < MIN_STABLE_EPOCHS) {
+        if (exemplarDecisions.size() < MIN_STABLE_EPOCHS) {
             return false;
         } else {
             converged = true;
-            int lowerBound = this.exemplarDecisions.size() - MIN_STABLE_EPOCHS;
-            for (int i = this.exemplarDecisions.size() - 1; i > lowerBound; i--) {
-                if (!this.exemplarDecisions.get(i).equals(this.exemplarDecisions.get(i - 1))) {
+            int lowerBound = exemplarDecisions.size() - MIN_STABLE_EPOCHS;
+            for (int i = exemplarDecisions.size() - 1; i > lowerBound; i--) {
+                if (!exemplarDecisions.get(i).equals(exemplarDecisions.get(i - 1))) {
                     converged = false;
                 }
             }
         }
         if (converged) {
-            logger.debug("converged in epoch {}/{}", this.epoch, this.maximalEpochs);
+            logger.debug("converged in epoch {}/{}", epoch, maximalEpochs);
         } else {
-            logger.debug("not converged in epoch {}/{}", this.epoch, this.maximalEpochs);
+            logger.debug("not converged in epoch {}/{}", epoch, maximalEpochs);
         }
         return converged;
     }
 
 
     public LabeledMatrix<DataType> getSimilarityMatrix() {
-        return this.similarityMatrix;
+        return similarityMatrix;
     }
 
     public void setSimilarityMatrix(LabeledMatrix<DataType> similarityMatrix) {
@@ -288,7 +288,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     }
 
     public LabeledMatrix<DataType> getAvailabilityMatrix() {
-        return this.availabilityMatrix;
+        return availabilityMatrix;
     }
 
     public void setAvailabilityMatrix(LabeledMatrix<DataType> availabilityMatrix) {
@@ -296,7 +296,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     }
 
     public LabeledMatrix<DataType> getResponsibilityMatrix() {
-        return this.responsibilityMatrix;
+        return responsibilityMatrix;
     }
 
     public void setResponsibilityMatrix(LabeledMatrix<DataType> responsibilityMatrix) {

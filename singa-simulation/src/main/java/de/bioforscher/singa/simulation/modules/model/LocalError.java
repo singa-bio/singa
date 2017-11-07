@@ -21,15 +21,15 @@ public class LocalError {
     }
 
     public AutomatonNode getNode() {
-        return this.node;
+        return node;
     }
 
     public ChemicalEntity<?> getEntity() {
-        return this.entity;
+        return entity;
     }
 
     public double getValue() {
-        return this.value;
+        return value;
     }
 
     @Override

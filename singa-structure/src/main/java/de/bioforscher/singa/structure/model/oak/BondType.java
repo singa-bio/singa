@@ -20,7 +20,7 @@ public enum BondType {
     }
 
     public String getCifName() {
-        return this.cifName;
+        return cifName;
     }
 
 }

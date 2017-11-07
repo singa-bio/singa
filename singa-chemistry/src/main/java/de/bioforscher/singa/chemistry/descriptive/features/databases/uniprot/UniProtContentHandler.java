@@ -60,9 +60,9 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean isCommonName = false;
 
     public UniProtContentHandler() {
-        this.additionalNames = new ArrayList<>();
-        this.textComments = new ArrayList<>();
-        this.ecNumbers = new ArrayList<>();
+        additionalNames = new ArrayList<>();
+        textComments = new ArrayList<>();
+        ecNumbers = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -73,34 +73,34 @@ public class UniProtContentHandler implements ContentHandler {
     Protein getProtein() {
         // create base enzyme
         Protein protein;
-        if (this.primaryIdentifier == null) {
-            protein = new Protein.Builder(this.identifier.toString())
-                    .name(this.recommendedName)
-                    .assignFeature(new MolarMass(this.molarMass, UniProtDatabase.origin))
+        if (primaryIdentifier == null) {
+            protein = new Protein.Builder(identifier.toString())
+                    .name(recommendedName)
+                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.origin))
                     .build();
         } else {
-            protein = new Enzyme.Builder(this.primaryIdentifier)
-                    .additionalIdentifier(this.identifier)
-                    .name(this.recommendedName)
-                    .assignFeature(new MolarMass(this.molarMass, UniProtDatabase.origin))
+            protein = new Enzyme.Builder(primaryIdentifier)
+                    .additionalIdentifier(identifier)
+                    .name(recommendedName)
+                    .assignFeature(new MolarMass(molarMass, UniProtDatabase.origin))
                     .build();
         }
         // add organism
-        protein.addOrganism(this.sourceOrganism);
+        protein.addOrganism(sourceOrganism);
         // add sequence without white spaces
-        protein.addAminoAcidSequence(this.aminoAcidSequence.replaceAll("\\s", ""));
+        protein.addAminoAcidSequence(aminoAcidSequence.replaceAll("\\s", ""));
         // add additional names
-        this.additionalNames.forEach(protein::addAdditionalName);
+        additionalNames.forEach(protein::addAdditionalName);
         // add textComments
-        this.textComments.forEach(protein::addAnnotation);
+        textComments.forEach(protein::addAnnotation);
         // add ecNumbers
-        this.ecNumbers.forEach(protein::addAdditionalIdentifier);
+        ecNumbers.forEach(protein::addAdditionalIdentifier);
 
         return protein;
     }
 
     Quantity<MolarMass> getMass() {
-        return Quantities.getQuantity(this.molarMass, MolarMass.GRAM_PER_MOLE);
+        return Quantities.getQuantity(molarMass, MolarMass.GRAM_PER_MOLE);
     }
 
     @Override
@@ -137,56 +137,56 @@ public class UniProtContentHandler implements ContentHandler {
             case "text":
             case "ecNumber":
             case "taxon": {
-                this.currentTag = qName;
+                currentTag = qName;
                 break;
             }
             case "recommendedName": {
-                this.currentTag = qName;
-                this.inRecommendedName = true;
+                currentTag = qName;
+                inRecommendedName = true;
                 break;
             }
             case "alternativeName": {
-                this.currentTag = qName;
-                this.inAlternativeName = true;
+                currentTag = qName;
+                inAlternativeName = true;
                 break;
             }
             case "organism": {
-                this.currentTag = qName;
-                this.inOrganism = true;
+                currentTag = qName;
+                inOrganism = true;
                 break;
             }
             case "comment": {
                 if (TEXT_COMMENTS_TO_PARSE.contains(atts.getValue("type"))) {
-                    this.currentTag = qName;
-                    this.inRelevantComment = true;
-                    this.temoraryCommentAnnotation = new Annotation<>(AnnotationType.NOTE);
-                    this.temoraryCommentAnnotation.setDescription(atts.getValue("type"));
+                    currentTag = qName;
+                    inRelevantComment = true;
+                    temoraryCommentAnnotation = new Annotation<>(AnnotationType.NOTE);
+                    temoraryCommentAnnotation.setDescription(atts.getValue("type"));
                 }
                 break;
             }
             case "name": {
-                this.currentTag = qName;
-                if (this.inOrganism) {
+                currentTag = qName;
+                if (inOrganism) {
                     if (atts.getValue("type").equals("scientific")) {
-                        this.isScientificName = true;
+                        isScientificName = true;
                     } else if (atts.getValue("type").equals("common")) {
-                        this.isCommonName = true;
+                        isCommonName = true;
                     }
                 }
                 break;
             }
             case "dbReference": {
-                if (this.inOrganism && atts.getValue("type").equals("NCBI Taxonomy")) {
+                if (inOrganism && atts.getValue("type").equals("NCBI Taxonomy")) {
                     // set tax id for organism
-                    this.sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
+                    sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
                 }
                 break;
             }
             case "sequence": {
-                this.currentTag = qName;
+                currentTag = qName;
                 // set weight
                 if (atts.getValue("mass") != null) {
-                    this.molarMass = Double.valueOf(atts.getValue("mass"));
+                    molarMass = Double.valueOf(atts.getValue("mass"));
                     break;
                 }
             }
@@ -196,35 +196,35 @@ public class UniProtContentHandler implements ContentHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equals(this.currentTag)) {
-            this.currentTag = "";
+        if (qName.equals(currentTag)) {
+            currentTag = "";
         }
 
         switch (qName) {
             case "recommendedName": {
-                this.inRecommendedName = false;
+                inRecommendedName = false;
                 break;
             }
             case "alternativeName": {
-                this.inAlternativeName = false;
+                inAlternativeName = false;
                 break;
             }
             case "organism": {
-                this.inOrganism = false;
+                inOrganism = false;
                 break;
             }
             case "name": {
-                this.isScientificName = false;
-                this.isCommonName = false;
+                isScientificName = false;
+                isCommonName = false;
                 break;
             }
             case "comment": {
-                if (this.inRelevantComment) {
-                    if (this.temoraryCommentAnnotation.getContent() != null &&
-                            !this.temoraryCommentAnnotation.getContent().trim().isEmpty()) {
-                        this.textComments.add(this.temoraryCommentAnnotation);
+                if (inRelevantComment) {
+                    if (temoraryCommentAnnotation.getContent() != null &&
+                            !temoraryCommentAnnotation.getContent().trim().isEmpty()) {
+                        textComments.add(temoraryCommentAnnotation);
                     }
-                    this.inRelevantComment = false;
+                    inRelevantComment = false;
                 }
             }
         }
@@ -234,61 +234,61 @@ public class UniProtContentHandler implements ContentHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
 
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "accession": {
                 // set pdbIdentifier
-                this.identifier = new UniProtIdentifier(new String(ch, start, length));
+                identifier = new UniProtIdentifier(new String(ch, start, length));
                 break;
             }
             case "ecNumber": {
                 // add ec number
-                this.ecNumbers.add(new ECNumber(new String(ch, start, length)));
+                ecNumbers.add(new ECNumber(new String(ch, start, length)));
                 break;
             }
             case "fullName": {
-                if (this.inRecommendedName) {
+                if (inRecommendedName) {
                     // set recommended name
-                    this.recommendedName = new String(ch, start, length);
-                } else if (this.inAlternativeName) {
+                    recommendedName = new String(ch, start, length);
+                } else if (inAlternativeName) {
                     // add alternative name
-                    this.additionalNames.add(new String(ch, start, length));
+                    additionalNames.add(new String(ch, start, length));
                 }
                 break;
             }
             case "name": {
-                if (this.inOrganism) {
-                    if (this.isScientificName) {
+                if (inOrganism) {
+                    if (isScientificName) {
                         // create Organism with name
-                        this.sourceOrganism = new Organism(new String(ch, start, length));
-                    } else if (this.isCommonName) {
+                        sourceOrganism = new Organism(new String(ch, start, length));
+                    } else if (isCommonName) {
                         // set common name
-                        this.sourceOrganism.setCommonName(new String(ch, start, length));
+                        sourceOrganism.setCommonName(new String(ch, start, length));
                     }
                 }
                 break;
             }
             case "taxon": {
-                if (this.inOrganism) {
+                if (inOrganism) {
                     // add linage to organism
-                    this.sourceOrganism.getLineage().add(new Taxon(new String(ch, start, length)));
+                    sourceOrganism.getLineage().add(new Taxon(new String(ch, start, length)));
                 }
                 break;
             }
             case "sequence": {
                 // set sequence
-                if (this.aminoAcidSequence == null) {
-                    this.aminoAcidSequence = new String(ch, start, length);
+                if (aminoAcidSequence == null) {
+                    aminoAcidSequence = new String(ch, start, length);
                 } else {
-                    this.aminoAcidSequence += new String(ch, start, length);
+                    aminoAcidSequence += new String(ch, start, length);
                 }
                 break;
             }
             case "text": {
-                if (this.inRelevantComment) {
-                    if (this.temoraryCommentAnnotation.getContent() == null) {
-                        this.temoraryCommentAnnotation.setContent(new String(ch, start, length));
+                if (inRelevantComment) {
+                    if (temoraryCommentAnnotation.getContent() == null) {
+                        temoraryCommentAnnotation.setContent(new String(ch, start, length));
                     } else {
-                        this.temoraryCommentAnnotation.setContent(this.temoraryCommentAnnotation.getContent()
+                        temoraryCommentAnnotation.setContent(temoraryCommentAnnotation.getContent()
                                 + new String(ch, start, length));
                     }
                 }

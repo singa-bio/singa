@@ -18,7 +18,7 @@ public class HalogenBond extends Interaction {
     }
 
     public int getDonor() {
-        return this.donor;
+        return donor;
     }
 
     public void setDonor(int donor) {
@@ -26,7 +26,7 @@ public class HalogenBond extends Interaction {
     }
 
     public int getAcceptor() {
-        return this.acceptor;
+        return acceptor;
     }
 
     public void setAcceptor(int acceptor) {
@@ -34,7 +34,7 @@ public class HalogenBond extends Interaction {
     }
 
     public double getDistance() {
-        return this.distance;
+        return distance;
     }
 
     public void setDistance(double distance) {
@@ -42,7 +42,7 @@ public class HalogenBond extends Interaction {
     }
 
     public double getDonorAngle() {
-        return this.donorAngle;
+        return donorAngle;
     }
 
     public void setDonorAngle(double donorAngle) {
@@ -50,7 +50,7 @@ public class HalogenBond extends Interaction {
     }
 
     public double getAcceptorAngle() {
-        return this.acceptorAngle;
+        return acceptorAngle;
     }
 
     public void setAcceptorAngle(double acceptorAngle) {
@@ -59,24 +59,24 @@ public class HalogenBond extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return this.donor;
+        return donor;
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return this.acceptor;
+        return acceptor;
     }
 
     @Override
     public String toString() {
         return "HalogenBond{" +
-                "donor=" + this.donor +
-                ", acceptor=" + this.acceptor +
-                ", plipIdentifier=" + this.plipIdentifier +
-                ", source=" + this.source +
-                ", target=" + this.target +
-                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
+                "donor=" + donor +
+                ", acceptor=" + acceptor +
+                ", plipIdentifier=" + plipIdentifier +
+                ", source=" + source +
+                ", target=" + target +
+                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

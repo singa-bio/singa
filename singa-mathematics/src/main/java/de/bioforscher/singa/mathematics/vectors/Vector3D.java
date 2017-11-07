@@ -45,9 +45,9 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The Vector3D class is designed to handle 3 values, "
                     + " but the given array contains " + elements.length + ".");
         }
-        this.x = elements[0];
-        this.y = elements[1];
-        this.z = elements[2];
+        x = elements[0];
+        y = elements[1];
+        z = elements[2];
     }
 
     /**
@@ -89,7 +89,7 @@ public class Vector3D implements Vector {
             return (VectorType) this;
         }
         if (vectorClass.equals(RegularVector.class)) {
-            return (VectorType) new RegularVector(this.x, this.y, this.z);
+            return (VectorType) new RegularVector(x, y, z);
         }
         throw new IllegalArgumentException("Can not convert Vector3D to " + vectorClass.getSimpleName());
     }
@@ -100,7 +100,7 @@ public class Vector3D implements Vector {
      * @return The x coordinate of this vector.
      */
     public double getX() {
-        return this.x;
+        return x;
     }
 
     /**
@@ -109,7 +109,7 @@ public class Vector3D implements Vector {
      * @return The y coordinate of this vector.
      */
     public double getY() {
-        return this.y;
+        return y;
     }
 
     /**
@@ -118,18 +118,18 @@ public class Vector3D implements Vector {
      * @return The z coordinate of this vector.
      */
     public double getZ() {
-        return this.z;
+        return z;
     }
 
     @Override
     public double getElement(int index) {
         switch (index) {
             case X_INDEX:
-                return this.x;
+                return x;
             case Y_INDEX:
-                return this.y;
+                return y;
             case Z_INDEX:
-                return this.z;
+                return z;
             default:
                 throw new IllegalArgumentException("Can only get values for available indices (0 - 3)");
         }
@@ -137,7 +137,7 @@ public class Vector3D implements Vector {
 
     @Override
     public double[] getElements() {
-        return new double[]{this.x, this.y, this.z};
+        return new double[]{x, y, z};
     }
 
     @Override
@@ -157,7 +157,7 @@ public class Vector3D implements Vector {
 
     @Override
     public Vector3D additivelyInvert() {
-        return new Vector3D(-this.x, -this.y, -this.z);
+        return new Vector3D(-x, -y, -z);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class Vector3D implements Vector {
      * @return A new vector with inverted x coordinate.
      */
     public Vector3D invertX() {
-        return new Vector3D(-this.x, this.y, this.z);
+        return new Vector3D(-x, y, z);
     }
 
     /**
@@ -191,7 +191,7 @@ public class Vector3D implements Vector {
      * @return A new vector with inverted y coordinate.
      */
     public Vector3D invertY() {
-        return new Vector3D(this.x, -this.y, this.z);
+        return new Vector3D(x, -y, z);
     }
 
     /**
@@ -201,7 +201,7 @@ public class Vector3D implements Vector {
      * @return A new vector with inverted z coordinate.
      */
     public Vector3D invertZ() {
-        return new Vector3D(this.x, this.y, -this.z);
+        return new Vector3D(x, y, -z);
     }
 
     /**
@@ -213,7 +213,7 @@ public class Vector3D implements Vector {
      * @return The addition.
      */
     public Vector3D add(Vector3D vector) {
-        return new Vector3D(this.x + vector.x, this.y + vector.y, this.z + vector.z);
+        return new Vector3D(x + vector.x, y + vector.y, z + vector.z);
     }
 
     @Override
@@ -222,9 +222,9 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
         return new Vector3D(
-                this.x + summand.getElement(X_INDEX),
-                this.y + summand.getElement(Y_INDEX),
-                this.z + summand.getElement(Z_INDEX));
+                x + summand.getElement(X_INDEX),
+                y + summand.getElement(Y_INDEX),
+                z + summand.getElement(Z_INDEX));
     }
 
     /**
@@ -236,7 +236,7 @@ public class Vector3D implements Vector {
      * @return The subtraction.
      */
     public Vector3D subtract(Vector3D vector) {
-        return new Vector3D(this.x - vector.x, this.y - vector.y, this.z - vector.z);
+        return new Vector3D(x - vector.x, y - vector.y, z - vector.z);
     }
 
     @Override
@@ -245,14 +245,14 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
         return new Vector3D(
-                this.x - subtrahend.getElement(X_INDEX),
-                this.y - subtrahend.getElement(Y_INDEX),
-                this.z - subtrahend.getElement(Z_INDEX));
+                x - subtrahend.getElement(X_INDEX),
+                y - subtrahend.getElement(Y_INDEX),
+                z - subtrahend.getElement(Z_INDEX));
     }
 
     @Override
     public Vector3D multiply(double scalar) {
-        return new Vector3D(this.x * scalar, this.y * scalar, this.z * scalar);
+        return new Vector3D(x * scalar, y * scalar, z * scalar);
     }
 
     /**
@@ -264,7 +264,7 @@ public class Vector3D implements Vector {
      * @return The element-wise multiplication.
      */
     public Vector3D multiply(Vector3D vector) {
-        return new Vector3D(this.x * vector.x, this.y * vector.y, this.z * vector.z);
+        return new Vector3D(x * vector.x, y * vector.y, z * vector.z);
     }
 
     @Override
@@ -273,14 +273,14 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
         return new Vector3D(
-                this.x * multiplicand.getElement(X_INDEX),
-                this.y * multiplicand.getElement(Y_INDEX),
-                this.z * multiplicand.getElement(Z_INDEX));
+                x * multiplicand.getElement(X_INDEX),
+                y * multiplicand.getElement(Y_INDEX),
+                z * multiplicand.getElement(Z_INDEX));
     }
 
     @Override
     public Vector3D divide(double scalar) {
-        return new Vector3D(this.x / scalar, this.y / scalar, this.z / scalar);
+        return new Vector3D(x / scalar, y / scalar, z / scalar);
     }
 
     /**
@@ -292,7 +292,7 @@ public class Vector3D implements Vector {
      * @return The element-wise division.
      */
     public Vector3D divide(Vector3D vector) {
-        return new Vector3D(this.x / vector.x, this.y / vector.y, this.z / vector.z);
+        return new Vector3D(x / vector.x, y / vector.y, z / vector.z);
     }
 
     @Override
@@ -301,9 +301,9 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
         return new Vector3D(
-                this.x / divisor.getElement(X_INDEX),
-                this.y / divisor.getElement(Y_INDEX),
-                this.z / divisor.getElement(Z_INDEX));
+                x / divisor.getElement(X_INDEX),
+                y / divisor.getElement(Y_INDEX),
+                z / divisor.getElement(Z_INDEX));
     }
 
     @Override
@@ -319,18 +319,18 @@ public class Vector3D implements Vector {
      * @return The dot product.
      */
     public double dotProduct(Vector3D vector) {
-        return this.x * vector.x + this.y * vector.y + this.z * vector.z;
+        return x * vector.x + y * vector.y + z * vector.z;
     }
 
 
     @Override
     public double dotProduct(Vector vector) {
-        return this.x * vector.getElement(X_INDEX) + this.y * vector.getElement(Y_INDEX) + this.z * vector.getElement(Z_INDEX);
+        return x * vector.getElement(X_INDEX) + y * vector.getElement(Y_INDEX) + z * vector.getElement(Z_INDEX);
     }
 
     @Override
     public double getMagnitude() {
-        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     @Override
@@ -339,9 +339,9 @@ public class Vector3D implements Vector {
             throw new IllegalArgumentException("The dimensions have to be equal to perform this operation.");
         }
         double[][] values =
-                {{this.x * vector.getElement(X_INDEX)}, {this.x * vector.getElement(Y_INDEX)}, {this.x * vector.getElement(Z_INDEX)},
-                        {this.y * vector.getElement(X_INDEX)}, {this.y * vector.getElement(Y_INDEX)}, {this.y * vector.getElement(Z_INDEX)},
-                        {this.z * vector.getElement(X_INDEX)}, {this.z * vector.getElement(Y_INDEX)}, {this.z * vector.getElement(Z_INDEX)}};
+                {{x * vector.getElement(X_INDEX)}, {x * vector.getElement(Y_INDEX)}, {x * vector.getElement(Z_INDEX)},
+                        {y * vector.getElement(X_INDEX)}, {y * vector.getElement(Y_INDEX)}, {y * vector.getElement(Z_INDEX)},
+                        {z * vector.getElement(X_INDEX)}, {z * vector.getElement(Y_INDEX)}, {z * vector.getElement(Z_INDEX)}};
         return FastMatrices.createSquareMatrix(values);
     }
 
@@ -355,9 +355,9 @@ public class Vector3D implements Vector {
      */
     public Vector3D crossProduct(Vector3D vector) {
         return new Vector3D(
-                this.y * vector.z - this.z * vector.y,
-                this.z * vector.x - this.x * vector.z,
-                this.x * vector.y - this.y * vector.x
+                y * vector.z - z * vector.y,
+                z * vector.x - x * vector.z,
+                x * vector.y - y * vector.x
         );
     }
 
@@ -368,26 +368,26 @@ public class Vector3D implements Vector {
 
         Vector3D vector3D = (Vector3D) o;
 
-        if (Double.compare(vector3D.x, this.x) != 0) return false;
-        if (Double.compare(vector3D.y, this.y) != 0) return false;
-        return Double.compare(vector3D.z, this.z) == 0;
+        if (Double.compare(vector3D.x, x) != 0) return false;
+        if (Double.compare(vector3D.y, y) != 0) return false;
+        return Double.compare(vector3D.z, z) == 0;
     }
 
     @Override
     public int hashCode() {
         int result;
         long temp;
-        temp = Double.doubleToLongBits(this.x);
+        temp = Double.doubleToLongBits(x);
         result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.y);
+        temp = Double.doubleToLongBits(y);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.z);
+        temp = Double.doubleToLongBits(z);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
     @Override
     public String toString() {
-        return "(" + this.x + ", " + this.y + ", " + this.z + ')';
+        return "(" + x + ", " + y + ", " + z + ')';
     }
 }

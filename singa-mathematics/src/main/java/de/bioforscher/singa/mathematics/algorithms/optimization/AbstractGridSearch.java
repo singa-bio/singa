@@ -14,11 +14,11 @@ public abstract class AbstractGridSearch {
 
     public AbstractGridSearch(List<UniqueParameterList<?>> inputParameterList) {
         this.inputParameterList = inputParameterList;
-        this.resultingValues = new HashMap<>();
+        resultingValues = new HashMap<>();
     }
 
     public List<UniqueParameterList<?>> getInputParameterList() {
-        return this.inputParameterList;
+        return inputParameterList;
     }
 
     public void setInputParameterList(List<UniqueParameterList<?>> inputParameterList) {
@@ -26,7 +26,7 @@ public abstract class AbstractGridSearch {
     }
 
     public Map<MixedParameterList, Double> getResultingValues() {
-        return this.resultingValues;
+        return resultingValues;
     }
 
     abstract public void search();

@@ -16,7 +16,7 @@ public enum CellState {
     }
 
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
 }

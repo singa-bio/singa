@@ -18,15 +18,15 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     public GraphProducer(GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, GraphType graph, int iterations) {
         this.renderer = renderer;
         this.graph = graph;
-        this.totalIterations = iterations;
+        totalIterations = iterations;
     }
 
     @Override
     public void run() {
-        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(this.graph,
-                this.renderer.drawingWidthProperty(), this.renderer.drawingHeightProperty(), 100);
-        for (int i = 0; i < this.totalIterations; i++) {
-            this.renderer.getGraphQueue().add(gdt.arrangeGraph(i));
+        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(graph,
+                renderer.drawingWidthProperty(), renderer.drawingHeightProperty(), 100);
+        for (int i = 0; i < totalIterations; i++) {
+            renderer.getGraphQueue().add(gdt.arrangeGraph(i));
             try {
                 Thread.sleep(40);
             } catch (InterruptedException e) {

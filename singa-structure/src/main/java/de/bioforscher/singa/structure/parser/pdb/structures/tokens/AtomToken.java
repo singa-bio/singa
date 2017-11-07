@@ -139,7 +139,7 @@ public enum AtomToken implements PDBToken {
 
     @Override
     public Range<Integer> getColumns() {
-        return this.columns;
+        return columns;
     }
 
     @Override
@@ -148,12 +148,12 @@ public enum AtomToken implements PDBToken {
     }
 
     private String createTokenString(String content) {
-        int totalLength = this.columns.getUpperBound() - this.columns.getLowerBound() - content.length();
+        int totalLength = columns.getUpperBound() - columns.getLowerBound() - content.length();
         StringBuilder filler = new StringBuilder();
         for (int i = 0; i < totalLength + 1; i++) {
             filler.append(" ");
         }
-        if (this.justification == Justification.LEFT) {
+        if (justification == Justification.LEFT) {
             return content + filler;
         }
         return filler + content;

@@ -114,12 +114,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * Creates a new plain simulation.
      */
     public Simulation() {
-        this.modules = new HashSet<>();
-        this.chemicalEntities = new HashSet<>();
-        this.listeners = new CopyOnWriteArrayList<>();
-        this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
-        this.epoch = 0;
-        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
+        modules = new HashSet<>();
+        chemicalEntities = new HashSet<>();
+        listeners = new CopyOnWriteArrayList<>();
+        elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
+        epoch = 0;
+        harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
     }
 
     /**
@@ -127,9 +127,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void nextEpoch() {
         // apply all modules
-        boolean timeStepChanged = this.harmonizer.step();
+        boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
-        for (AutomatonNode node : this.getGraph().getNodes()) {
+        for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
             // emit events to observers
             if (node.isObserved()) {
@@ -141,7 +141,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         // if time step did not change
         if (!timeStepChanged) {
             // try larger time step next time
-            this.harmonizer.increaseTimeStep();
+            harmonizer.increaseTimeStep();
         }
     }
 
@@ -149,16 +149,16 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * Update the epoch counter and elapsed time.
      */
     private void updateEpoch() {
-        this.epoch++;
-        this.elapsedTime = this.elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
+        epoch++;
+        elapsedTime = elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
     }
 
     /**
      * Apply all referenced assignment rules.
      */
     public void applyAssignmentRules() {
-        for (AssignmentRule rule : this.assignmentRules) {
-            for (AutomatonNode bioNode : this.graph.getNodes()) {
+        for (AssignmentRule rule : assignmentRules) {
+            for (AutomatonNode bioNode : graph.getNodes()) {
                 rule.applyRule(bioNode);
             }
         }
@@ -170,7 +170,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The simulation graph.
      */
     public AutomatonGraph getGraph() {
-        return this.graph;
+        return graph;
     }
 
     /**
@@ -181,7 +181,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
-        this.chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
+        chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
     }
 
     /**
@@ -190,7 +190,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The modules.
      */
     public Set<Module> getModules() {
-        return this.modules;
+        return modules;
     }
 
     /**
@@ -198,7 +198,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The assignment rules.
      */
     public List<AssignmentRule> getAssignmentRules() {
-        return this.assignmentRules;
+        return assignmentRules;
     }
 
     /**
@@ -216,7 +216,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The chemical entities.
      */
     public Set<ChemicalEntity<?>> getChemicalEntities() {
-        return this.chemicalEntities;
+        return chemicalEntities;
     }
 
     /**
@@ -233,7 +233,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The current epoch number
      */
     public long getEpoch() {
-        return this.epoch;
+        return epoch;
     }
 
     /**
@@ -241,7 +241,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The elapsed time after the deltas of the current epoch are applied.
      */
     public Quantity<Time> getElapsedTime() {
-        return this.elapsedTime;
+        return elapsedTime;
     }
 
     /**
@@ -250,13 +250,13 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @param node The observed node.
      */
     public void emitNextEpochEvent(AutomatonNode node) {
-        NodeUpdatedEvent event = new NodeUpdatedEvent(this.elapsedTime, node);
+        NodeUpdatedEvent event = new NodeUpdatedEvent(elapsedTime, node);
         emitEvent(event);
     }
 
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
-        return this.listeners;
+        return listeners;
     }
 
 }

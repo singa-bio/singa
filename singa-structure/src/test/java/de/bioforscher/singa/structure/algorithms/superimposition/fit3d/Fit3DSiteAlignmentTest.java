@@ -29,19 +29,19 @@ public class Fit3DSiteAlignmentTest {
                 .fileLocation(Resources.getResourceAsFileLocation("truncated_1asz_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite1 = StructuralMotif.fromLeafSubstructures(bindingSiteStructure1.getAllLeafSubstructures());
+        bindingSite1 = StructuralMotif.fromLeafSubstructures(bindingSiteStructure1.getAllLeafSubstructures());
         Structure bindingSiteStructure2 = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("truncated_3m4p_A_renum.pdb"))
                 .everything()
                 .parse();
-        this.bindingSite2 = StructuralMotif.fromLeafSubstructures(bindingSiteStructure2.getAllLeafSubstructures());
+        bindingSite2 = StructuralMotif.fromLeafSubstructures(bindingSiteStructure2.getAllLeafSubstructures());
     }
 
     @Test
     public void shouldCreateBindingSiteAlignment() throws IOException {
         Fit3D fit3d = Fit3DBuilder.create()
-                .site(this.bindingSite1)
-                .vs(this.bindingSite2)
+                .site(bindingSite1)
+                .vs(bindingSite2)
                 .cutoffScore(0.35)
                 .substitutionMatrix(SubstitutionMatrix.MC_LACHLAN)
                 .exhaustive()
@@ -58,10 +58,10 @@ public class Fit3DSiteAlignmentTest {
     @Test
     public void shouldCreateGutteridgeBindingSiteAlignment() {
         // exchanges have only be added for one of the sites because they are transitive
-        StructuralMotifs.assignComplexExchanges(this.bindingSite1, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(bindingSite1, MatcherFamily.GUTTERIDGE);
         Fit3D fit3d = Fit3DBuilder.create()
-                .site(this.bindingSite1)
-                .vs(this.bindingSite2)
+                .site(bindingSite1)
+                .vs(bindingSite2)
                 .restrictToSpecifiedExchanges()
                 .atomFilter(StructuralEntityFilter.AtomFilter.isBackbone())
                 .run();

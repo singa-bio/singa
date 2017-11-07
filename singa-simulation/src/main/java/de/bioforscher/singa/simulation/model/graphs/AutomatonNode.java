@@ -71,11 +71,11 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      */
     public AutomatonNode(int identifier) {
         super(identifier);
-        this.state = AQUEOUS;
-        this.cellSection = new EnclosedCompartment("default", "Default Compartment");
-        this.concentrationContainer = new SimpleConcentrationContainer(cellSection);
-        this.deltas = new DeltaContainer();
-        this.potentialDeltas = new ArrayList<>();
+        state = AQUEOUS;
+        cellSection = new EnclosedCompartment("default", "Default Compartment");
+        concentrationContainer = new SimpleConcentrationContainer(cellSection);
+        deltas = new DeltaContainer();
+        potentialDeltas = new ArrayList<>();
     }
 
     /**
@@ -107,7 +107,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param quantity The quantity.
      */
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        this.concentrationContainer.setConcentration(entity, quantity);
+        concentrationContainer.setConcentration(entity, quantity);
     }
 
     /**
@@ -116,7 +116,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return All concentrations of all chemical entities.
      */
     public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
-        return this.concentrationContainer.getAllConcentrations();
+        return concentrationContainer.getAllConcentrations();
     }
 
     /**
@@ -126,7 +126,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return All concentrations of all chemical entities.
      */
     public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
-        return this.concentrationContainer.getAllConcentrationsForSection(cellSection);
+        return concentrationContainer.getAllConcentrationsForSection(cellSection);
     }
 
     /**
@@ -136,7 +136,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return The concentration in mol/l.
      */
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return this.concentrationContainer.getConcentration(entity);
+        return concentrationContainer.getConcentration(entity);
     }
 
     /**
@@ -147,7 +147,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param quantity The quantity.
      */
     public void setAvailableConcentration(ChemicalEntity entity, CellSection cellSection, Quantity<MolarConcentration> quantity) {
-        this.concentrationContainer.setAvailableConcentration(cellSection, entity, quantity);
+        concentrationContainer.setAvailableConcentration(cellSection, entity, quantity);
     }
 
     /**
@@ -158,7 +158,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return The concentration of the given chemical entity.
      */
     public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
-        return this.concentrationContainer.getAvailableConcentration(cellSection, entity);
+        return concentrationContainer.getAvailableConcentration(cellSection, entity);
     }
 
     /**
@@ -167,7 +167,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return All deltas that are going to be applied to this node.
      */
     public List<Delta> getDeltas() {
-        return this.deltas.getDeltas();
+        return deltas.getDeltas();
     }
 
     /**
@@ -185,7 +185,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param potentialDelta The potential delta.
      */
     public void addPotentialDelta(Delta potentialDelta) {
-        this.potentialDeltas.add(potentialDelta);
+        potentialDeltas.add(potentialDelta);
     }
 
     /**
@@ -193,15 +193,15 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * time step.
      */
     public void clearPotentialDeltas() {
-        this.potentialDeltas.clear();
+        potentialDeltas.clear();
     }
 
     /**
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
-        this.potentialDeltas.forEach(this::addDelta);
-        this.potentialDeltas.clear();
+        potentialDeltas.forEach(this::addDelta);
+        potentialDeltas.clear();
     }
 
     /**
@@ -210,18 +210,18 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param delta Tha delta.
      */
     private void addDelta(Delta delta) {
-        this.deltas.addDelta(delta);
+        deltas.addDelta(delta);
     }
 
     /**
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        for (Delta delta : this.deltas.getDeltas()) {
+        for (Delta delta : deltas.getDeltas()) {
             setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(),
                     getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity()));
         }
-        this.deltas.clear();
+        deltas.clear();
     }
 
     /**
@@ -230,7 +230,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return all referenced sections in this node.
      */
     public Set<CellSection> getAllReferencedSections() {
-        return this.concentrationContainer.getAllReferencedSections();
+        return concentrationContainer.getAllReferencedSections();
     }
 
     /**
@@ -239,7 +239,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return All chemical entities referenced in this node.
      */
     public Set<ChemicalEntity<?>> getAllReferencedEntities() {
-        return this.concentrationContainer.getAllReferencedEntities();
+        return concentrationContainer.getAllReferencedEntities();
     }
 
     /**
@@ -248,7 +248,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return The node state.
      */
     public NodeState getState() {
-        return this.state;
+        return state;
     }
 
     /**
@@ -266,7 +266,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return this.isObserved;
+        return isObserved;
     }
 
     /**
@@ -284,7 +284,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return The primary cell section of this node.
      */
     public CellSection getCellSection() {
-        return this.cellSection;
+        return cellSection;
     }
 
     /**
@@ -298,7 +298,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
             setState(MEMBRANE);
         }
         this.cellSection = cellSection;
-        this.concentrationContainer = new SimpleConcentrationContainer(cellSection);
+        concentrationContainer = new SimpleConcentrationContainer(cellSection);
         this.cellSection.addNode(this);
     }
 
@@ -308,7 +308,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return The {@link ConcentrationContainer} used by this node.
      */
     public ConcentrationContainer getConcentrationContainer() {
-        return this.concentrationContainer;
+        return concentrationContainer;
     }
 
     /**
@@ -322,7 +322,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     @Override
     public String toString() {
-        return "BioNode [id=" + this.getIdentifier() + "]";
+        return "BioNode [id=" + getIdentifier() + "]";
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ConsensusContainer {
     public ConsensusContainer(StructuralMotif structuralMotif, boolean consensus) {
         this.structuralMotif = structuralMotif;
         this.consensus = consensus;
-        this.consensusDistance = 0.0;
+        consensusDistance = 0.0;
     }
 
     /**
@@ -30,11 +30,11 @@ public class ConsensusContainer {
      * @return True if consensus.
      */
     public boolean isConsensus() {
-        return this.consensus;
+        return consensus;
     }
 
     public SubstructureSuperimposition getSuperimposition() {
-        return this.superimposition;
+        return superimposition;
     }
 
     public void setSuperimposition(SubstructureSuperimposition superimposition) {
@@ -43,16 +43,16 @@ public class ConsensusContainer {
 
     @Override
     public String toString() {
-        return this.structuralMotif.toString() +
-                "_" + this.consensusDistance;
+        return structuralMotif.toString() +
+                "_" + consensusDistance;
     }
 
     public StructuralMotif getStructuralMotif() {
-        return this.structuralMotif;
+        return structuralMotif;
     }
 
     public BinaryTree<ConsensusContainer> getConsensusTree() {
-        return this.consensusTree;
+        return consensusTree;
     }
 
     public void setConsensusTree(BinaryTree<ConsensusContainer> consensusTree) {
@@ -60,11 +60,11 @@ public class ConsensusContainer {
     }
 
     public void addToConsensusDistance(double delta) {
-        this.consensusDistance += delta;
+        consensusDistance += delta;
     }
 
     public double getConsensusDistance() {
-        return this.consensusDistance;
+        return consensusDistance;
     }
 
     @Override
@@ -74,11 +74,11 @@ public class ConsensusContainer {
 
         ConsensusContainer that = (ConsensusContainer) o;
 
-        return this.structuralMotif != null ? this.structuralMotif.equals(that.structuralMotif) : that.structuralMotif == null;
+        return structuralMotif != null ? structuralMotif.equals(that.structuralMotif) : that.structuralMotif == null;
     }
 
     @Override
     public int hashCode() {
-        return this.structuralMotif != null ? this.structuralMotif.hashCode() : 0;
+        return structuralMotif != null ? structuralMotif.hashCode() : 0;
     }
 }

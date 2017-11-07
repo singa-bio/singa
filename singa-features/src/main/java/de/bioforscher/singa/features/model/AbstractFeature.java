@@ -15,17 +15,17 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
 
     @Override
     public FeatureOrigin getFeatureOrigin() {
-        return this.featureOrigin;
+        return featureOrigin;
     }
 
     @Override
     public FeatureContent getFeatureContent() {
-        return this.featureContent;
+        return featureContent;
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ": " + this.featureContent + " from " + this.featureOrigin;
+        return getClass().getSimpleName() + ": " + featureContent + " from " + featureOrigin;
     }
 
 }

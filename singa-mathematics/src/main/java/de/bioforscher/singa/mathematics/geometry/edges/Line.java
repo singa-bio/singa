@@ -41,12 +41,12 @@ public class Line {
     public Line(Vector2D strutPoint, double slope) {
         if (!Double.isInfinite(slope)) {
             // classical line
-            this.yIntercept = calculateYIntercept(strutPoint, slope);
+            yIntercept = calculateYIntercept(strutPoint, slope);
             this.slope = slope;
         } else {
             // vertical line
             // here y-intercept is used to store x-intercept since there is no y intercept
-            this.yIntercept = strutPoint.getX();
+            yIntercept = strutPoint.getX();
             this.slope = slope;
         }
     }
@@ -77,12 +77,12 @@ public class Line {
         } else if (first.getX() == second.getX()) {
             // vertical line
             // here y-intercept is used to store x-intercept since there is no y intercept
-            this.slope = Double.POSITIVE_INFINITY;
-            this.yIntercept = first.getX();
+            slope = Double.POSITIVE_INFINITY;
+            yIntercept = first.getX();
         } else {
             // classical line
-            this.slope = calculateSlope(first, second);
-            this.yIntercept = calculateYIntercept(first, this.slope);
+            slope = calculateSlope(first, second);
+            yIntercept = calculateYIntercept(first, slope);
         }
     }
 
@@ -116,7 +116,7 @@ public class Line {
     }
 
     public double getSlope() {
-        return this.slope;
+        return slope;
     }
 
     /**
@@ -127,9 +127,9 @@ public class Line {
      */
     public double getXIntercept() {
         if (isVertical()) {
-            return this.yIntercept;
+            return yIntercept;
         } else {
-            return -this.getYIntercept() / this.getSlope();
+            return -getYIntercept() / getSlope();
         }
     }
 
@@ -141,9 +141,9 @@ public class Line {
      */
     public double getXValue(double y) {
         if (isVertical()) {
-            return this.yIntercept;
+            return yIntercept;
         } else {
-            return (y - this.getYIntercept()) / this.getSlope();
+            return (y - getYIntercept()) / getSlope();
         }
 
     }
@@ -158,7 +158,7 @@ public class Line {
         if (isVertical()) {
             return Double.NaN;
         } else {
-            return this.yIntercept;
+            return yIntercept;
         }
     }
 
@@ -169,7 +169,7 @@ public class Line {
      * @return The y-value.
      */
     public double getYValue(double x) {
-        return this.slope * x + this.yIntercept;
+        return slope * x + yIntercept;
     }
 
 
@@ -179,7 +179,7 @@ public class Line {
      * @return he angle to the x-axis in radians.
      */
     public double getAngleToXAxis() {
-        return Math.atan(this.slope / 1);
+        return Math.atan(slope / 1);
     }
 
     /**
@@ -190,7 +190,7 @@ public class Line {
      * @return the perpendiculat slope
      */
     public double getPerpendicularSlope() {
-        return -1 / this.slope;
+        return -1 / slope;
     }
 
     /**
@@ -203,11 +203,11 @@ public class Line {
      */
     public Line getParallel(double distance) {
         if (isHorizontal()) {
-            return new Line(this.yIntercept + distance, this.slope);
+            return new Line(yIntercept + distance, slope);
         } else if (isVertical()) {
-            return new Line(new Vector2D(this.yIntercept + distance, 0), Double.POSITIVE_INFINITY);
+            return new Line(new Vector2D(yIntercept + distance, 0), Double.POSITIVE_INFINITY);
         } else {
-            return new Line(this.yIntercept + distance * Math.sqrt(1 + this.slope * this.slope), this.slope);
+            return new Line(yIntercept + distance * Math.sqrt(1 + slope * slope), slope);
         }
     }
 
@@ -218,9 +218,9 @@ public class Line {
      * @return The intersection.
      */
     public Vector2D getInterceptWithLine(Line line) {
-        final double a = this.slope;
+        final double a = slope;
         final double b = line.getSlope();
-        final double c = this.getYIntercept();
+        final double c = getYIntercept();
         final double d = line.getYIntercept();
         return new Vector2D((d - c) / (a - b), (a * d - b * c) / (a - b));
     }
@@ -232,10 +232,10 @@ public class Line {
      * @return The mirrored point.
      */
     public Vector2D mirrorVector(Vector2D originalVector) {
-        double d = (originalVector.getX() + (originalVector.getY() - this.getYIntercept()) * this.getSlope())
-                / (1 + this.getSlope() * this.getSlope());
+        double d = (originalVector.getX() + (originalVector.getY() - getYIntercept()) * getSlope())
+                / (1 + getSlope() * getSlope());
         return new Vector2D(
-                2 * d - originalVector.getX(), 2 * d * this.getSlope() - originalVector.getY() + 2 * this.yIntercept);
+                2 * d - originalVector.getX(), 2 * d * getSlope() - originalVector.getY() + 2 * yIntercept);
     }
 
     /**
@@ -244,7 +244,7 @@ public class Line {
      * @return {@code true}, if this line is horizontal
      */
     public boolean isHorizontal() {
-        return this.slope == 0.0;
+        return slope == 0.0;
     }
 
     /**
@@ -253,7 +253,7 @@ public class Line {
      * @return {@code true}, if this line is vertical
      */
     public boolean isVertical() {
-        return Double.isInfinite(this.slope);
+        return Double.isInfinite(slope);
     }
 
     @Override
@@ -261,9 +261,9 @@ public class Line {
         final int prime = 31;
         int result = 1;
         long temp;
-        temp = Double.doubleToLongBits(this.slope);
+        temp = Double.doubleToLongBits(slope);
         result = prime * result + (int) (temp ^ temp >>> 32);
-        temp = Double.doubleToLongBits(this.yIntercept);
+        temp = Double.doubleToLongBits(yIntercept);
         result = prime * result + (int) (temp ^ temp >>> 32);
         return result;
     }
@@ -280,15 +280,15 @@ public class Line {
             return false;
         }
         Line other = (Line) obj;
-        if (Double.doubleToLongBits(this.slope) != Double.doubleToLongBits(other.slope)) {
+        if (Double.doubleToLongBits(slope) != Double.doubleToLongBits(other.slope)) {
             return false;
         }
-        return Double.doubleToLongBits(this.yIntercept) == Double.doubleToLongBits(other.yIntercept);
+        return Double.doubleToLongBits(yIntercept) == Double.doubleToLongBits(other.yIntercept);
     }
 
     @Override
     public String toString() {
-        return "Line [yIntercept=" + this.getYIntercept() + ", slope=" + this.slope + "]";
+        return "Line [yIntercept=" + getYIntercept() + ", slope=" + slope + "]";
     }
 
 }

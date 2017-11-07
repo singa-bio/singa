@@ -39,10 +39,10 @@ public class CifFileParser {
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
-        this.atoms = new HashMap<>();
-        this.bonds = new HashMap<>();
-        this.bondLines = new ArrayList<>();
-        this.atomLines = new ArrayList<>();
+        atoms = new HashMap<>();
+        bonds = new HashMap<>();
+        bondLines = new ArrayList<>();
+        atomLines = new ArrayList<>();
     }
 
 
@@ -76,7 +76,7 @@ public class CifFileParser {
         boolean atomSection = false;
 
         // extract information
-        for (String line : this.lines) {
+        for (String line : lines) {
             // extract information
             extractInformation(line);
             // signifies start of bond section
@@ -90,7 +90,7 @@ public class CifFileParser {
                     bondSection = false;
                     continue;
                 }
-                this.bondLines.add(line);
+                bondLines.add(line);
             }
             if (!skipAtoms) {
                 if (line.startsWith("_chem_comp_atom.pdbx_ordinal")) {
@@ -103,7 +103,7 @@ public class CifFileParser {
                         atomSection = false;
                         continue;
                     }
-                    this.atomLines.add(line);
+                    atomLines.add(line);
                 }
             }
         }
@@ -113,7 +113,7 @@ public class CifFileParser {
      * Extracts and creates atoms from the extracted lines.
      */
     private void extractAtoms() {
-        for (String line : this.atomLines) {
+        for (String line : atomLines) {
             String[] splitLine = line.split("\\s+");
             /// 1 = atom name, 3 = element, 9 = x coordinate, 10 = y coordinate, 11 = z coordinates, 17 = identifer
             int identifier = Integer.valueOf(splitLine[17]);
@@ -121,7 +121,7 @@ public class CifFileParser {
             String atomName = splitLine[1];
             Vector3D coordinates = new Vector3D(Double.valueOf(splitLine[9]), Double.valueOf(splitLine[10]), Double.valueOf(splitLine[11]));
             OakAtom atom = new OakAtom(identifier, element, atomName, coordinates);
-            this.atoms.put(atomName, atom);
+            atoms.put(atomName, atom);
         }
     }
 
@@ -130,10 +130,10 @@ public class CifFileParser {
      */
     private void extractBonds() {
         // for each of the collected bond lines
-        for (String line : this.bondLines) {
+        for (String line : bondLines) {
             String[] splitLine = line.split("\\s+");
             // 1 = first atom, 2 = second atom, 3 = bond type
-            this.bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
+            bonds.put(new Pair<>(splitLine[1].replace("\"", ""), splitLine[2].replace("\"", "")),
                     BondType.getBondTypeByCifName(splitLine[3]).orElse(BondType.SINGLE_BOND));
         }
     }
@@ -146,23 +146,23 @@ public class CifFileParser {
     private void extractInformation(String line) {
         // extract compound name
         if (line.startsWith("_chem_comp.name")) {
-            this.name = extractValue(line);
+            name = extractValue(line);
         }
         // extract compound type
         if (line.startsWith("_chem_comp.type")) {
-            this.type = extractValue(line);
+            type = extractValue(line);
         }
         // extract one letter code
         if (line.startsWith("_chem_comp.one_letter_code")) {
-            this.oneLetterCode = extractValue(line);
+            oneLetterCode = extractValue(line);
         }
         // extract three letter code
         if (line.startsWith("_chem_comp.three_letter_code")) {
-            this.threeLetterCode = extractValue(line);
+            threeLetterCode = extractValue(line);
         }
         // extract parent
         if (line.startsWith("_chem_comp.mon_nstd_parent_comp_id")) {
-            this.parent = extractValue(line);
+            parent = extractValue(line);
         }
     }
 
@@ -188,24 +188,24 @@ public class CifFileParser {
         OakLeafSubstructure<?> leafSubstructure;
         if (isNucleotide()) {
             // check for nucleotides
-            Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(this.parent);
-            leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, this.threeLetterCode))
-                    .orElseGet(() -> new OakNucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(this.threeLetterCode).orElseThrow(() ->
-                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + this.threeLetterCode))));
+            Optional<NucleotideFamily> nucleotideFamily = NucleotideFamily.getNucleotideByThreeLetterCode(parent);
+            leafSubstructure = nucleotideFamily.map(nucleotideFamily1 -> new OakNucleotide(leafIdentifier, nucleotideFamily1, threeLetterCode))
+                    .orElseGet(() -> new OakNucleotide(leafIdentifier, NucleotideFamily.getNucleotideByThreeLetterCode(threeLetterCode).orElseThrow(() ->
+                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
 
         } else if (isAminoAcid()) {
             // check for amino acids
-            Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent);
-            leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new OakAminoAcid(leafIdentifier, aminoAcidFamily1, this.threeLetterCode))
-                    .orElseGet(() -> new OakAminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.threeLetterCode).orElseThrow(() ->
-                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + this.threeLetterCode))));
+            Optional<AminoAcidFamily> aminoAcidFamily = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(parent);
+            leafSubstructure = aminoAcidFamily.map(aminoAcidFamily1 -> new OakAminoAcid(leafIdentifier, aminoAcidFamily1, threeLetterCode))
+                    .orElseGet(() -> new OakAminoAcid(leafIdentifier, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(threeLetterCode).orElseThrow(() ->
+                            new IllegalArgumentException("Could not create Nucleotide with three letter code" + threeLetterCode))));
         } else {
             // else this is a ligand
-            OakLigand OakLigand = new OakLigand(leafIdentifier, new LigandFamily(this.oneLetterCode, this.threeLetterCode));
-            OakLigand.setName(this.name);
+            OakLigand OakLigand = new OakLigand(leafIdentifier, new LigandFamily(oneLetterCode, threeLetterCode));
+            OakLigand.setName(name);
             leafSubstructure = OakLigand;
         }
-        this.atoms.values().forEach(leafSubstructure::addAtom);
+        atoms.values().forEach(leafSubstructure::addAtom);
         connectAtoms(leafSubstructure);
         return leafSubstructure;
     }
@@ -231,7 +231,7 @@ public class CifFileParser {
         StructuralFamily structuralFamily = null;
         if (isNucleotide()) {
             // check for nucleotides
-            if (!this.parent.equals("?")) {
+            if (!parent.equals("?")) {
                 assignedFamily = LeafSkeleton.AssignedFamily.MODIFIED_NUCLEOTIDE;
             } else {
                 // TODO fix this fallback solution
@@ -244,7 +244,7 @@ public class CifFileParser {
             // else this is a ligand
             assignedFamily = LeafSkeleton.AssignedFamily.LIGAND;
         }
-        return new LeafSkeleton(this.threeLetterCode, this.parent, assignedFamily, this.bonds);
+        return new LeafSkeleton(threeLetterCode, parent, assignedFamily, bonds);
     }
 
     /**
@@ -254,7 +254,7 @@ public class CifFileParser {
      * @return
      */
     private boolean isNucleotide() {
-        return this.type.equalsIgnoreCase("RNA LINKING") || this.type.equalsIgnoreCase("DNA LINKING");
+        return type.equalsIgnoreCase("RNA LINKING") || type.equalsIgnoreCase("DNA LINKING");
     }
 
     /**
@@ -264,7 +264,7 @@ public class CifFileParser {
      * @return
      */
     private boolean isAminoAcid() {
-        return this.type.equalsIgnoreCase("L-PEPTIDE LINKING"); // && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
+        return type.equalsIgnoreCase("L-PEPTIDE LINKING"); // && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();
     }
 
     /**
@@ -274,10 +274,10 @@ public class CifFileParser {
      */
     private void connectAtoms(OakLeafSubstructure<?> leafWithAtoms) {
         int bondCounter = 0;
-        for (Map.Entry<Pair<String>, BondType> bond : this.bonds.entrySet()) {
+        for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
             OakBond oakBond = new OakBond(bondCounter++, bond.getValue());
-            leafWithAtoms.addBondBetween(oakBond, this.atoms.get(bond.getKey().getFirst()),
-                    this.atoms.get(bond.getKey().getSecond()));
+            leafWithAtoms.addBondBetween(oakBond, atoms.get(bond.getKey().getFirst()),
+                    atoms.get(bond.getKey().getSecond()));
         }
     }
 

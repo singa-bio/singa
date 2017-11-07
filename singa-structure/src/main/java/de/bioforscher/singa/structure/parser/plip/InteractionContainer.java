@@ -37,8 +37,8 @@ public class InteractionContainer {
      * Creates a new empty interaction container.
      */
     public InteractionContainer() {
-        this.interactions = new ArrayList<>();
-        this.ligandInteractions = new ArrayList<>();
+        interactions = new ArrayList<>();
+        ligandInteractions = new ArrayList<>();
     }
 
     /**
@@ -86,7 +86,7 @@ public class InteractionContainer {
      * @return A list of interactions between both leaves.
      */
     public List<Interaction> getInteractionsBetween(LeafIdentifier first, LeafIdentifier second) {
-        return this.interactions.stream()
+        return interactions.stream()
                 .filter(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second))
                 .collect(Collectors.toList());
     }
@@ -99,7 +99,7 @@ public class InteractionContainer {
      * @return True, if any interaction between the two leaves is annotated.
      */
     public boolean hasInteractions(LeafIdentifier first, LeafIdentifier second) {
-        return this.interactions.stream()
+        return interactions.stream()
                 .anyMatch(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second));
     }
 
@@ -111,7 +111,7 @@ public class InteractionContainer {
      * @param structure The structure to assign the interaction to.
      */
     public void mapToPseudoAtoms(OakStructure structure) {
-        for (Interaction interaction : this.interactions) {
+        for (Interaction interaction : interactions) {
             Vector3D centroid = new Vector3D(interaction.getLigandCoordinate()).add(new Vector3D(interaction.getProteinCoordinate())).multiply(0.5);
             structure.addAtom(interaction.getSource().getChainIdentifier(), InteractionType.getThreeLetterCode(interaction.getClass()), centroid);
         }
@@ -123,11 +123,11 @@ public class InteractionContainer {
      * @return All interactions.
      */
     public List<Interaction> getInteractions() {
-        return this.interactions;
+        return interactions;
     }
 
     public List<Interaction> getLigandInteractions() {
-        return this.ligandInteractions;
+        return ligandInteractions;
     }
 
     /**
@@ -255,7 +255,7 @@ public class InteractionContainer {
 
             if (!symmetricEntriesFound && !uncertainInteraction) {
                 logger.trace("Adding  : {}", interaction);
-                this.interactions.add(interaction);
+                interactions.add(interaction);
                 return;
             } else {
                 if (uncertainInteraction) {
@@ -269,21 +269,21 @@ public class InteractionContainer {
                 //  trivial case: all are different kinds
                 logger.trace("This kind of interaction is not present between the leaves.");
                 logger.trace("Adding  : {}", interaction);
-                this.interactions.add(interaction);
+                interactions.add(interaction);
             }
 
         } else {
             // no interaction between the leaves is present
             logger.trace("There are no interactions annotated between those leaves.");
             logger.trace("Adding  : {}", interaction);
-            this.interactions.add(interaction);
+            interactions.add(interaction);
         }
 
     }
 
     public void validateWithStructure(OakStructure structure) {
 
-        ListIterator<Interaction> interactionListIterator = this.interactions.listIterator();
+        ListIterator<Interaction> interactionListIterator = interactions.listIterator();
 
         while (interactionListIterator.hasNext()) {
             Interaction interaction = interactionListIterator.next();
@@ -319,7 +319,7 @@ public class InteractionContainer {
             }
 
             if (targetIsLigand || sourceIsLigand) {
-                this.ligandInteractions.add(interaction);
+                ligandInteractions.add(interaction);
                 interactionListIterator.remove();
             }
 

@@ -69,16 +69,16 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
     }
 
     public EnumSet<AminoAcidFamily> getMembers() {
-        return this.members;
+        return members;
     }
 
     @Override
     public String getOneLetterCode() {
-        return this.oneLetterCode;
+        return oneLetterCode;
     }
 
     @Override
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 }

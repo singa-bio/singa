@@ -23,10 +23,10 @@ public enum RepresentationSchemeType {
     }
 
     public Class<? extends AbstractRepresentationScheme> getCompatibleRepresentationScheme() {
-        return this.compatibleRepresentationScheme;
+        return compatibleRepresentationScheme;
     }
 
     public String getAtomNameString() {
-        return this.atomNomenclature;
+        return atomNomenclature;
     }
 }

@@ -51,23 +51,23 @@ public class RegularMatrix implements Matrix, Serializable {
                 throw new MalformedMatrixException(values);
             }
             // non symmetric, well formed, possibly rectangular
-            this.elements = values;
-            this.rowDimension = values.length;
-            this.columnDimension = values[0].length;
+            elements = values;
+            rowDimension = values.length;
+            columnDimension = values[0].length;
         } else {
             if (SymmetricMatrix.isCompact(values)) {
                 // symmetric, non well formed, compact
-                this.elements = values;
+                elements = values;
             } else {
                 if (!isWellFormed(values)) {
                     throw new MalformedMatrixException(values);
                 }
                 // symmetric, well formed, not compact
-                this.elements = SymmetricMatrix.compactToSymmetricMatrix(values);
+                elements = SymmetricMatrix.compactToSymmetricMatrix(values);
             }
             // square
-            this.rowDimension = values.length;
-            this.columnDimension = this.rowDimension;
+            rowDimension = values.length;
+            columnDimension = rowDimension;
         }
     }
 
@@ -75,7 +75,7 @@ public class RegularMatrix implements Matrix, Serializable {
      * A fast constructor usable from the fast Matrices class.
      */
     RegularMatrix(double[][] values, int rowDimension, int columnDimension) {
-        this.elements = values;
+        elements = values;
         this.rowDimension = rowDimension;
         this.columnDimension = columnDimension;
     }
@@ -118,12 +118,12 @@ public class RegularMatrix implements Matrix, Serializable {
 
     @Override
     public <MatrixClass extends Matrix> MatrixClass as(Class<MatrixClass> matrixClass) {
-        if (this.getClass().equals(matrixClass)) {
+        if (getClass().equals(matrixClass)) {
             return matrixClass.cast(this);
         } else if (SquareMatrix.isSquare(this) && matrixClass.getSimpleName().equals("SquareMatrix")) {
-            return createNewMatrix(this.getElements(), matrixClass);
+            return createNewMatrix(getElements(), matrixClass);
         } else if (SymmetricMatrix.isSymmetric(this) && matrixClass.getSimpleName().equals("SymmetricMatrix")) {
-            return createNewMatrix(this.getElements(), matrixClass);
+            return createNewMatrix(getElements(), matrixClass);
         } else {
             throw new IllegalArgumentException("Could not create desired matrix, from this instance.");
         }
@@ -131,42 +131,42 @@ public class RegularMatrix implements Matrix, Serializable {
 
     @Override
     public String getDimensionAsString() {
-        return String.valueOf(this.getRowDimension()) + "x"
-                + String.valueOf(this.getColumnDimension());
+        return String.valueOf(getRowDimension()) + "x"
+                + String.valueOf(getColumnDimension());
     }
 
     @Override
     public double getElement(int rowIndex, int columnIndex) {
-        return this.elements[rowIndex][columnIndex];
+        return elements[rowIndex][columnIndex];
     }
 
     @Override
     public double[][] getElements() {
-        return this.elements;
+        return elements;
     }
 
     @Override
     public RegularVector getRow(int rowIndex) {
-        return new RegularVector(this.elements[rowIndex]);
+        return new RegularVector(elements[rowIndex]);
     }
 
     @Override
     public int getRowDimension() {
-        return this.rowDimension;
+        return rowDimension;
     }
 
     @Override
     public RegularVector getColumn(int columnIndex) {
         double[] columnValues = new double[getRowDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
-            columnValues[rowIndex] = this.elements[rowIndex][columnIndex];
+            columnValues[rowIndex] = elements[rowIndex][columnIndex];
         }
         return new RegularVector(columnValues);
     }
 
     @Override
     public int getColumnDimension() {
-        return this.columnDimension;
+        return columnDimension;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
+                values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex)
                         + summand.getElement(rowIndex, columnIndex);
             }
         }
@@ -188,7 +188,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
+                values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex)
                         - subtrahend.getElement(rowIndex, columnIndex);
             }
         }
@@ -200,7 +200,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex) * multiplicand;
+                values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex) * multiplicand;
             }
         }
         return createRegularMatrix(values);
@@ -213,7 +213,7 @@ public class RegularMatrix implements Matrix, Serializable {
         for (int matrixRowIndex = 0; matrixRowIndex < getRowDimension(); matrixRowIndex++) {
             for (int vectorColumnIndex = 0; vectorColumnIndex < multiplicand.getDimension(); vectorColumnIndex++) {
                 values[matrixRowIndex] += multiplicand.getElement(vectorColumnIndex)
-                        * this.getElement(matrixRowIndex, vectorColumnIndex);
+                        * getElement(matrixRowIndex, vectorColumnIndex);
             }
         }
         return new RegularVector(values);
@@ -226,9 +226,9 @@ public class RegularMatrix implements Matrix, Serializable {
         for (int multiplierRowIndex = 0; multiplierRowIndex < getRowDimension(); multiplierRowIndex++) {
             for (int multiplicandColumnIndex = 0; multiplicandColumnIndex < multiplicand.getColumnDimension();
                  multiplicandColumnIndex++) {
-                for (int multiplierColumnIndex = 0; multiplierColumnIndex < this.getColumnDimension();
+                for (int multiplierColumnIndex = 0; multiplierColumnIndex < getColumnDimension();
                      multiplierColumnIndex++) { // aColumn
-                    values[multiplierRowIndex][multiplicandColumnIndex] += this.getElement(multiplierRowIndex,
+                    values[multiplierRowIndex][multiplicandColumnIndex] += getElement(multiplierRowIndex,
                             multiplierColumnIndex)
                             * multiplicand.getElement(multiplierColumnIndex, multiplicandColumnIndex);
                 }
@@ -243,7 +243,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[rowIndex][columnIndex] = this.getElement(rowIndex, columnIndex)
+                values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex)
                         * multiplicand.getElement(rowIndex, columnIndex);
             }
         }
@@ -255,7 +255,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[rowIndex][columnIndex] = -this.getElement(rowIndex, columnIndex);
+                values[rowIndex][columnIndex] = -getElement(rowIndex, columnIndex);
             }
         }
         return createRegularMatrix(values);
@@ -266,7 +266,7 @@ public class RegularMatrix implements Matrix, Serializable {
         double[][] values = new double[getColumnDimension()][getRowDimension()];
         for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
             for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
-                values[columnIndex][rowIndex] = this.getElement(rowIndex, columnIndex);
+                values[columnIndex][rowIndex] = getElement(rowIndex, columnIndex);
             }
         }
         return createRegularMatrix(values);
@@ -284,7 +284,7 @@ public class RegularMatrix implements Matrix, Serializable {
         for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
             cells[rowIndex] = new String[cols];
             for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
-                cells[rowIndex][columnIndex] = String.format("%.2f", this.getElement(rowIndex, columnIndex));
+                cells[rowIndex][columnIndex] = String.format("%.2f", getElement(rowIndex, columnIndex));
             }
         }
 

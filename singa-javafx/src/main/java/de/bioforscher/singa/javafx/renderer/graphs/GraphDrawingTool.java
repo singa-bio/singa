@@ -51,15 +51,15 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
         // force constant = sqrt(drawing area / desired area per node)
         double forceConstant = Math.sqrt((drawingHeight.get() * drawingWidth.get()) / (graph.getNodes().size() * 20));
         // repulsive force between nodes
-        this.repulsiveForce = new RepulsiveForce(forceConstant);
+        repulsiveForce = new RepulsiveForce(forceConstant);
         // repulsive force from boundaries
-        this.boundaryForce = new RepulsiveForce(forceConstant * 2);
+        boundaryForce = new RepulsiveForce(forceConstant * 2);
         // attractive force between nodes
-        this.attractiveForce = new AttractiveForce(forceConstant);
+        attractiveForce = new AttractiveForce(forceConstant);
         // temporary velocities
-        this.velocities = new HashMap<>();
+        velocities = new HashMap<>();
         for (NodeType n : graph.getNodes()) {
-            this.velocities.put(n, new Vector2D(0.0, 0.0));
+            velocities.put(n, new Vector2D(0.0, 0.0));
         }
     }
 
@@ -73,63 +73,63 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
     public GraphType arrangeGraph(int i) {
 
         // calculate the temperature
-        double t = DecayFunctions.linear(i, this.totalIterations, this.drawingWidth.doubleValue() / 40);
+        double t = DecayFunctions.linear(i, totalIterations, drawingWidth.doubleValue() / 40);
 
         // calculate repulsive forces
-        for (NodeType sourceNode : this.graph.getNodes()) {
+        for (NodeType sourceNode : graph.getNodes()) {
             // reset velocities
-            this.velocities.put(sourceNode, new Vector2D());
-            for (NodeType targetNode : this.graph.getNodes()) {
+            velocities.put(sourceNode, new Vector2D());
+            for (NodeType targetNode : graph.getNodes()) {
                 // if source and target are different
                 if (!sourceNode.equals(targetNode)) {
                     // calculate repulsive acceleration
-                    Vector2D acceleration = this.repulsiveForce.calculateAcceleration(sourceNode.getPosition(),
+                    Vector2D acceleration = repulsiveForce.calculateAcceleration(sourceNode.getPosition(),
                             targetNode.getPosition());
                     // add acceleration to current velocity
-                    Vector2D velocity = this.velocities.get(sourceNode).add(acceleration);
-                    this.velocities.put(sourceNode, velocity);
+                    Vector2D velocity = velocities.get(sourceNode).add(acceleration);
+                    velocities.put(sourceNode, velocity);
                 }
             }
         }
 
         // calculate attractive forces
-        for (EdgeType edge : this.graph.getEdges()) {
+        for (EdgeType edge : graph.getEdges()) {
 
             // get source and target of an edge
             NodeType sourceNode = edge.getSource();
             NodeType targetNode = edge.getTarget();
 
             // calculate attractive acceleration
-            Vector2D acceleration = this.attractiveForce.calculateAcceleration(sourceNode.getPosition(),
+            Vector2D acceleration = attractiveForce.calculateAcceleration(sourceNode.getPosition(),
                     targetNode.getPosition());
 
             // add acceleration to targets's velocities
-            Vector2D velocityTarget = this.velocities.get(targetNode).add(acceleration);
-            this.velocities.put(targetNode, velocityTarget);
+            Vector2D velocityTarget = velocities.get(targetNode).add(acceleration);
+            velocities.put(targetNode, velocityTarget);
 
             // subtract acceleration to source's velocities (fling to opposite
             // direction)
-            Vector2D velocitySource = this.velocities.get(sourceNode).subtract(acceleration);
-            this.velocities.put(sourceNode, velocitySource);
+            Vector2D velocitySource = velocities.get(sourceNode).subtract(acceleration);
+            velocities.put(sourceNode, velocitySource);
 
         }
 
         // calculate repulsion from boundaries
-        for (NodeType node : this.graph.getNodes()) {
+        for (NodeType node : graph.getNodes()) {
 
             // size of the barrier
             Vector2D position = node.getPosition();
-            double barrierRadius = this.drawingWidth.doubleValue() / 4.0;
+            double barrierRadius = drawingWidth.doubleValue() / 4.0;
 
             // calculate west and east barrier forces
             Vector2D accelerationX;
             if (position.getX() < barrierRadius) {
                 // calculate west barrier repulsive acceleration
-                accelerationX = this.boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
-            } else if (position.getX() > this.drawingWidth.doubleValue() - barrierRadius) {
+                accelerationX = boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
+            } else if (position.getX() > drawingWidth.doubleValue() - barrierRadius) {
                 // calculate east barrier repulsive acceleration
-                accelerationX = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(this.drawingWidth.doubleValue(), position.getY()));
+                accelerationX = boundaryForce.calculateAcceleration(position,
+                        new Vector2D(drawingWidth.doubleValue(), position.getY()));
             } else {
                 // if not within barrier range
                 accelerationX = new Vector2D(0, 0);
@@ -139,11 +139,11 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
             Vector2D accelerationY;
             if (position.getY() < barrierRadius) {
                 // calculate north barrier repulsive acceleration
-                accelerationY = this.boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
-            } else if (position.getY() > this.drawingHeight.doubleValue() - barrierRadius) {
+                accelerationY = boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
+            } else if (position.getY() > drawingHeight.doubleValue() - barrierRadius) {
                 // calculate south barrier repulsive acceleration
-                accelerationY = this.boundaryForce.calculateAcceleration(position,
-                        new Vector2D(position.getX(), this.drawingHeight.doubleValue()));
+                accelerationY = boundaryForce.calculateAcceleration(position,
+                        new Vector2D(position.getX(), drawingHeight.doubleValue()));
             } else {
                 // if not within barrier range
                 accelerationY = new Vector2D(0, 0);
@@ -151,16 +151,16 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
 
             // add acceleration to velocities
             Vector2D totalAcceleration = accelerationX.add(accelerationY);
-            Vector2D velocitySource = this.velocities.get(node).add(totalAcceleration);
-            this.velocities.put(node, velocitySource);
+            Vector2D velocitySource = velocities.get(node).add(totalAcceleration);
+            velocities.put(node, velocitySource);
 
         }
 
         // placement depending on current velocity
-        for (NodeType node : this.graph.getNodes()) {
+        for (NodeType node : graph.getNodes()) {
 
             Vector2D currentLocation = node.getPosition();
-            Vector2D currentVelocity = this.velocities.get(node);
+            Vector2D currentVelocity = velocities.get(node);
             double magnitude = currentVelocity.getMagnitude();
 
             // calculate new position v = v.pos + v^ * min(|v|,temp)
@@ -170,17 +170,17 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
             // dimension
             // TODO: could be better
             double nextX;
-            if (nextLocation.getX() < this.drawingWidth.doubleValue() && nextLocation.getX() > 0.0) {
+            if (nextLocation.getX() < drawingWidth.doubleValue() && nextLocation.getX() > 0.0) {
                 nextX = nextLocation.getX();
             } else {
-                nextX = this.drawingWidth.doubleValue() / 2;
+                nextX = drawingWidth.doubleValue() / 2;
             }
 
             double nextY;
-            if (nextLocation.getY() < this.drawingHeight.doubleValue() && nextLocation.getY() > 0.0) {
+            if (nextLocation.getY() < drawingHeight.doubleValue() && nextLocation.getY() > 0.0) {
                 nextY = nextLocation.getY();
             } else {
-                nextY = this.drawingHeight.doubleValue() / 2;
+                nextY = drawingHeight.doubleValue() / 2;
             }
 
             // place node
@@ -189,7 +189,7 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
         }
 
         // returns the optimized graph
-        return this.graph;
+        return graph;
 
     }
 

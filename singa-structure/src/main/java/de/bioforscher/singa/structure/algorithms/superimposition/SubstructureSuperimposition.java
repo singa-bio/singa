@@ -44,12 +44,12 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
 
     @Override
     public List<LeafSubstructure<?>> getReference() {
-        return this.reference;
+        return reference;
     }
 
     @Override
     public List<LeafSubstructure<?>> getCandidate() {
-        return this.candidate;
+        return candidate;
     }
 
     /**
@@ -60,47 +60,47 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
      * @return The full string representation of this {@link SubstructureSuperimposition}.
      */
     public String getStringRepresentation() {
-        return this.mappedCandidate.stream()
+        return mappedCandidate.stream()
                 .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
                         + leafSubstructure.getIdentifier().getSerial()
                         + (leafSubstructure.getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE ? "" : leafSubstructure.getInsertionCode())
                 )
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
-                        + this.mappedCandidate.get(0).getPdbIdentifier()
+                        + mappedCandidate.get(0).getPdbIdentifier()
                         + "_", ""));
     }
 
     @Override
     public String toString() {
         return "SubstructureSuperimposition{" +
-                "rmsd=" + this.rmsd +
+                "rmsd=" + rmsd +
                 '}';
     }
 
     @Override
     public double getRmsd() {
-        return this.rmsd;
+        return rmsd;
     }
 
     @Override
     public Vector getTranslation() {
-        return this.translation;
+        return translation;
     }
 
     @Override
     public Matrix getRotation() {
-        return this.rotation;
+        return rotation;
     }
 
     @Override
     public List<LeafSubstructure<?>> getMappedCandidate() {
-        return this.mappedCandidate;
+        return mappedCandidate;
     }
 
     @Override
     public List<LeafSubstructure<?>> getMappedFullCandidate() {
-        return this.mappedFullCandidate;
+        return mappedFullCandidate;
     }
 
     @Override
@@ -114,9 +114,9 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
         copyOfCandidate.stream()
                 .map(AtomContainer::getAllAtoms)
                 .flatMap(List::stream)
-                .forEach(atom -> atom.setPosition(this.rotation.transpose()
+                .forEach(atom -> atom.setPosition(rotation.transpose()
                         .multiply(atom.getPosition())
-                        .add(this.translation).as(Vector3D.class)));
+                        .add(translation).as(Vector3D.class)));
         return copyOfCandidate;
     }
 }

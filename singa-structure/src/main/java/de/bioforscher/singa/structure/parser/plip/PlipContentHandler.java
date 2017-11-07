@@ -40,12 +40,12 @@ public class PlipContentHandler implements ContentHandler {
     private Interaction currentInteraction;
 
     public PlipContentHandler(String pdbIdentifier) {
-        this.interactions = new InteractionContainer();
-        this.currentPdbIdentifier = pdbIdentifier;
+        interactions = new InteractionContainer();
+        currentPdbIdentifier = pdbIdentifier;
     }
 
     public String getCurrentPdbIdentifier() {
-        return this.currentPdbIdentifier;
+        return currentPdbIdentifier;
     }
 
     public void setCurrentPdbIdentifier(String currentPdbIdentifier) {
@@ -53,7 +53,7 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     public InteractionContainer getInteractionContainer() {
-        return this.interactions;
+        return interactions;
     }
 
     @Override
@@ -83,42 +83,42 @@ public class PlipContentHandler implements ContentHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-        this.currentTag = qName;
+        currentTag = qName;
         switch (qName) {
             case "halogen_bond":
-                this.currentInteraction = new HalogenBond(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.HALOGEN_BOND;
+                currentInteraction = new HalogenBond(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.HALOGEN_BOND;
                 break;
             case "hydrophobic_interaction":
-                this.currentInteraction = new HydrophobicInteraction(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.HYDROPHOBIC_INTERACTION;
+                currentInteraction = new HydrophobicInteraction(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.HYDROPHOBIC_INTERACTION;
                 break;
             case "hydrogen_bond":
-                this.currentInteraction = new HydrogenBond(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.HYDROGEN_BOND;
+                currentInteraction = new HydrogenBond(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.HYDROGEN_BOND;
                 break;
             case "water_bridge":
-                this.currentInteraction = new WaterBridge(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.WATER_BRIDGE;
+                currentInteraction = new WaterBridge(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.WATER_BRIDGE;
                 break;
             case "salt_bridge":
-                this.currentInteraction = new SaltBridge(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.SALT_BRIDGE;
+                currentInteraction = new SaltBridge(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.SALT_BRIDGE;
                 break;
             case "pi_stack":
-                this.currentInteraction = new PiStacking(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.PI_STACKING;
+                currentInteraction = new PiStacking(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.PI_STACKING;
                 break;
             case "pi_cation_interaction":
-                this.currentInteraction = new PiCation(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.PI_CATION_INTERACTION;
+                currentInteraction = new PiCation(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.PI_CATION_INTERACTION;
                 break;
             case "metal_complex":
-                this.currentInteraction = new MetalComplex(Integer.valueOf(atts.getValue("id")));
-                this.interactionType = InteractionType.METAL_COMPLEX;
+                currentInteraction = new MetalComplex(Integer.valueOf(atts.getValue("id")));
+                interactionType = InteractionType.METAL_COMPLEX;
                 break;
             case "ligcoo":
-                this.ligcoo = true;
+                ligcoo = true;
                 break;
             default:
                 break;
@@ -127,7 +127,7 @@ public class PlipContentHandler implements ContentHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        this.currentTag = "";
+        currentTag = "";
         switch (qName) {
             case "halogen_bond":
             case "hydrophobic_interaction":
@@ -140,7 +140,7 @@ public class PlipContentHandler implements ContentHandler {
                 addInteraction();
                 break;
             case "ligcoo":
-                this.ligcoo = false;
+                ligcoo = false;
                 break;
             default:
                 break;
@@ -149,42 +149,42 @@ public class PlipContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "resnr":
-                this.firstLeafSerial = new String(ch, start, length);
+                firstLeafSerial = new String(ch, start, length);
                 break;
             case "resnr_lig":
-                this.secondLeafSerial = new String(ch, start, length);
+                secondLeafSerial = new String(ch, start, length);
                 break;
             case "reschain":
-                this.firstLeafChain = new String(ch, start, length);
+                firstLeafChain = new String(ch, start, length);
                 break;
             case "reschain_lig":
-                this.secondLeafChain = new String(ch, start, length);
+                secondLeafChain = new String(ch, start, length);
                 break;
             case "x":
-                if (this.ligcoo) {
-                    this.c1x = asDouble(ch, start, length);
+                if (ligcoo) {
+                    c1x = asDouble(ch, start, length);
                 } else {
-                    this.c2x = asDouble(ch, start, length);
+                    c2x = asDouble(ch, start, length);
                 }
                 break;
             case "y":
-                if (this.ligcoo) {
-                    this.c1y = asDouble(ch, start, length);
+                if (ligcoo) {
+                    c1y = asDouble(ch, start, length);
                 } else {
-                    this.c2y = asDouble(ch, start, length);
+                    c2y = asDouble(ch, start, length);
                 }
                 break;
             case "z":
-                if (this.ligcoo) {
-                    this.c1z = asDouble(ch, start, length);
+                if (ligcoo) {
+                    c1z = asDouble(ch, start, length);
                 } else {
-                    this.c2z = asDouble(ch, start, length);
+                    c2z = asDouble(ch, start, length);
                 }
                 break;
             case "dist":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case HALOGEN_BOND:
                         as(HalogenBond.class).setDistance(asDouble(ch, start, length));
                         break;
@@ -212,7 +212,7 @@ public class PlipContentHandler implements ContentHandler {
                 as(WaterBridge.class).setDistanceDW(asDouble(ch, start, length));
                 break;
             case "don_angle":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case WATER_BRIDGE:
                         as(WaterBridge.class).setDonorAngle(asDouble(ch, start, length));
                         break;
@@ -234,7 +234,7 @@ public class PlipContentHandler implements ContentHandler {
                 as(WaterBridge.class).setAcceptor(asInteger(ch, start, length));
                 break;
             case "sidechain":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case HYDROGEN_BOND:
                         as(HydrogenBond.class).setSidechain(asBoolean(ch, start, length));
                         break;
@@ -243,7 +243,7 @@ public class PlipContentHandler implements ContentHandler {
                 }
                 break;
             case "protisdon":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case HYDROGEN_BOND:
                         as(HydrogenBond.class).setProtIsDon(asBoolean(ch, start, length));
                         break;
@@ -292,7 +292,7 @@ public class PlipContentHandler implements ContentHandler {
                 as(HalogenBond.class).setAcceptor(asInteger(ch, start, length));
                 break;
             case "idx":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case PI_CATION_INTERACTION:
                         as(PiCation.class).getAtoms2().add(asInteger(ch, start, length));
                         break;
@@ -311,7 +311,7 @@ public class PlipContentHandler implements ContentHandler {
                 as(PiStacking.class).setAngle(asDouble(ch, start, length));
                 break;
             case "offset":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case PI_CATION_INTERACTION:
                         as(PiCation.class).setOffset(asDouble(ch, start, length));
                         break;
@@ -327,7 +327,7 @@ public class PlipContentHandler implements ContentHandler {
                 as(PiCation.class).setProtcharged(asBoolean(ch, start, length));
                 break;
             case "lig_group":
-                switch (this.interactionType) {
+                switch (interactionType) {
                     case PI_CATION_INTERACTION:
                         as(PiCation.class).setLigandGroup(new String(ch, start, length));
                         break;
@@ -367,34 +367,34 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     private <InteractionClass extends Interaction> InteractionClass as(Class<InteractionClass> interactionType) {
-        return interactionType.cast(this.currentInteraction);
+        return interactionType.cast(currentInteraction);
     }
 
     private void addInteraction() {
         // skip all interactions that are not between standard amino acids
         // TODO This may be going down for amino acid ligands or modified amino acids
-        if (this.noResidueInteraction) {
-            this.noResidueInteraction = false;
+        if (noResidueInteraction) {
+            noResidueInteraction = false;
             return;
         }
         // TODO sometimes there are impossible leaf indices
-        if (this.firstLeafSerial.length() > 9 || this.firstLeafSerial.equals("NA")) {
-            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+        if (firstLeafSerial.length() > 9 || firstLeafSerial.equals("NA")) {
+            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", firstLeafSerial);
             return;
         }
-        if (this.secondLeafSerial.length() > 9 || this.secondLeafSerial.equals("NA")) {
-            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", this.firstLeafSerial);
+        if (secondLeafSerial.length() > 9 || secondLeafSerial.equals("NA")) {
+            logger.debug("The leaf serial {} is not valid. Skipping this interaction.", firstLeafSerial);
             return;
         }
         // generate identifiers
-        final LeafIdentifier source = new LeafIdentifier(this.currentPdbIdentifier, 1, this.firstLeafChain, Integer.valueOf(this.firstLeafSerial));
-        final LeafIdentifier target = new LeafIdentifier(this.currentPdbIdentifier, 1, this.secondLeafChain, Integer.valueOf(this.secondLeafSerial));
-        this.currentInteraction.setSource(source);
-        this.currentInteraction.setTarget(target);
-        this.currentInteraction.setLigandCoordinate(new double[]{this.c1x, this.c1y, this.c1z});
-        this.currentInteraction.setProteinCoordinate(new double[]{this.c2x, this.c2y, this.c2z});
+        final LeafIdentifier source = new LeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.valueOf(firstLeafSerial));
+        final LeafIdentifier target = new LeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.valueOf(secondLeafSerial));
+        currentInteraction.setSource(source);
+        currentInteraction.setTarget(target);
+        currentInteraction.setLigandCoordinate(new double[]{c1x, c1y, c1z});
+        currentInteraction.setProteinCoordinate(new double[]{c2x, c2y, c2z});
         // add the container to interactions
-        this.interactions.addInteraction(this.currentInteraction);
+        interactions.addInteraction(currentInteraction);
 
     }
 

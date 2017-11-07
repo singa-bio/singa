@@ -63,7 +63,7 @@ public class ExponentiationExpressionNode implements ExpressionNode {
      * Calculates base^exponent
      */
     public double getValue() {
-        return Math.pow(this.base.getValue(), this.exponent.getValue());
+        return Math.pow(base.getValue(), exponent.getValue());
     }
 
     /**
@@ -75,7 +75,7 @@ public class ExponentiationExpressionNode implements ExpressionNode {
      */
     public void accept(ExpressionNodeVisitor visitor) {
         visitor.visit(this);
-        this.base.accept(visitor);
-        this.exponent.accept(visitor);
+        base.accept(visitor);
+        exponent.accept(visitor);
     }
 }

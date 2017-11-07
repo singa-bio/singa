@@ -18,34 +18,34 @@ public class OakChain implements Chain {
     private Set<LeafIdentifier> consecutiveIdentifiers;
 
     public OakChain(String chainIdentifier) {
-        this.identifier = chainIdentifier;
-        this.leafSubstructures = new TreeMap<>();
-        this.consecutiveIdentifiers = new HashSet<>();
+        identifier = chainIdentifier;
+        leafSubstructures = new TreeMap<>();
+        consecutiveIdentifiers = new HashSet<>();
     }
 
     public OakChain(OakChain chain) {
-        this.identifier = chain.identifier;
-        this.leafSubstructures = new TreeMap<>();
+        identifier = chain.identifier;
+        leafSubstructures = new TreeMap<>();
         for (OakLeafSubstructure<?> leafSubstructure : chain.leafSubstructures.values()) {
-            this.leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
+            leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure.getCopy());
         }
-        this.consecutiveIdentifiers = new HashSet<>(chain.consecutiveIdentifiers);
+        consecutiveIdentifiers = new HashSet<>(chain.consecutiveIdentifiers);
     }
 
     @Override
     public String getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public List<LeafSubstructure<?>> getAllLeafSubstructures() {
-        return new ArrayList<>(this.leafSubstructures.values());
+        return new ArrayList<>(leafSubstructures.values());
     }
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        if (this.leafSubstructures.containsKey(leafIdentifier)) {
-            return Optional.of(this.leafSubstructures.get(leafIdentifier));
+        if (leafSubstructures.containsKey(leafIdentifier)) {
+            return Optional.of(leafSubstructures.get(leafIdentifier));
         }
         return Optional.empty();
 
@@ -53,26 +53,26 @@ public class OakChain implements Chain {
 
     public void addLeafSubstructure(OakLeafSubstructure leafSubstructure, boolean consecutivePart) {
         if (consecutivePart) {
-            this.consecutiveIdentifiers.add(leafSubstructure.getIdentifier());
+            consecutiveIdentifiers.add(leafSubstructure.getIdentifier());
         }
         addLeafSubstructure(leafSubstructure);
     }
 
     public void addLeafSubstructure(OakLeafSubstructure leafSubstructure) {
-        this.leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
+        leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
     }
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        if (this.leafSubstructures.containsKey(leafIdentifier)) {
+        if (leafSubstructures.containsKey(leafIdentifier)) {
             // collect all atoms that should be removed
-            List<Integer> atomsToBeRemoved = this.leafSubstructures.get(leafIdentifier).getAllAtoms().stream()
+            List<Integer> atomsToBeRemoved = leafSubstructures.get(leafIdentifier).getAllAtoms().stream()
                     .map(Atom::getIdentifier)
                     .collect(Collectors.toList());
             // remove them
             atomsToBeRemoved.forEach(this::removeAtom);
             // remove the leaf
-            this.leafSubstructures.remove(leafIdentifier);
+            leafSubstructures.remove(leafIdentifier);
             return true;
         } else {
             return false;
@@ -81,7 +81,7 @@ public class OakChain implements Chain {
 
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 return optionalAtom;
@@ -92,7 +92,7 @@ public class OakChain implements Chain {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
                 leafSubstructure.removeAtom(optionalAtom.get().getIdentifier());
@@ -138,7 +138,7 @@ public class OakChain implements Chain {
 
     public List<LeafSubstructure<?>> getConsecutivePart() {
         List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             if (consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
@@ -148,7 +148,7 @@ public class OakChain implements Chain {
 
     public List<LeafSubstructure<?>> getNonConsecutivePart() {
         List<LeafSubstructure<?>> consecutivePart = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : this.leafSubstructures.values()) {
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             if (!consecutiveIdentifiers.contains(leafSubstructure.getIdentifier())) {
                 consecutivePart.add(leafSubstructure);
             }
@@ -157,7 +157,7 @@ public class OakChain implements Chain {
     }
 
     LeafIdentifier getNextLeafIdentifier() {
-        LeafIdentifier lastLeafIdentifier = this.leafSubstructures.lastEntry().getKey();
+        LeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
         return new LeafIdentifier(lastLeafIdentifier.getPdbIdentifier(), lastLeafIdentifier.getModelIdentifier(),
                 lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
     }
@@ -169,7 +169,7 @@ public class OakChain implements Chain {
 
     @Override
     public String toString() {
-        return " Chain " + this.identifier;
+        return " Chain " + identifier;
     }
 
     @Override

@@ -72,23 +72,23 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     }
 
     public String getPdbIdentifier() {
-        return this.pdbIdentifer;
+        return pdbIdentifer;
     }
 
     public int getModelIdentifier() {
-        return this.modelIdentifer;
+        return modelIdentifer;
     }
 
     public String getChainIdentifier() {
-        return this.chainIdentifer;
+        return chainIdentifer;
     }
 
     public int getSerial() {
-        return this.serial;
+        return serial;
     }
 
     public char getInsertionCode() {
-        return this.insertionCode;
+        return insertionCode;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
     @Override
     public String toString() {
-        return this.pdbIdentifer + "-" + this.modelIdentifer + "-" + this.chainIdentifer + "-" + this.serial + (this.insertionCode != DEFAULT_INSERTION_CODE ? this.insertionCode : "");
+        return pdbIdentifer + "-" + modelIdentifer + "-" + chainIdentifer + "-" + serial + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
     }
 
     @Override
@@ -108,21 +108,21 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
 
         LeafIdentifier that = (LeafIdentifier) o;
 
-        if (this.serial != that.serial) return false;
-        if (this.modelIdentifer != that.modelIdentifer) return false;
-        if (this.insertionCode != that.insertionCode) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+        if (serial != that.serial) return false;
+        if (modelIdentifer != that.modelIdentifer) return false;
+        if (insertionCode != that.insertionCode) return false;
+        if (pdbIdentifer != null ? !pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
             return false;
-        return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
+        return chainIdentifer != null ? chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 
     @Override
     public int hashCode() {
-        int result = this.pdbIdentifer != null ? this.pdbIdentifer.hashCode() : 0;
-        result = 31 * result + this.modelIdentifer;
-        result = 31 * result + (this.chainIdentifer != null ? this.chainIdentifer.hashCode() : 0);
-        result = 31 * result + this.serial;
-        result = 31 * result + (int) this.insertionCode;
+        int result = pdbIdentifer != null ? pdbIdentifer.hashCode() : 0;
+        result = 31 * result + modelIdentifer;
+        result = 31 * result + (chainIdentifer != null ? chainIdentifer.hashCode() : 0);
+        result = 31 * result + serial;
+        result = 31 * result + (int) insertionCode;
         return result;
     }
 }

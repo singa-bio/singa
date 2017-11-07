@@ -24,12 +24,12 @@ public class ShortestPathFinderTest {
 
     @Before
     public void initialize() {
-        this.linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
+        linearGraph = Graphs.buildLinearGraph(10, boundingBox);
     }
 
     @Test
     public void shouldFindWithPredicate() {
-        RegularNode source = this.linearGraph.getNode(9);
+        RegularNode source = linearGraph.getNode(9);
         LinkedList<RegularNode> shortestPath = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
         Objects.requireNonNull(shortestPath);
         int start = 9;

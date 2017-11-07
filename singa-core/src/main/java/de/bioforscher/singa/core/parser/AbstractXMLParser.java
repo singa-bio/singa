@@ -22,11 +22,11 @@ public abstract class AbstractXMLParser<ResultType> extends AbstractHTMLParser<R
      */
     protected AbstractXMLParser() {
         try {
-            this.xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader = XMLReaderFactory.createXMLReader();
         } catch (SAXException e) {
             throw new ExceptionInInitializerError(e);
         }
-        this.xmlReader.setErrorHandler(new XMLErrorHandler());
+        xmlReader.setErrorHandler(new XMLErrorHandler());
     }
 
     /**
@@ -35,7 +35,7 @@ public abstract class AbstractXMLParser<ResultType> extends AbstractHTMLParser<R
      * @return The XMLReader.
      */
     protected XMLReader getXmlReader() {
-        return this.xmlReader;
+        return xmlReader;
     }
 
 }

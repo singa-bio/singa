@@ -50,7 +50,7 @@ public class OakAtom implements Atom {
         this.identifier = identifier;
         this.element = element;
         this.position = position;
-        this.neighbours = new HashSet<>();
+        neighbours = new HashSet<>();
     }
 
     /**
@@ -62,22 +62,22 @@ public class OakAtom implements Atom {
      * @param atom The atom to copy.
      */
     public OakAtom(OakAtom atom) {
-        this.atomName = atom.atomName;
-        this.identifier = atom.identifier;
-        this.element = atom.element;
-        this.position = new Vector3D(atom.position);
-        this.neighbours = new HashSet<>();
+        atomName = atom.atomName;
+        identifier = atom.identifier;
+        element = atom.element;
+        position = new Vector3D(atom.position);
+        neighbours = new HashSet<>();
     }
 
 
     @Override
     public Integer getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public Vector3D getPosition() {
-        return this.position;
+        return position;
     }
 
     @Override
@@ -87,20 +87,20 @@ public class OakAtom implements Atom {
 
     @Override
     public Element getElement() {
-        return this.element;
+        return element;
     }
 
     @Override
     public String getAtomName() {
-        return this.atomName;
+        return atomName;
     }
 
     public void addNeighbour(OakAtom node) {
-        this.neighbours.add(node);
+        neighbours.add(node);
     }
 
     public Set<OakAtom> getNeighbours() {
-        return this.neighbours;
+        return neighbours;
     }
 
     public OakAtom getCopy() {
@@ -109,9 +109,9 @@ public class OakAtom implements Atom {
 
     @Override
     public String toString() {
-        return "Atom: " + this.atomName +
-                " " + this.identifier +
-                " (" + this.position.getX() + ", " + this.position.getY() + ", " + this.position.getZ() + ")";
+        return "Atom: " + atomName +
+                " " + identifier +
+                " (" + position.getX() + ", " + position.getY() + ", " + position.getZ() + ")";
     }
 
     @Override
@@ -121,17 +121,17 @@ public class OakAtom implements Atom {
 
         OakAtom that = (OakAtom) o;
 
-        if (this.identifier != that.identifier) return false;
-        if (this.atomName != null ? !this.atomName.equals(that.atomName) : that.atomName != null)
+        if (identifier != that.identifier) return false;
+        if (atomName != null ? !atomName.equals(that.atomName) : that.atomName != null)
             return false;
-        return this.position != null ? this.position.equals(that.position) : that.position == null;
+        return position != null ? position.equals(that.position) : that.position == null;
     }
 
     @Override
     public int hashCode() {
-        int result = this.identifier;
-        result = 31 * result + (this.atomName != null ? this.atomName.hashCode() : 0);
-        result = 31 * result + (this.position != null ? this.position.hashCode() : 0);
+        int result = identifier;
+        result = 31 * result + (atomName != null ? atomName.hashCode() : 0);
+        result = 31 * result + (position != null ? position.hashCode() : 0);
         return result;
     }
 

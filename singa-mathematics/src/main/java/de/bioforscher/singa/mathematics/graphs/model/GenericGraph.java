@@ -66,7 +66,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
 
     @Override
     public Integer nextNodeIdentifier() {
-        return this.nextNodeIdentifier++;
+        return nextNodeIdentifier++;
     }
 
     /**

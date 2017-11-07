@@ -18,8 +18,8 @@ public class SymmetricMatrixTest {
     @Before
     public void initialize() {
         double[][] values = {{1.0, 2.0, 3.0}, {2.0, 4.0, 5.0}, {3.0, 5.0, 8.0}};
-        this.trueSymmetricMatrix = new SymmetricMatrix(values);
-        this.testSymmetricMatrix = new RegularMatrix(values);
+        trueSymmetricMatrix = new SymmetricMatrix(values);
+        testSymmetricMatrix = new RegularMatrix(values);
     }
 
     @Test
@@ -39,15 +39,15 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldConvertToSymmetricMatrix() {
-        SymmetricMatrix actual = this.testSymmetricMatrix.as(SymmetricMatrix.class);
-        assertTrue(Arrays.deepEquals(actual.getElements(), this.trueSymmetricMatrix.getElements()));
+        SymmetricMatrix actual = testSymmetricMatrix.as(SymmetricMatrix.class);
+        assertTrue(Arrays.deepEquals(actual.getElements(), trueSymmetricMatrix.getElements()));
     }
 
     @Test
     public void shouldGetRightElements() {
-        assertEquals(3.0, this.trueSymmetricMatrix.getElement(0, 2), 0.0);
-        assertEquals(3.0, this.trueSymmetricMatrix.getElement(2, 0), 0.0);
-        assertEquals(4.0, this.trueSymmetricMatrix.getElement(1, 1), 0.0);
+        assertEquals(3.0, trueSymmetricMatrix.getElement(0, 2), 0.0);
+        assertEquals(3.0, trueSymmetricMatrix.getElement(2, 0), 0.0);
+        assertEquals(4.0, trueSymmetricMatrix.getElement(1, 1), 0.0);
     }
 
     @Test
@@ -60,28 +60,28 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldAddSymmetricMatrices() {
-        Matrix actual = this.testSymmetricMatrix.add(this.testSymmetricMatrix);
-        Matrix expected = this.trueSymmetricMatrix.add(this.testSymmetricMatrix);
+        Matrix actual = testSymmetricMatrix.add(testSymmetricMatrix);
+        Matrix expected = trueSymmetricMatrix.add(testSymmetricMatrix);
         assertTrue(Arrays.deepEquals(actual.getElements(), expected.getElements()));
     }
 
     @Test
     public void shouldSubtractSymmetricMatrices() {
-        Matrix actual = this.testSymmetricMatrix.subtract(this.testSymmetricMatrix);
-        Matrix expected = this.trueSymmetricMatrix.subtract(this.testSymmetricMatrix);
+        Matrix actual = testSymmetricMatrix.subtract(testSymmetricMatrix);
+        Matrix expected = trueSymmetricMatrix.subtract(testSymmetricMatrix);
         assertTrue(Arrays.deepEquals(actual.getElements(), expected.getElements()));
     }
 
     @Test
     public void shouldMultiplySymmetricMatrices() {
-        Matrix actual = this.testSymmetricMatrix.multiply(this.testSymmetricMatrix);
-        Matrix expected = this.trueSymmetricMatrix.multiply(this.testSymmetricMatrix);
+        Matrix actual = testSymmetricMatrix.multiply(testSymmetricMatrix);
+        Matrix expected = trueSymmetricMatrix.multiply(testSymmetricMatrix);
         assertTrue(Arrays.deepEquals(actual.getElements(), expected.getElements()));
     }
 
     @Test
     public void shouldRetrieveValueForLabel() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
@@ -90,7 +90,7 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetStringRepresentation() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
@@ -102,7 +102,7 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetStringRepresentationWithoutLabels() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
         assertEquals("1.000000,2.000000,3.000000\n" +
                 "2.000000,4.000000,5.000000\n" +
                 "3.000000,5.000000,8.000000", lsm.getStringRepresentation());
@@ -110,7 +110,7 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldRetrieveLabelsOfSymmetricMatrix() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
@@ -124,8 +124,8 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldCopy() {
-        SymmetricMatrix copy1 = this.trueSymmetricMatrix.getCopy();
-        SquareMatrix copy2 = this.trueSymmetricMatrix.getCopy();
+        SymmetricMatrix copy1 = trueSymmetricMatrix.getCopy();
+        SquareMatrix copy2 = trueSymmetricMatrix.getCopy();
         copy1.getElements()[0][0] = Double.MIN_VALUE;
         assertTrue(SymmetricMatrix.isCompact(copy2.getElements()));
         assertTrue(copy2.getElements()[0][0] != Double.MIN_VALUE);
@@ -133,7 +133,7 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetColumnAndRowByLabel() {
-        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(this.trueSymmetricMatrix.getElements());
+        LabeledSymmetricMatrix<String> lsm = new LabeledSymmetricMatrix<>(trueSymmetricMatrix.getElements());
         lsm.setRowLabel("L1", 0);
         lsm.setRowLabel("L2", 1);
         lsm.setRowLabel("L3", 2);
@@ -145,8 +145,8 @@ public class SymmetricMatrixTest {
 
     @Test
     public void shouldGetRow() {
-        assertTrue(this.trueSymmetricMatrix.getRow(0).equals(new RegularVector(1.0, 2.0, 3.0)));
-        assertTrue(this.trueSymmetricMatrix.getRow(1).equals(new RegularVector(2.0, 4.0, 5.0)));
-        assertTrue(this.trueSymmetricMatrix.getRow(2).equals(new RegularVector(3.0, 5.0, 8.0)));
+        assertTrue(trueSymmetricMatrix.getRow(0).equals(new RegularVector(1.0, 2.0, 3.0)));
+        assertTrue(trueSymmetricMatrix.getRow(1).equals(new RegularVector(2.0, 4.0, 5.0)));
+        assertTrue(trueSymmetricMatrix.getRow(2).equals(new RegularVector(3.0, 5.0, 8.0)));
     }
 }

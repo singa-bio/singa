@@ -35,8 +35,8 @@ public class MmtfNucleotide extends MmtfLeafSubstructure<NucleotideFamily> imple
      */
     private MmtfNucleotide(MmtfNucleotide mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
-        this.family = mmtfLeafSubstructure.family;
-        this.exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
+        family = mmtfLeafSubstructure.family;
+        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

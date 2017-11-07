@@ -46,9 +46,9 @@ public class StructureRepresentation {
      */
     private StructureRepresentation(OakChain chain) {
         List<LeafSubstructure<?>> consecutivePart = chain.getConsecutivePart();
-        this.consecutiveRecords = getPdbLines(consecutivePart);
-        this.terminateRecord = ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
-        this.nonConsecutiveLeafs = chain.getNonConsecutivePart();
+        consecutiveRecords = getPdbLines(consecutivePart);
+        terminateRecord = ChainTerminatorToken.assemblePDBLine(consecutivePart.get(consecutivePart.size() - 1));
+        nonConsecutiveLeafs = chain.getNonConsecutivePart();
     }
 
     /**
@@ -214,7 +214,7 @@ public class StructureRepresentation {
      * @return The string representing the consecutive part of this structural representation.
      */
     private String getConsecutiveRepresentation() {
-        return this.consecutiveRecords.stream()
+        return consecutiveRecords.stream()
                 .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
     }
 
@@ -224,7 +224,7 @@ public class StructureRepresentation {
      * @return The terminating record for this representation.
      */
     private String getTerminateRecord() {
-        return this.terminateRecord + System.lineSeparator();
+        return terminateRecord + System.lineSeparator();
     }
 
     /**
@@ -233,6 +233,6 @@ public class StructureRepresentation {
      * @return The actual leaves of the nonconsecutive part.
      */
     private List<LeafSubstructure<?>> getNonConsecutiveLeafSubstructures() {
-        return this.nonConsecutiveLeafs;
+        return nonConsecutiveLeafs;
     }
 }

@@ -18,7 +18,7 @@ public class BinaryTree<T> implements Serializable {
     }
 
     public LabeledSymmetricMatrix<String> getDistanceMatrix() {
-        return this.distanceMatrix;
+        return distanceMatrix;
     }
 
     public void setDistanceMatrix(LabeledSymmetricMatrix<String> distanceMatrix) {
@@ -66,13 +66,13 @@ public class BinaryTree<T> implements Serializable {
      */
     public List<BinaryTreeNode<T>> getLeafNodes() {
         List<BinaryTreeNode<T>> leaveNodes = new ArrayList<>();
-        collectLeavesPreOrder(this.root, leaveNodes);
+        collectLeavesPreOrder(root, leaveNodes);
         return leaveNodes;
     }
 
 
     public BinaryTreeNode<T> getRoot() {
-        return this.root;
+        return root;
     }
 
     public void setRoot(BinaryTreeNode<T> root) {
@@ -80,11 +80,11 @@ public class BinaryTree<T> implements Serializable {
     }
 
     public BinaryTreeNode<T> findNode(T data) {
-        return this.root.findNode(data);
+        return root.findNode(data);
     }
 
     public int size() {
-        return this.root.size();
+        return root.size();
     }
 
     /**
@@ -93,7 +93,7 @@ public class BinaryTree<T> implements Serializable {
      * @return a formatted String formatted in Newick that contains the leaves.
      */
     public String toNewickString() {
-        return this.root.toNewickString() + ";";
+        return root.toNewickString() + ";";
     }
 
     public boolean containsNode(T nodeData) {
@@ -105,7 +105,7 @@ public class BinaryTree<T> implements Serializable {
     }
 
     public void appendNodeTo(T parentData, T childData) {
-        BinaryTreeNode<T> parentNode = this.findNode(parentData);
+        BinaryTreeNode<T> parentNode = findNode(parentData);
         if (parentNode.getLeft() != null && parentNode.getRight() != null) {
             throw new IllegalStateException(
                     "Both child nodes of " + parentNode + "are occupied. Unable to append additional child.");
@@ -119,7 +119,7 @@ public class BinaryTree<T> implements Serializable {
 
     @Override
     public String toString() {
-        return this.root.toStringInOrder();
+        return root.toStringInOrder();
     }
 
 }

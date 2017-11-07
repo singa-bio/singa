@@ -32,8 +32,8 @@ public class OakBond {
      * @param bond The bond to copy.
      */
     public OakBond(OakBond bond) {
-        this.identifier = bond.identifier;
-        this.bondType = bond.bondType;
+        identifier = bond.identifier;
+        bondType = bond.bondType;
     }
 
     public int getIdentifier() {
@@ -41,7 +41,7 @@ public class OakBond {
     }
 
     public BondType getBondType() {
-        return this.bondType;
+        return bondType;
     }
 
     public void setBondType(BondType bondType) {
@@ -49,7 +49,7 @@ public class OakBond {
     }
 
     public OakAtom getSource() {
-        return this.source;
+        return source;
     }
 
     public void setSource(OakAtom source) {
@@ -57,7 +57,7 @@ public class OakBond {
     }
 
     public OakAtom getTarget() {
-        return this.target;
+        return target;
     }
 
     public void setTarget(OakAtom target) {
@@ -65,7 +65,7 @@ public class OakBond {
     }
 
     public boolean connectsAtom(OakAtom oakAtom) {
-        return this.source.equals(oakAtom) || this.target.equals(oakAtom);
+        return source.equals(oakAtom) || target.equals(oakAtom);
     }
 
     public OakBond getCopy() {
@@ -78,14 +78,14 @@ public class OakBond {
         if (o == null || getClass() != o.getClass()) return false;
 
         OakBond bond = (OakBond) o;
-        if (this.identifier != bond.getIdentifier()) return false;
-        return this.bondType == bond.bondType;
+        if (identifier != bond.getIdentifier()) return false;
+        return bondType == bond.bondType;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (this.bondType != null ? this.bondType.hashCode() : 0);
+        result = 31 * result + (bondType != null ? bondType.hashCode() : 0);
         return result;
     }
 

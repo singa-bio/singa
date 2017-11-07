@@ -50,7 +50,7 @@ class ContentTreeNode {
     ContentTreeNode(String identifier, StructureLevel level) {
         this.identifier = identifier;
         this.level = level;
-        this.children = new ArrayList<>();
+        children = new ArrayList<>();
     }
 
     /**
@@ -61,7 +61,7 @@ class ContentTreeNode {
      */
     private ContentTreeNode(String identifier, OakAtom atom) {
         this.identifier = identifier;
-        this.level = ATOM;
+        level = ATOM;
         this.atom = atom;
     }
 
@@ -82,7 +82,7 @@ class ContentTreeNode {
      * @return The level of this node.
      */
     public StructureLevel getLevel() {
-        return this.level;
+        return level;
     }
 
     /**
@@ -91,7 +91,7 @@ class ContentTreeNode {
      * @return The identifier of this node.
      */
     public String getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     /**
@@ -109,7 +109,7 @@ class ContentTreeNode {
      * @return The atom associated to this node.
      */
     public OakAtom getAtom() {
-        return this.atom;
+        return atom;
     }
 
     /**
@@ -127,7 +127,7 @@ class ContentTreeNode {
      * @return The insertion code if any is associated to this node.
      */
     public char getInsertionCode() {
-        return this.insertionCode;
+        return insertionCode;
     }
 
     /**
@@ -141,7 +141,7 @@ class ContentTreeNode {
         if (this.level == level) {
             nodes.add(this);
         } else {
-            this.children.forEach(child -> nodes.addAll(child.getNodesFromLevel(level)));
+            children.forEach(child -> nodes.addAll(child.getNodesFromLevel(level)));
         }
         return nodes;
     }
@@ -152,9 +152,9 @@ class ContentTreeNode {
      * @return All atoms from this node
      */
     public Map<String, OakAtom> getAtomMap() {
-        if (this.getLevel() == LEAF) {
+        if (getLevel() == LEAF) {
             Map<String, OakAtom> atoms = new HashMap<>();
-            for (ContentTreeNode node : this.children) {
+            for (ContentTreeNode node : children) {
                 atoms.put(node.getAtom().getAtomName(), node.getAtom());
             }
             return atoms;
@@ -169,9 +169,9 @@ class ContentTreeNode {
      * @param identifer Its identifier.
      */
     public void appendAtom(OakAtom atom, UniqueAtomIdentifer identifer) {
-        ListIterator<ContentTreeNode> iterator = this.children.listIterator();
-        if (this.children.isEmpty()) {
-            switch (this.level) {
+        ListIterator<ContentTreeNode> iterator = children.listIterator();
+        if (children.isEmpty()) {
+            switch (level) {
                 case STRUCTURE: {
                     iterator.add(new ContentTreeNode(String.valueOf(identifer.getModelIdentifier()), MODEL));
                     logger.trace("Added model {}", identifer.getModelIdentifier());
@@ -198,7 +198,7 @@ class ContentTreeNode {
             }
             iterator.previous().appendAtom(atom, identifer);
         } else {
-            switch (this.level) {
+            switch (level) {
                 case STRUCTURE: {
                     while (iterator.hasNext()) {
                         ContentTreeNode model = iterator.next();

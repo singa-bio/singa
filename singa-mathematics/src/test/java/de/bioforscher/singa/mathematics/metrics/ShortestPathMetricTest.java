@@ -22,36 +22,36 @@ public class ShortestPathMetricTest {
 
     @Before
     public void initObjects() {
-        this.linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
-        this.circularGraph = Graphs.buildCircularGraph(10, this.boundingBox);
-        this.treeGraph = Graphs.buildTreeGraph(4, this.boundingBox);
+        linearGraph = Graphs.buildLinearGraph(10, boundingBox);
+        circularGraph = Graphs.buildCircularGraph(10, boundingBox);
+        treeGraph = Graphs.buildTreeGraph(4, boundingBox);
     }
 
     @Test
     public void testFirstEqualsSecondTrivialCase() {
-        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(this.linearGraph);
-        double distance = shortestPath.calculateDistance(this.linearGraph.getNode(2), this.linearGraph.getNode(2));
+        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(linearGraph);
+        double distance = shortestPath.calculateDistance(linearGraph.getNode(2), linearGraph.getNode(2));
         assertEquals(0.0, distance, 0.0);
     }
 
     @Test
     public void testLinearGraph() {
-        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(this.linearGraph);
-        double distance = shortestPath.calculateDistance(this.linearGraph.getNode(0), this.linearGraph.getNode(7));
+        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(linearGraph);
+        double distance = shortestPath.calculateDistance(linearGraph.getNode(0), linearGraph.getNode(7));
         assertEquals(7.0, distance, 0.0);
     }
 
     @Test
     public void testCircularGraph() {
-        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(this.circularGraph);
-        double distance = shortestPath.calculateDistance(this.circularGraph.getNode(0), this.circularGraph.getNode(7));
+        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(circularGraph);
+        double distance = shortestPath.calculateDistance(circularGraph.getNode(0), circularGraph.getNode(7));
         assertEquals(3.0, distance, 0.0);
     }
 
     @Test
     public void testTreeGraph() {
-        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(this.treeGraph);
-        double distance = shortestPath.calculateDistance(this.treeGraph.getNode(0), this.treeGraph.getNode(7));
+        Metric<Node<?, ?, ?>> shortestPath = new ShortestPathMetric(treeGraph);
+        double distance = shortestPath.calculateDistance(treeGraph.getNode(0), treeGraph.getNode(7));
         assertEquals(4.0, distance, 0.0);
     }
 

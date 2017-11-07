@@ -63,27 +63,27 @@ public class ConsensusAlignment {
     ConsensusAlignment(ConsensusBuilder.Builder builder) {
 
         // convert given input structures to data model
-        this.input = builder.structuralMotifs.stream()
+        input = builder.structuralMotifs.stream()
                 .map(ConsensusAlignment::toContainer)
                 .collect(Collectors.toList());
 
-        logger.info("consensus alignment initialized with {} structures", this.input.size());
+        logger.info("consensus alignment initialized with {} structures", input.size());
 
-        this.clusterCutoff = builder.clusterCutoff;
-        this.alignWithinClusters = builder.alignWithinClusters;
-        this.atomFilter = builder.atomFilter;
+        clusterCutoff = builder.clusterCutoff;
+        alignWithinClusters = builder.alignWithinClusters;
+        atomFilter = builder.atomFilter;
 
         // create representation scheme if given
         RepresentationSchemeType representationSchemeType = builder.representationSchemeType;
         if (representationSchemeType != null) {
             logger.info("using representation scheme {}", representationSchemeType);
-            this.representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
+            representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
         }
 
-        this.idealSuperimposition = builder.idealSuperimposition;
+        idealSuperimposition = builder.idealSuperimposition;
 
         // check if all substructures are of the same size
-        if (this.input.stream()
+        if (input.stream()
                 .map(ConsensusContainer::getStructuralMotif)
                 .map(StructuralMotif::getAllLeafSubstructures)
                 .map(List::size)
@@ -92,18 +92,18 @@ public class ConsensusAlignment {
                     "calculate a consensus alignment");
         }
 
-        this.iterationCounter = 0;
-        this.alignmentTrace = new ArrayList<>();
-        this.alignmentCounts = new ArrayList<>();
+        iterationCounter = 0;
+        alignmentTrace = new ArrayList<>();
+        alignmentCounts = new ArrayList<>();
 
         // initialize tree storage
-        this.consensusTrees = new ArrayList<>();
+        consensusTrees = new ArrayList<>();
 
         // calculate initial alignments
         calculateInitialAlignments();
 
         logger.info("{} initial alignment pairs were computed, in total we have to compute {} alignments",
-                this.alignments.size(), this.alignments.size() * (this.input.size() - 1));
+                alignments.size(), alignments.size() * (input.size() - 1));
 
         // create initial tree leaves
         createTreeLeaves();
@@ -112,7 +112,7 @@ public class ConsensusAlignment {
         // split top level tree
         splitTopLevelTree();
         // align within clusters if specified
-        if (this.alignWithinClusters) {
+        if (alignWithinClusters) {
             alignWithinClusters();
         }
     }
@@ -129,11 +129,11 @@ public class ConsensusAlignment {
     }
 
     public List<Double> getAlignmentTrace() {
-        return this.alignmentTrace;
+        return alignmentTrace;
     }
 
     public List<BinaryTree<ConsensusContainer>> getClusters() {
-        return this.clusters;
+        return clusters;
     }
 
     /**
@@ -143,11 +143,11 @@ public class ConsensusAlignment {
      * @throws IOException If the path cannot be written to.
      */
     public void writeClusters(Path outputPath) throws IOException {
-        logger.info("writing {} clusters to {}", this.clusters.size(), outputPath);
+        logger.info("writing {} clusters to {}", clusters.size(), outputPath);
         Files.createDirectories(outputPath);
-        for (int i = 0; i < this.clusters.size(); i++) {
+        for (int i = 0; i < clusters.size(); i++) {
             String clusterBaseLocation = "cluster_" + (i + 1) + "/";
-            BinaryTree<ConsensusContainer> currentCluster = this.clusters.get(i);
+            BinaryTree<ConsensusContainer> currentCluster = clusters.get(i);
             // write consensus
             if (currentCluster.getLeafNodes().size() > 1) {
                 StructureWriter.writeLeafSubstructures(currentCluster.getRoot().getData().getStructuralMotif().getAllLeafSubstructures(),
@@ -171,27 +171,27 @@ public class ConsensusAlignment {
      */
     private void alignWithinClusters() {
         // skip one-trees
-        this.clusters.stream().filter(cluster -> cluster.size() > 1).forEach(cluster -> {
+        clusters.stream().filter(cluster -> cluster.size() > 1).forEach(cluster -> {
             // reference is always the root consensus
             ConsensusContainer reference = cluster.getRoot().getData();
             cluster.getLeafNodes().stream().map(BinaryTreeNode::getData).forEach(consensusContainer -> {
                 SubstructureSuperimposition superimposition;
-                if (this.representationScheme == null) {
-                    superimposition = this.idealSuperimposition ?
+                if (representationScheme == null) {
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference.getStructuralMotif(),
-                                    consensusContainer.getStructuralMotif(), this.atomFilter) :
+                                    consensusContainer.getStructuralMotif(), atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getStructuralMotif().getAllLeafSubstructures(),
-                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), this.atomFilter);
+                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), atomFilter);
                 } else {
-                    superimposition = this.idealSuperimposition ?
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference.getStructuralMotif(),
-                                    consensusContainer.getStructuralMotif(), this.representationScheme) :
+                                    consensusContainer.getStructuralMotif(), representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getStructuralMotif().getAllLeafSubstructures(),
-                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), this.representationScheme);
+                                    consensusContainer.getStructuralMotif().getAllLeafSubstructures(), representationScheme);
                 }
                 consensusContainer.setSuperimposition(superimposition);
             });
@@ -203,10 +203,10 @@ public class ConsensusAlignment {
      */
     private void splitTopLevelTree() {
         // create list where all trees are stored
-        this.clusters = new ArrayList<>();
-        this.clusters.add(getTopConsensusTree());
+        clusters = new ArrayList<>();
+        clusters.add(getTopConsensusTree());
         // start iterating over the list
-        ListIterator<BinaryTree<ConsensusContainer>> clustersIterator = this.clusters.listIterator();
+        ListIterator<BinaryTree<ConsensusContainer>> clustersIterator = clusters.listIterator();
         while (clustersIterator.hasNext()) {
             // get current node and child nodes
             BinaryTreeNode<ConsensusContainer> currentNode = clustersIterator.next().getRoot();
@@ -228,7 +228,7 @@ public class ConsensusAlignment {
             }
 
             // split tree if distance exceeds cutoff value
-            if (leftDistance > this.clusterCutoff || rightDistance > this.clusterCutoff) {
+            if (leftDistance > clusterCutoff || rightDistance > clusterCutoff) {
 
                 // remove parent tree
                 clustersIterator.remove();
@@ -248,7 +248,7 @@ public class ConsensusAlignment {
      * @return the top-level tree
      */
     public BinaryTree<ConsensusContainer> getTopConsensusTree() {
-        return this.consensusTrees.get(this.consensusTrees.size() - 1);
+        return consensusTrees.get(consensusTrees.size() - 1);
     }
 
     /**
@@ -257,7 +257,7 @@ public class ConsensusAlignment {
      * @return all trees that were constructed
      */
     public List<BinaryTree<ConsensusContainer>> getConsensusTrees() {
-        return this.consensusTrees;
+        return consensusTrees;
     }
 
     /**
@@ -265,7 +265,7 @@ public class ConsensusAlignment {
      */
     private void calculateConsensusAlignment() {
         // iteratively reduce candidates
-        while (!this.alignments.isEmpty()) {
+        while (!alignments.isEmpty()) {
             findAndMergeClosestPair();
         }
     }
@@ -276,7 +276,7 @@ public class ConsensusAlignment {
      * @return The consensus score
      */
     public double getConsensusScore() {
-        return this.consensusScore;
+        return consensusScore;
     }
 
     /**
@@ -285,7 +285,7 @@ public class ConsensusAlignment {
      * @return The normalized consensus score.
      */
     public double getNormalizedConsensusScore() {
-        return this.consensusScore / (this.iterationCounter * this.input.get(0).getStructuralMotif().size());
+        return consensusScore / (iterationCounter * input.get(0).getStructuralMotif().size());
     }
 
     /**
@@ -293,21 +293,21 @@ public class ConsensusAlignment {
      */
     private void findAndMergeClosestPair() {
 
-        this.iterationCounter++;
+        iterationCounter++;
 
-        Pair<ConsensusContainer> closestPair = this.alignments.firstEntry().getValue();
-        SubstructureSuperimposition closestPairSuperimposition = this.alignments.firstKey();
+        Pair<ConsensusContainer> closestPair = alignments.firstEntry().getValue();
+        SubstructureSuperimposition closestPairSuperimposition = alignments.firstKey();
         double closestPairRmsd = closestPairSuperimposition.getRmsd();
-        this.alignmentTrace.add(closestPairRmsd);
-        this.alignmentCounts.add(this.input.size());
+        alignmentTrace.add(closestPairRmsd);
+        alignmentCounts.add(input.size());
 
-        logger.debug("closest pair for iteration {} is {} with RMSD {}", this.iterationCounter, closestPair, closestPairRmsd);
+        logger.debug("closest pair for iteration {} is {} with RMSD {}", iterationCounter, closestPair, closestPairRmsd);
 
         // sum up closest pair RMSD
-        this.consensusScore += closestPairRmsd;
+        consensusScore += closestPairRmsd;
 
-        createConsensus(this.alignments.firstEntry());
-        updateAlignments(this.alignments.firstEntry());
+        createConsensus(alignments.firstEntry());
+        updateAlignments(alignments.firstEntry());
     }
 
     /**
@@ -319,7 +319,7 @@ public class ConsensusAlignment {
             Pair<ConsensusContainer>> substructurePair) {
 
         Iterator<Map.Entry<SubstructureSuperimposition, Pair<ConsensusContainer>>> alignmentsIterator =
-                this.alignments.entrySet().iterator();
+                alignments.entrySet().iterator();
 
         while (alignmentsIterator.hasNext()) {
 
@@ -340,39 +340,39 @@ public class ConsensusAlignment {
         }
 
         // remove from input list
-        this.input.removeIf(inputStructure -> inputStructure.equals(substructurePair.getValue().getFirst()));
-        this.input.removeIf(inputStructure -> inputStructure.equals(substructurePair.getValue().getSecond()));
+        input.removeIf(inputStructure -> inputStructure.equals(substructurePair.getValue().getFirst()));
+        input.removeIf(inputStructure -> inputStructure.equals(substructurePair.getValue().getSecond()));
 
         // add new alignments
-        for (ConsensusContainer inputStructure : this.input) {
+        for (ConsensusContainer inputStructure : input) {
 
             // calculate superimposition
             SubstructureSuperimposition superimposition;
-            if (this.representationScheme == null) {
-                superimposition = this.idealSuperimposition ?
+            if (representationScheme == null) {
+                superimposition = idealSuperimposition ?
                         SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                this.currentConsensus.getStructuralMotif(),
-                                inputStructure.getStructuralMotif(), this.atomFilter) :
+                                currentConsensus.getStructuralMotif(),
+                                inputStructure.getStructuralMotif(), atomFilter) :
                         SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                this.currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
-                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), this.atomFilter);
+                                currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
+                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), atomFilter);
             } else {
-                superimposition = this.idealSuperimposition ?
+                superimposition = idealSuperimposition ?
                         SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
-                                this.currentConsensus.getStructuralMotif(),
-                                inputStructure.getStructuralMotif(), this.representationScheme) :
+                                currentConsensus.getStructuralMotif(),
+                                inputStructure.getStructuralMotif(), representationScheme) :
                         SubstructureSuperimposer.calculateSubstructureSuperimposition(
-                                this.currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
-                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), this.representationScheme);
+                                currentConsensus.getStructuralMotif().getAllLeafSubstructures(),
+                                inputStructure.getStructuralMotif().getAllLeafSubstructures(), representationScheme);
             }
 
             // store alignment
-            Pair<ConsensusContainer> alignmentPair = new Pair<>(this.currentConsensus, inputStructure);
-            this.alignments.put(superimposition, alignmentPair);
+            Pair<ConsensusContainer> alignmentPair = new Pair<>(currentConsensus, inputStructure);
+            alignments.put(superimposition, alignmentPair);
         }
 
         // add consensusObservation to itemsetObservations
-        this.input.add(this.currentConsensus);
+        input.add(currentConsensus);
     }
 
     /**
@@ -410,17 +410,17 @@ public class ConsensusAlignment {
         // collect intersecting, filtered and sorted atoms
         List<List<Atom>> referenceAtoms;
         List<List<Atom>> candidateAtoms;
-        if (this.representationScheme == null) {
+        if (representationScheme == null) {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
-                            .filter(this.atomFilter)
+                            .filter(atomFilter)
                             .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
                             .sorted(Comparator.comparing(Atom::getAtomName))
                             .collect(Collectors.toList()))
                     .collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
-                            .filter(this.atomFilter)
+                            .filter(atomFilter)
                             .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
                             .sorted(Comparator.comparing(Atom::getAtomName))
                             .collect(Collectors.toList()))
@@ -429,13 +429,13 @@ public class ConsensusAlignment {
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> {
                         List<Atom> atomList = new ArrayList<>();
-                        atomList.add(this.representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getFirst()));
+                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getFirst()));
                         return atomList;
                     }).collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> {
                         List<Atom> atomList = new ArrayList<>();
-                        atomList.add(this.representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getSecond()));
+                        atomList.add(representationScheme.determineRepresentingAtom(pairSetEntry.getKey().getSecond()));
                         return atomList;
                     })
                     .collect(Collectors.toList());
@@ -477,7 +477,7 @@ public class ConsensusAlignment {
             consensusLeaveSubstructures.add(leafSubstructure);
             leafCounter++;
         }
-        this.currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafSubstructures(consensusLeaveSubstructures), true);
+        currentConsensus = new ConsensusContainer(StructuralMotif.fromLeafSubstructures(consensusLeaveSubstructures), true);
 
         // create tree node
         BinaryTreeNode<ConsensusContainer> leftNode;
@@ -485,10 +485,10 @@ public class ConsensusAlignment {
         BinaryTreeNode<ConsensusContainer> consensusNode;
 
         // both nodes have to be leaves
-        if (this.iterationCounter == 1) {
+        if (iterationCounter == 1) {
             leftNode = findLeave(substructurePair.getValue().getFirst());
             rightNode = findLeave(substructurePair.getValue().getSecond());
-            consensusNode = new BinaryTreeNode<>(this.currentConsensus, leftNode, rightNode);
+            consensusNode = new BinaryTreeNode<>(currentConsensus, leftNode, rightNode);
         } else {
             // try to find matching node in existing tree
             leftNode = findNode(substructurePair.getValue().getFirst());
@@ -502,13 +502,13 @@ public class ConsensusAlignment {
             if (rightNode == null) {
                 rightNode = findLeave(substructurePair.getValue().getSecond());
             }
-            consensusNode = new BinaryTreeNode<>(this.currentConsensus, leftNode, rightNode);
+            consensusNode = new BinaryTreeNode<>(currentConsensus, leftNode, rightNode);
         }
 
         // create and set consensus tree
         BinaryTree<ConsensusContainer> consensusTree = new BinaryTree<>(consensusNode);
-        this.currentConsensus.setConsensusTree(consensusTree);
-        this.consensusTrees.add(consensusTree);
+        currentConsensus.setConsensusTree(consensusTree);
+        consensusTrees.add(consensusTree);
 
         // calculate consensus distances (half the RMSD of the consensus alignment)
         // FIXME something really strange happens here when modifying the values of the map they are not reflected to the tree
@@ -525,7 +525,7 @@ public class ConsensusAlignment {
      * @return the corresponding leave
      */
     private BinaryTreeNode<ConsensusContainer> findLeave(ConsensusContainer consensusContainer) {
-        return this.leaves.stream()
+        return leaves.stream()
                 .filter(leave -> leave.getData().equals(consensusContainer))
                 .findFirst().orElseThrow(() -> new ConsensusException("failed during tree construction"));
     }
@@ -539,7 +539,7 @@ public class ConsensusAlignment {
      */
     private BinaryTreeNode<ConsensusContainer> findNode(ConsensusContainer consensusContainer) {
         BinaryTreeNode<ConsensusContainer> nodeForObservation = null;
-        for (BinaryTree<ConsensusContainer> tree : this.consensusTrees) {
+        for (BinaryTree<ConsensusContainer> tree : consensusTrees) {
             nodeForObservation = tree.findNode(consensusContainer);
             if (nodeForObservation != null) {
                 break;
@@ -556,18 +556,18 @@ public class ConsensusAlignment {
      */
     private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure>, Set<String>> pairListEntry) {
 
-        if (this.representationScheme == null) {
+        if (representationScheme == null) {
             pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
-                    .filter(this.atomFilter)
+                    .filter(atomFilter)
                     .map(Atom::getAtomName)
                     .collect(Collectors.toSet()));
             pairListEntry.getValue().retainAll(pairListEntry.getKey().getSecond().getAllAtoms().stream()
-                    .filter(this.atomFilter)
+                    .filter(atomFilter)
                     .map(Atom::getAtomName)
                     .collect(Collectors.toSet()));
         } else {
-            pairListEntry.getValue().add(this.representationScheme.determineRepresentingAtom(pairListEntry.getKey().getFirst()).getAtomName());
-            pairListEntry.getValue().add(this.representationScheme.determineRepresentingAtom(pairListEntry.getKey().getSecond()).getAtomName());
+            pairListEntry.getValue().add(representationScheme.determineRepresentingAtom(pairListEntry.getKey().getFirst()).getAtomName());
+            pairListEntry.getValue().add(representationScheme.determineRepresentingAtom(pairListEntry.getKey().getSecond()).getAtomName());
         }
     }
 
@@ -575,7 +575,7 @@ public class ConsensusAlignment {
      * Initially calculates the leaves of the alignment tree.
      */
     private void createTreeLeaves() {
-        this.leaves = this.input.stream()
+        leaves = input.stream()
                 .map(BinaryTreeNode::new)
                 .collect(Collectors.toList());
     }
@@ -586,44 +586,44 @@ public class ConsensusAlignment {
      */
 
     private void calculateInitialAlignments() {
-        this.alignments = new TreeMap<>(Comparator.comparing(SubstructureSuperimposition::getRmsd));
-        double[][] temporaryDistanceMatrix = new double[this.input.size()][this.input.size()];
+        alignments = new TreeMap<>(Comparator.comparing(SubstructureSuperimposition::getRmsd));
+        double[][] temporaryDistanceMatrix = new double[input.size()][input.size()];
         List<ConsensusContainer> distanceMatrixLabels = new ArrayList<>();
         // initially append first label
-        distanceMatrixLabels.add(this.input.get(0));
+        distanceMatrixLabels.add(input.get(0));
 
         int alignmentCounter = 0;
-        for (int i = 0; i < this.input.size() - 1; i++) {
+        for (int i = 0; i < input.size() - 1; i++) {
 
-            for (int j = i + 1; j < this.input.size(); j++) {
+            for (int j = i + 1; j < input.size(); j++) {
 
-                StructuralMotif reference = this.input.get(i).getStructuralMotif();
-                StructuralMotif candidate = this.input.get(j).getStructuralMotif();
+                StructuralMotif reference = input.get(i).getStructuralMotif();
+                StructuralMotif candidate = input.get(j).getStructuralMotif();
 
                 // calculate superimposition
                 SubstructureSuperimposition superimposition;
-                if (this.representationScheme == null) {
-                    superimposition = this.idealSuperimposition ?
+                if (representationScheme == null) {
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    candidate, this.atomFilter) :
+                                    candidate, atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), this.atomFilter);
+                                    candidate.getAllLeafSubstructures(), atomFilter);
                 } else {
-                    superimposition = this.idealSuperimposition ?
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    candidate, this.representationScheme) :
+                                    candidate, representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), this.representationScheme);
+                                    candidate.getAllLeafSubstructures(), representationScheme);
                 }
 
                 // store alignment
                 Pair<ConsensusContainer> alignmentPair = new Pair<>(new ConsensusContainer(reference, false),
                         new ConsensusContainer(candidate, false));
-                this.alignments.put(superimposition, alignmentPair);
+                alignments.put(superimposition, alignmentPair);
 
                 // store distance matrix
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();
@@ -631,14 +631,14 @@ public class ConsensusAlignment {
 
                 alignmentCounter++;
                 if (alignmentCounter % 1000 == 0) {
-                    logger.info("computed {} of {} initial alignments ", alignmentCounter, this.input.size() *
-                            ((this.input.size() - 1) / 2));
+                    logger.info("computed {} of {} initial alignments ", alignmentCounter, input.size() *
+                            ((input.size() - 1) / 2));
                 }
             }
             // store label
-            distanceMatrixLabels.add(this.input.get(i + 1));
+            distanceMatrixLabels.add(input.get(i + 1));
         }
-        this.distanceMatrix = new LabeledSymmetricMatrix<>(temporaryDistanceMatrix);
-        this.distanceMatrix.setColumnLabels(distanceMatrixLabels);
+        distanceMatrix = new LabeledSymmetricMatrix<>(temporaryDistanceMatrix);
+        distanceMatrix.setColumnLabels(distanceMatrixLabels);
     }
 }

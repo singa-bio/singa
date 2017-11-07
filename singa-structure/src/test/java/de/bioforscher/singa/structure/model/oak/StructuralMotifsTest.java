@@ -30,16 +30,16 @@ public class StructuralMotifsTest {
                 .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()
                 .parse();
-        this.structuralMotif = StructuralMotif.fromLeafSubstructures(motifStructure.getAllLeafSubstructures());
+        structuralMotif = StructuralMotif.fromLeafSubstructures(motifStructure.getAllLeafSubstructures());
     }
 
     @Test
     public void shouldAssignExchanges() {
-        StructuralMotifs.assignComplexExchanges(this.structuralMotif, MatcherFamily.GUTTERIDGE);
+        StructuralMotifs.assignComplexExchanges(structuralMotif, MatcherFamily.GUTTERIDGE);
         assertTrue(MatcherFamily.GUTTERIDGE.stream()
                 .map(MatcherFamily::getMembers)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toSet()).containsAll(this.structuralMotif.getAllAminoAcids()
+                .collect(Collectors.toSet()).containsAll(structuralMotif.getAllAminoAcids()
                         .stream()
                         .map(AminoAcid::getExchangeableFamilies)
                         .flatMap(Collection::stream)

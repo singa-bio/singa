@@ -21,6 +21,6 @@ public enum AnnotationType {
 
     @Override
     public String toString() {
-        return this.outputString;
+        return outputString;
     }
 }

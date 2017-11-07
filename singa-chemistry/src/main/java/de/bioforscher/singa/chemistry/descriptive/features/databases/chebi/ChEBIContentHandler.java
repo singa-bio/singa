@@ -27,7 +27,7 @@ public class ChEBIContentHandler implements ContentHandler {
     private String primaryIdentifier;
 
     public ChEBIContentHandler() {
-        this.smilesBuilder = new StringBuilder();
+        smilesBuilder = new StringBuilder();
     }
 
     public ChEBIContentHandler(String primaryIdentifier) {
@@ -36,20 +36,20 @@ public class ChEBIContentHandler implements ContentHandler {
     }
 
     public Species getSpecies() {
-        if (this.molarMass == null) {
-            this.molarMass = new MolarMass(10.0, ChEBIDatabase.origin);
+        if (molarMass == null) {
+            molarMass = new MolarMass(10.0, ChEBIDatabase.origin);
         }
         if (primaryIdentifier == null) {
-            return new Species.Builder(this.identifier.toString())
-                    .name(this.name)
-                    .assignFeature(this.molarMass)
+            return new Species.Builder(identifier.toString())
+                    .name(name)
+                    .assignFeature(molarMass)
                     .assignFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin))
                     .additionalIdentifier(inChIKey)
                     .build();
         } else {
-            return new Species.Builder(this.primaryIdentifier)
-                    .name(this.name)
-                    .assignFeature(this.molarMass)
+            return new Species.Builder(primaryIdentifier)
+                    .name(name)
+                    .assignFeature(molarMass)
                     .assignFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin))
                     .additionalIdentifier(new ChEBIIdentifier(identifier.toString()))
                     .additionalIdentifier(inChIKey)
@@ -90,41 +90,41 @@ public class ChEBIContentHandler implements ContentHandler {
             case "mass":
             case "smiles":
             case "inchiKey":
-                this.currentTag = qName;
+                currentTag = qName;
                 break;
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "chebiId":
             case "chebiAsciiName":
             case "mass":
             case "smiles":
             case "inchiKey":
-                this.currentTag = "";
+                currentTag = "";
                 break;
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        switch (this.currentTag) {
+        switch (currentTag) {
             case "chebiId": {
                 if (identifier == null) {
                     final String precursorString = new String(ch, start, length);
-                    this.identifier = new SimpleStringIdentifier(precursorString);
+                    identifier = new SimpleStringIdentifier(precursorString);
                 }
                 break;
             }
             case "chebiAsciiName": {
-                this.name = new String(ch, start, length);
+                name = new String(ch, start, length);
                 break;
             }
             case "mass": {
                 final String precursorString = new String(ch, start, length);
-                this.molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.origin);
+                molarMass = new MolarMass(Double.valueOf(precursorString), ChEBIDatabase.origin);
                 break;
             }
             case "smiles": {
@@ -133,7 +133,7 @@ public class ChEBIContentHandler implements ContentHandler {
             }
             case "inchiKey": {
                 final String precursorString = new String(ch, start, length);
-                this.inChIKey = new InChIKey(precursorString);
+                inChIKey = new InChIKey(precursorString);
                 break;
             }
         }

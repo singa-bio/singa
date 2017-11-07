@@ -49,7 +49,7 @@ public class SBMLParameterConverter {
         if (unit.equalsIgnoreCase("dimensionless") || unit.isEmpty()) {
             parameterUnit = ONE;
         } else {
-            parameterUnit = this.units.get(unit);
+            parameterUnit = units.get(unit);
         }
         SimulationParameter<?> simulationParameter = new SimulationParameter<>(primaryIdentifier,
                 Quantities.getQuantity(value, parameterUnit));

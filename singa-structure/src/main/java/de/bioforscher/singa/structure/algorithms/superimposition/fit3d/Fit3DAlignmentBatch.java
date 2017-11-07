@@ -47,20 +47,20 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private List<Fit3DMatch> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
-        this.queryMotif = builder.queryMotif;
-        this.multiParser = builder.multiParser;
-        this.parallelism = builder.parallelism;
-        this.skipAlphaCarbonTargets = builder.skipAlphaCarbonTargets;
-        this.skipBackboneTargets = builder.skipBackboneTargets;
-        this.executorService = Executors.newWorkStealingPool(this.parallelism);
-        this.atomFilter = builder.atomFilter;
-        this.representationScheme = builder.representationScheme;
-        this.rmsdCutoff = builder.rmsdCutoff;
-        this.distanceTolerance = builder.distanceTolerance;
-        this.statisticalModel = builder.statisticalModel;
-        logger.info("Fit3D alignment batch initialized with {} target structures", this.multiParser.getNumberOfQueuedStructures());
+        queryMotif = builder.queryMotif;
+        multiParser = builder.multiParser;
+        parallelism = builder.parallelism;
+        skipAlphaCarbonTargets = builder.skipAlphaCarbonTargets;
+        skipBackboneTargets = builder.skipBackboneTargets;
+        executorService = Executors.newWorkStealingPool(parallelism);
+        atomFilter = builder.atomFilter;
+        representationScheme = builder.representationScheme;
+        rmsdCutoff = builder.rmsdCutoff;
+        distanceTolerance = builder.distanceTolerance;
+        statisticalModel = builder.statisticalModel;
+        logger.info("Fit3D alignment batch initialized with {} target structures", multiParser.getNumberOfQueuedStructures());
         computeAlignments();
-        logger.info("found {} matches in {} target structures", this.allMatches.size(), this.multiParser.getNumberOfQueuedStructures());
+        logger.info("found {} matches in {} target structures", allMatches.size(), multiParser.getNumberOfQueuedStructures());
     }
 
     /**
@@ -70,12 +70,12 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
         // create the exact number of jobs
         List<Fit3DCalculator> jobs = new ArrayList<>();
-        for (int i = 0; i < this.multiParser.getNumberOfQueuedStructures(); i++) {
+        for (int i = 0; i < multiParser.getNumberOfQueuedStructures(); i++) {
             jobs.add(new Fit3DCalculator());
         }
 
         try {
-            this.allMatches = this.executorService.invokeAll(jobs).stream()
+            allMatches = executorService.invokeAll(jobs).stream()
                     .map(future -> {
                         try {
                             return future.get();
@@ -91,12 +91,12 @@ public class Fit3DAlignmentBatch implements Fit3D {
             logger.error("Ft3D parallel execution failed", e);
         }
 
-        Collections.sort(this.allMatches);
+        Collections.sort(allMatches);
 
         // calculate de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.statistics
-        if (this.statisticalModel != null) {
+        if (statisticalModel != null) {
             try {
-                this.statisticalModel.calculatePvalues(this.allMatches);
+                statisticalModel.calculatePvalues(allMatches);
             } catch (Exception e) {
                 logger.warn("failed to calculate p-values", e);
             }
@@ -110,7 +110,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
      */
     @Override
     public List<Fit3DMatch> getMatches() {
-        return this.allMatches;
+        return allMatches;
     }
 
     /**
@@ -130,42 +130,42 @@ public class Fit3DAlignmentBatch implements Fit3D {
         public List<Fit3DMatch> call() throws Exception {
             // FIXME here we are dealing only with the first model
             Fit3D fit3d;
-            if (Fit3DAlignmentBatch.this.multiParser.hasNext()) {
+            if (multiParser.hasNext()) {
                 try {
-                    Structure structure = Fit3DAlignmentBatch.this.multiParser.next();
-                    if (Fit3DAlignmentBatch.this.skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
+                    Structure structure = multiParser.next();
+                    if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
                         logger.info("ignored alpha carbon only structure {}", structure);
                         return null;
                     }
-                    if (Fit3DAlignmentBatch.this.skipBackboneTargets && Structures.isBackboneStructure(structure)) {
+                    if (skipBackboneTargets && Structures.isBackboneStructure(structure)) {
                         logger.info("ignored backbone only structure {}", structure);
                         return null;
                     }
                     Model target = structure.getFirstModel();
                     logger.info("computing Fit3D alignment against {}", target);
                     // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
-                    if (Fit3DAlignmentBatch.this.representationScheme == null) {
+                    if (representationScheme == null) {
                         fit3d = Fit3DBuilder.create()
-                                .query(Fit3DAlignmentBatch.this.queryMotif)
+                                .query(queryMotif)
                                 .target(target)
-                                .atomFilter(Fit3DAlignmentBatch.this.atomFilter)
-                                .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
-                                .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
-                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
+                                .atomFilter(atomFilter)
+                                .rmsdCutoff(rmsdCutoff)
+                                .distanceTolerance(distanceTolerance)
+                                .statisticalModel(statisticalModel)
                                 .run();
                     } else {
                         fit3d = Fit3DBuilder.create()
-                                .query(Fit3DAlignmentBatch.this.queryMotif)
+                                .query(queryMotif)
                                 .target(target)
-                                .representationScheme(Fit3DAlignmentBatch.this.representationScheme.getType())
-                                .rmsdCutoff(Fit3DAlignmentBatch.this.rmsdCutoff)
-                                .distanceTolerance(Fit3DAlignmentBatch.this.distanceTolerance)
-                                .statisticalModel(Fit3DAlignmentBatch.this.statisticalModel)
+                                .representationScheme(representationScheme.getType())
+                                .rmsdCutoff(rmsdCutoff)
+                                .distanceTolerance(distanceTolerance)
+                                .statisticalModel(statisticalModel)
                                 .run();
                     }
                     return fit3d.getMatches();
                 } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
-                    logger.warn("failed to run Fit3D against structure {}", Fit3DAlignmentBatch.this.multiParser.getCurrentPdbIdentifier(), e);
+                    logger.warn("failed to run Fit3D against structure {}", multiParser.getCurrentPdbIdentifier(), e);
                 }
             }
             return null;

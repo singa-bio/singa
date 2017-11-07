@@ -48,7 +48,7 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
         fetchResource();
         // parse xml
         try {
-            this.getXmlReader().parse(new InputSource(getFetchResult()));
+            getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {
@@ -59,7 +59,7 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
     @Override
     public Species parse() {
         parseXML();
-        return ((ChEBIContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
+        return ((ChEBIContentHandler) getXmlReader().getContentHandler()).getSpecies();
     }
 
     public static void main(String[] args) {

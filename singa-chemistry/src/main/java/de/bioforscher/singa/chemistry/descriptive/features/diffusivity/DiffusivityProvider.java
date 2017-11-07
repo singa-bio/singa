@@ -44,10 +44,10 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
         // choose which correlation to take
         if (molarMass.getValue().doubleValue() < CORRELATION_THRESHOLD.getValue().doubleValue()) {
             // use wilke correlation for entities weighting less than 10000 g/mol
-            return this.wilkeCorrelation.predict(featureable);
+            return wilkeCorrelation.predict(featureable);
         } else {
             // else use young correlation
-            return this.youngCorrelation.predict(featureable);
+            return youngCorrelation.predict(featureable);
         }
     }
 }

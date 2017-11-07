@@ -21,7 +21,7 @@ public abstract class Interaction {
     }
 
     public LeafIdentifier getSource() {
-        return this.source;
+        return source;
     }
 
     public void setSource(LeafIdentifier source) {
@@ -29,7 +29,7 @@ public abstract class Interaction {
     }
 
     public LeafIdentifier getTarget() {
-        return this.target;
+        return target;
     }
 
     public void setTarget(LeafIdentifier target) {
@@ -37,7 +37,7 @@ public abstract class Interaction {
     }
 
     public double[] getLigandCoordinate() {
-        return this.ligandCoordinate;
+        return ligandCoordinate;
     }
 
     public void setLigandCoordinate(double[] ligandCoordinate) {
@@ -45,7 +45,7 @@ public abstract class Interaction {
     }
 
     public double[] getProteinCoordinate() {
-        return this.proteinCoordinate;
+        return proteinCoordinate;
     }
 
     public void setProteinCoordinate(double[] proteinCoordinate) {
@@ -53,7 +53,7 @@ public abstract class Interaction {
     }
 
     public int getPlipIdentifier() {
-        return this.plipIdentifier;
+        return plipIdentifier;
     }
 
     public void setPlipIdentifier(int plipIdentifier) {

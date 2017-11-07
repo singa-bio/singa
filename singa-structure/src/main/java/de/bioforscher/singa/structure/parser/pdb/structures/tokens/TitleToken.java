@@ -55,15 +55,15 @@ public enum TitleToken implements PDBToken {
 
     @Override
     public Range<Integer> getColumns() {
-        return this.columns;
+        return columns;
     }
 
     @Override
     public String extract(String line) {
-        if (line.length() >= this.getColumns().getUpperBound()) {
-            return line.substring(this.getColumns().getLowerBound() - 1, this.getColumns().getUpperBound());
+        if (line.length() >= getColumns().getUpperBound()) {
+            return line.substring(getColumns().getLowerBound() - 1, getColumns().getUpperBound());
         } else {
-            return line.substring(this.getColumns().getLowerBound() - 1);
+            return line.substring(getColumns().getLowerBound() - 1);
         }
     }
 

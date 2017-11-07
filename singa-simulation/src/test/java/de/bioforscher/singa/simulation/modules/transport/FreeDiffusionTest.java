@@ -90,12 +90,12 @@ public class FreeDiffusionTest {
 
     @Test
     public void shouldReachCorrectHalfLife() {
-        logger.info("Performing free diffusion test for {} with a time step of {} and {} nodes ...", this.species.getName(), this.timeStep, this.numberOfNodes);
+        logger.info("Performing free diffusion test for {} with a time step of {} and {} nodes ...", species.getName(), timeStep, numberOfNodes);
         // setup and run simulation
-        Simulation simulation = setUpSimulation(this.numberOfNodes, this.timeStep, this.species);
-        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, this.numberOfNodes, this.species);
+        Simulation simulation = setUpSimulation(numberOfNodes, timeStep, species);
+        Quantity<Time> actualHalfLifeTime = runSimulation(simulation, numberOfNodes, species);
         // test results
-        assertEquals(this.expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1e-4);
+        assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1e-4);
     }
 
     private Simulation setUpSimulation(int numberOfNodes, Quantity<Time> timeStep, Species species) {

@@ -39,22 +39,22 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     @Override
     public String toString() {
         return "Fit3DMatch{" +
-                "substructureSuperimposition=" + this.substructureSuperimposition +
-                ", rmsd=" + this.rmsd +
-                ", pvalue=" + this.pvalue +
+                "substructureSuperimposition=" + substructureSuperimposition +
+                ", rmsd=" + rmsd +
+                ", pvalue=" + pvalue +
                 '}';
     }
 
     public SubstructureSuperimposition getSubstructureSuperimposition() {
-        return this.substructureSuperimposition;
+        return substructureSuperimposition;
     }
 
     public double getRmsd() {
-        return this.rmsd;
+        return rmsd;
     }
 
     public double getPvalue() {
-        return this.pvalue;
+        return pvalue;
     }
 
     public void setPvalue(double pvalue) {
@@ -63,15 +63,15 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
     public String toCsvLine() {
         StringJoiner stringJoiner = new StringJoiner(",");
-        String stringRepresentation = this.substructureSuperimposition.getStringRepresentation();
+        String stringRepresentation = substructureSuperimposition.getStringRepresentation();
         stringJoiner.add(stringRepresentation.replaceFirst("\\d+\\.\\d+_", ""));
-        stringJoiner.add(String.valueOf(this.rmsd));
-        stringJoiner.add(String.valueOf(this.pvalue));
+        stringJoiner.add(String.valueOf(rmsd));
+        stringJoiner.add(String.valueOf(pvalue));
         return stringJoiner.toString();
     }
 
     @Override
     public int compareTo(Fit3DMatch other) {
-        return Double.compare(this.rmsd, other.rmsd);
+        return Double.compare(rmsd, other.rmsd);
     }
 }

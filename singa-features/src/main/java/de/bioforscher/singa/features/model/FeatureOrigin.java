@@ -25,24 +25,24 @@ public class FeatureOrigin {
 
     public FeatureOrigin(OriginType originType) {
         this.originType = originType;
-        this.name = "Undefined";
-        this.publication = "Undefined ";
+        name = "Undefined";
+        publication = "Undefined ";
     }
 
     public OriginType getOriginType() {
-        return this.originType;
+        return originType;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public String getPublication() {
-        return this.publication;
+        return publication;
     }
 
     @Override
     public String toString() {
-        return this.originType == MANUAL_ANNOTATION ? "manual annotation" : this.name + " ("+ this.publication +")";
+        return originType == MANUAL_ANNOTATION ? "manual annotation" : name + " (" + publication + ")";
     }
 }

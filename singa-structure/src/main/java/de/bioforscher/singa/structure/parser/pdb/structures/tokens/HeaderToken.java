@@ -32,6 +32,6 @@ public enum HeaderToken implements PDBToken {
 
     @Override
     public Range<Integer> getColumns() {
-        return this.columns;
+        return columns;
     }
 }

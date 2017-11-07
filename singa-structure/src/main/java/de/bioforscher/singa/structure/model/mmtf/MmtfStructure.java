@@ -41,8 +41,8 @@ public class MmtfStructure implements Structure {
      */
     public MmtfStructure(byte[] bytes) {
         this.bytes = bytes;
-        this.data = bytesToStructureData(bytes);
-        this.cachedModels = new HashMap<>();
+        data = bytesToStructureData(bytes);
+        cachedModels = new HashMap<>();
     }
 
     /**

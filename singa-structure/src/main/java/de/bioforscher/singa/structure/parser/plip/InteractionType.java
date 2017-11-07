@@ -32,10 +32,10 @@ public enum InteractionType {
     }
 
     public Class<? extends Interaction> getInteractionClass() {
-        return this.interactionClass;
+        return interactionClass;
     }
 
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 }

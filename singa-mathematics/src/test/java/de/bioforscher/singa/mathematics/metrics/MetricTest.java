@@ -23,7 +23,7 @@ public class MetricTest {
 
     @Before
     public void initObjects() {
-        this.jaccard = new JaccardMetric<>();
+        jaccard = new JaccardMetric<>();
     }
 
     @Test
@@ -94,7 +94,7 @@ public class MetricTest {
         second.add("Cucumber");
         second.add("Tomato");
 
-        double jaccardDistance = this.jaccard.calculateDistance(first, second);
+        double jaccardDistance = jaccard.calculateDistance(first, second);
         assertEquals(0.8, jaccardDistance, 0.0);
     }
 
@@ -102,7 +102,7 @@ public class MetricTest {
     public void testJaccardMetricWithEmptySet() {
         Set<String> first = new HashSet<>();
         Set<String> second = new HashSet<>();
-        double jaccardDistance = this.jaccard.calculateDistance(first, second);
+        double jaccardDistance = jaccard.calculateDistance(first, second);
         assertEquals(1.0, jaccardDistance, 0.0);
     }
 

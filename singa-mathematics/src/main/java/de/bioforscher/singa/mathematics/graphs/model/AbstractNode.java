@@ -38,7 +38,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
      */
     public AbstractNode(IdentifierType identifier) {
         this.identifier = identifier;
-        this.neighbours = new ArrayList<>();
+        neighbours = new ArrayList<>();
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
     @Override
     public IdentifierType getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
     @Override
     public List<NodeType> getNeighbours() {
-        return this.neighbours;
+        return neighbours;
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
     @Override
     public void addNeighbour(NodeType node) {
-        this.neighbours.add(node);
+        neighbours.add(node);
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
      * @param node The node to remove.
      */
     public void removeNeighbour(NodeType node) {
-        this.neighbours.remove(node);
+        neighbours.remove(node);
     }
 
     /**
@@ -105,13 +105,13 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
      * @return true if the list of neighbors contains the given node.
      */
     public boolean hasNeighbour(NodeType node) {
-        return this.neighbours.contains(node);
+        return neighbours.contains(node);
     }
 
 
     @Override
     public VectorType getPosition() {
-        return this.position;
+        return position;
     }
 
     @Override
@@ -121,7 +121,7 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
     @Override
     public int getDegree() {
-        return this.neighbours.size();
+        return neighbours.size();
     }
 
     @Override
@@ -131,17 +131,17 @@ public abstract class AbstractNode<NodeType extends Node<NodeType, VectorType, I
 
         AbstractNode<?, ?, ?> that = (AbstractNode<?, ?, ?>) o;
 
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        return "Node " + this.identifier;
+        return "Node " + identifier;
     }
 
 }

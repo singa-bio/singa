@@ -24,11 +24,11 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * Private constructor to prevent external instantiation.
      */
     private ShortestPathFinder(NodeType sourceNode) {
-        this.distances = new HashMap<>();
-        this.predecessors = new HashMap<>();
-        this.queue = new LinkedList<>();
-        this.queue.offer(sourceNode);
-        this.distances.put(sourceNode, 0);
+        distances = new HashMap<>();
+        predecessors = new HashMap<>();
+        queue = new LinkedList<>();
+        queue.offer(sourceNode);
+        distances.put(sourceNode, 0);
     }
 
     /**
@@ -101,16 +101,16 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @return The shortest path if the target fulfills the predicate and null otherwise.
      */
     private LinkedList<NodeType> checkTarget(NodeType source, NodeType target, Predicate<NodeType> targetPredicate) {
-        if (!this.distances.containsKey(target)) {
+        if (!distances.containsKey(target)) {
             // until predicate is fulfilled the first time
             if (targetPredicate.test(target)) {
-                this.predecessors.put(target, source);
+                predecessors.put(target, source);
                 return getPath(target);
             }
             // calculate distance and offer to queue
-            this.distances.put(target, this.distances.get(source) + 1);
-            this.predecessors.put(target, source);
-            this.queue.offer(target);
+            distances.put(target, distances.get(source) + 1);
+            predecessors.put(target, source);
+            queue.offer(target);
         }
         return null;
     }
@@ -124,12 +124,12 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
     private LinkedList<NodeType> getPath(NodeType targetNode) {
         LinkedList<NodeType> path = new LinkedList<>();
         NodeType step = targetNode;
-        if (this.predecessors.get(step) == null) {
+        if (predecessors.get(step) == null) {
             return null;
         }
         path.add(step);
-        while (this.predecessors.get(step) != null) {
-            step = this.predecessors.get(step);
+        while (predecessors.get(step) != null) {
+            step = predecessors.get(step);
             path.add(step);
         }
         Collections.reverse(path);

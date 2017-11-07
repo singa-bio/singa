@@ -45,17 +45,17 @@ public class TurnoverNumber extends AbstractFeature<Quantity<Frequency>> impleme
         // transform to specified amount
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half
-        this.halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
+        halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
     }
 
     @Override
     public Quantity<Frequency> getScaledQuantity() {
-        return this.scaledQuantity;
+        return scaledQuantity;
     }
 
     @Override
     public Quantity<Frequency> getHalfScaledQuantity() {
-        return this.halfScaledQuantity;
+        return halfScaledQuantity;
     }
 
 }

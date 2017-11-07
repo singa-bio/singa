@@ -43,7 +43,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      * Creates a new empty graph.
      */
     public AutomatonGraph() {
-        this.cellSections = new HashMap<>();
+        cellSections = new HashMap<>();
     }
 
     /**
@@ -54,7 +54,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      */
     public AutomatonGraph(int nodeCapacity, int edgeCapacity) {
         super(nodeCapacity, edgeCapacity);
-        this.cellSections = new HashMap<>();
+        cellSections = new HashMap<>();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
 
     @Override
     public Integer nextNodeIdentifier() {
-        return this.nextNodeIdentifier++;
+        return nextNodeIdentifier++;
     }
 
     /**
@@ -90,7 +90,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      * @param concentration The concentration.
      */
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        this.getNodes().forEach(node -> node.setConcentration(entity, concentration));
+        getNodes().forEach(node -> node.setConcentration(entity, concentration));
     }
 
     /**
@@ -99,7 +99,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      * @return The cell sections.
      */
     public Set<CellSection> getCellSections() {
-        return new HashSet<>(this.cellSections.values());
+        return new HashSet<>(cellSections.values());
     }
 
     /**
@@ -109,7 +109,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      * @return The cell section.
      */
     public CellSection getCellSection(String identifier) {
-        return this.cellSections.get(identifier);
+        return cellSections.get(identifier);
     }
 
     /**
@@ -118,7 +118,7 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
      * @param cellSection The cell section.
      */
     public void addCellSection(CellSection cellSection) {
-        this.cellSections.put(cellSection.getIdentifier(), cellSection);
+        cellSections.put(cellSection.getIdentifier(), cellSection);
     }
 
     /**
@@ -132,17 +132,17 @@ public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, 
     public void addNodesToCompartment(EnclosedCompartment enclosedCompartment, Rectangle rectangle) {
         Set<AutomatonNode> compartmentContent = new HashSet<>();
         Rectangle r = new Rectangle(rectangle.getTopRightVertex(), rectangle.getBottomLeftVertex());
-        this.getNodes().forEach(node -> {
+        getNodes().forEach(node -> {
             if (node.getPosition().canBePlacedIn(r)) {
                 compartmentContent.add(node);
                 node.setCellSection(enclosedCompartment);
             }
         });
         if (!compartmentContent.isEmpty()) {
-            this.cellSections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
+            cellSections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
             Membrane membrane = enclosedCompartment.generateMembrane();
             enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
-            this.cellSections.put(membrane.getIdentifier(), membrane);
+            cellSections.put(membrane.getIdentifier(), membrane);
         }
     }
 

@@ -49,26 +49,26 @@ public class XForm extends Group {
     public Rotate rx = new Rotate();
 
     {
-        this.rx.setAxis(Rotate.X_AXIS);
+        rx.setAxis(Rotate.X_AXIS);
     }
 
     public Rotate ry = new Rotate();
 
     {
-        this.ry.setAxis(Rotate.Y_AXIS);
+        ry.setAxis(Rotate.Y_AXIS);
     }
 
     public Rotate rz = new Rotate();
 
     {
-        this.rz.setAxis(Rotate.Z_AXIS);
+        rz.setAxis(Rotate.Z_AXIS);
     }
 
     public Scale s = new Scale();
 
     public XForm() {
         super();
-        getTransforms().addAll(this.translate, this.rz, this.ry, this.rx, this.s);
+        getTransforms().addAll(translate, rz, ry, rx, s);
     }
 
     public XForm(RotateOrder rotateOrder) {
@@ -76,130 +76,130 @@ public class XForm extends Group {
         // choose the order of rotations based on the rotateOrder
         switch (rotateOrder) {
             case XYZ:
-                getTransforms().addAll(this.translate, this.p, this.rz, this.ry, this.rx, this.s, this.ip);
+                getTransforms().addAll(translate, p, rz, ry, rx, s, ip);
                 break;
             case YXZ:
-                getTransforms().addAll(this.translate, this.p, this.rz, this.rx, this.ry, this.s, this.ip);
+                getTransforms().addAll(translate, p, rz, rx, ry, s, ip);
                 break;
             case YZX:
-                getTransforms().addAll(this.translate, this.p, this.rx, this.rz, this.ry, this.s, this.ip);  // For Camera
+                getTransforms().addAll(translate, p, rx, rz, ry, s, ip);  // For Camera
                 break;
             case ZXY:
-                getTransforms().addAll(this.translate, this.p, this.ry, this.rx, this.rz, this.s, this.ip);
+                getTransforms().addAll(translate, p, ry, rx, rz, s, ip);
                 break;
             case ZYX:
-                getTransforms().addAll(this.translate, this.p, this.rx, this.ry, this.rz, this.s, this.ip);
+                getTransforms().addAll(translate, p, rx, ry, rz, s, ip);
                 break;
         }
     }
 
     public void setTranslate(double x, double y, double z) {
-        this.translate.setX(x);
-        this.translate.setY(y);
-        this.translate.setZ(z);
+        translate.setX(x);
+        translate.setY(y);
+        translate.setZ(z);
     }
 
     public void setTranslate(double x, double y) {
-        this.translate.setX(x);
-        this.translate.setY(y);
+        translate.setX(x);
+        translate.setY(y);
     }
 
     public void setTx(double x) {
-        this.translate.setX(x);
+        translate.setX(x);
     }
 
     public void setTy(double y) {
-        this.translate.setY(y);
+        translate.setY(y);
     }
 
     public void setTz(double z) {
-        this.translate.setZ(z);
+        translate.setZ(z);
     }
 
     public void setRotate(double x, double y, double z) {
-        this.rx.setAngle(x);
-        this.ry.setAngle(y);
-        this.rz.setAngle(z);
+        rx.setAngle(x);
+        ry.setAngle(y);
+        rz.setAngle(z);
     }
 
     public void setRotateX(double x) {
-        this.rx.setAngle(x);
+        rx.setAngle(x);
     }
 
     public void setRotateY(double y) {
-        this.ry.setAngle(y);
+        ry.setAngle(y);
     }
 
     public void setRotateZ(double z) {
-        this.rz.setAngle(z);
+        rz.setAngle(z);
     }
 
     public void setRy(double y) {
-        this.ry.setAngle(y);
+        ry.setAngle(y);
     }
 
     public void setRz(double z) {
-        this.rz.setAngle(z);
+        rz.setAngle(z);
     }
 
     public void setScale(double scaleFactor) {
-        this.s.setX(scaleFactor);
-        this.s.setY(scaleFactor);
-        this.s.setZ(scaleFactor);
+        s.setX(scaleFactor);
+        s.setY(scaleFactor);
+        s.setZ(scaleFactor);
     }
 
     public void setSx(double x) {
-        this.s.setX(x);
+        s.setX(x);
     }
 
     public void setSy(double y) {
-        this.s.setY(y);
+        s.setY(y);
     }
 
     public void setSz(double z) {
-        this.s.setZ(z);
+        s.setZ(z);
     }
 
     public void setPivot(double x, double y, double z) {
-        this.p.setX(x);
-        this.p.setY(y);
-        this.p.setZ(z);
-        this.ip.setX(-x);
-        this.ip.setY(-y);
-        this.ip.setZ(-z);
+        p.setX(x);
+        p.setY(y);
+        p.setZ(z);
+        ip.setX(-x);
+        ip.setY(-y);
+        ip.setZ(-z);
     }
 
     public void reset() {
-        this.translate.setX(0.0);
-        this.translate.setY(0.0);
-        this.translate.setZ(0.0);
-        this.rx.setAngle(0.0);
-        this.ry.setAngle(0.0);
-        this.rz.setAngle(0.0);
-        this.s.setX(1.0);
-        this.s.setY(1.0);
-        this.s.setZ(1.0);
-        this.p.setX(0.0);
-        this.p.setY(0.0);
-        this.p.setZ(0.0);
-        this.ip.setX(0.0);
-        this.ip.setY(0.0);
-        this.ip.setZ(0.0);
+        translate.setX(0.0);
+        translate.setY(0.0);
+        translate.setZ(0.0);
+        rx.setAngle(0.0);
+        ry.setAngle(0.0);
+        rz.setAngle(0.0);
+        s.setX(1.0);
+        s.setY(1.0);
+        s.setZ(1.0);
+        p.setX(0.0);
+        p.setY(0.0);
+        p.setZ(0.0);
+        ip.setX(0.0);
+        ip.setY(0.0);
+        ip.setZ(0.0);
     }
 
     public void resetTSP() {
-        this.translate.setX(0.0);
-        this.translate.setY(0.0);
-        this.translate.setZ(0.0);
-        this.s.setX(1.0);
-        this.s.setY(1.0);
-        this.s.setZ(1.0);
-        this.p.setX(0.0);
-        this.p.setY(0.0);
-        this.p.setZ(0.0);
-        this.ip.setX(0.0);
-        this.ip.setY(0.0);
-        this.ip.setZ(0.0);
+        translate.setX(0.0);
+        translate.setY(0.0);
+        translate.setZ(0.0);
+        s.setX(1.0);
+        s.setY(1.0);
+        s.setZ(1.0);
+        p.setX(0.0);
+        p.setY(0.0);
+        p.setZ(0.0);
+        ip.setX(0.0);
+        ip.setY(0.0);
+        ip.setZ(0.0);
     }
 
 }

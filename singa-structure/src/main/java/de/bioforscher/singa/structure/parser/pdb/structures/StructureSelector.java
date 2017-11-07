@@ -126,7 +126,7 @@ public class StructureSelector {
 
         @Override
         public ChainStep model(int identifier) {
-            this.structuralModel = this.structure.getAllModels().stream()
+            structuralModel = structure.getAllModels().stream()
                     .filter(structuralModel -> structuralModel.getIdentifier() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no structural model with ID " + identifier));
@@ -135,12 +135,12 @@ public class StructureSelector {
 
         @Override
         public Model selectModel() {
-            return this.structuralModel;
+            return structuralModel;
         }
 
         @Override
         public ResidueStep chain(String identifier) {
-            this.chain = this.structuralModel.getAllChains().stream()
+            chain = structuralModel.getAllChains().stream()
                     .filter(chain -> chain.getIdentifier().equals(identifier))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
@@ -149,12 +149,12 @@ public class StructureSelector {
 
         @Override
         public Chain selectChain() {
-            return this.chain;
+            return chain;
         }
 
         @Override
         public AminoAcidAtomStep aminoAcid(int identifier) {
-            this.aminoAcid = this.chain.getAllLeafSubstructures().stream()
+            aminoAcid = chain.getAllLeafSubstructures().stream()
                     .filter(AminoAcid.class::isInstance)
                     .map(AminoAcid.class::cast)
                     .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
@@ -165,12 +165,12 @@ public class StructureSelector {
 
         @Override
         public AminoAcid selectAminoAcid() {
-            return this.aminoAcid;
+            return aminoAcid;
         }
 
         @Override
         public NucleotideAtomStep nucleotide(int identifier) {
-            this.nucleotide = this.chain.getAllLeafSubstructures().stream()
+            nucleotide = chain.getAllLeafSubstructures().stream()
                     .filter(Nucleotide.class::isInstance)
                     .map(Nucleotide.class::cast)
                     .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
@@ -181,12 +181,12 @@ public class StructureSelector {
 
         @Override
         public Nucleotide selectNucleotide() {
-            return this.nucleotide;
+            return nucleotide;
         }
 
         @Override
         public AtomContainerAtomStep atomContainer(int identifier) {
-            this.atomContainer = this.chain.getAllLeafSubstructures().stream()
+            atomContainer = chain.getAllLeafSubstructures().stream()
                     .filter(Ligand.class::isInstance)
                     .map(Ligand.class::cast)
                     .filter(leafSubstructure -> leafSubstructure.getIdentifier().getSerial() == identifier)
@@ -197,19 +197,19 @@ public class StructureSelector {
 
         @Override
         public Ligand selectAtomContainer() {
-            return this.atomContainer;
+            return atomContainer;
         }
 
         @Override
         public SelectStep atom(int identifier) {
-            if (this.aminoAcid != null) {
-                this.atom = getAtomFromLeafSubstructure(this.aminoAcid, identifier);
+            if (aminoAcid != null) {
+                atom = getAtomFromLeafSubstructure(aminoAcid, identifier);
             }
-            if (this.nucleotide != null) {
-                this.atom = getAtomFromLeafSubstructure(this.nucleotide, identifier);
+            if (nucleotide != null) {
+                atom = getAtomFromLeafSubstructure(nucleotide, identifier);
             }
-            if (this.atomContainer != null) {
-                this.atom = getAtomFromLeafSubstructure(this.atomContainer, identifier);
+            if (atomContainer != null) {
+                atom = getAtomFromLeafSubstructure(atomContainer, identifier);
             }
             return this;
         }
@@ -223,7 +223,7 @@ public class StructureSelector {
 
         @Override
         public Atom selectAtom() {
-            return this.atom;
+            return atom;
         }
     }
 }

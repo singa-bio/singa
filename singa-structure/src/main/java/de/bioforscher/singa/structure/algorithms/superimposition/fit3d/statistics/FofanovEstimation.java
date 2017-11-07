@@ -66,8 +66,8 @@ public class FofanovEstimation implements StatisticalModel {
         this.rmsdCutoff = rmsdCutoff;
         this.referenceSize = referenceSize;
         this.modelCorrectnessCutoff = modelCorrectnessCutoff;
-        this.gs = new AtomicInteger(0);
-        this.ns = new AtomicInteger(0);
+        gs = new AtomicInteger(0);
+        ns = new AtomicInteger(0);
     }
 
     /**
@@ -104,7 +104,7 @@ public class FofanovEstimation implements StatisticalModel {
     }
 
     public double getModelCorrectnessCutoff() {
-        return this.modelCorrectnessCutoff;
+        return modelCorrectnessCutoff;
     }
 
     private void checkRequirements() {
@@ -117,11 +117,11 @@ public class FofanovEstimation implements StatisticalModel {
 
 
     public void incrementNs() {
-        this.ns.incrementAndGet();
+        ns.incrementAndGet();
     }
 
     public void incrementGs() {
-        this.gs.incrementAndGet();
+        gs.incrementAndGet();
     }
 
     @Override
@@ -132,11 +132,11 @@ public class FofanovEstimation implements StatisticalModel {
         runScript();
         for (int i = 0; i < matches.size(); i++) {
             Fit3DMatch match = matches.get(i);
-            if (match.getRmsd() > this.modelCorrectnessCutoff) {
+            if (match.getRmsd() > modelCorrectnessCutoff) {
                 match.setPvalue(Double.NaN);
                 continue;
             }
-            match.setPvalue(this.pvalues.getElement(i));
+            match.setPvalue(pvalues.getElement(i));
         }
     }
 
@@ -144,29 +144,29 @@ public class FofanovEstimation implements StatisticalModel {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.applyPattern("0.0000");
-        String formattedRmsdValues = this.matches.stream()
+        String formattedRmsdValues = matches.stream()
                 .map(Fit3DMatch::getRmsd)
                 .map(df::format)
                 .collect(Collectors.joining("\n", "rmsd\n", ""));
-        Files.write(this.rmsdValuesPath,
+        Files.write(rmsdValuesPath,
                 formattedRmsdValues.getBytes());
-        logger.info("rmsd values written to {}", this.rmsdValuesPath);
+        logger.info("rmsd values written to {}", rmsdValuesPath);
     }
 
     private void runScript() throws IOException, InterruptedException {
         logger.info("computing p-values by calling external R script");
-        this.pvaluesPath = this.temporaryDirectoryPath.resolve("pvalues.csv");
+        pvaluesPath = temporaryDirectoryPath.resolve("pvalues.csv");
         ProcessBuilder processBuilder = new ProcessBuilder(BINARY_NAME,
-                this.scriptPath.toString(),
-                String.valueOf(this.referenceSize),
-                String.valueOf(this.ns.get()),
-                String.valueOf(this.gs.get()),
+                scriptPath.toString(),
+                String.valueOf(referenceSize),
+                String.valueOf(ns.get()),
+                String.valueOf(gs.get()),
                 String.valueOf(START_RMSD),
-                String.valueOf(this.rmsdCutoff),
-                String.valueOf(this.modelCorrectnessCutoff),
+                String.valueOf(rmsdCutoff),
+                String.valueOf(modelCorrectnessCutoff),
                 String.valueOf(SAMPLE_SIZE),
-                this.rmsdValuesPath.toString(),
-                this.pvaluesPath.toString());
+                rmsdValuesPath.toString(),
+                pvaluesPath.toString());
         Process process;
         if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
             process = processBuilder.inheritIO().start();
@@ -181,7 +181,7 @@ public class FofanovEstimation implements StatisticalModel {
 
         logger.info("p-value calculation successful");
 
-        double[] pvalues = Files.readAllLines(this.pvaluesPath).stream()
+        double[] pvalues = Files.readAllLines(pvaluesPath).stream()
                 .map(Double::valueOf)
                 .mapToDouble(Double::doubleValue).toArray();
 
@@ -189,11 +189,11 @@ public class FofanovEstimation implements StatisticalModel {
     }
 
     private void createTemporaryDirectory() throws IOException {
-        this.temporaryDirectoryPath = Files.createTempDirectory("fit3d_");
-        this.rmsdValuesPath = this.temporaryDirectoryPath.resolve("rmsd.csv");
+        temporaryDirectoryPath = Files.createTempDirectory("fit3d_");
+        rmsdValuesPath = temporaryDirectoryPath.resolve("rmsd.csv");
         InputStream resourceAsStream = Resources.getResourceAsStream("de/bioforscher/singa/structure/algorithms/superimposition/fit3d/statistics/statistics/fofanov.R");
-        this.scriptPath = this.temporaryDirectoryPath.resolve("fofanov.R");
-        Files.copy(resourceAsStream, this.scriptPath);
-        logger.debug("script fofanov.R copied to {}", this.scriptPath);
+        scriptPath = temporaryDirectoryPath.resolve("fofanov.R");
+        Files.copy(resourceAsStream, scriptPath);
+        logger.debug("script fofanov.R copied to {}", scriptPath);
     }
 }

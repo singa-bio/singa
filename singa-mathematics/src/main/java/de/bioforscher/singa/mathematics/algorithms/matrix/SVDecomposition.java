@@ -64,169 +64,169 @@ public class SVDecomposition {
 
         // reduce arrayInput to bidiagonal form, storing the diagonal elements
         // in singularValues and the super-diagonal elements in e.
-        int nct = Math.min(this.rowDimension - 1, this.columnDimension);
-        int nrt = Math.max(0, Math.min(this.columnDimension - 2, this.rowDimension));
+        int nct = Math.min(rowDimension - 1, columnDimension);
+        int nrt = Math.max(0, Math.min(columnDimension - 2, rowDimension));
         for (int k = 0; k < Math.max(nct, nrt); k++) {
             if (k < nct) {
 
                 // compute the transformation for the k-th column and place the k-th diagonal in singularValues[k]
                 // compute 2-norm of k-th column without under/overflow
-                this.singularValues[k] = 0;
-                for (int i = k; i < this.rowDimension; i++) {
-                    this.singularValues[k] = hypot(this.singularValues[k], this.arrayInput[i][k]);
+                singularValues[k] = 0;
+                for (int i = k; i < rowDimension; i++) {
+                    singularValues[k] = hypot(singularValues[k], arrayInput[i][k]);
                 }
-                if (this.singularValues[k] != 0.0) {
-                    if (this.arrayInput[k][k] < 0.0) {
-                        this.singularValues[k] = -this.singularValues[k];
+                if (singularValues[k] != 0.0) {
+                    if (arrayInput[k][k] < 0.0) {
+                        singularValues[k] = -singularValues[k];
                     }
-                    for (int i = k; i < this.rowDimension; i++) {
-                        this.arrayInput[i][k] /= this.singularValues[k];
+                    for (int i = k; i < rowDimension; i++) {
+                        arrayInput[i][k] /= singularValues[k];
                     }
-                    this.arrayInput[k][k] += 1.0;
+                    arrayInput[k][k] += 1.0;
                 }
-                this.singularValues[k] = -this.singularValues[k];
+                singularValues[k] = -singularValues[k];
             }
-            for (int j = k + 1; j < this.columnDimension; j++) {
-                if ((k < nct) & (this.singularValues[k] != 0.0)) {
+            for (int j = k + 1; j < columnDimension; j++) {
+                if ((k < nct) & (singularValues[k] != 0.0)) {
 
                     // apply the transformation
                     double t = 0;
-                    for (int i = k; i < this.rowDimension; i++) {
-                        t += this.arrayInput[i][k] * this.arrayInput[i][j];
+                    for (int i = k; i < rowDimension; i++) {
+                        t += arrayInput[i][k] * arrayInput[i][j];
                     }
-                    t = -t / this.arrayInput[k][k];
-                    for (int i = k; i < this.rowDimension; i++) {
-                        this.arrayInput[i][j] += t * this.arrayInput[i][k];
+                    t = -t / arrayInput[k][k];
+                    for (int i = k; i < rowDimension; i++) {
+                        arrayInput[i][j] += t * arrayInput[i][k];
                     }
                 }
 
                 // place the k-th row of arrayInput into e for the subsequent calculation of the row transformation
-                this.e[j] = this.arrayInput[k][j];
+                e[j] = arrayInput[k][j];
             }
-            if (this.wantu & (k < nct)) {
+            if (wantu & (k < nct)) {
 
                 // place the transformation in arrayU for subsequent back multiplication.
-                for (int i = k; i < this.rowDimension; i++) {
-                    this.arrayU[i][k] = this.arrayInput[i][k];
+                for (int i = k; i < rowDimension; i++) {
+                    arrayU[i][k] = arrayInput[i][k];
                 }
             }
             if (k < nrt) {
 
                 // compute the k-th row transformation and place the k-th super-diagonal in e[k]
                 // compute 2-norm without under/overflow
-                this.e[k] = 0;
-                for (int i = k + 1; i < this.columnDimension; i++) {
-                    this.e[k] = hypot(this.e[k], this.e[i]);
+                e[k] = 0;
+                for (int i = k + 1; i < columnDimension; i++) {
+                    e[k] = hypot(e[k], e[i]);
                 }
-                if (this.e[k] != 0.0) {
-                    if (this.e[k + 1] < 0.0) {
-                        this.e[k] = -this.e[k];
+                if (e[k] != 0.0) {
+                    if (e[k + 1] < 0.0) {
+                        e[k] = -e[k];
                     }
-                    for (int i = k + 1; i < this.columnDimension; i++) {
-                        this.e[i] /= this.e[k];
+                    for (int i = k + 1; i < columnDimension; i++) {
+                        e[i] /= e[k];
                     }
-                    this.e[k + 1] += 1.0;
+                    e[k + 1] += 1.0;
                 }
-                this.e[k] = -this.e[k];
-                if ((k + 1 < this.rowDimension) & (this.e[k] != 0.0)) {
+                e[k] = -e[k];
+                if ((k + 1 < rowDimension) & (e[k] != 0.0)) {
 
                     // Apply the transformation.
 
-                    for (int i = k + 1; i < this.rowDimension; i++) {
-                        this.work[i] = 0.0;
+                    for (int i = k + 1; i < rowDimension; i++) {
+                        work[i] = 0.0;
                     }
-                    for (int j = k + 1; j < this.columnDimension; j++) {
-                        for (int i = k + 1; i < this.rowDimension; i++) {
-                            this.work[i] += this.e[j] * this.arrayInput[i][j];
+                    for (int j = k + 1; j < columnDimension; j++) {
+                        for (int i = k + 1; i < rowDimension; i++) {
+                            work[i] += e[j] * arrayInput[i][j];
                         }
                     }
-                    for (int j = k + 1; j < this.columnDimension; j++) {
-                        double t = -this.e[j] / this.e[k + 1];
-                        for (int i = k + 1; i < this.rowDimension; i++) {
-                            this.arrayInput[i][j] += t * this.work[i];
+                    for (int j = k + 1; j < columnDimension; j++) {
+                        double t = -e[j] / e[k + 1];
+                        for (int i = k + 1; i < rowDimension; i++) {
+                            arrayInput[i][j] += t * work[i];
                         }
                     }
                 }
-                if (this.wantv) {
+                if (wantv) {
 
                     // Place the transformation in arrayV for subsequent
                     // back multiplication.
 
-                    for (int i = k + 1; i < this.columnDimension; i++) {
-                        this.arrayV[i][k] = this.e[i];
+                    for (int i = k + 1; i < columnDimension; i++) {
+                        arrayV[i][k] = e[i];
                     }
                 }
             }
         }
 
         // set up the final bidiagonal matrix or order p
-        int p = Math.min(this.columnDimension, this.rowDimension + 1);
-        if (nct < this.columnDimension) {
-            this.singularValues[nct] = this.arrayInput[nct][nct];
+        int p = Math.min(columnDimension, rowDimension + 1);
+        if (nct < columnDimension) {
+            singularValues[nct] = arrayInput[nct][nct];
         }
-        if (this.rowDimension < p) {
-            this.singularValues[p - 1] = 0.0;
+        if (rowDimension < p) {
+            singularValues[p - 1] = 0.0;
         }
         if (nrt + 1 < p) {
-            this.e[nrt] = this.arrayInput[nrt][p - 1];
+            e[nrt] = arrayInput[nrt][p - 1];
         }
-        this.e[p - 1] = 0.0;
+        e[p - 1] = 0.0;
 
         // if required, generate arrayU
-        if (this.wantu) {
-            for (int j = nct; j < this.nu; j++) {
-                for (int i = 0; i < this.rowDimension; i++) {
-                    this.arrayU[i][j] = 0.0;
+        if (wantu) {
+            for (int j = nct; j < nu; j++) {
+                for (int i = 0; i < rowDimension; i++) {
+                    arrayU[i][j] = 0.0;
                 }
-                this.arrayU[j][j] = 1.0;
+                arrayU[j][j] = 1.0;
             }
             for (int k = nct - 1; k >= 0; k--) {
-                if (this.singularValues[k] != 0.0) {
-                    for (int j = k + 1; j < this.nu; j++) {
+                if (singularValues[k] != 0.0) {
+                    for (int j = k + 1; j < nu; j++) {
                         double t = 0;
-                        for (int i = k; i < this.rowDimension; i++) {
-                            t += this.arrayU[i][k] * this.arrayU[i][j];
+                        for (int i = k; i < rowDimension; i++) {
+                            t += arrayU[i][k] * arrayU[i][j];
                         }
-                        t = -t / this.arrayU[k][k];
-                        for (int i = k; i < this.rowDimension; i++) {
-                            this.arrayU[i][j] += t * this.arrayU[i][k];
+                        t = -t / arrayU[k][k];
+                        for (int i = k; i < rowDimension; i++) {
+                            arrayU[i][j] += t * arrayU[i][k];
                         }
                     }
-                    for (int i = k; i < this.rowDimension; i++) {
-                        this.arrayU[i][k] = -this.arrayU[i][k];
+                    for (int i = k; i < rowDimension; i++) {
+                        arrayU[i][k] = -arrayU[i][k];
                     }
-                    this.arrayU[k][k] = 1.0 + this.arrayU[k][k];
+                    arrayU[k][k] = 1.0 + arrayU[k][k];
                     for (int i = 0; i < k - 1; i++) {
-                        this.arrayU[i][k] = 0.0;
+                        arrayU[i][k] = 0.0;
                     }
                 } else {
-                    for (int i = 0; i < this.rowDimension; i++) {
-                        this.arrayU[i][k] = 0.0;
+                    for (int i = 0; i < rowDimension; i++) {
+                        arrayU[i][k] = 0.0;
                     }
-                    this.arrayU[k][k] = 1.0;
+                    arrayU[k][k] = 1.0;
                 }
             }
         }
 
         // if required, generate arrayV
-        if (this.wantv) {
-            for (int k = this.columnDimension - 1; k >= 0; k--) {
-                if ((k < nrt) & (this.e[k] != 0.0)) {
-                    for (int j = k + 1; j < this.nu; j++) {
+        if (wantv) {
+            for (int k = columnDimension - 1; k >= 0; k--) {
+                if ((k < nrt) & (e[k] != 0.0)) {
+                    for (int j = k + 1; j < nu; j++) {
                         double t = 0;
-                        for (int i = k + 1; i < this.columnDimension; i++) {
-                            t += this.arrayV[i][k] * this.arrayV[i][j];
+                        for (int i = k + 1; i < columnDimension; i++) {
+                            t += arrayV[i][k] * arrayV[i][j];
                         }
-                        t = -t / this.arrayV[k + 1][k];
-                        for (int i = k + 1; i < this.columnDimension; i++) {
-                            this.arrayV[i][j] += t * this.arrayV[i][k];
+                        t = -t / arrayV[k + 1][k];
+                        for (int i = k + 1; i < columnDimension; i++) {
+                            arrayV[i][j] += t * arrayV[i][k];
                         }
                     }
                 }
-                for (int i = 0; i < this.columnDimension; i++) {
-                    this.arrayV[i][k] = 0.0;
+                for (int i = 0; i < columnDimension; i++) {
+                    arrayV[i][k] = 0.0;
                 }
-                this.arrayV[k][k] = 1.0;
+                arrayV[k][k] = 1.0;
             }
         }
 
@@ -251,9 +251,9 @@ public class SVDecomposition {
                 if (k == -1) {
                     break;
                 }
-                if (Math.abs(this.e[k]) <=
-                        tiny + eps * (Math.abs(this.singularValues[k]) + Math.abs(this.singularValues[k + 1]))) {
-                    this.e[k] = 0.0;
+                if (Math.abs(e[k]) <=
+                        tiny + eps * (Math.abs(singularValues[k]) + Math.abs(singularValues[k + 1]))) {
+                    e[k] = 0.0;
                     break;
                 }
             }
@@ -265,10 +265,10 @@ public class SVDecomposition {
                     if (ks == k) {
                         break;
                     }
-                    double t = (ks != p ? Math.abs(this.e[ks]) : 0.) +
-                            (ks != k + 1 ? Math.abs(this.e[ks - 1]) : 0.);
-                    if (Math.abs(this.singularValues[ks]) <= tiny + eps * t) {
-                        this.singularValues[ks] = 0.0;
+                    double t = (ks != p ? Math.abs(e[ks]) : 0.) +
+                            (ks != k + 1 ? Math.abs(e[ks - 1]) : 0.);
+                    if (Math.abs(singularValues[ks]) <= tiny + eps * t) {
+                        singularValues[ks] = 0.0;
                         break;
                     }
                 }
@@ -288,22 +288,22 @@ public class SVDecomposition {
 
                 // deflate negligible singularValues(p).
                 case 1: {
-                    double f = this.e[p - 2];
-                    this.e[p - 2] = 0.0;
+                    double f = e[p - 2];
+                    e[p - 2] = 0.0;
                     for (int j = p - 2; j >= k; j--) {
-                        double t = hypot(this.singularValues[j], f);
-                        double cs = this.singularValues[j] / t;
+                        double t = hypot(singularValues[j], f);
+                        double cs = singularValues[j] / t;
                         double sn = f / t;
-                        this.singularValues[j] = t;
+                        singularValues[j] = t;
                         if (j != k) {
-                            f = -sn * this.e[j - 1];
-                            this.e[j - 1] = cs * this.e[j - 1];
+                            f = -sn * e[j - 1];
+                            e[j - 1] = cs * e[j - 1];
                         }
-                        if (this.wantv) {
-                            for (int i = 0; i < this.columnDimension; i++) {
-                                t = cs * this.arrayV[i][j] + sn * this.arrayV[i][p - 1];
-                                this.arrayV[i][p - 1] = -sn * this.arrayV[i][j] + cs * this.arrayV[i][p - 1];
-                                this.arrayV[i][j] = t;
+                        if (wantv) {
+                            for (int i = 0; i < columnDimension; i++) {
+                                t = cs * arrayV[i][j] + sn * arrayV[i][p - 1];
+                                arrayV[i][p - 1] = -sn * arrayV[i][j] + cs * arrayV[i][p - 1];
+                                arrayV[i][j] = t;
                             }
                         }
                     }
@@ -312,20 +312,20 @@ public class SVDecomposition {
 
                 // split at negligible singularValues(k).
                 case 2: {
-                    double f = this.e[k - 1];
-                    this.e[k - 1] = 0.0;
+                    double f = e[k - 1];
+                    e[k - 1] = 0.0;
                     for (int j = k; j < p; j++) {
-                        double t = hypot(this.singularValues[j], f);
-                        double cs = this.singularValues[j] / t;
+                        double t = hypot(singularValues[j], f);
+                        double cs = singularValues[j] / t;
                         double sn = f / t;
-                        this.singularValues[j] = t;
-                        f = -sn * this.e[j];
-                        this.e[j] = cs * this.e[j];
-                        if (this.wantu) {
-                            for (int i = 0; i < this.rowDimension; i++) {
-                                t = cs * this.arrayU[i][j] + sn * this.arrayU[i][k - 1];
-                                this.arrayU[i][k - 1] = -sn * this.arrayU[i][j] + cs * this.arrayU[i][k - 1];
-                                this.arrayU[i][j] = t;
+                        singularValues[j] = t;
+                        f = -sn * e[j];
+                        e[j] = cs * e[j];
+                        if (wantu) {
+                            for (int i = 0; i < rowDimension; i++) {
+                                t = cs * arrayU[i][j] + sn * arrayU[i][k - 1];
+                                arrayU[i][k - 1] = -sn * arrayU[i][j] + cs * arrayU[i][k - 1];
+                                arrayU[i][j] = t;
                             }
                         }
                     }
@@ -337,13 +337,13 @@ public class SVDecomposition {
 
                     // calculate the shift
                     double scale = Math.max(Math.max(Math.max(Math.max(
-                            Math.abs(this.singularValues[p - 1]), Math.abs(this.singularValues[p - 2])), Math.abs(this.e[p - 2])),
-                            Math.abs(this.singularValues[k])), Math.abs(this.e[k]));
-                    double sp = this.singularValues[p - 1] / scale;
-                    double spm1 = this.singularValues[p - 2] / scale;
-                    double epm1 = this.e[p - 2] / scale;
-                    double sk = this.singularValues[k] / scale;
-                    double ek = this.e[k] / scale;
+                            Math.abs(singularValues[p - 1]), Math.abs(singularValues[p - 2])), Math.abs(e[p - 2])),
+                            Math.abs(singularValues[k])), Math.abs(e[k]));
+                    double sp = singularValues[p - 1] / scale;
+                    double spm1 = singularValues[p - 2] / scale;
+                    double epm1 = e[p - 2] / scale;
+                    double sk = singularValues[k] / scale;
+                    double ek = e[k] / scale;
                     double b = ((spm1 + sp) * (spm1 - sp) + epm1 * epm1) / 2.0;
                     double c = (sp * epm1) * (sp * epm1);
                     double shift = 0.0;
@@ -363,36 +363,36 @@ public class SVDecomposition {
                         double cs = f / t;
                         double sn = g / t;
                         if (j != k) {
-                            this.e[j - 1] = t;
+                            e[j - 1] = t;
                         }
-                        f = cs * this.singularValues[j] + sn * this.e[j];
-                        this.e[j] = cs * this.e[j] - sn * this.singularValues[j];
-                        g = sn * this.singularValues[j + 1];
-                        this.singularValues[j + 1] = cs * this.singularValues[j + 1];
-                        if (this.wantv) {
-                            for (int i = 0; i < this.columnDimension; i++) {
-                                t = cs * this.arrayV[i][j] + sn * this.arrayV[i][j + 1];
-                                this.arrayV[i][j + 1] = -sn * this.arrayV[i][j] + cs * this.arrayV[i][j + 1];
-                                this.arrayV[i][j] = t;
+                        f = cs * singularValues[j] + sn * e[j];
+                        e[j] = cs * e[j] - sn * singularValues[j];
+                        g = sn * singularValues[j + 1];
+                        singularValues[j + 1] = cs * singularValues[j + 1];
+                        if (wantv) {
+                            for (int i = 0; i < columnDimension; i++) {
+                                t = cs * arrayV[i][j] + sn * arrayV[i][j + 1];
+                                arrayV[i][j + 1] = -sn * arrayV[i][j] + cs * arrayV[i][j + 1];
+                                arrayV[i][j] = t;
                             }
                         }
                         t = hypot(f, g);
                         cs = f / t;
                         sn = g / t;
-                        this.singularValues[j] = t;
-                        f = cs * this.e[j] + sn * this.singularValues[j + 1];
-                        this.singularValues[j + 1] = -sn * this.e[j] + cs * this.singularValues[j + 1];
-                        g = sn * this.e[j + 1];
-                        this.e[j + 1] = cs * this.e[j + 1];
-                        if (this.wantu && (j < this.rowDimension - 1)) {
-                            for (int i = 0; i < this.rowDimension; i++) {
-                                t = cs * this.arrayU[i][j] + sn * this.arrayU[i][j + 1];
-                                this.arrayU[i][j + 1] = -sn * this.arrayU[i][j] + cs * this.arrayU[i][j + 1];
-                                this.arrayU[i][j] = t;
+                        singularValues[j] = t;
+                        f = cs * e[j] + sn * singularValues[j + 1];
+                        singularValues[j + 1] = -sn * e[j] + cs * singularValues[j + 1];
+                        g = sn * e[j + 1];
+                        e[j + 1] = cs * e[j + 1];
+                        if (wantu && (j < rowDimension - 1)) {
+                            for (int i = 0; i < rowDimension; i++) {
+                                t = cs * arrayU[i][j] + sn * arrayU[i][j + 1];
+                                arrayU[i][j + 1] = -sn * arrayU[i][j] + cs * arrayU[i][j + 1];
+                                arrayU[i][j] = t;
                             }
                         }
                     }
-                    this.e[p - 2] = f;
+                    e[p - 2] = f;
                     iter = iter + 1;
                 }
                 break;
@@ -401,35 +401,35 @@ public class SVDecomposition {
                 case 4: {
 
                     // make the singular values positive
-                    if (this.singularValues[k] <= 0.0) {
-                        this.singularValues[k] = (this.singularValues[k] < 0.0 ? -this.singularValues[k] : 0.0);
-                        if (this.wantv) {
+                    if (singularValues[k] <= 0.0) {
+                        singularValues[k] = (singularValues[k] < 0.0 ? -singularValues[k] : 0.0);
+                        if (wantv) {
                             for (int i = 0; i <= pp; i++) {
-                                this.arrayV[i][k] = -this.arrayV[i][k];
+                                arrayV[i][k] = -arrayV[i][k];
                             }
                         }
                     }
 
                     // order the singular values
                     while (k < pp) {
-                        if (this.singularValues[k] >= this.singularValues[k + 1]) {
+                        if (singularValues[k] >= singularValues[k + 1]) {
                             break;
                         }
-                        double t = this.singularValues[k];
-                        this.singularValues[k] = this.singularValues[k + 1];
-                        this.singularValues[k + 1] = t;
-                        if (this.wantv && (k < this.columnDimension - 1)) {
-                            for (int i = 0; i < this.columnDimension; i++) {
-                                t = this.arrayV[i][k + 1];
-                                this.arrayV[i][k + 1] = this.arrayV[i][k];
-                                this.arrayV[i][k] = t;
+                        double t = singularValues[k];
+                        singularValues[k] = singularValues[k + 1];
+                        singularValues[k + 1] = t;
+                        if (wantv && (k < columnDimension - 1)) {
+                            for (int i = 0; i < columnDimension; i++) {
+                                t = arrayV[i][k + 1];
+                                arrayV[i][k + 1] = arrayV[i][k];
+                                arrayV[i][k] = t;
                             }
                         }
-                        if (this.wantu && (k < this.rowDimension - 1)) {
-                            for (int i = 0; i < this.rowDimension; i++) {
-                                t = this.arrayU[i][k + 1];
-                                this.arrayU[i][k + 1] = this.arrayU[i][k];
-                                this.arrayU[i][k] = t;
+                        if (wantu && (k < rowDimension - 1)) {
+                            for (int i = 0; i < rowDimension; i++) {
+                                t = arrayU[i][k + 1];
+                                arrayU[i][k + 1] = arrayU[i][k];
+                                arrayU[i][k] = t;
                             }
                         }
                         k++;
@@ -441,8 +441,8 @@ public class SVDecomposition {
             }
         }
 
-        this.matrixU = FastMatrices.createRegularMatrix(this.arrayU);
-        this.matrixV = FastMatrices.createRegularMatrix(this.arrayV);
+        matrixU = FastMatrices.createRegularMatrix(arrayU);
+        matrixV = FastMatrices.createRegularMatrix(arrayV);
     }
 
     private static double hypot(double a, double b) {
@@ -460,26 +460,26 @@ public class SVDecomposition {
     }
 
     public Matrix getMatrixU() {
-        return this.matrixU;
+        return matrixU;
     }
 
     public Matrix getMatrixV() {
-        return this.matrixV;
+        return matrixV;
     }
 
     private void initialize(Matrix matrix) {
-        this.arrayInput = matrix.getCopy().getElements();
-        this.rowDimension = matrix.getRowDimension();
-        this.columnDimension = matrix.getColumnDimension();
+        arrayInput = matrix.getCopy().getElements();
+        rowDimension = matrix.getRowDimension();
+        columnDimension = matrix.getColumnDimension();
 
-        this.nu = Math.min(this.rowDimension, this.columnDimension);
-        this.singularValues = new double[Math.min(this.rowDimension + 1, this.columnDimension)];
-        this.arrayU = new double[this.rowDimension][this.nu];
-        this.arrayV = new double[this.columnDimension][this.columnDimension];
-        this.e = new double[this.columnDimension];
-        this.work = new double[this.rowDimension];
-        this.wantu = true;
-        this.wantv = true;
+        nu = Math.min(rowDimension, columnDimension);
+        singularValues = new double[Math.min(rowDimension + 1, columnDimension)];
+        arrayU = new double[rowDimension][nu];
+        arrayV = new double[columnDimension][columnDimension];
+        e = new double[columnDimension];
+        work = new double[rowDimension];
+        wantu = true;
+        wantv = true;
     }
 
     /**
@@ -489,7 +489,7 @@ public class SVDecomposition {
      */
 
     public double[][] getArrayV() {
-        return this.arrayV;
+        return arrayV;
     }
 
     /**
@@ -499,7 +499,7 @@ public class SVDecomposition {
      */
 
     public double[] getSingularValues() {
-        return this.singularValues;
+        return singularValues;
     }
 
 }

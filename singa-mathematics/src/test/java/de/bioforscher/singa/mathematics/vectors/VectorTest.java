@@ -20,57 +20,57 @@ public class VectorTest {
 
     @Before
     public void initialize() {
-        this.first4DVector = new RegularVector(10.0, 20.0, 30.0, 40.0);
-        this.first3DVector = new RegularVector(20.0, 30.0, 40.0);
-        this.first2DVector = new RegularVector(15.0, 25.0);
-        this.second2DVector = new RegularVector(2.0, 3.0);
-        this.scalar = 2.0;
+        first4DVector = new RegularVector(10.0, 20.0, 30.0, 40.0);
+        first3DVector = new RegularVector(20.0, 30.0, 40.0);
+        first2DVector = new RegularVector(15.0, 25.0);
+        second2DVector = new RegularVector(2.0, 3.0);
+        scalar = 2.0;
     }
 
     @Test
     public void testToString() {
-        assertEquals(this.first4DVector.toString(), "Vector 4D (10.0, 20.0, 30.0, 40.0)");
-        assertEquals(this.first2DVector.toString(), "Vector 2D (15.0, 25.0)");
+        assertEquals(first4DVector.toString(), "Vector 4D (10.0, 20.0, 30.0, 40.0)");
+        assertEquals(first2DVector.toString(), "Vector 2D (15.0, 25.0)");
     }
 
     @Test(expected = IncompatibleDimensionsException.class)
     public void testIncompatibleDimensionsException() throws IncompatibleDimensionsException {
-        this.first4DVector.distanceTo(this.first2DVector);
+        first4DVector.distanceTo(first2DVector);
     }
 
     @Test
     public void shouldConvertRegularTo2D() {
-        Vector2D actual = this.first2DVector.as(Vector2D.class);
+        Vector2D actual = first2DVector.as(Vector2D.class);
         assertEquals("Vector2D", actual.getClass().getSimpleName());
     }
 
     @Test
     public void shouldNotConvertRegularTo2D() {
-        Vector2D actual = this.first3DVector.as(Vector2D.class);
+        Vector2D actual = first3DVector.as(Vector2D.class);
         assertNull(actual);
     }
 
     @Test
     public void shouldConvertRegularTo3D() {
-        Vector3D actual = this.first3DVector.as(Vector3D.class);
+        Vector3D actual = first3DVector.as(Vector3D.class);
         assertEquals("Vector3D", actual.getClass().getSimpleName());
     }
 
     @Test
     public void shouldNotConvertRegularTo3D() {
-        Vector3D actual = this.first2DVector.as(Vector3D.class);
+        Vector3D actual = first2DVector.as(Vector3D.class);
         assertNull(actual);
     }
 
     @Test
     public void testDyadicProduct() {
-        RegularMatrix dyadicProduct = this.first2DVector.dyadicProduct(this.second2DVector);
+        RegularMatrix dyadicProduct = first2DVector.dyadicProduct(second2DVector);
         assertTrue(Arrays.deepEquals(new double[][]{{30.0, 45.0}, {50.0, 75.0}}, dyadicProduct.getElements()));
     }
 
     @Test
     public void testDistanceCalculationWithDifferentMetic() {
-        double actual = this.first2DVector.distanceTo(this.second2DVector, VectorMetricProvider.MANHATTAN_METRIC);
+        double actual = first2DVector.distanceTo(second2DVector, VectorMetricProvider.MANHATTAN_METRIC);
         assertEquals(35.0, actual, 0.0);
     }
 

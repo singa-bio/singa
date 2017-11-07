@@ -35,8 +35,8 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
      */
     private MmtfAminoAcid(MmtfAminoAcid mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
-        this.family = mmtfLeafSubstructure.family;
-        this.exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
+        family = mmtfLeafSubstructure.family;
+        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

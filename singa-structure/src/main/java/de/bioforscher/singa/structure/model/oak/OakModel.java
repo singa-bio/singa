@@ -33,14 +33,14 @@ public class OakModel implements Model {
      */
     public OakModel(int identifier) {
         this.identifier = identifier;
-        this.chains = new TreeMap<>();
+        chains = new TreeMap<>();
     }
 
     public OakModel(OakModel model) {
-        this.identifier = model.getIdentifier();
-        this.chains = new TreeMap<>();
+        identifier = model.getIdentifier();
+        chains = new TreeMap<>();
         for (OakChain chain : model.chains.values()) {
-            this.chains.put(chain.getIdentifier(), chain.getCopy());
+            chains.put(chain.getIdentifier(), chain.getCopy());
         }
 
     }
@@ -60,20 +60,20 @@ public class OakModel implements Model {
 
     @Override
     public Optional<Chain> getChain(String chainIdentifier) {
-        if (this.chains.containsKey(chainIdentifier)) {
-            return Optional.of(this.chains.get(chainIdentifier));
+        if (chains.containsKey(chainIdentifier)) {
+            return Optional.of(chains.get(chainIdentifier));
         }
         return Optional.empty();
     }
 
     public void addChain(OakChain chain) {
-        this.chains.put(chain.getIdentifier(), chain);
+        chains.put(chain.getIdentifier(), chain);
     }
 
     @Override
     public List<LeafSubstructure<?>> getAllLeafSubstructures() {
         List<LeafSubstructure<?>> allLeafSubstructures = new ArrayList<>();
-        for (Chain chain : this.chains.values()) {
+        for (Chain chain : chains.values()) {
             final List<LeafSubstructure<?>> leafSubstructures = chain.getAllLeafSubstructures();
             allLeafSubstructures.addAll(leafSubstructures);
         }
@@ -82,7 +82,7 @@ public class OakModel implements Model {
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        for (Chain chain : this.chains.values()) {
+        for (Chain chain : chains.values()) {
             final Optional<LeafSubstructure<?>> optionalLeafSubstructure = chain.getLeafSubstructure(leafIdentifier);
             if (optionalLeafSubstructure.isPresent()) {
                 return optionalLeafSubstructure;
@@ -93,7 +93,7 @@ public class OakModel implements Model {
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        for (Chain chain : this.chains.values()) {
+        for (Chain chain : chains.values()) {
             final Optional<LeafSubstructure<?>> optionalLeafSubstructure = chain.getLeafSubstructure(leafIdentifier);
             if (optionalLeafSubstructure.isPresent()) {
                 chain.removeLeafSubstructure(optionalLeafSubstructure.get().getIdentifier());
@@ -105,7 +105,7 @@ public class OakModel implements Model {
 
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (Chain chain : this.chains.values()) {
+        for (Chain chain : chains.values()) {
             final List<LeafSubstructure<?>> allLeafSubstructures = chain.getAllLeafSubstructures();
             for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
                 final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
@@ -119,7 +119,7 @@ public class OakModel implements Model {
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        for (Chain chain : this.chains.values()) {
+        for (Chain chain : chains.values()) {
             final List<LeafSubstructure<?>> allLeafSubstructures = chain.getAllLeafSubstructures();
             for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
                 final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
@@ -137,7 +137,7 @@ public class OakModel implements Model {
 
     @Override
     public String toString() {
-        return "Model " + this.identifier;
+        return "Model " + identifier;
     }
 
     @Override

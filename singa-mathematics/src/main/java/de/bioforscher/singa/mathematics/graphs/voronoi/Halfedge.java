@@ -10,6 +10,6 @@ public class Halfedge {
     Halfedge PQnext;
 
     public Halfedge() {
-        this.PQnext = null;
+        PQnext = null;
     }
 }

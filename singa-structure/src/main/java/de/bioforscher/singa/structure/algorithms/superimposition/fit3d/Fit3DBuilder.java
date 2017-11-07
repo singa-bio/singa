@@ -265,7 +265,7 @@ public class Fit3DBuilder {
         @Override
         public TargetStep query(StructuralMotif query) {
             Objects.requireNonNull(query);
-            this.queryMotif = query;
+            queryMotif = query;
             return this;
         }
 
@@ -294,10 +294,10 @@ public class Fit3DBuilder {
         @Override
         public Fit3D run() throws SubstructureSuperimpositionException {
             // decide which implementation should be used
-            if (this.multiParser != null) {
+            if (multiParser != null) {
                 return new Fit3DAlignmentBatch(this);
             }
-            if (this.site1 != null && this.site2 != null) {
+            if (site1 != null && site2 != null) {
                 return new Fit3DSiteAlignment(this);
             }
             return new Fit3DAlignment(this);
@@ -331,7 +331,7 @@ public class Fit3DBuilder {
         @Override
         public ParameterStep representationScheme(RepresentationSchemeType representationSchemeType) {
             Objects.requireNonNull(representationSchemeType);
-            this.representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
+            representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
             return this;
         }
 
@@ -340,25 +340,25 @@ public class Fit3DBuilder {
             if (limitedParallelism <= 0.0) {
                 throw new Fit3DException("level of parallelism for batch calculation must be positive");
             }
-            this.parallelism = limitedParallelism;
+            parallelism = limitedParallelism;
             return this;
         }
 
         @Override
         public AtomStep maximalParallelism() {
-            this.parallelism = Runtime.getRuntime().availableProcessors();
+            parallelism = Runtime.getRuntime().availableProcessors();
             return this;
         }
 
         @Override
         public BatchParameterStep skipAlphaCarbonTargets() {
-            this.skipAlphaCarbonTargets = true;
+            skipAlphaCarbonTargets = true;
             return this;
         }
 
         @Override
         public BatchParameterStep skipBackboneTargets() {
-            this.skipBackboneTargets = true;
+            skipBackboneTargets = true;
             return this;
         }
 
@@ -389,19 +389,19 @@ public class Fit3DBuilder {
 
         @Override
         public AtomStep restrictToSpecifiedExchanges() {
-            this.restrictToExchanges = true;
+            restrictToExchanges = true;
             return this;
         }
 
         @Override
         public AtomStep ignoreSpecifiedExchanges() {
-            this.restrictToExchanges = false;
+            restrictToExchanges = false;
             return this;
         }
 
         @Override
         public AtomStep exhaustive() {
-            this.exhaustive = true;
+            exhaustive = true;
             return this;
         }
     }

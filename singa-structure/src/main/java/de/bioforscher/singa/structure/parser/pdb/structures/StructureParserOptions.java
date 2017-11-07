@@ -100,7 +100,7 @@ public class StructureParserOptions {
      * @return The value of this option.
      */
     public boolean isCreatingEdges() {
-        return this.createEdges;
+        return createEdges;
     }
 
     /**
@@ -122,7 +122,7 @@ public class StructureParserOptions {
      * @return The value of this option.
      */
     public boolean isRetrievingLigandInformation() {
-        return this.retrieveLigandInformation;
+        return retrieveLigandInformation;
     }
 
     /**
@@ -144,7 +144,7 @@ public class StructureParserOptions {
      * @return The value of this option.
      */
     public boolean isConnectingHydrogens() {
-        return this.connectHydrogens;
+        return connectHydrogens;
     }
 
     /**
@@ -164,7 +164,7 @@ public class StructureParserOptions {
      * @return {@code true} to turn this option on, {@code false} to turn it off.
      */
     public boolean isOmittingHydrogen() {
-        return this.omitHydrogens;
+        return omitHydrogens;
     }
 
     /**
@@ -176,7 +176,7 @@ public class StructureParserOptions {
     public void omitHydrogens(boolean omitHydrogens) {
         this.omitHydrogens = omitHydrogens;
         if (omitHydrogens) {
-            this.connectHydrogens = false;
+            connectHydrogens = false;
         }
     }
 
@@ -187,7 +187,7 @@ public class StructureParserOptions {
      * @return {@code true} to turn this option on, {@code false} to turn it off.
      */
     public boolean isInferringTitleFromFileName() {
-        return this.inferTitleFromFileName;
+        return inferTitleFromFileName;
     }
 
     /**
@@ -207,7 +207,7 @@ public class StructureParserOptions {
      * @return {@code true} to turn this option on, {@code false} to turn it off.
      */
     public boolean isInferringIdentifierFromFileName() {
-        return this.inferIdentifierFromFileName;
+        return inferIdentifierFromFileName;
     }
 
     /**

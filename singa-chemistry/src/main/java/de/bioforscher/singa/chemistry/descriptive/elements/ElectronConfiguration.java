@@ -13,6 +13,84 @@ public class ElectronConfiguration {
 
     private EnumMap<AtomicOrbital, Integer> configuration;
 
+    public ElectronConfiguration() {
+        configuration = new EnumMap<>(AtomicOrbital.class);
+    }
+
+    public static ElectronConfiguration parseElectronConfigurationFromString(String orbitalsString) {
+        String[] splitOrbitals = orbitalsString.toLowerCase().split("-");
+        ElectronConfiguration configuration = new ElectronConfiguration();
+        for (String orbitalString : splitOrbitals) {
+            configuration.getConfiguration().put(AtomicOrbital.getAtomicOrbital(orbitalString.substring(0,2)), Integer.valueOf(orbitalString.substring(2)));
+        }
+        return configuration;
+    }
+
+    public Map<AtomicOrbital, Integer> getConfiguration() {
+        return configuration;
+    }
+
+    public int getOuterMostShell() {
+        return configuration.keySet().stream()
+                .mapToInt(AtomicOrbital::getShell)
+                .max()
+                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
+    }
+
+    public Map<AtomicOrbital, Integer> getOrbitalsOfShell(int shell){
+        return configuration.entrySet().stream()
+                .filter(entry -> entry.getKey().getShell() == shell)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public int getTotalNumberOfElectrons() {
+        return configuration.values().stream()
+                .reduce((v1, v2) -> v1 + v2)
+                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
+
+    }
+
+    public int getNumberOfValenceElectrons() {
+        // first group = main group elements with complete d and f sub shells
+        // second group = transition group element with incomplete d and f shells
+        // TODO getIncompleteShells is called twice
+        if (isTransitionGroup()) {
+            Map<AtomicOrbital, Integer> incompleteShells = getIncompleteShells();
+            Map<AtomicOrbital, Integer> outerShells = getOrbitalsOfShell(getOuterMostShell());
+            Map<AtomicOrbital, Integer> distinct = new HashMap<>();
+            distinct.putAll(incompleteShells);
+            distinct.putAll(outerShells);
+            return distinct.values().stream()
+                    .reduce((v1,v2) -> v1+v2)
+                    .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
+        }
+        return getNumberOfElectronsInOutermostShell();
+    }
+
+    private boolean isTransitionGroup() {
+        return getIncompleteShells().keySet()
+                .stream().anyMatch(orbital -> orbital.getSubShell() == 'd' || orbital.getSubShell() == 'f');
+    }
+
+    private int getNumberOfElectronsInOutermostShell() {
+        return getOrbitalsOfShell(getOuterMostShell()).values().stream()
+                .reduce((v1,v2) -> v1+v2)
+                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
+    }
+
+    public Map<AtomicOrbital, Integer> getIncompleteShells() {
+        return configuration.entrySet().stream()
+                .filter(entry -> entry.getKey().getMaximalElectrons() - entry.getValue() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    @Override
+    public String toString() {
+        return configuration.entrySet().stream()
+                .map(entry -> entry.getKey().toString()+entry.getValue())
+                .collect(Collectors.joining("-"));
+    }
+
     public enum AtomicOrbital {
         // 1s2-2s2-2p6-3s2-3p6-3d10-4s2-4p6-4d10-4f14-5s2-5p6-5d10-5f14-6s2-6p6-6d6-7s2
         S1('s', 1),
@@ -51,105 +129,32 @@ public class ElectronConfiguration {
         }
 
         public int getShell() {
-            return this.shell;
+            return shell;
         }
 
         public char getSubShell() {
-            return this.subShell;
+            return subShell;
         }
 
         public int getMaximalElectrons() {
-            switch (this.subShell) {
-                case 's': return MAX_ELECTRONS_S;
-                case 'p': return MAX_ELECTRONS_P;
-                case 'd': return MAX_ELECTRONS_D;
-                case 'f': return MAX_ELECTRONS_F;
-                default: return 0;
+            switch (subShell) {
+                case 's':
+                    return MAX_ELECTRONS_S;
+                case 'p':
+                    return MAX_ELECTRONS_P;
+                case 'd':
+                    return MAX_ELECTRONS_D;
+                case 'f':
+                    return MAX_ELECTRONS_F;
+                default:
+                    return 0;
             }
         }
 
         @Override
         public String toString() {
-            return String.valueOf(this.shell)+this.subShell;
+            return String.valueOf(shell) + subShell;
         }
-    }
-
-    public static ElectronConfiguration parseElectronConfigurationFromString(String orbitalsString) {
-        String[] splitOrbitals = orbitalsString.toLowerCase().split("-");
-        ElectronConfiguration configuration = new ElectronConfiguration();
-        for (String orbitalString : splitOrbitals) {
-            configuration.getConfiguration().put(AtomicOrbital.getAtomicOrbital(orbitalString.substring(0,2)), Integer.valueOf(orbitalString.substring(2)));
-        }
-        return configuration;
-    }
-
-    public ElectronConfiguration() {
-        this.configuration = new EnumMap<>(AtomicOrbital.class);
-    }
-
-    public Map<AtomicOrbital, Integer> getConfiguration() {
-        return this.configuration;
-    }
-
-    public int getOuterMostShell() {
-        return this.configuration.keySet().stream()
-                .mapToInt(AtomicOrbital::getShell)
-                .max()
-                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
-    }
-
-    public Map<AtomicOrbital, Integer> getOrbitalsOfShell(int shell){
-        return this.configuration.entrySet().stream()
-                .filter(entry -> entry.getKey().getShell() == shell)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    public int getNumberOfValenceElectrons() {
-        // first group = main group elements with complete d and f sub shells
-        // second group = transition group element with incomplete d and f shells
-        // TODO getIncompleteShells is called twice
-        if (isTransitionGroup()) {
-            Map<AtomicOrbital, Integer> incompleteShells = getIncompleteShells();
-            Map<AtomicOrbital, Integer> outerShells = getOrbitalsOfShell(getOuterMostShell());
-            Map<AtomicOrbital, Integer> distinct = new HashMap<>();
-            distinct.putAll(incompleteShells);
-            distinct.putAll(outerShells);
-            return distinct.values().stream()
-                    .reduce((v1,v2) -> v1+v2)
-                    .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
-        }
-        return getNumberOfElectronsInOutermostShell();
-    }
-
-    private boolean isTransitionGroup() {
-        return getIncompleteShells().keySet()
-                .stream().anyMatch(orbital -> orbital.getSubShell() == 'd' || orbital.getSubShell() == 'f');
-    }
-
-    private int getNumberOfElectronsInOutermostShell() {
-        return getOrbitalsOfShell(getOuterMostShell()).values().stream()
-                .reduce((v1,v2) -> v1+v2)
-                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
-    }
-
-    public int getTotalNumberOfElectrons() {
-        return this.configuration.values().stream()
-                .reduce((v1,v2) -> v1+v2)
-                .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
-
-    }
-
-    public Map<AtomicOrbital, Integer> getIncompleteShells() {
-        return this.configuration.entrySet().stream()
-                .filter(entry -> entry.getKey().getMaximalElectrons() - entry.getValue() > 0)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    @Override
-    public String toString() {
-        return this.configuration.entrySet().stream()
-                .map(entry -> entry.getKey().toString()+entry.getValue())
-                .collect(Collectors.joining("-"));
     }
 
 }

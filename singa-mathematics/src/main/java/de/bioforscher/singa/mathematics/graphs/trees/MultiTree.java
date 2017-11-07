@@ -5,11 +5,11 @@ public class MultiTree<T> {
     private MultiTreeNode<T> root;
 
     public MultiTree(T rootData) {
-        this.root = new MultiTreeNode<>(rootData);
+        root = new MultiTreeNode<>(rootData);
     }
 
     public MultiTreeNode<T> getRoot() {
-        return this.root;
+        return root;
     }
 
     public void setRoot(MultiTreeNode<T> root) {
@@ -17,7 +17,7 @@ public class MultiTree<T> {
     }
 
     public void addChildToRoot(MultiTreeNode<T> child) {
-        this.root.addChild(child);
+        root.addChild(child);
     }
 
     public void traversePreOrder(MultiTreeNode<T> node) {

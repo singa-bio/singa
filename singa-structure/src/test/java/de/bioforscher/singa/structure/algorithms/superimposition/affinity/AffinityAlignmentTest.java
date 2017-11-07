@@ -30,7 +30,7 @@ public class AffinityAlignmentTest {
     public void setUp() throws Exception {
         StructureParserOptions structureParserOptions = new StructureParserOptions();
         structureParserOptions.inferIdentifierFromFileName(true);
-        this.input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
+        input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .everything()
@@ -44,19 +44,19 @@ public class AffinityAlignmentTest {
     @Test
     public void shouldRunAffinityAlignment() throws IOException {
         AffinityAlignment affinityAlignment = AffinityAlignment.create()
-                .inputStructuralMotifs(this.input)
+                .inputStructuralMotifs(input)
                 .run();
         Assert.assertEquals(3, affinityAlignment.getClusters().size());
-        Assert.assertEquals(this.input.size(), affinityAlignment.getClusters().values().stream()
+        Assert.assertEquals(input.size(), affinityAlignment.getClusters().values().stream()
                 .mapToInt(Collection::size)
                 .sum());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithInputOfDifferentSize() {
-        this.input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
+        input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
         AffinityAlignment.create()
-                .inputStructuralMotifs(this.input)
+                .inputStructuralMotifs(input)
                 .run();
     }
 

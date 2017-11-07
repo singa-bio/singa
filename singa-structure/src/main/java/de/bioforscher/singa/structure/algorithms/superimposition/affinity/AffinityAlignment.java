@@ -54,7 +54,7 @@ public class AffinityAlignment {
     private AffinityAlignment(Builder builder) {
 
         // get copy of input structural motifs
-        this.input = builder.structuralMotifs.stream()
+        input = builder.structuralMotifs.stream()
                 .map(StructuralMotif::getCopy)
                 .collect(Collectors.toList());
 
@@ -62,16 +62,16 @@ public class AffinityAlignment {
         RepresentationSchemeType representationSchemeType = builder.representationSchemeType;
         if (representationSchemeType != null) {
             logger.info("using representation scheme {}", representationSchemeType);
-            this.representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
+            representationScheme = RepresentationSchemeFactory.createRepresentationScheme(representationSchemeType);
         }
 
-        this.idealSuperimposition = builder.idealSuperimposition;
-        this.atomFilter = builder.atomFilter;
+        idealSuperimposition = builder.idealSuperimposition;
+        atomFilter = builder.atomFilter;
 
-        logger.info("affinity alignment initialized with {} input structures", this.input.size());
+        logger.info("affinity alignment initialized with {} input structures", input.size());
 
         // check if all substructures are of the same size
-        if (this.input.stream()
+        if (input.stream()
                 .map(StructuralMotif::getAllLeafSubstructures)
                 .map(List::size)
                 .collect(Collectors.toSet()).size() != 1) {
@@ -94,44 +94,44 @@ public class AffinityAlignment {
     }
 
     public LabeledSymmetricMatrix<StructuralMotif> getDistanceMatrix() {
-        return this.distanceMatrix;
+        return distanceMatrix;
     }
 
     public double getSelfDissimilarity() {
-        return this.selfDissimilarity;
+        return selfDissimilarity;
     }
 
     public double getSilhouetteCoefficient() {
-        return this.silhouetteCoefficient;
+        return silhouetteCoefficient;
     }
 
     public Map<StructuralMotif, List<StructuralMotif>> getClusters() {
-        return this.clusters;
+        return clusters;
     }
 
     private void alignWithinClusters() {
         StructuralMotif reference;
-        for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : this.clusters.entrySet()) {
+        for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : clusters.entrySet()) {
             List<StructuralMotif> alignedCluster = new ArrayList<>();
             reference = entry.getKey();
             for (StructuralMotif structuralMotif : entry.getValue()) {
                 SubstructureSuperimposition superimposition;
-                if (this.representationScheme == null) {
-                    superimposition = this.idealSuperimposition ?
+                if (representationScheme == null) {
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    structuralMotif, this.atomFilter) :
+                                    structuralMotif, atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    structuralMotif.getAllLeafSubstructures(), this.atomFilter);
+                                    structuralMotif.getAllLeafSubstructures(), atomFilter);
                 } else {
-                    superimposition = this.idealSuperimposition ?
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    structuralMotif, this.representationScheme) :
+                                    structuralMotif, representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    structuralMotif.getAllLeafSubstructures(), this.representationScheme);
+                                    structuralMotif.getAllLeafSubstructures(), representationScheme);
                 }
                 alignedCluster.add(StructuralMotif.fromLeafSubstructures(superimposition.getMappedFullCandidate()));
             }
@@ -140,58 +140,58 @@ public class AffinityAlignment {
     }
 
     private void determineSelfSimilarity() {
-        this.selfDissimilarity = Vectors.getMedian(new RegularVector(this.distanceMatrix.streamElements().toArray()));
-        logger.info("self-dissimilarity of input structures (median of RMSD values) is {}", this.selfDissimilarity);
+        selfDissimilarity = Vectors.getMedian(new RegularVector(distanceMatrix.streamElements().toArray()));
+        logger.info("self-dissimilarity of input structures (median of RMSD values) is {}", selfDissimilarity);
     }
 
     private void computeClustering() {
         AffinityPropagation<StructuralMotif> affinityPropagation = AffinityPropagation.<StructuralMotif>create()
-                .dataPoints(this.input)
-                .matrix(this.distanceMatrix)
+                .dataPoints(input)
+                .matrix(distanceMatrix)
                 .isDistance(true)
-                .selfSimilarity(this.selfDissimilarity)
+                .selfSimilarity(selfDissimilarity)
                 .maximalEpochs(MAXIMAL_EPOCHS)
                 .lambda(LAMBDA)
                 .run();
-        this.silhouetteCoefficient = affinityPropagation.getSilhouetteCoefficient();
-        this.clusters = affinityPropagation.getClusters();
-        logger.info("found {} clusters", this.clusters.size());
+        silhouetteCoefficient = affinityPropagation.getSilhouetteCoefficient();
+        clusters = affinityPropagation.getClusters();
+        logger.info("found {} clusters", clusters.size());
     }
 
     private void calculateInitialAlignments() {
-        double[][] temporaryDistanceMatrix = new double[this.input.size()][this.input.size()];
-        for (int i = 0; i < this.input.size() - 1; i++) {
-            for (int j = i + 1; j < this.input.size(); j++) {
+        double[][] temporaryDistanceMatrix = new double[input.size()][input.size()];
+        for (int i = 0; i < input.size() - 1; i++) {
+            for (int j = i + 1; j < input.size(); j++) {
 
-                StructuralMotif reference = this.input.get(i);
-                StructuralMotif candidate = this.input.get(j);
+                StructuralMotif reference = input.get(i);
+                StructuralMotif candidate = input.get(j);
 
                 // calculate superimposition
                 SubstructureSuperimposition superimposition;
-                if (this.representationScheme == null) {
-                    superimposition = this.idealSuperimposition ?
+                if (representationScheme == null) {
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    candidate, this.atomFilter) :
+                                    candidate, atomFilter) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), this.atomFilter);
+                                    candidate.getAllLeafSubstructures(), atomFilter);
                 } else {
-                    superimposition = this.idealSuperimposition ?
+                    superimposition = idealSuperimposition ?
                             SubstructureSuperimposer.calculateIdealSubstructureSuperimposition(
                                     reference,
-                                    candidate, this.representationScheme) :
+                                    candidate, representationScheme) :
                             SubstructureSuperimposer.calculateSubstructureSuperimposition(
                                     reference.getAllLeafSubstructures(),
-                                    candidate.getAllLeafSubstructures(), this.representationScheme);
+                                    candidate.getAllLeafSubstructures(), representationScheme);
                 }
 
                 temporaryDistanceMatrix[i][j] = superimposition.getRmsd();
                 temporaryDistanceMatrix[j][i] = superimposition.getRmsd();
             }
         }
-        this.distanceMatrix = new LabeledSymmetricMatrix<>(temporaryDistanceMatrix);
-        this.distanceMatrix.setRowLabels(this.input);
+        distanceMatrix = new LabeledSymmetricMatrix<>(temporaryDistanceMatrix);
+        distanceMatrix.setRowLabels(input);
     }
 
     /**
@@ -201,10 +201,10 @@ public class AffinityAlignment {
      * @throws IOException If the path cannot be written to.
      */
     public void writeClusters(Path outputPath) throws IOException {
-        logger.info("writing {} clusters to {}", this.clusters.size(), outputPath);
+        logger.info("writing {} clusters to {}", clusters.size(), outputPath);
         Files.createDirectories(outputPath);
         int clusterCounter = 0;
-        for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : this.clusters.entrySet()) {
+        for (Map.Entry<StructuralMotif, List<StructuralMotif>> entry : clusters.entrySet()) {
             String clusterBaseLocation = "cluster_" + (clusterCounter + 1) + "/";
             // write exemplar
             StructureWriter.writeLeafSubstructures(entry.getKey().getAllLeafSubstructures(),

@@ -66,21 +66,21 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public String getOneLetterCode() {
-        return this.oneLetterCode;
+        return oneLetterCode;
     }
 
     @Override
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 
     public EnumSet<AtomName> getAllowedAtoms() {
-        return this.allowedAtoms;
+        return allowedAtoms;
     }
 
     /**

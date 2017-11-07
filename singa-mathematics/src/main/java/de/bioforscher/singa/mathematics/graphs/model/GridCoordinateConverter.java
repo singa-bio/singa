@@ -16,33 +16,33 @@ public class GridCoordinateConverter {
     }
 
     public int getNumberOfColumns() {
-        return this.numberOfColumns;
+        return numberOfColumns;
     }
 
     public int getNumberOfRows() {
-        return this.numberOfRows;
+        return numberOfRows;
     }
 
     public Vector2D convert(int nodeIdentifier) {
-        if (nodeIdentifier > this.numberOfColumns * this.numberOfRows) {
+        if (nodeIdentifier > numberOfColumns * numberOfRows) {
             throw new IndexOutOfBoundsException(
-                    "The node identifier " + nodeIdentifier + " is out of the possible range (" + (this.numberOfColumns * this.numberOfRows) +
-                            ") of a rectangular grid graph with " + this.numberOfRows + " numberOfRows and " + this.numberOfColumns +
+                    "The node identifier " + nodeIdentifier + " is out of the possible range (" + (numberOfColumns * numberOfRows) +
+                            ") of a rectangular grid graph with " + numberOfRows + " numberOfRows and " + numberOfColumns +
                             " numberOfColumns.");
         }
-        int y = (int) (nodeIdentifier / (double) this.numberOfColumns);
-        double x = nodeIdentifier % this.numberOfColumns;
+        int y = (int) (nodeIdentifier / (double) numberOfColumns);
+        double x = nodeIdentifier % numberOfColumns;
         return new Vector2D(x, y);
     }
 
     public int convert(Vector2D coordinate) {
-        if (coordinate.getX() > this.numberOfColumns) {
+        if (coordinate.getX() > numberOfColumns) {
             throw new IndexOutOfBoundsException(
-                    "The x coordinate " + coordinate.getX() + " is out of the possible range " + this.numberOfColumns + ".");
-        } else if (coordinate.getY() > this.numberOfRows) {
+                    "The x coordinate " + coordinate.getX() + " is out of the possible range " + numberOfColumns + ".");
+        } else if (coordinate.getY() > numberOfRows) {
             throw new IndexOutOfBoundsException(
-                    "The x coordinate " + coordinate.getY() + " is out of the possible range " + this.numberOfRows + ".");
+                    "The x coordinate " + coordinate.getY() + " is out of the possible range " + numberOfRows + ".");
         }
-        return (int) (coordinate.getY() * this.numberOfColumns + coordinate.getX());
+        return (int) (coordinate.getY() * numberOfColumns + coordinate.getX());
     }
 }

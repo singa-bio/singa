@@ -26,6 +26,31 @@ public class ColorScale {
     private final double saturation;
     private final double brightness;
 
+    private ColorScale(Builder builder) {
+        minimalValue = builder.minimalValue;
+        maximalValue = builder.maximalValue;
+        scalingFactor = builder.scalingFactor;
+        minimalHue = builder.minimalHue;
+        saturation = builder.saturation;
+        brightness = builder.brightness;
+    }
+
+    /**
+     * Gets the color as specified by this gradient for this value between the minimal and maximal value.
+     *
+     * @param value The value to be converted to a color.
+     * @return The resulting color.
+     */
+    public Color getColor(double value) {
+        if (value < minimalValue || value > maximalValue) {
+            throw new IllegalArgumentException(
+                    "The requested value " + value + " is not contained in the initialized range [" + minimalValue
+                            + "," + maximalValue + "].");
+        }
+        final double requestedHue = (value - minimalValue) * scalingFactor + minimalHue;
+        return Color.hsb(requestedHue, saturation, brightness);
+    }
+
     public static class Builder {
 
         private double minimalValue;
@@ -55,7 +80,7 @@ public class ColorScale {
         }
 
         public Builder minimalHue(Color minimalHueColor) {
-            this.minimalHue = minimalHueColor.getHue();
+            minimalHue = minimalHueColor.getHue();
             return this;
         }
 
@@ -68,7 +93,7 @@ public class ColorScale {
         }
 
         public Builder maximalHue(Color maximalHueColor) {
-            this.maximalHue = maximalHueColor.getHue();
+            maximalHue = maximalHueColor.getHue();
             return this;
         }
 
@@ -89,40 +114,15 @@ public class ColorScale {
         }
 
         public ColorScale build() {
-            if (this.minimalHue > this.maximalHue) {
+            if (minimalHue > maximalHue) {
                 throw new IllegalArgumentException(
                         "The value for minimal hue has to be larger than the one for maximal hue.");
             }
             // scale min and max values
-            this.scalingFactor = (this.maximalHue - this.minimalHue) / (this.maximalValue - this.minimalValue);
+            scalingFactor = (maximalHue - minimalHue) / (maximalValue - minimalValue);
             return new ColorScale(this);
         }
 
-    }
-
-    private ColorScale(Builder builder) {
-        this.minimalValue = builder.minimalValue;
-        this.maximalValue = builder.maximalValue;
-        this.scalingFactor = builder.scalingFactor;
-        this.minimalHue = builder.minimalHue;
-        this.saturation = builder.saturation;
-        this.brightness = builder.brightness;
-    }
-
-    /**
-     * Gets the color as specified by this gradient for this value between the minimal and maximal value.
-     *
-     * @param value The value to be converted to a color.
-     * @return The resulting color.
-     */
-    public Color getColor(double value) {
-        if (value < this.minimalValue || value > this.maximalValue) {
-            throw new IllegalArgumentException(
-                    "The requested value " + value + " is not contained in the initialized range [" + this.minimalValue
-                            + "," + this.maximalValue + "].");
-        }
-        final double requestedHue = (value - this.minimalValue) * this.scalingFactor + this.minimalHue;
-        return Color.hsb(requestedHue, this.saturation, this.brightness);
     }
 
 }

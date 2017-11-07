@@ -25,10 +25,10 @@ public class RendererExamples extends Application implements Renderer {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        this.canvas = new Canvas(500, 500);
+        canvas = new Canvas(500, 500);
 
         BorderPane root = new BorderPane();
-        root.setCenter(this.canvas);
+        root.setCenter(canvas);
 
         // add axis
         getGraphicsContext().setLineWidth(5);
@@ -69,16 +69,16 @@ public class RendererExamples extends Application implements Renderer {
 
     @Override
     public GraphicsContext getGraphicsContext() {
-        return this.canvas.getGraphicsContext2D();
+        return canvas.getGraphicsContext2D();
     }
 
     @Override
     public double getDrawingWidth() {
-        return this.canvas.getWidth();
+        return canvas.getWidth();
     }
 
     @Override
     public double getDrawingHeight() {
-        return this.canvas.getHeight();
+        return canvas.getHeight();
     }
 }

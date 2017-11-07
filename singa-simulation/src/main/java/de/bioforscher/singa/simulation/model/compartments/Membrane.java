@@ -20,10 +20,10 @@ public class Membrane extends CellSection {
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
-        this.innerLayer = new EnclosedCompartment(identifier + "I", name + " Inner Layer");
-        this.innerLayer.setSubsection(true);
-        this.outerLayer = new EnclosedCompartment(identifier + "O", name + " Outer Layer");
-        this.innerLayer.setSubsection(true);
+        innerLayer = new EnclosedCompartment(identifier + "I", name + " Inner Layer");
+        innerLayer.setSubsection(true);
+        outerLayer = new EnclosedCompartment(identifier + "O", name + " Outer Layer");
+        innerLayer.setSubsection(true);
     }
 
     public static Membrane forCompartment(EnclosedCompartment enclosedCompartment) {
@@ -31,7 +31,7 @@ public class Membrane extends CellSection {
     }
 
     public EnclosedCompartment getInnerCompartment() {
-        return this.innerCompartment;
+        return innerCompartment;
     }
 
     public CellSection getInnerLayer() {
@@ -48,13 +48,13 @@ public class Membrane extends CellSection {
             // get adjacent compartments that are not the inner compartment and not the membrane itself
             Set<CellSection> sections = node.getNeighbours().stream()
                     .map(AutomatonNode::getCellSection)
-                    .filter(cellSection -> !cellSection.equals(this.innerCompartment) && !cellSection.equals(this))
+                    .filter(cellSection -> !cellSection.equals(innerCompartment) && !cellSection.equals(this))
                     .collect(Collectors.toSet());
             if (sections.size() != 1) {
                 throw new IllegalStateException("The node "+node+" is considered as a membrane node but has neighbours " +
                         "in more than 3 states (inner section, outer section, membrane section)");
             }
-            node.setConcentrationContainer(new MembraneContainer(sections.iterator().next(), this.innerCompartment, this));
+            node.setConcentrationContainer(new MembraneContainer(sections.iterator().next(), innerCompartment, this));
         }
     }
 

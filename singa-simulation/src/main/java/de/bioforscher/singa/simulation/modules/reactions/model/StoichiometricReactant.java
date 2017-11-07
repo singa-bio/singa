@@ -31,12 +31,12 @@ public class StoichiometricReactant extends Reactant {
 
     public StoichiometricReactant(ChemicalEntity entity, ReactantRole role) {
         super(entity, role);
-        this.stoichiometricNumber = 1;
-        this.reactionOrder = 1;
+        stoichiometricNumber = 1;
+        reactionOrder = 1;
     }
 
     public double getStoichiometricNumber() {
-        return this.stoichiometricNumber;
+        return stoichiometricNumber;
     }
 
     public void setStoichiometricNumber(double stoichiometricNumber) {
@@ -44,7 +44,7 @@ public class StoichiometricReactant extends Reactant {
     }
 
     public double getReactionOrder() {
-        return this.reactionOrder;
+        return reactionOrder;
     }
 
     public void setReactionOrder(double reactionOrder) {
@@ -52,7 +52,7 @@ public class StoichiometricReactant extends Reactant {
     }
 
     public boolean isRateDetermining() {
-        return this.rateDetermining;
+        return rateDetermining;
     }
 
     public void setRateDetermining(boolean rateDetermining) {

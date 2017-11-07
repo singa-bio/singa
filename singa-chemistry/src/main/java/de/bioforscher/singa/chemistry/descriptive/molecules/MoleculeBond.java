@@ -15,7 +15,7 @@ public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
 
     public MoleculeBond(int identifier, char smilesSymbol) {
         super(identifier);
-        this.type = MoleculeBondType.getBondForSMILESSymbol(smilesSymbol);
+        type = MoleculeBondType.getBondForSMILESSymbol(smilesSymbol);
     }
 
     public MoleculeBond(int identifier, MoleculeAtom source, MoleculeAtom target, MoleculeBondType type) {
@@ -24,7 +24,7 @@ public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
     }
 
     public MoleculeBondType getType() {
-        return this.type;
+        return type;
     }
 
     public void setType(MoleculeBondType type) {

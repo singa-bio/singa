@@ -38,7 +38,7 @@ public class ConsensusAlignmentTest {
     public void setUp() throws Exception {
         StructureParserOptions structureParserOptions = new StructureParserOptions();
         structureParserOptions.inferIdentifierFromFileName(true);
-        this.input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
+        input = Files.list(Paths.get(Resources.getResourceAsFileLocation("consensus_alignment")))
                 .map(path -> StructureParser.local()
                         .fileLocation(path.toString())
                         .everything()
@@ -51,29 +51,29 @@ public class ConsensusAlignmentTest {
 
     @Test(expected = ConsensusException.class)
     public void shouldFailWithInputOfDifferentSize() {
-        this.input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
+        input.get(0).addLeafSubstructure(new OakAminoAcid(new LeafIdentifier(0), AminoAcidFamily.ALANINE));
         ConsensusBuilder.create()
-                .inputStructuralMotifs(this.input)
+                .inputStructuralMotifs(input)
                 .run();
     }
 
     @Test
     public void shouldCreateConsensusAlignment() throws IOException {
         ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
-                .inputStructuralMotifs(this.input)
+                .inputStructuralMotifs(input)
                 .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
                 .clusterCutoff(0.6)
                 .run();
         List<LeafSubstructure<?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
                 .getStructuralMotif().getAllLeafSubstructures();
-        consensusAlignment.writeClusters(this.folder.getRoot().toPath());
-        assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
+        consensusAlignment.writeClusters(folder.getRoot().toPath());
+        assertEquals(input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }
 
     @Test
     public void shouldCreateConsensusAlignmentWithRepresentationScheme() throws IOException {
         ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
-                .inputStructuralMotifs(this.input)
+                .inputStructuralMotifs(input)
                 .representationSchemeType(RepresentationSchemeType.CB)
                 .clusterCutoff(0.2)
                 .alignWithinClusters(true)
@@ -81,7 +81,7 @@ public class ConsensusAlignmentTest {
                 .run();
         List<LeafSubstructure<?>> consensusMotif = consensusAlignment.getTopConsensusTree().getRoot().getData()
                 .getStructuralMotif().getAllLeafSubstructures();
-        consensusAlignment.writeClusters(this.folder.getRoot().toPath());
-        assertEquals(this.input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
+        consensusAlignment.writeClusters(folder.getRoot().toPath());
+        assertEquals(input.size(), consensusAlignment.getTopConsensusTree().getLeafNodes().size());
     }
 }

@@ -34,23 +34,23 @@ public class RankBiasedOverlap {
 
     private void calculateRbo() {
 
-        this.rbo = 0.0;
+        rbo = 0.0;
 
-        for (int i = 1; i < this.limit; i++) {
+        for (int i = 1; i < limit; i++) {
 
-            List<?> subList1 = new ArrayList<>(this.list1.subList(0, i));
-            List<?> subList2 = new ArrayList<>(this.list2.subList(0, i));
+            List<?> subList1 = new ArrayList<>(list1.subList(0, i));
+            List<?> subList2 = new ArrayList<>(list2.subList(0, i));
             subList1.retainAll(subList2);
 
             double a = (double) subList1.size() / (double) i;
 
-            this.rbo = this.rbo + Math.pow(p, i - 1) * a;
+            rbo = rbo + Math.pow(p, i - 1) * a;
         }
 
-        this.rbo = (1 - p) * this.rbo;
+        rbo = (1 - p) * rbo;
     }
 
     public double getRbo() {
-        return this.rbo;
+        return rbo;
     }
 }

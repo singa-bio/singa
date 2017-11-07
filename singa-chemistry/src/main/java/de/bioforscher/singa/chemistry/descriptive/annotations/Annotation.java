@@ -67,7 +67,7 @@ public class Annotation<ContentType> {
      * @return The {@link AnnotationType}.
      */
     public AnnotationType getAnnotationType() {
-        return this.annotationType;
+        return annotationType;
     }
 
     /**
@@ -85,7 +85,7 @@ public class Annotation<ContentType> {
      * @return The description.
      */
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Annotation<ContentType> {
      * @return The content.
      */
     public ContentType getContent() {
-        return this.content;
+        return content;
     }
 
     /**
@@ -117,6 +117,6 @@ public class Annotation<ContentType> {
 
     @Override
     public String toString() {
-        return this.annotationType.toString() + ": " + this.content.toString();
+        return annotationType.toString() + ": " + content.toString();
     }
 }

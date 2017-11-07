@@ -174,7 +174,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * @return {@code true} if the inner dimensions of both matrices match and {@code false} otherwise.
      */
     default boolean hasSameInnerDimension(Matrix matrix) {
-        return this.getColumnDimension() == matrix.getRowDimension();
+        return getColumnDimension() == matrix.getRowDimension();
     }
 
     /**
@@ -201,7 +201,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * false} otherwise.
      */
     default boolean hasSameInnerDimension(Vector vector) {
-        return this.getColumnDimension() == vector.getDimension();
+        return getColumnDimension() == vector.getDimension();
     }
 
     /**
@@ -228,8 +228,8 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      */
     @Override
     default boolean hasSameDimensions(Matrix matrix) {
-        return this.getRowDimension() == matrix.getRowDimension()
-                && this.getColumnDimension() == matrix.getColumnDimension();
+        return getRowDimension() == matrix.getRowDimension()
+                && getColumnDimension() == matrix.getColumnDimension();
     }
 
 }

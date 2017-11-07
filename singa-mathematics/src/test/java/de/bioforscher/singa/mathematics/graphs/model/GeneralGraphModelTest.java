@@ -14,14 +14,14 @@ public class GeneralGraphModelTest {
 
     @Before
     public void initialize() {
-        this.boundingBox = new Rectangle(100, 100);
+        boundingBox = new Rectangle(100, 100);
     }
 
     @Test
     public void shouldAddNode() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0, this.boundingBox);
-        RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1, this.boundingBox);
+        RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0, boundingBox);
+        RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1, boundingBox);
         testGraph.addNode(nodeToAdd);
         assertTrue(testGraph.containsNode(nodeToAdd));
         assertFalse(testGraph.containsEdge(nodeNotToAdd));
@@ -30,8 +30,8 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldConnectNodes() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode source = Nodes.createRandomlyPlacedNode(0, this.boundingBox);
-        RegularNode target = Nodes.createRandomlyPlacedNode(1, this.boundingBox);
+        RegularNode source = Nodes.createRandomlyPlacedNode(0, boundingBox);
+        RegularNode target = Nodes.createRandomlyPlacedNode(1, boundingBox);
         testGraph.addNode(source);
         testGraph.addNode(target);
         testGraph.addEdgeBetween(0, source, target);
@@ -44,7 +44,7 @@ public class GeneralGraphModelTest {
 
     @Test
     public void shouldRemoveNode() {
-        UndirectedGraph linearGraph = Graphs.buildLinearGraph(10, this.boundingBox);
+        UndirectedGraph linearGraph = Graphs.buildLinearGraph(10, boundingBox);
         int unexpectedNodeIdentifier = 5;
         RegularNode removedNode = linearGraph.removeNode(unexpectedNodeIdentifier);
         // check if node has been removed correctly

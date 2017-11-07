@@ -31,22 +31,22 @@ public class Fit3DMatchTest {
 
     @Before
     public void setUp() {
-        this.target = StructureParser.online()
+        target = StructureParser.online()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
+        queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
     public void shouldGetCsvRepresentation() {
         Fit3D fit3d = Fit3DBuilder.create()
-                .query(this.queryMotif)
-                .target(this.target.getFirstChain())
+                .query(queryMotif)
+                .target(target.getFirstChain())
                 .run();
         assertEquals("1gl0_E-57_E-102_E-195,4.6807102570267135E-4,NaN", fit3d.getMatches().get(0).toCsvLine());
     }
@@ -54,10 +54,10 @@ public class Fit3DMatchTest {
     @Test
     public void shouldWriteSummaryFile() throws IOException {
         Fit3D fit3d = Fit3DBuilder.create()
-                .query(this.queryMotif)
-                .target(this.target.getFirstChain())
+                .query(queryMotif)
+                .target(target.getFirstChain())
                 .run();
-        File summaryFile = this.testFolder.newFile("summary.csv");
+        File summaryFile = testFolder.newFile("summary.csv");
         fit3d.writeSummaryFile(summaryFile.toPath());
         assertTrue(summaryFile.exists());
     }

@@ -59,14 +59,14 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
     public Protein parse() {
         parseXML();
         // return parsing result
-        return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getProtein();
+        return ((UniProtContentHandler) getXmlReader().getContentHandler()).getProtein();
     }
 
     private void parseXML() {
-        fetchResource(this.identifier.toString() + ".xml");
+        fetchResource(identifier.toString() + ".xml");
         // parse xml
         try {
-            this.getXmlReader().parse(new InputSource(getFetchResult()));
+            getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {

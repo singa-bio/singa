@@ -335,7 +335,7 @@ public class StructureParser {
          * @return The parser with the given options.
          */
         public SingleParser setOptions(StructureParserOptions options) {
-            this.selector.options = options;
+            selector.options = options;
             return this;
         }
 
@@ -346,15 +346,15 @@ public class StructureParser {
          * @throws StructureParserException if the structure could not be parsed as specified during the selection.
          */
         public Structure parse() throws StructureParserException {
-            if (this.selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
+            if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
                 // FIXME uiuiui
                 try {
-                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(this.selector.sourceSelector.contentIterator.next().get(0)));
+                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
                 } catch (IOException e) {
                     logger.warn("failed to parse structure", e);
                 }
             }
-            return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
+            return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
     }
 
@@ -388,7 +388,7 @@ public class StructureParser {
          * @return The number of structures totally queued.
          */
         public int getNumberOfQueuedStructures() {
-            return this.selector.sourceSelector.contentIterator.getNumberOfQueuedStructures();
+            return selector.sourceSelector.contentIterator.getNumberOfQueuedStructures();
         }
 
         /**
@@ -397,7 +397,7 @@ public class StructureParser {
          * @return The number of structures remaining.
          */
         public int getNumberOfRemainingStructures() {
-            return this.selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
+            return selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
         }
 
         /**
@@ -407,7 +407,7 @@ public class StructureParser {
          * @throws IllegalStateException if the structures identifier could not be accessed.
          */
         public String getCurrentPdbIdentifier() {
-            return this.selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
+            return selector.sourceSelector.contentIterator.getCurrentPdbIdentifier();
         }
 
         /**
@@ -417,7 +417,7 @@ public class StructureParser {
          * @throws IllegalStateException if the structures identifier could not be accessed.
          */
         public String getCurrentChainIdentifier() {
-            return this.selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
+            return selector.sourceSelector.contentIterator.getCurrentChainIdentifier();
         }
 
         /**
@@ -427,7 +427,7 @@ public class StructureParser {
          * @return The parser with the set options.
          */
         public MultiParser setOptions(StructureParserOptions options) {
-            this.selector.options = options;
+            selector.options = options;
             return this;
         }
 
@@ -439,13 +439,13 @@ public class StructureParser {
         public List<Structure> parse() {
             logger.info("parsing {} structures ", getNumberOfQueuedStructures());
             List<Structure> structures = new ArrayList<>();
-            this.selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
+            selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
                 try {
-                    if (this.selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
+                    if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
                         // FIXME uiuiui
                         structures.add(new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0))));
                     } else {
-                        structures.add(StructureCollector.parse(lines, this.selector));
+                        structures.add(StructureCollector.parse(lines, selector));
                     }
                 } catch (StructureParserException | IOException e) {
                     logger.warn("failed to parse structure", e);
@@ -457,20 +457,20 @@ public class StructureParser {
 
         @Override
         synchronized public boolean hasNext() {
-            return this.selector.sourceSelector.contentIterator.hasNext();
+            return selector.sourceSelector.contentIterator.hasNext();
         }
 
         @Override
         synchronized public Structure next() {
-            if (this.selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
+            if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
                 // FIXME uiuiui
                 try {
-                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(this.selector.sourceSelector.contentIterator.next().get(0)));
+                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
                 } catch (IOException e) {
                     logger.warn("failed to parse structure", e);
                 }
             }
-            return StructureCollector.parse(this.selector.sourceSelector.contentIterator.next(), this.selector);
+            return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
     }
 
@@ -496,7 +496,7 @@ public class StructureParser {
 
         @Override
         public MultiChainStep allModels() {
-            this.allModels = true;
+            allModels = true;
             return this;
         }
 
@@ -512,7 +512,7 @@ public class StructureParser {
          * @return The {@link MultiParser}.
          */
         private MultiParser mapping() {
-            this.parseMapping = true;
+            parseMapping = true;
             return new MultiParser(this);
         }
 
@@ -557,7 +557,7 @@ public class StructureParser {
 
         @Override
         public SingleChainStep allModels() {
-            this.allModels = true;
+            allModels = true;
             return this;
         }
 
@@ -649,7 +649,7 @@ public class StructureParser {
          */
         Reducer(SourceSelector sourceSelector) {
             this.sourceSelector = sourceSelector;
-            this.skeletons = new HashMap<>();
+            skeletons = new HashMap<>();
         }
 
         /**
@@ -659,8 +659,8 @@ public class StructureParser {
          */
         void setModelIdentifier(int modelIdentifier) {
             this.modelIdentifier = modelIdentifier;
-            this.modelsReduced = true;
-            this.allModels = false;
+            modelsReduced = true;
+            allModels = false;
         }
 
         /**
@@ -671,9 +671,9 @@ public class StructureParser {
         void setChainIdentifier(String chainIdentifier) {
             Objects.requireNonNull(chainIdentifier);
             this.chainIdentifier = chainIdentifier;
-            this.allChains = false;
-            if (!this.modelsReduced) {
-                this.allModels = true;
+            allChains = false;
+            if (!modelsReduced) {
+                allModels = true;
             }
         }
 
@@ -681,40 +681,40 @@ public class StructureParser {
          * Sets all chains to be parsed.
          */
         void setAllChains() {
-            this.allChains = true;
+            allChains = true;
         }
 
         /**
          * Sets everything to be parsed.
          */
         void setEverything() {
-            if (!this.modelsReduced) {
-                this.allModels = true;
+            if (!modelsReduced) {
+                allModels = true;
             }
-            this.allChains = true;
+            allChains = true;
         }
 
         /**
          * Updates the pdb identifier after parsing.
          */
         void updatePdbIdentifer() {
-            this.pdbIdentifier = this.sourceSelector.contentIterator.getCurrentPdbIdentifier();
+            pdbIdentifier = sourceSelector.contentIterator.getCurrentPdbIdentifier();
         }
 
         /**
          * Updates the chain identifier after parsing.
          */
         void updateChainIdentifier() {
-            this.chainIdentifier = this.sourceSelector.contentIterator.getCurrentChainIdentifier();
+            chainIdentifier = sourceSelector.contentIterator.getCurrentChainIdentifier();
         }
 
         @Override
         public String toString() {
-            return "Reducer{pdbIdentifier='" + this.pdbIdentifier + '\'' +
-                    ", modelIdentifier=" + this.modelIdentifier +
-                    ", chainIdentifier='" + this.chainIdentifier + '\'' +
-                    ", allModels=" + this.allModels +
-                    ", allChains=" + this.allChains +
+            return "Reducer{pdbIdentifier='" + pdbIdentifier + '\'' +
+                    ", modelIdentifier=" + modelIdentifier +
+                    ", chainIdentifier='" + chainIdentifier + '\'' +
+                    ", allModels=" + allModels +
+                    ", allChains=" + allChains +
                     '}';
         }
 
@@ -743,37 +743,37 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep pdbIdentifier(String pdbIdentifier) {
-            this.contentIterator = new StructureContentIterator(pdbIdentifier, this.sourceLocation);
+            contentIterator = new StructureContentIterator(pdbIdentifier, sourceLocation);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep pdbIdentifiers(List<String> pdbIdentifiers) {
-            this.contentIterator = new StructureContentIterator(String.class, pdbIdentifiers, this.sourceLocation);
+            contentIterator = new StructureContentIterator(String.class, pdbIdentifiers, sourceLocation);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep file(File file) {
-            this.contentIterator = new StructureContentIterator(file);
+            contentIterator = new StructureContentIterator(file);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep files(List<File> files) {
-            this.contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep path(Path path) {
-            this.contentIterator = new StructureContentIterator(path);
+            contentIterator = new StructureContentIterator(path);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep paths(List<Path> paths) {
-            this.contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
             return new MultiReducingSelector(this);
         }
 
@@ -788,7 +788,7 @@ public class StructureParser {
             } catch (IOException e) {
                 throw new UncheckedIOException("Unable to parse structure from input stream.", e);
             }
-            this.contentIterator = new StructureContentIterator(tempFile);
+            contentIterator = new StructureContentIterator(tempFile);
             return new SingleReducingSelector(this);
         }
 
@@ -800,19 +800,19 @@ public class StructureParser {
 
         @Override
         public MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers) {
-            this.contentIterator = new StructureContentIterator(localPDB, pdbIdentifiers);
+            contentIterator = new StructureContentIterator(localPDB, pdbIdentifiers);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
-            this.contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
+            contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep fileLocation(String location) {
-            this.contentIterator = new StructureContentIterator(Paths.get(location));
+            contentIterator = new StructureContentIterator(Paths.get(location));
             return new SingleReducingSelector(this);
         }
 
@@ -821,17 +821,17 @@ public class StructureParser {
             List<Path> paths = locations.stream()
                     .map(Paths::get)
                     .collect(Collectors.toList());
-            this.contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public MultiParser chainList(Path path, String separator) {
             try {
-                if (this.localPDB != null) {
-                    this.contentIterator = new StructureContentIterator(readMappingFile(path, separator), this.localPDB);
+                if (localPDB != null) {
+                    contentIterator = new StructureContentIterator(readMappingFile(path, separator), localPDB);
                 } else {
-                    this.contentIterator = new StructureContentIterator(readMappingFile(path, separator), this.sourceLocation);
+                    contentIterator = new StructureContentIterator(readMappingFile(path, separator), sourceLocation);
                 }
             } catch (IOException e) {
                 throw new UncheckedIOException("Could not open input stream for chain list file.", e);
@@ -903,7 +903,7 @@ public class StructureParser {
          * @param localPdbLocation
          */
         public LocalPDB(String localPdbLocation) {
-            this.localPdbPath = Paths.get(localPdbLocation);
+            localPdbPath = Paths.get(localPdbLocation);
         }
 
         /**
@@ -912,7 +912,7 @@ public class StructureParser {
          * @return The path to the local pdb.
          */
         public Path getLocalPdbPath() {
-            return this.localPdbPath;
+            return localPdbPath;
         }
 
         /**
@@ -923,7 +923,7 @@ public class StructureParser {
          */
         public Path getPathForPdbIdentifier(String pdbIdentifier) {
             pdbIdentifier = pdbIdentifier.toLowerCase();
-            return this.localPdbPath.resolve(BASE_PATH).resolve(pdbIdentifier.substring(1, 3))
+            return localPdbPath.resolve(BASE_PATH).resolve(pdbIdentifier.substring(1, 3))
                     .resolve(pdbIdentifier).resolve("pdb" + pdbIdentifier + ".ent.gz");
         }
     }

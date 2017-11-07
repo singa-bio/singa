@@ -20,7 +20,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public int getDonor() {
-        return this.donor;
+        return donor;
     }
 
     public void setDonor(int donor) {
@@ -28,7 +28,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public int getAcceptor() {
-        return this.acceptor;
+        return acceptor;
     }
 
     public void setAcceptor(int acceptor) {
@@ -36,7 +36,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public boolean isSidechain() {
-        return this.sidechain;
+        return sidechain;
     }
 
     public void setSidechain(boolean sidechain) {
@@ -44,7 +44,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public boolean isProtIsDon() {
-        return this.protIsDon;
+        return protIsDon;
     }
 
     public void setProtIsDon(boolean protIsDon) {
@@ -52,7 +52,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public double getDistanceHA() {
-        return this.distanceHA;
+        return distanceHA;
     }
 
     public void setDistanceHA(double distanceHA) {
@@ -60,7 +60,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public double getDistanceDA() {
-        return this.distanceDA;
+        return distanceDA;
     }
 
     public void setDistanceDA(double distanceDA) {
@@ -68,7 +68,7 @@ public class HydrogenBond extends Interaction {
     }
 
     public double getAngle() {
-        return this.angle;
+        return angle;
     }
 
     public void setAngle(double angle) {
@@ -77,25 +77,25 @@ public class HydrogenBond extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return this.protIsDon ? this.donor : this.acceptor;
+        return protIsDon ? donor : acceptor;
     }
 
     @Override
     public int getFirstTargetAtom() {
-        return this.protIsDon ? this.acceptor : this.donor;
+        return protIsDon ? acceptor : donor;
     }
 
     @Override
     public String toString() {
         return "HydrogenBond{" +
-                "donor=" + this.donor +
-                ", acceptor=" + this.acceptor +
-                ", protIsDon=" + this.protIsDon +
-                ", plipIdentifier=" + this.plipIdentifier +
-                ", source=" + this.source +
-                ", target=" + this.target +
-                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
+                "donor=" + donor +
+                ", acceptor=" + acceptor +
+                ", protIsDon=" + protIsDon +
+                ", plipIdentifier=" + plipIdentifier +
+                ", source=" + source +
+                ", target=" + target +
+                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

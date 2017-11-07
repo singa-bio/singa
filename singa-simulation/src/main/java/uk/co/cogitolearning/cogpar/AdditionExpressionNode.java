@@ -53,7 +53,7 @@ public class AdditionExpressionNode extends SequenceExpressionNode {
      */
     public double getValue() {
         double sum = 0.0;
-        for (Term t : this.terms) {
+        for (Term t : terms) {
             if (t.positive)
                 sum += t.expression.getValue();
             else
@@ -71,7 +71,7 @@ public class AdditionExpressionNode extends SequenceExpressionNode {
      */
     public void accept(ExpressionNodeVisitor visitor) {
         visitor.visit(this);
-        for (Term t : this.terms)
+        for (Term t : terms)
             t.expression.accept(visitor);
     }
 

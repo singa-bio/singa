@@ -35,23 +35,23 @@ public class RegularMatrixTest {
     @Before
     public void initialize() {
         double[][] squareValues = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}};
-        this.squareMatrix = new RegularMatrix(squareValues);
+        squareMatrix = new RegularMatrix(squareValues);
         double[][] firstRectangularValues = {{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}};
-        this.firstRectangularMatrix = new RegularMatrix(firstRectangularValues);
+        firstRectangularMatrix = new RegularMatrix(firstRectangularValues);
         double[][] secondRectangularValues = {{7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}};
-        this.secondRectangularMatrix = new RegularMatrix(secondRectangularValues);
+        secondRectangularMatrix = new RegularMatrix(secondRectangularValues);
 
         double[][] fourTimesTwoValues = {{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}, {7.0, 8.0}};
-        this.fourTimesTwo = new RegularMatrix(fourTimesTwoValues);
+        fourTimesTwo = new RegularMatrix(fourTimesTwoValues);
         double[][] twoTimesThreeValues = {{9.0, 10.0, 11.0}, {12.0, 13.0, 14.0}};
-        this.twoTimesThree = new RegularMatrix(twoTimesThreeValues);
+        twoTimesThree = new RegularMatrix(twoTimesThreeValues);
 
         double[][] uniqueValues = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}};
-        this.matrixWithUniqueExtrema = new RegularMatrix(uniqueValues);
+        matrixWithUniqueExtrema = new RegularMatrix(uniqueValues);
         double[][] ambiguousValues = {{1.0, 1.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 9.0, 9.0}};
-        this.matrixWithAmbiguousExtrema = new RegularMatrix(ambiguousValues);
+        matrixWithAmbiguousExtrema = new RegularMatrix(ambiguousValues);
         double[][] unspecifiedValues = {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
-        this.matrixWithNoExtrema = new RegularMatrix(unspecifiedValues);
+        matrixWithNoExtrema = new RegularMatrix(unspecifiedValues);
 
     }
 
@@ -70,92 +70,92 @@ public class RegularMatrixTest {
 
     @Test
     public void testSameDimension() {
-        boolean sameDimensions = this.firstRectangularMatrix.hasSameDimensions(this.secondRectangularMatrix);
+        boolean sameDimensions = firstRectangularMatrix.hasSameDimensions(secondRectangularMatrix);
         assertEquals(true, sameDimensions);
     }
 
     @Test
     public void testRowDimension() {
-        int rowVector = this.firstRectangularMatrix.getRow(0).getDimension();
-        int rowDimension = this.firstRectangularMatrix.getColumnDimension();
+        int rowVector = firstRectangularMatrix.getRow(0).getDimension();
+        int rowDimension = firstRectangularMatrix.getColumnDimension();
         assertEquals(rowVector, rowDimension, 0);
     }
 
     @Test
     public void testColumnDimension() {
-        int columnVector = this.firstRectangularMatrix.getColumn(0).getDimension();
-        int columnDimension = this.firstRectangularMatrix.getRowDimension();
+        int columnVector = firstRectangularMatrix.getColumn(0).getDimension();
+        int columnDimension = firstRectangularMatrix.getRowDimension();
         assertEquals(columnVector, columnDimension, 0);
     }
 
     @Test
     public void testRowExtraction() {
-        RegularVector row = this.squareMatrix.getRow(0);
+        RegularVector row = squareMatrix.getRow(0);
         assertArrayEquals(new double[]{1.0, 2.0, 3.0}, row.getElements(), 0.0);
     }
 
     @Test
     public void testColumnExtraction() {
-        RegularVector column = this.squareMatrix.getColumn(0);
+        RegularVector column = squareMatrix.getColumn(0);
         assertArrayEquals(new double[]{1.0, 4.0, 7.0}, column.getElements(), 0.0);
     }
 
     @Test
     public void testElementExtraction() {
-        double element = this.squareMatrix.getElement(0, 1);
+        double element = squareMatrix.getElement(0, 1);
         assertEquals(2.0, element, 0.0);
     }
 
     @Test
     public void testAddition() {
-        Matrix addition = this.firstRectangularMatrix.add(this.secondRectangularMatrix);
+        Matrix addition = firstRectangularMatrix.add(secondRectangularMatrix);
         assertTrue(Arrays.deepEquals(new double[][]{{8.0, 10.0}, {12.0, 14.0}, {16.0, 18.0}},
                 addition.getElements()));
     }
 
     @Test
     public void testSubstraction() {
-        Matrix addition = this.firstRectangularMatrix.subtract(this.secondRectangularMatrix);
+        Matrix addition = firstRectangularMatrix.subtract(secondRectangularMatrix);
         assertTrue(Arrays.deepEquals(new double[][]{{-6.0, -6.0}, {-6.0, -6.0}, {-6.0, -6.0}},
                 addition.getElements()));
     }
 
     @Test
     public void testSummation() {
-        Matrix addition = Addable.sum(Arrays.asList(this.firstRectangularMatrix, this.firstRectangularMatrix, this.firstRectangularMatrix));
+        Matrix addition = Addable.sum(Arrays.asList(firstRectangularMatrix, firstRectangularMatrix, firstRectangularMatrix));
         assertTrue(Arrays.deepEquals(new double[][]{{3.0, 6.0}, {9.0, 12.0}, {15.0, 18.0}},
                 addition.getElements()));
     }
 
     @Test
     public void testAdditiveInversion() {
-        Matrix inversion = this.firstRectangularMatrix.additivelyInvert();
+        Matrix inversion = firstRectangularMatrix.additivelyInvert();
         assertTrue(Arrays.deepEquals(new double[][]{{-1.0, -2.0}, {-3.0, -4.0}, {-5.0, -6.0}},
                 inversion.getElements()));
     }
 
     @Test
     public void testTransposition() {
-        Matrix transposition = this.firstRectangularMatrix.transpose();
+        Matrix transposition = firstRectangularMatrix.transpose();
         assertTrue(Arrays.deepEquals(new double[][]{{1.0, 3.0, 5.0}, {2.0, 4.0, 6.0}},
                 transposition.getElements()));
     }
 
     @Test(expected = IncompatibleDimensionsException.class)
     public void ensureSameDimensions() {
-        Matrix addition = this.squareMatrix.add(this.secondRectangularMatrix);
+        Matrix addition = squareMatrix.add(secondRectangularMatrix);
         assertNull(addition);
     }
 
     @Test(expected = IncompatibleDimensionsException.class)
     public void ensureSameInnerDimensions() {
-        Matrix multiplication = this.twoTimesThree.multiply(this.fourTimesTwo);
+        Matrix multiplication = twoTimesThree.multiply(fourTimesTwo);
         assertNull(multiplication);
     }
 
     @Test
     public void testMultiplicationWithScalar() {
-        Matrix multiplication = this.firstRectangularMatrix.multiply(2);
+        Matrix multiplication = firstRectangularMatrix.multiply(2);
         assertTrue(Arrays.deepEquals(new double[][]{{2.0, 4.0}, {6.0, 8.0}, {10.0, 12.0}},
                 multiplication.getElements()));
     }
@@ -163,46 +163,46 @@ public class RegularMatrixTest {
     @Test
     public void testMultiplicationWithVector() {
         Vector multiplicand = new RegularVector(2.0, 3.0);
-        Vector multiplication = this.fourTimesTwo.multiply(multiplicand);
+        Vector multiplication = fourTimesTwo.multiply(multiplicand);
         assertArrayEquals(new double[]{8.0, 18.0, 28.0, 38.0}, multiplication.getElements(), 0.0);
     }
 
     @Test
     public void testMultiplicationWithMatrix() {
-        Matrix multiplication = this.fourTimesTwo.multiply(this.twoTimesThree);
+        Matrix multiplication = fourTimesTwo.multiply(twoTimesThree);
         assertTrue(Arrays.deepEquals(new double[][]{{33.0, 36.0, 39.0}, {75.0, 82.0, 89.0},
                 {117.0, 128.0, 139.0}, {159.0, 174.0, 189.0}}, multiplication.getElements()));
     }
 
     @Test
     public void testHadamardMultiplication() {
-        Matrix multiplication = this.fourTimesTwo.hadamardMultiply(this.fourTimesTwo);
+        Matrix multiplication = fourTimesTwo.hadamardMultiply(fourTimesTwo);
         assertTrue(Arrays.deepEquals(new double[][]{{1.0, 4.0}, {9.0, 16.0}, {25.0, 36.0}, {49.0, 64.0}},
                 multiplication.getElements()));
     }
 
     @Test
     public void shouldConvertRegularToSquared() {
-        SquareMatrix actual = this.squareMatrix.as(SquareMatrix.class);
-        assertTrue(Arrays.deepEquals(this.squareMatrix.getElements(), actual.getElements()));
+        SquareMatrix actual = squareMatrix.as(SquareMatrix.class);
+        assertTrue(Arrays.deepEquals(squareMatrix.getElements(), actual.getElements()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotConvertRegularToSquared() {
-        SquareMatrix actual = this.firstRectangularMatrix.as(SquareMatrix.class);
+        SquareMatrix actual = firstRectangularMatrix.as(SquareMatrix.class);
         assertNull(actual);
     }
 
     @Test
     public void testToString() {
         String expected = " 9.00 10.00 11.00\n12.00 13.00 14.00\n";
-        assertEquals(expected, this.twoTimesThree.toString());
+        assertEquals(expected, twoTimesThree.toString());
     }
 
     @Test
     public void shouldGetStringRepresentation() {
 
-        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(firstRectangularMatrix.getElements());
         lrm.setRowLabel("R3", 2);
         lrm.setRowLabel("R2", 1);
         lrm.setRowLabel("R1", 0);
@@ -219,36 +219,36 @@ public class RegularMatrixTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldEnsureLabelCapacity() {
 
-        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(firstRectangularMatrix.getElements());
         lrm.setRowLabel("R7", 7);
     }
 
     @Test
     public void shouldFindMatrixExtrema() {
 
-        Optional<Pair<Integer>> minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithUniqueExtrema);
+        Optional<Pair<Integer>> minimalPosition = Matrices.getPositionOfMinimalElement(matrixWithUniqueExtrema);
         assertTrue(minimalPosition.isPresent());
         assertEquals(0L, (long) minimalPosition.get().getFirst());
         assertEquals(0L, (long) minimalPosition.get().getSecond());
-        minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        minimalPosition = Matrices.getPositionOfMinimalElement(matrixWithAmbiguousExtrema);
         assertEquals(Optional.empty(), minimalPosition);
-        minimalPosition = Matrices.getPositionOfMinimalElement(this.matrixWithNoExtrema);
+        minimalPosition = Matrices.getPositionOfMinimalElement(matrixWithNoExtrema);
         assertEquals(Optional.empty(), minimalPosition);
 
-        Optional<Pair<Integer>> maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithUniqueExtrema);
+        Optional<Pair<Integer>> maximalPosition = Matrices.getPositionOfMaximalElement(matrixWithUniqueExtrema);
         assertTrue(maximalPosition.isPresent());
         assertEquals(2L, (long) maximalPosition.get().getFirst());
         assertEquals(2L, (long) maximalPosition.get().getSecond());
-        maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        maximalPosition = Matrices.getPositionOfMaximalElement(matrixWithAmbiguousExtrema);
         assertEquals(Optional.empty(), maximalPosition);
-        maximalPosition = Matrices.getPositionOfMaximalElement(this.matrixWithNoExtrema);
+        maximalPosition = Matrices.getPositionOfMaximalElement(matrixWithNoExtrema);
         assertEquals(Optional.empty(), maximalPosition);
 
-        List<Pair<Integer>> minimalPositions = Matrices.getPositionsOfMinimalElement(this.matrixWithAmbiguousExtrema);
+        List<Pair<Integer>> minimalPositions = Matrices.getPositionsOfMinimalElement(matrixWithAmbiguousExtrema);
         assertTrue(minimalPositions.get(0).getFirst() == 0 && minimalPositions.get(0).getSecond() == 0);
         assertTrue(minimalPositions.get(1).getFirst() == 0 && minimalPositions.get(1).getSecond() == 1);
 
-        List<Pair<Integer>> maximalPositions = Matrices.getPositionsOfMaximalElement(this.matrixWithAmbiguousExtrema);
+        List<Pair<Integer>> maximalPositions = Matrices.getPositionsOfMaximalElement(matrixWithAmbiguousExtrema);
         assertTrue(maximalPositions.get(0).getFirst() == 2 && maximalPositions.get(0).getSecond() == 1);
         assertTrue(maximalPositions.get(1).getFirst() == 2 && maximalPositions.get(1).getSecond() == 2);
     }
@@ -297,15 +297,15 @@ public class RegularMatrixTest {
 
     @Test
     public void shouldCopy(){
-        RegularMatrix copy1 = this.squareMatrix.getCopy();
-        RegularMatrix copy2 = this.squareMatrix.getCopy();
+        RegularMatrix copy1 = squareMatrix.getCopy();
+        RegularMatrix copy2 = squareMatrix.getCopy();
         copy1.getElements()[0][0] = Double.MIN_VALUE;
         assertTrue(copy2.getElements()[0][0] != Double.MIN_VALUE);
     }
 
     @Test
     public void shouldGetColumnAndRowByLabel() {
-        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(firstRectangularMatrix.getElements());
         lrm.setRowLabel("R3", 2);
         lrm.setRowLabel("R2", 1);
         lrm.setRowLabel("R1", 0);
@@ -320,7 +320,7 @@ public class RegularMatrixTest {
     @Test
     public void shouldStreamAllElements() {
         List<Double> expectedElements = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
-        List<Double> actualElements = this.firstRectangularMatrix.streamElements().boxed().collect(Collectors.toList());
+        List<Double> actualElements = firstRectangularMatrix.streamElements().boxed().collect(Collectors.toList());
         for (int i = 0 ; i < expectedElements.size() ; i++ ) {
             assertEquals(expectedElements.get(i), actualElements.get(i), 0.0);
         }
@@ -329,7 +329,7 @@ public class RegularMatrixTest {
 
     @Test
     public void shouldRetrieveLabelsOfSymmetricMatrix(){
-        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(this.firstRectangularMatrix.getElements());
+        LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(firstRectangularMatrix.getElements());
         lrm.setRowLabel("R3", 2);
         lrm.setRowLabel("R2", 1);
         lrm.setRowLabel("R1", 0);

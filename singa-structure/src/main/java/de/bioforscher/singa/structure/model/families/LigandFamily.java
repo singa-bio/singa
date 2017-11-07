@@ -19,12 +19,12 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
 
     @Override
     public String getOneLetterCode() {
-        return this.oneLetterCode;
+        return oneLetterCode;
     }
 
     @Override
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 
     @Override
@@ -39,19 +39,19 @@ public class LigandFamily implements StructuralFamily<LigandFamily> {
 
         LigandFamily that = (LigandFamily) o;
 
-        return this.threeLetterCode != null ? this.threeLetterCode.equals(that.threeLetterCode) : that.threeLetterCode == null;
+        return threeLetterCode != null ? threeLetterCode.equals(that.threeLetterCode) : that.threeLetterCode == null;
     }
 
     @Override
     public int hashCode() {
-        return this.threeLetterCode != null ? this.threeLetterCode.hashCode() : 0;
+        return threeLetterCode != null ? threeLetterCode.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "LigandFamily{" +
-                "oneLetterCode='" + this.oneLetterCode + '\'' +
-                ", threeLetterCode='" + this.threeLetterCode + '\'' +
+                "oneLetterCode='" + oneLetterCode + '\'' +
+                ", threeLetterCode='" + threeLetterCode + '\'' +
                 '}';
     }
 }

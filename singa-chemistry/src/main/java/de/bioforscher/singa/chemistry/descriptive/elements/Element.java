@@ -64,10 +64,10 @@ public class Element {
         this.name = name;
         this.symbol = symbol;
         this.protonNumber = protonNumber;
-        this.electronNumber = protonNumber;
-        this.valenceElectronNumber = ElectronConfiguration.parseElectronConfigurationFromString(electronConfiguration).getNumberOfValenceElectrons();
-        this.neutronNumber = protonNumber;
-        this.atomicMass = atomicWeight;
+        electronNumber = protonNumber;
+        valenceElectronNumber = ElectronConfiguration.parseElectronConfigurationFromString(electronConfiguration).getNumberOfValenceElectrons();
+        neutronNumber = protonNumber;
+        atomicMass = atomicWeight;
     }
 
     /**
@@ -92,17 +92,17 @@ public class Element {
      * @param neutronNumber  The neutron number.
      */
     private Element(Element element, int electronNumber, int neutronNumber) {
-        this.name = element.getName();
-        this.symbol = element.getSymbol();
-        this.protonNumber = element.getProtonNumber();
+        name = element.getName();
+        symbol = element.getSymbol();
+        protonNumber = element.getProtonNumber();
         this.electronNumber = electronNumber;
-        this.valenceElectronNumber = element.valenceElectronNumber;
+        valenceElectronNumber = element.valenceElectronNumber;
         this.neutronNumber = neutronNumber;
-        if (neutronNumber != this.protonNumber) {
+        if (neutronNumber != protonNumber) {
             // TODO determine correctly
-            this.atomicMass = Quantities.getQuantity(neutronNumber, GRAM_PER_MOLE);
+            atomicMass = Quantities.getQuantity(neutronNumber, GRAM_PER_MOLE);
         } else {
-            this.atomicMass = element.getAtomicMass();
+            atomicMass = element.getAtomicMass();
         }
 
     }
@@ -113,7 +113,7 @@ public class Element {
      * @return The name.
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -122,7 +122,7 @@ public class Element {
      * @return The symbol.
      */
     public String getSymbol() {
-        return this.symbol;
+        return symbol;
     }
 
     /**
@@ -131,7 +131,7 @@ public class Element {
      * @return The proton number.
      */
     public int getProtonNumber() {
-        return this.protonNumber;
+        return protonNumber;
     }
 
     /**
@@ -140,7 +140,7 @@ public class Element {
      * @return The atomic mass.
      */
     public Quantity<MolarMass> getAtomicMass() {
-        return this.atomicMass;
+        return atomicMass;
     }
 
     /**
@@ -158,7 +158,7 @@ public class Element {
      * @return The electron number.
      */
     public int getElectronNumber() {
-        return this.electronNumber;
+        return electronNumber;
     }
 
     /**
@@ -167,7 +167,7 @@ public class Element {
      * @return The number of valence electrons.
      */
     public int getValenceElectronNumber() {
-        return this.valenceElectronNumber;
+        return valenceElectronNumber;
     }
 
     /**
@@ -177,14 +177,14 @@ public class Element {
      */
     public int getNumberOfPotentialBonds() {
         // very preliminary
-        if (this.electronNumber <= 2) {
-            return 2 - this.electronNumber;
+        if (electronNumber <= 2) {
+            return 2 - electronNumber;
         }
         // octet rule
-        if (this.valenceElectronNumber <= 4) {
-            return this.valenceElectronNumber;
+        if (valenceElectronNumber <= 4) {
+            return valenceElectronNumber;
         }
-        return 8 - this.valenceElectronNumber;
+        return 8 - valenceElectronNumber;
     }
 
     /**
@@ -193,7 +193,7 @@ public class Element {
      * @return The neutron number.
      */
     public int getNeutronNumber() {
-        return this.neutronNumber;
+        return neutronNumber;
     }
 
     /**
@@ -204,7 +204,7 @@ public class Element {
      */
     public Element asIon(int charge) {
         if (charge != 0) {
-            return new Element(this, this.electronNumber + charge, this.neutronNumber);
+            return new Element(this, electronNumber + charge, neutronNumber);
         }
         return this;
     }
@@ -236,9 +236,9 @@ public class Element {
      * @return An isotope of this element.
      */
     public Element asIsotope(int massNumber) {
-        int neutronNumber = massNumber - this.protonNumber;
+        int neutronNumber = massNumber - protonNumber;
         if (neutronNumber != this.neutronNumber) {
-            return new Element(this, this.electronNumber, neutronNumber);
+            return new Element(this, electronNumber, neutronNumber);
         }
         return this;
     }
@@ -249,7 +249,7 @@ public class Element {
      * @return {@code true} if this Element is an ion and {@code false} otherwise.
      */
     public boolean isIon() {
-        return this.electronNumber != this.protonNumber;
+        return electronNumber != protonNumber;
     }
 
     /**
@@ -258,7 +258,7 @@ public class Element {
      * @return {@code true} if this Element is an anion and {@code false} otherwise.
      */
     public boolean isAnion() {
-        return this.protonNumber < this.electronNumber;
+        return protonNumber < electronNumber;
     }
 
     /**
@@ -267,7 +267,7 @@ public class Element {
      * @return {@code true} if this Element is an cation and {@code false} otherwise.
      */
     public boolean isCation() {
-        return this.protonNumber > this.electronNumber;
+        return protonNumber > electronNumber;
     }
 
     /**
@@ -276,11 +276,11 @@ public class Element {
      * @return The charge of this Element.
      */
     public int getCharge() {
-        return this.electronNumber - this.protonNumber;
+        return electronNumber - protonNumber;
     }
 
     public int getMassNumber() {
-        return this.neutronNumber + this.protonNumber;
+        return neutronNumber + protonNumber;
     }
 
     /**
@@ -289,12 +289,12 @@ public class Element {
      * @return {@code true} if this Element is an isotope and {@code false} otherwise.
      */
     public boolean isIsotope() {
-        return this.protonNumber != this.neutronNumber;
+        return protonNumber != neutronNumber;
     }
 
     @Override
     public String toString() {
-        return (this.neutronNumber != this.protonNumber ? getMassNumber() : "") + this.symbol + (getCharge() != 0 ? getCharge() : "");
+        return (neutronNumber != protonNumber ? getMassNumber() : "") + symbol + (getCharge() != 0 ? getCharge() : "");
     }
 
     @Override
@@ -304,16 +304,16 @@ public class Element {
 
         Element element = (Element) o;
 
-        if (this.protonNumber != element.protonNumber) return false;
-        if (this.electronNumber != element.electronNumber) return false;
-        return this.neutronNumber == element.neutronNumber;
+        if (protonNumber != element.protonNumber) return false;
+        if (electronNumber != element.electronNumber) return false;
+        return neutronNumber == element.neutronNumber;
     }
 
     @Override
     public int hashCode() {
-        int result = this.protonNumber;
-        result = 31 * result + this.electronNumber;
-        result = 31 * result + this.neutronNumber;
+        int result = protonNumber;
+        result = 31 * result + electronNumber;
+        result = 31 * result + neutronNumber;
         return result;
     }
 }

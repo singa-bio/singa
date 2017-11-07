@@ -48,22 +48,22 @@ public class ValidAlignmentGenerator {
     public List<List<Pair<LeafSubstructure<?>>>> getValidAlignments() {
 
         // initialize paths
-        this.pathsThroughSecondMotif = new ArrayList<>();
-        this.pathsThroughSecondMotif.add(new ArrayList<>());
+        pathsThroughSecondMotif = new ArrayList<>();
+        pathsThroughSecondMotif.add(new ArrayList<>());
 
         // handle each
-        for (int currentPathLength = 0; currentPathLength < this.reference.size(); currentPathLength++) {
+        for (int currentPathLength = 0; currentPathLength < reference.size(); currentPathLength++) {
             final int expectedLength = currentPathLength + 1;
 
             // because we handle this as LeafStructures we can deal with any type
-            LeafSubstructure currentReference = this.reference.get(currentPathLength);
+            LeafSubstructure currentReference = reference.get(currentPathLength);
             logger.trace("iteration {}: currently handling {} of reference motif", currentPathLength, currentReference);
 
             // for each candidate: append it to the currently known paths
-            this.pathsThroughSecondMotif = this.candidate.stream()
+            pathsThroughSecondMotif = candidate.stream()
                     // create each possible combination of the current paths and the available candidate residues
                     //TODO: this could improve, if not already consumed residues are appended
-                    .flatMap(candidateResidue -> this.pathsThroughSecondMotif.stream()
+                    .flatMap(candidateResidue -> pathsThroughSecondMotif.stream()
                             // clone path
                             .map(this::cloneList)
                             // append path by candidateResidue
@@ -83,9 +83,9 @@ public class ValidAlignmentGenerator {
                     .collect(Collectors.toList());
         }
 
-        return this.pathsThroughSecondMotif.stream()
+        return pathsThroughSecondMotif.stream()
                 .map(path -> IntStream.range(0, path.size())
-                        .mapToObj(index -> new Pair<>(this.reference.get(index), path.get(index)))
+                        .mapToObj(index -> new Pair<>(reference.get(index), path.get(index)))
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }

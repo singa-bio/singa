@@ -29,7 +29,7 @@ public class Scalar implements Vector {
      * @return The value of this scalar.
      */
     public double getValue() {
-        return this.value;
+        return value;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class Scalar implements Vector {
         if (index != 0) {
             throw new IndexOutOfBoundsException("Scalar can only contain a single value at index 0.");
         }
-        return this.value;
+        return value;
     }
 
     @Override
     public double[] getElements() {
-        return new double[]{this.value};
+        return new double[]{value};
     }
 
     @Override
@@ -94,13 +94,13 @@ public class Scalar implements Vector {
     @Override
     public Scalar add(Vector summand) {
         assertThatDimensionsMatch(summand);
-        return new Scalar(this.value + summand.getElement(0));
+        return new Scalar(value + summand.getElement(0));
     }
 
     @Override
     public Scalar subtract(Vector subtrahend) {
         assertThatDimensionsMatch(subtrahend);
-        return new Scalar(this.value - subtrahend.getElement(0));
+        return new Scalar(value - subtrahend.getElement(0));
     }
 
     /**
@@ -110,7 +110,7 @@ public class Scalar implements Vector {
      */
     @Override
     public Scalar additivelyInvert() {
-        return new Scalar(-this.value);
+        return new Scalar(-value);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class Scalar implements Vector {
 
     @Override
     public Scalar multiply(double scalar) {
-        return new Scalar(this.value * scalar);
+        return new Scalar(value * scalar);
     }
 
     /**
@@ -157,12 +157,12 @@ public class Scalar implements Vector {
 
     @Override
     public Scalar divide(double scalar) {
-        return new Scalar(this.value / scalar);
+        return new Scalar(value / scalar);
     }
 
     @Override
     public Scalar normalize() {
-        return new Scalar(this.value);
+        return new Scalar(value);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class Scalar implements Vector {
 
     @Override
     public double getMagnitude() {
-        return this.value;
+        return value;
     }
 
     /**
@@ -195,7 +195,7 @@ public class Scalar implements Vector {
     @Override
     public double distanceTo(Vector another) {
         assertThatDimensionsMatch(another);
-        return Math.abs(this.subtract(another).getValue());
+        return Math.abs(subtract(another).getValue());
     }
 
 }

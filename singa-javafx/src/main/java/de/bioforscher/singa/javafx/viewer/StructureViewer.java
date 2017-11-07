@@ -71,25 +71,25 @@ public class StructureViewer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        this.chainMaterials = new HashMap<>();
+        chainMaterials = new HashMap<>();
 
-        this.treeView = new TreeView<>();
-        this.treeView.getSelectionModel().selectedItemProperty()
+        treeView = new TreeView<>();
+        treeView.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
                         toogleDisplay(newValue.getValue());
                     }
                 });
 
-        this.displayGroup.getChildren().add(this.world);
-        this.displayGroup.setDepthTest(DepthTest.ENABLE);
+        displayGroup.getChildren().add(world);
+        displayGroup.setDepthTest(DepthTest.ENABLE);
 
         if (structure.getAllModels().size() > 1) {
             // add leafs
-            this.displayStructure = new OakStructure();
-            this.displayStructure.addModel((OakModel) structure.getAllModels().get(0));
+            displayStructure = new OakStructure();
+            displayStructure.addModel((OakModel) structure.getAllModels().get(0));
         } else {
-            this.displayStructure = structure;
+            displayStructure = structure;
         }
 
         fillTree();
@@ -97,35 +97,35 @@ public class StructureViewer extends Application {
         buildCamera();
         buildDisplayedStructure();
 
-        SubScene structureScene = new SubScene(this.displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
+        SubScene structureScene = new SubScene(displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
         handleKeyboard(structureScene);
         handleMouse(structureScene);
         structureScene.setFill(Color.WHITE);
 
-        SplitPane pane = new SplitPane(structureScene, this.treeView);
+        SplitPane pane = new SplitPane(structureScene, treeView);
         Scene mainScene = new Scene(pane);
 
         primaryStage.setTitle("Singa Molecule Viewer");
         primaryStage.setScene(mainScene);
         primaryStage.show();
 
-        structureScene.setCamera(this.camera);
+        structureScene.setCamera(camera);
     }
 
     private void buildCamera() {
         //defining the order of rotations
-        this.displayGroup.getChildren().add(this.XYRotate);
-        this.XYRotate.getChildren().add(this.XYTranslate);
-        this.XYTranslate.getChildren().add(this.ZRotate);
-        this.ZRotate.getChildren().add(this.camera);
-        this.ZRotate.setRotateZ(180.0);
+        displayGroup.getChildren().add(XYRotate);
+        XYRotate.getChildren().add(XYTranslate);
+        XYTranslate.getChildren().add(ZRotate);
+        ZRotate.getChildren().add(camera);
+        ZRotate.setRotateZ(180.0);
 
-        this.camera.setNearClip(CAMERA_NEAR_CLIP);
-        this.camera.setFarClip(CAMERA_FAR_CLIP);
-        this.camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
+        camera.setNearClip(CAMERA_NEAR_CLIP);
+        camera.setFarClip(CAMERA_FAR_CLIP);
+        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
 
-        this.XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+        XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+        XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
     private void translateToCentre() {
@@ -142,11 +142,11 @@ public class StructureViewer extends Application {
 
     private void buildDisplayedStructure() {
         // add leafs
-        this.displayStructure.getAllLeafSubstructures().stream()
+        displayStructure.getAllLeafSubstructures().stream()
                 .map(OakLeafSubstructure.class::cast)
                 .forEach(this::addLeafSubstructure);
         // add the created molecule to the world
-        this.world.getChildren().addAll(this.moleculeGroup);
+        world.getChildren().addAll(moleculeGroup);
 
     }
 
@@ -167,7 +167,7 @@ public class StructureViewer extends Application {
                 atom.getIdentifier() + ") of " + origin.getFamily().getThreeLetterCode() + ":" + origin.getIdentifier());
         Tooltip.install(atomShape, tooltip);
 
-        this.moleculeGroup.getChildren().add(atomShape);
+        moleculeGroup.getChildren().add(atomShape);
     }
 
     private void fillTree() {
@@ -184,7 +184,7 @@ public class StructureViewer extends Application {
             rootItem.getChildren().add(modelNode);
         }
 
-        this.treeView.setRoot(rootItem);
+        treeView.setRoot(rootItem);
     }
 
     private void toogleDisplay(final String identifier) {
@@ -196,41 +196,41 @@ public class StructureViewer extends Application {
     }
 
     private void displayModel(final String identifier) {
-        this.displayStructure = new OakStructure();
-        this.world = new XForm();
-        this.moleculeGroup = new XForm();
-        this.displayStructure.addModel((OakModel) structure.getAllModels().get(Integer.valueOf(identifier.replace("Model: ", ""))));
+        displayStructure = new OakStructure();
+        world = new XForm();
+        moleculeGroup = new XForm();
+        displayStructure.addModel((OakModel) structure.getAllModels().get(Integer.valueOf(identifier.replace("Model: ", ""))));
         buildDisplayedStructure();
-        this.displayGroup.getChildren().retainAll();
-        this.displayGroup.getChildren().add(this.world);
+        displayGroup.getChildren().retainAll();
+        displayGroup.getChildren().add(world);
     }
 
     private void displayChain(final String identifier) {
-        this.displayStructure = new OakStructure();
-        this.world = new XForm();
-        this.moleculeGroup = new XForm();
+        displayStructure = new OakStructure();
+        world = new XForm();
+        moleculeGroup = new XForm();
         OakChain chain = (OakChain) structure.getAllChains().stream()
                 .filter(aChain -> aChain.getIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
         final OakModel model = new OakModel(1);
         model.addChain(chain);
-        this.displayStructure.addModel(model);
+        displayStructure.addModel(model);
         buildDisplayedStructure();
-        this.displayGroup.getChildren().retainAll();
-        this.displayGroup.getChildren().add(this.world);
+        displayGroup.getChildren().retainAll();
+        displayGroup.getChildren().add(world);
     }
 
     private void addLeafBond(LeafSubstructure origin, OakBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
-        this.moleculeGroup.getChildren().add(bondShape);
+        moleculeGroup.getChildren().add(bondShape);
     }
 
     private void addChainBond(Chain origin, OakBond bond) {
         Cylinder bondShape = createCylinderConnecting(bond.getSource().getPosition(), bond.getTarget().getPosition());
         bondShape.setMaterial(getMaterial(origin, bond));
-        this.moleculeGroup.getChildren().add(bondShape);
+        moleculeGroup.getChildren().add(bondShape);
 
     }
 
@@ -260,8 +260,8 @@ public class StructureViewer extends Application {
             return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
                 String chain = origin.getIdentifier().getChainIdentifier();
-                if (this.chainMaterials.containsKey(chain)) {
-                    return this.chainMaterials.get(chain);
+            if (chainMaterials.containsKey(chain)) {
+                return chainMaterials.get(chain);
                 } else {
                     return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
                 }
@@ -288,11 +288,11 @@ public class StructureViewer extends Application {
     }
 
     private PhongMaterial getMaterialForChain(String chain) {
-        if (this.chainMaterials.containsKey(chain)) {
-            return this.chainMaterials.get(chain);
+        if (chainMaterials.containsKey(chain)) {
+            return chainMaterials.get(chain);
         } else {
             PhongMaterial material = MaterialProvider.crateMaterialFromColor(Color.color(Math.random(), Math.random(), Math.random()));
-            this.chainMaterials.put(chain, material);
+            chainMaterials.put(chain, material);
             return material;
         }
     }
@@ -300,19 +300,19 @@ public class StructureViewer extends Application {
     private void handleMouse(SubScene scene) {
 
         scene.setOnMousePressed(me -> {
-            this.mousePosX = me.getSceneX();
-            this.mousePosY = me.getSceneY();
-            this.mouseOldX = me.getSceneX();
-            this.mouseOldY = me.getSceneY();
+            mousePosX = me.getSceneX();
+            mousePosY = me.getSceneY();
+            mouseOldX = me.getSceneX();
+            mouseOldY = me.getSceneY();
         });
 
         scene.setOnMouseDragged(me -> {
-            this.mouseOldX = this.mousePosX;
-            this.mouseOldY = this.mousePosY;
-            this.mousePosX = me.getSceneX();
-            this.mousePosY = me.getSceneY();
-            this.mouseDeltaX = (this.mousePosX - this.mouseOldX);
-            this.mouseDeltaY = (this.mousePosY - this.mouseOldY);
+            mouseOldX = mousePosX;
+            mouseOldY = mousePosY;
+            mousePosX = me.getSceneX();
+            mousePosY = me.getSceneY();
+            mouseDeltaX = (mousePosX - mouseOldX);
+            mouseDeltaY = (mousePosY - mouseOldY);
 
             double modifier = 1.0;
 
@@ -323,19 +323,19 @@ public class StructureViewer extends Application {
                 modifier = SHIFT_MULTIPLIER;
             }
             if (me.isPrimaryButtonDown()) {
-                this.XYRotate.ry.setAngle(
-                        this.XYRotate.ry.getAngle() - this.mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED);
-                this.XYRotate.rx.setAngle(
-                        this.XYRotate.rx.getAngle() + this.mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
+                XYRotate.ry.setAngle(
+                        XYRotate.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED);
+                XYRotate.rx.setAngle(
+                        XYRotate.rx.getAngle() + mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
             } else if (me.isSecondaryButtonDown()) {
-                double z = this.camera.getTranslateZ();
-                double newZ = z + this.mouseDeltaX * MOUSE_SPEED * modifier;
-                this.camera.setTranslateZ(newZ);
+                double z = camera.getTranslateZ();
+                double newZ = z + mouseDeltaX * MOUSE_SPEED * modifier;
+                camera.setTranslateZ(newZ);
             } else if (me.isMiddleButtonDown()) {
-                this.XYTranslate.translate.setX(
-                        this.XYTranslate.translate.getX() + this.mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
-                this.XYTranslate.translate.setY(
-                        this.XYTranslate.translate.getY() + this.mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
+                XYTranslate.translate.setX(
+                        XYTranslate.translate.getX() + mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
+                XYTranslate.translate.setY(
+                        XYTranslate.translate.getY() + mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
             }
         });
     }
@@ -346,11 +346,11 @@ public class StructureViewer extends Application {
             switch (event.getCode()) {
                 case R: {
                     // reset to default
-                    this.XYTranslate.translate.setX(0.0);
-                    this.XYTranslate.translate.setY(0.0);
-                    this.camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-                    this.XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                    this.XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                    XYTranslate.translate.setX(0.0);
+                    XYTranslate.translate.setY(0.0);
+                    camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
+                    XYRotate.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+                    XYRotate.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
                     break;
                 }
             }

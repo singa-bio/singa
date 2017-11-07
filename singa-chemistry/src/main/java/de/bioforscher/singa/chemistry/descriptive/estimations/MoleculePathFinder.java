@@ -21,8 +21,8 @@ public class MoleculePathFinder {
     private List<LinkedList<MoleculeAtom>> candidates;
 
     private MoleculePathFinder(MoleculeGraph molecule) {
-        this.graph = molecule;
-        this.candidates = new LinkedList<>();
+        graph = molecule;
+        candidates = new LinkedList<>();
     }
 
     public static List<LinkedList<MoleculeAtom>> findPathInMolecule(MoleculeGraph molecule, LinkedList<Element> path) {
@@ -94,18 +94,18 @@ public class MoleculePathFinder {
         for (MoleculeAtom startingPoint : startingPoints) {
             LinkedList<MoleculeAtom> candidate = new LinkedList<>();
             candidate.add(startingPoint);
-            this.candidates.add(candidate);
+            candidates.add(candidate);
         }
     }
 
     private List<MoleculeAtom> findStartingPoints(LinkedList<Element> path) {
-        return this.graph.getNodes().stream()
+        return graph.getNodes().stream()
                 .filter(isElement(path.getFirst()))
                 .collect(Collectors.toList());
     }
 
     private List<MoleculeAtom> findStartingPointsForMultiPath(LinkedList<Set<Element>> multiPath) {
-        return this.graph.getNodes().stream()
+        return graph.getNodes().stream()
                 .filter(isOneOfElements(multiPath.getFirst()))
                 .collect(Collectors.toList());
     }
@@ -119,7 +119,7 @@ public class MoleculePathFinder {
         // for each element in the path
         while (pathIterator.hasNext()) {
             Element nextElement = pathIterator.next();
-            ListIterator<LinkedList<MoleculeAtom>> candidateIterator = this.candidates.listIterator();
+            ListIterator<LinkedList<MoleculeAtom>> candidateIterator = candidates.listIterator();
             // and each candidate
             while (candidateIterator.hasNext()) {
                 LinkedList<MoleculeAtom> candidate = candidateIterator.next();
@@ -149,7 +149,7 @@ public class MoleculePathFinder {
         // for each element in the path
         while (pathIterator.hasNext()) {
             Set<Element> nextElements = pathIterator.next();
-            ListIterator<LinkedList<MoleculeAtom>> candidateIterator = this.candidates.listIterator();
+            ListIterator<LinkedList<MoleculeAtom>> candidateIterator = candidates.listIterator();
             // and each candidate
             while (candidateIterator.hasNext()) {
                 LinkedList<MoleculeAtom> candidate = candidateIterator.next();
@@ -172,17 +172,17 @@ public class MoleculePathFinder {
 
     private void cleanIteration(int iteration) {
         // kick all elements from the previous iteration
-        this.candidates.removeIf(moleculeAtoms -> moleculeAtoms.size() != iteration);
+        candidates.removeIf(moleculeAtoms -> moleculeAtoms.size() != iteration);
     }
 
     private void cleanCandidates() {
-        ListIterator<LinkedList<MoleculeAtom>> candidateIterator = this.candidates.listIterator();
+        ListIterator<LinkedList<MoleculeAtom>> candidateIterator = candidates.listIterator();
         // list to remember duplicates (to avoid concurrent modification)
         Set<List<MoleculeAtom>> listsToRemove = new HashSet<>();
         // for each candidate
         while (candidateIterator.hasNext()) {
             LinkedList<MoleculeAtom> reference = candidateIterator.next();
-            ListIterator<LinkedList<MoleculeAtom>> duplicateIterator = this.candidates.listIterator(candidateIterator.nextIndex());
+            ListIterator<LinkedList<MoleculeAtom>> duplicateIterator = candidates.listIterator(candidateIterator.nextIndex());
             // compare pairwise
             while (duplicateIterator.hasNext()) {
                 LinkedList<MoleculeAtom> test = duplicateIterator.next();
@@ -196,7 +196,7 @@ public class MoleculePathFinder {
             }
         }
         // remove all flagged lists
-        this.candidates.removeAll(listsToRemove);
+        candidates.removeAll(listsToRemove);
     }
 
 }

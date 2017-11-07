@@ -57,20 +57,20 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     public OakLeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
-        this.divergingThreeLetterCode = "";
+        divergingThreeLetterCode = "";
         this.family = family;
-        this.atoms = new TreeMap<>();
-        this.bonds = new HashMap<>();
-        this.exchangeableFamilies = new HashSet<>();
+        atoms = new TreeMap<>();
+        bonds = new HashMap<>();
+        exchangeableFamilies = new HashSet<>();
     }
 
     public OakLeafSubstructure(LeafIdentifier identifer, FamilyType aminoAcidFamily, String threeLetterCode) {
-        this.leafIdentifier = identifer;
-        this.family = aminoAcidFamily;
-        this.divergingThreeLetterCode = threeLetterCode;
-        this.atoms = new TreeMap<>();
-        this.bonds = new HashMap<>();
-        this.exchangeableFamilies = new HashSet<>();
+        leafIdentifier = identifer;
+        family = aminoAcidFamily;
+        divergingThreeLetterCode = threeLetterCode;
+        atoms = new TreeMap<>();
+        bonds = new HashMap<>();
+        exchangeableFamilies = new HashSet<>();
     }
 
     /**
@@ -87,24 +87,24 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         this(leafSubstructure.leafIdentifier, leafSubstructure.family);
         // copy and add all atoms
         for (OakAtom atom : leafSubstructure.atoms.values()) {
-            this.atoms.put(atom.getIdentifier(), atom.getCopy());
+            atoms.put(atom.getIdentifier(), atom.getCopy());
         }
         // copy and add all bonds
         for (OakBond bond : leafSubstructure.bonds.values()) {
             OakBond edgeCopy = bond.getCopy();
-            OakAtom sourceCopy = this.atoms.get(bond.getSource().getIdentifier());
-            OakAtom targetCopy = this.atoms.get(bond.getTarget().getIdentifier());
+            OakAtom sourceCopy = atoms.get(bond.getSource().getIdentifier());
+            OakAtom targetCopy = atoms.get(bond.getTarget().getIdentifier());
             addBondBetween(edgeCopy, sourceCopy, targetCopy);
         }
         // add exchangeable types
-        this.exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
-        this.annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
+        exchangeableFamilies.addAll(leafSubstructure.getExchangeableFamilies());
+        annotatedAsHetAtom = leafSubstructure.annotatedAsHetAtom;
     }
 
 
     @Override
     public LeafIdentifier getIdentifier() {
-        return this.leafIdentifier;
+        return leafIdentifier;
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public Optional<Atom> getAtomByName(String atomName) {
-        for (OakAtom graphAtom : this.atoms.values()) {
+        for (OakAtom graphAtom : atoms.values()) {
             if (graphAtom.getAtomName().equals(atomName)) {
                 return Optional.of(graphAtom);
             }
@@ -124,7 +124,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public boolean isAnnotatedAsHeteroAtom() {
-        return this.annotatedAsHetAtom;
+        return annotatedAsHetAtom;
     }
 
     public void setAnnotatedAsHetAtom(boolean annotatedAsHetAtom) {
@@ -133,49 +133,49 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public String getThreeLetterCode() {
-        if (this.divergingThreeLetterCode.isEmpty()) {
-            return this.family.getThreeLetterCode();
+        if (divergingThreeLetterCode.isEmpty()) {
+            return family.getThreeLetterCode();
         }
-        return this.divergingThreeLetterCode;
+        return divergingThreeLetterCode;
     }
 
     @Override
     public FamilyType getFamily() {
-        return this.family;
+        return family;
     }
 
     @Override
     public List<Atom> getAllAtoms() {
-        return new ArrayList<>(this.atoms.values());
+        return new ArrayList<>(atoms.values());
     }
 
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
-        if (this.atoms.containsKey(atomIdentifier)) {
-            return Optional.of(this.atoms.get(atomIdentifier));
+        if (atoms.containsKey(atomIdentifier)) {
+            return Optional.of(atoms.get(atomIdentifier));
         }
         return Optional.empty();
     }
 
     public void addAtom(OakAtom atom) {
-        this.atoms.put(atom.getIdentifier(), atom);
+        atoms.put(atom.getIdentifier(), atom);
     }
 
     @Override
     public void removeAtom(Integer atomIdentifier) {
-        final OakAtom atom = this.atoms.get(atomIdentifier);
+        final OakAtom atom = atoms.get(atomIdentifier);
         if (atom != null) {
             for (OakAtom neighbor : atom.getNeighbours()) {
                 neighbor.getNeighbours().remove(atom);
             }
 
-            this.atoms.remove(atom.getIdentifier());
-            this.bonds.entrySet().removeIf(edge -> edge.getValue().connectsAtom(atom));
+            atoms.remove(atom.getIdentifier());
+            bonds.entrySet().removeIf(edge -> edge.getValue().connectsAtom(atom));
         }
     }
 
     public Collection<OakBond> getBonds() {
-        return this.bonds.values();
+        return bonds.values();
     }
 
     /**
@@ -193,7 +193,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         }
         edge.setSource(source);
         edge.setTarget(target);
-        this.bonds.put(edge.getIdentifier(), edge);
+        bonds.put(edge.getIdentifier(), edge);
         source.addNeighbour(target);
         target.addNeighbour(source);
         return edge.getIdentifier();
@@ -203,10 +203,10 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         if (source == null || target == null) {
             return -1;
         }
-        OakBond bond = new OakBond(this.nextEdgeIdentifier++);
+        OakBond bond = new OakBond(nextEdgeIdentifier++);
         bond.setSource(source);
         bond.setTarget(target);
-        this.bonds.put(bond.getIdentifier(), bond);
+        bonds.put(bond.getIdentifier(), bond);
         source.addNeighbour(target);
         target.addNeighbour(source);
         return bond.getIdentifier();
@@ -214,12 +214,12 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public Set<FamilyType> getExchangeableFamilies() {
-        return this.exchangeableFamilies;
+        return exchangeableFamilies;
     }
 
     @Override
     public void addExchangeableFamily(FamilyType exchangeableType) {
-        this.exchangeableFamilies.add(exchangeableType);
+        exchangeableFamilies.add(exchangeableType);
     }
 
     @Override
@@ -229,20 +229,20 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
         OakLeafSubstructure<?> that = (OakLeafSubstructure<?>) o;
 
-        if (this.leafIdentifier != null ? !this.leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
+        if (leafIdentifier != null ? !leafIdentifier.equals(that.leafIdentifier) : that.leafIdentifier != null)
             return false;
-        return this.family != null ? this.family.equals(that.family) : that.family == null;
+        return family != null ? family.equals(that.family) : that.family == null;
     }
 
     @Override
     public String toString() {
-        return this.leafIdentifier.toString();
+        return leafIdentifier.toString();
     }
 
     @Override
     public int hashCode() {
-        int result = this.leafIdentifier != null ? this.leafIdentifier.hashCode() : 0;
-        result = 31 * result + (this.family != null ? this.family.hashCode() : 0);
+        int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
+        result = 31 * result + (family != null ? family.hashCode() : 0);
         return result;
     }
 

@@ -20,12 +20,12 @@ public class SimplePolygon implements Polytope<Vector2D> {
 
     @Override
     public Vector2D[] getVertices() {
-        return this.vertices;
+        return vertices;
     }
 
     @Override
     public Vector2D getVertex(int vertexIdentifier) {
-        return this.vertices[vertexIdentifier];
+        return vertices[vertexIdentifier];
     }
 
     public double getLeftMostXPosition() {
@@ -53,7 +53,7 @@ public class SimplePolygon implements Polytope<Vector2D> {
     }
 
     public int getNumberOfVertices() {
-        return this.vertices.length;
+        return vertices.length;
     }
 
     public int getNumberOfEdges() {

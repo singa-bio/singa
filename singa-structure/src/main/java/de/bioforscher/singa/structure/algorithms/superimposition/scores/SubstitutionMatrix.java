@@ -49,11 +49,11 @@ public enum SubstitutionMatrix {
                 structuralFamilyLabels.add(AminoAcidFamily.valueOf(stringLabeledMatrix.getRowLabel(i)));
             }
         }
-        this.matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
-        this.matrix.setRowLabels(structuralFamilyLabels);
+        matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
+        matrix.setRowLabels(structuralFamilyLabels);
     }
 
     public LabeledSymmetricMatrix<StructuralFamily> getMatrix() {
-        return this.matrix;
+        return matrix;
     }
 }

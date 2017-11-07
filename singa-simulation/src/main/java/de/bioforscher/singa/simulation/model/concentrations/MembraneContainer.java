@@ -35,10 +35,10 @@ public class MembraneContainer implements ConcentrationContainer {
         this.innerPhaseSection = innerPhaseSection;
         this.membrane = membrane;
 
-        this.outerPhase = new HashMap<>();
-        this.outerLayer = new HashMap<>();
-        this.innerLayer = new HashMap<>();
-        this.innerPhase = new HashMap<>();
+        outerPhase = new HashMap<>();
+        outerLayer = new HashMap<>();
+        innerLayer = new HashMap<>();
+        innerPhase = new HashMap<>();
     }
 
     public MembraneContainer(MembraneContainer container) {
@@ -55,77 +55,77 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     public Quantity<MolarConcentration> getOuterPhaseConcentration(ChemicalEntity chemicalEntity) {
-        if (this.outerPhase.containsKey(chemicalEntity)) {
-            return this.outerPhase.get(chemicalEntity);
+        if (outerPhase.containsKey(chemicalEntity)) {
+            return outerPhase.get(chemicalEntity);
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
 
     public Quantity<MolarConcentration> getInnerPhaseConcentration(ChemicalEntity chemicalEntity) {
-        if (this.innerPhase.containsKey(chemicalEntity)) {
-            return this.innerPhase.get(chemicalEntity);
+        if (innerPhase.containsKey(chemicalEntity)) {
+            return innerPhase.get(chemicalEntity);
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
 
     public Quantity<MolarConcentration> getOuterMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
-        if (this.outerLayer.containsKey(chemicalEntity)) {
-            return this.outerLayer.get(chemicalEntity);
+        if (outerLayer.containsKey(chemicalEntity)) {
+            return outerLayer.get(chemicalEntity);
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
 
     public Quantity<MolarConcentration> getInnerMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
-        if (this.innerLayer.containsKey(chemicalEntity)) {
-            return this.innerLayer.get(chemicalEntity);
+        if (innerLayer.containsKey(chemicalEntity)) {
+            return innerLayer.get(chemicalEntity);
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
 
     @Override
     public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
-        if (cellSection.equals(this.outerPhaseSection)) {
-            return this.outerPhase;
-        } else if (cellSection.equals(this.innerPhaseSection)) {
-            return this.innerPhase;
-        } else if (cellSection.equals(this.membrane)) {
+        if (cellSection.equals(outerPhaseSection)) {
+            return outerPhase;
+        } else if (cellSection.equals(innerPhaseSection)) {
+            return innerPhase;
+        } else if (cellSection.equals(membrane)) {
             Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations = new HashMap<>();
-            for (Map.Entry<ChemicalEntity<?>, Quantity<MolarConcentration>> entry : this.innerLayer.entrySet()) {
-                concentrations.put(entry.getKey(), entry.getValue().add(this.outerLayer.get(entry.getKey())).divide(2.0));
+            for (Map.Entry<ChemicalEntity<?>, Quantity<MolarConcentration>> entry : innerLayer.entrySet()) {
+                concentrations.put(entry.getKey(), entry.getValue().add(outerLayer.get(entry.getKey())).divide(2.0));
             }
             return concentrations;
-        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
-            return this.innerLayer;
-        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
-            return this.outerLayer;
+        } else if (cellSection.equals(membrane.getInnerLayer())) {
+            return innerLayer;
+        } else if (cellSection.equals(membrane.getOuterLayer())) {
+            return outerLayer;
         }
         return Collections.emptyMap();
     }
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
-        if (cellSection.equals(this.outerPhaseSection)) {
-            if (this.outerPhase.containsKey(chemicalEntity)) {
-                return this.outerPhase.get(chemicalEntity);
+        if (cellSection.equals(outerPhaseSection)) {
+            if (outerPhase.containsKey(chemicalEntity)) {
+                return outerPhase.get(chemicalEntity);
             }
-        } else if (cellSection.equals(this.innerPhaseSection)) {
-            if (this.innerPhase.containsKey(chemicalEntity)) {
-                return this.innerPhase.get(chemicalEntity);
+        } else if (cellSection.equals(innerPhaseSection)) {
+            if (innerPhase.containsKey(chemicalEntity)) {
+                return innerPhase.get(chemicalEntity);
             }
-        } else if (cellSection.equals(this.membrane)) {
+        } else if (cellSection.equals(membrane)) {
             Quantity<MolarConcentration> concentrationSum;
-            if (this.innerLayer.containsKey(chemicalEntity)) {
-                concentrationSum = (this.innerLayer.get(chemicalEntity));
-                concentrationSum = concentrationSum.add(this.outerLayer.get(chemicalEntity));
+            if (innerLayer.containsKey(chemicalEntity)) {
+                concentrationSum = (innerLayer.get(chemicalEntity));
+                concentrationSum = concentrationSum.add(outerLayer.get(chemicalEntity));
                 return concentrationSum.divide(2.0);
             }
-        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
-            if (this.innerLayer.containsKey(chemicalEntity)) {
-                return this.innerLayer.get(chemicalEntity);
+        } else if (cellSection.equals(membrane.getInnerLayer())) {
+            if (innerLayer.containsKey(chemicalEntity)) {
+                return innerLayer.get(chemicalEntity);
             }
-        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
-            if (this.outerLayer.containsKey(chemicalEntity)) {
-                return this.outerLayer.get(chemicalEntity);
+        } else if (cellSection.equals(membrane.getOuterLayer())) {
+            if (outerLayer.containsKey(chemicalEntity)) {
+                return outerLayer.get(chemicalEntity);
             }
         }
         return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
@@ -133,66 +133,66 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        this.outerPhase.put(chemicalEntity, concentration);
-        this.outerLayer.put(chemicalEntity, concentration);
-        this.innerLayer.put(chemicalEntity, concentration);
-        this.innerPhase.put(chemicalEntity, concentration);
+        outerPhase.put(chemicalEntity, concentration);
+        outerLayer.put(chemicalEntity, concentration);
+        innerLayer.put(chemicalEntity, concentration);
+        innerPhase.put(chemicalEntity, concentration);
     }
 
     @Override
     public void setAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        if (cellSection.equals(this.outerPhaseSection)) {
-            this.outerPhase.put(chemicalEntity, concentration);
-        } else if (cellSection.equals(this.innerPhaseSection)) {
-            this.innerPhase.put(chemicalEntity, concentration);
-        } else if (cellSection.equals(this.membrane)) {
-            this.innerLayer.put(chemicalEntity, concentration);
-            this.outerLayer.put(chemicalEntity, concentration);
-        } else if (cellSection.equals(this.membrane.getInnerLayer())) {
-            this.innerLayer.put(chemicalEntity, concentration);
-        } else if (cellSection.equals(this.membrane.getOuterLayer())) {
-            this.outerLayer.put(chemicalEntity, concentration);
+        if (cellSection.equals(outerPhaseSection)) {
+            outerPhase.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(innerPhaseSection)) {
+            innerPhase.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(membrane)) {
+            innerLayer.put(chemicalEntity, concentration);
+            outerLayer.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(membrane.getInnerLayer())) {
+            innerLayer.put(chemicalEntity, concentration);
+        } else if (cellSection.equals(membrane.getOuterLayer())) {
+            outerLayer.put(chemicalEntity, concentration);
         }
     }
 
     @Override
     public Set<ChemicalEntity<?>> getAllReferencedEntities() {
         Set<ChemicalEntity<?>> entities = new HashSet<>();
-        entities.addAll(this.innerLayer.keySet());
-        entities.addAll(this.innerPhase.keySet());
-        entities.addAll(this.outerPhase.keySet());
-        entities.addAll(this.outerLayer.keySet());
+        entities.addAll(innerLayer.keySet());
+        entities.addAll(innerPhase.keySet());
+        entities.addAll(outerPhase.keySet());
+        entities.addAll(outerLayer.keySet());
         return entities;
     }
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
         Set<CellSection> sections = new HashSet<>();
-        sections.add(this.innerPhaseSection);
-        sections.add(this.outerPhaseSection);
-        sections.add(this.membrane.getInnerLayer());
-        sections.add(this.membrane.getOuterLayer());
+        sections.add(innerPhaseSection);
+        sections.add(outerPhaseSection);
+        sections.add(membrane.getInnerLayer());
+        sections.add(membrane.getOuterLayer());
         return sections;
     }
 
     public Membrane getMembrane() {
-        return this.membrane;
+        return membrane;
     }
 
     public CellSection getOuterPhaseSection() {
-        return this.outerPhaseSection;
+        return outerPhaseSection;
     }
 
     public CellSection getOuterLayerSection() {
-        return this.membrane.getOuterLayer();
+        return membrane.getOuterLayer();
     }
 
     public CellSection getInnerLayerSection() {
-        return this.membrane.getInnerLayer();
+        return membrane.getInnerLayer();
     }
 
     public CellSection getInnerPhaseSection() {
-        return this.innerPhaseSection;
+        return innerPhaseSection;
     }
 
     @Override

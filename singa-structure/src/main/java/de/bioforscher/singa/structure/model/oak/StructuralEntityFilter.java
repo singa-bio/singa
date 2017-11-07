@@ -32,7 +32,7 @@ public class StructuralEntityFilter {
         }
 
         public Predicate<LeafSubstructure> getFilter() {
-            return this.filter;
+            return filter;
         }
     }
 
@@ -61,7 +61,7 @@ public class StructuralEntityFilter {
         }
 
         public Predicate<Atom> getFilter() {
-            return this.filter;
+            return filter;
         }
     }
 

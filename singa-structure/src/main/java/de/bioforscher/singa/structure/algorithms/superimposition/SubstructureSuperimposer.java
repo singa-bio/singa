@@ -149,7 +149,7 @@ public class SubstructureSuperimposer {
         perAtomAlignment.keySet().forEach(pair ->
                 referenceNameJoiner.add(String.format("%-50s", pair.getFirst().toString())));
         StringJoiner atomNameJoiner = new StringJoiner("|", "|", "|");
-        if (this.representationScheme == null) {
+        if (representationScheme == null) {
             perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
                     .add(String.format("%-50s", atomNames.stream()
                             .sorted()
@@ -158,7 +158,7 @@ public class SubstructureSuperimposer {
             perAtomAlignment.values().forEach(atomNames -> atomNameJoiner
                     .add(String.format("%-50s", Stream.of(RepresentationSchemeType.values())
                             .filter(representationSchemeType -> representationSchemeType.getCompatibleRepresentationScheme()
-                                    .isInstance(this.representationScheme))
+                                    .isInstance(representationScheme))
                             .findAny().orElse(RepresentationSchemeType.CA))));
         }
         StringJoiner candidateNameJoiner = new StringJoiner("|", "|", "|");
@@ -180,13 +180,13 @@ public class SubstructureSuperimposer {
      */
     private SubstructureSuperimposition calculateIdealSuperimposition() throws SubstructureSuperimpositionException {
         Optional<SubstructureSuperimposition> optionalSuperimposition = StreamPermutations.of(
-                this.candidate.toArray(new LeafSubstructure<?>[this.candidate.size()]))
+                candidate.toArray(new LeafSubstructure<?>[candidate.size()]))
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
                 .map(permutedCandidates -> {
                     try {
-                        return new SubstructureSuperimposer(this.reference,
-                                permutedCandidates, this.atomFilter, this.representationScheme)
+                        return new SubstructureSuperimposer(reference,
+                                permutedCandidates, atomFilter, representationScheme)
                                 .calculateSuperimposition();
                     } catch (SubstructureSuperimpositionException e) {
                         logger.error("failed to calculate substructure superimposition", e);
@@ -209,8 +209,8 @@ public class SubstructureSuperimposer {
         Map<Pair<LeafSubstructure<?>>, Set<String>> perAtomAlignment = new LinkedHashMap<>();
 
         // create pairs of substructures to align
-        IntStream.range(0, this.reference.size())
-                .forEach(i -> perAtomAlignment.put(new Pair<>(this.reference.get(i), this.candidate.get(i)),
+        IntStream.range(0, reference.size())
+                .forEach(i -> perAtomAlignment.put(new Pair<>(reference.get(i), candidate.get(i)),
                         new HashSet<>()));
 
         // create atom subsets to align
@@ -220,17 +220,17 @@ public class SubstructureSuperimposer {
         List<Atom> referenceAtoms;
         List<Atom> candidateAtoms;
         // no representation scheme is defined
-        if (this.representationScheme == null) {
+        if (representationScheme == null) {
             // collect intersecting, filtered and sorted reference atoms
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .flatMap(pairSetEntry -> pairSetEntry.getKey().getFirst().getAllAtoms().stream()
-                            .filter(this.atomFilter)
+                            .filter(atomFilter)
                             .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
                             .sorted(Comparator.comparing(Atom::getAtomName)))
                     .collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .flatMap(pairSetEntry -> pairSetEntry.getKey().getSecond().getAllAtoms().stream()
-                            .filter(this.atomFilter)
+                            .filter(atomFilter)
                             .filter(atom -> pairSetEntry.getValue().contains(atom.getAtomName()))
                             .sorted(Comparator.comparing(Atom::getAtomName)))
                     .collect(Collectors.toList());
@@ -238,16 +238,16 @@ public class SubstructureSuperimposer {
             // reduce each leaf substructure to single representation scheme atoms
             referenceAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getFirst())
-                    .map(this.representationScheme::determineRepresentingAtom)
+                    .map(representationScheme::determineRepresentingAtom)
                     .collect(Collectors.toList());
             candidateAtoms = perAtomAlignment.entrySet().stream()
                     .map(pairSetEntry -> pairSetEntry.getKey().getSecond())
-                    .map(this.representationScheme::determineRepresentingAtom)
+                    .map(representationScheme::determineRepresentingAtom)
                     .collect(Collectors.toList());
         }
 
         if (referenceAtoms.isEmpty() || candidateAtoms.isEmpty()) {
-            logger.error("reference {} against candidate {} has no compatible atom sets: {} {}", this.reference, this.candidate, referenceAtoms, candidateAtoms);
+            logger.error("reference {} against candidate {} has no compatible atom sets: {} {}", reference, candidate, referenceAtoms, candidateAtoms);
             throw new SubstructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
         }
 
@@ -261,9 +261,9 @@ public class SubstructureSuperimposer {
                         .collect(Collectors.toList()));
 
         // store result
-        this.translation = vectorSuperimposition.getTranslation();
-        this.rotation = vectorSuperimposition.getRotation();
-        this.rmsd = vectorSuperimposition.getRmsd();
+        translation = vectorSuperimposition.getTranslation();
+        rotation = vectorSuperimposition.getRotation();
+        rmsd = vectorSuperimposition.getRmsd();
 
         // store mapping of atoms to vectors
         List<Vector> mappedPositions = vectorSuperimposition.getMappedCandidate();
@@ -274,13 +274,13 @@ public class SubstructureSuperimposer {
 
         // use a copy of the candidate to apply the mapping after calculating the superimposition
         List<LeafSubstructure<?>> mappedCandidate = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : this.candidate) {
+        for (LeafSubstructure<?> leafSubstructure : candidate) {
             mappedCandidate.add(leafSubstructure.getCopy());
         }
 
         // also create a copy for the full all-atom candidate
         List<LeafSubstructure<?>> mappedFullCandidate = new ArrayList<>();
-        for (LeafSubstructure<?> leafSubstructure : this.candidate) {
+        for (LeafSubstructure<?> leafSubstructure : candidate) {
             mappedFullCandidate.add(leafSubstructure.getCopy());
         }
 
@@ -312,19 +312,19 @@ public class SubstructureSuperimposer {
         mappedFullCandidate.stream()
                 .map(AtomContainer::getAllAtoms)
                 .flatMap(List::stream)
-                .forEach(atom -> atom.setPosition(this.rotation
+                .forEach(atom -> atom.setPosition(rotation
                         .transpose()
                         .multiply(atom.getPosition())
-                        .add(this.translation).as(Vector3D.class)));
+                        .add(translation).as(Vector3D.class)));
 
-        logger.debug("superimposed substructures with RMSD {}{}", this.rmsd, toAlignmentString(perAtomAlignment));
+        logger.debug("superimposed substructures with RMSD {}{}", rmsd, toAlignmentString(perAtomAlignment));
 
         // compose superimposition container
         return new SubstructureSuperimposition(vectorSuperimposition.getRmsd(),
-                this.translation,
-                this.rotation,
-                this.reference,
-                this.candidate,
+                translation,
+                rotation,
+                reference,
+                candidate,
                 mappedCandidate, mappedFullCandidate);
     }
 
@@ -336,11 +336,11 @@ public class SubstructureSuperimposer {
     private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?>>, Set<String>> pairListEntry) {
 
         pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
-                .filter(this.atomFilter)
+                .filter(atomFilter)
                 .map(Atom::getAtomName)
                 .collect(Collectors.toSet()));
         pairListEntry.getValue().retainAll(pairListEntry.getKey().getSecond().getAllAtoms().stream()
-                .filter(this.atomFilter)
+                .filter(atomFilter)
                 .map(Atom::getAtomName)
                 .collect(Collectors.toSet()));
     }

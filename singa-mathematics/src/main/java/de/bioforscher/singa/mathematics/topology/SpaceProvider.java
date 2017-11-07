@@ -22,7 +22,7 @@ public class SpaceProvider {
      * @return All predefined Spaces as a unmodifiable Set.
      */
     public Set<EuclideanSpace> getSpaces() {
-        return Collections.unmodifiableSet(this.spaces);
+        return Collections.unmodifiableSet(spaces);
     }
 
     private static EuclideanSpace addElement(EuclideanSpace element) {

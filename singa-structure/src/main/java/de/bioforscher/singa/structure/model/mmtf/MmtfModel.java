@@ -52,8 +52,8 @@ public class MmtfModel implements Model {
         this.data = data;
         this.bytes = bytes;
         this.modelIndex = modelIndex;
-        this.chainMap = new TreeMap<>();
-        this.cachedChains = new HashMap<>();
+        chainMap = new TreeMap<>();
+        cachedChains = new HashMap<>();
 
         if (modelIndex > data.getNumModels() - 1) {
             throw new IllegalArgumentException("Unable to access model with identifier: " + modelIndex);
@@ -87,17 +87,17 @@ public class MmtfModel implements Model {
      * @param mmtfModel The {@link MmtfModel} to copy.
      */
     private MmtfModel(MmtfModel mmtfModel) {
-        this.bytes = mmtfModel.bytes;
-        this.data = MmtfStructure.bytesToStructureData(bytes);
-        this.data = mmtfModel.data;
-        this.modelIndex = mmtfModel.modelIndex;
-        this.chainMap = new HashMap<>(mmtfModel.chainMap);
-        this.cachedChains = new HashMap<>();
+        bytes = mmtfModel.bytes;
+        data = MmtfStructure.bytesToStructureData(bytes);
+        data = mmtfModel.data;
+        modelIndex = mmtfModel.modelIndex;
+        chainMap = new HashMap<>(mmtfModel.chainMap);
+        cachedChains = new HashMap<>();
     }
 
     @Override
     public String toString() {
-        return "MmtfModel{" + this.data.getStructureId() + "," + getIdentifier() + "}";
+        return "MmtfModel{" + data.getStructureId() + "," + getIdentifier() + "}";
     }
 
     @Override

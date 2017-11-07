@@ -24,27 +24,27 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
     }
 
     public String getPdbIdentifier() {
-        return this.pdbIdentifer;
+        return pdbIdentifer;
     }
 
     public int getModelIdentifier() {
-        return this.modelIdentifer;
+        return modelIdentifer;
     }
 
     public String getChainIdentifier() {
-        return this.chainIdentifer;
+        return chainIdentifer;
     }
 
     public int getLeafSerial() {
-        return this.leafSerial;
+        return leafSerial;
     }
 
     public char getLeafInsertionCode() {
-        return this.leafInsertionCode;
+        return leafInsertionCode;
     }
 
     public int getAtomSerial() {
-        return this.atomSerial;
+        return atomSerial;
     }
 
     @Override
@@ -54,33 +54,33 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
 
         UniqueAtomIdentifer that = (UniqueAtomIdentifer) o;
 
-        if (this.atomSerial != that.atomSerial) return false;
-        if (this.modelIdentifer != that.modelIdentifer) return false;
-        if (this.leafSerial != that.leafSerial) return false;
-        if (this.leafInsertionCode != that.leafInsertionCode) return false;
-        if (this.pdbIdentifer != null ? !this.pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
+        if (atomSerial != that.atomSerial) return false;
+        if (modelIdentifer != that.modelIdentifer) return false;
+        if (leafSerial != that.leafSerial) return false;
+        if (leafInsertionCode != that.leafInsertionCode) return false;
+        if (pdbIdentifer != null ? !pdbIdentifer.equals(that.pdbIdentifer) : that.pdbIdentifer != null)
             return false;
-        return this.chainIdentifer != null ? this.chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
+        return chainIdentifer != null ? chainIdentifer.equals(that.chainIdentifer) : that.chainIdentifer == null;
     }
 
     @Override
     public int hashCode() {
-        int result = this.pdbIdentifer != null ? this.pdbIdentifer.hashCode() : 0;
-        result = 31 * result + this.modelIdentifer;
-        result = 31 * result + (this.chainIdentifer != null ? this.chainIdentifer.hashCode() : 0);
-        result = 31 * result + this.leafSerial;
-        result = 31 * result + (int) this.leafInsertionCode;
-        result = 31 * result + this.atomSerial;
+        int result = pdbIdentifer != null ? pdbIdentifer.hashCode() : 0;
+        result = 31 * result + modelIdentifer;
+        result = 31 * result + (chainIdentifer != null ? chainIdentifer.hashCode() : 0);
+        result = 31 * result + leafSerial;
+        result = 31 * result + (int) leafInsertionCode;
+        result = 31 * result + atomSerial;
         return result;
     }
 
     @Override
     public String toString() {
-        return this.pdbIdentifer + "-" +
-                this.modelIdentifer + "-" +
-                this.chainIdentifer + "-" +
-                this.leafSerial + (this.leafInsertionCode != LeafIdentifier.DEFAULT_INSERTION_CODE ? this.leafInsertionCode : "") + "-" +
-                this.atomSerial;
+        return pdbIdentifer + "-" +
+                modelIdentifer + "-" +
+                chainIdentifer + "-" +
+                leafSerial + (leafInsertionCode != LeafIdentifier.DEFAULT_INSERTION_CODE ? leafInsertionCode : "") + "-" +
+                atomSerial;
     }
 
     @Override

@@ -35,8 +35,8 @@ public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Li
      */
     private MmtfLigand(MmtfLigand mmtfLeafSubstructure) {
         super(mmtfLeafSubstructure);
-        this.family = mmtfLeafSubstructure.family;
-        this.exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
+        family = mmtfLeafSubstructure.family;
+        exchangeableFamilies = new HashSet<>(mmtfLeafSubstructure.exchangeableFamilies);
     }
 
     @Override

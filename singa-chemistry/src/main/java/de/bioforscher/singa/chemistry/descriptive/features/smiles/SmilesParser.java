@@ -104,15 +104,15 @@ public class SmilesParser {
      * Initializes the smiles Parser
      */
     public SmilesParser() {
-        this.symbols = new LinkedList<>();
-        this.tokens = new ArrayList<>();
-        this.molecule = new MoleculeGraph();
-        this.connectors = new HashMap<>();
-        this.ringClosures = new HashMap<>();
-        this.branches = new ArrayDeque<>();
-        this.hydrogens = new ArrayList<>();
-        this.currentToken = "";
-        this.currentBondType = null;
+        symbols = new LinkedList<>();
+        tokens = new ArrayList<>();
+        molecule = new MoleculeGraph();
+        connectors = new HashMap<>();
+        ringClosures = new HashMap<>();
+        branches = new ArrayDeque<>();
+        hydrogens = new ArrayList<>();
+        currentToken = "";
+        currentBondType = null;
     }
 
     /**
@@ -191,7 +191,7 @@ public class SmilesParser {
         } else if (parseAtomSpecification()) {
             connectConsecutiveAtoms();
             return true;
-        } else if (this.currentSymbol == '*') {
+        } else if (currentSymbol == '*') {
             addToTokens();
             poll();
         }
@@ -204,7 +204,7 @@ public class SmilesParser {
             return false;
         }
 
-        if (this.currentSymbol == '(') {
+        if (currentSymbol == '(') {
             addToTokens();
             poll();
             openBranch();
@@ -215,7 +215,7 @@ public class SmilesParser {
                 length++;
             }
 
-            if (this.currentSymbol == ')') {
+            if (currentSymbol == ')') {
                 // ending with closed round brackets
                 if (length < 1) {
                     return false;
@@ -252,7 +252,7 @@ public class SmilesParser {
             return false;
         }
 
-        switch (this.currentSymbol) {
+        switch (currentSymbol) {
             case '-':
             case '=':
             case '#':
@@ -278,7 +278,7 @@ public class SmilesParser {
             return false;
         }
 
-        if (this.currentSymbol == '%') {
+        if (currentSymbol == '%') {
             if (isNonZeroDecimal()) {
                 addToCurrentToken();
                 poll();
@@ -303,16 +303,16 @@ public class SmilesParser {
         }
 
         // OrganicSymbol ::= 'B' 'r'? | 'C' 'l'? | 'N' | 'O' | 'P' | 'S' | 'F' | 'I'
-        switch (this.currentSymbol) {
+        switch (currentSymbol) {
             case 'B': {
-                if (this.symbols.peek() == 'r') {
+                if (symbols.peek() == 'r') {
                     // Brom
                     dispose();
                     if (addLater) {
-                        this.currentToken += "Br";
-                        this.currentElement = ElementProvider.BROMINE;
+                        currentToken += "Br";
+                        currentElement = ElementProvider.BROMINE;
                     } else {
-                        this.tokens.add("Br");
+                        tokens.add("Br");
                         addAtomToGraph("Br");
                     }
                 } else {
@@ -323,14 +323,14 @@ public class SmilesParser {
                 return true;
             }
             case 'C': {
-                if (this.symbols.peek() == 'l') {
+                if (symbols.peek() == 'l') {
                     // Chlor
                     dispose();
                     if (addLater) {
-                        this.currentToken += "Cl";
-                        this.currentElement = ElementProvider.CHLORINE;
+                        currentToken += "Cl";
+                        currentElement = ElementProvider.CHLORINE;
                     } else {
-                        this.tokens.add("Cl");
+                        tokens.add("Cl");
                         addAtomToGraph("Cl");
                     }
                 } else {
@@ -360,11 +360,11 @@ public class SmilesParser {
     private void handleAtom(boolean addLater) {
         if (addLater) {
             addToCurrentToken();
-            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(this.currentSymbol))
-                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + this.currentSymbol + " represents no valid element."));
+            currentElement = ElementProvider.getElementBySymbol(String.valueOf(currentSymbol))
+                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + currentSymbol + " represents no valid element."));
         } else {
             addToTokens();
-            addAtomToGraph(this.currentSymbol);
+            addAtomToGraph(currentSymbol);
         }
     }
 
@@ -374,7 +374,7 @@ public class SmilesParser {
         }
 
         // AromaticSymbol ::= 'b' | 'c' | 'n' | 'o' | 'p' | 's'
-        switch (this.currentSymbol) {
+        switch (currentSymbol) {
             case 'b':
             case 'c':
             case 'n':
@@ -382,7 +382,7 @@ public class SmilesParser {
             case 'p':
             case 's': {
                 handleAtom(addLater);
-                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -398,7 +398,7 @@ public class SmilesParser {
         }
 
         // AtomSpec ::= '[' Isotope? ( 'se' | 'as' | AromaticSymbol | ElementSymbol | WILDCARD ) ChiralClass? HCount? Charge? Class? ']'
-        if (this.currentSymbol == '[') {
+        if (currentSymbol == '[') {
             addToCurrentToken();
             poll();
             // try to parse isotope
@@ -411,7 +411,7 @@ public class SmilesParser {
                     // if not, try to parse element
                     if (!parseElementSymbol()) {
                         // if not, try to parse wildcard
-                        if (this.currentSymbol == '*') {
+                        if (currentSymbol == '*') {
                             addToCurrentToken();
                             poll();
                         } else {
@@ -429,7 +429,7 @@ public class SmilesParser {
 
             addAtom();
 
-            if (this.currentSymbol == ']') {
+            if (currentSymbol == ']') {
                 // ending with closed square brackets
                 addToCurrentToken();
                 addAndClearCurrentToken();
@@ -449,20 +449,20 @@ public class SmilesParser {
         String isotopeCount = "";
         if (isNonZeroDecimal()) {
             // parse first nonzero decimal
-            isotopeCount += this.currentSymbol;
+            isotopeCount += currentSymbol;
             poll();
             if (isDecimal()) {
                 // parse second decimal
-                isotopeCount += this.currentSymbol;
+                isotopeCount += currentSymbol;
                 poll();
                 if (isDecimal()) {
                     // parse third decimal
-                    isotopeCount += this.currentSymbol;
+                    isotopeCount += currentSymbol;
                     poll();
                 }
             }
-            this.currentToken += isotopeCount;
-            this.currentMassNumber = Integer.valueOf(isotopeCount);
+            currentToken += isotopeCount;
+            currentMassNumber = Integer.valueOf(isotopeCount);
             return true;
         }
         return false;
@@ -473,22 +473,22 @@ public class SmilesParser {
             return false;
         }
 
-        if (this.currentSymbol == 's') {
-            if (this.symbols.peek() == 'e') {
+        if (currentSymbol == 's') {
+            if (symbols.peek() == 'e') {
                 // parse selenium
                 dispose();
-                this.currentElement = ElementProvider.SELENIUM;
-                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentElement = ElementProvider.SELENIUM;
+                currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
             return false;
-        } else if (this.currentSymbol == 'a') {
-            if (this.symbols.peek() == 's') {
+        } else if (currentSymbol == 'a') {
+            if (symbols.peek() == 's') {
                 // parse arsenic
                 dispose();
-                this.currentElement = ElementProvider.ARSENIC;
-                this.currentBondType = MoleculeBondType.AROMATIC_BOND;
+                currentElement = ElementProvider.ARSENIC;
+                currentBondType = MoleculeBondType.AROMATIC_BOND;
                 poll();
                 return true;
             }
@@ -502,15 +502,15 @@ public class SmilesParser {
         if (isUpperCaseWordCharacter()) {
             String element = "";
             addToCurrentToken();
-            element += this.currentSymbol;
+            element += currentSymbol;
             poll();
             if (isLowerCaseWordCharacter()) {
                 addToCurrentToken();
-                element += this.currentSymbol;
+                element += currentSymbol;
                 poll();
             }
-            this.currentElement = ElementProvider.getElementBySymbol(String.valueOf(element))
-                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + this.currentSymbol + " represents no valid element."));
+            currentElement = ElementProvider.getElementBySymbol(String.valueOf(element))
+                    .orElseThrow(() -> new IllegalArgumentException("The symbol " + currentSymbol + " represents no valid element."));
             return true;
         }
         return false;
@@ -523,15 +523,15 @@ public class SmilesParser {
 
         // ChiralClass ::= ( '@' ( '@' | 'TH' [1-2] | 'AL' [1-2] | 'SP' [1-3] |
         // 'TB' ( '1' [0-9]? | '2' '0'? | [3-9] ) | 'OH' ( '1' [0-9]? | '2' [0-9]? | '3' '0'? | [4-9] ) )? )?
-        if (this.currentSymbol == '@') {
+        if (currentSymbol == '@') {
             addToCurrentToken();
             poll();
-            if (this.currentSymbol == '@') {
+            if (currentSymbol == '@') {
                 addToCurrentToken();
                 poll();
                 return true;
-            } else if (this.currentSymbol == 'T') {
-                if (this.symbols.peek() == 'H') {
+            } else if (currentSymbol == 'T') {
+                if (symbols.peek() == 'H') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '2')) {
@@ -539,10 +539,10 @@ public class SmilesParser {
                         poll();
                         return true;
                     }
-                } else if (this.symbols.peek() == 'B') {
+                } else if (symbols.peek() == 'B') {
                     addThisAndNext();
                     poll();
-                    if (this.currentSymbol == '1') {
+                    if (currentSymbol == '1') {
                         addToCurrentToken();
                         poll();
                         if (isDecimal()) {
@@ -550,10 +550,10 @@ public class SmilesParser {
                             poll();
                         }
                         return true;
-                    } else if (this.currentSymbol == '2') {
+                    } else if (currentSymbol == '2') {
                         addToCurrentToken();
                         poll();
-                        if (this.currentSymbol == '0') {
+                        if (currentSymbol == '0') {
                             addToCurrentToken();
                             poll();
                         }
@@ -564,8 +564,8 @@ public class SmilesParser {
                         return true;
                     }
                 }
-            } else if (this.currentSymbol == 'A') {
-                if (this.symbols.peek() == 'L') {
+            } else if (currentSymbol == 'A') {
+                if (symbols.peek() == 'L') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '2')) {
@@ -574,8 +574,8 @@ public class SmilesParser {
                         return true;
                     }
                 }
-            } else if (this.currentSymbol == 'S') {
-                if (this.symbols.peek() == 'P') {
+            } else if (currentSymbol == 'S') {
+                if (symbols.peek() == 'P') {
                     addThisAndNext();
                     poll();
                     if (isInRage('1', '3')) {
@@ -584,11 +584,11 @@ public class SmilesParser {
                         return true;
                     }
                 }
-            } else if (this.currentSymbol == 'O') {
-                if (this.symbols.peek() == 'H') {
+            } else if (currentSymbol == 'O') {
+                if (symbols.peek() == 'H') {
                     addThisAndNext();
                     poll();
-                    if (this.currentSymbol == '1') {
+                    if (currentSymbol == '1') {
                         addToCurrentToken();
                         poll();
                         if (isDecimal()) {
@@ -596,7 +596,7 @@ public class SmilesParser {
                             poll();
                         }
                         return true;
-                    } else if (this.currentSymbol == '2') {
+                    } else if (currentSymbol == '2') {
                         addToCurrentToken();
                         poll();
                         if (isDecimal()) {
@@ -604,10 +604,10 @@ public class SmilesParser {
                             poll();
                         }
                         return true;
-                    } else if (this.currentSymbol == '3') {
+                    } else if (currentSymbol == '3') {
                         addToCurrentToken();
                         poll();
-                        if (this.currentSymbol == '0') {
+                        if (currentSymbol == '0') {
                             addToCurrentToken();
                             poll();
                         }
@@ -629,12 +629,12 @@ public class SmilesParser {
         }
 
         // HCount   ::= 'H' [0-9]?
-        if (this.currentSymbol == 'H') {
+        if (currentSymbol == 'H') {
             addToCurrentToken();
             poll();
             if (isDecimal()) {
                 addToCurrentToken();
-                connectHydrogens(Integer.valueOf(String.valueOf(this.currentSymbol)));
+                connectHydrogens(Integer.valueOf(String.valueOf(currentSymbol)));
                 poll();
                 return true;
             }
@@ -650,12 +650,12 @@ public class SmilesParser {
         String chargeToken = "";
         // Charge   ::= '-' ( '-' | '0' | '1' [0-5]? | [2-9] )?
         //            | '+' ( '+' | '0' | '1' [0-5]? | [2-9] )?
-        if (this.currentSymbol == '+') {
-            chargeToken += this.currentSymbol;
+        if (currentSymbol == '+') {
+            chargeToken += currentSymbol;
             addToCurrentToken();
             poll();
-            if (this.currentSymbol == '+') {
-                chargeToken += this.currentSymbol;
+            if (currentSymbol == '+') {
+                chargeToken += currentSymbol;
                 addToCurrentToken();
                 poll();
             } else {
@@ -663,12 +663,12 @@ public class SmilesParser {
             }
             setCharge(chargeToken);
             return true;
-        } else if (this.currentSymbol == '-') {
-            chargeToken += this.currentSymbol;
+        } else if (currentSymbol == '-') {
+            chargeToken += currentSymbol;
             addToCurrentToken();
             poll();
-            if (this.currentSymbol == '-') {
-                chargeToken += this.currentSymbol;
+            if (currentSymbol == '-') {
+                chargeToken += currentSymbol;
                 addToCurrentToken();
                 poll();
             } else {
@@ -682,21 +682,21 @@ public class SmilesParser {
 
     private String parseChargeNumber() {
         String chargeToken = "";
-        if (this.currentSymbol == '0') {
-            chargeToken += this.currentSymbol;
+        if (currentSymbol == '0') {
+            chargeToken += currentSymbol;
             addToCurrentToken();
             poll();
-        } else if (this.currentSymbol == '1') {
-            chargeToken += this.currentSymbol;
+        } else if (currentSymbol == '1') {
+            chargeToken += currentSymbol;
             addToCurrentToken();
             poll();
             if (isInRage('0', '5')) {
-                chargeToken += this.currentSymbol;
+                chargeToken += currentSymbol;
                 addToCurrentToken();
                 poll();
             }
         } else if (isInRage('2', '9')) {
-            chargeToken += this.currentSymbol;
+            chargeToken += currentSymbol;
             addToCurrentToken();
             poll();
         }
@@ -706,19 +706,19 @@ public class SmilesParser {
     private void setCharge(String chargeToken) {
         switch (chargeToken) {
             case "+":
-                this.currentCharge = 1;
+                currentCharge = 1;
                 break;
             case "++":
-                this.currentCharge = 2;
+                currentCharge = 2;
                 break;
             case "-":
-                this.currentCharge = -1;
+                currentCharge = -1;
                 break;
             case "--":
-                this.currentCharge = -2;
+                currentCharge = -2;
                 break;
             default:
-                this.currentCharge = Integer.valueOf(chargeToken);
+                currentCharge = Integer.valueOf(chargeToken);
                 break;
         }
     }
@@ -728,7 +728,7 @@ public class SmilesParser {
             return false;
         }
         // Class    ::= ':' [0-9]+
-        if (this.currentSymbol == ':') {
+        if (currentSymbol == ':') {
             addToCurrentToken();
             poll();
             int length = 0;
@@ -743,49 +743,49 @@ public class SmilesParser {
     }
 
     private void setNextBond() {
-        this.currentBondType = MoleculeBondType.getBondForSMILESSymbol(this.currentSymbol);
+        currentBondType = MoleculeBondType.getBondForSMILESSymbol(currentSymbol);
     }
 
     private void connectConsecutiveAtoms() {
-        if (this.molecule.getNodes().size() > 1) {
-            if (this.firstAtomInBranch) {
-                if (this.sameChainReference) {
-                    this.connectors.put(new Pair<>(this.branches.peekLast(), this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
-                    this.sameChainReference = false;
+        if (molecule.getNodes().size() > 1) {
+            if (firstAtomInBranch) {
+                if (sameChainReference) {
+                    connectors.put(new Pair<>(branches.peekLast(), currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
+                    sameChainReference = false;
                 } else {
-                    this.connectors.put(new Pair<>(this.branches.pollLast(), this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
+                    connectors.put(new Pair<>(branches.pollLast(), currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
                 }
-                this.currentBondType = null;
-                this.firstAtomInBranch = false;
+                currentBondType = null;
+                firstAtomInBranch = false;
             } else {
-                this.connectors.put(new Pair<>(this.currentIdentifer - 1, this.currentIdentifer), this.currentBondType == null ? MoleculeBondType.SINGLE_BOND : this.currentBondType);
-                this.currentBondType = null;
+                connectors.put(new Pair<>(currentIdentifer - 1, currentIdentifer), currentBondType == null ? MoleculeBondType.SINGLE_BOND : currentBondType);
+                currentBondType = null;
             }
         }
     }
 
     private void connectHydrogens(int hydrogenCount) {
         for (int count = 0; count < hydrogenCount; count++) {
-            this.hydrogens.add(this.currentIdentifer + 1);
+            hydrogens.add(currentIdentifer + 1);
         }
     }
 
     private void addRingClosure() {
-        int closureIdentifier = Integer.valueOf(String.valueOf(this.currentSymbol));
-        if (this.ringClosures.containsKey(closureIdentifier)) {
-            this.connectors.put(new Pair<>(this.ringClosures.get(closureIdentifier), this.currentIdentifer), MoleculeBondType.SINGLE_BOND);
-            this.ringClosures.remove(closureIdentifier);
+        int closureIdentifier = Integer.valueOf(String.valueOf(currentSymbol));
+        if (ringClosures.containsKey(closureIdentifier)) {
+            connectors.put(new Pair<>(ringClosures.get(closureIdentifier), currentIdentifer), MoleculeBondType.SINGLE_BOND);
+            ringClosures.remove(closureIdentifier);
         } else {
-            this.ringClosures.put(closureIdentifier, this.currentIdentifer);
+            ringClosures.put(closureIdentifier, currentIdentifer);
         }
     }
 
     private boolean isEmpty() {
-        return this.currentSymbol == null;
+        return currentSymbol == null;
     }
 
     private boolean isInRage(Character rangeStart, Character rangeEnd) {
-        return this.currentSymbol >= rangeStart && this.currentSymbol <= rangeEnd;
+        return currentSymbol >= rangeStart && currentSymbol <= rangeEnd;
     }
 
     /**
@@ -828,7 +828,7 @@ public class SmilesParser {
      * Adds the current symbol to the current token.
      */
     private void addToCurrentToken() {
-        this.currentToken += this.currentSymbol;
+        currentToken += currentSymbol;
     }
 
     private void addThisAndNext() {
@@ -841,28 +841,28 @@ public class SmilesParser {
      * Adds the current symbol to the collected tokens.
      */
     private void addToTokens() {
-        logger.trace("read token {}", this.currentSymbol);
-        this.tokens.add(String.valueOf(this.currentSymbol));
+        logger.trace("read token {}", currentSymbol);
+        tokens.add(String.valueOf(currentSymbol));
     }
 
     private void addAndClearCurrentToken() {
-        logger.trace("read token {}", this.currentToken);
-        this.tokens.add(this.currentToken);
-        this.currentToken = "";
+        logger.trace("read token {}", currentToken);
+        tokens.add(currentToken);
+        currentToken = "";
     }
 
     /**
      * Polls the next character from the symbols and sets the current symbol
      */
     private void poll() {
-        this.currentSymbol = this.symbols.poll();
+        currentSymbol = symbols.poll();
     }
 
     /**
      * Disposes the current character.
      */
     private void dispose() {
-        this.poll();
+        poll();
     }
 
     /**
@@ -880,32 +880,32 @@ public class SmilesParser {
      * @param atom The symbol of the element of the new atom.
      */
     private void addAtomToGraph(String atom) {
-        this.currentIdentifer = this.molecule.addNextAtom(atom);
+        currentIdentifer = molecule.addNextAtom(atom);
     }
 
     private void addAtom() {
-        if (this.currentMassNumber != 0) {
-            this.currentIdentifer = this.molecule.addNextAtom(this.currentElement, this.currentCharge, this.currentMassNumber);
-            this.currentMassNumber = 0;
+        if (currentMassNumber != 0) {
+            currentIdentifer = molecule.addNextAtom(currentElement, currentCharge, currentMassNumber);
+            currentMassNumber = 0;
         } else {
-            this.currentIdentifer = this.molecule.addNextAtom(this.currentElement, this.currentCharge);
+            currentIdentifer = molecule.addNextAtom(currentElement, currentCharge);
         }
-        this.currentElement = null;
-        this.currentCharge = 0;
+        currentElement = null;
+        currentCharge = 0;
     }
 
     private void openBranch() {
-        if (!this.sameChainReference) {
-            this.branches.add(this.currentIdentifer);
+        if (!sameChainReference) {
+            branches.add(currentIdentifer);
         }
 
     }
 
     private void closeBranch() {
-        if (this.symbols.peek() == '(') {
-            this.sameChainReference = true;
+        if (symbols.peek() == '(') {
+            sameChainReference = true;
         }
-        this.firstAtomInBranch = true;
+        firstAtomInBranch = true;
     }
 
 }

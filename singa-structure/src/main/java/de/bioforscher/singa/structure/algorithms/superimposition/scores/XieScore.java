@@ -28,7 +28,7 @@ public class XieScore {
     private XieScore(SubstitutionMatrix substitutionMatrix, SubstructureSuperimposition substructureSuperimposition) {
         this.substitutionMatrix = substitutionMatrix;
         this.substructureSuperimposition = substructureSuperimposition;
-        this.score = calculateRawScore(substructureSuperimposition);
+        score = calculateRawScore(substructureSuperimposition);
         normalizeScore();
         determineSignificance();
     }
@@ -41,10 +41,10 @@ public class XieScore {
     @Override
     public String toString() {
         return "XieScore{" +
-                "score=" + this.score +
-                ", normalizedScore=" + this.normalizedScore +
-                ", significance=" + this.significance +
-                ", substitutionMatrix=" + this.substitutionMatrix +
+                "score=" + score +
+                ", normalizedScore=" + normalizedScore +
+                ", significance=" + significance +
+                ", substitutionMatrix=" + substitutionMatrix +
                 '}';
     }
 
@@ -54,8 +54,8 @@ public class XieScore {
         for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
             LeafSubstructure reference = substructureSuperimposition.getReference().get(i);
             LeafSubstructure candidate = substructureSuperimposition.getMappedCandidate().get(i);
-            double m = this.substitutionMatrix.getMatrix()
-                    .getValueFromPosition(this.substitutionMatrix.getMatrix()
+            double m = substitutionMatrix.getMatrix()
+                    .getValueFromPosition(substitutionMatrix.getMatrix()
                             .getPositionFromLabels(reference.getFamily(), candidate.getFamily()));
             double angle = xieRepresentationScheme.determineRepresentingAtom(reference).getPosition()
                     .angleTo(xieRepresentationScheme.determineRepresentingAtom(candidate).getPosition());
@@ -91,14 +91,14 @@ public class XieScore {
         double d = Double.NaN;
         double e = Double.NaN;
         double f = Double.NaN;
-        if (this.substitutionMatrix == SubstitutionMatrix.BLOSUM_45) {
+        if (substitutionMatrix == SubstitutionMatrix.BLOSUM_45) {
             a = 17.242;
             b = -40.911;
             c = 46.138;
             d = 5.998;
             e = -12.370;
             f = 25.441;
-        } else if (this.substitutionMatrix == SubstitutionMatrix.MC_LACHLAN) {
+        } else if (substitutionMatrix == SubstitutionMatrix.MC_LACHLAN) {
             a = 5.963;
             b = -15.523;
             c = 21.690;
@@ -106,32 +106,32 @@ public class XieScore {
             e = -9.449;
             f = 18.252;
         }
-        int n = this.substructureSuperimposition.getReference().size();
+        int n = substructureSuperimposition.getReference().size();
         double mu = a * Math.log(n) * Math.log(n) + b * Math.log(n) + c;
         double sigma = d * Math.log(n) * Math.log(n) + e * Math.log(n) + f;
-        double z = (this.score * this.score - mu) / sigma;
-        this.significance = 1 - Math.exp(-Math.exp(-z));
+        double z = (score * score - mu) / sigma;
+        significance = 1 - Math.exp(-Math.exp(-z));
     }
 
     private void normalizeScore() {
         double upperBound = calculateRawScore(new SubstructureSuperimposition(0, null, null,
-                this.substructureSuperimposition.getReference(), null,
-                this.substructureSuperimposition.getReference(), null)) +
+                substructureSuperimposition.getReference(), null,
+                substructureSuperimposition.getReference(), null)) +
                 calculateRawScore(new SubstructureSuperimposition(0, null, null,
-                        this.substructureSuperimposition.getCandidate(), null,
-                        this.substructureSuperimposition.getCandidate(), null)) / 2;
-        this.normalizedScore = 1 - (this.score / upperBound);
+                        substructureSuperimposition.getCandidate(), null,
+                        substructureSuperimposition.getCandidate(), null)) / 2;
+        normalizedScore = 1 - (score / upperBound);
     }
 
     public double getScore() {
-        return this.score;
+        return score;
     }
 
     public double getSignificance() {
-        return this.significance;
+        return significance;
     }
 
     public double getNormalizedScore() {
-        return this.normalizedScore;
+        return normalizedScore;
     }
 }

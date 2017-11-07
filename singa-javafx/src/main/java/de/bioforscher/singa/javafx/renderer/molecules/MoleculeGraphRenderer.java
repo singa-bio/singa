@@ -15,13 +15,13 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
     public MoleculeGraphRenderer() {
         GraphRenderOptions options = new GraphRenderOptions();
         options.setNodeDiameter(22);
-        this.setRenderingOptions(options);
+        setRenderingOptions(options);
     }
 
     @Override
     protected void drawNode(MoleculeAtom atom) {
         // draw node
-        getGraphicsContext().setFill(this.moleculeOptions.getColorForElement(atom.getElement().getSymbol()));
+        getGraphicsContext().setFill(moleculeOptions.getColorForElement(atom.getElement().getSymbol()));
         drawPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw outline
         getGraphicsContext().setStroke(getRenderingOptions().getEdgeColor());

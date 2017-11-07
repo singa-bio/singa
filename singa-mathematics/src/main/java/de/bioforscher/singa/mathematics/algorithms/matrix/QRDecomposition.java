@@ -53,7 +53,7 @@ public class QRDecomposition {
      * @return The original Matrix.
      */
     public Matrix getOriginalMatrix() {
-        return this.originalMatrix;
+        return originalMatrix;
     }
 
     /**
@@ -62,7 +62,7 @@ public class QRDecomposition {
      * @return The orthogonal Matrix Q.
      */
     public Matrix getMatrixQ() {
-        return this.matrixQ;
+        return matrixQ;
     }
 
     /**
@@ -71,7 +71,7 @@ public class QRDecomposition {
      * @return The upper triangular Matrix R.
      */
     public Matrix getMatrixR() {
-        return this.matrixR;
+        return matrixR;
     }
 
     /**

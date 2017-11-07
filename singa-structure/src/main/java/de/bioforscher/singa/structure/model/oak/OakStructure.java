@@ -33,22 +33,22 @@ public class OakStructure implements Structure {
     private int lastAddedAtomIdentifier;
 
     public OakStructure() {
-        this.models = new TreeMap<>();
+        models = new TreeMap<>();
     }
 
     public OakStructure(OakStructure structure) {
-        this.pdbIdentifier = structure.getPdbIdentifier();
-        this.title = structure.title;
-        this.models = new TreeMap<>();
-        this.lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
+        pdbIdentifier = structure.getPdbIdentifier();
+        title = structure.title;
+        models = new TreeMap<>();
+        lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
         for (OakModel model : structure.models.values()) {
-            this.models.put(model.getIdentifier(), model.getCopy());
+            models.put(model.getIdentifier(), model.getCopy());
         }
     }
 
     @Override
     public String getPdbIdentifier() {
-        return this.pdbIdentifier;
+        return pdbIdentifier;
     }
 
     public void setPdbIdentifier(String pdbIdentifier) {
@@ -61,7 +61,7 @@ public class OakStructure implements Structure {
 
     @Override
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public void setTitle(String title) {
@@ -87,7 +87,7 @@ public class OakStructure implements Structure {
     }
 
     public void addModel(OakModel model) {
-        this.models.put(model.getIdentifier(), model);
+        models.put(model.getIdentifier(), model);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class OakStructure implements Structure {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getIdentifier().equals(atomSerial)) {
-                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(this.pdbIdentifier, model.getIdentifier(),
+                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getIdentifier(),
                                     chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atomSerial);
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
@@ -178,8 +178,8 @@ public class OakStructure implements Structure {
         if (optionalChain.isPresent()) {
             OakChain chain = (OakChain) optionalChain.get();
             OakLigand leafSubstructure = new OakLigand(chain.getNextLeafIdentifier(), new LigandFamily(threeLetterCode));
-            this.lastAddedAtomIdentifier++;
-            leafSubstructure.addAtom(new OakAtom(this.lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
+            lastAddedAtomIdentifier++;
+            leafSubstructure.addAtom(new OakAtom(lastAddedAtomIdentifier, ElementProvider.UNKOWN, "CA", position));
             chain.addLeafSubstructure(leafSubstructure);
         } else {
             throw new IllegalStateException("Unable to add atom to chain " + chainIdentifier + ", chain could not be found.");

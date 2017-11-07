@@ -12,7 +12,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
     private Set<Class<? extends Feature>> requirements;
 
     protected FeatureProvider() {
-        this.requirements = new HashSet<>();
+        requirements = new HashSet<>();
     }
 
     protected void setProvidedFeature(Class<? extends Feature> providedFeature) {
@@ -20,7 +20,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
     }
 
     protected <RequirementType extends Feature> void addRequirement(Class<RequirementType> feature) {
-        this.requirements.add(feature);
+        requirements.add(feature);
     }
 
     /**
@@ -29,8 +29,8 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
      * @param featureable The {@link Featureable} entity to be annotated.
      */
     private void resolveRequirements(Featureable featureable) {
-        if (this.requirements != null) {
-            for (Class<? extends Feature> requirement : this.requirements) {
+        if (requirements != null) {
+            for (Class<? extends Feature> requirement : requirements) {
                 if (!featureable.hasFeature(requirement)) {
                     featureable.setFeature(requirement);
                 }
@@ -39,12 +39,12 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
     }
 
     public  <FeatureableType extends Featureable> void assign(FeatureableType featureable) {
-        if (!featureable.hasFeature(this.providedFeature)) {
-            if (featureable.canBeFeaturedWith(this.providedFeature)) {
+        if (!featureable.hasFeature(providedFeature)) {
+            if (featureable.canBeFeaturedWith(providedFeature)) {
                 resolveRequirements(featureable);
                 featureable.setFeature(provide(featureable));
             } else {
-                throw new IllegalArgumentException("The Feature "+this.providedFeature+" is not available for " + featureable.getClass().getSimpleName());
+                throw new IllegalArgumentException("The Feature " + providedFeature + " is not available for " + featureable.getClass().getSimpleName());
             }
         }
     }

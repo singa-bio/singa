@@ -22,7 +22,7 @@ public class MetalComplex extends Interaction {
     }
 
     public int getAtom1() {
-        return this.atom1;
+        return atom1;
     }
 
     public void setAtom1(int atom1) {
@@ -30,7 +30,7 @@ public class MetalComplex extends Interaction {
     }
 
     public int getAtom2() {
-        return this.atom2;
+        return atom2;
     }
 
     public void setAtom2(int atom2) {
@@ -38,7 +38,7 @@ public class MetalComplex extends Interaction {
     }
 
     public double getDistance() {
-        return this.distance;
+        return distance;
     }
 
     public void setDistance(double distance) {
@@ -46,7 +46,7 @@ public class MetalComplex extends Interaction {
     }
 
     public double getRms() {
-        return this.rms;
+        return rms;
     }
 
     public void setRms(double rms) {
@@ -54,7 +54,7 @@ public class MetalComplex extends Interaction {
     }
 
     public String getGeometry() {
-        return this.geometry;
+        return geometry;
     }
 
     public void setGeometry(String geometry) {
@@ -62,7 +62,7 @@ public class MetalComplex extends Interaction {
     }
 
     public String getLocation() {
-        return this.location;
+        return location;
     }
 
     public void setLocation(String location) {
@@ -70,7 +70,7 @@ public class MetalComplex extends Interaction {
     }
 
     public String getMetalType() {
-        return this.metalType;
+        return metalType;
     }
 
     public void setMetalType(String metalType) {
@@ -78,7 +78,7 @@ public class MetalComplex extends Interaction {
     }
 
     public int getCoordination() {
-        return this.coordination;
+        return coordination;
     }
 
     public void setCoordination(int coordination) {
@@ -86,7 +86,7 @@ public class MetalComplex extends Interaction {
     }
 
     public int getComplexnum() {
-        return this.complexnum;
+        return complexnum;
     }
 
     public void setComplexnum(int complexnum) {
@@ -95,26 +95,26 @@ public class MetalComplex extends Interaction {
 
     @Override
     public int getFirstSourceAtom() {
-        return this.atom2;
+        return atom2;
     }
     // take care here source is the metal ion
 
     @Override
     public int getFirstTargetAtom() {
-        return this.atom1;
+        return atom1;
     }
     // and target is the partner
 
     @Override
     public String toString() {
         return "MetalComplex{" +
-                "atom1=" + this.atom1 +
-                ", atom2=" + this.atom2 +
-                ", plipIdentifier=" + this.plipIdentifier +
-                ", source=" + this.source +
-                ", target=" + this.target +
-                ", ligandCoordinate=" + Arrays.toString(this.ligandCoordinate) +
-                ", proteinCoordinate=" + Arrays.toString(this.proteinCoordinate) +
+                "atom1=" + atom1 +
+                ", atom2=" + atom2 +
+                ", plipIdentifier=" + plipIdentifier +
+                ", source=" + source +
+                ", target=" + target +
+                ", ligandCoordinate=" + Arrays.toString(ligandCoordinate) +
+                ", proteinCoordinate=" + Arrays.toString(proteinCoordinate) +
                 '}';
     }
 }

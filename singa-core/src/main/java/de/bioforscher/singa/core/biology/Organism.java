@@ -41,7 +41,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
      */
     public Organism(String scientificName) {
         this.scientificName = scientificName;
-        this.lineage = new ArrayList<>();
+        lineage = new ArrayList<>();
     }
 
     /**
@@ -49,7 +49,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
      * @return The scientific name.
      */
     public String getScientificName() {
-        return this.scientificName;
+        return scientificName;
     }
 
     /**
@@ -65,7 +65,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
      * @return The common name.
      */
     public String getCommonName() {
-        return this.commonName;
+        return commonName;
     }
 
     /**
@@ -83,7 +83,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     @Override
     public NCBITaxonomyIdentifier getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     /**
@@ -99,7 +99,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
      * @return The linage.
      */
     public List<Taxon> getLineage() {
-        return this.lineage;
+        return lineage;
     }
 
     /**

@@ -70,10 +70,10 @@ public class Voronoi {
     private List<VoronoiFaceEdge> allEdges;
 
     public Voronoi(double minDistanceBetweenSites) {
-        this.siteidx = 0;
-        this.sites = null;
+        siteidx = 0;
+        sites = null;
 
-        this.allEdges = null;
+        allEdges = null;
         this.minDistanceBetweenSites = minDistanceBetweenSites;
     }
 
@@ -104,31 +104,31 @@ public class Voronoi {
             minY = maxY;
             maxY = temp;
         }
-        this.borderMinX = minX;
-        this.borderMinY = minY;
-        this.borderMaxX = maxX;
-        this.borderMaxY = maxY;
+        borderMinX = minX;
+        borderMinY = minY;
+        borderMaxX = maxX;
+        borderMaxY = maxY;
 
-        this.siteidx = 0;
+        siteidx = 0;
         voronoi_bd();
 
-        return this.allEdges;
+        return allEdges;
     }
 
     private void sort(double[] xValuesIn, double[] yValuesIn, int count) {
 
         // list with edges
-        this.allEdges = new LinkedList<>();
+        allEdges = new LinkedList<>();
 
         // number of sites
-        this.nsites = count;
+        nsites = count;
         // number of vertices
-        this.nvertices = 0;
+        nvertices = 0;
         // number of edges
-        this.nedges = 0;
+        nedges = 0;
 
         // sqrt of (number of sites + 4)
-        this.sqrt_nsites = (int) Math.sqrt((double) this.nsites + 4);
+        sqrt_nsites = (int) Math.sqrt((double) nsites + 4);
 
         // Copy the inputs
         double[] xValues = new double[count];
@@ -184,50 +184,50 @@ public class Voronoi {
 
     private void sortNode(double xValues[], double yValues[], int numPoints) {
         // number of input sites
-        this.nsites = numPoints;
+        nsites = numPoints;
         // new array for sites
-        this.sites = new Site[this.nsites];
+        sites = new Site[nsites];
 
         // setup minimal and maximal point to be first point in array
-        this.xmin = xValues[0];
-        this.ymin = yValues[0];
-        this.xmax = xValues[0];
-        this.ymax = yValues[0];
+        xmin = xValues[0];
+        ymin = yValues[0];
+        xmax = xValues[0];
+        ymax = yValues[0];
         // for every point
-        for (int i = 0; i < this.nsites; i++) {
+        for (int i = 0; i < nsites; i++) {
             // new site
-            this.sites[i] = new Site();
+            sites[i] = new Site();
             // with coordinates x_i and y_i
-            this.sites[i].coord.setPoint(xValues[i], yValues[i]);
-            this.sites[i].sitenbr = i;
+            sites[i].coord.setPoint(xValues[i], yValues[i]);
+            sites[i].sitenbr = i;
 
             // search for minimal and maximal x values
-            if (xValues[i] < this.xmin) {
-                this.xmin = xValues[i];
-            } else if (xValues[i] > this.xmax) {
-                this.xmax = xValues[i];
+            if (xValues[i] < xmin) {
+                xmin = xValues[i];
+            } else if (xValues[i] > xmax) {
+                xmax = xValues[i];
             }
 
             // search for minimal and maximal y values
-            if (yValues[i] < this.ymin) {
-                this.ymin = yValues[i];
-            } else if (yValues[i] > this.ymax) {
-                this.ymax = yValues[i];
+            if (yValues[i] < ymin) {
+                ymin = yValues[i];
+            } else if (yValues[i] > ymax) {
+                ymax = yValues[i];
             }
 
         }
-        qsort(this.sites);
+        qsort(sites);
         // differences between minimal and maximal values
-        this.deltay = this.ymax - this.ymin;
-        this.deltax = this.xmax - this.xmin;
+        deltay = ymax - ymin;
+        deltax = xmax - xmin;
     }
 
     /* return a single in-storage site */
     private Site nextone() {
         Site s;
-        if (this.siteidx < this.nsites) {
-            s = this.sites[this.siteidx];
-            this.siteidx += 1;
+        if (siteidx < nsites) {
+            s = sites[siteidx];
+            siteidx += 1;
             return s;
         } else {
             return null;
@@ -271,25 +271,25 @@ public class Voronoi {
             newedge.c /= dy;// set formula of line, with y fixed to 1
         }
 
-        newedge.edgenbr = this.nedges;
+        newedge.edgenbr = nedges;
 
-        this.nedges += 1;
+        nedges += 1;
         return newedge;
     }
 
     private void makevertex(Site v) {
-        v.sitenbr = this.nvertices;
-        this.nvertices += 1;
+        v.sitenbr = nvertices;
+        nvertices += 1;
     }
 
     private boolean PQinitialize() {
-        this.PQcount = 0;
-        this.PQmin = 0;
-        this.PQhashsize = 4 * this.sqrt_nsites;
-        this.PQhash = new Halfedge[this.PQhashsize];
+        PQcount = 0;
+        PQmin = 0;
+        PQhashsize = 4 * sqrt_nsites;
+        PQhash = new Halfedge[PQhashsize];
 
-        for (int i = 0; i < this.PQhashsize; i += 1) {
-            this.PQhash[i] = new Halfedge();
+        for (int i = 0; i < PQhashsize; i += 1) {
+            PQhash[i] = new Halfedge();
         }
         return true;
     }
@@ -297,15 +297,15 @@ public class Voronoi {
     private int PQbucket(Halfedge he) {
         int bucket;
 
-        bucket = (int) ((he.ystar - this.ymin) / this.deltay * this.PQhashsize);
+        bucket = (int) ((he.ystar - ymin) / deltay * PQhashsize);
         if (bucket < 0) {
             bucket = 0;
         }
-        if (bucket >= this.PQhashsize) {
-            bucket = this.PQhashsize - 1;
+        if (bucket >= PQhashsize) {
+            bucket = PQhashsize - 1;
         }
-        if (bucket < this.PQmin) {
-            this.PQmin = bucket;
+        if (bucket < PQmin) {
+            PQmin = bucket;
         }
         return bucket;
     }
@@ -316,14 +316,14 @@ public class Voronoi {
 
         he.vertex = v;
         he.ystar = v.coord.y + offset;
-        last = this.PQhash[PQbucket(he)];
+        last = PQhash[PQbucket(he)];
         while ((next = last.PQnext) != null
                 && (he.ystar > next.ystar || he.ystar == next.ystar && v.coord.x > next.vertex.coord.x)) {
             last = next;
         }
         he.PQnext = last.PQnext;
         last.PQnext = he;
-        this.PQcount += 1;
+        PQcount += 1;
     }
 
     // remove the HalfEdge from the list of vertices
@@ -331,38 +331,38 @@ public class Voronoi {
         Halfedge last;
 
         if (he.vertex != null) {
-            last = this.PQhash[PQbucket(he)];
+            last = PQhash[PQbucket(he)];
             while (last.PQnext != he) {
                 last = last.PQnext;
             }
 
             last.PQnext = he.PQnext;
-            this.PQcount -= 1;
+            PQcount -= 1;
             he.vertex = null;
         }
     }
 
     private boolean PQempty() {
-        return this.PQcount == 0;
+        return PQcount == 0;
     }
 
     private Point PQ_min() {
         Point answer = new Point();
 
-        while (this.PQhash[this.PQmin].PQnext == null) {
-            this.PQmin += 1;
+        while (PQhash[PQmin].PQnext == null) {
+            PQmin += 1;
         }
-        answer.x = this.PQhash[this.PQmin].PQnext.vertex.coord.x;
-        answer.y = this.PQhash[this.PQmin].PQnext.ystar;
+        answer.x = PQhash[PQmin].PQnext.vertex.coord.x;
+        answer.y = PQhash[PQmin].PQnext.ystar;
         return answer;
     }
 
     private Halfedge PQextractmin() {
         Halfedge curr;
 
-        curr = this.PQhash[this.PQmin].PQnext;
-        this.PQhash[this.PQmin].PQnext = curr.PQnext;
-        this.PQcount -= 1;
+        curr = PQhash[PQmin].PQnext;
+        PQhash[PQmin].PQnext = curr.PQnext;
+        PQcount -= 1;
         return curr;
     }
 
@@ -378,23 +378,23 @@ public class Voronoi {
 
     private boolean ELinitialize() {
         int i;
-        this.ELhashsize = 2 * this.sqrt_nsites;
-        this.ELhash = new Halfedge[this.ELhashsize];
+        ELhashsize = 2 * sqrt_nsites;
+        ELhash = new Halfedge[ELhashsize];
 
-        for (i = 0; i < this.ELhashsize; i += 1) {
-            this.ELhash[i] = null;
+        for (i = 0; i < ELhashsize; i += 1) {
+            ELhash[i] = null;
         }
-        this.ELleftend = HEcreate(null, 0);
-        this.ELrightend = HEcreate(null, 0);
+        ELleftend = HEcreate(null, 0);
+        ELrightend = HEcreate(null, 0);
 
-        this.ELleftend.ELleft = null;
-        this.ELleftend.ELright = this.ELrightend;
+        ELleftend.ELleft = null;
+        ELleftend.ELright = ELrightend;
 
-        this.ELrightend.ELleft = this.ELleftend;
-        this.ELrightend.ELright = null;
+        ELrightend.ELleft = ELleftend;
+        ELrightend.ELright = null;
 
-        this.ELhash[0] = this.ELleftend;
-        this.ELhash[this.ELhashsize - 1] = this.ELrightend;
+        ELhash[0] = ELleftend;
+        ELhash[ELhashsize - 1] = ELrightend;
 
         return true;
     }
@@ -409,7 +409,7 @@ public class Voronoi {
 
     private Site leftreg(Halfedge he) {
         if (he.ELedge == null) {
-            return this.bottomsite;
+            return bottomsite;
         }
         return he.ELpm == LE ? he.ELedge.reg[LE] : he.ELedge.reg[RE];
     }
@@ -435,16 +435,16 @@ public class Voronoi {
     private Halfedge ELgethash(int b) {
         Halfedge he;
 
-        if (b < 0 || b >= this.ELhashsize) {
+        if (b < 0 || b >= ELhashsize) {
             return null;
         }
-        he = this.ELhash[b];
+        he = ELhash[b];
         if (he == null || !he.deleted) {
             return he;
         }
 
         /* Hash table points to deleted half edge. Patch as necessary. */
-        this.ELhash[b] = null;
+        ELhash[b] = null;
         return null;
     }
 
@@ -455,15 +455,15 @@ public class Voronoi {
         /* Use hash table to get close to desired halfedge */
         // use the hash function to find the place in the hash map that this
         // HalfEdge should be
-        bucket = (int) ((p.x - this.xmin) / this.deltax * this.ELhashsize);
+        bucket = (int) ((p.x - xmin) / deltax * ELhashsize);
 
         // make sure that the bucket position in within the range of the hash
         // array
         if (bucket < 0) {
             bucket = 0;
         }
-        if (bucket >= this.ELhashsize) {
-            bucket = this.ELhashsize - 1;
+        if (bucket >= ELhashsize) {
+            bucket = ELhashsize - 1;
         }
 
         he = ELgethash(bucket);
@@ -471,7 +471,7 @@ public class Voronoi {
         // if the HE isn't found, search backwards and forwards in the hash map
         // for the first non-null entry
         {
-            for (i = 1; i < this.ELhashsize; i += 1) {
+            for (i = 1; i < ELhashsize; i += 1) {
                 if ((he = ELgethash(bucket - i)) != null) {
                     break;
                 }
@@ -481,12 +481,12 @@ public class Voronoi {
             }
         }
         /* Now search linear list of halfedges for the correct one */
-        if (he == this.ELleftend || he != this.ELrightend && right_of(he, p)) {
+        if (he == ELleftend || he != ELrightend && right_of(he, p)) {
             // keep going right on the list until either the end is reached, or
             // you find the 1st edge which the point isn't to the right of
             do {
                 he = he.ELright;
-            } while (he != this.ELrightend && right_of(he, p));
+            } while (he != ELrightend && right_of(he, p));
             he = he.ELleft;
         } else
         // if the point is to the left of the HalfEdge, then search left for
@@ -494,19 +494,19 @@ public class Voronoi {
         {
             do {
                 he = he.ELleft;
-            } while (he != this.ELleftend && !right_of(he, p));
+            } while (he != ELleftend && !right_of(he, p));
         }
 
         /* Update hash table and reference counts */
-        if (bucket > 0 && bucket < this.ELhashsize - 1) {
-            this.ELhash[bucket] = he;
+        if (bucket > 0 && bucket < ELhashsize - 1) {
+            ELhash[bucket] = he;
         }
         return he;
     }
 
     private void pushGraphEdge(Site leftSite, Site rightSite, double x1, double y1, double x2, double y2) {
         VoronoiFaceEdge newEdge = new VoronoiFaceEdge();
-        this.allEdges.add(newEdge);
+        allEdges.add(newEdge);
         newEdge.x1 = x1;
         newEdge.y1 = y1;
         newEdge.x2 = x2;
@@ -528,14 +528,14 @@ public class Voronoi {
 
         // if the distance between the two points this line was created from is
         // less than the square root of 2, then ignore it
-        if (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < this.minDistanceBetweenSites) {
+        if (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < minDistanceBetweenSites) {
             return;
         }
 
-        pxmin = this.borderMinX;
-        pxmax = this.borderMaxX;
-        pymin = this.borderMinY;
-        pymax = this.borderMaxY;
+        pxmin = borderMinX;
+        pxmax = borderMaxX;
+        pymin = borderMinY;
+        pymax = borderMaxY;
 
         if (e.a == 1.0 && e.b >= 0.0) {
             s1 = e.ep[1];
@@ -689,7 +689,7 @@ public class Voronoi {
         // if this halfedge has no edge, return the bottom site (whatever
         // that is)
         {
-            return this.bottomsite;
+            return bottomsite;
         }
 
         // if the ELpm field is zero, return the site 0 that this edge bisects,
@@ -770,7 +770,7 @@ public class Voronoi {
         PQinitialize();
         ELinitialize();
 
-        this.bottomsite = nextone();
+        bottomsite = nextone();
         newsite = nextone();
         while (true) {
             if (!PQempty()) {
@@ -895,7 +895,7 @@ public class Voronoi {
             }
         }
 
-        for (lbnd = ELright(this.ELleftend); lbnd != this.ELrightend; lbnd = ELright(lbnd)) {
+        for (lbnd = ELright(ELleftend); lbnd != ELrightend; lbnd = ELright(lbnd)) {
             e = lbnd.ELedge;
             clip_line(e);
         }

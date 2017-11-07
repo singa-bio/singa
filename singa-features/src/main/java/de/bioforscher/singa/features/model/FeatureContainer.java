@@ -11,11 +11,11 @@ public class FeatureContainer {
     private HashMap<Class<? extends Feature>, Feature<?>> content;
 
     public FeatureContainer() {
-        this.content = new HashMap<>();
+        content = new HashMap<>();
     }
 
     public <FeatureType extends Feature<?>> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return featureTypeClass.cast(this.content.get(featureTypeClass));
+        return featureTypeClass.cast(content.get(featureTypeClass));
     }
 
     public <FeatureableType extends Featureable, FeatureType extends Feature<?>> void setFeature(Class<FeatureType> featureTypeClass, FeatureableType featureable) {
@@ -23,15 +23,15 @@ public class FeatureContainer {
     }
 
     public <FeatureType extends Feature<?>> void setFeature(FeatureType feature) {
-        this.content.put(feature.getClass(), feature);
+        content.put(feature.getClass(), feature);
     }
 
     public <FeatureType extends Feature<?>> boolean hasFeature(Class<FeatureType> featureTypeClass) {
-        return this.content.containsKey(featureTypeClass);
+        return content.containsKey(featureTypeClass);
     }
 
     public Collection<Feature<?>> getAllFeatures() {
-        return this.content.values();
+        return content.values();
     }
 
 }

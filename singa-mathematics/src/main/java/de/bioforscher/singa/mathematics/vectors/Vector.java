@@ -50,7 +50,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return A stream of all elements in the vector.
      */
     default DoubleStream streamElements() {
-        return DoubleStream.of(this.getElements());
+        return DoubleStream.of(getElements());
     }
 
     /**
@@ -59,8 +59,8 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @param action A stream of all positions and the respective elements.
      */
     default void forEach(BiConsumer<Integer, Double> action) {
-        for (int i = 0; i < this.getDimension(); i++) {
-            action.accept(i, this.getElement(i));
+        for (int i = 0; i < getDimension(); i++) {
+            action.accept(i, getElement(i));
         }
     }
 
@@ -194,7 +194,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      */
     default double angleTo(Vector another) {
         assertThatDimensionsMatch(another);
-        return Math.acos(this.dotProduct(another) / (this.getMagnitude() * another.getMagnitude()));
+        return Math.acos(dotProduct(another) / (getMagnitude() * another.getMagnitude()));
     }
 
     /**
@@ -203,7 +203,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
      * @return Thrue, if this vector contains only Zeros.
      */
     default boolean isZero() {
-        for (double element: this.getElements()) {
+        for (double element : getElements()) {
             if (element != 0.0) {
                 return false;
             }

@@ -36,12 +36,12 @@ public enum NucleotideFamily implements StructuralFamily<NucleotideFamily> {
 
     @Override
     public String getOneLetterCode() {
-        return this.oneLetterCode;
+        return oneLetterCode;
     }
 
     @Override
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 
 }

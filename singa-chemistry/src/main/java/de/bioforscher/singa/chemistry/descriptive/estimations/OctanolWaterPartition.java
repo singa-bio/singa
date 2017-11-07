@@ -30,43 +30,21 @@ public class OctanolWaterPartition {
     }
 
     /**
-     * The class encapsulates a identifer for each equation and parameter to assign a specific value to.
+     * Calculates the Octanol/Water partition coefficient using the NC + NHET Method presented in "Calculation of
+     * Molecular Lipophilicity: State-of-the-Art and Comparison of Log P Methods on More Than 96,000 Compounds" by
+     * Mannhold et al. 2008
+     *
+     * @return The octanol water partition coefficient.
      */
-    private static class FactorIdentifier {
-
-        private final int equation;
-        private final String parameter;
-
-        public FactorIdentifier(int equation, String parameter) {
-            this.equation = equation;
-            this.parameter = parameter;
-        }
-
-        public int getEquation() {
-            return this.equation;
-        }
-
-        public String getParameter() {
-            return this.parameter;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            FactorIdentifier that = (FactorIdentifier) o;
-
-            if (this.equation != that.equation) return false;
-            return this.parameter != null ? this.parameter.equals(that.parameter) : that.parameter == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = this.equation;
-            result = 31 * result + (this.parameter != null ? this.parameter.hashCode() : 0);
-            return result;
-        }
+    private double calculateCoefficientUsingNCAndNHET() {
+        final double carbons = calculateNumberOfCarbonAtoms();
+        final double nonCarbon = moleculeGraph.getNodes().size() - carbons;
+        logger.debug("number of hetero atoms is: {}", nonCarbon);
+        final double result = getFactor(1, "NC_NC") * carbons +
+                getFactor(1, "NC_NHET") * nonCarbon +
+                getFactor(1, "NC_C");
+        logger.debug("calculated log p using NC + NHET (Mannhold 2008): {}", result);
+        return result;
     }
 
     private static Map<FactorIdentifier, Double> parameterCoefficients = new HashMap<>();
@@ -125,28 +103,28 @@ public class OctanolWaterPartition {
         }
     }
 
-    /**
-     * Calculates the Octanol/Water partition coefficient using the NC + NHET Method presented in "Calculation of
-     * Molecular Lipophilicity: State-of-the-Art and Comparison of Log P Methods on More Than 96,000 Compounds" by
-     * Mannhold et al. 2008
-     *
-     * @return The octanol water partition coefficient.
-     */
-    private double calculateCoefficientUsingNCAndNHET() {
-        final double carbons = calculateNumberOfCarbonAtoms();
-        final double nonCarbon = this.moleculeGraph.getNodes().size() - carbons;
-        logger.debug("number of hetero atoms is: {}", nonCarbon);
-        final double result = getFactor(1, "NC_NC") * carbons +
-                getFactor(1, "NC_NHET") * nonCarbon +
-                getFactor(1, "NC_C");
-        logger.debug("calculated log p using NC + NHET (Mannhold 2008): {}", result);
-        return result;
-    }
-
     private double calculateNumberOfCarbonAtoms() {
-        final double carbonAtoms = this.moleculeGraph.countAtomsOfElement(CARBON);
+        final double carbonAtoms = moleculeGraph.countAtomsOfElement(CARBON);
         logger.debug("number of carbon atoms is: {}", carbonAtoms);
         return carbonAtoms;
+    }
+
+    /**
+     * Returns the summation of carbon and halogen atoms weighted by {@link ElementProvider#CARBON Carbon}: 1.0, {@link
+     * ElementProvider#FLUORINE Flourine}: 0.5, {@link ElementProvider#CHLORINE Chlorine}: 1.0, {@link
+     * ElementProvider#BROMINE Bromine}: 1.5 and {@link ElementProvider#IODINE Iodine}: 2.0.
+     *
+     * @return The CX Parameter.
+     */
+    private double calculateCX() {
+        double cx = 0;
+        cx += moleculeGraph.countAtomsOfElement(CARBON);
+        cx += moleculeGraph.countAtomsOfElement(FLUORINE) * 0.5;
+        cx += moleculeGraph.countAtomsOfElement(CHLORINE);
+        cx += moleculeGraph.countAtomsOfElement(BROMINE) * 1.5;
+        cx += moleculeGraph.countAtomsOfElement(IODINE) * 2.0;
+        logger.debug("CX parameter scored: {}", cx);
+        return cx;
     }
 
     /**
@@ -177,25 +155,6 @@ public class OctanolWaterPartition {
         return result;
     }
 
-
-    /**
-     * Returns the summation of carbon and halogen atoms weighted by {@link ElementProvider#CARBON Carbon}: 1.0,
-     * {@link ElementProvider#FLUORINE Flourine}: 0.5, {@link ElementProvider#CHLORINE Chlorine}: 1.0,
-     * {@link ElementProvider#BROMINE Bromine}: 1.5 and {@link ElementProvider#IODINE Iodine}: 2.0.
-     *
-     * @return The CX Parameter.
-     */
-    private double calculateCX() {
-        double cx = 0;
-        cx += this.moleculeGraph.countAtomsOfElement(CARBON);
-        cx += this.moleculeGraph.countAtomsOfElement(FLUORINE) * 0.5;
-        cx += this.moleculeGraph.countAtomsOfElement(CHLORINE);
-        cx += this.moleculeGraph.countAtomsOfElement(BROMINE) * 1.5;
-        cx += this.moleculeGraph.countAtomsOfElement(IODINE) * 2.0;
-        logger.debug("CX parameter scored: {}", cx);
-        return cx;
-    }
-
     /**
      * Returns the total number of {@link ElementProvider#OXYGEN Oxigen} and {@link ElementProvider#NITROGEN Nitrogen}
      * atoms.
@@ -204,8 +163,8 @@ public class OctanolWaterPartition {
      */
     private double calcualteNO() {
         double no = 0;
-        no += this.moleculeGraph.countAtomsOfElement(OXYGEN);
-        no += this.moleculeGraph.countAtomsOfElement(NITROGEN);
+        no += moleculeGraph.countAtomsOfElement(OXYGEN);
+        no += moleculeGraph.countAtomsOfElement(NITROGEN);
         logger.debug("NO parameter scored: {}", no);
         return no;
     }
@@ -219,10 +178,10 @@ public class OctanolWaterPartition {
     private double calculatePRX() {
         double prx = 0;
         // score for N/O; X-Y: 1.0
-        final List<LinkedList<MoleculeAtom>> xy = this.moleculeGraph.findMultiPathOfElements(xyPath);
+        final List<LinkedList<MoleculeAtom>> xy = moleculeGraph.findMultiPathOfElements(xyPath);
         prx += xy.size();
         // score for X-A-Y: 2.0 (X, Y: N/O, A: C,S, or P)
-        final List<LinkedList<MoleculeAtom>> xay = this.moleculeGraph.findMultiPathOfElements(xayPath);
+        final List<LinkedList<MoleculeAtom>> xay = moleculeGraph.findMultiPathOfElements(xayPath);
         for (LinkedList<MoleculeAtom> path : xay) {
             boolean isReduced = false;
             final MoleculeAtom firstAtom = path.get(0);
@@ -234,14 +193,14 @@ public class OctanolWaterPartition {
                     // first is oxygen
                     if (lastAtom.getElement().equals(NITROGEN)) {
                         // last is nitrogen
-                        if (this.moleculeGraph.getEdgeBetween(centralAtom, firstAtom).get().getType().equals(MoleculeBondType.DOUBLE_BOND)) {
+                        if (moleculeGraph.getEdgeBetween(centralAtom, firstAtom).get().getType().equals(MoleculeBondType.DOUBLE_BOND)) {
                             isReduced = true;
                         }
                     }
                 } else if (lastAtom.getElement().equals(OXYGEN)) {
                     // first can only be nitrogen if it is not oxygen
                     // last is oxygen
-                    if (this.moleculeGraph.getEdgeBetween(centralAtom, lastAtom).get().getType().equals(MoleculeBondType.DOUBLE_BOND)) {
+                    if (moleculeGraph.getEdgeBetween(centralAtom, lastAtom).get().getType().equals(MoleculeBondType.DOUBLE_BOND)) {
                         isReduced = true;
                     }
                 }
@@ -268,7 +227,7 @@ public class OctanolWaterPartition {
     private double calculateUB() {
         // TODO assemble test case
         double ub = 0;
-        for (MoleculeBond bond : this.moleculeGraph.getEdges()) {
+        for (MoleculeBond bond : moleculeGraph.getEdges()) {
             if (bond.getType() == MoleculeBondType.DOUBLE_BOND || bond.getType() == MoleculeBondType.TRIPLE_BOND) {
                 MoleculeAtom source = bond.getSource();
                 MoleculeAtom target = bond.getTarget();
@@ -298,6 +257,46 @@ public class OctanolWaterPartition {
         }
         logger.debug("UB parameter scored: {}", ub);
         return ub;
+    }
+
+    /**
+     * The class encapsulates a identifer for each equation and parameter to assign a specific value to.
+     */
+    private static class FactorIdentifier {
+
+        private final int equation;
+        private final String parameter;
+
+        public FactorIdentifier(int equation, String parameter) {
+            this.equation = equation;
+            this.parameter = parameter;
+        }
+
+        public int getEquation() {
+            return equation;
+        }
+
+        public String getParameter() {
+            return parameter;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FactorIdentifier that = (FactorIdentifier) o;
+
+            if (equation != that.equation) return false;
+            return parameter != null ? parameter.equals(that.parameter) : that.parameter == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = equation;
+            result = 31 * result + (parameter != null ? parameter.hashCode() : 0);
+            return result;
+        }
     }
 
     public static void main(String[] args) {

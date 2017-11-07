@@ -55,16 +55,16 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         // transform to specified amount
         this.scaledQuantity = denominator.multiply(targetTimeScale.getValue());
         // and half of it
-        this.halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
+        halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
     public Quantity<Diffusivity> getScaledQuantity() {
-        return this.scaledQuantity;
+        return scaledQuantity;
     }
 
     @Override
     public Quantity<Diffusivity> getHalfScaledQuantity() {
-        return this.halfScaledQuantity;
+        return halfScaledQuantity;
     }
 
     @Override

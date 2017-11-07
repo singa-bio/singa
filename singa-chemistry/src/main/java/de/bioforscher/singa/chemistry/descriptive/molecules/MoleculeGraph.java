@@ -78,7 +78,7 @@ public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vec
     }
 
     public int countAtomsOfElement(Element element) {
-        return (int) this.getNodes().stream()
+        return (int) getNodes().stream()
                 .filter(isElement(element))
                 .count();
     }

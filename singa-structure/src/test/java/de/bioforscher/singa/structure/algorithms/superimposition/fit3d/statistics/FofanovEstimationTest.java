@@ -30,9 +30,9 @@ public class FofanovEstimationTest {
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
+        queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        this.structureParserOptions = StructureParserOptions.withSettings(
+        structureParserOptions = StructureParserOptions.withSettings(
                 StructureParserOptions.Setting.OMIT_EDGES,
                 StructureParserOptions.Setting.OMIT_HYDROGENS,
                 StructureParserOptions.Setting.OMIT_LIGAND_INFORMATION,
@@ -44,9 +44,9 @@ public class FofanovEstimationTest {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
-                .setOptions(this.structureParserOptions);
+                .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
-                .query(this.queryMotif)
+                .query(queryMotif)
                 .targets(multiParser)
                 .maximalParallelism()
                 .atomFilter(AtomFilter.isArbitrary())
@@ -61,13 +61,13 @@ public class FofanovEstimationTest {
     @Test
     public void shouldCalculatePvaluesWithCorrectnessCutoff() {
         double modelCorrectnessCutoff = 3.0;
-        double epsilon = FofanovEstimation.determineEpsilon(this.queryMotif, modelCorrectnessCutoff);
+        double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
-                .setOptions(this.structureParserOptions);
+                .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
-                .query(this.queryMotif)
+                .query(queryMotif)
                 .targets(multiParser)
                 .maximalParallelism()
                 .atomFilter(AtomFilter.isArbitrary())

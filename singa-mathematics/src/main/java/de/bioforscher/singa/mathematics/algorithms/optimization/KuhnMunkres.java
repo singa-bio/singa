@@ -51,14 +51,14 @@ public class KuhnMunkres<DataType> {
         computeInitialSolution();
         greedyMatch();
         int w = fetchUnmatchedWorker();
-        while (w < this.dimension) {
+        while (w < dimension) {
             initializePhase(w);
             executePhase();
             w = fetchUnmatchedWorker();
         }
-        int[] result = Arrays.copyOf(this.matchJobByWorker, this.rows);
+        int[] result = Arrays.copyOf(matchJobByWorker, rows);
         for (w = 0; w < result.length; w++) {
-            if (result[w] >= this.cols) {
+            if (result[w] >= cols) {
                 result[w] = -1;
             }
         }
@@ -66,9 +66,9 @@ public class KuhnMunkres<DataType> {
     }
 
     private void assignPairs(int[] result) {
-        this.assignedPairs = new ArrayList<>();
-        for (int i = 0; i < this.labeledCostMatrix.getRowDimension(); i++) {
-            this.assignedPairs.add(new Pair<>(this.labeledCostMatrix.getRowLabel(i), this.labeledCostMatrix.getColumnLabel(result[i])));
+        assignedPairs = new ArrayList<>();
+        for (int i = 0; i < labeledCostMatrix.getRowDimension(); i++) {
+            assignedPairs.add(new Pair<>(labeledCostMatrix.getRowLabel(i), labeledCostMatrix.getColumnLabel(result[i])));
         }
 
     }
@@ -77,11 +77,11 @@ public class KuhnMunkres<DataType> {
         while (true) {
             int minSlackWorker = -1, minSlackJob = -1;
             double minSlackValue = Double.POSITIVE_INFINITY;
-            for (int j = 0; j < this.dimension; j++) {
-                if (this.parentWorkerByCommittedJob[j] == -1) {
-                    if (this.minSlackValueByJob[j] < minSlackValue) {
-                        minSlackValue = this.minSlackValueByJob[j];
-                        minSlackWorker = this.minSlackWorkerByJob[j];
+            for (int j = 0; j < dimension; j++) {
+                if (parentWorkerByCommittedJob[j] == -1) {
+                    if (minSlackValueByJob[j] < minSlackValue) {
+                        minSlackValue = minSlackValueByJob[j];
+                        minSlackWorker = minSlackWorkerByJob[j];
                         minSlackJob = j;
                     }
                 }
@@ -89,30 +89,30 @@ public class KuhnMunkres<DataType> {
             if (minSlackValue > 0) {
                 updateLabeling(minSlackValue);
             }
-            this.parentWorkerByCommittedJob[minSlackJob] = minSlackWorker;
-            if (this.matchWorkerByJob[minSlackJob] == -1) {
+            parentWorkerByCommittedJob[minSlackJob] = minSlackWorker;
+            if (matchWorkerByJob[minSlackJob] == -1) {
                 int committedJob = minSlackJob;
-                int parentWorker = this.parentWorkerByCommittedJob[committedJob];
+                int parentWorker = parentWorkerByCommittedJob[committedJob];
                 while (true) {
-                    int temp = this.matchJobByWorker[parentWorker];
+                    int temp = matchJobByWorker[parentWorker];
                     match(parentWorker, committedJob);
                     committedJob = temp;
                     if (committedJob == -1) {
                         break;
                     }
-                    parentWorker = this.parentWorkerByCommittedJob[committedJob];
+                    parentWorker = parentWorkerByCommittedJob[committedJob];
                 }
                 return;
             } else {
-                int worker = this.matchWorkerByJob[minSlackJob];
-                this.committedWorkers[worker] = true;
-                for (int j = 0; j < this.dimension; j++) {
-                    if (this.parentWorkerByCommittedJob[j] == -1) {
-                        double slack = this.costMatrix[worker][j] - this.labelByWorker[worker]
-                                - this.labelByJob[j];
-                        if (this.minSlackValueByJob[j] > slack) {
-                            this.minSlackValueByJob[j] = slack;
-                            this.minSlackWorkerByJob[j] = worker;
+                int worker = matchWorkerByJob[minSlackJob];
+                committedWorkers[worker] = true;
+                for (int j = 0; j < dimension; j++) {
+                    if (parentWorkerByCommittedJob[j] == -1) {
+                        double slack = costMatrix[worker][j] - labelByWorker[worker]
+                                - labelByJob[j];
+                        if (minSlackValueByJob[j] > slack) {
+                            minSlackValueByJob[j] = slack;
+                            minSlackWorkerByJob[j] = worker;
                         }
                     }
                 }
@@ -121,36 +121,36 @@ public class KuhnMunkres<DataType> {
     }
 
     private void updateLabeling(double slack) {
-        for (int w = 0; w < this.dimension; w++) {
-            if (this.committedWorkers[w]) {
-                this.labelByWorker[w] += slack;
+        for (int w = 0; w < dimension; w++) {
+            if (committedWorkers[w]) {
+                labelByWorker[w] += slack;
             }
         }
-        for (int j = 0; j < this.dimension; j++) {
-            if (this.parentWorkerByCommittedJob[j] != -1) {
-                this.labelByJob[j] -= slack;
+        for (int j = 0; j < dimension; j++) {
+            if (parentWorkerByCommittedJob[j] != -1) {
+                labelByJob[j] -= slack;
             } else {
-                this.minSlackValueByJob[j] -= slack;
+                minSlackValueByJob[j] -= slack;
             }
         }
     }
 
     private void initializePhase(int w) {
-        Arrays.fill(this.committedWorkers, false);
-        Arrays.fill(this.parentWorkerByCommittedJob, -1);
-        this.committedWorkers[w] = true;
-        for (int j = 0; j < this.dimension; j++) {
-            this.minSlackValueByJob[j] = this.costMatrix[w][j] - this.labelByWorker[w]
-                    - this.labelByJob[j];
-            this.minSlackWorkerByJob[j] = w;
+        Arrays.fill(committedWorkers, false);
+        Arrays.fill(parentWorkerByCommittedJob, -1);
+        committedWorkers[w] = true;
+        for (int j = 0; j < dimension; j++) {
+            minSlackValueByJob[j] = costMatrix[w][j] - labelByWorker[w]
+                    - labelByJob[j];
+            minSlackWorkerByJob[j] = w;
         }
 
     }
 
     private int fetchUnmatchedWorker() {
         int w;
-        for (w = 0; w < this.dimension; w++) {
-            if (this.matchJobByWorker[w] == -1) {
+        for (w = 0; w < dimension; w++) {
+            if (matchJobByWorker[w] == -1) {
                 break;
             }
         }
@@ -158,10 +158,10 @@ public class KuhnMunkres<DataType> {
     }
 
     private void greedyMatch() {
-        for (int w = 0; w < this.dimension; w++) {
-            for (int j = 0; j < this.dimension; j++) {
-                if (this.matchJobByWorker[w] == -1 && this.matchWorkerByJob[j] == -1
-                        && this.costMatrix[w][j] - this.labelByWorker[w] - this.labelByJob[j] == 0) {
+        for (int w = 0; w < dimension; w++) {
+            for (int j = 0; j < dimension; j++) {
+                if (matchJobByWorker[w] == -1 && matchWorkerByJob[j] == -1
+                        && costMatrix[w][j] - labelByWorker[w] - labelByJob[j] == 0) {
                     match(w, j);
                 }
             }
@@ -169,21 +169,21 @@ public class KuhnMunkres<DataType> {
     }
 
     private void match(int w, int j) {
-        this.matchJobByWorker[w] = j;
-        this.matchWorkerByJob[j] = w;
+        matchJobByWorker[w] = j;
+        matchWorkerByJob[j] = w;
     }
 
     private void initialize(double[][] costMatrix) {
-        this.dimension = Math.max(costMatrix.length, costMatrix[0].length);
-        this.rows = costMatrix.length;
-        this.cols = costMatrix[0].length;
-        this.costMatrix = new double[this.dimension][this.dimension];
-        for (int w = 0; w < this.dimension; w++) {
+        dimension = Math.max(costMatrix.length, costMatrix[0].length);
+        rows = costMatrix.length;
+        cols = costMatrix[0].length;
+        this.costMatrix = new double[dimension][dimension];
+        for (int w = 0; w < dimension; w++) {
             if (w < costMatrix.length) {
-                if (costMatrix[w].length != this.cols) {
+                if (costMatrix[w].length != cols) {
                     throw new IllegalArgumentException("irregular cost matrix");
                 }
-                for (int j = 0; j < this.cols; j++) {
+                for (int j = 0; j < cols; j++) {
                     if (Double.isInfinite(costMatrix[w][j])) {
                         throw new IllegalArgumentException("infinite cost");
                     }
@@ -191,67 +191,67 @@ public class KuhnMunkres<DataType> {
                         throw new IllegalArgumentException("NaN cost");
                     }
                 }
-                this.costMatrix[w] = Arrays.copyOf(costMatrix[w], this.dimension);
+                this.costMatrix[w] = Arrays.copyOf(costMatrix[w], dimension);
             } else {
-                this.costMatrix[w] = new double[this.dimension];
+                this.costMatrix[w] = new double[dimension];
             }
         }
-        this.labelByWorker = new double[this.dimension];
-        this.labelByJob = new double[this.dimension];
-        this.minSlackWorkerByJob = new int[this.dimension];
-        this.minSlackValueByJob = new double[this.dimension];
-        this.committedWorkers = new boolean[this.dimension];
-        this.parentWorkerByCommittedJob = new int[this.dimension];
-        this.matchJobByWorker = new int[this.dimension];
-        Arrays.fill(this.matchJobByWorker, -1);
-        this.matchWorkerByJob = new int[this.dimension];
-        Arrays.fill(this.matchWorkerByJob, -1);
+        labelByWorker = new double[dimension];
+        labelByJob = new double[dimension];
+        minSlackWorkerByJob = new int[dimension];
+        minSlackValueByJob = new double[dimension];
+        committedWorkers = new boolean[dimension];
+        parentWorkerByCommittedJob = new int[dimension];
+        matchJobByWorker = new int[dimension];
+        Arrays.fill(matchJobByWorker, -1);
+        matchWorkerByJob = new int[dimension];
+        Arrays.fill(matchWorkerByJob, -1);
     }
 
     private void reduce() {
-        for (int w = 0; w < this.dimension; w++) {
+        for (int w = 0; w < dimension; w++) {
             double min = Double.POSITIVE_INFINITY;
-            for (int j = 0; j < this.dimension; j++) {
-                if (this.costMatrix[w][j] < min) {
-                    min = this.costMatrix[w][j];
+            for (int j = 0; j < dimension; j++) {
+                if (costMatrix[w][j] < min) {
+                    min = costMatrix[w][j];
                 }
             }
-            for (int j = 0; j < this.dimension; j++) {
-                this.costMatrix[w][j] -= min;
+            for (int j = 0; j < dimension; j++) {
+                costMatrix[w][j] -= min;
             }
         }
-        double[] min = new double[this.dimension];
-        for (int j = 0; j < this.dimension; j++) {
+        double[] min = new double[dimension];
+        for (int j = 0; j < dimension; j++) {
             min[j] = Double.POSITIVE_INFINITY;
         }
-        for (int w = 0; w < this.dimension; w++) {
-            for (int j = 0; j < this.dimension; j++) {
-                if (this.costMatrix[w][j] < min[j]) {
-                    min[j] = this.costMatrix[w][j];
+        for (int w = 0; w < dimension; w++) {
+            for (int j = 0; j < dimension; j++) {
+                if (costMatrix[w][j] < min[j]) {
+                    min[j] = costMatrix[w][j];
                 }
             }
         }
-        for (int w = 0; w < this.dimension; w++) {
-            for (int j = 0; j < this.dimension; j++) {
-                this.costMatrix[w][j] -= min[j];
+        for (int w = 0; w < dimension; w++) {
+            for (int j = 0; j < dimension; j++) {
+                costMatrix[w][j] -= min[j];
             }
         }
     }
 
     private void computeInitialSolution() {
-        for (int j = 0; j < this.dimension; j++) {
-            this.labelByJob[j] = Double.POSITIVE_INFINITY;
+        for (int j = 0; j < dimension; j++) {
+            labelByJob[j] = Double.POSITIVE_INFINITY;
         }
-        for (int w = 0; w < this.dimension; w++) {
-            for (int j = 0; j < this.dimension; j++) {
-                if (this.costMatrix[w][j] < this.labelByJob[j]) {
-                    this.labelByJob[j] = this.costMatrix[w][j];
+        for (int w = 0; w < dimension; w++) {
+            for (int j = 0; j < dimension; j++) {
+                if (costMatrix[w][j] < labelByJob[j]) {
+                    labelByJob[j] = costMatrix[w][j];
                 }
             }
         }
     }
 
     public List<Pair<DataType>> getAssignedPairs() {
-        return this.assignedPairs;
+        return assignedPairs;
     }
 }

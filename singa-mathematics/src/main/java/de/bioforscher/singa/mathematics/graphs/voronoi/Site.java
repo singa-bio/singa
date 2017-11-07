@@ -7,6 +7,6 @@ public class Site {
     int sitenbr;
 
     public Site() {
-        this.coord = new Point();
+        coord = new Point();
     }
 }

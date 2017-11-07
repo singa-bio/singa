@@ -166,35 +166,35 @@ public class FunctionExpressionNode implements ExpressionNode {
      * value.
      */
     public double getValue() {
-        switch (this.function) {
+        switch (function) {
             case SIN:
-                return Math.sin(this.argument.getValue());
+                return Math.sin(argument.getValue());
             case COS:
-                return Math.cos(this.argument.getValue());
+                return Math.cos(argument.getValue());
             case TAN:
-                return Math.tan(this.argument.getValue());
+                return Math.tan(argument.getValue());
             case ASIN:
-                return Math.asin(this.argument.getValue());
+                return Math.asin(argument.getValue());
             case ACOS:
-                return Math.acos(this.argument.getValue());
+                return Math.acos(argument.getValue());
             case ATAN:
-                return Math.atan(this.argument.getValue());
+                return Math.atan(argument.getValue());
             case SQRT:
-                return Math.sqrt(this.argument.getValue());
+                return Math.sqrt(argument.getValue());
             case EXP:
-                return Math.exp(this.argument.getValue());
+                return Math.exp(argument.getValue());
             case LN:
-                return Math.log(this.argument.getValue());
+                return Math.log(argument.getValue());
             case LOG:
-                return Math.log(this.argument.getValue()) * 0.43429448190325182765;
+                return Math.log(argument.getValue()) * 0.43429448190325182765;
             case LOG2:
-                return Math.log(this.argument.getValue()) * 1.442695040888963407360;
+                return Math.log(argument.getValue()) * 1.442695040888963407360;
             case ABS:
-                return Math.abs(this.argument.getValue());
+                return Math.abs(argument.getValue());
 
         }
 
-        throw new EvaluationException("Invalid function id " + this.function + "!");
+        throw new EvaluationException("Invalid function id " + function + "!");
     }
 
     /**
@@ -206,7 +206,7 @@ public class FunctionExpressionNode implements ExpressionNode {
      */
     public void accept(ExpressionNodeVisitor visitor) {
         visitor.visit(this);
-        this.argument.accept(visitor);
+        argument.accept(visitor);
     }
 
 }

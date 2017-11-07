@@ -26,27 +26,27 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
      */
     protected ComplexedChemicalEntity(SimpleStringIdentifier identifier) {
         super(identifier);
-        this.associatedParts = new HashMap<>();
+        associatedParts = new HashMap<>();
     }
 
     public void addAssociatedPart(ChemicalEntity chemicalEntity) {
-        this.associatedParts.computeIfPresent(chemicalEntity, (key, value) -> value + 1);
-        this.associatedParts.putIfAbsent(chemicalEntity, 1);
+        associatedParts.computeIfPresent(chemicalEntity, (key, value) -> value + 1);
+        associatedParts.putIfAbsent(chemicalEntity, 1);
         computeMolarMass();
     }
 
     public Map<ChemicalEntity<?>, Integer> getAssociatedParts() {
-        return this.associatedParts;
+        return associatedParts;
     }
 
     public Set<ChemicalEntity<?>> getAssociatedChemicalEntities() {
-        return this.associatedParts.keySet();
+        return associatedParts.keySet();
     }
 
     private void computeMolarMass() {
-        double sum = this.associatedParts.keySet().stream()
+        double sum = associatedParts.keySet().stream()
                 .mapToDouble(entity -> entity.getFeature(MolarMass.class).getFeatureContent()
-                        .multiply(this.associatedParts.get(entity))
+                        .multiply(associatedParts.get(entity))
                         .getValue().doubleValue())
                 .sum();
         setFeature(new MolarMass(sum, computedMassOrigin));
@@ -55,7 +55,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
     @Override
     public String toString() {
         return "ComplexedChemicalEntity "+super.getIdentifier()+" {" +
-                "associatedParts=" + this.associatedParts +
+                "associatedParts=" + associatedParts +
                 '}';
     }
 
@@ -81,7 +81,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
 
         public ComplexedChemicalEntity.Builder addAssociatedPart(ChemicalEntity chemicalEntity) {
             if (chemicalEntity != null) {
-                this.topLevelObject.addAssociatedPart(chemicalEntity);
+                topLevelObject.addAssociatedPart(chemicalEntity);
             }
             return this;
         }

@@ -70,7 +70,7 @@ public abstract class SequenceExpressionNode implements ExpressionNode {
      * Default constructor.
      */
     public SequenceExpressionNode() {
-        this.terms = new ArrayList<Term>();
+        terms = new ArrayList<Term>();
     }
 
     /**
@@ -80,8 +80,8 @@ public abstract class SequenceExpressionNode implements ExpressionNode {
      * @param positive a boolean flag
      */
     public SequenceExpressionNode(ExpressionNode node, boolean positive) {
-        this.terms = new ArrayList<>();
-        this.terms.add(new Term(positive, node));
+        terms = new ArrayList<>();
+        terms.add(new Term(positive, node));
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class SequenceExpressionNode implements ExpressionNode {
      * @param positive a boolean flag
      */
     public void add(ExpressionNode node, boolean positive) {
-        this.terms.add(new Term(positive, node));
+        terms.add(new Term(positive, node));
     }
 
 }

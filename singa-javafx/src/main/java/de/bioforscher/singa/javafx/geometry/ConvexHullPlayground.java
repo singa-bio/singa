@@ -29,28 +29,28 @@ public class ConvexHullPlayground extends Application implements Renderer {
     @Override
     public void init() throws Exception {
         // setup the canvas
-        this.canvas = new Canvas(500, 500);
+        canvas = new Canvas(500, 500);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // setup root
         BorderPane root = new BorderPane();
-        root.setCenter(this.canvas);
-        this.canvas.getGraphicsContext2D().setLineWidth(7);
+        root.setCenter(canvas);
+        canvas.getGraphicsContext2D().setLineWidth(7);
 
         // generate points
         List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(20, new Rectangle(500, 500));
         ConvexHull convexHull = ConvexHull.calculateHullFor(vectors);
 
-        this.canvas.getGraphicsContext2D().setFill(Color.DIMGRAY);
+        canvas.getGraphicsContext2D().setFill(Color.DIMGRAY);
         convexHull.getNonHullVectors().forEach(this::drawPoint);
 
-        this.canvas.getGraphicsContext2D().setFill(Color.CORNFLOWERBLUE);
+        canvas.getGraphicsContext2D().setFill(Color.CORNFLOWERBLUE);
         convexHull.getHull().forEach(this::drawPoint);
 
-        this.canvas.getGraphicsContext2D().setStroke(Color.CORNFLOWERBLUE);
-        this.canvas.getGraphicsContext2D().setLineWidth(2);
+        canvas.getGraphicsContext2D().setStroke(Color.CORNFLOWERBLUE);
+        canvas.getGraphicsContext2D().setLineWidth(2);
         connectPoints(convexHull.getHull());
 
         // show
@@ -61,17 +61,17 @@ public class ConvexHullPlayground extends Application implements Renderer {
 
     @Override
     public GraphicsContext getGraphicsContext() {
-        return this.canvas.getGraphicsContext2D();
+        return canvas.getGraphicsContext2D();
     }
 
     @Override
     public double getDrawingWidth() {
-        return this.canvas.getWidth();
+        return canvas.getWidth();
     }
 
     @Override
     public double getDrawingHeight() {
-        return this.canvas.getHeight();
+        return canvas.getHeight();
     }
 
 }

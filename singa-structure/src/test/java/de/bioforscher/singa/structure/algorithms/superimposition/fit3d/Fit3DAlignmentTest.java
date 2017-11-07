@@ -40,22 +40,22 @@ public class Fit3DAlignmentTest {
 
     @Before
     public void setUp() throws IOException {
-        this.target = StructureParser.online()
+        target = StructureParser.online()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .parse();
-        this.queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
+        queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
     public void shouldRunFit3DAlignment() {
         Fit3D fit3d = Fit3DBuilder.create()
-                .query(this.queryMotif)
-                .target(this.target.getAllChains().get(0))
+                .query(queryMotif)
+                .target(target.getAllChains().get(0))
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
         assertEquals(0.0005, matches.get(0).getRmsd(), 1E-4);
@@ -63,10 +63,10 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentWithExchangesAgainstAll() {
-        this.queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), MatcherFamily.ALL);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), MatcherFamily.ALL);
         Fit3D fit3d = Fit3DBuilder.create()
-                .query(this.queryMotif)
-                .target(this.target.getAllChains().get(0))
+                .query(queryMotif)
+                .target(target.getAllChains().get(0))
                 .atomFilter(AtomFilter.isArbitrary())
                 .rmsdCutoff(1.0)
                 .run();
@@ -133,7 +133,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldGenerateCombinations() {
-        assertEquals(1L, StreamCombinations.combinations(3, this.queryMotif.getAllLeafSubstructures()).count());
+        assertEquals(1L, StreamCombinations.combinations(3, queryMotif.getAllLeafSubstructures()).count());
     }
 
     @Test
@@ -173,13 +173,13 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldSkipAlphaCarbonStructureInBatch() {
-        this.queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
-        Fit3D fit3d = Fit3DBuilder.create().query(this.queryMotif)
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
                 .targets(multiParser)
                 .skipAlphaCarbonTargets()
                 .maximalParallelism()
@@ -192,13 +192,13 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldSkipBackboneStructureInBatch() {
-        this.queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
+        queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
-        Fit3D fit3d = Fit3DBuilder.create().query(this.queryMotif)
+        Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
                 .targets(multiParser)
                 .skipBackboneTargets()
                 .maximalParallelism()

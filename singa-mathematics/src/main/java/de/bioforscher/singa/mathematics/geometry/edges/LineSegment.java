@@ -34,8 +34,8 @@ public class LineSegment extends Line {
      */
     public LineSegment(Vector2D start, Vector2D end) {
         super(start, end);
-        this.startingPoint = start;
-        this.endingPoint = end;
+        startingPoint = start;
+        endingPoint = end;
     }
 
     /**
@@ -43,7 +43,7 @@ public class LineSegment extends Line {
      * @return The starting point.
      */
     public Vector2D getStartingPoint() {
-        return this.startingPoint;
+        return startingPoint;
     }
 
     /**
@@ -51,7 +51,7 @@ public class LineSegment extends Line {
      * @return The ending point.
      */
     public Vector2D getEndingPoint() {
-        return this.endingPoint;
+        return endingPoint;
     }
 
     /**
@@ -127,15 +127,15 @@ public class LineSegment extends Line {
      */
     public LineSegment getParallelSegment(double distance) {
         if (isHorizontal()) {
-            return new LineSegment(this.startingPoint.getX(), this.startingPoint.getY() + distance,
-                    this.endingPoint.getX(), this.endingPoint.getY()+distance);
+            return new LineSegment(startingPoint.getX(), startingPoint.getY() + distance,
+                    endingPoint.getX(), endingPoint.getY() + distance);
         } else if (isVertical()) {
-            return new LineSegment(this.startingPoint.getX() + distance, this.startingPoint.getY(),
-                    this.endingPoint.getX() + distance, this.endingPoint.getY());
+            return new LineSegment(startingPoint.getX() + distance, startingPoint.getY(),
+                    endingPoint.getX() + distance, endingPoint.getY());
         } else {
             Line parallel = getParallel(distance);
-            Line perpendicularStart = new Line(this.startingPoint, parallel.getPerpendicularSlope());
-            Line perpendicularEnd = new Line(this.endingPoint, parallel.getPerpendicularSlope());
+            Line perpendicularStart = new Line(startingPoint, parallel.getPerpendicularSlope());
+            Line perpendicularEnd = new Line(endingPoint, parallel.getPerpendicularSlope());
             return new LineSegment(parallel.getInterceptWithLine(perpendicularStart),
                     parallel.getInterceptWithLine(perpendicularEnd));
         }
@@ -166,7 +166,7 @@ public class LineSegment extends Line {
      * @return The length.
      */
     public double getLength() {
-        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(this.startingPoint, this.endingPoint);
+        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(startingPoint, endingPoint);
     }
 
 }

@@ -27,7 +27,7 @@ public class LeafSkeleton {
     }
 
     public String getThreeLetterCode() {
-        return this.threeLetterCode;
+        return threeLetterCode;
     }
 
     public void setThreeLetterCode(String threeLetterCode) {
@@ -35,7 +35,7 @@ public class LeafSkeleton {
     }
 
     public String getParent() {
-        return this.parent;
+        return parent;
     }
 
     public void setParent(String parent) {
@@ -43,7 +43,7 @@ public class LeafSkeleton {
     }
 
     public AssignedFamily getAssignedFamily() {
-        return this.assignedFamily;
+        return assignedFamily;
     }
 
     public void setAssignedFamily(AssignedFamily assignedFamily) {
@@ -51,7 +51,7 @@ public class LeafSkeleton {
     }
 
     public Map<Pair<String>, BondType> getBonds() {
-        return this.bonds;
+        return bonds;
     }
 
     public void setBonds(Map<Pair<String>, BondType> bonds) {
@@ -60,25 +60,25 @@ public class LeafSkeleton {
 
     public OakLeafSubstructure<?> toRealLeafSubstructure(LeafIdentifier identifer, Map<String, OakAtom> atoms) {
         OakLeafSubstructure<?> substructure;
-        switch (this.assignedFamily) {
+        switch (assignedFamily) {
             case MODIFIED_AMINO_ACID: {
-                substructure = new OakAminoAcid(identifer, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent)
-                        .orElse(AminoAcidFamily.UNKNOWN), this.threeLetterCode);
+                substructure = new OakAminoAcid(identifer, AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(parent)
+                        .orElse(AminoAcidFamily.UNKNOWN), threeLetterCode);
                 break;
             }
             case MODIFIED_NUCLEOTIDE: {
-                substructure = new OakNucleotide(identifer, NucleotideFamily.getNucleotideByThreeLetterCode(this.parent)
-                        .orElse(NucleotideFamily.UNKNOWN), this.threeLetterCode);
+                substructure = new OakNucleotide(identifer, NucleotideFamily.getNucleotideByThreeLetterCode(parent)
+                        .orElse(NucleotideFamily.UNKNOWN), threeLetterCode);
                 break;
             }
             default: {
-                substructure = new OakLigand(identifer, new LigandFamily("?", this.threeLetterCode));
+                substructure = new OakLigand(identifer, new LigandFamily("?", threeLetterCode));
                 break;
             }
         }
         atoms.values().forEach(substructure::addAtom);
         int bondCounter = 0;
-        for (Map.Entry<Pair<String>, BondType> bond : this.bonds.entrySet()) {
+        for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
             substructure.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst()),
                     atoms.get(bond.getKey().getSecond()));
             bondCounter++;

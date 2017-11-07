@@ -53,21 +53,21 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
      */
     protected ChemicalEntity(IdentifierType identifier) {
         this.identifier = identifier;
-        this.annotations = new ArrayList<>();
-        this.features = new FeatureContainer();
-        this.availableFeatures = new HashSet<>();
-        this.availableFeatures.add(Diffusivity.class);
-        this.availableFeatures.add(MolarMass.class);
+        annotations = new ArrayList<>();
+        features = new FeatureContainer();
+        availableFeatures = new HashSet<>();
+        availableFeatures.add(Diffusivity.class);
+        availableFeatures.add(MolarMass.class);
     }
 
     @Override
     public IdentifierType getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -81,7 +81,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     @Override
     public List<Annotation> getAnnotations() {
-        return this.annotations;
+        return annotations;
     }
 
     /**
@@ -116,45 +116,45 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     @Override
     public Collection<Feature<?>> getFeatures() {
-        return this.features.getAllFeatures();
+        return features.getAllFeatures();
     }
 
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return this.features.getFeature(featureTypeClass);
+        return features.getFeature(featureTypeClass);
     }
 
     @Override
     public <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass) {
-        this.features.setFeature(featureTypeClass, this);
+        features.setFeature(featureTypeClass, this);
     }
 
     @Override
     public <FeatureType extends Feature> void setFeature(FeatureType feature) {
-        this.features.setFeature(feature);
+        features.setFeature(feature);
     }
 
     @Override
     public <FeatureType extends Feature> boolean hasFeature(Class<FeatureType> featureTypeClass) {
-        return this.features.hasFeature(featureTypeClass);
+        return features.hasFeature(featureTypeClass);
     }
 
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
-        return this.availableFeatures;
+        return availableFeatures;
     }
 
     public List<Identifier> getAllIdentifiers() {
         List<Identifier> identifiers = getAdditionalIdentifiers();
-        identifiers.add(this.identifier);
+        identifiers.add(identifier);
         return identifiers;
     }
 
     @Override
     public String toString() {
         return "ChemicalEntity{" +
-                "identifier=" + this.identifier +
-                ", name='" + this.name + '\'' +
+                "identifier=" + identifier +
+                ", name='" + name + '\'' +
                 '}';
     }
 
@@ -179,8 +179,8 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         BuilderType builderObject;
 
         public Builder(IdentifierType identifier) {
-            this.topLevelObject = createObject(identifier);
-            this.builderObject = getBuilder();
+            topLevelObject = createObject(identifier);
+            builderObject = getBuilder();
         }
 
         protected abstract TopLevelType createObject(IdentifierType primaryIdentifer);
@@ -188,37 +188,37 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         protected abstract BuilderType getBuilder();
 
         public BuilderType name(String name) {
-            this.topLevelObject.setName(name);
-            return this.builderObject;
+            topLevelObject.setName(name);
+            return builderObject;
         }
 
         public BuilderType assignFeature(Feature feature) {
-            this.topLevelObject.setFeature(feature);
-            return this.builderObject;
+            topLevelObject.setFeature(feature);
+            return builderObject;
         }
 
         public BuilderType assignFeature(Class<? extends Feature> feature) {
-            this.topLevelObject.setFeature(feature);
-            return this.builderObject;
+            topLevelObject.setFeature(feature);
+            return builderObject;
         }
 
         public BuilderType additionalIdentifier(Identifier identifier) {
-            this.topLevelObject.addAdditionalIdentifier(identifier);
-            return this.builderObject;
+            topLevelObject.addAdditionalIdentifier(identifier);
+            return builderObject;
         }
 
         public BuilderType additionalIdentifiers(Collection<Identifier> identifiers) {
-            this.topLevelObject.addAdditionalIdentifiers(identifiers);
-            return this.builderObject;
+            topLevelObject.addAdditionalIdentifiers(identifiers);
+            return builderObject;
         }
 
         public BuilderType annotation(Annotation annotation) {
-            this.topLevelObject.addAnnotation(annotation);
-            return this.builderObject;
+            topLevelObject.addAnnotation(annotation);
+            return builderObject;
         }
 
         public TopLevelType build() {
-            return this.topLevelObject;
+            return topLevelObject;
         }
     }
 

@@ -8,7 +8,7 @@ public class MixedParameterList {
     private List<ParameterValue<?>> parameterValues;
 
     public MixedParameterList() {
-        this.parameterValues = new ArrayList<>();
+        parameterValues = new ArrayList<>();
     }
 
     public MixedParameterList(List<ParameterValue<?>> parameterValues) {
@@ -16,16 +16,16 @@ public class MixedParameterList {
     }
 
     public void add(ParameterValue<?> element) {
-        this.parameterValues.add(element);
+        parameterValues.add(element);
     }
 
     public List<ParameterValue<?>> getValues() {
-        return this.parameterValues;
+        return parameterValues;
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Comparable<T>> ParameterValue<T> getValue(int index, Class<T> typeClass) {
-        return (ParameterValue<T>) this.parameterValues.get(index);
+        return (ParameterValue<T>) parameterValues.get(index);
     }
 
     public void setValues(List<ParameterValue<?>> parameterValues) {
@@ -34,13 +34,13 @@ public class MixedParameterList {
 
     @Override
     public String toString() {
-        return this.parameterValues.toString().replace("[", "").replace("]", "");
+        return parameterValues.toString().replace("[", "").replace("]", "");
     }
 
     @Override
     public MixedParameterList clone() {
         MixedParameterList newSet = new MixedParameterList();
-        this.parameterValues.forEach(newSet::add);
+        parameterValues.forEach(newSet::add);
         return newSet;
     }
 

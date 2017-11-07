@@ -39,7 +39,7 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
 
     private GenericNode(GenericNode<ContentType> node) {
         super(node);
-        this.content = node.getContent();
+        content = node.getContent();
     }
 
     /**
@@ -48,7 +48,7 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
      * @return The content of the node.
      */
     public ContentType getContent() {
-        return this.content;
+        return content;
     }
 
     /**

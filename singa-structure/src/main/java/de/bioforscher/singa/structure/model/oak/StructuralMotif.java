@@ -20,7 +20,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     private StructuralMotif(String identifier) {
         this.identifier = identifier;
-        this.leafSubstructures = new LinkedHashMap<>();
+        leafSubstructures = new LinkedHashMap<>();
     }
 
     private StructuralMotif(String identifier, List<LeafSubstructure<?>> leafSubstructures) {
@@ -96,13 +96,13 @@ public class StructuralMotif implements LeafSubstructureContainer {
 
     @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final LeafSubstructure leafSubstructure = this.leafSubstructures.remove(leafIdentifier);
+        final LeafSubstructure leafSubstructure = leafSubstructures.remove(leafIdentifier);
         return leafSubstructure != null;
     }
 
 
     public void addLeafSubstructure(LeafSubstructure leafSubstructure) {
-        this.leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
+        leafSubstructures.put(leafSubstructure.getIdentifier(), leafSubstructure);
     }
 
 
@@ -112,7 +112,7 @@ public class StructuralMotif implements LeafSubstructureContainer {
      * @return The size of the motif.
      */
     public int size() {
-        return this.leafSubstructures.size();
+        return leafSubstructures.size();
     }
 
 

@@ -32,7 +32,7 @@ public class MinkowskiMetric<VectorType extends Vector> implements Metric<Vector
     @Override
     public double calculateDistance(VectorType first, VectorType second) {
         if (first.hasSameDimensions(second)) {
-            if (this.p == Double.POSITIVE_INFINITY) {
+            if (p == Double.POSITIVE_INFINITY) {
                 return getMaximalDifference(first, second);
             }
             return getRegularMinkowskiDifference(first, second);
@@ -45,9 +45,9 @@ public class MinkowskiMetric<VectorType extends Vector> implements Metric<Vector
     private double getRegularMinkowskiDifference(VectorType first, VectorType second) {
         double sum = 0;
         for (int i = 0; i < first.getDimension(); i++) {
-            sum += Math.pow(Math.abs(first.getElement(i) - second.getElement(i)), this.p);
+            sum += Math.pow(Math.abs(first.getElement(i) - second.getElement(i)), p);
         }
-        return Math.pow(sum, 1.0 / this.p);
+        return Math.pow(sum, 1.0 / p);
     }
 
     private double getMaximalDifference(VectorType first, VectorType second) {

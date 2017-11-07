@@ -36,30 +36,30 @@ public class Gyration {
     }
 
     public List<Atom> getAtoms() {
-        return this.atoms;
+        return atoms;
     }
 
     public Vector3D getCentroid() {
-        return this.centroid;
+        return centroid;
     }
 
     public double getRadius() {
-        return this.radius;
+        return radius;
     }
 
     private void calculateRadius() {
         // determine geometric centroid
-        List<Vector3D> positions = this.atoms.stream()
+        List<Vector3D> positions = atoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
-        this.centroid = Vectors3D.getCentroid(positions);
+        centroid = Vectors3D.getCentroid(positions);
         double sumOfSquaredDistances = 0.0;
         double sumOfMolecularMass = 0.0;
-        for (Atom atom : this.atoms) {
+        for (Atom atom : atoms) {
             sumOfSquaredDistances += atom.getElement().getAtomicMass().getValue().doubleValue()
-                    * SQUARED_EUCLIDEAN_METRIC.calculateDistance(atom.getPosition(), this.centroid);
+                    * SQUARED_EUCLIDEAN_METRIC.calculateDistance(atom.getPosition(), centroid);
             sumOfMolecularMass += atom.getElement().getAtomicMass().getValue().doubleValue();
         }
-        this.radius = Math.sqrt(sumOfSquaredDistances / sumOfMolecularMass);
+        radius = Math.sqrt(sumOfSquaredDistances / sumOfMolecularMass);
     }
 }

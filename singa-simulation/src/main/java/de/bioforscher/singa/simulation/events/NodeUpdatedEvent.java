@@ -16,11 +16,11 @@ public class NodeUpdatedEvent {
     }
 
     public Quantity<Time> getTime() {
-        return this.time;
+        return time;
     }
 
     public AutomatonNode getNode() {
-        return this.node;
+        return node;
     }
 
 }

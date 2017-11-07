@@ -37,8 +37,8 @@ public class Enzyme extends Protein {
      */
     protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
-        this.availableFeatures.add(MichaelisConstant.class);
-        this.availableFeatures.add(TurnoverNumber.class);
+        availableFeatures.add(MichaelisConstant.class);
+        availableFeatures.add(TurnoverNumber.class);
     }
 
     /**
@@ -47,7 +47,7 @@ public class Enzyme extends Protein {
      * @return The possible substrates
      */
     public List<Species> getSubstrates() {
-        return this.substrates;
+        return substrates;
     }
 
     /**
@@ -68,7 +68,7 @@ public class Enzyme extends Protein {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
-            this.topLevelObject.setSubstrates(new ArrayList<>());
+            topLevelObject.setSubstrates(new ArrayList<>());
         }
 
         public Builder(String identifier) {
@@ -86,12 +86,12 @@ public class Enzyme extends Protein {
         }
 
         public Builder substrates(List<Species> substrates) {
-            this.topLevelObject.setSubstrates(substrates);
+            topLevelObject.setSubstrates(substrates);
             return this;
         }
 
         public Builder addSubstrate(Species substrate) {
-            this.topLevelObject.getSubstrates().add(substrate);
+            topLevelObject.getSubstrates().add(substrate);
             return this;
         }
 

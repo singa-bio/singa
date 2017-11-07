@@ -13,7 +13,7 @@ public class FeatureRegistry {
     private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> featureRegistry;
 
     private FeatureRegistry() {
-        this.featureRegistry = new HashMap<>();
+        featureRegistry = new HashMap<>();
     }
 
     public static FeatureRegistry getInstance() {

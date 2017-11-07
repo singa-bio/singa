@@ -49,8 +49,8 @@ public class PsScore {
         this.substructureSuperimposition = substructureSuperimposition;
         this.referenceLength = referenceLength;
         this.queryLength = queryLength;
-        this.alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
-        this.betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
+        alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
+        betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
         calculateScore();
         calculateSignificance();
     }
@@ -75,35 +75,35 @@ public class PsScore {
     }
 
     private void calculateSignificance() {
-        this.significance = 1 - Math.exp(-Math.exp(-calculateZ()));
+        significance = 1 - Math.exp(-Math.exp(-calculateZ()));
     }
 
     private double calculateZ() {
-        double mu = 0.3117 + 0.0277 * Math.log(this.queryLength) + (-0.029) * Math.log(this.referenceLength);
-        double sigma = 0.0366 + 0.0025 * Math.log(this.queryLength) + (-0.0084) * Math.log(this.referenceLength);
-        return (this.score - mu) / sigma;
+        double mu = 0.3117 + 0.0277 * Math.log(queryLength) + (-0.029) * Math.log(referenceLength);
+        double sigma = 0.0366 + 0.0025 * Math.log(queryLength) + (-0.0084) * Math.log(referenceLength);
+        return (score - mu) / sigma;
     }
 
     private void calculateScore() {
-        double scalingFactor = 0.23 - 12.0 / Math.pow(this.queryLength, 1.88);
-        this.score = (determineS() + scalingFactor) / (1 + scalingFactor);
+        double scalingFactor = 0.23 - 12.0 / Math.pow(queryLength, 1.88);
+        score = (determineS() + scalingFactor) / (1 + scalingFactor);
     }
 
     private double determineS() {
 
         double sumValue = 0.0;
-        for (int i = 0; i < this.substructureSuperimposition.getReference().size(); i++) {
-            LeafSubstructure<?> referenceLeafSubstructure = this.substructureSuperimposition.getReference().get(i);
-            LeafSubstructure<?> queryLeafSubstructure = this.substructureSuperimposition.getMappedCandidate().get(i);
+        for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
+            LeafSubstructure<?> referenceLeafSubstructure = substructureSuperimposition.getReference().get(i);
+            LeafSubstructure<?> queryLeafSubstructure = substructureSuperimposition.getMappedCandidate().get(i);
 
             double distance = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(referenceLeafSubstructure.getPosition(), queryLeafSubstructure.getPosition());
-            double distanceScalingFactor = 0.70 * Math.pow((this.queryLength - 5), 0.25) - 0.2;
+            double distanceScalingFactor = 0.70 * Math.pow((queryLength - 5), 0.25) - 0.2;
             double pi = calculateP(referenceLeafSubstructure, queryLeafSubstructure);
             double ri = calculateR(referenceLeafSubstructure, queryLeafSubstructure);
             sumValue += pi * ri * (1 + Math.pow(distance, 2) / Math.pow(distanceScalingFactor, 2));
         }
 
-        return (1.0 / this.queryLength) * sumValue;
+        return (1.0 / queryLength) * sumValue;
     }
 
     private double calculateR(LeafSubstructure<?> referenceLeafSubstructure, LeafSubstructure<?> querylLeafSubstructure) {
@@ -129,25 +129,25 @@ public class PsScore {
     }
 
     private Vector3D determineAlphaBetaVector(LeafSubstructure<?> leafSubstructure) {
-        return this.alphaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition()
-                .subtract(this.betaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition());
+        return alphaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition()
+                .subtract(betaCarbonRepresentation.determineRepresentingAtom(leafSubstructure).getPosition());
     }
 
     public double getScore() {
-        return this.score;
+        return score;
     }
 
     public double getSignificance() {
-        return this.significance;
+        return significance;
     }
 
     @Override
     public String toString() {
         return "PsScore{" +
-                "referenceLength=" + this.referenceLength +
-                ", queryLength=" + this.queryLength +
-                ", score=" + this.score +
-                ", significance=" + this.significance +
+                "referenceLength=" + referenceLength +
+                ", queryLength=" + queryLength +
+                ", score=" + score +
+                ", significance=" + significance +
                 '}';
     }
 }

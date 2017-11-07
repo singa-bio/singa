@@ -344,11 +344,11 @@ public enum AtomName {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public Element getElement() {
-        return this.element;
+        return element;
     }
 
 }
