@@ -62,7 +62,7 @@ public class PfamParserTest {
                 .pfamIdentifier("PF00089")
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")))
                 .domains();
-        assertEquals(20, chains.size());
+        assertEquals(17, chains.size());
     }
 
     @Test

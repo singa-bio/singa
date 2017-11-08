@@ -47,6 +47,12 @@ public class VectorSuperimposerTest {
     }
 
     @Test
+    public void calculateKuhnMunkresSuperimposition() throws Exception {
+        VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateKuhnMunkresSuperimposition(reference, candidate);
+        assertEquals(1.3611043603449626, vectorSuperimposition.getRmsd(), 0.1E-6);
+    }
+
+    @Test
     public void applySuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(reference, candidate);
         List<Vector> mappedCandidate = vectorSuperimposition.applyTo(candidate);

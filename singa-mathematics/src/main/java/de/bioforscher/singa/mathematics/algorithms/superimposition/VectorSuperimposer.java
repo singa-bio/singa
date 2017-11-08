@@ -1,11 +1,10 @@
 package de.bioforscher.singa.mathematics.algorithms.superimposition;
 
+import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.algorithms.matrix.SVDecomposition;
+import de.bioforscher.singa.mathematics.algorithms.optimization.KuhnMunkres;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
-import de.bioforscher.singa.mathematics.matrices.FastMatrices;
-import de.bioforscher.singa.mathematics.matrices.Matrices;
-import de.bioforscher.singa.mathematics.matrices.Matrix;
-import de.bioforscher.singa.mathematics.matrices.SquareMatrix;
+import de.bioforscher.singa.mathematics.matrices.*;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
@@ -51,14 +50,23 @@ public class VectorSuperimposer {
         return new VectorSuperimposer(reference, candidate).calculateIdealSuperimposition();
     }
 
+    /**
+     * Finds the superimposition with the minimal distances between pairs of {@link Vector}s by using {@link
+     * KuhnMunkres} optimization. This is only useful if candidate and reference vectors are already pre-aligned.
+     *
+     * @return The {@link VectorSuperimposition} with the minimal distances between pairs.
+     */
+    public static VectorSuperimposition calculateKuhnMunkresSuperimposition(List<Vector> reference, List<Vector> candidate) {
+        return new VectorSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition();
+    }
+
     private VectorSuperimposition calculateSuperimposition() {
         center();
         calculateRotation();
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-        return new VectorSuperimposition(rmsd, translation, rotation, reference, candidate,
-                mappedCandidate);
+        return new VectorSuperimposition(rmsd, translation, rotation, reference, candidate, mappedCandidate);
     }
 
     private void calculateRMSD() {
@@ -76,7 +84,7 @@ public class VectorSuperimposer {
     private void applyMapping() {
         mappedCandidate = candidate.stream()
                 .map(vector -> rotation.transpose().multiply(vector).add(translation))
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     private void calculateTranslation() {
@@ -125,9 +133,10 @@ public class VectorSuperimposer {
     }
 
     /**
-     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors.
+     * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors by exhaustive calculation of
+     * all permutations.
      *
-     * @return the ideal superimposition
+     * @return The ideal {@link VectorSuperimposition}.
      */
     private VectorSuperimposition calculateIdealSuperimposition() {
         Optional<VectorSuperimposition> optionalSuperimposition = StreamPermutations.of(
@@ -139,5 +148,30 @@ public class VectorSuperimposer {
                 .reduce((VectorSuperimposition s1, VectorSuperimposition s2) ->
                         s1.getRmsd() < s2.getRmsd() ? s1 : s2);
         return optionalSuperimposition.orElse(null);
+    }
+
+    private VectorSuperimposition calculateKuhnMunkresSuperimposition() {
+        // calculate pairwise squared distances between reference and candidate
+        double[][] elements = new double[reference.size()][candidate.size()];
+        for (int i = 0; i < reference.size(); i++) {
+            for (int j = i; j < candidate.size(); j++) {
+                double squaredDistance = VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistance(reference.get(i), candidate.get(j));
+                elements[i][j] = squaredDistance;
+                elements[j][i] = squaredDistance;
+            }
+        }
+        LabeledMatrix<Vector> labeledSquaredDistanceMatrix = new LabeledRegularMatrix<>(elements);
+        labeledSquaredDistanceMatrix.setRowLabels(reference);
+        labeledSquaredDistanceMatrix.setColumnLabels(candidate);
+        // find optimal assignment with minimal pairwise distances using Kuhn-Munkres optimization
+        KuhnMunkres<Vector> kuhnMunkres = new KuhnMunkres<>(labeledSquaredDistanceMatrix);
+        List<Pair<Vector>> assignedPairs = kuhnMunkres.getAssignedPairs();
+        List<Vector> updatedReference = assignedPairs.stream()
+                .map(Pair::getFirst)
+                .collect(Collectors.toList());
+        List<Vector> updatedCandidate = assignedPairs.stream()
+                .map(Pair::getSecond)
+                .collect(Collectors.toList());
+        return new VectorSuperimposer(updatedReference, updatedCandidate).calculateSuperimposition();
     }
 }

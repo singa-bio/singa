@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.algorithms.optimization;
 
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
+import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,11 @@ public class KuhnMunkres<DataType> {
     public KuhnMunkres(LabeledMatrix<DataType> labeledCostMatrix) {
         logger.info("calculating optimal assignment for cost matrix\n{}", labeledCostMatrix.getStringRepresentation());
         this.labeledCostMatrix = labeledCostMatrix;
-        initialize(this.labeledCostMatrix.getElements());
+        if (this.labeledCostMatrix instanceof LabeledSymmetricMatrix) {
+            throw new IllegalArgumentException("cost matrix cannot be symmetric because elements cannot be assigned to themselves");
+        } else {
+            initialize(this.labeledCostMatrix.getElements());
+        }
         execute();
     }
 
