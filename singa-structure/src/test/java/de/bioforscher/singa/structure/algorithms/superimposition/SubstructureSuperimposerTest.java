@@ -4,6 +4,7 @@ package de.bioforscher.singa.structure.algorithms.superimposition;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
@@ -88,7 +89,7 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateSidechainSubstructureSuperimposition() {
+    public void shouldCalculateSideChainSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate, isSideChain());
         List<LeafSubstructure<?>> reconstructedAndMappedCandidate =
@@ -100,10 +101,17 @@ public class SubstructureSuperimposerTest {
     }
 
     @Test
-    public void shouldCalculateIdealSubStructureSuperimposition() {
+    public void shouldCalculateIdealSubstructureSuperimposition() {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateIdealSubstructureSuperimposition(reference, candidate);
-        assertEquals(0.6439715367058053, superimposition.getRmsd(), 0E-9);
+        assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
+    }
+
+    @Test
+    public void shouldCalculateKuhnMunkresSubstructureSuperimposition() {
+        SubstructureSuperimposition superimposition = SubstructureSuperimposer
+                .calculateKuhnMunkresSubstructureSuperimposition(reference, candidate, SubstitutionMatrix.BLOSUM_45, true);
+        assertEquals(0.6439715367058053, superimposition.getRmsd(), 1E-9);
     }
 
     @Test
@@ -145,7 +153,6 @@ public class SubstructureSuperimposerTest {
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
 
         SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
-
     }
 
     @Test

@@ -3,6 +3,8 @@ package de.bioforscher.singa.structure.algorithms.superimposition.scores;
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
+import de.bioforscher.singa.mathematics.matrices.Matrix;
+import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import org.slf4j.Logger;
@@ -51,6 +53,36 @@ public enum SubstitutionMatrix {
         }
         matrix = new LabeledSymmetricMatrix<>(stringLabeledMatrix.getCompleteElements());
         matrix.setRowLabels(structuralFamilyLabels);
+    }
+
+    public LabeledSymmetricMatrix<StructuralFamily> toCostMatrix() {
+        switch (this) {
+            case BLOSUM_45:
+                // additively invert matrix
+                Matrix invertedMatrix = BLOSUM_45.getMatrix().additivelyInvert();
+                // find minimal element
+                double minimalElement = Matrices.getPositionOfMinimalElement(invertedMatrix)
+                        .map(position -> invertedMatrix.getElements()[position.getFirst()][position.getSecond()])
+                        .orElse(Double.NaN);
+                // add minimal element to each value
+                double[][] matrixWithMinimalElement = new double[invertedMatrix.getRowDimension()][invertedMatrix.getColumnDimension()];
+                for (int i = 0; i < matrixWithMinimalElement.length; i++) {
+                    for (int j = 0; j < matrixWithMinimalElement[i].length; j++) {
+                        matrixWithMinimalElement[i][j] = minimalElement;
+                    }
+                }
+                RegularMatrix summand = new RegularMatrix(matrixWithMinimalElement);
+                LabeledSymmetricMatrix<StructuralFamily> costMatrix = new LabeledSymmetricMatrix<>(
+                        invertedMatrix.subtract(summand).getElements());
+                costMatrix.setRowLabels(BLOSUM_45.getMatrix().getRowLabels());
+                costMatrix.setColumnLabels(BLOSUM_45.getMatrix().getColumnLabels());
+                return costMatrix;
+            case MC_LACHLAN:
+                // TODO figure out correct transformation for matrix
+                return getMatrix();
+            default:
+                return getMatrix();
+        }
     }
 
     public LabeledSymmetricMatrix<StructuralFamily> getMatrix() {

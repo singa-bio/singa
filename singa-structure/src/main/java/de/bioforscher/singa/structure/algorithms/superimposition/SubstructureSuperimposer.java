@@ -1,14 +1,19 @@
 package de.bioforscher.singa.structure.algorithms.superimposition;
 
 import de.bioforscher.singa.core.utility.Pair;
+import de.bioforscher.singa.mathematics.algorithms.optimization.KuhnMunkres;
+import de.bioforscher.singa.mathematics.algorithms.superimposition.Superimposition;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorSuperimposer;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorSuperimposition;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
+import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
+import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType;
+import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.AtomContainer;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
@@ -25,7 +30,8 @@ import java.util.stream.Stream;
 import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 
 /**
- * Calculates the ideal superimposition.
+ * Calculates the various {@link Superimposition}s for structures. // TODO migrate to builder pattern to avoid
+ * overloaded constructor
  *
  * @author fk
  */
@@ -108,6 +114,54 @@ public class SubstructureSuperimposer {
                                                                                         RepresentationScheme representationScheme) {
         return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateIdealSuperimposition();
     }
+
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
+                                                                                              List<LeafSubstructure<?>> candidate,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
+                                                                                              List<LeafSubstructure<?>> candidate,
+                                                                                              Predicate<Atom> atomFilter,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
+                                                                                              List<LeafSubstructure<?>> candidate,
+                                                                                              RepresentationScheme representationScheme,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
+                                                                                              LeafSubstructureContainer candidate,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
+                                                                                              LeafSubstructureContainer candidate,
+                                                                                              Predicate<Atom> atomFilter,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate, atomFilter, null).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
+    public static SubstructureSuperimposition calculateKuhnMunkresSubstructureSuperimposition(LeafSubstructureContainer reference,
+                                                                                              LeafSubstructureContainer candidate,
+                                                                                              RepresentationScheme representationScheme,
+                                                                                              SubstitutionMatrix substitutionMatrix,
+                                                                                              boolean considerExchanges) {
+        return new SubstructureSuperimposer(reference, candidate, DEFAULT_ATOM_FILTER, representationScheme).calculateKuhnMunkresSuperimposition(substitutionMatrix, considerExchanges);
+    }
+
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
                                                                                    List<LeafSubstructure<?>> candidate) throws SubstructureSuperimpositionException {
@@ -199,6 +253,44 @@ public class SubstructureSuperimposer {
         return optionalSuperimposition.orElseThrow(() -> new SubstructureSuperimpositionException("no ideal superimposition found"));
     }
 
+    private SubstructureSuperimposition calculateKuhnMunkresSuperimposition(SubstitutionMatrix substitutionMatrix, boolean considerExchanges) {
+        // create cost matrix based on substitution matrix
+        double[][] costMatrixElements = new double[reference.size()][candidate.size()];
+        for (int i = 0; i < reference.size(); i++) {
+            for (int j = i; j < candidate.size(); j++) {
+                LeafSubstructure<?> referenceLeafSubstructure = reference.get(i);
+                LeafSubstructure<?> candidateLeafSubstructure = candidate.get(j);
+                double substitutionCost = substitutionMatrix.toCostMatrix().getValueForLabel(
+                        referenceLeafSubstructure.getFamily(), candidateLeafSubstructure.getFamily());
+                // add penalties to all substructure pairs that should not be exchangeable
+                if (considerExchanges) {
+                    if (!referenceLeafSubstructure.getContainingFamilies().contains(candidateLeafSubstructure.getFamily())) {
+                        substitutionCost = Double.MAX_VALUE;
+                    }
+                }
+                costMatrixElements[i][j] = substitutionCost;
+                costMatrixElements[j][i] = substitutionCost;
+            }
+        }
+        LabeledMatrix<LeafSubstructure<?>> costMatrix = new LabeledRegularMatrix<>(costMatrixElements);
+        costMatrix.setRowLabels(reference);
+        costMatrix.setColumnLabels(candidate);
+
+        // calculate optimal assignments
+        KuhnMunkres<LeafSubstructure<?>> kuhnMunkres = new KuhnMunkres<>(costMatrix);
+        List<Pair<LeafSubstructure<?>>> assignedPairs = kuhnMunkres.getAssignedPairs();
+
+        List<LeafSubstructure<?>> updatedReference = assignedPairs.stream()
+                .map(Pair::getFirst)
+                .collect(Collectors.toList());
+        List<LeafSubstructure<?>> updatedCandidate = assignedPairs.stream()
+                .map(Pair::getSecond)
+                .collect(Collectors.toList());
+
+        return new SubstructureSuperimposer(updatedReference, updatedCandidate, atomFilter, representationScheme)
+                .calculateSuperimposition();
+    }
+
     /**
      * Finds the superimposition for a list of {@link LeafSubstructure} according to their input order
      *
@@ -219,6 +311,7 @@ public class SubstructureSuperimposer {
 
         List<Atom> referenceAtoms;
         List<Atom> candidateAtoms;
+
         // no representation scheme is defined
         if (representationScheme == null) {
             // collect intersecting, filtered and sorted reference atoms
@@ -334,7 +427,6 @@ public class SubstructureSuperimposer {
      * @param pairListEntry the map entry for which intersecting atoms should be defined
      */
     private void defineIntersectingAtoms(Map.Entry<Pair<LeafSubstructure<?>>, Set<String>> pairListEntry) {
-
         pairListEntry.getValue().addAll(pairListEntry.getKey().getFirst().getAllAtoms().stream()
                 .filter(atomFilter)
                 .map(Atom::getAtomName)
