@@ -40,7 +40,7 @@ public class FofanovEstimation implements StatisticalModel {
 
     private static final String BINARY_NAME = "Rscript";
     private static final double START_RMSD = 0.0;
-    private static final double SAMPLE_SIZE = 10000;
+    private static final double SAMPLE_SIZE = 100000;
     private static Logger logger = LoggerFactory.getLogger(FofanovEstimation.class);
 
     private int referenceSize = DEFAULT_REFERENCE_SIZE;
