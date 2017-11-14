@@ -83,9 +83,8 @@ public class CombinedTransportTest {
         simulation.getModules().add(diffusion);
         simulation.getModules().add(membraneTransport);
 
-        while (true) {
-            simulation.nextEpoch();
-        }
+        simulation.nextEpoch();
+
     }
 
 }
