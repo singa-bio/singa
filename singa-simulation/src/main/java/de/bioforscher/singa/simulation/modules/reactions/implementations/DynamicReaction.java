@@ -22,11 +22,6 @@ public class DynamicReaction extends Reaction {
         initialize(kineticLaw);
     }
 
-    public DynamicReaction(DynamicKineticLaw kineticLaw) {
-        super();
-        initialize(kineticLaw);
-    }
-
     private void initialize(DynamicKineticLaw kineticLaw) {
         this.kineticLaw = kineticLaw;
         catalyticReactants = new ArrayList<>();
@@ -34,7 +29,6 @@ public class DynamicReaction extends Reaction {
         availableFeatures.add(AppliedScale.class);
         setFeature(new AppliedScale());
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 

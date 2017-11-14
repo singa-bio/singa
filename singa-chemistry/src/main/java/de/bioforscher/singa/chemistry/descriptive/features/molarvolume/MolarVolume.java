@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
+package de.bioforscher.singa.chemistry.descriptive.features.molarvolume;
 
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
@@ -9,38 +9,35 @@ import tec.units.ri.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.units.ri.unit.Units.GRAM;
+import static tec.units.ri.unit.Units.CUBIC_METRE;
 import static tec.units.ri.unit.Units.MOLE;
 
 /**
- * In chemistry, the molar mass is a physical property. It is defined as the mass of a given substance (chemical element
- * or chemical compound) divided by its amount of substance.
- *
  * @author cl
  */
-public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Quantity<MolarMass> {
+public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implements Quantity<MolarVolume> {
 
-    public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
+    public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
 
     public static void register() {
-        FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);
+        FeatureRegistry.addProviderForFeature(MolarVolume.class, MolarVolumeProvider.class);
     }
 
-    public MolarMass(Quantity<MolarMass> quantity, FeatureOrigin featureOrigin) {
+    public MolarVolume(Quantity<MolarVolume> quantity, FeatureOrigin featureOrigin) {
         super(quantity, featureOrigin);
     }
 
-    public MolarMass(double quantity, FeatureOrigin featureOrigin) {
-        super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), featureOrigin);
+    public MolarVolume(double quantity, FeatureOrigin featureOrigin) {
+        super(Quantities.getQuantity(quantity, CUBIC_METRE_PER_MOLE), featureOrigin);
     }
 
     @Override
-    public Quantity<MolarMass> add(Quantity<MolarMass> augend) {
+    public Quantity<MolarVolume> add(Quantity<MolarVolume> augend) {
         return getFeatureContent().add(augend);
     }
 
     @Override
-    public Quantity<MolarMass> subtract(Quantity<MolarMass> subtrahend) {
+    public Quantity<MolarVolume> subtract(Quantity<MolarVolume> subtrahend) {
         return getFeatureContent().subtract(subtrahend);
     }
 
@@ -50,7 +47,7 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
     }
 
     @Override
-    public Quantity<MolarMass> divide(Number divisor) {
+    public Quantity<MolarVolume> divide(Number divisor) {
         return getFeatureContent().divide(divisor);
     }
 
@@ -60,7 +57,7 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
     }
 
     @Override
-    public Quantity<MolarMass> multiply(Number multiplier) {
+    public Quantity<MolarVolume> multiply(Number multiplier) {
         return getFeatureContent().multiply(multiplier);
     }
 
@@ -70,7 +67,7 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
     }
 
     @Override
-    public Quantity<MolarMass> to(Unit<MolarMass> unit) {
+    public Quantity<MolarVolume> to(Unit<MolarVolume> unit) {
         return getFeatureContent().to(unit);
     }
 
@@ -85,7 +82,7 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
     }
 
     @Override
-    public Unit<MolarMass> getUnit() {
+    public Unit<MolarVolume> getUnit() {
         return getFeatureContent().getUnit();
     }
 }

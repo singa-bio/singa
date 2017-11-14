@@ -21,7 +21,6 @@ public class NthOrderReaction extends Reaction {
         availableFeatures.add(RateConstant.class);
         setFeature(new RateConstant(rateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 

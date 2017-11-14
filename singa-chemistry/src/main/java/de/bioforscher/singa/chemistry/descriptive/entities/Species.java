@@ -6,7 +6,11 @@ import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A chemical species should be used to handle everything that can be described with a SMILES (Simplified Molecular
@@ -21,10 +25,19 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
  */
 public class Species extends ChemicalEntity<SimpleStringIdentifier> {
 
-    public final static Species UNKNOWN_SPECIES = new Species.Builder("UNK")
+
+    public static final Species UNKNOWN_SPECIES = new Species.Builder("UNK")
             .name("Unknown chemical species")
             .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
+
+    protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    static {
+        Species.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        availableFeatures.add(Smiles.class);
+        availableFeatures.add(LogP.class);
+    }
 
     /**
      * Creates a new Species with the given {@link ChEBIIdentifier}.
@@ -33,8 +46,11 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
      */
     protected Species(SimpleStringIdentifier identifier) {
         super(identifier);
-        availableFeatures.add(Smiles.class);
-        availableFeatures.add(LogP.class);
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
     }
 
     /**

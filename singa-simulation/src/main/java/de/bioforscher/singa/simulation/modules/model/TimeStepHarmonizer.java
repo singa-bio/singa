@@ -33,7 +33,7 @@ public class TimeStepHarmonizer {
     }
 
     public boolean step() {
-        // TODO optimize the number of times the parameters have to be rescaled (only of time step has changed)
+        // TODO optimize the number of times the parameters have to be rescaled (only if time step has changed)
         // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
         currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();

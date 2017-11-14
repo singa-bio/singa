@@ -26,10 +26,10 @@ import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.SECOND;
 
 /**
- * The simulation calss encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
+ * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
  * Each simulation requires a {@link AutomatonGraph}, a set of {@link Module}s and a set of {@link ChemicalEntity}s.
  * Additionally {@link AssignmentRule}s can be used to assign concentrations to chemical entities based on rules
- * (functions). <p> The Class {@link SimulationExamples} provides a set of examples where Simulations are being set up.
+ * (functions). <p> The class {@link SimulationExamples} provides a set of examples where Simulations are being set up.
  * Principally the following steps should be taken:
  * <pre>
  *     // initialize simulation
@@ -143,6 +143,14 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
             // try larger time step next time
             harmonizer.increaseTimeStep();
         }
+    }
+
+    public void initialize() {
+        // for each module
+        // get required entity features
+        // for each entity
+        // assign feature if feature is assignable
+        // check featurable modules if features are annotated
     }
 
     /**

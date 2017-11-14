@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -21,69 +20,18 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * @author cl
  */
-public class AbstractSectionSpecificModule implements Module {
+public abstract class AbstractSectionSpecificModule extends AbstractModule {
 
-    protected boolean halfTime;
-
-    private Simulation simulation;
+    private ConcentrationContainer currentHalfConcentrations;
     private Map<Function<ConcentrationContainer, List<Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
 
-    private Predicate<AutomatonNode> conditionalApplication;
-
-    private LocalError largestLocalError;
-
-    private AutomatonNode currentNode;
-    private CellSection currentCellSection;
-    private List<Delta> currentFullDeltas;
-    private List<Delta> currentHalfDeltas;
-    private ConcentrationContainer currentHalfConcentrations;
-
-    public AbstractSectionSpecificModule() {
-        deltaFunctions = new HashMap<>();
-        currentFullDeltas = new ArrayList<>();
-        currentHalfDeltas = new ArrayList<>();
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
-    }
-
     public AbstractSectionSpecificModule(Simulation simulation) {
-        this();
-        this.simulation = simulation;
-    }
-
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
+        super(simulation);
+        deltaFunctions = new HashMap<>();
     }
 
     public void addDeltaFunction(Function<ConcentrationContainer, List<Delta>> deltaFunction, Predicate<ConcentrationContainer> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
-    }
-
-    public AutomatonNode getCurrentNode() {
-        return currentNode;
-    }
-
-    public CellSection getCurrentCellSection() {
-        return currentCellSection;
-    }
-
-    public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
-        conditionalApplication = predicate;
-    }
-
-    public void applyAlways() {
-        conditionalApplication = bioNode -> true;
-    }
-
-    protected <FeatureContent> FeatureContent getFeature(ChemicalEntity<?> entity, Class<? extends ScalableFeature<FeatureContent>> featureClass) {
-        ScalableFeature<FeatureContent> feature = entity.getFeature(featureClass);
-        if (halfTime) {
-            return feature.getHalfScaledQuantity();
-        }
-        return feature.getScaledQuantity();
     }
 
     public void determineAllDeltas() {
@@ -128,7 +76,7 @@ public class AbstractSectionSpecificModule implements Module {
                 ArrayList<ChemicalEntity<?>> unchangedEntities = new ArrayList<>(concentrationContainer.getAllReferencedEntities());
                 for (Delta fullDelta : fullDeltas) {
                     setHalfStepConcentration(fullDelta);
-                    currentFullDeltas.add(fullDelta);
+                    currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, fullDelta.getChemicalEntity()), fullDelta);
                     unchangedEntities.remove(fullDelta.getChemicalEntity());
                 }
                 for (ChemicalEntity<?> unchangedEntity : unchangedEntities) {
@@ -151,22 +99,22 @@ public class AbstractSectionSpecificModule implements Module {
             if (entry.getValue().test(concentrationContainer)) {
                 List<Delta> halfDeltas = entry.getKey().apply(currentHalfConcentrations);
                 for (Delta halfDelta : halfDeltas) {
-                    currentHalfDeltas.add(halfDelta.multiply(2.0));
+                    currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, halfDelta.getChemicalEntity()), halfDelta.multiply(2.0));
                 }
             }
         }
         // and register potential deltas at node
-        currentNode.addPotentialDeltas(currentHalfDeltas);
+        currentNode.addPotentialDeltas(currentHalfDeltas.values());
     }
 
     private void examineLocalError() {
         // only if there is any change there can be a local error
         // careful we rely on putting the deltas in the same order as they are referenced in the list of delta functions
         LocalError temporaryLargestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
-        for (int i = 0; i < currentFullDeltas.size(); i++) {
-            Delta fullDelta = currentFullDeltas.get(i);
+        for (DeltaIdentifier deltaIdentifier : currentFullDeltas.keySet()) {
+            Delta fullDelta = currentFullDeltas.get(deltaIdentifier);
             double fullDeltaValue = fullDelta.getQuantity().getValue().doubleValue();
-            double halfDeltaValue = currentHalfDeltas.get(i).getQuantity().getValue().doubleValue();
+            double halfDeltaValue = currentHalfDeltas.get(deltaIdentifier).getQuantity().getValue().doubleValue();
             double localErrorValue = 0.0;
             // if there is no change, there is no error
             if (fullDeltaValue != 0.0 && halfDeltaValue != 0) {
@@ -178,6 +126,7 @@ public class AbstractSectionSpecificModule implements Module {
                 temporaryLargestLocalError = new LocalError(currentNode, fullDelta.getChemicalEntity(), localErrorValue);
             }
         }
+
         // compare to current maximum
         if (largestLocalError.getValue() < temporaryLargestLocalError.getValue()) {
             // set if this is larger
@@ -186,16 +135,6 @@ public class AbstractSectionSpecificModule implements Module {
         // clear used deltas
         currentFullDeltas.clear();
         currentHalfDeltas.clear();
-    }
-
-    @Override
-    public LocalError getLargestLocalError() {
-        return largestLocalError;
-    }
-
-    @Override
-    public void resetLargestLocalError() {
-        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
 }

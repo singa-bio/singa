@@ -29,10 +29,8 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
     public FreeDiffusion(Simulation simulation) {
         super(simulation);
-        // apply to every node
-        applyAlways();
-        // the change
-        addDeltaFunction(this::calculateDelta);
+        // apply everywhere
+        addDeltaFunction(this::calculateDelta, node -> true);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {

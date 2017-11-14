@@ -15,10 +15,7 @@ import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationC
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
@@ -175,7 +172,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      *
      * @param potentialDeltas The potential deltas.
      */
-    public void addPotentialDeltas(List<Delta> potentialDeltas) {
+    public void addPotentialDeltas(Collection<Delta> potentialDeltas) {
         this.potentialDeltas.addAll(potentialDeltas);
     }
 

@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.parser.sbml.converter;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
@@ -47,9 +48,10 @@ public class SBMLReactionConverter {
     }
 
     public DynamicReaction convertReaction(Reaction reaction) {
+        Simulation simulation = new Simulation();
         logger.debug("Parsing Reaction {} ...", reaction.getName());
         DynamicKineticLaw kineticLaw = kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
-        currentReaction = new DynamicReaction(kineticLaw);
+        currentReaction = new DynamicReaction(simulation, kineticLaw);
         assignSubstrates(reaction.getListOfReactants());
         assignProducts(reaction.getListOfProducts());
         assignModifiers(reaction.getListOfModifiers());

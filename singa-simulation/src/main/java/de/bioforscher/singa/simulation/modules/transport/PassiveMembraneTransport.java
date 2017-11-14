@@ -25,7 +25,7 @@ public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule
     public PassiveMembraneTransport(Simulation simulation) {
         super(simulation);
         // apply this module only to membranes
-        onlyApplyIf(bioNode -> bioNode.getState().equals(NodeState.MEMBRANE));
+        onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
         // change of outer layer

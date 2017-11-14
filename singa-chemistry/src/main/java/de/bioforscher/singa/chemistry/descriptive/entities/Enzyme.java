@@ -7,9 +7,12 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisCo
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.model.Feature;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An Enzyme is a Protein, that is associated with a catalytic function. For the usage in reactions this chemical
@@ -30,6 +33,14 @@ public class Enzyme extends Protein {
      */
     private List<Species> substrates;
 
+    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    static {
+        Enzyme.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        availableFeatures.add(MichaelisConstant.class);
+        availableFeatures.add(TurnoverNumber.class);
+    }
+
     /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.
      *
@@ -37,8 +48,6 @@ public class Enzyme extends Protein {
      */
     protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
-        availableFeatures.add(MichaelisConstant.class);
-        availableFeatures.add(TurnoverNumber.class);
     }
 
     /**
@@ -57,6 +66,11 @@ public class Enzyme extends Protein {
      */
     public void setSubstrates(List<Species> substrates) {
         this.substrates = substrates;
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
     }
 
     @Override

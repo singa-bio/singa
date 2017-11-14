@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolume;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
@@ -44,7 +45,13 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     private FeatureContainer features;
 
-    protected final Set<Class<? extends Feature>> availableFeatures;
+    protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    static {
+        availableFeatures.add(Diffusivity.class);
+        availableFeatures.add(MolarMass.class);
+        availableFeatures.add(MolarVolume.class);
+    }
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -55,9 +62,6 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new FeatureContainer();
-        availableFeatures = new HashSet<>();
-        availableFeatures.add(Diffusivity.class);
-        availableFeatures.add(MolarMass.class);
     }
 
     @Override

@@ -27,7 +27,6 @@ public class MichaelisMentenReaction extends Reaction {
         setFeature(enzyme.getFeature(TurnoverNumber.class));
         setFeature(enzyme.getFeature(MichaelisConstant.class));
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
