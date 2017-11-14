@@ -5,7 +5,7 @@ import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.represent
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
-import static de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType.CA;
+import static de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeType.ALPHA_CARBON;
 
 /**
  * An implementation of the score described in:
@@ -49,7 +49,7 @@ public class XieScore {
     }
 
     private double calculateRawScore(SubstructureSuperimposition substructureSuperimposition) {
-        RepresentationScheme xieRepresentationScheme = RepresentationSchemeFactory.createRepresentationScheme(CA);
+        RepresentationScheme xieRepresentationScheme = RepresentationSchemeFactory.createRepresentationScheme(ALPHA_CARBON);
         double temporaryScore = 0.0;
         for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
             LeafSubstructure reference = substructureSuperimposition.getReference().get(i);

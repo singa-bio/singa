@@ -49,8 +49,8 @@ public class PsScore {
         this.substructureSuperimposition = substructureSuperimposition;
         this.referenceLength = referenceLength;
         this.queryLength = queryLength;
-        alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
-        betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
+        alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.ALPHA_CARBON);
+        betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.BETA_CARBON);
         calculateScore();
         calculateSignificance();
     }
