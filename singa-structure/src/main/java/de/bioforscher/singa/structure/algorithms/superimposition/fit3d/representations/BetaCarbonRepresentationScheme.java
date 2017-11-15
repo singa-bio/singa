@@ -27,9 +27,9 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
     @Override
     public Atom determineRepresentingAtom(LeafSubstructure<?> leafSubstructure) {
         // immediately return atom if part of structure
-        final Optional<Atom> optionalCB = leafSubstructure.getAtomByName("CB");
-        if (optionalCB.isPresent()) {
-            return optionalCB.get();
+        final Optional<Atom> optionalBetaCarbon = leafSubstructure.getAtomByName("CB");
+        if (optionalBetaCarbon.isPresent()) {
+            return optionalBetaCarbon.get();
         }
         if (!(leafSubstructure instanceof AminoAcid)) {
             logger.warn("fallback for {} because it is no amino acid", leafSubstructure);
@@ -45,17 +45,16 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
                     Stream.of(alanine).collect(Collectors.toList()),
                     AtomFilter.isBackbone());
             // obtain virtual beta carbon
-            Optional<Atom> optionalBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
+            Optional<Atom> optionalVirtualBetaCarbon = superimposition.getMappedFullCandidate().get(0).getAllAtoms().stream()
                     .filter(AtomFilter.isBetaCarbon())
                     .findAny();
-            if (optionalBetaCarbon.isPresent()) {
+            if (optionalVirtualBetaCarbon.isPresent()) {
                 return new OakAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
                         ElementProvider.CARBON,
-                        RepresentationSchemeType.CB.getAtomNameString(),
-                        optionalBetaCarbon.get().getPosition().getCopy());
+                        RepresentationSchemeType.BETA_CARBON.getAtomNameString(),
+                        optionalVirtualBetaCarbon.get().getPosition().getCopy());
             }
         }
-        // TODO maybe we need copy here
         return leafSubstructure.getAllAtoms().stream()
                 .filter(AtomFilter.isBetaCarbon())
                 .findAny()
@@ -64,6 +63,6 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
 
     @Override
     public RepresentationSchemeType getType() {
-        return RepresentationSchemeType.CB;
+        return RepresentationSchemeType.BETA_CARBON;
     }
 }

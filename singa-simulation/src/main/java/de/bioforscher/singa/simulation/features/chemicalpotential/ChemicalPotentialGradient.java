@@ -10,7 +10,9 @@ import javax.measure.Quantity;
 public class ChemicalPotentialGradient {
 
     public static Quantity calcualteChemcialPotentialConstantFor(ChemicalEntity entity) {
-        
+
+//        Quantity constant = NaturalConstants.BOLTZMANN_CONSTANT.multiply(-1).multiply(EnvironmentalParameters.getInstance().getSystemTemperature()).multiply(entity.getFeature())
+
         return null;
     }
 

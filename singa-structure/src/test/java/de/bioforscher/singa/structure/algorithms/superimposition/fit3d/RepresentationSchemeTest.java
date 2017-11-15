@@ -19,7 +19,7 @@ public class RepresentationSchemeTest {
     @Test
     public void shouldRepresentAsAlphaCarbon() throws IOException {
         AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
-        RepresentationScheme alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CA);
+        RepresentationScheme alphaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.ALPHA_CARBON);
         assertArrayEquals(alanine.getAtomByName("CA").get().getPosition().getElements(),
                 alphaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
                 1E-6);
@@ -29,7 +29,7 @@ public class RepresentationSchemeTest {
     @Test
     public void shouldRepresentBetaCarbon() throws IOException {
         AminoAcid alanine = AminoAcidFamily.ALANINE.getPrototype();
-        RepresentationScheme betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB);
+        RepresentationScheme betaCarbonRepresentation = RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.BETA_CARBON);
         assertArrayEquals(alanine.getAtomByName("CB").get().getPosition().getElements(),
                 betaCarbonRepresentation.determineRepresentingAtom(alanine).getPosition().getElements(),
                 1E-6);

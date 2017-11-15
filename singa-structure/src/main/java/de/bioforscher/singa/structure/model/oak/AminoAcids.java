@@ -29,7 +29,7 @@ public class AminoAcids {
         if (aminoAcid.getFamily() != AminoAcidFamily.GLYCINE) {
             throw new IllegalArgumentException("virtual beta carbon can only be calculated for glycine");
         }
-        return RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.CB)
+        return RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.BETA_CARBON)
                 .determineRepresentingAtom(aminoAcid);
 
     }

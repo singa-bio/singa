@@ -74,7 +74,7 @@ public class ConsensusAlignmentTest {
     public void shouldCreateConsensusAlignmentWithRepresentationScheme() throws IOException {
         ConsensusAlignment consensusAlignment = ConsensusBuilder.create()
                 .inputStructuralMotifs(input)
-                .representationSchemeType(RepresentationSchemeType.CB)
+                .representationSchemeType(RepresentationSchemeType.BETA_CARBON)
                 .clusterCutoff(0.2)
                 .alignWithinClusters(true)
                 .idealSuperimposition(true)

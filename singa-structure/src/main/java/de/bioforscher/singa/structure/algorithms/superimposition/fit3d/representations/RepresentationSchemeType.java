@@ -7,8 +7,8 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.represen
  */
 public enum RepresentationSchemeType {
 
-    CA(AlphaCarbonRepresentationScheme.class, "CA"),
-    CB(BetaCarbonRepresentationScheme.class, "CB"),
+    ALPHA_CARBON(AlphaCarbonRepresentationScheme.class, "CA"),
+    BETA_CARBON(BetaCarbonRepresentationScheme.class, "CB"),
     CENTROID(CentroidRepresentationScheme.class, "CO"),
     LAST_HEAVY_SIDE_CHAIN(LastHeavySidechainRepresentationScheme.class, "LH"),
     SIDE_CHAIN_CENTROID(SideChainCentroidRepresentationScheme.class, "SC");

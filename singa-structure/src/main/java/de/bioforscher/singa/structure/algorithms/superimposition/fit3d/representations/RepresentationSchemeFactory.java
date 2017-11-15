@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public abstract class RepresentationSchemeFactory {
 
     protected static final Logger logger = LoggerFactory.getLogger(RepresentationSchemeFactory.class);
-    private static final RepresentationSchemeType FALLBACK_REPRESENTATION_SCHEME_TYPE = RepresentationSchemeType.CA;
+    private static final RepresentationSchemeType FALLBACK_REPRESENTATION_SCHEME_TYPE = RepresentationSchemeType.ALPHA_CARBON;
 
     /**
      * prevent instantiation

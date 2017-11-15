@@ -213,7 +213,7 @@ public class SubstructureSuperimposer {
                     .add(String.format("%-50s", Stream.of(RepresentationSchemeType.values())
                             .filter(representationSchemeType -> representationSchemeType.getCompatibleRepresentationScheme()
                                     .isInstance(representationScheme))
-                            .findAny().orElse(RepresentationSchemeType.CA))));
+                            .findAny().orElse(RepresentationSchemeType.ALPHA_CARBON))));
         }
         StringJoiner candidateNameJoiner = new StringJoiner("|", "|", "|");
         perAtomAlignment.keySet().forEach(pair ->

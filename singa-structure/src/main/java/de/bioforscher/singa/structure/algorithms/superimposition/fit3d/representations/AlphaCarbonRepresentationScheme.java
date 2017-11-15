@@ -35,6 +35,6 @@ public class AlphaCarbonRepresentationScheme extends AbstractRepresentationSchem
 
     @Override
     public RepresentationSchemeType getType() {
-        return RepresentationSchemeType.CA;
+        return RepresentationSchemeType.ALPHA_CARBON;
     }
 }
