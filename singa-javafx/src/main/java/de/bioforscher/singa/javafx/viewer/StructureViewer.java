@@ -45,6 +45,8 @@ public class StructureViewer extends Application {
     private static final double TRACK_SPEED = 0.3;
 
     public static OakStructure structure;
+    public static List<de.bioforscher.singa.mathematics.geometry.bodies.Sphere> spheres;
+
     public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
     private final Group displayGroup = new Group();
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -84,18 +86,24 @@ public class StructureViewer extends Application {
         displayGroup.getChildren().add(world);
         displayGroup.setDepthTest(DepthTest.ENABLE);
 
-        if (structure.getAllModels().size() > 1) {
-            // add leafs
-            displayStructure = new OakStructure();
-            displayStructure.addModel((OakModel) structure.getAllModels().get(0));
-        } else {
-            displayStructure = structure;
+        if (structure != null) {
+            if (structure.getAllModels().size() > 1) {
+                // add leafs
+                displayStructure = new OakStructure();
+                displayStructure.addModel((OakModel) structure.getAllModels().get(0));
+            } else {
+                displayStructure = structure;
+            }
+            fillTree();
+            translateToCentre();
+            buildCamera();
+            buildDisplayedStructure();
         }
 
-        fillTree();
-        translateToCentre();
-        buildCamera();
-        buildDisplayedStructure();
+        if (spheres != null) {
+            buildCamera();
+            buildSpheres();
+        }
 
         SubScene structureScene = new SubScene(displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
         handleKeyboard(structureScene);
@@ -259,13 +267,13 @@ public class StructureViewer extends Application {
         } else if (colorScheme == ColorScheme.BY_FAMILY) {
             return MaterialProvider.getMaterialForType(origin.getFamily());
         } else {
-                String chain = origin.getIdentifier().getChainIdentifier();
+            String chain = origin.getIdentifier().getChainIdentifier();
             if (chainMaterials.containsKey(chain)) {
                 return chainMaterials.get(chain);
-                } else {
-                    return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
-                }
+            } else {
+                return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
             }
+        }
 
     }
 
@@ -295,6 +303,28 @@ public class StructureViewer extends Application {
             chainMaterials.put(chain, material);
             return material;
         }
+    }
+
+    private void buildSpheres() {
+        world = new XForm();
+        moleculeGroup = new XForm();
+        for (de.bioforscher.singa.mathematics.geometry.bodies.Sphere sphere : spheres) {
+
+            Sphere sphereShape = new Sphere(sphere.getRadius());
+            sphereShape.setMaterial(MaterialProvider.crateMaterialFromColor(Color.color(Math.random(), Math.random(), Math.random())));
+            sphereShape.setTranslateX(sphere.getCenter().getX());
+            sphereShape.setTranslateY(sphere.getCenter().getY());
+            sphereShape.setTranslateZ(sphere.getCenter().getZ());
+
+            // add tooltip
+            Tooltip tooltip = new Tooltip(sphere.toString());
+            Tooltip.install(sphereShape, tooltip);
+
+            moleculeGroup.getChildren().add(sphereShape);
+        }
+        world.getChildren().addAll(moleculeGroup);
+        displayGroup.getChildren().add(world);
+
     }
 
     private void handleMouse(SubScene scene) {
