@@ -1,5 +1,6 @@
 package de.bioforscher.singa.javafx.viewer;
 
+import de.bioforscher.singa.mathematics.geometry.bodies.Cube;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.mathematics.vectors.Vectors3D;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
@@ -8,13 +9,13 @@ import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Model;
 import de.bioforscher.singa.structure.model.oak.*;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.*;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
@@ -46,6 +47,7 @@ public class StructureViewer extends Application {
 
     public static OakStructure structure;
     public static List<de.bioforscher.singa.mathematics.geometry.bodies.Sphere> spheres;
+    public static List<Cube> cubes;
 
     public static ColorScheme colorScheme = ColorScheme.BY_CHAIN;
     private final Group displayGroup = new Group();
@@ -65,6 +67,7 @@ public class StructureViewer extends Application {
     private double mouseDeltaY;
 
     private TreeView<String> treeView;
+    private Vector3D centroid;
 
     public static void main(String[] args) {
         launch(args);
@@ -96,21 +99,23 @@ public class StructureViewer extends Application {
             }
             fillTree();
             translateToCentre();
-            buildCamera();
             buildDisplayedStructure();
         }
-
-        if (spheres != null) {
-            buildCamera();
-            buildSpheres();
-        }
+        buildCamera();
 
         SubScene structureScene = new SubScene(displayGroup, 800, 600, true, SceneAntialiasing.BALANCED);
         handleKeyboard(structureScene);
         handleMouse(structureScene);
         structureScene.setFill(Color.WHITE);
 
-        SplitPane pane = new SplitPane(structureScene, treeView);
+        Button showSpheres = new Button("Show Spheres");
+        showSpheres.setOnAction(this::buildSpheres);
+        Button showCubes = new Button("Show Boxes");
+        showCubes.setOnAction(this::buildCubes);
+
+        VBox vbox = new VBox(treeView, showSpheres, showCubes);
+
+        SplitPane pane = new SplitPane(structureScene, vbox);
         Scene mainScene = new Scene(pane);
 
         primaryStage.setTitle("Singa Molecule Viewer");
@@ -139,13 +144,13 @@ public class StructureViewer extends Application {
     private void translateToCentre() {
         List<Atom> allAtoms = structure.getAllAtoms();
 
-        final Vector3D centroid = Vectors3D.getCentroid(allAtoms.stream()
+        centroid = Vectors3D.getCentroid(allAtoms.stream()
                 .map(Atom::getPosition)
                 .collect(Collectors.toList()))
                 .multiply(3.0);
 
-        allAtoms.forEach(atom -> atom.setPosition(
-                atom.getPosition().multiply(3.0).subtract(centroid)));
+        allAtoms.forEach(atom -> atom.setPosition(atom.getPosition().multiply(3.0).subtract(centroid)));
+        // cubes.forEach(cube -> cube.setCenter(cube.getCenter().multiply(3.0).subtract(centroid)));
     }
 
     private void buildDisplayedStructure() {
@@ -207,7 +212,7 @@ public class StructureViewer extends Application {
         displayStructure = new OakStructure();
         world = new XForm();
         moleculeGroup = new XForm();
-        displayStructure.addModel((OakModel) structure.getAllModels().get(Integer.valueOf(identifier.replace("Model: ", ""))));
+        displayStructure.addModel((OakModel) structure.getModel(Integer.valueOf(identifier.replace("Model: ", ""))).get());
         buildDisplayedStructure();
         displayGroup.getChildren().retainAll();
         displayGroup.getChildren().add(world);
@@ -305,13 +310,13 @@ public class StructureViewer extends Application {
         }
     }
 
-    private void buildSpheres() {
+    private void buildSpheres(ActionEvent event) {
         world = new XForm();
         moleculeGroup = new XForm();
         for (de.bioforscher.singa.mathematics.geometry.bodies.Sphere sphere : spheres) {
 
             Sphere sphereShape = new Sphere(sphere.getRadius());
-            sphereShape.setMaterial(MaterialProvider.crateMaterialFromColor(Color.color(Math.random(), Math.random(), Math.random())));
+            sphereShape.setMaterial(MaterialProvider.crateMaterialFromColor(Color.LIGHTSKYBLUE));
             sphereShape.setTranslateX(sphere.getCenter().getX());
             sphereShape.setTranslateY(sphere.getCenter().getY());
             sphereShape.setTranslateZ(sphere.getCenter().getZ());
@@ -322,9 +327,47 @@ public class StructureViewer extends Application {
 
             moleculeGroup.getChildren().add(sphereShape);
         }
-        world.getChildren().addAll(moleculeGroup);
-        displayGroup.getChildren().add(world);
 
+        for (Cube cube : cubes) {
+
+            Box boxShape = new Box(cube.getSideLength(), cube.getSideLength(), cube.getSideLength());
+            boxShape.setMaterial(MaterialProvider.crateMaterialFromColor(Color.LIGHTSALMON));
+            boxShape.setTranslateX(cube.getCenter().getX());
+            boxShape.setTranslateY(cube.getCenter().getY());
+            boxShape.setTranslateZ(cube.getCenter().getZ());
+
+            // add tooltip
+            Tooltip tooltip = new Tooltip(cube.toString());
+            Tooltip.install(boxShape, tooltip);
+
+            moleculeGroup.getChildren().add(boxShape);
+        }
+
+        world.getChildren().add(moleculeGroup);
+        displayGroup.getChildren().retainAll();
+        displayGroup.getChildren().add(world);
+    }
+
+    private void buildCubes(ActionEvent event) {
+        world = new XForm();
+        moleculeGroup = new XForm();
+        for (Cube cube : cubes) {
+
+            Box boxShape = new Box(cube.getSideLength(), cube.getSideLength(), cube.getSideLength());
+            boxShape.setMaterial(MaterialProvider.crateMaterialFromColor(Color.LIGHTSALMON));
+            boxShape.setTranslateX(cube.getCenter().getX());
+            boxShape.setTranslateY(cube.getCenter().getY());
+            boxShape.setTranslateZ(cube.getCenter().getZ());
+
+            // add tooltip
+            Tooltip tooltip = new Tooltip(cube.toString());
+            Tooltip.install(boxShape, tooltip);
+
+            moleculeGroup.getChildren().add(boxShape);
+        }
+        world.getChildren().add(moleculeGroup);
+        displayGroup.getChildren().retainAll();
+        displayGroup.getChildren().add(world);
     }
 
     private void handleMouse(SubScene scene) {

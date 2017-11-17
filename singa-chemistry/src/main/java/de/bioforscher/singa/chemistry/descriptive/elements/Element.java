@@ -1,15 +1,18 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
+import de.bioforscher.singa.features.units.UnitProvider;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Length;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
+import static de.bioforscher.singa.features.units.UnitProvider.ANGSTROEM;
 
 /**
- * A chemical element or element is a species of atoms having the same number of protons. Generally no elements need
- * to be created since all common elements are deposited statically in the {@link ElementProvider}. Each element is
+ * A chemical element or element is a species of atoms having the same number of protons. Generally no elements need to
+ * be created since all common elements are deposited statically in the {@link ElementProvider}. Each element is
  * basically final. The isotopes and ions can easily be created with the provided methods.
  *
  * @author cl
@@ -51,14 +54,17 @@ public class Element {
      */
     private Quantity<MolarMass> atomicMass;
 
+    private Quantity<Length> vanDerWaalsRadius;
+
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight.
      *
-     * @param name                  The name.
-     * @param symbol                The symbol.
-     * @param protonNumber          The proton number.
-     * @param atomicWeight          The atomic weight.
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
      * @param electronConfiguration The electron configuration.
+     * @param vanDerWaalsRadius The van der Waals radius in {@link UnitProvider#ANGSTROEM}
      */
     public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight, String electronConfiguration) {
         this.name = name;
@@ -71,15 +77,20 @@ public class Element {
     }
 
     /**
-     * Creates a new Element with name, symbol, proton number and atomic weight in
-     * {@link MolarMass#GRAM_PER_MOLE g/mol}.
+     * Creates a new Element with name, symbol, proton number and atomic weight in {@link MolarMass#GRAM_PER_MOLE
+     * g/mol}.
      *
-     * @param name                  The name.
-     * @param symbol                The symbol.
-     * @param protonNumber          The proton number.
-     * @param atomicWeight          The atomic weight.
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
      * @param electronConfiguration The electron configuration.
      */
+    public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration,  double vanDerWaalsRadius) {
+        this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);
+        this.vanDerWaalsRadius = Quantities.getQuantity(vanDerWaalsRadius, ANGSTROEM);
+    }
+
     public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);
     }
@@ -87,9 +98,9 @@ public class Element {
     /**
      * Creates a new Element with the possibility to specify electron and neutron number.
      *
-     * @param element        A previously defined element.
+     * @param element A previously defined element.
      * @param electronNumber The electron number.
-     * @param neutronNumber  The neutron number.
+     * @param neutronNumber The neutron number.
      */
     private Element(Element element, int electronNumber, int neutronNumber) {
         name = element.getName();
@@ -281,6 +292,10 @@ public class Element {
 
     public int getMassNumber() {
         return neutronNumber + protonNumber;
+    }
+
+    public Quantity<Length> getVanDerWaalsRadius() {
+        return vanDerWaalsRadius;
     }
 
     /**

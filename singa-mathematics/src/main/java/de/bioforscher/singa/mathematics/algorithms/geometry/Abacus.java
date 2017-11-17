@@ -4,6 +4,7 @@ import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,18 +17,19 @@ public class Abacus {
     private List<Sphere> spheres;
     private BitPlane xyBitPlane;
 
+    private List<BitPlane> slices;
+
     private int volume = 0;
-    private int surface = 0;
 
-    double[] xx;
-    double[] yy;
-    double[] zz;
-    double[] rr;
+    private double[] xx;
+    private double[] yy;
+    private double[] zz;
+    private double[] rr;
 
-    int[] xc;
-    int[] yc;
-    int[] zc;
-    int[] rc;
+    private int[] scaledX;
+    private int[] scaledY;
+    private int[] scaledZ;
+    private int[] scaledR;
 
     private double xMin;
     private double yMin;
@@ -37,24 +39,24 @@ public class Abacus {
     private double yMax;
     private double zMax;
 
-    private int maximalXExtension = 1000;
-    private int maximalYExtension = 1000;
-    private int maximalZExtension = 1000;
+    private int cubesSideLength = 100;
+
     private final int numberOfSpheres;
     private double scale;
 
     public Abacus(List<Sphere> spheres) {
         this.spheres = spheres;
-        xyBitPlane = new BitPlane(maximalXExtension, maximalYExtension);
+        slices = new ArrayList<>();
+        xyBitPlane = new BitPlane(cubesSideLength, cubesSideLength);
         numberOfSpheres = spheres.size();
         xx = new double[numberOfSpheres];
         yy = new double[numberOfSpheres];
         zz = new double[numberOfSpheres];
         rr = new double[numberOfSpheres];
-        xc = new int[numberOfSpheres];
-        yc = new int[numberOfSpheres];
-        zc = new int[numberOfSpheres];
-        rc = new int[numberOfSpheres];
+        scaledX = new int[numberOfSpheres];
+        scaledY = new int[numberOfSpheres];
+        scaledZ = new int[numberOfSpheres];
+        scaledR = new int[numberOfSpheres];
         initializeBoundaries();
         initializeArrays();
     }
@@ -107,94 +109,52 @@ public class Abacus {
     }
 
     public void calcualte() {
-       scale();
-       double scale2 = scale*scale;
-       double scale3 = scale2*scale;
-       volume = 0;
-       for (int j = 0; j < maximalZExtension; j++) {
-           xyBitPlane = new BitPlane(maximalXExtension, maximalYExtension);
-           createPlane(j);
-           trace();
-       }
-        System.out.println(volume);
+        scale();
+        volume = 0;
+        for (int zSlice = 0; zSlice < cubesSideLength; zSlice++) {
+            xyBitPlane = new BitPlane(cubesSideLength, cubesSideLength);
+            createPlane(zSlice);
+            trace();
+        }
+        // TODO determine correct factor
+        System.out.println("Calculated: " + volume / 10);
     }
 
     public void scale() {
-        int delta = 0;
-        boolean fitted = false;
-        ScalingFactor[] scalingFactors = new ScalingFactor[5];
-        for (int i = 0; i < scalingFactors.length; i++) {
-            scalingFactors[i] = new ScalingFactor();
-        }
-        scale = 0;
+        // get largest extend
+        final double width = Math.abs(xMax - xMin);
+        final double height = Math.abs(yMax - yMin);
+        final double depth = Math.abs(zMax - zMin);
 
-        while (!fitted) {
-            // calculate scaling factors
-            scalingFactors[0].value = (xMax - xMin + delta) / (maximalXExtension - 1);
-            scalingFactors[1].value = (yMax - yMin + delta) / (maximalYExtension - 1);
-            scalingFactors[2].value = (zMax - zMin + delta) / (maximalZExtension - 1);
-            scalingFactors[3].value = (xMax - xMin + delta) / (maximalZExtension - 1);
-            scalingFactors[4].value = (zMax - zMin + delta) / (maximalXExtension - 1);
-            for (ScalingFactor scalingFactor : scalingFactors) {
-                scalingFactor.magnitude++;
-            }
-            // sort scaling factors (bubble)
-            boolean ordered;
-            do {
-                ordered = true;
-                for (int i = 4; i > 0; i--) {
-                    if (scalingFactors[i - 1].value > scalingFactors[i].value) {
-                        ScalingFactor temp = scalingFactors[i];
-                        scalingFactors[i] = scalingFactors[i - 1];
-                        scalingFactors[i - 1] = temp;
-                        ordered = false;
-                    }
-                }
-            } while (!ordered);
-
-            // determine integer scale
-            int j = -1;
-            int x2;
-            int y2;
-            int z2;
-            do {
-                j++;
-                scale = scalingFactors[j].value;
-                y2 = (int) Math.round((yMax - yMin) / scale);
-                if (scalingFactors[j].magnitude < 4) {
-                    x2 = (int) Math.round((xMax - xMin) / scale);
-                    z2 = (int) Math.round((zMax - zMin) / scale);
-                } else {
-                    x2 = (int) Math.round((zMax - zMin) / scale);
-                    z2 = (int) Math.round((xMax - xMin) / scale);
-                }
-                if (x2 < maximalXExtension - 1 && y2 < maximalYExtension && z2 < maximalZExtension) {
-                    fitted = true;
-                }
-            } while (!(fitted || (j == 4)));
-            delta++;
-        }
-        // actual rescaling
-        if (scalingFactors[0].magnitude > 4) {
-            for (int i = 0; i < numberOfSpheres; i++) {
-                xc[i] = (int) ((zz[i] - zMin) / scale) + 1;
-                zc[i] = (int) ((xx[i] - xMin) / scale) + 1;
-                yc[i] = (int) ((yy[i] - yMin) / scale) + 1;
-                rc[i] = (int) (rr[i] / scale);
-            }
+        // scale between 0 and cube side length
+        // get min max coordinates
+        double scaleMin;
+        double scaleMax;
+        if (width > height && width > depth) {
+            scaleMin = xMin;
+            scaleMax = xMax;
+        } else if (height > width && height > depth) {
+            scaleMin = yMin;
+            scaleMax = yMax;
         } else {
-            for (int i = 0; i < numberOfSpheres; i++) {
-                xc[i] = (int) ((xx[i] - xMin) / scale) + 1;
-                zc[i] = (int) ((zz[i] - zMin) / scale) + 1;
-                yc[i] = (int) ((yy[i] - yMin) / scale) + 1;
-                rc[i] = (int) (rr[i] / scale);
-            }
+            scaleMin = zMin;
+            scaleMax = zMax;
         }
+
+        scale = cubesSideLength / (scaleMax - scaleMin);
+
+        for (int i = 0; i < numberOfSpheres; i++) {
+            scaledX[i] = (int) Math.round((xx[i] - xMin) * scale);
+            scaledY[i] = (int) Math.round((yy[i] - yMin) * scale);
+            scaledZ[i] = (int) Math.round((zz[i] - zMin) * scale);
+            scaledR[i] = (int) Math.round(rr[i] * scale);
+        }
+
     }
 
     public void trace() {
-        for (int x = 0; x < maximalXExtension; x++) {
-            for (int y = 0;  y < maximalYExtension;  y++) {
+        for (int x = 0; x < cubesSideLength; x++) {
+            for (int y = 0; y < cubesSideLength; y++) {
                 if (xyBitPlane.getBit(x, y)) {
                     volume++;
                     // calc surface here
@@ -203,30 +163,33 @@ public class Abacus {
         }
     }
 
-    public void createPlane(int zi) {
+    private void createPlane(int zSlice) {
         // zi is the layer in z dimension
         for (int i = 0; i < numberOfSpheres; i++) {
-            // height (slice) of the current sphere
-            int h = zi - zc[i];
+            // squared distance of the current slice to the sphere
+            int sliceDistance = zSlice - scaledZ[i];
             // radius
-            int rh = rc[i];
-            double rcirc2 = rh * rh - h * h;
-            if (rcirc2 > 0) {
-                double rcirc = Math.sqrt(rcirc2);
-                createCircle(i, rcirc, rcirc2);
+            int sphereRadius = scaledR[i];
+            // calculate squared center distance
+            double squaredCenterDistance = sphereRadius * sphereRadius - sliceDistance * sliceDistance;
+            // check if layer intersects the current sphere ((z - z0)² <= r² = r)
+            if (squaredCenterDistance > 0) {
+                createCircle(i, squaredCenterDistance);
             }
         }
+        slices.add(xyBitPlane);
     }
 
-    public void createCircle(int i, double rcirc, double rcirc2) {
-        for (int x = (int) Math.round(xc[i] - rcirc); x <= xc[i]; x++) {
-            double dist = x - xc[i];
-            double d = rcirc2 - dist * dist;
+    private void createCircle(int i, double squaredCenterDistance) {
+        double centerDistance = Math.sqrt(squaredCenterDistance);
+        for (int x = (int) Math.round(scaledX[i] - centerDistance); x <= scaledX[i]; x++) {
+            double dist = x - scaledX[i];
+            double d = squaredCenterDistance - dist * dist;
             if (d > 0.0) {
                 int w = (int) Math.sqrt(d);
-                int y1 = yc[i] + w;
-                int y2 = yc[i] - w;
-                int ix1 = xc[i] + xc[i] - x;
+                int y1 = scaledY[i] + w;
+                int y2 = scaledY[i] - w;
+                int ix1 = scaledX[i] + scaledX[i] - x;
                 for (int iy = y2; iy < y1; iy++) {
                     // TODO ust setFromTo to do this
                     xyBitPlane.setBit(x, iy);
@@ -236,14 +199,23 @@ public class Abacus {
         }
     }
 
-    private class ScalingFactor {
-        private double value;
-        private int magnitude;
-
-        public ScalingFactor() {
-            value = 0.0;
-            magnitude = 0;
-        }
+    public List<BitPlane> getSlices() {
+        return slices;
     }
 
+    public double getScale() {
+        return scale;
+    }
+
+    public double getxMin() {
+        return xMin;
+    }
+
+    public double getyMin() {
+        return yMin;
+    }
+
+    public double getzMin() {
+        return zMin;
+    }
 }

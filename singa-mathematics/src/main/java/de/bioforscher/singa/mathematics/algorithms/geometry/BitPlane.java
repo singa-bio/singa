@@ -7,9 +7,13 @@ import java.util.BitSet;
  */
 public class BitPlane {
 
+    private final int width;
+    private final int height;
     private BitSet[] plane;
 
     public BitPlane(int width, int height) {
+        this.width = width;
+        this.height = height;
         plane = new BitSet[width];
         for (int x = 0; x < plane.length; x++) {
             plane[x] = new BitSet(height);
@@ -24,10 +28,11 @@ public class BitPlane {
         return plane[x].get(y);
     }
 
-    public void reset() {
-        for (BitSet bitSet : plane) {
-            bitSet.clear();
-        }
+    public int getWidth() {
+        return width;
     }
 
+    public int getHeight() {
+        return height;
+    }
 }
