@@ -21,7 +21,7 @@ public class PlipParserTest {
     private static int structureCount = 0;
 
     @Test
-    public void shouldParseInterChainInteractions() {
+    public void shouldParseIntraChainInteractions() {
         InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
         OakStructure structure = (OakStructure) StructureParser.online()
