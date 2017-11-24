@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -37,7 +38,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     private void initialize() {
         stoichiometricReactants = new ArrayList<>();
-        features = new FeatureContainer();
+        features = new ChemistryFeatureContainer();
     }
 
     /**

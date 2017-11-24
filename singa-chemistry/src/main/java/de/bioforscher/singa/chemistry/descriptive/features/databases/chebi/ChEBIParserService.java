@@ -16,7 +16,6 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
     private static final Logger logger = LoggerFactory.getLogger(ChEBIParserService.class);
     private static final String CHEBI_FETCH_URL = "https://www.ebi.ac.uk/webservices/chebi/2.0/test/getCompleteEntity?chebiId=%s";
 
-
     public ChEBIParserService(ChEBIIdentifier identifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler());
         setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
+import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.FeatureRegistry;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.ProductUnit;

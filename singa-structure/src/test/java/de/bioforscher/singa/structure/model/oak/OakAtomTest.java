@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;

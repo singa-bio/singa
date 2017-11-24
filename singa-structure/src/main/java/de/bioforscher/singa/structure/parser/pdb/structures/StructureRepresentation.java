@@ -198,7 +198,7 @@ public class StructureRepresentation {
     /**
      * Returns a list of pdb lines from any collection of leaves.
      *
-     * @param leafSubstructures The laves to convert.
+     * @param leafSubstructures The laves to convertToSpheres.
      * @return A list of atom lines.
      */
     private List<String> getPdbLines(Collection<LeafSubstructure<?>> leafSubstructures) {

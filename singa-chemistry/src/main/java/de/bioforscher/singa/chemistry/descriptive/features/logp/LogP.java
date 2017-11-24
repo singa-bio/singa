@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.logp;
 
+import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.FeatureRegistry;
 
 /**
  * @author cl

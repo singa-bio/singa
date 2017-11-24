@@ -14,12 +14,14 @@ public class Abacus {
 
     private static final Logger logger = LoggerFactory.getLogger(Abacus.class);
 
+    private static final int DEFAULT_CUBE_SIDE_LENGTH = 200;
+
     private List<Sphere> spheres;
     private BitPlane xyBitPlane;
 
     private List<BitPlane> slices;
 
-    private int volume = 0;
+    private long volume = 0;
 
     private double[] xx;
     private double[] yy;
@@ -39,14 +41,16 @@ public class Abacus {
     private double yMax;
     private double zMax;
 
-    private int cubesSideLength = 100;
+    private int cubesSideLength = DEFAULT_CUBE_SIDE_LENGTH;
 
-    private final int numberOfSpheres;
+    private int numberOfSpheres;
     private double scale;
 
-    public Abacus(List<Sphere> spheres) {
-        this.spheres = spheres;
+    public Abacus() {
         slices = new ArrayList<>();
+    }
+
+    private void initialize() {
         xyBitPlane = new BitPlane(cubesSideLength, cubesSideLength);
         numberOfSpheres = spheres.size();
         xx = new double[numberOfSpheres];
@@ -62,6 +66,7 @@ public class Abacus {
     }
 
     private void initializeArrays() {
+        logger.debug("Initializing arrays...");
         for (int i = 0; i < spheres.size(); i++) {
             final Sphere sphere = spheres.get(i);
             xx[i] = sphere.getCenter().getX();
@@ -72,12 +77,14 @@ public class Abacus {
     }
 
     private void initializeBoundaries() {
+        logger.debug("Initializing system boundaries ...");
         xMin = Double.MAX_VALUE;
         yMin = Double.MAX_VALUE;
         zMin = Double.MAX_VALUE;
         xMax = -Double.MAX_VALUE;
         yMax = -Double.MAX_VALUE;
         zMax = -Double.MAX_VALUE;
+
         for (Sphere sphere : spheres) {
             final double cMinX = sphere.getCenter().getX() - sphere.getRadius();
             if (cMinX < xMin) {
@@ -104,11 +111,20 @@ public class Abacus {
                 zMax = cMaxZ;
             }
         }
+
         logger.debug("Minimal Boundaries: x = {}, y = {}, z = {}.", xMin, yMin, zMin);
         logger.debug("Maximal Boundaries: x = {}, y = {}, z = {}.", xMax, yMax, zMax);
     }
 
-    public void calcualte() {
+    public static double predict(List<Sphere> spheres) {
+        Abacus abacus = new Abacus();
+        abacus.spheres = spheres;
+        return abacus.calculate();
+    }
+
+    public double calculate() {
+        logger.info("Using Abacus algorithm to estimate volume of {} spheres in a {} side length cube.", spheres.size(), cubesSideLength);
+        initialize();
         scale();
         volume = 0;
         for (int zSlice = 0; zSlice < cubesSideLength; zSlice++) {
@@ -116,16 +132,18 @@ public class Abacus {
             createPlane(zSlice);
             trace();
         }
-        // TODO determine correct factor
-        System.out.println("Calculated: " + volume / 10);
+        final double scaledVolume = volume / (scale * scale * scale);
+        logger.info("Predicted volume of {}.", scaledVolume);
+        return scaledVolume;
     }
 
-    public void scale() {
+    private void scale() {
+        logger.debug("Scaling system ...");
         // get largest extend
         final double width = Math.abs(xMax - xMin);
         final double height = Math.abs(yMax - yMin);
         final double depth = Math.abs(zMax - zMin);
-
+        logger.debug("Width (x): {}, Height (y): {}, Depth (z): {}.", width, height, depth);
         // scale between 0 and cube side length
         // get min max coordinates
         double scaleMin;
@@ -133,16 +151,18 @@ public class Abacus {
         if (width > height && width > depth) {
             scaleMin = xMin;
             scaleMax = xMax;
+            scale = cubesSideLength / width;
         } else if (height > width && height > depth) {
             scaleMin = yMin;
             scaleMax = yMax;
+            scale = cubesSideLength / height;
         } else {
             scaleMin = zMin;
             scaleMax = zMax;
+            scale = cubesSideLength / depth;
         }
 
-        scale = cubesSideLength / (scaleMax - scaleMin);
-
+        logger.info("Using scale between {} and {}, resulting in a final scaling factor of {}.", scaleMin, scaleMax, scale);
         for (int i = 0; i < numberOfSpheres; i++) {
             scaledX[i] = (int) Math.round((xx[i] - xMin) * scale);
             scaledY[i] = (int) Math.round((yy[i] - yMin) * scale);
@@ -197,6 +217,22 @@ public class Abacus {
                 }
             }
         }
+    }
+
+    public List<Sphere> getSpheres() {
+        return spheres;
+    }
+
+    public void setSpheres(List<Sphere> spheres) {
+        this.spheres = spheres;
+    }
+
+    public int getCubesSideLength() {
+        return cubesSideLength;
+    }
+
+    public void setCubesSideLength(int cubesSideLength) {
+        this.cubesSideLength = cubesSideLength;
     }
 
     public List<BitPlane> getSlices() {

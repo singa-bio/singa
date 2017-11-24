@@ -1,9 +1,9 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations;
 
 
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Atom;

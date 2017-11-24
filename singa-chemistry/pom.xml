@@ -19,17 +19,7 @@
         <!-- singa dependencies -->
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-core</artifactId>
-            <version>0.3.0-alpha</version>
-        </dependency>
-        <dependency>
-            <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-features</artifactId>
-            <version>0.3.0-alpha</version>
-        </dependency>
-        <dependency>
-            <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-mathematics</artifactId>
+            <artifactId>singa-structure</artifactId>
             <version>0.3.0-alpha</version>
         </dependency>
     </dependencies>

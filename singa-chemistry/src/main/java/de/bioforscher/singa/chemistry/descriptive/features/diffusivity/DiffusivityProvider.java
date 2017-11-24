@@ -1,14 +1,14 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
+import static de.bioforscher.singa.structure.features.molarmass.MolarMass.GRAM_PER_MOLE;
 import static tec.units.ri.AbstractUnit.ONE;
 
 /**

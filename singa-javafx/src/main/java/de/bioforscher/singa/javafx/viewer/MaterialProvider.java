@@ -1,6 +1,6 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;
 import de.bioforscher.singa.structure.model.families.StructuralFamily;

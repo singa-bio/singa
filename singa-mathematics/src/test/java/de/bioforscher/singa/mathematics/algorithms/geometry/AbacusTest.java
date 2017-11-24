@@ -18,11 +18,12 @@ public class AbacusTest {
         spheres.add(new Sphere(new Vector3D(0.0, 0.0, 0.0), 1.0));
         // spheres.add(new Sphere(new Vector3D(4.0, 5.0, 6.0), 4.0));
 
-        Abacus abacus = new Abacus(spheres);
-        abacus.calcualte();
-        System.out.println("Actual: "+spheres.get(0).getVolume());
+        Abacus.predict(spheres);
 
     }
+
+
+
 
 
 }

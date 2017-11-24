@@ -15,7 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-chemistry</artifactId>
+            <artifactId>singa-mathematics</artifactId>
+            <version>0.3.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>de.bioforscher.singa</groupId>
+            <artifactId>singa-features</artifactId>
             <version>0.3.0-alpha</version>
         </dependency>
         <dependency>

@@ -1,6 +1,5 @@
 package de.bioforscher.singa.structure.parser.plip;
 
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import java.io.UncheckedIOException;
  */
 public class PlipParser extends AbstractXMLParser<InteractionContainer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlipParser.class);
 
     private PlipParser(String pdbIdentifier, InputStream inputStream) {
         logger.info("Parsing interactions for {}", pdbIdentifier);

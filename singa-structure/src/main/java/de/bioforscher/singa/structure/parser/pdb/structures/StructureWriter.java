@@ -1,9 +1,7 @@
 package de.bioforscher.singa.structure.parser.pdb.structures;
 
 
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
-import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import de.bioforscher.singa.structure.model.oak.OakStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -66,6 +67,25 @@ public class StructureWriter {
         logger.info("Writing structure {} to {}.", structure, outputPath);
         Files.createDirectories(outputPath.getParent());
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(structure).getBytes());
+    }
+
+    public static void writeToXYZ(AtomContainer atomContainer, Path outputPath) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        DecimalFormat coordinateFormat = new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.US));
+        builder.append(atomContainer.getAllAtoms().size())
+                .append(System.lineSeparator())
+                .append(System.lineSeparator());
+
+        for (Atom atom : atomContainer.getAllAtoms()) {
+            builder.append(atom.getElement().getSymbol()).append("\t")
+                    .append(coordinateFormat.format(atom.getPosition().getX())).append("\t")
+                    .append(coordinateFormat.format(atom.getPosition().getY())).append("\t")
+                    .append(coordinateFormat.format(atom.getPosition().getZ())).append(System.lineSeparator());
+        }
+
+        Files.createDirectories(outputPath.getParent());
+        Files.write(outputPath, builder.toString().getBytes());
+
     }
 
 }

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.molecules;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.structure.elements.Element;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 
 /**
  * @author cl

@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  * @author cl
  */
-public class FeatureContainer {
+public abstract class FeatureContainer {
 
     private HashMap<Class<? extends Feature>, Feature<?>> content;
 
@@ -18,9 +18,7 @@ public class FeatureContainer {
         return featureTypeClass.cast(content.get(featureTypeClass));
     }
 
-    public <FeatureableType extends Featureable, FeatureType extends Feature<?>> void setFeature(Class<FeatureType> featureTypeClass, FeatureableType featureable) {
-        FeatureRegistry.getProvider(featureTypeClass).assign(featureable);
-    }
+    public abstract <FeatureableType extends Featureable, FeatureType extends Feature<?>> void setFeature(Class<FeatureType> featureTypeClass, FeatureableType featureable);
 
     public <FeatureType extends Feature<?>> void setFeature(FeatureType feature) {
         content.put(feature.getClass(), feature);

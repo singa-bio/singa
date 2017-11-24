@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.core.utility.Range;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
 import java.util.Objects;

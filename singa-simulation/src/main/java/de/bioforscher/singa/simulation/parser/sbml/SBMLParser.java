@@ -6,7 +6,6 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
@@ -20,6 +19,7 @@ import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLAssignmentRuleC
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLReactionConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLUnitConverter;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.sbml.jsbml.CVTerm;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;

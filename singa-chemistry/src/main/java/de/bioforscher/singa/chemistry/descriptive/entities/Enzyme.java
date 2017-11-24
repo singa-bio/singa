@@ -2,12 +2,12 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 
 import java.util.ArrayList;
 import java.util.HashSet;

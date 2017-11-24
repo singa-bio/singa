@@ -3,15 +3,17 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
+import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
-import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolume;
+import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
+import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 
 import java.util.*;
 
@@ -50,6 +52,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     static {
         availableFeatures.add(Diffusivity.class);
         availableFeatures.add(MolarMass.class);
+        availableFeatures.add(Structure3D.class);
         availableFeatures.add(MolarVolume.class);
     }
 
@@ -61,7 +64,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     protected ChemicalEntity(IdentifierType identifier) {
         this.identifier = identifier;
         annotations = new ArrayList<>();
-        features = new FeatureContainer();
+        features = new ChemistryFeatureContainer();
     }
 
     @Override

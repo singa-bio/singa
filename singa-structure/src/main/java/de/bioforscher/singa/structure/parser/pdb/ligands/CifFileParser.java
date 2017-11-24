@@ -1,9 +1,9 @@
 package de.bioforscher.singa.structure.parser.pdb.ligands;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.elements.Element;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.LigandFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;

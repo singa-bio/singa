@@ -62,7 +62,7 @@ public class ConsensusAlignment {
 
     ConsensusAlignment(ConsensusBuilder.Builder builder) {
 
-        // convert given input structures to data model
+        // convertToSpheres given input structures to data model
         input = builder.structuralMotifs.stream()
                 .map(ConsensusAlignment::toContainer)
                 .collect(Collectors.toList());

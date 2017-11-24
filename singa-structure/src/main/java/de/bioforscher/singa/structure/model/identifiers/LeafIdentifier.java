@@ -15,6 +15,8 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
     public static final char DEFAULT_INSERTION_CODE = '\u0000';
 
+    public static final LeafIdentifier DEFAULT_LEAF_IDENTIFIER = new LeafIdentifier(1);
+
     private static final Comparator<LeafIdentifier> leafIdentiferComparator = Comparator
             .comparing(LeafIdentifier::getPdbIdentifier)
             .thenComparing(LeafIdentifier::getModelIdentifier)

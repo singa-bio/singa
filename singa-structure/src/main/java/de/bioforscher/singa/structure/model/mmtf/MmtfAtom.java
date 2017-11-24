@@ -1,8 +1,8 @@
 package de.bioforscher.singa.structure.model.mmtf;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
+import de.bioforscher.singa.structure.elements.Element;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import org.rcsb.mmtf.api.StructureDataInterface;
 

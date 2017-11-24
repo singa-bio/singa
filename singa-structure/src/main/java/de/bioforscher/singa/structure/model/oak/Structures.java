@@ -1,9 +1,11 @@
 package de.bioforscher.singa.structure.model.oak;
 
+import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -90,5 +92,13 @@ public class Structures {
                 .noneMatch(AtomFilter.isBackbone().negate()
                         .and(AtomFilter.isHydrogen().negate())
                         .and(AtomFilter.isBetaCarbon().negate()));
+    }
+
+    public static List<Sphere> convertToSpheres(AtomContainer atomContainer) {
+        List<Sphere> spheres = new ArrayList<>();
+        for (Atom atom : atomContainer.getAllAtoms()) {
+            spheres.add(new Sphere(atom.getPosition(), atom.getElement().getVanDerWaalsRadius().getValue().doubleValue()));
+        }
+        return spheres;
     }
 }

@@ -1,11 +1,11 @@
 package de.bioforscher.singa.structure.model.oak;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
+import de.bioforscher.singa.structure.elements.Element;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.*;
+import static de.bioforscher.singa.structure.elements.ElementProvider.*;
 
 /**
  * Most (some) of the AtomNames in the PDB.
