@@ -176,9 +176,9 @@ public class StructureViewer extends Application {
         for (Model model : structure.getAllModels()) {
             TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getIdentifier()));
             model.getAllChains().stream()
-                    .sorted(Comparator.comparing(Chain::getIdentifier))
+                    .sorted(Comparator.comparing(Chain::getChainIdentifier))
                     .forEach(chain -> {
-                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getIdentifier()));
+                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getChainIdentifier()));
                         modelNode.getChildren().add(chainNode);
                     });
             rootItem.getChildren().add(modelNode);
@@ -210,7 +210,7 @@ public class StructureViewer extends Application {
         world = new XForm();
         moleculeGroup = new XForm();
         OakChain chain = (OakChain) structure.getAllChains().stream()
-                .filter(aChain -> aChain.getIdentifier().equals(identifier.replace("Chain: ", "")))
+                .filter(aChain -> aChain.getChainIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
         final OakModel model = new OakModel(1);
@@ -283,7 +283,7 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {
-            return getMaterialForChain(origin.getIdentifier());
+            return getMaterialForChain(origin.getChainIdentifier());
         }
     }
 

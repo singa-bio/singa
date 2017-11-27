@@ -40,7 +40,7 @@ public class OakModel implements Model {
         identifier = model.getIdentifier();
         chains = new TreeMap<>();
         for (OakChain chain : model.chains.values()) {
-            chains.put(chain.getIdentifier(), chain.getCopy());
+            chains.put(chain.getChainIdentifier(), chain.getCopy());
         }
 
     }
@@ -67,7 +67,7 @@ public class OakModel implements Model {
     }
 
     public void addChain(OakChain chain) {
-        chains.put(chain.getIdentifier(), chain);
+        chains.put(chain.getChainIdentifier(), chain);
     }
 
     @Override

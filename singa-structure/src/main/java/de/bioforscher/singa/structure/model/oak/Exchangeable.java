@@ -8,24 +8,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Exchangeable defines {@link StructuralEntity}s that exchangeable in terms of mapping another label or a set of other
- * labels to that structural entity. <p> <b>This constitutes a surjective mapping of {@link StructuralFamily}s.</b> <p>
- * <b>By default a {@link StructuralEntity} type is always exchangeable with itself.</b>
+ * Exchangeable defines an entity that is exchangeable in terms of mapping another label or a set of other labels to
+ * that entity. <p> <b>This constitutes a surjective mapping of {@link StructuralFamily}s.</b> <p> <b>By default an
+ * entity implementing {@link Exchangeable} is always exchangeable with itself.</b>
  *
  * @author fk
  */
 public interface Exchangeable<FamilyType extends StructuralFamily> {
 
     /**
-     * Returns the {@link StructuralFamily} of the {@link StructuralEntity}.
+     * Returns the {@link StructuralFamily} of this entity.
      *
      * @return the {@link StructuralFamily}
      */
     FamilyType getFamily();
 
     /**
-     * Returns the {@link StructuralFamily}s to which this {@link StructuralEntity} is exchangeable. By default a {@link
-     * StructuralEntity} is always exchangeable to the same {@link StructuralFamily}.
+     * Returns the {@link StructuralFamily}s to which this entity is exchangeable. By default an entity is always
+     * exchangeable to the same {@link StructuralFamily}.
      *
      * @return a set of exchangeable types
      */

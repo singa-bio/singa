@@ -162,7 +162,7 @@ public class OakStructure implements Structure {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         if (atom.getIdentifier().equals(atomSerial)) {
                             UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getIdentifier(),
-                                    chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
+                                    chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atomSerial);
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }

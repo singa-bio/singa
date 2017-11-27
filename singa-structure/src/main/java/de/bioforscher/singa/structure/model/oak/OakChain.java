@@ -33,7 +33,7 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getChainIdentifier() {
         return identifier;
     }
 

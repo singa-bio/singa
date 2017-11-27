@@ -141,7 +141,7 @@ public class StructureSelector {
         @Override
         public ResidueStep chain(String identifier) {
             chain = structuralModel.getAllChains().stream()
-                    .filter(chain -> chain.getIdentifier().equals(identifier))
+                    .filter(chain -> chain.getChainIdentifier().equals(identifier))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
             return this;

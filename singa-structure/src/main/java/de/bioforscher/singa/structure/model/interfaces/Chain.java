@@ -13,7 +13,7 @@ public interface Chain extends LeafSubstructureContainer {
      *
      * @return The chain identifier.
      */
-    String getIdentifier();
+    String getChainIdentifier();
 
     /**
      * Returns a copy of this chain.

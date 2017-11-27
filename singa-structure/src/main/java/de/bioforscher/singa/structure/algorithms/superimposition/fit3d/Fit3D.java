@@ -101,6 +101,7 @@ public interface Fit3D {
      * Writes a CSV summary file of the matches obtained by {@link Fit3D}i.
      *
      * @param summaryFilePath The {@link Path} to which the file should be written.
+     * @throws IOException If writing of the summary file fails.
      */
     default void writeSummaryFile(Path summaryFilePath) throws IOException {
         String summaryFileContent = getMatches().stream()

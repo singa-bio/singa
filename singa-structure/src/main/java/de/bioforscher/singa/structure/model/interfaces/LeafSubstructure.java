@@ -72,8 +72,9 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     String getThreeLetterCode();
 
     /**
-     * Returns a copy of this leaf substructure.
+     * Returns a copy of this {@link LeafSubstructure}.
      *
+     * @param <LeafImplementation> The type of the {@link LeafSubstructure}.
      * @return A copy of this leaf substructure.
      */
     <LeafImplementation extends LeafSubstructure> LeafImplementation getCopy();

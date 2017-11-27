@@ -48,7 +48,7 @@ public class OakModelTest {
     @Test
     public void getFirstChain() throws Exception {
         final Chain firstChain = firstModel.getFirstChain();
-        assertEquals("A", firstChain.getIdentifier());
+        assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class OakModelTest {
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
-        assertEquals("B", chain.get().getIdentifier());
+        assertEquals("B", chain.get().getChainIdentifier());
     }
 
     @Test
