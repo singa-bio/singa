@@ -34,6 +34,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * Removes a {@link LeafSubstructure} from this container.
      *
      * @param leafIdentifier The identifier of the leaf.
+     * @return True if the {@link LeafSubstructure} was removed.
      */
     boolean removeLeafSubstructure(LeafIdentifier leafIdentifier);
 

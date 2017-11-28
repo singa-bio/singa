@@ -15,8 +15,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its last heavy sidechain atom (the atom most
- * far from the alpha carbon). This is only available for {@link GraphAminoAcid}s with defined alpha carbons. For
+ * An implementation to represent a given {@link LeafSubstructure} by its last heavy sidechain atom (the atom most
+ * far from the alpha carbon). This is only available for {@link AminoAcid}s with defined alpha carbons. For
  * glycine this defaults to {@link BetaCarbonRepresentationScheme}.
  *
  * @author fk
