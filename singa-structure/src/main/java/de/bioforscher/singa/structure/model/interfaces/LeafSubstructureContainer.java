@@ -167,7 +167,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
     default Optional<Atom> getAtom(int atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             for (Atom atom : leafSubstructure.getAllAtoms()) {
-                if (atom.getIdentifier() == atomIdentifier) {
+                if (atom.getAtomIdentifier() == atomIdentifier) {
                     return Optional.of(atom);
                 }
             }

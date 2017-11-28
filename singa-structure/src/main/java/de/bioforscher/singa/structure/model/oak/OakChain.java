@@ -33,7 +33,7 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getChainIdentifier() {
         return identifier;
     }
 
@@ -67,7 +67,7 @@ public class OakChain implements Chain {
         if (leafSubstructures.containsKey(leafIdentifier)) {
             // collect all atoms that should be removed
             List<Integer> atomsToBeRemoved = leafSubstructures.get(leafIdentifier).getAllAtoms().stream()
-                    .map(Atom::getIdentifier)
+                    .map(Atom::getAtomIdentifier)
                     .collect(Collectors.toList());
             // remove them
             atomsToBeRemoved.forEach(this::removeAtom);
@@ -95,7 +95,7 @@ public class OakChain implements Chain {
         for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(optionalAtom.get().getIdentifier());
+                leafSubstructure.removeAtom(optionalAtom.get().getAtomIdentifier());
                 return;
             }
         }

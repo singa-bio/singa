@@ -42,7 +42,7 @@ public class OakStructure implements Structure {
         models = new TreeMap<>();
         lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
         for (OakModel model : structure.models.values()) {
-            models.put(model.getIdentifier(), model.getCopy());
+            models.put(model.getModelIdentifier(), model.getCopy());
         }
     }
 
@@ -87,7 +87,7 @@ public class OakStructure implements Structure {
     }
 
     public void addModel(OakModel model) {
-        models.put(model.getIdentifier(), model);
+        models.put(model.getModelIdentifier(), model);
     }
 
     @Override
@@ -160,9 +160,9 @@ public class OakStructure implements Structure {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
-                        if (atom.getIdentifier().equals(atomSerial)) {
-                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getIdentifier(),
-                                    chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
+                        if (atom.getAtomIdentifier().equals(atomSerial)) {
+                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getModelIdentifier(),
+                                    chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atomSerial);
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }

@@ -18,7 +18,7 @@ public interface Atom {
      *
      * @return The atom identifier.
      */
-    Integer getIdentifier();
+    Integer getAtomIdentifier();
 
     /**
      * Returns the position in three dimensional space.
@@ -61,7 +61,7 @@ public interface Atom {
      * @return The flat String representation of this atom.
      */
     default String flatToString() {
-        return getIdentifier() + ": " + getAtomName() + " " + getPosition();
+        return getAtomIdentifier() + ": " + getAtomName() + " " + getPosition();
     }
 
 }

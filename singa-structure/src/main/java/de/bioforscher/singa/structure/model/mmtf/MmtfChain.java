@@ -111,7 +111,7 @@ public class MmtfChain implements Chain {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getChainIdentifier() {
         return chainIdentifier;
     }
 

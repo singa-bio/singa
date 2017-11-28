@@ -40,7 +40,7 @@ public enum ChainTerminatorToken implements PDBToken {
     public static String assemblePDBLine(LeafSubstructure lastLeafOfChain) {
         // TER     961      ASP A  62
         return "TER   " +
-                String.format("%5d", (lastLeafOfChain.getAllAtoms().get(lastLeafOfChain.getAllAtoms().size() - 1).getIdentifier() + 1)) +
+                String.format("%5d", (lastLeafOfChain.getAllAtoms().get(lastLeafOfChain.getAllAtoms().size() - 1).getAtomIdentifier() + 1)) +
                 "      " +
                 lastLeafOfChain.getFamily().getThreeLetterCode().toUpperCase() +
                 " " +

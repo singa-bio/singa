@@ -66,7 +66,7 @@ public class StructureParserTest {
                 .allChains()
                 .parse();
         assertEquals(1, structure.getAllModels().size());
-        assertEquals(new Integer(2), structure.getFirstModel().getIdentifier());
+        assertEquals(new Integer(2), structure.getFirstModel().getModelIdentifier());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class StructureParserTest {
                 .chainIdentifier("A")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals("A", structure.getFirstChain().getIdentifier());
+        assertEquals("A", structure.getFirstChain().getChainIdentifier());
     }
 
     @Test
@@ -89,8 +89,8 @@ public class StructureParserTest {
                 .chainIdentifier("B")
                 .parse();
         assertEquals(1, structure.getAllChains().size());
-        assertEquals(new Integer(3), structure.getFirstModel().getIdentifier());
-        assertEquals("B", structure.getFirstChain().getIdentifier());
+        assertEquals(new Integer(3), structure.getFirstModel().getModelIdentifier());
+        assertEquals("B", structure.getFirstChain().getChainIdentifier());
     }
 
     @Test

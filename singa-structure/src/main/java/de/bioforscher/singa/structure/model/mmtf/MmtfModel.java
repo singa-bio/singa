@@ -97,11 +97,11 @@ public class MmtfModel implements Model {
 
     @Override
     public String toString() {
-        return "MmtfModel{" + data.getStructureId() + "," + getIdentifier() + "}";
+        return "MmtfModel{" + data.getStructureId() + "," + getModelIdentifier() + "}";
     }
 
     @Override
-    public Integer getIdentifier() {
+    public Integer getModelIdentifier() {
         return modelIndex + 1;
     }
 

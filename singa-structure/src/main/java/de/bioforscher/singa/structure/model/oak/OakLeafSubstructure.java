@@ -87,13 +87,13 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         this(leafSubstructure.leafIdentifier, leafSubstructure.family);
         // copy and add all atoms
         for (OakAtom atom : leafSubstructure.atoms.values()) {
-            atoms.put(atom.getIdentifier(), atom.getCopy());
+            atoms.put(atom.getAtomIdentifier(), atom.getCopy());
         }
         // copy and add all bonds
         for (OakBond bond : leafSubstructure.bonds.values()) {
             OakBond edgeCopy = bond.getCopy();
-            OakAtom sourceCopy = atoms.get(bond.getSource().getIdentifier());
-            OakAtom targetCopy = atoms.get(bond.getTarget().getIdentifier());
+            OakAtom sourceCopy = atoms.get(bond.getSource().getAtomIdentifier());
+            OakAtom targetCopy = atoms.get(bond.getTarget().getAtomIdentifier());
             addBondBetween(edgeCopy, sourceCopy, targetCopy);
         }
         // add exchangeable types
@@ -158,7 +158,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     public void addAtom(OakAtom atom) {
-        atoms.put(atom.getIdentifier(), atom);
+        atoms.put(atom.getAtomIdentifier(), atom);
     }
 
     @Override
@@ -169,7 +169,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
                 neighbor.getNeighbours().remove(atom);
             }
 
-            atoms.remove(atom.getIdentifier());
+            atoms.remove(atom.getAtomIdentifier());
             bonds.entrySet().removeIf(edge -> edge.getValue().connectsAtom(atom));
         }
     }
@@ -253,7 +253,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     public String deepToString() {
         return flatToString() + ", with Atoms: {" + getAllAtoms().stream()
-                .map(atom -> atom.getAtomName() + "-" + atom.getIdentifier())
+                .map(atom -> atom.getAtomName() + "-" + atom.getAtomIdentifier())
                 .collect(Collectors.joining(", ")) + "}";
     }
 

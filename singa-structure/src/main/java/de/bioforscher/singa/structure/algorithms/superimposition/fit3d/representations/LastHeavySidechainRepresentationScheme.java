@@ -55,7 +55,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         }
         int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(((AminoAcid) leafSubstructure).getAtomByName("CA").get()));
         Atom referenceAtom = atomDistanceMatrix.getColumnLabel(maximalElementIndex);
-        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
                 referenceAtom.getPosition());
