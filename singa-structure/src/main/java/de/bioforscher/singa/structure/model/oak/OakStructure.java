@@ -173,6 +173,14 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
+    /**
+     * Adds an {@link Atom} to the {@link Structure}
+     * FIXME: atom serial overflow may happen (>9999)
+     *
+     * @param chainIdentifier The identifier of the {@link Chain} to which it should be added.
+     * @param threeLetterCode The three-letter code of the associated {@link LeafSubstructure}.
+     * @param position The position of the {@link Atom}.
+     */
     public void addAtom(String chainIdentifier, String threeLetterCode, Vector3D position) {
         Optional<Chain> optionalChain = getFirstModel().getChain(chainIdentifier);
         if (optionalChain.isPresent()) {

@@ -73,6 +73,7 @@ public class OakChain implements Chain {
             atomsToBeRemoved.forEach(this::removeAtom);
             // remove the leaf
             leafSubstructures.remove(leafIdentifier);
+            consecutiveIdentifiers.remove(leafIdentifier);
             return true;
         } else {
             return false;
