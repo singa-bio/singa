@@ -21,7 +21,7 @@ public class StructureViewerPlayground {
 
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
 
-        final Species species = ChEBIParserService.parse("CHEBI:15422");
+        final Species species = ChEBIParserService.parse("CHEBI:50104");
 
         final Structure3D feature = species.getFeature(Structure3D.class);
         OakStructure structure = new OakStructure();

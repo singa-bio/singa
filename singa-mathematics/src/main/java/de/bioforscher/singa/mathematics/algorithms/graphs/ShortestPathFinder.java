@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
+import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
@@ -44,13 +45,13 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            VectorType extends Vector, IdentifierType> LinkedList<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
+            VectorType extends Vector, IdentifierType> GraphPath<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
         ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
-                LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
+                GraphPath<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                 if (path != null) {
                     return path;
                 }
@@ -73,14 +74,14 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            VectorType extends Vector, IdentifierType> LinkedList<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+            VectorType extends Vector, IdentifierType> GraphPath<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
         ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 if (trackPredicate.test(currentNode)) {
-                    LinkedList<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
+                    GraphPath<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                     if (path != null) {
                         return path;
                     }
@@ -100,7 +101,7 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @param targetPredicate The predicate to fulfill.
      * @return The shortest path if the target fulfills the predicate and null otherwise.
      */
-    private LinkedList<NodeType> checkTarget(NodeType source, NodeType target, Predicate<NodeType> targetPredicate) {
+    private GraphPath<NodeType> checkTarget(NodeType source, NodeType target, Predicate<NodeType> targetPredicate) {
         if (!distances.containsKey(target)) {
             // until predicate is fulfilled the first time
             if (targetPredicate.test(target)) {
@@ -121,8 +122,8 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @param targetNode The target node.
      * @return The path to the node.
      */
-    private LinkedList<NodeType> getPath(NodeType targetNode) {
-        LinkedList<NodeType> path = new LinkedList<>();
+    private GraphPath<NodeType> getPath(NodeType targetNode) {
+        GraphPath<NodeType> path = new GraphPath<>();
         NodeType step = targetNode;
         if (predecessors.get(step) == null) {
             return null;

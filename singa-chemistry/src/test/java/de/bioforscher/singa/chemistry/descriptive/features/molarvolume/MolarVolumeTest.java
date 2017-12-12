@@ -12,6 +12,8 @@ public class MolarVolumeTest {
 
     @Test
     public void shouldUseChEBIToCalculateVolume() {
+        // values from http://pubs.acs.org/doi/pdf/10.1021/ja00354a007
+
         Species ammonia = ChEBIParserService.parse("CHEBI:16134");
         Species propane = ChEBIParserService.parse("CHEBI:32879");
         Species benzene = ChEBIParserService.parse("CHEBI:16716");
