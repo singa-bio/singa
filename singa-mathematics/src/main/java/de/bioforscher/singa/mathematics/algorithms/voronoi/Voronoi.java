@@ -97,10 +97,8 @@ public class Voronoi {
         //   discard edges completely outside bounding box
         //   discard edges which are point-like
         diagram.clipEdges();
-
-        //   add missing edges in order to close opened cells
-        // diagram.closeCells();
-        diagram.closeBorderCells();
+        // add missing edges in order to close opened cells
+        diagram.closeCells();
     }
 
     private boolean siteEventIsBeforeCircleEvent(SiteEvent siteEvent, CircleEvent circleEvent) {

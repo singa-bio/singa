@@ -63,7 +63,6 @@ public class VoronoiHalfEdge {
             return this.edge.getStartingPoint();
         }
         return this.edge.getEndingPoint();
-
     }
 
     public void setStartPoint(Vector2D startPoint) {

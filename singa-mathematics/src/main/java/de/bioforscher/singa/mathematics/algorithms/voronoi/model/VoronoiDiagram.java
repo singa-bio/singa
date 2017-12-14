@@ -73,8 +73,8 @@ public class VoronoiDiagram {
 
         this.leftBorder = boundingBox.getLeftMostXPosition();
         this.rightBorder = boundingBox.getRightMostXPosition();
-        this.topBorder = boundingBox.getBottomMostYPosition();
         this.bottomBorder = boundingBox.getTopMostYPosition();
+        this.topBorder = boundingBox.getBottomMostYPosition();
     }
 
     /**
@@ -163,6 +163,9 @@ public class VoronoiDiagram {
      * @return The vertex.
      */
     Vector2D createVertex(Vector2D vertex) {
+        if (this.vertices.contains(vertex)) {
+            return vertex;
+        }
         this.vertices.add(vertex);
         return vertex;
     }
@@ -208,6 +211,8 @@ public class VoronoiDiagram {
                     !clipEdge(edge) ||
                     (Math.abs(edge.getStartingPoint().getX() - edge.getEndingPoint().getX()) < 1e-9 && Math.abs(edge.getStartingPoint().getY() - edge.getEndingPoint().getY()) < 1e-9)) {
                 logger.trace(" Removing edge {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
+                edge.setStartingPoint(null);
+                edge.setEndingPoint(null);
                 edges.remove(edge);
             } else {
                 logger.trace(" Post processed edge: {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
@@ -443,6 +448,10 @@ public class VoronoiDiagram {
             edge.setStartingPoint(createVertex(ax + t0 * dx, ay + t0 * dy));
         }
 
+        if (t1 < 1) {
+            edge.setEndingPoint(createVertex(ax + t1 * dx, ay + t1 * dy));
+        }
+
         // va and/or vb were clipped, thus we will need to close
         // cells which use this edge.
         if (t0 > 0 || t1 < 1) {
@@ -461,7 +470,8 @@ public class VoronoiDiagram {
         for (VoronoiCell cell : cells.values()) {
             // prune, order halfedges counterclockwise, then add missing ones
             // required to close cells
-            if (cell.prepareHalfEdges() != 0) {
+            // cell.prepareHalfEdges();
+            if (cell.prepareHalfEdges() == 0) {
                 continue;
             }
             if (cell.isClosed()) {
@@ -571,85 +581,14 @@ public class VoronoiDiagram {
                             break;
                         }
 
+                        System.out.println("This point should never be reached.");
                     }
 
                 }
-
+                iLeft++;
             }
-
+            cell.setClosed(true);
         }
-    }
-
-
-    public void closeBorderCells() {
-
-
-        for (VoronoiCell cell : cells.values()) {
-            // prepare all half edges
-            cell.prepareHalfEdges();
-            // if
-            if (cell.isOpen()) {
-                final ListIterator<VoronoiHalfEdge> halfEdgeIterator = cell.getHalfEdges().listIterator();
-                while (halfEdgeIterator.hasNext()) {
-                    VoronoiHalfEdge current = halfEdgeIterator.next();
-                    Vector2D startPoint = current.getStartPoint();
-                    Vector2D endPoint = current.getEndPoint();
-
-                    // check start
-                    Vector2D newStart = getIntersectionWithBorder(startPoint, endPoint);
-                    if (newStart != null) {
-                        current.setStartPoint(newStart);
-
-                        // add vertex
-                        // createVertex(newStart);
-                        // add edge
-                        // replace half edge
-                    }
-
-                    // check end
-                    Vector2D newEnd = getIntersectionWithBorder(endPoint,startPoint);
-                    if (newEnd != null) {
-                        current.setEndPoint(endPoint);
-                        // add vertex
-                        // createVertex(newEnd);
-                        // add edge
-                        // replace half edge
-                    }
-
-                }
-            }
-
-        }
-    }
-
-    /**
-     * Returns the intersection with a border, if there is no intersection {@code null} is returned.
-     * @param pointToCheck The point that is checked for misplacement.
-     * @param fixedPoint The point that is used as a fixed reference.
-     * @return Ihe intersection with a border, if there is no intersection {@code null} is returned.
-     */
-    public Vector2D getIntersectionWithBorder(Vector2D pointToCheck, Vector2D fixedPoint) {
-        if (pointToCheck.getX() < leftBorder) {
-            // calculate intersection with left border
-            Line edgeLine = new Line(fixedPoint, pointToCheck);
-            return left.getInterceptWithLine(edgeLine);
-        }
-        if (pointToCheck.getX() > rightBorder) {
-            // calculate intersection with right border
-            Line edgeLine = new Line(fixedPoint, pointToCheck);
-            return right.getInterceptWithLine(edgeLine);
-        }
-        if (pointToCheck.getY() < topBorder) {
-            // calculate intersection with top border
-            Line edgeLine = new Line(fixedPoint, pointToCheck);
-            return top.getInterceptWithLine(edgeLine);
-        }
-        if (pointToCheck.getY() > bottomBorder) {
-            // calculate intersection with bottom border
-            Line edgeLine = new Line(fixedPoint, pointToCheck);
-            return bottom.getInterceptWithLine(edgeLine);
-        }
-        return null;
     }
 
     /**

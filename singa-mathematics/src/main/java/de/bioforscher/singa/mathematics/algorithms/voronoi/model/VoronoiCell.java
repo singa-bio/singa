@@ -59,7 +59,7 @@ public class VoronoiCell implements Polygon {
             }
         }
         // sort them by angle
-        this.halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle));
+        this.halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle).reversed());
         // return the number of remaining edges
         return this.halfEdges.size();
     }
@@ -154,6 +154,7 @@ public class VoronoiCell implements Polygon {
 
     /**
      * Returns the original site of this cell.
+     *
      * @return The original site of this cell.
      */
     public SiteEvent getSite() {
@@ -162,6 +163,7 @@ public class VoronoiCell implements Polygon {
 
     /**
      * Returns all half edges enclosing this cell.
+     *
      * @return All half edges enclosing this cell.
      */
     public List<VoronoiHalfEdge> getHalfEdges() {
@@ -170,6 +172,7 @@ public class VoronoiCell implements Polygon {
 
     /**
      * Returns true, if this cell is closed and false otherwise.
+     *
      * @return true, if this cell is closed and false otherwise.
      */
     public boolean isClosed() {
@@ -182,6 +185,7 @@ public class VoronoiCell implements Polygon {
 
     /**
      * Sets whether this cell is considered as closed or not.
+     *
      * @param closed true, if this cell is closed and false otherwise.
      */
     void setClosed(boolean closed) {
@@ -194,7 +198,7 @@ public class VoronoiCell implements Polygon {
         for (int index = 0; index < halfEdges.size(); index++) {
             vertices[index] = halfEdges.get(index).getStartPoint();
         }
-        return  vertices;
+        return vertices;
     }
 
     @Override

@@ -4,16 +4,18 @@ import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
-import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiHalfEdge;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -26,6 +28,7 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private Canvas canvas;
     private VoronoiDiagram diagram;
+    private List<Vector2D> points;
 
     public static void main(String[] args) {
         launch();
@@ -57,52 +60,24 @@ public class VoronoiPlayground extends Application implements Renderer {
 
         // setup root
         BorderPane root = new BorderPane();
-        this.canvas = new Canvas(500, 500);
-        this.canvas.setOnMouseClicked(event -> {
-            Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
-            for (VoronoiCell voronoiCell : diagram.getCells()) {
-                if (voronoiCell.evaluatePointPosition(clickPosition) == VoronoiCell.INSIDE) {
-                    if (voronoiCell.isOpen()) {
-                        System.out.println("This cell is open.");
-                        getGraphicsContext().setFill(Color.TOMATO);
-                    } else {
-                        getGraphicsContext().setFill(Color.DARKSEAGREEN);
-                        System.out.println("This cell is closed.");
-                    }
-                    for (VoronoiHalfEdge voronoiHalfEdge : voronoiCell.getHalfEdges()) {
-                        System.out.println("Start:"+voronoiHalfEdge.getStartPoint()+" End:"+voronoiHalfEdge.getEndPoint());
-                    }
 
-                    fillPolygon(voronoiCell);
-                    getGraphicsContext().setFill(Color.BLACK);
-                    final Vector2D[] vertices = voronoiCell.getVertices();
-                    for (int i = 0; i < vertices.length; i++) {
-                        drawTextCenteredOnPoint(String.valueOf(i), vertices[i]);
-                    }
-                    // TODO cells bordering on the bounding box are sometimes not closed correctly
-                    // System.out.println(voronoiCell.getSite());
-                    break;
-                }
-            }
-        });
-
+        // setup canvas
+        this.canvas = new Canvas(700, 700);
+        this.canvas.setOnMouseClicked(this::handleCanvasClick);
         root.setCenter(this.canvas);
 
-        Button nextEventButton = new Button("Reinitialize");
-        nextEventButton.setOnAction(event -> {
-            getGraphicsContext().setFill(Color.WHITE);
-            drawRectangle(new Vector2D(0, 0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
-            List<Vector2D> vectors = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(500, 500));
-            getGraphicsContext().setFill(Color.BLACK);
-            getGraphicsContext().setLineWidth(3);
-            vectors.forEach(this::drawPoint);
-            diagram = Voronoi.generateVoronoiDiagram(vectors, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
-            getGraphicsContext().setStroke(Color.TOMATO);
-            getGraphicsContext().setLineWidth(2);
-            diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+        // setup button bar
+        HBox buttonBar = new HBox();
 
-        });
-        root.setBottom(nextEventButton);
+        Button pointsButton = new Button("Generate points");
+        pointsButton.setOnAction(this::generatePoints);
+
+        Button voronoiButton = new Button("Generate Voronoi");
+        voronoiButton.setOnAction(this::generateVoronoi);
+
+        buttonBar.getChildren().addAll(pointsButton, voronoiButton);
+
+        root.setBottom(buttonBar);
 
         // show
         Scene scene = new Scene(root);
@@ -123,6 +98,38 @@ public class VoronoiPlayground extends Application implements Renderer {
     @Override
     public double getDrawingHeight() {
         return this.canvas.getHeight();
+    }
+
+    private void handleCanvasClick(MouseEvent event) {
+        Vector2D clickPosition = new Vector2D(event.getX(), event.getY());
+        for (VoronoiCell voronoiCell : diagram.getCells()) {
+            if (voronoiCell.evaluatePointPosition(clickPosition) == VoronoiCell.INSIDE) {
+                getGraphicsContext().setFill(Color.INDIANRED);
+                fillPolygon(voronoiCell);
+                break;
+            }
+        }
+    }
+
+    private void generatePoints(ActionEvent event) {
+        getGraphicsContext().setFill(Color.WHITE);
+        drawRectangle(new Vector2D(0, 0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
+        points = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
+        getGraphicsContext().setFill(Color.DARKRED);
+        getGraphicsContext().setLineWidth(4);
+        points.forEach(this::drawPoint);
+    }
+
+    private void generateVoronoi(ActionEvent event) {
+        if (points != null) {
+            diagram = Voronoi.generateVoronoiDiagram(points, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
+            getGraphicsContext().setLineWidth(4);
+            getGraphicsContext().setStroke(Color.TOMATO);
+            diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+            getGraphicsContext().setFill(Color.DARKRED);
+            getGraphicsContext().setLineWidth(6);
+            diagram.getVertices().forEach(this::drawPoint);
+        }
     }
 
 }
