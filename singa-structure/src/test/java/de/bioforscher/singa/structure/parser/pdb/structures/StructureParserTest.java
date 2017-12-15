@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.*;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class StructureParserTest {
 
@@ -162,6 +161,26 @@ public class StructureParserTest {
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
         assertEquals("1GL0", structure.getPdbIdentifier());
+    }
+
+    @Test
+    public void shouldIgnoreHeteroAtoms() {
+        StructureParserOptions options = StructureParserOptions.withSettings(StructureParserOptions.Setting.OMIT_HETERO_ATOMS);
+        Structure structure = StructureParser.online()
+                .pdbIdentifier("3fjz")
+                .chainIdentifier("A")
+                .setOptions(options)
+                .parse();
+        assertFalse(structure.getAllLeafSubstructures().stream()
+                .anyMatch(LeafSubstructure::isAnnotatedAsHeteroAtom));
+        options = StructureParserOptions.withSettings(StructureParserOptions.Setting.GET_HETERO_ATOMS);
+        structure = StructureParser.online()
+                .pdbIdentifier("3fjz")
+                .chainIdentifier("A")
+                .setOptions(options)
+                .parse();
+        assertTrue(structure.getAllLeafSubstructures().stream()
+                .anyMatch(LeafSubstructure::isAnnotatedAsHeteroAtom));
     }
 
     @Test

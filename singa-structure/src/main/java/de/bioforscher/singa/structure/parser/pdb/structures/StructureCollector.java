@@ -314,6 +314,10 @@ public class StructureCollector {
         for (String currentLine : pdbLines) {
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
+                // TODO move this to reducer?
+                if (!reducer.options.isHeteroAtoms() && currentRecordType.equals("HETATM")) {
+                    continue;
+                }
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),

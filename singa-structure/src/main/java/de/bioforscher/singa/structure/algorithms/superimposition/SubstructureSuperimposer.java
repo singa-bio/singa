@@ -309,6 +309,14 @@ public class SubstructureSuperimposer {
         perAtomAlignment.entrySet()
                 .forEach(this::defineIntersectingAtoms);
 
+        boolean nonMatchingAtoms = perAtomAlignment.values().stream()
+                .anyMatch(Set::isEmpty);
+
+        if (nonMatchingAtoms) {
+            logger.error("reference {} against candidate {} has no compatible atom strings: {} {}", reference, candidate);
+            throw new SubstructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
+        }
+
         List<Atom> referenceAtoms;
         List<Atom> candidateAtoms;
 

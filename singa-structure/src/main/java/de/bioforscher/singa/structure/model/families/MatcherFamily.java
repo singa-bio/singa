@@ -14,7 +14,6 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
 
     ALL(EnumSet.allOf(AminoAcidFamily.class), "*", "ALL"),
 
-
     GUTTERIDGE_IMIDAZOLE(EnumSet.of(HISTIDINE), "i", "IMI"),
     GUTTERIDGE_AMINE(EnumSet.of(LYSINE), "n", "AMN"),
     GUTTERIDGE_CARBOXYLATE(EnumSet.of(ASPARTIC_ACID, GLUTAMIC_ACID), "n", "AMN"),
@@ -46,7 +45,7 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
             GUTTERIDGE_THIOL);
 
     /**
-     * The following ypes are grouped according to functional chemical groups:
+     * The following types are grouped according to functional chemical groups:
      * <pre>
      *      aromatic (a)             F,Y,W
      *      negatively charged (n)   D,E
@@ -57,6 +56,8 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
      */
     public static EnumSet<MatcherFamily> FUNCTIONAL = EnumSet.of(FUNCTIONAL_AROMATIC, FUNCTIONAL_NEGATIVE,
             FUNCTIONAL_POSITIVE, FUNCTIONAL_POLAR, FUNCTIONAL_UNPOLAR);
+
+    public static EnumSet<MatcherFamily> ALL_AMINO_ACIDS = EnumSet.of(ALL);
 
     private EnumSet<AminoAcidFamily> members;
     private String oneLetterCode;
