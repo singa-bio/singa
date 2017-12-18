@@ -3,11 +3,19 @@ package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 import de.bioforscher.singa.mathematics.graphs.trees.RedBlackNode;
 
 /**
- * Some kind of RB Tree
+ * The beach section is an implementation of a {@link RedBlackNode}. Sorting itself to efficiently store neighbouring
+ * beach sections.
  */
 public class BeachSection extends RedBlackNode<BeachSection> {
 
+    /**
+     * The site event.
+     */
     private SiteEvent site;
+
+    /**
+     * The circle event.
+     */
     private CircleEvent circleEvent;
 
     private VoronoiEdge edge;

@@ -5,26 +5,56 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
 
 public class BeachLine {
 
+    /**
+     * The logger for the beach line.
+     */
     private static final Logger logger = LoggerFactory.getLogger(BeachLine.class);
+
+    /**
+     * The cutoff for numerical precision.
+     */
     private static final double epsilon = 1E-9;
 
+    /**
+     * The beach line.
+     */
     private BeachSection beachline;
+
+    /**
+     * The circle events that are being processed. Automatically sorting by processing order (next to be processed to
+     * the top).
+     */
     private TreeSet<CircleEvent> circleEvents;
 
+    /**
+     * The Voronoi diagram.
+     */
     private VoronoiDiagram diagram;
 
+    /**
+     * Creates a new beach line for a given bounding box.
+     *
+     * @param boundingBox The bounding box.
+     */
     public BeachLine(Rectangle boundingBox) {
         this.diagram = new VoronoiDiagram(boundingBox);
         this.beachline = new BeachSection();
-        this.circleEvents = new TreeSet<>(CircleEvent.topToBottom);
+        // top to bottom
+        this.circleEvents = new TreeSet<>(Comparator.comparingDouble((CircleEvent circle) -> circle.getEventCoordinate().getY()));
     }
 
+    /**
+     * For a given site event, add a beach section to the beach line.
+     *
+     * @param site The site event.
+     */
     public void addBeachSection(SiteEvent site) {
 
         logger.debug("Adding beach section for site {}.", site);
@@ -43,7 +73,7 @@ public class BeachLine {
         // determine left and right beach sections which will surround the newly created beach sections
         while (node != null) {
             logger.trace("Calculating left break point.");
-            dxl = leftBreakPoint(node, directrix) - x;
+            dxl = calculateLeftBreakPoint(node, directrix) - x;
             logger.trace("Left break point is {}.", dxl);
             if (dxl > epsilon) {
                 // before the left edge of the beach section
@@ -76,13 +106,10 @@ public class BeachLine {
                     break;
                 }
             }
-            logger.trace("Calculating break points again.");
         }
 
         BeachSection newArc = new BeachSection(site);
         this.beachline.insertSuccessor(lArc, newArc);
-
-        // case
 
         // [null,null]
         // least likely case: new beach section is the first beach section on the beachline.
@@ -108,7 +135,7 @@ public class BeachLine {
             rArc = new BeachSection(lArc.getSite());
             this.beachline.insertSuccessor(newArc, rArc);
 
-            // create VoronoiEdge
+            // create edge
             VoronoiEdge edge = this.diagram.createEdge(lArc.getSite(), newArc.getSite());
             newArc.setEdge(edge);
             rArc.setEdge(edge);
@@ -127,7 +154,6 @@ public class BeachLine {
         //   one new transition appears
         //   no collapsing beach section as a result
         //   new beach section become right-most node of the RB-tree
-
         if (lArc != null && rArc == null) {
             newArc.setEdge(this.diagram.createEdge(lArc.getSite(), newArc.getSite()));
             return;
@@ -155,16 +181,16 @@ public class BeachLine {
             // new and right beach sections.
             // http://mathforum.org/library/drmath/view/55002.html
             SiteEvent lSite = lArc.getSite();
-            double ax = lSite.getX();
-            double ay = lSite.getY();
-            double bx = site.getX() - ax;
-            double by = site.getY() - ay;
+            final double ax = lSite.getX();
+            final double ay = lSite.getY();
+            final double bx = site.getX() - ax;
+            final double by = site.getY() - ay;
             SiteEvent rSite = rArc.getSite();
-            double cx = rSite.getX() - ax;
-            double cy = rSite.getY() - ay;
-            double d = 2 * (bx * cy - by * cx);
-            double hb = bx * bx + by * by;
-            double hc = cx * cx + cy * cy;
+            final double cx = rSite.getX() - ax;
+            final double cy = rSite.getY() - ay;
+            final double d = 2.0 * (bx * cy - by * cx);
+            final double hb = bx * bx + by * by;
+            final double hc = cx * cx + cy * cy;
             Vector2D vertex = diagram.createVertex((cy * hb - by * hc) / d + ax, (bx * hc - cx * hb) / d + ay);
 
             // one transition disappear
@@ -181,11 +207,16 @@ public class BeachLine {
         }
     }
 
+    /**
+     * Removes a beach section from the beach line if it has collapsed.
+     *
+     * @param beachSection The beach section to remove.
+     */
     public void removeBeachSection(BeachSection beachSection) {
-
+        logger.trace("Beach section {} collapsed, removing it.", beachSection);
         CircleEvent circle = beachSection.getCircleEvent();
-        double x = circle.getEventCoordinate().getX();
-        double y = circle.getyCenter();
+        final double x = circle.getEventCoordinate().getX();
+        final double y = circle.getYCenter();
         Vector2D vertex = diagram.createVertex(x, y);
         BeachSection previous = beachSection.getPrevious();
         BeachSection next = beachSection.getNext();
@@ -194,8 +225,7 @@ public class BeachLine {
         disappearingTransitions.push(beachSection);
 
         // remove collapsed beach section from beach line
-        logger.trace("Beach section {} collapsed, removing it.", beachSection);
-        detachBeachsection(beachSection);
+        detachBeachSection(beachSection);
 
         // there could be more than one empty arc at the deletion point, this
         // happens when more than two edges are linked by the same vertex,
@@ -203,18 +233,18 @@ public class BeachLine {
         // the deletion point.
         // by the way, there is *always* a predecessor/successor to any collapsed
         // beach section, it's just impossible to have a collapsing first/last
-        // beach sections on the beachline, since they obviously are unconstrained
+        // beach sections on the beach line, since they obviously are unconstrained
         // on their left/right side.
 
         // look left
         BeachSection lArc = previous;
         while (lArc.getCircleEvent() != null &&
                 Math.abs(x - lArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
-                Math.abs(y - lArc.getCircleEvent().getyCenter()) < 1e-9) {
+                Math.abs(y - lArc.getCircleEvent().getYCenter()) < 1e-9) {
             logger.trace("Found beach section to the left - detaching {}.", lArc);
             previous = lArc.getPrevious();
             disappearingTransitions.push(lArc);
-            detachBeachsection(lArc);
+            detachBeachSection(lArc);
             lArc = previous;
         }
 
@@ -229,11 +259,11 @@ public class BeachLine {
         BeachSection rArc = next;
         while (rArc.getCircleEvent() != null &&
                 Math.abs(x - rArc.getCircleEvent().getEventCoordinate().getX()) < 1e-9 &&
-                Math.abs(y - rArc.getCircleEvent().getyCenter()) < 1e-9) {
+                Math.abs(y - rArc.getCircleEvent().getYCenter()) < 1e-9) {
             logger.trace("Found beach section to the left - detaching {}.", rArc);
             next = rArc.getNext();
             disappearingTransitions.offer(rArc);
-            detachBeachsection(rArc);
+            detachBeachSection(rArc);
             rArc = next;
         }
 
@@ -268,25 +298,27 @@ public class BeachLine {
         attachCircleEvent(rArc);
     }
 
-    public void detachBeachsection(BeachSection beachSection) {
-        detachCircleEvent(beachSection);
-        this.beachline.removeNode(beachSection);
-    }
-
-    private double leftBreakPoint(BeachSection node, double directrix) {
-        logger.trace("Calculating break point for node "+node+" and directrix "+directrix);
-        SiteEvent site = node.getSite();
-        double rfocx = site.getX();
-        double rfocy = site.getY();
+    /**
+     * Calculates the intersection (break point) to the first beach section left of the given beach section.
+     *
+     * @param beachSection The beach section.
+     * @param directrix The y position of the directrix.
+     * @return The break point (the x position on the directrix).
+     */
+    private double calculateLeftBreakPoint(BeachSection beachSection, double directrix) {
+        logger.trace("Calculating break point for node " + beachSection + " and directrix " + directrix);
+        // get focus
+        double rightFocusX = beachSection.getSite().getX();
+        double rightFocusY = beachSection.getSite().getY();
         // distance or delta to the directrix
-        double pby2 = rfocy - directrix;
+        double pby2 = rightFocusY - directrix;
         // focus is on the directrix
         if (pby2 == 0.0) {
-            return rfocx;
+            return rightFocusX;
         }
 
-        // handle previous  beach line section
-        BeachSection previousSection = node.getPrevious();
+        // handle previous beach line section
+        BeachSection previousSection = beachSection.getPrevious();
         if (previousSection == null) {
             logger.trace("No beach section to the left.");
             return Double.NEGATIVE_INFINITY;
@@ -300,46 +332,73 @@ public class BeachLine {
             return lfocx;
         }
 
-        double hl = lfocx - rfocx;
+        double hl = lfocx - rightFocusX;
         double aby2 = 1 / pby2 - 1 / plby2;
         double b = hl / plby2;
 
         if (aby2 != 0.0) {
-            return (-b + Math.sqrt(b * b - 2 * aby2 * (hl * hl / (-2 * plby2) - lfocy + plby2 / 2 + rfocy - pby2 / 2))) / aby2 + rfocx;
+            return (-b + Math.sqrt(b * b - 2 * aby2 * (hl * hl / (-2 * plby2) - lfocy + plby2 / 2 + rightFocusY - pby2 / 2))) / aby2 + rightFocusX;
         }
         // both parabolas have same distance to directrix, thus break point is midway
-        return (rfocx + lfocx) / 2;
+        return (rightFocusX + lfocx) / 2;
     }
 
-    private double rightBreakPoint(BeachSection node, double directrix) {
-        BeachSection rArc = node.getNext();
+    /**
+     * Calculates the intersection (break point) to the first beach section right of the given beach section.
+     *
+     * @param beachSection The beach section.
+     * @param directrix The y position of the directrix.
+     * @return The break point (the x position on the directrix).
+     */
+    private double rightBreakPoint(BeachSection beachSection, double directrix) {
+        BeachSection rArc = beachSection.getNext();
         if (rArc != null) {
-            return leftBreakPoint(rArc, directrix);
+            return calculateLeftBreakPoint(rArc, directrix);
         }
-        SiteEvent site = node.getSite();
+        SiteEvent site = beachSection.getSite();
         double result = site.getY() == directrix ? site.getX() : Double.POSITIVE_INFINITY;
         logger.trace("No beach section to the right.", result);
         return result;
     }
 
-    private void detachCircleEvent(BeachSection arc) {
-        CircleEvent circleEvent = arc.getCircleEvent();
+    /**
+     * Detaches a beach section from the beach line.
+     *
+     * @param beachSection The beach section.
+     */
+    private void detachBeachSection(BeachSection beachSection) {
+        detachCircleEvent(beachSection);
+        this.beachline.removeNode(beachSection);
+    }
+
+    /**
+     * Removes referenced circle event from collapsing beach section.
+     *
+     * @param beachSection The collapsing beach section.
+     */
+    private void detachCircleEvent(BeachSection beachSection) {
+        CircleEvent circleEvent = beachSection.getCircleEvent();
         if (circleEvent != null) {
             this.circleEvents.remove(circleEvent);
-            arc.setCircleEvent(null);
+            beachSection.setCircleEvent(null);
         }
     }
 
-    private void attachCircleEvent(BeachSection arc) {
-        BeachSection lArc = arc.getPrevious();
-        BeachSection rArc = arc.getNext();
+    /**
+     * Creates and attaches a new circle event for the beach section.
+     *
+     * @param beachSection The beach section.
+     */
+    private void attachCircleEvent(BeachSection beachSection) {
+        BeachSection lArc = beachSection.getPrevious();
+        BeachSection rArc = beachSection.getNext();
 
         if (lArc == null || rArc == null) {
             return;
         }
 
         SiteEvent lSite = lArc.getSite();
-        SiteEvent cSite = arc.getSite();
+        SiteEvent cSite = beachSection.getSite();
         SiteEvent rSite = rArc.getSite();
 
         // If site of left beachsection is same as site of
@@ -380,16 +439,21 @@ public class BeachLine {
         double ycenter = y + by;
 
         CircleEvent circleEvent = new CircleEvent();
-        circleEvent.setBeachSection(arc);
+        circleEvent.setBeachSection(beachSection);
         circleEvent.setSite(cSite);
         circleEvent.setEventCoordinate(new Vector2D(x + bx, ycenter + Math.sqrt(x * x + y * y)));
-        circleEvent.setyCenter(ycenter);
-        arc.setCircleEvent(circleEvent);
+        circleEvent.setYCenter(ycenter);
+        beachSection.setCircleEvent(circleEvent);
 
         // add newly created circle event
         this.circleEvents.add(circleEvent);
     }
 
+    /**
+     * Gets the next circle event that needs to be processed.
+     *
+     * @return The next circle event or null if no circle event exists.
+     */
     public CircleEvent getFirstCircleEvent() {
         if (this.circleEvents.isEmpty()) {
             return null;
@@ -398,11 +462,12 @@ public class BeachLine {
         }
     }
 
+    /**
+     * Returns the Voronoi diagram.
+     * @return The Voronoi diagram.
+     */
     public VoronoiDiagram getDiagram() {
         return this.diagram;
     }
 
-    public void setDiagram(VoronoiDiagram diagram) {
-        this.diagram = diagram;
-    }
 }

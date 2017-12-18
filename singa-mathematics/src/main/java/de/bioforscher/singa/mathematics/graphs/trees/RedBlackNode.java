@@ -18,6 +18,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
     private boolean isRed;
 
     public RedBlackNode() {
+
     }
 
     public void insertSuccessor(NodeType node, NodeType successor) {

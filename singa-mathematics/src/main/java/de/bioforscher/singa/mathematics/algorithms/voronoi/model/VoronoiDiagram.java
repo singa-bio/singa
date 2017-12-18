@@ -1,6 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
-import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * Contains all information about the voronoi diagram created by {@link Voronoi#generateVoronoiDiagram(Collection,
+ * Contains all information about the voronoi diagram created by {@link VoronoiGenerator#generateVoronoiDiagram(Collection,
  * Rectangle)}. Vertices are created for every point two edges meet and for intersections with the bounding box. Edges
  * are splitting cells that are associated to each of the processed vectors.
  */

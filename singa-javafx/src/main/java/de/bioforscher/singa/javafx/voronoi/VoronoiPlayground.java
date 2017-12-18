@@ -1,7 +1,7 @@
 package de.bioforscher.singa.javafx.voronoi;
 
 import de.bioforscher.singa.javafx.renderer.Renderer;
-import de.bioforscher.singa.mathematics.algorithms.voronoi.Voronoi;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
@@ -122,7 +122,7 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void generateVoronoi(ActionEvent event) {
         if (points != null) {
-            diagram = Voronoi.generateVoronoiDiagram(points, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
+            diagram = VoronoiGenerator.generateVoronoiDiagram(points, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
             getGraphicsContext().setLineWidth(4);
             getGraphicsContext().setStroke(Color.TOMATO);
             diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));

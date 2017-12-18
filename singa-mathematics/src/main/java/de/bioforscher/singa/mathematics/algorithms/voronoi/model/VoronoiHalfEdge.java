@@ -65,14 +65,6 @@ public class VoronoiHalfEdge {
         return this.edge.getEndingPoint();
     }
 
-    public void setStartPoint(Vector2D startPoint) {
-        if (this.edge.getLeftSite().equals(this.site)) {
-            this.edge.setStartingPoint(startPoint);
-        } else {
-            this.edge.setEndingPoint(startPoint);
-        }
-    }
-
     /**
      * Returns the point where this edge ends.
      *
@@ -83,14 +75,6 @@ public class VoronoiHalfEdge {
             return this.edge.getEndingPoint();
         }
         return this.edge.getStartingPoint();
-    }
-
-    public void setEndPoint(Vector2D endPoint) {
-        if (this.edge.getLeftSite().equals(this.site)) {
-            this.edge.setEndingPoint(endPoint);
-        } else {
-            this.edge.setStartingPoint(endPoint);
-        }
     }
 
     /**
