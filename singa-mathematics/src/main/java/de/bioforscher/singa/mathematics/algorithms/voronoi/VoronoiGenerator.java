@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.algorithms.voronoi;
 
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.*;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.model.Node;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import java.util.*;
  * </pre>
  *
  * @author cl
- * @see <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Qikipedia: Fortune's algorithm</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Fortune%27s_algorithm">Wikipedia: Fortune's algorithm</a>
  * @see <a href="http://www.raymondhill.net/voronoi/rhill-voronoi.html">Javascript implementation of Raymonnd Hill</a>
  * @see <a href="https://link.springer.com/article/10.1007%2FBF01840357">A sweepline algorithm for Voronoi diagrams.</a>
  */
@@ -54,6 +55,13 @@ public class VoronoiGenerator {
         return voronoi.beachLine.getDiagram();
     }
 
+
+    public static <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiDiagram generateVoronoiDiagram(Map<Integer, NodeType> nodeMap, Rectangle boundingBox) {
+        VoronoiGenerator voronoi = new VoronoiGenerator(nodeMap, boundingBox);
+        voronoi.generateDiagram();
+        return voronoi.beachLine.getDiagram();
+    }
+
     /**
      * Creates a new Voronoi generator.
      *
@@ -69,6 +77,19 @@ public class VoronoiGenerator {
         // add them as site events to the deque
         this.siteEvents = new ArrayDeque<>();
         sortedCopy.forEach(vector -> this.siteEvents.push(new SiteEvent(vector)));
+        logger.trace("Sorted sites in queue: {}", this.siteEvents);
+    }
+
+    private <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiGenerator(Map<Integer, NodeType> nodeMap, Rectangle boundingBox) {
+        // initialize beach line with bounding box
+        this.beachLine = new BeachLine(boundingBox);
+        // sort the original vectors from top to bottom
+        Comparator<AbstractMap.Entry<Integer,NodeType>> comparator = Comparator.comparing(nodeType -> nodeType.getValue().getPosition().getY());
+        TreeSet<AbstractMap.Entry<Integer,NodeType>> sortedCopy = new TreeSet<>(comparator.reversed());
+        sortedCopy.addAll(nodeMap.entrySet());
+        // add them as site events to the deque
+        this.siteEvents = new ArrayDeque<>();
+        sortedCopy.forEach(entry -> this.siteEvents.push(new SiteEvent(entry.getKey(), entry.getValue().getPosition())));
         logger.trace("Sorted sites in queue: {}", this.siteEvents);
     }
 
@@ -91,8 +112,12 @@ public class VoronoiGenerator {
                 if (previousSite == null || siteEvent.getX() != previousSite.getX() || siteEvent.getY() != previousSite.getY()) {
                     logger.trace("Processing site event: {}", siteEvent);
                     // first create cell for new site
-                    this.beachLine.getDiagram().createCell(siteIdentifier, siteEvent);
-                    siteIdentifier++;
+                    if (siteEvent.getIdentifier() == -1) {
+                        this.beachLine.getDiagram().createCell(siteIdentifier, siteEvent);
+                        siteIdentifier++;
+                    } else {
+                        this.beachLine.getDiagram().createCell(siteEvent.getIdentifier(), siteEvent);
+                    }
                     // then create a beach section for that site
                     this.beachLine.addBeachSection(siteEvent);
                     previousSite = siteEvent;

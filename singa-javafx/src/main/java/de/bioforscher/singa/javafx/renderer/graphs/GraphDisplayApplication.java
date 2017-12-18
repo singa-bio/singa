@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -22,16 +23,21 @@ public class GraphDisplayApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Canvas canvas = new Canvas();
-        canvas.setWidth(1400);
-        canvas.setHeight(1400);
+        Canvas canvas = new GraphCanvas(this);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
 
-        Button arrange = new Button("Arrange");
-        arrange.setOnAction(action -> renderer.arrangeGraph(graph));
-        root.setBottom(arrange);
+        HBox buttonBar = new HBox();
+
+        Button forceDirectedLayout = new Button("Arrange");
+        forceDirectedLayout.setOnAction(action -> renderer.arrangeGraph(graph));
+
+        Button relaxLayout = new Button("Relax");
+        relaxLayout.setOnAction(action -> renderer.relaxGraph(graph));
+
+        buttonBar.getChildren().addAll(forceDirectedLayout, relaxLayout);
+        root.setBottom(buttonBar);
 
         // show
         Scene scene = new Scene(root);
@@ -41,7 +47,25 @@ public class GraphDisplayApplication extends Application {
         renderer.drawingWidthProperty().bind(canvas.widthProperty());
         renderer.drawingHeightProperty().bind(canvas.heightProperty());
         renderer.setGraphicsContext(canvas.getGraphicsContext2D());
-        renderer.arrangeGraph(graph);
+
+        canvas.widthProperty().bind(root.widthProperty());
+        canvas.heightProperty().bind(root.heightProperty().subtract(buttonBar.heightProperty()));
+
+        canvas.widthProperty().addListener(observable -> renderer.render(graph));
+        canvas.heightProperty().addListener(observable -> renderer.render(graph));
+
+    }
+
+    public void triggerRendering() {
+        renderer.render(graph);
+    }
+
+    public static GraphRenderer getRenderer() {
+        return renderer;
+    }
+
+    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> getGraph() {
+        return graph;
     }
 
     public static void main(String[] args) {

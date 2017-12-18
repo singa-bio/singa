@@ -1,13 +1,13 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
-import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Contains all information about the voronoi diagram created by {@link VoronoiGenerator#generateVoronoiDiagram(Collection,
@@ -37,6 +37,11 @@ public class VoronoiDiagram {
     private List<Vector2D> vertices;
 
     /**
+     * The bounding box.
+     */
+    private final Rectangle boundingBox;
+
+    /**
      * Left border of the bounding box
      */
     private double leftBorder;
@@ -56,11 +61,6 @@ public class VoronoiDiagram {
      */
     private double bottomBorder;
 
-    Line top = new Line(0, 0, 500, 0);
-    Line bottom = new Line(0, 500, 500, 500);
-    Line left = new Line(0, 0, 0, 500);
-    Line right = new Line(500, 0, 500, 500);
-
     /**
      * Creates a new Voronoi diagram with the bounding box.
      *
@@ -70,17 +70,21 @@ public class VoronoiDiagram {
         this.cells = new HashMap<>();
         this.edges = new ArrayList<>();
         this.vertices = new ArrayList<>();
-
+        this.boundingBox = boundingBox;
         this.leftBorder = boundingBox.getLeftMostXPosition();
         this.rightBorder = boundingBox.getRightMostXPosition();
         this.bottomBorder = boundingBox.getTopMostYPosition();
         this.topBorder = boundingBox.getBottomMostYPosition();
     }
 
+    public List<Vector2D> getSites() {
+        return this.cells.values().stream().map(cell -> cell.getSite().getSite()).collect(Collectors.toList());
+    }
+
     /**
-     * Gets all edges of the voronoi diagram.
+     * Returns the edges of the Voronoi diagram.
      *
-     * @return
+     * @return The edges of the Voronoi diagram.
      */
     public List<VoronoiEdge> getEdges() {
         return this.edges;
@@ -192,6 +196,10 @@ public class VoronoiDiagram {
      */
     public Collection<VoronoiCell> getCells() {
         return this.cells.values();
+    }
+
+    public Rectangle getBoundingBox() {
+        return boundingBox;
     }
 
     /**

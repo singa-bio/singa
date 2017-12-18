@@ -192,6 +192,31 @@ public class VoronoiCell implements Polygon {
         this.closed = closed;
     }
 
+    public Vector2D getCentroid() {
+        double x = 0.0;
+        double y = 0.0;
+        for (VoronoiHalfEdge halfEdge : halfEdges) {
+            final Vector2D startPoint = halfEdge.getStartPoint();
+            final Vector2D endPoint = halfEdge.getEndPoint();
+            final double v = startPoint.getX() * endPoint.getY() - endPoint.getX() * startPoint.getY();
+            x += (startPoint.getX() + endPoint.getX()) * v;
+            y += (startPoint.getY() + endPoint.getY()) * v;
+        }
+        double m = getArea() * 6.0;
+        return new Vector2D(x/m, y/m);
+    }
+
+    public double getArea() {
+        double area = 0.0;
+        for (VoronoiHalfEdge halfEdge : halfEdges) {
+            final Vector2D startPoint = halfEdge.getStartPoint();
+            final Vector2D endPoint = halfEdge.getEndPoint();
+            area += startPoint.getX() * endPoint.getY();
+            area -= startPoint.getY() * endPoint.getX();
+        }
+        return area / 2.0;
+    }
+
     @Override
     public Vector2D[] getVertices() {
         Vector2D[] vertices = new Vector2D[this.halfEdges.size()];
