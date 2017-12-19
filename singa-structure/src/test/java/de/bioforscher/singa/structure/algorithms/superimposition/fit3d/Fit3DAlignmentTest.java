@@ -115,8 +115,33 @@ public class Fit3DAlignmentTest {
         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
+
     @Test
-    public void shouldFindInterMolecularMatches() throws IOException {
+    public void shouldRunFit3DAlignmentWithMMTFAndExchanges() {
+        Structure target = StructureParser.mmtf()
+                .pdbIdentifier("2mnr")
+                .everything()
+                .parse();
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(target.getFirstModel())
+                .atomFilter(AtomFilter.isArbitrary())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+    @Test
+    public void shouldFindInterMolecularMatches() {
         Structure target = StructureParser.online()
                 .pdbIdentifier("4CHA")
                 .everything()
@@ -137,7 +162,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldAlignNucleotideMotif() throws IOException {
+    public void shouldAlignNucleotideMotif() {
         Structure nucleotideTarget = StructureParser.online()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
@@ -154,7 +179,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindLigandContainingMotif() throws IOException {
+    public void shouldFindLigandContainingMotif() {
         Structure queryStructure = StructureParser.online()
                 .pdbIdentifier("1ACJ")
                 .everything()
@@ -210,7 +235,7 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindInteractionMotif() throws IOException {
+    public void shouldFindInteractionMotif() {
         InteractionContainer interactionContainer = PlipParser.parse("1k1i",
                 Resources.getResourceAsStream("plip/1k1i.xml"));
         Structure structure = StructureParser.online()
