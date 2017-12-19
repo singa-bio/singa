@@ -94,23 +94,23 @@ public class MmtfChainTest {
         assertEquals(atom.getPosition(), new Vector3D(8.392000198364258, 2.0460000038146973, -5.789000034332275));
     }
 
-
     @Test
     public void removeAtom() {
         // ATOM   3208 HH22 ARG B  83      37.797  27.994 -88.269  1.00  0.00           H
-        Optional<Atom> optionalAtom = chainToModify.getAtom(3208);
+        final int atomIdentifier = 3208;
+        Optional<Atom> optionalAtom = chainToModify.getAtom(atomIdentifier);
         if (!optionalAtom.isPresent()) {
             fail("Optional atom was empty.");
         }
         final Atom atom = optionalAtom.get();
-        assertEquals(atom.getAtomIdentifier().intValue(), 3208);
-        chainToModify.removeAtom(3208);
+        assertEquals(atom.getAtomIdentifier().intValue(), atomIdentifier);
+        chainToModify.removeAtom(atomIdentifier);
         // check if it is present in the chain
-        optionalAtom = chainToModify.getAtom(3208);
+        optionalAtom = chainToModify.getAtom(atomIdentifier);
         assertTrue(!optionalAtom.isPresent());
         // check if it is present in the structure
         // keep ini mind: get atom returns the first atom with id 3208 that is found (the one not removed in model 2)
-        optionalAtom = structure2N5E.getModel(1).get().getAtom(3208);
+        optionalAtom = structure2N5E.getModel(1).get().getAtom(atomIdentifier);
         assertTrue(!optionalAtom.isPresent());
     }
 

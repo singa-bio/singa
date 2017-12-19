@@ -129,6 +129,8 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
 
     @Override
     public Optional<Atom> getAtom(Integer internalAtomIndex) {
+        // offset between internal and external indices
+        internalAtomIndex--;
         if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex || removedAtoms.contains(internalAtomIndex)) {
             return Optional.empty();
         }

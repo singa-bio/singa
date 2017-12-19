@@ -143,6 +143,7 @@ public class MmtfChain implements Chain {
         } else {
             final Range<Integer> atomRange = atomRanges.get(internalIndex);
             MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(internalIndex), internalIndex, atomRange.getLowerBound(), atomRange.getUpperBound());
+            cachedLeaves.put(internalIndex, leaf);
             return Optional.of(leaf);
         }
     }
