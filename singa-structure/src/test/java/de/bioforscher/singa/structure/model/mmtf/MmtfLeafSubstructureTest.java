@@ -35,25 +35,25 @@ public class MmtfLeafSubstructureTest {
     }
 
     @Test
-    public void getIdentifier() throws Exception {
+    public void getIdentifier() {
         assertEquals(new LeafIdentifier("1C0A", 1, "A", 162), leaf162.getIdentifier());
         assertEquals(new LeafIdentifier("1C0A", 1, "B", 620, 'A'), leaf620A.getIdentifier());
     }
 
     @Test
-    public void getThreeLetterCode() throws Exception {
+    public void getThreeLetterCode() {
         assertEquals("Thr", leaf162.getThreeLetterCode());
         assertEquals("H2U", leaf620A.getThreeLetterCode());
     }
 
     @Test
-    public void getAllAtoms() throws Exception {
+    public void getAllAtoms() {
         final List<Atom> allAtoms = leaf162.getAllAtoms();
         assertEquals(7, allAtoms.size());
     }
 
     @Test
-    public void getAtom() throws Exception {
+    public void getAtom() {
         final Optional<Atom> atom = leaf620A.getAtom(437);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");

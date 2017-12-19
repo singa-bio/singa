@@ -8,7 +8,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,52 +22,52 @@ public class OakStructureTest {
 
 
     @BeforeClass
-    public static void prepareData() throws IOException {
+    public static void prepareData() {
         structure2N5E = (OakStructure) StructureParser.online().pdbIdentifier("2N5E").parse();
         structure1C0A = (OakStructure) StructureParser.online().pdbIdentifier("1C0A").parse();
         structureToModify = (OakStructure) StructureParser.online().pdbIdentifier("1BRR").parse();
     }
 
     @Test
-    public void getPdbIdentifier() throws Exception {
+    public void getPdbIdentifier() {
         String actual = structure2N5E.getPdbIdentifier();
         assertEquals("2N5E", actual);
     }
 
     @Test
-    public void setPdbIdentifier() throws Exception {
+    public void setPdbIdentifier() {
         structureToModify.setPdbIdentifier("5ING");
         String actual = structureToModify.getPdbIdentifier();
         assertEquals("5ING", actual);
     }
 
     @Test
-    public void getTitle() throws Exception {
+    public void getTitle() {
         String actual = structure2N5E.getTitle();
         assertEquals("THE 3D SOLUTION STRUCTURE OF DISCOIDAL HIGH-DENSITY LIPOPROTEIN PARTICLES", actual);
     }
 
     @Test
-    public void setTitle() throws Exception {
+    public void setTitle() {
         structureToModify.setTitle("Test Title");
         String actual = structureToModify.getTitle();
         assertEquals("Test Title", actual);
     }
 
     @Test
-    public void getAllModels() throws Exception {
+    public void getAllModels() {
         List<Model> allModels = structure2N5E.getAllModels();
         assertEquals(10, allModels.size());
     }
 
     @Test
-    public void getFirstModel() throws Exception {
+    public void getFirstModel() {
         Model model = structure2N5E.getFirstModel();
         assertEquals(1, (int) model.getModelIdentifier());
     }
 
     @Test
-    public void getModel() throws Exception {
+    public void getModel() {
         Optional<Model> model = structure2N5E.getModel(2);
         if (!model.isPresent()) {
             fail("Optional model was empty.");
@@ -77,26 +76,26 @@ public class OakStructureTest {
     }
 
     @Test
-    public void addModel() throws Exception {
+    public void addModel() {
         structureToModify.addModel(new OakModel(2));
         int actualSize = structureToModify.getAllModels().size();
         assertEquals(2, actualSize);
     }
 
     @Test
-    public void getAllChains() throws Exception {
+    public void getAllChains() {
         List<Chain> allChains = structure2N5E.getAllChains();
         assertEquals(20, allChains.size());
     }
 
     @Test
-    public void getFirstChain() throws Exception {
+    public void getFirstChain() {
         Chain firstChain = structure2N5E.getFirstChain();
         assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getChain() throws Exception {
+    public void getChain() {
         Optional<Chain> chain = structure2N5E.getChain(1, "B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
@@ -105,13 +104,13 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getAllLeafSubstructures() throws Exception {
+    public void getAllLeafSubstructures() {
         List<LeafSubstructure<?>> leafSubstructures = structure2N5E.getAllLeafSubstructures();
         assertEquals(3340, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() throws Exception {
+    public void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = structure2N5E.getLeafSubstructure(new LeafIdentifier("2N5E", 5, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -123,7 +122,7 @@ public class OakStructureTest {
     }
 
     @Test
-    public void removeLeafSubstructure() throws Exception {
+    public void removeLeafSubstructure() {
         LeafIdentifier leafIdentifier = new LeafIdentifier("1BRR", 1, "A", 176);
         Optional<LeafSubstructure<?>> leafSubstructure = structureToModify.getLeafSubstructure(leafIdentifier);
         if (leafSubstructure.isPresent()) {
@@ -136,13 +135,13 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getAllAminoAcids() throws Exception {
+    public void getAllAminoAcids() {
         final List<AminoAcid> aminoAcids = structure1C0A.getAllAminoAcids();
         assertEquals(585, aminoAcids.size());
     }
 
     @Test
-    public void getAminoAcid() throws Exception {
+    public void getAminoAcid() {
         final Optional<AminoAcid> aminoAcid = structure1C0A.getAminoAcid(new LeafIdentifier("1c0a", 1, "A", 98));
         if (!aminoAcid.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -154,14 +153,14 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getAllNucleotides() throws Exception {
+    public void getAllNucleotides() {
         final List<Nucleotide> nucleotides = structure1C0A.getAllNucleotides();
         // recognizes modified nucleotides as nucleotides nevertheless
         assertEquals(77, nucleotides.size());
     }
 
     @Test
-    public void getNucleotide() throws Exception {
+    public void getNucleotide() {
         final Optional<Nucleotide> nucleotide = structure1C0A.getNucleotide(new LeafIdentifier("1c0a", 1, "B", 617));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -173,13 +172,13 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getAllLigands() throws Exception {
+    public void getAllLigands() {
         final List<Ligand> ligands = structure1C0A.getAllLigands();
         assertEquals(517, ligands.size());
     }
 
     @Test
-    public void getLigand() throws Exception {
+    public void getLigand() {
         final Optional<Ligand> nucleotide = structure1C0A.getLigand(new LeafIdentifier("1c0a", 1, "A", 831));
         if (!nucleotide.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -191,13 +190,13 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getAllAtoms() throws Exception {
+    public void getAllAtoms() {
         final List<Atom> atoms = structure1C0A.getAllAtoms();
         assertEquals(6820, atoms.size());
     }
 
     @Test
-    public void getAtom() throws Exception {
+    public void getAtom() {
         final Optional<Atom> atom = structure1C0A.getAtom(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
@@ -207,7 +206,7 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getUniqueAtomEntry() throws Exception {
+    public void getUniqueAtomEntry() {
         final Optional<Map.Entry<UniqueAtomIdentifer, Atom>> atom = structure1C0A.getUniqueAtomEntry(15);
         if (!atom.isPresent()) {
             fail("Optional atom was empty.");
@@ -220,7 +219,7 @@ public class OakStructureTest {
     }
 
     @Test
-    public void addAtom() throws Exception {
+    public void addAtom() {
         final int expected = structureToModify.getAllAtoms().size() + 1;
         structureToModify.addAtom("A", "ADD", new Vector3D(1.0, 2.0, 3.0));
         final int actual = structureToModify.getAllAtoms().size();
@@ -228,7 +227,7 @@ public class OakStructureTest {
     }
 
     @Test
-    public void removeAtom() throws Exception {
+    public void removeAtom() {
         final int expected = structureToModify.getAllAtoms().size() - 1;
         structureToModify.removeAtom(17);
         final int actual = structureToModify.getAllAtoms().size();
@@ -236,13 +235,13 @@ public class OakStructureTest {
     }
 
     @Test
-    public void getLastAddedAtomIdentifier() throws Exception {
+    public void getLastAddedAtomIdentifier() {
         final int lastAddedAtomIdentifier = structure1C0A.getLastAddedAtomIdentifier();
         assertEquals(6822, lastAddedAtomIdentifier);
     }
 
     @Test
-    public void getCopy() throws Exception {
+    public void getCopy() {
         final Structure structure2N5ECopy = structure2N5E.getCopy();
         assertTrue(structure2N5E != structure2N5ECopy);
         assertTrue(structure2N5E.equals(structure2N5ECopy));

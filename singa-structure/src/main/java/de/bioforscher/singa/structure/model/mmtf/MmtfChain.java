@@ -103,8 +103,9 @@ public class MmtfChain implements Chain {
      */
     private MmtfChain(MmtfChain mmtfChain) {
         bytes = mmtfChain.bytes;
-        data = MmtfStructure.bytesToStructureData(bytes);
+        data = mmtfChain.data;
         chainIdentifier = mmtfChain.chainIdentifier;
+        cachedLeaves = new HashMap<>(mmtfChain.cachedLeaves);
         relevantGroups = new ArrayList<>(mmtfChain.relevantGroups);
         leafIdentifiers = new HashMap<>(mmtfChain.leafIdentifiers);
         atomRanges = new HashMap<>(mmtfChain.atomRanges);
@@ -154,6 +155,7 @@ public class MmtfChain implements Chain {
         }
         leafIdentifiers.remove(internalIndex);
         cachedLeaves.remove(internalIndex);
+        // the Integer cast has to be there
         relevantGroups.remove((Integer) internalIndex);
         atomRanges.remove(internalIndex);
         return true;
@@ -185,6 +187,18 @@ public class MmtfChain implements Chain {
         return new MmtfChain(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MmtfChain mmtfChain = (MmtfChain) o;
+        return Objects.equals(chainIdentifier, mmtfChain.chainIdentifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chainIdentifier);
+    }
 
     private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
         for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {

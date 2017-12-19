@@ -87,7 +87,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
      */
     protected MmtfLeafSubstructure(MmtfLeafSubstructure<?> mmtfLeafSubstructure) {
         bytes = mmtfLeafSubstructure.bytes;
-        data = MmtfStructure.bytesToStructureData(bytes);
+        data = mmtfLeafSubstructure.data;
         leafIdentifier = mmtfLeafSubstructure.leafIdentifier;
         internalGroupIndex = mmtfLeafSubstructure.internalGroupIndex;
         atomStartIndex = mmtfLeafSubstructure.atomStartIndex;
@@ -119,7 +119,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
             if (cachedAtoms.containsKey(internalAtomIndex)) {
                 results.add(cachedAtoms.get(internalAtomIndex));
             } else {
-                MmtfAtom mmtfAtom = new MmtfAtom(data, bytes, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+                MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
                 cachedAtoms.put(internalAtomIndex, mmtfAtom);
                 results.add(mmtfAtom);
             }
@@ -135,7 +135,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         if (cachedAtoms.containsKey(internalAtomIndex)) {
             return Optional.of(cachedAtoms.get(internalAtomIndex));
         } else {
-            MmtfAtom mmtfAtom = new MmtfAtom(data, bytes, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+            MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
             cachedAtoms.put(internalAtomIndex, mmtfAtom);
             return Optional.of(mmtfAtom);
         }
@@ -164,6 +164,20 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MmtfLeafSubstructure<?> that = (MmtfLeafSubstructure<?>) o;
+        return Objects.equals(family, that.family) &&
+                Objects.equals(leafIdentifier, that.leafIdentifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(family, leafIdentifier);
     }
 
     @Override

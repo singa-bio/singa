@@ -8,7 +8,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class AtomFilterTest {
 
     @Test
-    public void shouldApplyAtomFilter() throws IOException {
+    public void shouldApplyAtomFilter() {
 
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);

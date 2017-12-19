@@ -39,7 +39,7 @@ public class Fit3DAlignmentTest {
     private Structure target;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         target = StructureParser.online()
                 .pdbIdentifier("1GL0")
                 .parse();
@@ -101,6 +101,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldRunFit3DAlignmentWithMMTF() {
         Structure target = StructureParser.mmtf()
+        // Structure target = StructureParser.online()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -118,7 +119,8 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentWithMMTFAndExchanges() {
-        Structure target = StructureParser.mmtf()
+         Structure target = StructureParser.mmtf()
+        // Structure target = StructureParser.online()
                 .pdbIdentifier("2mnr")
                 .everything()
                 .parse();

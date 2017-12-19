@@ -20,7 +20,7 @@ public class StructuralMotifTest {
     private static StructuralMotif motif;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void setup() {
         Structure motifStructure = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("Asn_3m4p.pdb"))
                 .everything()

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class StructuresTest {
 
     @Test
-    public void calculateDistanceMatrix() throws Exception {
+    public void calculateDistanceMatrix() {
         Chain chain = StructureParser.online()
                 .pdbIdentifier("1HRR")
                 .parse()
@@ -48,7 +48,7 @@ public class StructuresTest {
     }
 
     @Test
-    public void isAlphaCarbonStructure() throws Exception {
+    public void isAlphaCarbonStructure() {
         Structure alphaCarbonStructure = StructureParser.online()
                 .pdbIdentifier("1hrb")
                 .parse();

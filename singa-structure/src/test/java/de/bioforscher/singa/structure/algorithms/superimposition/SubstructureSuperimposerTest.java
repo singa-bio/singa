@@ -16,7 +16,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class SubstructureSuperimposerTest {
     private static Chain reference;
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup() {
         Structure motif1 = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("motif_HDS_01.pdb"))
                 .parse();

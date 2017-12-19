@@ -12,7 +12,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class AminoAcidsTest {
 
     @Test
-    public void createVirtualCBAtom() throws Exception {
+    public void createVirtualCBAtom() {
         AminoAcid glycine = AminoAcidFamily.GLYCINE.getPrototype();
         assertArrayEquals(new double[]{0.5631065040724832, 1.8146146343509413, -0.6210296794396173},
                 AminoAcids.createVirtualCBAtom(glycine).getPosition().getElements(),

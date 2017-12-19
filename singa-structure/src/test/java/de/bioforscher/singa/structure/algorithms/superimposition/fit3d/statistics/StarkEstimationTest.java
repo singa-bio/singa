@@ -10,9 +10,9 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
@@ -40,7 +40,8 @@ public class StarkEstimationTest {
     }
 
     @Test
-    public void shouldCalculatePvalues() throws IOException, InterruptedException {
+    @Ignore
+    public void shouldCalculatePvalues() {
         StarkEstimation starkEstimation = new StarkEstimation();
         StructureParser.MultiParser multiParser = StructureParser.online()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")

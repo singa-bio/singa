@@ -235,15 +235,16 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     @Override
-    public String toString() {
-        return leafIdentifier.toString();
-    }
-
-    @Override
     public int hashCode() {
         int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
         result = 31 * result + (family != null ? family.hashCode() : 0);
         return result;
+    }
+
+
+    @Override
+    public String toString() {
+        return leafIdentifier.toString();
     }
 
     @Override
