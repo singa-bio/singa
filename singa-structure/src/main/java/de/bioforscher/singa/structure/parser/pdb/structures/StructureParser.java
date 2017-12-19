@@ -900,7 +900,7 @@ public class StructureParser {
         /**
          * Creates a new reference for a local pdb installation.
          *
-         * @param localPdbLocation
+         * @param localPdbLocation The location of the local PDB installation.
          */
         public LocalPDB(String localPdbLocation) {
             localPdbPath = Paths.get(localPdbLocation);

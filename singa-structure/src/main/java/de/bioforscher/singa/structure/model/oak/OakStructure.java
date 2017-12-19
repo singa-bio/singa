@@ -175,7 +175,7 @@ public class OakStructure implements Structure {
 
     /**
      * Adds an {@link Atom} to the {@link Structure}
-     * FIXME: atom serial overflow may happen (>9999)
+     * FIXME: atom serial overflow may happen (if exceeds 9999)
      *
      * @param chainIdentifier The identifier of the {@link Chain} to which it should be added.
      * @param threeLetterCode The three-letter code of the associated {@link LeafSubstructure}.

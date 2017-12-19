@@ -35,6 +35,11 @@ public class MmtfAtom implements Atom {
     private int internalAtomIndex;
 
     /**
+     * The cached position of the atom.
+     */
+    private Vector3D cachedPosition;
+
+    /**
      * Creates a new {@link MmtfAtom}.
      *
      * @param data The original mmtf data.
@@ -47,6 +52,14 @@ public class MmtfAtom implements Atom {
         this.internalGroupIndex = internalGroupIndex;
         this.internalAtomIndex = internalAtomIndex;
         this.groupPositionIndex = groupPositionIndex;
+    }
+
+    public MmtfAtom(MmtfAtom mmtfAtom) {
+        data = mmtfAtom.data;
+        internalGroupIndex = mmtfAtom.internalGroupIndex;
+        internalAtomIndex = mmtfAtom.internalAtomIndex;
+        groupPositionIndex = mmtfAtom.groupPositionIndex;
+        cachedPosition = mmtfAtom.cachedPosition;
     }
 
     @Override
@@ -62,21 +75,28 @@ public class MmtfAtom implements Atom {
 
     @Override
     public Vector3D getPosition() {
-        // assemble position from internal atom identifier
-        return new Vector3D(data.getxCoords()[internalAtomIndex], data.getyCoords()[internalAtomIndex], data.getzCoords()[internalAtomIndex]);
+        if (cachedPosition == null) {
+            // assemble position from internal atom identifier
+            cachedPosition = new Vector3D(data.getxCoords()[internalAtomIndex], data.getyCoords()[internalAtomIndex], data.getzCoords()[internalAtomIndex]);
+        }
+        return cachedPosition;
+
     }
 
     @Override
     public void setPosition(Vector3D position) {
-        data.getxCoords()[internalAtomIndex] = (float) position.getX();
-        data.getyCoords()[internalAtomIndex] = (float) position.getY();
-        data.getzCoords()[internalAtomIndex] = (float) position.getZ();
+        cachedPosition = position;
     }
 
     @Override
     public Element getElement() {
         return ElementProvider.getElementBySymbol(data.getGroupElementNames(data.getGroupTypeIndices()[internalGroupIndex])[groupPositionIndex])
                 .orElse(ElementProvider.UNKOWN);
+    }
+
+    @Override
+    public Atom getCopy() {
+        return new MmtfAtom(this);
     }
 
     @Override

@@ -93,7 +93,12 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         atomStartIndex = mmtfLeafSubstructure.atomStartIndex;
         atomEndIndex = mmtfLeafSubstructure.atomEndIndex;
         removedAtoms = new HashSet<>(mmtfLeafSubstructure.removedAtoms);
-        cachedAtoms = new HashMap<>(mmtfLeafSubstructure.cachedAtoms);
+
+        // effectively copy atoms
+        cachedAtoms = new HashMap<>();
+        for (Map.Entry<Integer, MmtfAtom> entry : mmtfLeafSubstructure.cachedAtoms.entrySet()) {
+            cachedAtoms.put(entry.getKey(), (MmtfAtom) entry.getValue().getCopy());
+        }
     }
 
     @Override

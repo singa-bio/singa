@@ -151,7 +151,21 @@ public class SubstructureSuperimposerTest {
         List<LeafIdentifier> secondIdentifiers = LeafIdentifiers.of("A-58", "A-59");
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
 
-        SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
+        SubstructureSuperimposition mmtfSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
+
+        first = StructureParser.online()
+                .pdbIdentifier("1cd9")
+                .parse();
+        firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
+
+        second = StructureParser.online()
+                .pdbIdentifier("1cn4")
+                .parse();
+        secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
+
+        SubstructureSuperimposition pdbSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
+
+        assertEquals(mmtfSuperimposition.getRmsd(), pdbSuperimposition.getRmsd(), 1E-6);
     }
 
     @Test

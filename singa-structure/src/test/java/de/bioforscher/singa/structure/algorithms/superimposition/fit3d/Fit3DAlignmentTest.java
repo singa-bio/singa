@@ -119,8 +119,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentWithMMTFAndExchanges() {
-         Structure target = StructureParser.mmtf()
-        // Structure target = StructureParser.online()
+        Structure target = StructureParser.online()
                 .pdbIdentifier("2mnr")
                 .everything()
                 .parse();

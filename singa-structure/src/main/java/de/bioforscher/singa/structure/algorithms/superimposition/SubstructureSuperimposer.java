@@ -403,9 +403,7 @@ public class SubstructureSuperimposer {
         for (LeafSubstructure<?> subStructure : mappedCandidate) {
             for (Atom atom : subStructure.getAllAtoms()) {
                 Vector newPosition = mappedPositions.get(positionMapping.get(atom.getAtomIdentifier()));
-                // FIXME provide class for 3d vector superimposition
-                Vector3D v3 = newPosition.as(Vector3D.class);
-                atom.setPosition(v3);
+                atom.setPosition(newPosition.as(Vector3D.class));
             }
         }
 

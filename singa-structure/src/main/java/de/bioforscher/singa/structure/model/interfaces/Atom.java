@@ -47,6 +47,8 @@ public interface Atom {
      */
     String getAtomName();
 
+    Atom getCopy();
+
     /**
      * Returns the flat String representation of this atom in the form:
      * <pre>
