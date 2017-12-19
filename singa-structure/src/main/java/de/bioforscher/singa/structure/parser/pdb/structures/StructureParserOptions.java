@@ -31,6 +31,10 @@ public class StructureParserOptions {
      * Tries to find a pdbid in the file name and uses it as the identifier of the structure.
      */
     private boolean inferIdentifierFromFileName = false;
+    /**
+     * Defines if hetero atoms should be parsed.
+     */
+    private boolean heteroAtoms = true;
 
     /**
      * Create a new Options object using enum constants.
@@ -66,6 +70,12 @@ public class StructureParserOptions {
             case OMIT_LIGAND_INFORMATION:
                 options.retrieveLigandInformation(false);
                 break;
+            case GET_HETERO_ATOMS:
+                options.heteroAtoms(true);
+                break;
+            case OMIT_HETERO_ATOMS:
+                options.heteroAtoms(false);
+                break;
             case GET_HYDROGEN_CONNECTIONS:
                 options.connectHydrogens(true);
                 break;
@@ -91,6 +101,14 @@ public class StructureParserOptions {
                 options.inferIdentifierFromFileName(false);
                 break;
         }
+    }
+
+    public void heteroAtoms(boolean heteroAtoms) {
+        this.heteroAtoms = heteroAtoms;
+    }
+
+    public boolean isHeteroAtoms() {
+        return heteroAtoms;
     }
 
     /**
@@ -244,6 +262,16 @@ public class StructureParserOptions {
          * Omit parsing of ligand information.
          */
         OMIT_LIGAND_INFORMATION,
+
+        /**
+         * Parse atoms annotated as hetero atoms (default).
+         */
+        GET_HETERO_ATOMS,
+
+        /**
+         * Omit parsing of hetero atoms.
+         */
+        OMIT_HETERO_ATOMS,
 
         /**
          * Connect hydrogens to leafs.

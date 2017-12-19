@@ -71,7 +71,7 @@ public class OakAtom implements Atom {
 
 
     @Override
-    public Integer getIdentifier() {
+    public Integer getAtomIdentifier() {
         return identifier;
     }
 

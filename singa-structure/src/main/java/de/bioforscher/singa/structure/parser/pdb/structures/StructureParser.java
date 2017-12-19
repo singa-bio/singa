@@ -396,7 +396,7 @@ public class StructureParser {
          *
          * @return The number of structures remaining.
          */
-        public int getNumberOfRemainingStructures() {
+        public synchronized int getNumberOfRemainingStructures() {
             return selector.sourceSelector.contentIterator.getNumberOfRemainingStructures();
         }
 

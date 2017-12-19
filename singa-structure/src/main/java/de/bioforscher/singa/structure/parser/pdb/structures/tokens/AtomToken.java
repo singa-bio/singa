@@ -75,7 +75,7 @@ public enum AtomToken implements PDBToken {
             } else {
                 currentLine.append(RECORD_TYPE.createTokenString("HETATM"));
             }
-            currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getIdentifier())))
+            currentLine.append(ATOM_SERIAL.createTokenString(String.valueOf(atom.getAtomIdentifier())))
                     .append(" ")
                     .append(formatAtomName(atom))
                     .append(" ") // ALTERNATE_LOCATION_INDICATOR not yet implemented

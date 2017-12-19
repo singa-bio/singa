@@ -46,7 +46,7 @@ public class SideChainCentroidRepresentationScheme extends AbstractRepresentatio
                         .negate()))
                 .map(Atom::getPosition)
                 .collect(Collectors.toList());
-        return new OakAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.SIDE_CHAIN_CENTROID.getAtomNameString(),
                 Vectors3D.getCentroid(atomPositions));

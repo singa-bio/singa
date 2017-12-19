@@ -49,7 +49,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstModel() throws Exception {
         Model model = structure2N5E.getFirstModel();
-        assertEquals(1, (int) model.getIdentifier());
+        assertEquals(1, (int) model.getModelIdentifier());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class MmtfStructureTest {
         if (!model.isPresent()) {
             fail("Optional model was empty.");
         }
-        assertEquals(2, (int) model.get().getIdentifier());
+        assertEquals(2, (int) model.get().getModelIdentifier());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class MmtfStructureTest {
     @Test
     public void getFirstChain() throws Exception {
         Chain firstChain = structure2N5E.getFirstChain();
-        assertEquals("A", firstChain.getIdentifier());
+        assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class MmtfStructureTest {
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
-        assertEquals("B", chain.get().getIdentifier());
+        assertEquals("B", chain.get().getChainIdentifier());
     }
 
     @Test

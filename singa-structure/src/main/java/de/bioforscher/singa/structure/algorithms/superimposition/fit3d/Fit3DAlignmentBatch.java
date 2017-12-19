@@ -1,6 +1,5 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.StatisticalModel;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
@@ -9,11 +8,9 @@ import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.model.oak.Structures;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,7 +90,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
 
         Collections.sort(allMatches);
 
-        // calculate de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.statistics
+        // calculate statistics
         if (statisticalModel != null) {
             try {
                 statisticalModel.calculatePvalues(allMatches);
@@ -127,7 +124,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private class Fit3DCalculator implements Callable<List<Fit3DMatch>> {
 
         @Override
-        public List<Fit3DMatch> call() throws Exception {
+        public List<Fit3DMatch> call() {
             // FIXME here we are dealing only with the first model
             Fit3D fit3d;
             if (multiParser.hasNext()) {
@@ -164,8 +161,9 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .run();
                     }
                     return fit3d.getMatches();
-                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
-                    logger.warn("failed to run Fit3D against structure {}", multiParser.getCurrentPdbIdentifier(), e);
+//                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
+                } catch (Exception e) {
+                    logger.warn("failed to run Fit3D", e);
                 }
             }
             return null;

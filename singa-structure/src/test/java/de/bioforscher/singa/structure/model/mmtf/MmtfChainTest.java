@@ -30,7 +30,7 @@ public class MmtfChainTest {
 
     @Test
     public void getIdentifier() throws Exception {
-        assertEquals("A", firstChain.getIdentifier());
+        assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test

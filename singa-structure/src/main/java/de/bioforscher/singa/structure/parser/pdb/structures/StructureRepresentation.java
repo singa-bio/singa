@@ -72,7 +72,7 @@ public class StructureRepresentation {
             appendChainRepresentations(sb, structuralModel);
         } else {
             for (OakModel model : allModels) {
-                sb.append("MODEL ").append(String.format("%5d", model.getIdentifier())).append(System.lineSeparator());
+                sb.append("MODEL ").append(String.format("%5d", model.getModelIdentifier())).append(System.lineSeparator());
                 appendChainRepresentations(sb, model);
                 sb.append("ENDMDL").append(System.lineSeparator());
             }
@@ -157,7 +157,7 @@ public class StructureRepresentation {
     private static String composePdbRepresentationOfNonConsecutiveRecords(List<LeafSubstructure<?>> nonConsecutiveLeafs) {
         // sorts the leafy by their atom identifier
         if (!nonConsecutiveLeafs.isEmpty()) {
-            nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().get(0).getIdentifier()));
+            nonConsecutiveLeafs.sort(Comparator.comparingInt(nonConsecutiveLeaf -> nonConsecutiveLeaf.getAllAtoms().get(0).getAtomIdentifier()));
             return nonConsecutiveLeafs.stream()
                     .map(LeafSubstructure::getPdbLines)
                     .flatMap(Collection::stream)

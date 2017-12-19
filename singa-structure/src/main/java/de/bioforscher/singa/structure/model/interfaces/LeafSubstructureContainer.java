@@ -34,6 +34,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
      * Removes a {@link LeafSubstructure} from this container.
      *
      * @param leafIdentifier The identifier of the leaf.
+     * @return True if the {@link LeafSubstructure} was removed.
      */
     boolean removeLeafSubstructure(LeafIdentifier leafIdentifier);
 
@@ -167,7 +168,7 @@ public interface LeafSubstructureContainer extends AtomContainer {
     default Optional<Atom> getAtom(int atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             for (Atom atom : leafSubstructure.getAllAtoms()) {
-                if (atom.getIdentifier() == atomIdentifier) {
+                if (atom.getAtomIdentifier() == atomIdentifier) {
                     return Optional.of(atom);
                 }
             }

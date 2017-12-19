@@ -15,8 +15,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its last heavy sidechain atom (the atom most
- * far from the alpha carbon). This is only available for {@link GraphAminoAcid}s with defined alpha carbons. For
+ * An implementation to represent a given {@link LeafSubstructure} by its last heavy sidechain atom (the atom most
+ * far from the alpha carbon). This is only available for {@link AminoAcid}s with defined alpha carbons. For
  * glycine this defaults to {@link BetaCarbonRepresentationScheme}.
  *
  * @author fk
@@ -55,7 +55,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         }
         int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(((AminoAcid) leafSubstructure).getAtomByName("CA").get()));
         Atom referenceAtom = atomDistanceMatrix.getColumnLabel(maximalElementIndex);
-        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
                 referenceAtom.getPosition());
