@@ -51,6 +51,11 @@ public class OakChain implements Chain {
 
     }
 
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return leafSubstructures.values().iterator().next();
+    }
+
     public void addLeafSubstructure(OakLeafSubstructure leafSubstructure, boolean consecutivePart) {
         if (consecutivePart) {
             consecutiveIdentifiers.add(leafSubstructure.getIdentifier());
@@ -169,11 +174,6 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public String toString() {
-        return " Chain " + identifier;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -187,4 +187,10 @@ public class OakChain implements Chain {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return  flatToString();
+    }
+
 }

@@ -95,6 +95,11 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return leafSubstructures.values().iterator().next();
+    }
+
+    @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         final LeafSubstructure leafSubstructure = leafSubstructures.remove(leafIdentifier);
         return leafSubstructure != null;

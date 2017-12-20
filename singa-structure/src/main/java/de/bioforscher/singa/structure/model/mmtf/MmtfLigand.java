@@ -45,16 +45,6 @@ public class MmtfLigand extends MmtfLeafSubstructure<LigandFamily> implements Li
     }
 
     @Override
-    public String flatToString() {
-        return "Ligand (" + getThreeLetterCode() + ") " + getIdentifier();
-    }
-
-    @Override
-    public String toString() {
-        return flatToString();
-    }
-
-    @Override
     public Ligand getCopy() {
         return new MmtfLigand(this);
     }

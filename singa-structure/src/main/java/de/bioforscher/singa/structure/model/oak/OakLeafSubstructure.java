@@ -6,7 +6,6 @@ import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -244,18 +243,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public String toString() {
-        return leafIdentifier.toString();
-    }
-
-    @Override
-    public String flatToString() {
-        return getClass().getSimpleName() + ": " + getFamily().getThreeLetterCode() + " " + getIdentifier();
-    }
-
-    public String deepToString() {
-        return flatToString() + ", with Atoms: {" + getAllAtoms().stream()
-                .map(atom -> atom.getAtomName() + "-" + atom.getAtomIdentifier())
-                .collect(Collectors.joining(", ")) + "}";
+        return  flatToString();
     }
 
 

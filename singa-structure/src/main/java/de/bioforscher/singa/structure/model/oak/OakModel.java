@@ -92,6 +92,11 @@ public class OakModel implements Model {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstChain().getFirstLeafSubstructure();
+    }
+
+    @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         for (Chain chain : chains.values()) {
             final Optional<LeafSubstructure<?>> optionalLeafSubstructure = chain.getLeafSubstructure(leafIdentifier);
@@ -136,11 +141,6 @@ public class OakModel implements Model {
     }
 
     @Override
-    public String toString() {
-        return "Model " + identifier;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -154,4 +154,10 @@ public class OakModel implements Model {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return  flatToString();
+    }
+
 }

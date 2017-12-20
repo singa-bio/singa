@@ -17,7 +17,7 @@ public class PDBIdentifier extends AbstractIdentifier {
     /**
      * The pattern to verify the identifier.
      */
-    public static final Pattern PATTERN = Pattern.compile("[0-9][A-Za-z0-9]{3}");
+    public static final Pattern PATTERN = Pattern.compile("[1-9][A-Za-z0-9]{3}");
 
     /**
      * Creates a new identifier.

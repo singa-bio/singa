@@ -76,6 +76,15 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         this.atomStartIndex = atomStartIndex;
         this.atomEndIndex = atomEndIndex;
         removedAtoms = new HashSet<>();
+        // take care of alternative positions by moving them to removed atoms
+        final char[] alternativeLocationCodes = data.getAltLocIds();
+        for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
+            final char alternativeLocationCode = alternativeLocationCodes[internalAtomIndex];
+            // using 'A' to identify the first alternative location might be vulnerable
+            if (alternativeLocationCode !=LeafIdentifier.DEFAULT_INSERTION_CODE && alternativeLocationCode != 'A'){
+                removedAtoms.add(internalAtomIndex);
+            }
+        }
         exchangeableFamilies = new HashSet<>();
         cachedAtoms = new HashMap<>();
     }
@@ -113,7 +122,6 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
 
     @Override
     public List<Atom> getAllAtoms() {
-        // terminate records are fucking the numbering up
         List<Atom> results = new ArrayList<>();
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
             // skip removed atoms
@@ -174,6 +182,16 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     }
 
     @Override
+    public FamilyType getFamily() {
+        return family;
+    }
+
+    @Override
+    public Set<FamilyType> getExchangeableFamilies() {
+        return exchangeableFamilies;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -188,13 +206,8 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
     }
 
     @Override
-    public FamilyType getFamily() {
-        return family;
-    }
-
-    @Override
-    public Set<FamilyType> getExchangeableFamilies() {
-        return exchangeableFamilies;
+    public String toString() {
+        return flatToString();
     }
 
 }

@@ -71,4 +71,8 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      */
     Structure getCopy();
 
+    default String flatToString() {
+        return getPdbIdentifier();
+    }
+
 }
