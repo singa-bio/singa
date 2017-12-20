@@ -33,7 +33,7 @@ public class StructureParser {
      * @return Source selection
      */
     public static LocalSourceStep local() {
-        return new SourceSelector(SourceLocation.OFFLINE);
+        return new SourceSelector();
     }
 
     /**
@@ -346,13 +346,18 @@ public class StructureParser {
          * @throws StructureParserException if the structure could not be parsed as specified during the selection.
          */
         public Structure parse() throws StructureParserException {
-            if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                // FIXME uiuiui
-                try {
+            try {
+                if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
+                    // FIXME uiuiui
+
                     return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
-                } catch (IOException e) {
-                    logger.warn("failed to parse structure", e);
+
+                } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
+                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), false);
                 }
+            } catch (IOException e) {
+                logger.warn("failed to parse structure", e);
+                throw new StructureParserException(e.getMessage());
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
@@ -441,9 +446,11 @@ public class StructureParser {
             List<Structure> structures = new ArrayList<>();
             selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
                 try {
+                    // FIXME uiuiui
                     if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                        // FIXME uiuiui
                         structures.add(new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0))));
+                    } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
+                        structures.add(new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false));
                     } else {
                         structures.add(StructureCollector.parse(lines, selector));
                     }
@@ -462,13 +469,15 @@ public class StructureParser {
 
         @Override
         synchronized public Structure next() {
-            if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
+            try {
                 // FIXME uiuiui
-                try {
+                if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
                     return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
-                } catch (IOException e) {
-                    logger.warn("failed to parse structure", e);
+                } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
+                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), false);
                 }
+            } catch (IOException e) {
+                logger.warn("failed to parse structure", e);
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
@@ -741,6 +750,9 @@ public class StructureParser {
             this.sourceLocation = sourceLocation;
         }
 
+        public SourceSelector() {
+        }
+
         @Override
         public SingleBranchStep pdbIdentifier(String pdbIdentifier) {
             contentIterator = new StructureContentIterator(pdbIdentifier, sourceLocation);
@@ -761,7 +773,7 @@ public class StructureParser {
 
         @Override
         public MultiBranchStep files(List<File> files) {
-            contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(File.class, files, SourceLocation.OFFLINE_PDB);
             return new MultiReducingSelector(this);
         }
 
@@ -773,7 +785,7 @@ public class StructureParser {
 
         @Override
         public MultiBranchStep paths(List<Path> paths) {
-            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
             return new MultiReducingSelector(this);
         }
 
@@ -794,34 +806,39 @@ public class StructureParser {
 
         @Override
         public AdditionalLocalSourceStep localPDB(LocalPDB localPDB) {
+            sourceLocation = localPDB.sourceLocation;
             this.localPDB = localPDB;
             return this;
         }
 
         @Override
         public MultiBranchStep localPDB(LocalPDB localPDB, List<String> pdbIdentifiers) {
+            sourceLocation = localPDB.sourceLocation;
             contentIterator = new StructureContentIterator(localPDB, pdbIdentifiers);
             return new MultiReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep localPDB(LocalPDB localPDB, String pdbIdentifier) {
+            sourceLocation = localPDB.sourceLocation;
             contentIterator = new StructureContentIterator(localPDB, pdbIdentifier);
             return new SingleReducingSelector(this);
         }
 
         @Override
         public SingleBranchStep fileLocation(String location) {
+            sourceLocation = localPDB.sourceLocation;
             contentIterator = new StructureContentIterator(Paths.get(location));
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep fileLocations(List<String> locations) {
+            sourceLocation = localPDB.sourceLocation;
             List<Path> paths = locations.stream()
                     .map(Paths::get)
                     .collect(Collectors.toList());
-            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE);
+            contentIterator = new StructureContentIterator(Path.class, paths, SourceLocation.OFFLINE_PDB);
             return new MultiReducingSelector(this);
         }
 
@@ -890,7 +907,9 @@ public class StructureParser {
         /**
          * The default folder structure of local pdb installations.
          */
-        static final Path BASE_PATH = Paths.get("data/structures/divided/pdb");
+        static final Path BASE_PATH_PDB = Paths.get("data/structures/divided/");
+
+        private final SourceLocation sourceLocation;
 
         /**
          * The path to the local pdb.
@@ -902,8 +921,16 @@ public class StructureParser {
          *
          * @param localPdbLocation The location of the local PDB installation.
          */
-        public LocalPDB(String localPdbLocation) {
-            localPdbPath = Paths.get(localPdbLocation);
+        public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
+            this.sourceLocation = sourceLocation;
+            if (sourceLocation == SourceLocation.OFFLINE_MMTF) {
+                localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("mmtf");
+            } else if (sourceLocation == SourceLocation.OFFLINE_PDB) {
+                localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("pdb");
+            } else {
+                throw new IllegalArgumentException("Source location mus be offline.");
+            }
+
         }
 
         /**
@@ -923,8 +950,11 @@ public class StructureParser {
          */
         public Path getPathForPdbIdentifier(String pdbIdentifier) {
             pdbIdentifier = pdbIdentifier.toLowerCase();
-            return localPdbPath.resolve(BASE_PATH).resolve(pdbIdentifier.substring(1, 3))
-                    .resolve(pdbIdentifier).resolve("pdb" + pdbIdentifier + ".ent.gz");
+            final Path middleIdentifierPath = localPdbPath.resolve(pdbIdentifier.substring(1, 3));
+            if (sourceLocation == SourceLocation.OFFLINE_PDB) {
+                return middleIdentifierPath.resolve("pdb" + pdbIdentifier + ".ent.gz");
+            }
+            return middleIdentifierPath.resolve(pdbIdentifier + ".mmtf.gz");
         }
     }
 }

@@ -45,7 +45,7 @@ public class MmtfStructureTest {
     @Test
     public void getPdbIdentifier() {
         String actual = structure2N5E.getPdbIdentifier();
-        assertEquals("2N5E", actual);
+        assertEquals("2n5e", actual);
     }
 
     @Test

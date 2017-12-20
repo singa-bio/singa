@@ -16,6 +16,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import org.junit.Ignore;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -27,9 +28,10 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class CombinedTransportTest {
 
-    private static final Rectangle boundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
+    private static final Rectangle boundingBox = new Rectangle(400, 400);
 
     @Test
+    @Ignore
     public void shouldSimulateBothTransportModules() {
 
         Species domperidone = new Species.Builder("CHEBI:31515")
@@ -60,13 +62,10 @@ public class CombinedTransportTest {
                 node.setCellSection(membrane);
                 node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
                 node.setAvailableConcentration(domperidone, inner, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-                System.out.print('=');
             } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 37 && coordinate.getY() < 27) {
-                System.out.print('X');
                 node.setCellSection(inner);
                 node.setConcentration(domperidone, 0.0);
             } else {
-                System.out.print('O');
                 node.setCellSection(outer);
                 node.setConcentration(domperidone, 1.0);
             }
@@ -83,9 +82,8 @@ public class CombinedTransportTest {
         simulation.getModules().add(diffusion);
         simulation.getModules().add(membraneTransport);
 
-//        while (true) {
         simulation.nextEpoch();
-//        }
+
     }
 
 }

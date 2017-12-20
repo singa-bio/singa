@@ -9,13 +9,14 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation.OFFLINE_MMTF;
+import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation.OFFLINE_PDB;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.*;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME;
 import static de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions.Setting.GET_TITLE_FROM_FILENAME;
@@ -43,7 +44,7 @@ public class StructureParserTest {
 
     @Test
     public void shouldParsePDBIdentifierFromHeader() {
-        assertEquals("1BUW", hemoglobin.getPdbIdentifier());
+        assertEquals("1buw", hemoglobin.getPdbIdentifier());
     }
 
     @Test
@@ -126,16 +127,24 @@ public class StructureParserTest {
     }
 
     @Test
-    public void shouldParseFromLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+    public void shouldParseFromLocalPDB() {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"), OFFLINE_PDB);
         Structure structure = local()
                 .localPDB(localPdb, "1C0A")
                 .parse();
     }
 
     @Test
-    public void shouldParseFromLocalPDBWithChainList() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
+    public void shouldParseFromLocalMMTF() {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"), OFFLINE_MMTF);
+        Structure structure = local()
+                .localPDB(localPdb, "1C0A")
+                .parse();
+    }
+
+    @Test
+    public void shouldParseFromLocalPDBWithChainList() {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"), OFFLINE_PDB);
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));
         List<Structure> structure = local()
                 .localPDB(localPdb)
@@ -145,9 +154,9 @@ public class StructureParserTest {
     }
 
     @Test
-    public void shouldRetrievePathOfLocalPDB() throws URISyntaxException {
-        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"));
-        assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/1c0a/pdb1c0a.ent.gz"));
+    public void shouldRetrievePathOfLocalPDB() {
+        LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"), OFFLINE_PDB);
+        assertTrue(localPdb.getPathForPdbIdentifier("1C0A").endsWith("pdb/data/structures/divided/pdb/c0/pdb1c0a.ent.gz"));
     }
 
     @Test
@@ -160,7 +169,7 @@ public class StructureParserTest {
                 .parse();
 
         assertEquals("1GL0_HDS_intra_E-H57_E-D102_E-S195", structure.getTitle());
-        assertEquals("1GL0", structure.getPdbIdentifier());
+        assertEquals("1gl0", structure.getPdbIdentifier());
     }
 
     @Test

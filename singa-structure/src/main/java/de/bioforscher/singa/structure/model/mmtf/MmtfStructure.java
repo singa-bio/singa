@@ -40,8 +40,17 @@ public class MmtfStructure implements Structure {
      * @param bytes The original undecoded bytes.
      */
     public MmtfStructure(byte[] bytes) {
+        this(bytes, true);
+    }
+
+    /**
+     * Creates a new {@link MmtfStructure}
+     *
+     * @param bytes The original undecoded bytes.
+     */
+    public MmtfStructure(byte[] bytes, boolean deflate) {
         this.bytes = bytes;
-        data = bytesToStructureData(bytes);
+        data = bytesToStructureData(bytes, deflate);
         cachedModels = new HashMap<>();
     }
 
@@ -54,10 +63,16 @@ public class MmtfStructure implements Structure {
         this(mmtfStructure.bytes);
     }
 
-    static StructureDataInterface bytesToStructureData(byte[] bytes) {
+    static StructureDataInterface bytesToStructureData(byte[] bytes, boolean deflate) {
         MessagePackSerialization mmtfBeanSeDeMessagePackImpl = new MessagePackSerialization();
         try {
-            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(ReaderUtils.deflateGzip(bytes))));
+            byte[] gzip;
+            if (deflate) {
+                gzip = ReaderUtils.deflateGzip(bytes);
+            } else {
+                gzip = bytes;
+            }
+            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(gzip)));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -200,6 +215,6 @@ public class MmtfStructure implements Structure {
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 }
