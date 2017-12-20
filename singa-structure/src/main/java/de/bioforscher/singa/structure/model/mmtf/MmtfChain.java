@@ -149,6 +149,11 @@ public class MmtfChain implements Chain {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getLeafSubstructure(leafIdentifiers.values().iterator().next()).get();
+    }
+
+    @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         final int internalIndex = getInternalIndexForLeafIdentifier(leafIdentifier);
         if (internalIndex == -1) {
@@ -160,6 +165,15 @@ public class MmtfChain implements Chain {
         relevantGroups.remove((Integer) internalIndex);
         atomRanges.remove(internalIndex);
         return true;
+    }
+
+    private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
+        for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
+            if (leafIdentifierEntry.getValue().equals(leafIdentifier)) {
+                return leafIdentifierEntry.getKey();
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -201,12 +215,9 @@ public class MmtfChain implements Chain {
         return Objects.hash(chainIdentifier);
     }
 
-    private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
-        for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
-            if (leafIdentifierEntry.getValue().equals(leafIdentifier)) {
-                return leafIdentifierEntry.getKey();
-            }
-        }
-        return -1;
+    @Override
+    public String toString() {
+        return  flatToString();
     }
+
 }

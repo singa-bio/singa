@@ -88,16 +88,10 @@ public class MmtfModel implements Model {
      */
     private MmtfModel(MmtfModel mmtfModel) {
         bytes = mmtfModel.bytes;
-        data = MmtfStructure.bytesToStructureData(bytes);
         data = mmtfModel.data;
         modelIndex = mmtfModel.modelIndex;
         chainMap = new HashMap<>(mmtfModel.chainMap);
         cachedChains = new HashMap<>();
-    }
-
-    @Override
-    public String toString() {
-        return "MmtfModel{" + data.getStructureId() + "," + getModelIdentifier() + "}";
     }
 
     @Override
@@ -168,6 +162,11 @@ public class MmtfModel implements Model {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstChain().getFirstLeafSubstructure();
+    }
+
+    @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
@@ -202,6 +201,11 @@ public class MmtfModel implements Model {
     @Override
     public Model getCopy() {
         return new MmtfModel(this);
+    }
+
+    @Override
+    public String toString() {
+        return  flatToString();
     }
 
 

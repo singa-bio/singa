@@ -52,8 +52,8 @@ public class OakStructure implements Structure {
     }
 
     public void setPdbIdentifier(String pdbIdentifier) {
-        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches()) {
-            this.pdbIdentifier = pdbIdentifier;
+        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches() || pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
+            this.pdbIdentifier = pdbIdentifier.toLowerCase();
         } else {
             throw new IllegalArgumentException("The pdb identifier must match to the pdb identifier pattern.");
         }
@@ -129,6 +129,11 @@ public class OakStructure implements Structure {
             return chain.get().getLeafSubstructure(leafIdentifier);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstModel().getFirstChain().getFirstLeafSubstructure();
     }
 
     @Override
@@ -220,14 +225,6 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public String toString() {
-        return "OakStructure{" +
-                "pdbIdentifier='" + pdbIdentifier + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -241,4 +238,10 @@ public class OakStructure implements Structure {
     public int hashCode() {
         return pdbIdentifier != null ? pdbIdentifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return flatToString();
+    }
+
 }

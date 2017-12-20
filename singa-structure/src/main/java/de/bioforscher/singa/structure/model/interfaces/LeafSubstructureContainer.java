@@ -30,6 +30,9 @@ public interface LeafSubstructureContainer extends AtomContainer {
      */
     Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier);
 
+
+    LeafSubstructure<?> getFirstLeafSubstructure();
+
     /**
      * Removes a {@link LeafSubstructure} from this container.
      *

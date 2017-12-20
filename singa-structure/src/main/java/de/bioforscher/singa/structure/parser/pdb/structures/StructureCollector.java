@@ -263,7 +263,7 @@ public class StructureCollector {
     /**
      * Collects and creates the actual structure from all remaining lines.
      *
-     * @return The parsde structure.
+     * @return The parsed structure.
      */
     private Structure collectStructure() {
         collectAtomInformation();
@@ -275,7 +275,6 @@ public class StructureCollector {
         structure.setPdbIdentifier(contentTree.getIdentifier());
         structure.setTitle(titleBuilder.toString());
 
-        int chainGraphId = 0;
         for (ContentTreeNode modelNode : contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
             OakModel model = new OakModel(Integer.valueOf(modelNode.getIdentifier()));

@@ -65,7 +65,7 @@ public class MmtfStructure implements Structure {
 
     @Override
     public String getPdbIdentifier() {
-        return data.getStructureId();
+        return data.getStructureId().toLowerCase();
     }
 
     @Override
@@ -158,6 +158,11 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstChain().getFirstLeafSubstructure();
+    }
+
+    @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         for (Chain chain : getAllChains()) {
             if (chain.removeLeafSubstructure(leafIdentifier)) {
@@ -195,9 +200,6 @@ public class MmtfStructure implements Structure {
 
     @Override
     public String toString() {
-        return "MmtfStructure{" +
-                "pdbIdentifier='" + data.getStructureId() + '\'' +
-                ", title='" + data.getTitle() + '\'' +
-                '}';
+        return  flatToString();
     }
 }

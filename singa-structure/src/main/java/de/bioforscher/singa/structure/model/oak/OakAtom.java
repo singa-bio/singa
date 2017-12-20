@@ -109,9 +109,7 @@ public class OakAtom implements Atom {
 
     @Override
     public String toString() {
-        return "Atom: " + atomName +
-                " " + identifier +
-                " (" + position.getX() + ", " + position.getY() + ", " + position.getZ() + ")";
+        return  flatToString();
     }
 
     @Override

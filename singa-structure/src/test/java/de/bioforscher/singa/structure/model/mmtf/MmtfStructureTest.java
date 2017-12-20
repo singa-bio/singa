@@ -3,6 +3,7 @@ package de.bioforscher.singa.structure.model.mmtf;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.*;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.rcsb.mmtf.decoder.ReaderUtils;
@@ -26,6 +27,19 @@ public class MmtfStructureTest {
     public static void prepareData() throws IOException {
         structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
         structure1C0A = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1C0A"));
+    }
+
+    @Test
+    public void shouldIgnoreAlternativePosition() throws IOException {
+        final Structure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1dlf"));
+        final Structure oakStructure = StructureParser.online().pdbIdentifier("1dlf").parse();
+        final LeafIdentifier leafIdentifier = new LeafIdentifier("1dlf", 1, "H", 70);
+
+        LeafSubstructure mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();
+        LeafSubstructure oakLeaf = oakStructure.getLeafSubstructure(leafIdentifier).get();
+        mmtfLeaf.getAllAtoms();
+        assertEquals(oakLeaf.getAllAtoms().size(), mmtfLeaf.getAllAtoms().size());
+
     }
 
     @Test

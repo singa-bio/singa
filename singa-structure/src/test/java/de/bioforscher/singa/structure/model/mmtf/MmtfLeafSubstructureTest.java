@@ -22,7 +22,7 @@ public class MmtfLeafSubstructureTest {
 
     private static Structure structure1C0A;
     private static LeafSubstructure leaf162;
-    private static LeafSubstructure leaf620A;
+    private static LeafSubstructure<?> leaf620A;
     private static LeafSubstructure leafToModify;
 
     @BeforeClass
@@ -88,19 +88,17 @@ public class MmtfLeafSubstructureTest {
     }
 
     @Test
-    public void containsAtomWithName() {
-
-    }
-
-    @Test
     public void getAtomByName() {
-
+        // HETATM  444  C1' H2U B 620A     64.290   3.199  32.742  1.00 78.93           C
+        final Optional<Atom> optionalAtom = leaf620A.getAtomByName("C1'");
+        if (!optionalAtom.isPresent()) {
+            fail("Optional atom was empty.");
+        }
+        // one offset to regular pdb file
+        final Atom atom = optionalAtom.get();
+        assertEquals(atom.getAtomIdentifier().intValue(), 444);
+        assertEquals("C1'", atom.getAtomName());
+        assertEquals(new Vector3D(64.29000091552734, 3.1989998817443848, 32.742000579833984), atom.getPosition());
     }
-
-    @Test
-    public void getCopy() {
-
-    }
-
 
 }
