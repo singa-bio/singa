@@ -43,7 +43,7 @@ public class StarkEstimationTest {
     @Ignore
     public void shouldCalculatePvalues() {
         StarkEstimation starkEstimation = new StarkEstimation();
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()

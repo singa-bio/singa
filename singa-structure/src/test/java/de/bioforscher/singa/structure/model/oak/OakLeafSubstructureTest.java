@@ -27,7 +27,7 @@ public class OakLeafSubstructureTest {
 
     @BeforeClass
     public static void prepareData() {
-        Structure structure1C0A = StructureParser.online().pdbIdentifier("1C0A").parse();
+        Structure structure1C0A = StructureParser.pdb().pdbIdentifier("1C0A").parse();
         leaf162 = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 162)).get();
         leaf620A = structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 620, 'A')).get();
         leafToModify = (OakAminoAcid) structure1C0A.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 161)).get();

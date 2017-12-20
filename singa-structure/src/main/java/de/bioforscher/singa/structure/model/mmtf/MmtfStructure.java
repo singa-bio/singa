@@ -188,6 +188,15 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
+    public int getNumberOfLeafSubstructures() {
+        int sum = 0;
+        for (Chain chain : getAllChains()) {
+            sum += chain.getNumberOfLeafSubstructures();
+        }
+        return sum;
+    }
+
+    @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);

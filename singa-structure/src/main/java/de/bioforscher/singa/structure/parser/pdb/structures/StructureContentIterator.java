@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation.*;
+import static de.bioforscher.singa.structure.parser.pdb.structures.SourceLocation.*;
 
 /**
  * This iterator administers each structure that should be parsed and its origin.
@@ -449,12 +449,4 @@ class StructureContentIterator implements Iterator<List<String>> {
             }
         }
     }
-
-    /**
-     * The location the files should be parsed from.
-     */
-    enum SourceLocation {
-        ONLINE_PDB, ONLINE_MMTF, OFFLINE_PDB, OFFLINE_MMTF
-    }
-
 }

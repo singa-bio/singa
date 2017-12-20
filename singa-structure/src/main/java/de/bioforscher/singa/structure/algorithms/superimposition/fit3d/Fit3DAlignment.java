@@ -57,7 +57,7 @@ public class Fit3DAlignment implements Fit3D {
         representationScheme = builder.representationScheme;
         statisticalModel = builder.statisticalModel;
 
-        if (queryMotif.size() > target.getAllLeafSubstructures().size()) {
+        if (queryMotif.size() > target.getNumberOfLeafSubstructures()) {
             throw new Fit3DException("search target " + target + " must contain at least as many atom-containing substructures " +
                     "as the query motif");
         }
@@ -71,7 +71,7 @@ public class Fit3DAlignment implements Fit3D {
 
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
         reduceTargetStructure();
-        if (queryMotif.size() > target.getAllLeafSubstructures().size()) {
+        if (queryMotif.size() > target.getNumberOfLeafSubstructures()) {
             logger.debug("reduced target structure smaller than query motif, no matches can be found");
             return;
         }

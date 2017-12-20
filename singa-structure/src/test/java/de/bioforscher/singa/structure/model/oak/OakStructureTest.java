@@ -23,9 +23,9 @@ public class OakStructureTest {
 
     @BeforeClass
     public static void prepareData() {
-        structure2N5E = (OakStructure) StructureParser.online().pdbIdentifier("2N5E").parse();
-        structure1C0A = (OakStructure) StructureParser.online().pdbIdentifier("1C0A").parse();
-        structureToModify = (OakStructure) StructureParser.online().pdbIdentifier("1BRR").parse();
+        structure2N5E = (OakStructure) StructureParser.pdb().pdbIdentifier("2N5E").parse();
+        structure1C0A = (OakStructure) StructureParser.pdb().pdbIdentifier("1C0A").parse();
+        structureToModify = (OakStructure) StructureParser.pdb().pdbIdentifier("1BRR").parse();
     }
 
     @Test

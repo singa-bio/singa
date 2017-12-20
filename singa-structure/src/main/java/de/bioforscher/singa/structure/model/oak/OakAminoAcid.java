@@ -1,8 +1,12 @@
 package de.bioforscher.singa.structure.model.oak;
 
+import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+
+import java.util.Optional;
 
 /**
  * @author cl
@@ -24,5 +28,14 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
     @Override
     public OakAminoAcid getCopy() {
         return new OakAminoAcid(this);
+    }
+
+    @Override
+    public Vector3D getPosition() {
+        Optional<Atom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
+        if (optionalAlphaCarbon.isPresent()) {
+            return optionalAlphaCarbon.get().getPosition();
+        }
+        return super.getPosition();
     }
 }

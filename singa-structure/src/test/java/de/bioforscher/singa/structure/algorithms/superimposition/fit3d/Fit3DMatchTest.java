@@ -31,7 +31,7 @@ public class Fit3DMatchTest {
 
     @Before
     public void setUp() {
-        target = StructureParser.online()
+        target = StructureParser.pdb()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()

@@ -21,7 +21,7 @@ public class StructuresTest {
 
     @Test
     public void calculateDistanceMatrix() {
-        Chain chain = StructureParser.online()
+        Chain chain = StructureParser.pdb()
                 .pdbIdentifier("1HRR")
                 .parse()
                 .getFirstChain();
@@ -34,7 +34,7 @@ public class StructuresTest {
 
     @Test
     public void calculateAtomDistanceMatrix() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("5kqr")
                 .chainIdentifier("A")
                 .parse();
@@ -49,7 +49,7 @@ public class StructuresTest {
 
     @Test
     public void isAlphaCarbonStructure() {
-        Structure alphaCarbonStructure = StructureParser.online()
+        Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("1hrb")
                 .parse();
         assertTrue(Structures.isAlphaCarbonStructure(alphaCarbonStructure));
@@ -57,7 +57,7 @@ public class StructuresTest {
 
     @Test
     public void isBackboneOnlyStructure() {
-        Structure alphaCarbonStructure = StructureParser.online()
+        Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("2plp")
                 .parse();
         assertTrue(Structures.isBackboneStructure(alphaCarbonStructure));

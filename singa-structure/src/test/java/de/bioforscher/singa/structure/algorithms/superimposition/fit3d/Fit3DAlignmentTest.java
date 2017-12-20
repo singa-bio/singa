@@ -40,7 +40,7 @@ public class Fit3DAlignmentTest {
 
     @Before
     public void setUp() {
-        target = StructureParser.online()
+        target = StructureParser.mmtf()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
@@ -76,7 +76,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
-        Structure nucleotideTarget = StructureParser.online()
+        Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
@@ -101,7 +101,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldRunFit3DAlignmentWithMMTF() {
         Structure target = StructureParser.mmtf()
-        // Structure target = StructureParser.online()
+                // Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -119,7 +119,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentWithMMTFAndExchanges() {
-        Structure target = StructureParser.online()
+        Structure target = StructureParser.pdb()
                 .pdbIdentifier("2mnr")
                 .everything()
                 .parse();
@@ -143,7 +143,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindInterMolecularMatches() {
-        Structure target = StructureParser.online()
+        Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -164,7 +164,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldAlignNucleotideMotif() {
-        Structure nucleotideTarget = StructureParser.online()
+        Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
@@ -181,7 +181,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldFindLigandContainingMotif() {
-        Structure queryStructure = StructureParser.online()
+        Structure queryStructure = StructureParser.pdb()
                 .pdbIdentifier("1ACJ")
                 .everything()
                 .parse();
@@ -202,7 +202,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -221,7 +221,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -239,7 +239,7 @@ public class Fit3DAlignmentTest {
     public void shouldFindInteractionMotif() {
         InteractionContainer interactionContainer = PlipParser.parse("1k1i",
                 Resources.getResourceAsStream("plip/1k1i.xml"));
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
@@ -261,7 +261,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldHandleInsertionCodeMotifs() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("2w0l")
                 .parse();
 

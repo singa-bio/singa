@@ -34,7 +34,7 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
     Model getCopy();
 
     default String flatToString() {
-        return getFirstChain().getFirstLeafSubstructure().getPdbIdentifier()+"-"+getModelIdentifier();
+        return getFirstChain().getFirstLeafSubstructure().getPdbIdentifier() + "-" + getModelIdentifier();
     }
 
 }

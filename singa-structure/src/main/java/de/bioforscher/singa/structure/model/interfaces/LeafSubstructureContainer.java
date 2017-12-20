@@ -30,7 +30,6 @@ public interface LeafSubstructureContainer extends AtomContainer {
      */
     Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier);
 
-
     LeafSubstructure<?> getFirstLeafSubstructure();
 
     /**
@@ -43,6 +42,10 @@ public interface LeafSubstructureContainer extends AtomContainer {
 
     default boolean removeLeafSubstructure(LeafSubstructure leafSubstructure) {
         return removeLeafSubstructure(leafSubstructure.getIdentifier());
+    }
+
+    default int getNumberOfLeafSubstructures() {
+        return getAllLeafSubstructures().size();
     }
 
     /**

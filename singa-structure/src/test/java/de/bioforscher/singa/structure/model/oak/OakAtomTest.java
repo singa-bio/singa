@@ -23,7 +23,7 @@ public class OakAtomTest {
 
     @BeforeClass
     public static void prepareData() {
-        Structure structure1C0A = StructureParser.online().pdbIdentifier("1C0A").parse();
+        Structure structure1C0A = StructureParser.pdb().pdbIdentifier("1C0A").parse();
         // no offset to regular pdb file
         atom412 = (OakAtom) structure1C0A.getAtom(412).get();
         // one offset to regular pdb file

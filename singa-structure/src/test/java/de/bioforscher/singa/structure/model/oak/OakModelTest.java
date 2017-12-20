@@ -26,7 +26,7 @@ public class OakModelTest {
 
     @BeforeClass
     public static void prepareData() {
-        Structure structure2N5E = StructureParser.online().pdbIdentifier("2N5E").parse();
+        Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
         firstModel = (OakModel) structure2N5E.getFirstModel();
         secondModel = (OakModel) structure2N5E.getModel(2).get();
         modelToModify = (OakModel) structure2N5E.getModel(3).get();
@@ -89,12 +89,12 @@ public class OakModelTest {
 
     @Test
     public void removeLeafSubstructure() {
-        final int expected = modelToModify.getAllLeafSubstructures().size() - 1;
+        final int expected = modelToModify.getNumberOfLeafSubstructures() - 1;
         final boolean response = modelToModify.removeLeafSubstructure(new LeafIdentifier("2N5E", 3, "B", 64));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }
-        final int actual = modelToModify.getAllLeafSubstructures().size();
+        final int actual = modelToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
 

@@ -106,14 +106,14 @@ public class PfamParser {
             int endPdb = Integer.valueOf(PdbToken.PDB_RESIDUE_END.extract(relevantLine));
             List<LeafSubstructure<?>> domain;
             if (structureParserOptions != null) {
-                domain = StructureParser.online()
+                domain = StructureParser.pdb()
                         .pdbIdentifier(pdbIdentifier)
                         .chainIdentifier(chainIdentifier)
                         .setOptions(structureParserOptions)
                         .parse()
                         .getAllLeafSubstructures();
             } else {
-                domain = StructureParser.online()
+                domain = StructureParser.pdb()
                         .pdbIdentifier(pdbIdentifier)
                         .chainIdentifier(chainIdentifier)
                         .parse()
@@ -140,14 +140,14 @@ public class PfamParser {
             logger.info("parsing Pfam chain {}_{}", pdbIdentifier, chainIdentifier);
             Chain chain;
             if (structureParserOptions != null) {
-                chain = StructureParser.online()
+                chain = StructureParser.pdb()
                         .pdbIdentifier(pdbIdentifier)
                         .chainIdentifier(chainIdentifier)
                         .setOptions(structureParserOptions)
                         .parse()
                         .getFirstModel().getFirstChain();
             } else {
-                chain = StructureParser.online()
+                chain = StructureParser.pdb()
                         .pdbIdentifier(pdbIdentifier)
                         .chainIdentifier(chainIdentifier)
                         .parse()

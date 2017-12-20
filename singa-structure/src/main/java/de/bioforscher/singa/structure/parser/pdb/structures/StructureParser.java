@@ -16,8 +16,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation;
-
 /**
  * Parses structures in pdb format.
  *
@@ -41,7 +39,7 @@ public class StructureParser {
      *
      * @return Source selection
      */
-    public static IdentifierStep online() {
+    public static IdentifierStep pdb() {
         return new SourceSelector(SourceLocation.ONLINE_PDB);
     }
 
@@ -474,10 +472,11 @@ public class StructureParser {
                 if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
                     return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
                 } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), false);
+                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), true);
                 }
             } catch (IOException e) {
                 logger.warn("failed to parse structure", e);
+                throw new StructureParserException(e.getMessage());
             }
             return StructureCollector.parse(selector.sourceSelector.contentIterator.next(), selector);
         }
@@ -827,14 +826,12 @@ public class StructureParser {
 
         @Override
         public SingleBranchStep fileLocation(String location) {
-            sourceLocation = localPDB.sourceLocation;
             contentIterator = new StructureContentIterator(Paths.get(location));
             return new SingleReducingSelector(this);
         }
 
         @Override
         public MultiBranchStep fileLocations(List<String> locations) {
-            sourceLocation = localPDB.sourceLocation;
             List<Path> paths = locations.stream()
                     .map(Paths::get)
                     .collect(Collectors.toList());

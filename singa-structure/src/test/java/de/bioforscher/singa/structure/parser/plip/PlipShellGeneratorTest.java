@@ -15,7 +15,7 @@ public class PlipShellGeneratorTest {
     @Test
     public void shouldFindShellsForLigand() {
 
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1c0a")
                 .parse();
 

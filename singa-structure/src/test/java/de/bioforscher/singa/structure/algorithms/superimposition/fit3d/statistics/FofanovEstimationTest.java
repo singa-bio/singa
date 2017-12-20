@@ -7,6 +7,7 @@ import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.SourceLocation;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
@@ -43,8 +44,10 @@ public class FofanovEstimationTest {
     @Ignore
     public void shouldCalculatePvalues() {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
-        StructureParser.MultiParser multiParser = StructureParser.online()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
+        StructureParser.MultiParser multiParser = StructureParser.local()
+                .localPDB(new StructureParser.LocalPDB("/srv/pdb_mmtf", SourceLocation.OFFLINE_MMTF))
+//                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
+                .chainList(Paths.get("/home/fkaiser/Workspace/CloudStation/PhD/Promotion/datasets/nrpdb/nrpdb_041416/nrpdb_041416_BLAST_e-80.txt"), "\t")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
                 .query(queryMotif)
@@ -65,7 +68,7 @@ public class FofanovEstimationTest {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()

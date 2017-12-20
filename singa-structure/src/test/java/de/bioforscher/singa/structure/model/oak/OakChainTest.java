@@ -26,10 +26,10 @@ public class OakChainTest {
 
     @BeforeClass
     public static void prepareData() {
-        Structure structure2N5E = StructureParser.online().pdbIdentifier("2N5E").parse();
+        Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
         firstChain = (OakChain) structure2N5E.getFirstChain();
         chainToModify = (OakChain) structure2N5E.getFirstModel().getChain("B").get();
-        anotherChain = (OakChain) StructureParser.online().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
+        anotherChain = (OakChain) StructureParser.pdb().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
     }
 
     @Test
@@ -58,30 +58,30 @@ public class OakChainTest {
 
     @Test
     public void addLeafSubstructure() {
-        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
+        final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         chainToModify.addLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
 
     @Test
     public void addLeafSubstructureToConsecutive() {
-        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
+        final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         final OakAminoAcid newAminoAcid = new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
         assertTrue(chainToModify.getConsecutivePart().contains(newAminoAcid));
     }
 
     @Test
     public void removeLeafSubstructure() {
-        final int expected = chainToModify.getAllLeafSubstructures().size() - 1;
+        final int expected = chainToModify.getNumberOfLeafSubstructures() - 1;
         final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
 

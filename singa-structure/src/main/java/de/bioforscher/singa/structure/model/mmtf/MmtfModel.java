@@ -199,13 +199,22 @@ public class MmtfModel implements Model {
     }
 
     @Override
+    public int getNumberOfLeafSubstructures() {
+        int sum = 0;
+        for (Chain chain : getAllChains()) {
+            sum += chain.getNumberOfLeafSubstructures();
+        }
+        return sum;
+    }
+
+    @Override
     public Model getCopy() {
         return new MmtfModel(this);
     }
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 
 

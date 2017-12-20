@@ -72,7 +72,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 3);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 12);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum());
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -153,12 +153,12 @@ public class SubstructureSuperimposerTest {
 
         SubstructureSuperimposition mmtfSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
 
-        first = StructureParser.online()
+        first = StructureParser.pdb()
                 .pdbIdentifier("1cd9")
                 .parse();
         firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
 
-        second = StructureParser.online()
+        second = StructureParser.pdb()
                 .pdbIdentifier("1cn4")
                 .parse();
         secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);

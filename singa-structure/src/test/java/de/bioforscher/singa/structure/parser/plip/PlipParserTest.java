@@ -24,7 +24,7 @@ public class PlipParserTest {
     public void shouldParseIntraChainInteractions() {
         InputStream inputStream = getResourceAsStream("plip/1c0a.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1c0a", inputStream);
-        OakStructure structure = (OakStructure) StructureParser.online()
+        OakStructure structure = (OakStructure) StructureParser.pdb()
                 .pdbIdentifier("1c0a")
                 .chainIdentifier("A")
                 .parse();
@@ -45,12 +45,10 @@ public class PlipParserTest {
     public void shouldParseInteractionsWithInsertionCodes() {
         InputStream inputStream = getResourceAsStream("plip/1k1i.xml");
         InteractionContainer interactionContainer = PlipParser.parse("1k1i", inputStream);
-        OakStructure structure = (OakStructure) StructureParser.online()
+        OakStructure structure = (OakStructure) StructureParser.pdb()
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
         interactionContainer.validateWithStructure(structure);
     }
-
-
 }

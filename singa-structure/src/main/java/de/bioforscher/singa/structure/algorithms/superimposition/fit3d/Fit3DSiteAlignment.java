@@ -179,8 +179,8 @@ public class Fit3DSiteAlignment implements Fit3D {
     }
 
     private void calculatePsScore() {
-        psScore = PsScore.of(currentBestSuperimposition, site1.getAllLeafSubstructures().size(),
-                site2.getAllLeafSubstructures().size());
+        psScore = PsScore.of(currentBestSuperimposition, site1.getNumberOfLeafSubstructures(),
+                site2.getNumberOfLeafSubstructures());
     }
 
     /**
@@ -450,8 +450,8 @@ public class Fit3DSiteAlignment implements Fit3D {
      */
     private void calculateAssignment() {
         double[][] costValues = new double[site1.size()][site2.size()];
-        for (int i = 0; i < site1.getAllLeafSubstructures().size(); i++) {
-            for (int j = 0; j < site2.getAllLeafSubstructures().size(); j++) {
+        for (int i = 0; i < site1.getNumberOfLeafSubstructures(); i++) {
+            for (int j = 0; j < site2.getNumberOfLeafSubstructures(); j++) {
                 LeafSubstructure<?> residue1 = site1.getAllLeafSubstructures().get(i);
                 LeafSubstructure<?> residue2 = site2.getAllLeafSubstructures().get(j);
                 if (restrictToExchanges && residue1.getFamily() != residue2.getFamily()) {

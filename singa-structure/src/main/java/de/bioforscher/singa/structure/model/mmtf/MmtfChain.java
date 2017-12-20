@@ -167,6 +167,11 @@ public class MmtfChain implements Chain {
         return true;
     }
 
+    @Override
+    public int getNumberOfLeafSubstructures() {
+        return leafIdentifiers.size();
+    }
+
     private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
         for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
             if (leafIdentifierEntry.getValue().equals(leafIdentifier)) {

@@ -32,7 +32,7 @@ public class MmtfStructureTest {
     @Test
     public void shouldIgnoreAlternativePosition() throws IOException {
         final Structure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("1dlf"));
-        final Structure oakStructure = StructureParser.online().pdbIdentifier("1dlf").parse();
+        final Structure oakStructure = StructureParser.pdb().pdbIdentifier("1dlf").parse();
         final LeafIdentifier leafIdentifier = new LeafIdentifier("1dlf", 1, "H", 70);
 
         LeafSubstructure mmtfLeaf = mmtfStructure.getLeafSubstructure(leafIdentifier).get();

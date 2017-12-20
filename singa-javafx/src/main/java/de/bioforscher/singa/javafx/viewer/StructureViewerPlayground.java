@@ -17,7 +17,7 @@ public class StructureViewerPlayground {
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);
 
-        OakStructure structure = (OakStructure) StructureParser.online()
+        OakStructure structure = (OakStructure) StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .everything()
                 .setOptions(options)

@@ -27,7 +27,7 @@ public class AtomFilterTest {
         StructureParserOptions options = new StructureParserOptions();
         options.omitHydrogens(true);
 
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4HHB")
                 .everything()
                 .setOptions(options)
