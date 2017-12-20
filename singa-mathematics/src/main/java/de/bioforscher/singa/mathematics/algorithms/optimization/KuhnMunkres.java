@@ -40,7 +40,7 @@ public class KuhnMunkres<DataType> {
     private List<Pair<DataType>> assignedPairs;
 
     public KuhnMunkres(LabeledMatrix<DataType> labeledCostMatrix) {
-        logger.info("calculating optimal assignment for cost matrix of size {}:{}", labeledCostMatrix.getRowDimension(),
+        logger.info("calculating optimal assignment for cost matrix with {} rows and {} columns", labeledCostMatrix.getRowDimension(),
                 labeledCostMatrix.getColumnDimension());
         this.labeledCostMatrix = labeledCostMatrix;
         if (this.labeledCostMatrix instanceof LabeledSymmetricMatrix) {

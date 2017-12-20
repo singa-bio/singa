@@ -1,12 +1,8 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Resources;
-import de.bioforscher.singa.mathematics.algorithms.optimization.KuhnMunkres;
-import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
-import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
 import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
@@ -61,26 +57,12 @@ public class Fit3DSiteAlignmentTest {
 
     @Test
     public void shouldAlignBindingSitesKuhnMunkres() {
-        double[][] costValues = new double[bindingSite1.size()][bindingSite2.size()];
-        for (int i = 0; i < bindingSite1.getAllLeafSubstructures().size(); i++) {
-            for (int j = 0; j < bindingSite2.getAllLeafSubstructures().size(); j++) {
-                LeafSubstructure<?> residue1 = bindingSite1.getAllLeafSubstructures().get(i);
-                LeafSubstructure<?> residue2 = bindingSite2.getAllLeafSubstructures().get(j);
-                if (residue1.getFamily() != residue2.getFamily()) {
-                    costValues[i][j] = Double.MAX_VALUE;
-                    continue;
-                }
-                costValues[i][j] = SubstitutionMatrix.MC_LACHLAN.getMatrix().getValueForLabel(residue1.getFamily(), residue2.getFamily());
-            }
-        }
-        LabeledMatrix<LeafSubstructure<?>> costMatrix = new LabeledRegularMatrix<>(costValues);
-        costMatrix.setRowLabels(bindingSite1.getAllLeafSubstructures());
-        costMatrix.setColumnLabels(bindingSite2.getAllLeafSubstructures());
-        System.out.println(costMatrix.getStringRepresentation());
-        KuhnMunkres<LeafSubstructure<?>> optimization = new KuhnMunkres<>(costMatrix);
-        optimization.getAssignedPairs().stream()
-                .map(pair -> pair.getFirst().getFamily() + "-" + pair.getSecond().getFamily())
-                .forEach(System.out::println);
+        Fit3D fit3d = Fit3DBuilder.create()
+                .site(bindingSite1)
+                .vs(bindingSite2)
+                .kuhnMunkres(SubstitutionMatrix.MC_LACHLAN, false)
+                .run();
+        assertEquals(10.367884580510683, fit3d.getMatches().get(0).getRmsd(), 1E-6);
     }
 
     @Test

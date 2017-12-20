@@ -104,6 +104,16 @@ public class Fit3DBuilder {
          * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
          */
         AtomStep exhaustive();
+
+        /**
+         * Assigns the alignment using Kuhn-Munkres optimization and scoring derived from the specified substitution matrix.
+         * This is a heuristic alignment that does not necessarily yield the best alignment possible.
+         *
+         * @param substitutionMatrix The {@link SubstitutionMatrix} to be used for calculation of the assignment.
+         * @param restrictToExchanges If set true specified exchanges of the input sites are considered.
+         * @return The {@link AtomStep} to define optional restrictions on {@link Atom}s.
+         */
+        AtomStep kuhnMunkres(SubstitutionMatrix substitutionMatrix, boolean restrictToExchanges);
     }
 
     public interface SiteParameterConfigurationStep extends SiteConfigurationStep {
@@ -257,6 +267,7 @@ public class Fit3DBuilder {
         double cutoffScore = DEFAULT_CUTOFF_SCORE;
         boolean exhaustive;
         boolean restrictToExchanges;
+        boolean kuhnMunkres;
         SubstitutionMatrix substitutionMatrix = DEFAULT_SUBSTITUTION_MATRIX;
         boolean skipAlphaCarbonTargets;
         boolean skipBackboneTargets;
@@ -402,6 +413,16 @@ public class Fit3DBuilder {
         @Override
         public AtomStep exhaustive() {
             exhaustive = true;
+            return this;
+        }
+
+        @Override
+        public AtomStep kuhnMunkres(SubstitutionMatrix substitutionMatrix, boolean restrictToExchanges) {
+            kuhnMunkres = true;
+            this.substitutionMatrix = substitutionMatrix;
+            if (restrictToExchanges) {
+                this.restrictToExchanges = true;
+            }
             return this;
         }
     }
