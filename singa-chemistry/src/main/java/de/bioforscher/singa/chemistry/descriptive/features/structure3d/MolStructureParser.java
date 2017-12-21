@@ -19,7 +19,7 @@ import java.util.*;
  *
  * @author cl
  */
-public class MolStructueParser {
+public class MolStructureParser {
 
     private List<String> lines;
 
@@ -30,7 +30,7 @@ public class MolStructueParser {
     private List<OakAtom> atoms;
     private Map<Pair<Integer>, BondType> bonds;
 
-    public MolStructueParser(List<String> lines) {
+    public MolStructureParser(List<String> lines) {
         this.lines = lines;
         atoms = new ArrayList<>();
         bonds = new HashMap<>();

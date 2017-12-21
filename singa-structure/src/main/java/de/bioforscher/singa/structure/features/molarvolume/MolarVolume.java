@@ -26,10 +26,6 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
         super(Quantities.getQuantity(quantity, CUBIC_METRE_PER_MOLE), featureOrigin);
     }
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(MolarVolume.class, MolarVolumeProvider.class);
-    }
-
     @Override
     public Quantity<MolarVolume> add(Quantity<MolarVolume> augend) {
         return getFeatureContent().add(augend);

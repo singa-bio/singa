@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
-import de.bioforscher.singa.chemistry.descriptive.features.structure3d.MolStructueParser;
+import de.bioforscher.singa.chemistry.descriptive.features.structure3d.MolStructureParser;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.InChIKey;
@@ -121,16 +121,16 @@ public class ChEBIContentHandler implements ContentHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         switch (qName) {
             case "ChemicalStructures":
                 if (is3DStructure && isMolStructure) {
                     // create structure
-                    MolStructueParser parser = new MolStructueParser(Arrays.asList(structureBuilder.toString().split("\\R")));
+                    MolStructureParser parser = new MolStructureParser(Arrays.asList(structureBuilder.toString().split("\\R")));
                     ligand3D = parser.parse();
                 } else if (is2DStructure && isDefaultStrucutre){
                     // create structure
-                    MolStructueParser parser = new MolStructueParser(Arrays.asList(structureBuilder.toString().split("\\R")));
+                    MolStructureParser parser = new MolStructureParser(Arrays.asList(structureBuilder.toString().split("\\R")));
                     ligand2D = parser.parse();
                 }
                 // clean up

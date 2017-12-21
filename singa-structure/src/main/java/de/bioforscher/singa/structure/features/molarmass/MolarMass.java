@@ -29,10 +29,6 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), featureOrigin);
     }
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);
-    }
-
     @Override
     public Quantity<MolarMass> add(Quantity<MolarMass> augend) {
         return getFeatureContent().add(augend);
