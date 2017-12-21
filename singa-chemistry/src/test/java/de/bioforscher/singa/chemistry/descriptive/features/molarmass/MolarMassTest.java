@@ -2,7 +2,6 @@ package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
@@ -14,9 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class MolarMassTest {
 
     @Test
-    @Ignore
     public void shouldUseChEBIToFetchMolarMass() {
-        // this is a known problem and fixed in another branch
         Species testSpecies = new Species.Builder("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(MolarMass.class);

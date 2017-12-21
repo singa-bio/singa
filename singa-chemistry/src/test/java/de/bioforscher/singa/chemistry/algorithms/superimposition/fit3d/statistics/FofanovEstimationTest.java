@@ -10,6 +10,7 @@ import de.bioforscher.singa.chemistry.physical.model.StructuralEntityFilter.Atom
 import de.bioforscher.singa.chemistry.physical.model.Structure;
 import de.bioforscher.singa.core.utility.Resources;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
+    @Ignore
     public void shouldCalculatePvalues() throws IOException, InterruptedException {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureParser.MultiParser multiParser = StructureParser.online()
@@ -59,6 +61,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
+    @Ignore
     public void shouldCalculatePvaluesWithCorrectnessCutoff() {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(this.queryMotif, modelCorrectnessCutoff);

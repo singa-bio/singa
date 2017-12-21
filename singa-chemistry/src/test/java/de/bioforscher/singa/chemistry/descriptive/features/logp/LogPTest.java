@@ -2,7 +2,6 @@ package de.bioforscher.singa.chemistry.descriptive.features.logp;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -25,9 +24,7 @@ public class LogPTest {
     }
 
     @Test
-    @Ignore
     public void shouldBeAbleToFetchLogPWithChEBISpecies() {
-        // this is a known problem and fixed in another branch
         Species testSpecies = ChEBIParserService.parse("CHEBI:8772");
         // assign feature
         testSpecies.setFeature(LogP.class);

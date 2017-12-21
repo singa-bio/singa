@@ -1,7 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,9 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class SmilesTest {
 
     @Test
-    @Ignore
     public void shouldUseChEBIToFetchMolarMass() {
-        // this is a known problem and fixed in another branch
         Species testSpecies = new Species.Builder("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(Smiles.class);

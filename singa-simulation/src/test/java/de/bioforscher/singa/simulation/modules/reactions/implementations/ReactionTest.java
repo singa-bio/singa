@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.reactions;
+package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
@@ -14,9 +14,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 import org.junit.Test;

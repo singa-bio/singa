@@ -3,7 +3,6 @@ package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import org.junit.Ignore;
 import org.junit.Test;
 import tec.units.ri.quantity.Quantities;
 
@@ -20,9 +19,7 @@ import static tec.units.ri.unit.Units.SECOND;
 public class DiffusivityTest {
 
     @Test
-    @Ignore
     public void shouldResolveRequiredFeature() {
-        // this is a known problem and fixed in another branch
         Species testSpecies = new Species.Builder("CHEBI:29802")
                 .build();
         // assign feature
@@ -70,16 +67,16 @@ public class DiffusivityTest {
         Diffusivity diffusivity = new Diffusivity(1, FeatureOrigin.MANUALLY_ANNOTATED);
         // double time step - double the scaled quantity
         diffusivity.scale(Quantities.getQuantity(2, SECOND), Quantities.getQuantity(1, CENTI(METRE)));
-        TestCase.assertEquals(2.0, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(2.0, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
         // double space step - divide by square of length
         diffusivity.scale(Quantities.getQuantity(1, SECOND), Quantities.getQuantity(2, CENTI(METRE)));
-        TestCase.assertEquals(0.25, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(0.25, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
         // change both (5 * 1/(10*10))
         diffusivity.scale(Quantities.getQuantity(5, SECOND), Quantities.getQuantity(0.1, CENTI(METRE)));
-        TestCase.assertEquals(500, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(500, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
         // some other units
         diffusivity.scale(Quantities.getQuantity(5, MILLI(SECOND)), Quantities.getQuantity(0.1, MILLI(METRE)));
-        TestCase.assertEquals(50, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(50, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
     }
 
 }

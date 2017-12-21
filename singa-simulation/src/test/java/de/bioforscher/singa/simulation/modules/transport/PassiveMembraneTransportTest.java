@@ -11,6 +11,7 @@ import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,7 @@ public class PassiveMembraneTransportTest {
     }
 
     @Test
+    @Ignore
     public void passiveDiffusionTest() {
         initialize();
         setupEntities();
