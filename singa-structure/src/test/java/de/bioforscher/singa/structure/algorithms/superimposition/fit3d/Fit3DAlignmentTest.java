@@ -118,7 +118,7 @@ public class Fit3DAlignmentTest {
 
 
     @Test
-    public void shouldRunFit3DAlignmentWithMMTFAndExchanges() {
+    public void shouldRunFit3DAlignmentAndExchanges() {
         Structure target = StructureParser.pdb()
                 .pdbIdentifier("2mnr")
                 .everything()

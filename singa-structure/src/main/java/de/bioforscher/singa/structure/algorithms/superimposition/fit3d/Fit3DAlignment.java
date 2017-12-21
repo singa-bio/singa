@@ -9,7 +9,6 @@ import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSup
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.FofanovEstimation;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.StatisticalModel;
-import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
@@ -70,7 +69,7 @@ public class Fit3DAlignment implements Fit3D {
         logger.debug("computing Fit3D alignment of motif {} against {}", queryMotif, target);
 
         // reduce target structures to the types that are actually occurring in the query motif or defined exchanges
-        reduceTargetStructure();
+        target.removeLeafSubstructuresNotRelevantFor(queryMotif);
         if (queryMotif.size() > target.getNumberOfLeafSubstructures()) {
             logger.debug("reduced target structure smaller than query motif, no matches can be found");
             return;
@@ -218,23 +217,6 @@ public class Fit3DAlignment implements Fit3D {
         squaredQueryExtent = queryDistanceMatrix.getElement(positionOfMaximalElement.getFirst(),
                 positionOfMaximalElement.getSecond());
         logger.debug("the squared query motif extent is {}", squaredQueryExtent);
-    }
-
-
-    /**
-     * Reduces the target structure only to the {@link StructuralFamily} types that are contained in the query motif or
-     * its defined exchanges.
-     */
-    private void reduceTargetStructure() {
-        // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
-        Set<Object> containingTypes = queryMotif.getAllLeafSubstructures().stream()
-                .map(LeafSubstructure::getContainingFamilies)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-        List<LeafSubstructure<?>> toBeRemoved = target.getAllLeafSubstructures().stream()
-                .filter(leafSubstructure -> !containingTypes.contains(leafSubstructure.getFamily()))
-                .collect(Collectors.toList());
-        toBeRemoved.forEach(target::removeLeafSubstructure);
     }
 
     /**

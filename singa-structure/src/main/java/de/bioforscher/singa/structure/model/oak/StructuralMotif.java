@@ -120,7 +120,6 @@ public class StructuralMotif implements LeafSubstructureContainer {
         return leafSubstructures.size();
     }
 
-
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : leafSubstructures.values()) {

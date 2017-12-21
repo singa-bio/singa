@@ -2,10 +2,7 @@ package de.bioforscher.singa.structure.model.mmtf;
 
 
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
-import de.bioforscher.singa.structure.model.interfaces.Atom;
-import de.bioforscher.singa.structure.model.interfaces.Chain;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
-import de.bioforscher.singa.structure.model.interfaces.Model;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -167,6 +164,33 @@ public class MmtfModel implements Model {
     }
 
     @Override
+    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
+        final Optional<Chain> chain = getChain(leafIdentifier.getChainIdentifier());
+        if (chain.isPresent()) {
+            if (chain.get().removeLeafSubstructure(leafIdentifier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+        for (Chain chain : getAllChains()) {
+            chain.removeLeafSubstructuresNotRelevantFor(leafSubstructuresToKeep);
+        }
+    }
+
+    @Override
+    public int getNumberOfLeafSubstructures() {
+        int sum = 0;
+        for (Chain chain : getAllChains()) {
+            sum += chain.getNumberOfLeafSubstructures();
+        }
+        return sum;
+    }
+
+    @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
@@ -185,26 +209,6 @@ public class MmtfModel implements Model {
                 leafSubstructure.removeAtom(atomIdentifier);
             }
         }
-    }
-
-    @Override
-    public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chain = getChain(leafIdentifier.getChainIdentifier());
-        if (chain.isPresent()) {
-            if (chain.get().removeLeafSubstructure(leafIdentifier)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public int getNumberOfLeafSubstructures() {
-        int sum = 0;
-        for (Chain chain : getAllChains()) {
-            sum += chain.getNumberOfLeafSubstructures();
-        }
-        return sum;
     }
 
     @Override

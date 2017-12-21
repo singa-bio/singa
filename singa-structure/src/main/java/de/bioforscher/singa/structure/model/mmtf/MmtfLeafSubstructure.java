@@ -81,7 +81,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
             final char alternativeLocationCode = alternativeLocationCodes[internalAtomIndex];
             // using 'A' to identify the first alternative location might be vulnerable
-            if (alternativeLocationCode !=LeafIdentifier.DEFAULT_INSERTION_CODE && alternativeLocationCode != 'A'){
+            if (alternativeLocationCode != LeafIdentifier.DEFAULT_INSERTION_CODE && alternativeLocationCode != 'A') {
                 removedAtoms.add(internalAtomIndex);
             }
         }
@@ -147,13 +147,7 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         if (internalAtomIndex < atomStartIndex || internalAtomIndex > atomEndIndex || removedAtoms.contains(internalAtomIndex)) {
             return Optional.empty();
         }
-        if (cachedAtoms.containsKey(internalAtomIndex)) {
-            return Optional.of(cachedAtoms.get(internalAtomIndex));
-        } else {
-            MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
-            cachedAtoms.put(internalAtomIndex, mmtfAtom);
-            return Optional.of(mmtfAtom);
-        }
+        return cacheAtom(internalAtomIndex);
     }
 
     @Override
@@ -171,11 +165,26 @@ public abstract class MmtfLeafSubstructure<FamilyType extends StructuralFamily> 
         return false;
     }
 
+    private Optional<Atom> cacheAtom(int internalAtomIndex) {
+        if (cachedAtoms.containsKey(internalAtomIndex)) {
+            return Optional.of(cachedAtoms.get(internalAtomIndex));
+        } else {
+            MmtfAtom mmtfAtom = new MmtfAtom(data, internalGroupIndex, internalAtomIndex - atomStartIndex, internalAtomIndex);
+            cachedAtoms.put(internalAtomIndex, mmtfAtom);
+            return Optional.of(mmtfAtom);
+        }
+    }
+
     @Override
     public Optional<Atom> getAtomByName(String atomName) {
-        for (Atom atom : getAllAtoms()) {
-            if (atom.getAtomName().equals(atomName)) {
-                return Optional.of(atom);
+        for (int internalAtomIndex = atomStartIndex; internalAtomIndex <= atomEndIndex; internalAtomIndex++) {
+            // skip removed atoms
+            if (removedAtoms.contains(internalAtomIndex)) {
+                continue;
+            }
+            final String actualAtomName = data.getGroupAtomNames(data.getGroupTypeIndices()[internalGroupIndex])[internalAtomIndex - atomStartIndex];
+            if (atomName.equals(actualAtomName)) {
+                return cacheAtom(internalAtomIndex);
             }
         }
         return Optional.empty();

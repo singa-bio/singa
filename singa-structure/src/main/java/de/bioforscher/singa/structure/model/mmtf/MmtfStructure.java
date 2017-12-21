@@ -188,6 +188,14 @@ public class MmtfStructure implements Structure {
     }
 
     @Override
+    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+        for (Chain chain : getAllChains()) {
+            chain.removeLeafSubstructuresNotRelevantFor(leafSubstructuresToKeep);
+        }
+    }
+
+
+    @Override
     public int getNumberOfLeafSubstructures() {
         int sum = 0;
         for (Chain chain : getAllChains()) {

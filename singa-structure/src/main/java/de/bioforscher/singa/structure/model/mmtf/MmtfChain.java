@@ -1,10 +1,12 @@
 package de.bioforscher.singa.structure.model.mmtf;
 
 import de.bioforscher.singa.core.utility.Range;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -167,6 +169,38 @@ public class MmtfChain implements Chain {
         return true;
     }
 
+    /**
+     * Removes all {@link LeafSubstructure}s from this container that are not referenced in the given
+     * {@link LeafSubstructureContainer}. Basically all LeafSubstructures are removed that do not match any of the
+     * given containers families. This method also keeps exchangeable families if any are defined.
+     *
+     * Further, this method does not cache the leafs that are being removed in contrary to the default implementation.
+     *
+     * @param leafSubstructuresToKeep The leaf structures that are kept.
+     */
+    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+        // this method is somewhat optimized for speed
+        // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
+        Set<String> relevantFamilies = new HashSet<>();
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructuresToKeep.getAllLeafSubstructures()) {
+            relevantFamilies.add(leafSubstructure.getFamily().getThreeLetterCode().toUpperCase());
+            for (StructuralFamily structuralFamily : leafSubstructure.getExchangeableFamilies()) {
+                relevantFamilies.add(structuralFamily.getThreeLetterCode().toUpperCase());
+            }
+        }
+        // remove references by mmtf group name
+        final ListIterator<Integer> relevantGroupIterator = relevantGroups.listIterator();
+        while (relevantGroupIterator.hasNext()) {
+            int internalIndex = relevantGroupIterator.next();
+            final String groupFamily = data.getGroupName(data.getGroupTypeIndices()[internalIndex]);
+            if (!relevantFamilies.contains(groupFamily)) {
+                leafIdentifiers.remove(internalIndex);
+                atomRanges.remove(internalIndex);
+                relevantGroupIterator.remove();
+            }
+        }
+    }
+
     @Override
     public int getNumberOfLeafSubstructures() {
         return leafIdentifiers.size();
@@ -222,7 +256,7 @@ public class MmtfChain implements Chain {
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 
 }
