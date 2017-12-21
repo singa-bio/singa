@@ -29,14 +29,14 @@ public class TimeStepHarmonizer {
     public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
         EnvironmentalParameters.getInstance().setTimeStep(initialTimeStep);
         this.simulation = simulation;
-        this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
     public boolean step() {
-        // TODO optimize the number of times the parameters have to be rescaled (only of time step has changed)
+        // TODO optimize the number of times the parameters have to be rescaled (only if time step has changed)
         // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
-        this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+        currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
         rescaleParameters();
         // request local error for each module
         executeAllModules();
@@ -45,9 +45,9 @@ public class TimeStepHarmonizer {
         do {
             optimizeTimeStep();
             // if time step changed
-            if (this.timeStepChanged) {
+            if (timeStepChanged) {
                 // clear previously assigned deltas
-                for (AutomatonNode bioNode : this.simulation.getGraph().getNodes()) {
+                for (AutomatonNode bioNode : simulation.getGraph().getNodes()) {
                     bioNode.clearPotentialDeltas();
                 }
                 // update deltas
@@ -58,12 +58,12 @@ public class TimeStepHarmonizer {
         // shift potential deltas to true deltas
         finalizeDeltas();
 
-        return this.timeStepChanged;
+        return timeStepChanged;
     }
 
     private void executeAllModules() {
-        this.largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
-        for (Module module : this.simulation.getModules()) {
+        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        for (Module module : simulation.getModules()) {
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error
@@ -74,29 +74,29 @@ public class TimeStepHarmonizer {
     }
 
     private void finalizeDeltas() {
-        for (AutomatonNode node : this.simulation.getGraph().getNodes()) {
+        for (AutomatonNode node : simulation.getGraph().getNodes()) {
             node.shiftDeltas();
         }
     }
 
     private void examineLocalError(Module module, LocalError localError) {
-        if (this.largestLocalError.getValue() < localError.getValue()) {
-            this.largestLocalError = localError;
-            this.criticalModule = module;
+        if (largestLocalError.getValue() < localError.getValue()) {
+            largestLocalError = localError;
+            criticalModule = module;
         }
     }
 
     private void optimizeTimeStep() {
         double localError = largestLocalError.getValue();
-        this.timeStepChanged = false;
+        timeStepChanged = false;
         boolean errorIsTooLarge = tryToDecreaseTimeStep(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
-            this.currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+            currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
             // determine biggest local error
-            localError = this.criticalModule.determineDeltasForNode(this.largestLocalError.getNode()).getValue();
+            localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
             // logger.info("Current local error is {}",localError);
-            this.criticalModule.resetLargestLocalError();
+            criticalModule.resetLargestLocalError();
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = tryToDecreaseTimeStep(localError);
         }
@@ -104,10 +104,10 @@ public class TimeStepHarmonizer {
     }
 
     public void rescaleParameters() {
-        for (ChemicalEntity<?> entity : this.simulation.getChemicalEntities()) {
+        for (ChemicalEntity<?> entity : simulation.getChemicalEntities()) {
             entity.scaleScalableFeatures();
         }
-        for (Module module : this.simulation.getModules()) {
+        for (Module module : simulation.getModules()) {
             if (module instanceof Featureable) {
                 ((Featureable) module).scaleScalableFeatures();
             }
@@ -116,13 +116,13 @@ public class TimeStepHarmonizer {
 
     public void increaseTimeStep() {
         logger.trace("Increasing time step for the next epoch.");
-        EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(1.2));
+        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(1.2));
         rescaleParameters();
     }
 
     public void decreaseTimeStep() {
         logger.trace("Reducing time step and trying again.");
-        EnvironmentalParameters.getInstance().setTimeStep(this.currentTimeStep.multiply(0.8));
+        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(0.8));
         rescaleParameters();
     }
 
@@ -130,7 +130,7 @@ public class TimeStepHarmonizer {
         // determine whether to increase or reduce time step size
         if (localError > epsilon) {
             decreaseTimeStep();
-            this.timeStepChanged = true;
+            timeStepChanged = true;
             return true;
         }
         return false;

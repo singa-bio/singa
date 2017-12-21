@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -59,14 +59,14 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
     public Protein parse() {
         parseXML();
         // return parsing result
-        return ((UniProtContentHandler) this.getXmlReader().getContentHandler()).getProtein();
+        return ((UniProtContentHandler) getXmlReader().getContentHandler()).getProtein();
     }
 
     private void parseXML() {
-        fetchResource(this.identifier.toString() + ".xml");
+        fetchResource(identifier.toString() + ".xml");
         // parse xml
         try {
-            this.getXmlReader().parse(new InputSource(getFetchResult()));
+            getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {

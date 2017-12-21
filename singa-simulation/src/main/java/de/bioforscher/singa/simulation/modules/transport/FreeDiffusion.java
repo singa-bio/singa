@@ -19,8 +19,8 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
- * concentration. This module defines the diffusion between {@link AutomatonNode}s in a {@link AutomatonGraph}, as described
- * by Fick's laws of diffusion.
+ * concentration. This module defines the diffusion between {@link AutomatonNode}s in a {@link AutomatonGraph}, as
+ * described by Fick's laws of diffusion.
  *
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
@@ -29,10 +29,8 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
     public FreeDiffusion(Simulation simulation) {
         super(simulation);
-        // apply to every node
-        applyAlways();
-        // the change
-        addDeltaFunction(this::calculateDelta);
+        // apply everywhere
+        addDeltaFunction(this::calculateDelta, node -> true);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {

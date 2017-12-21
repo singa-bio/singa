@@ -33,26 +33,26 @@ public class AppliedScale extends AbstractFeature<Double> implements ScalableFea
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         if (previousTimeStep != null) {
             // determine how the time step has changed
-            double scale = time.to(MILLI(SECOND)).getValue().doubleValue() / this.previousTimeStep.to(MILLI(SECOND)).getValue().doubleValue();
+            double scale = time.to(MILLI(SECOND)).getValue().doubleValue() / previousTimeStep.to(MILLI(SECOND)).getValue().doubleValue();
             // scale to current time step
-            this.scaledQuantity = scaledQuantity * scale;
+            scaledQuantity = scaledQuantity * scale;
             // and half
-            this.halfScaledQuantity = scaledQuantity * 0.5;
+            halfScaledQuantity = scaledQuantity * 0.5;
         } else {
-            this.scaledQuantity = 1.0;
-            this.halfScaledQuantity = 0.5;
+            scaledQuantity = 1.0;
+            halfScaledQuantity = 0.5;
         }
-        this.previousTimeStep = time;
+        previousTimeStep = time;
     }
 
     @Override
     public Double getScaledQuantity() {
-        return this.scaledQuantity;
+        return scaledQuantity;
     }
 
     @Override
     public Double getHalfScaledQuantity() {
-        return this.halfScaledQuantity;
+        return halfScaledQuantity;
     }
 
 }

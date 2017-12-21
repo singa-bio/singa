@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.molecules;
 
-import de.bioforscher.singa.chemistry.descriptive.elements.Element;
-import de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.structure.elements.Element;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 
 /**
  * @author cl
@@ -14,7 +14,7 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
 
     public MoleculeAtom(int identifier) {
         super(identifier);
-        this.element = ElementProvider.UNKOWN;
+        element = ElementProvider.UNKOWN;
     }
 
     public MoleculeAtom(int identifier, Vector2D position) {
@@ -26,8 +26,13 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
         this.element = element;
     }
 
+    private MoleculeAtom(MoleculeAtom moleculeAtom) {
+        super(moleculeAtom);
+        element = moleculeAtom.element;
+    }
+
     public Element getElement() {
-        return this.element;
+        return element;
     }
 
     public void setElement(Element element) {
@@ -36,6 +41,11 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
 
     @Override
     public String toString() {
-        return this.element.toString() + ":" + this.getIdentifier();
+        return element.toString() + ":" + getIdentifier();
+    }
+
+    @Override
+    public MoleculeAtom getCopy() {
+        return new MoleculeAtom(this);
     }
 }

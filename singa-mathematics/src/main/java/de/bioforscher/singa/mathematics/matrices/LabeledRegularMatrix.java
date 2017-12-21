@@ -20,8 +20,8 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     public LabeledRegularMatrix(double[][] values) {
         super(values);
-        this.rowLabelMap = new IdentityHashMap<>();
-        this.columnLabelMap = new IdentityHashMap<>();
+        rowLabelMap = new IdentityHashMap<>();
+        columnLabelMap = new IdentityHashMap<>();
     }
 
     @Override
@@ -29,12 +29,12 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         if (rowIndex > getRowDimension()) {
             throw new IllegalArgumentException("specified index " + rowIndex + " exceeds row dimension " + getRowDimension());
         }
-        this.rowLabelMap.put(label, rowIndex);
+        rowLabelMap.put(label, rowIndex);
     }
 
     @Override
     public RegularVector getRowByLabel(LabelType label) {
-        int rowIndex = this.rowLabelMap.entrySet().stream()
+        int rowIndex = rowLabelMap.entrySet().stream()
                 .filter(entry -> entry.getKey().equals(label))
                 .findFirst()
                 .map(Map.Entry::getValue)
@@ -44,13 +44,13 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public LabelType getRowLabel(int rowIndex) {
-        return this.rowLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
+        return rowLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("no row label exists for row index " + rowIndex));
     }
 
     @Override
     public List<LabelType> getRowLabels() {
-        return this.rowLabelMap.entrySet().stream()
+        return rowLabelMap.entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
@@ -61,12 +61,12 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         if (columnIndex > getColumnDimension()) {
             throw new IllegalArgumentException("specified index " + columnIndex + " exceeds column dimension " + getColumnDimension());
         }
-        this.columnLabelMap.put(label, columnIndex);
+        columnLabelMap.put(label, columnIndex);
     }
 
     @Override
     public RegularVector getColumnByLabel(LabelType label) {
-        int columnIndex = this.columnLabelMap.entrySet().stream()
+        int columnIndex = columnLabelMap.entrySet().stream()
                 .filter(entry -> entry.getKey().equals(label))
                 .findFirst()
                 .map(Map.Entry::getValue)
@@ -76,13 +76,13 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public LabelType getColumnLabel(int columnIndex) {
-        return this.columnLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(columnIndex)).map(Map.Entry::getKey)
+        return columnLabelMap.entrySet().stream().filter(entry -> entry.getValue().equals(columnIndex)).map(Map.Entry::getKey)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("no column label exists for column index " + columnIndex));
     }
 
     @Override
     public List<LabelType> getColumnLabels() {
-        return this.columnLabelMap.entrySet().stream()
+        return columnLabelMap.entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
@@ -90,7 +90,7 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
 
     @Override
     public Pair<Integer> getPositionFromLabels(LabelType rowLabel, LabelType columnLabel) {
-        return new Pair<>(this.rowLabelMap.get(rowLabel), this.columnLabelMap.get(columnLabel));
+        return new Pair<>(rowLabelMap.get(rowLabel), columnLabelMap.get(columnLabel));
     }
 
     @Override
@@ -101,9 +101,9 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
     @Override
     public String getStringRepresentation() {
         StringJoiner rowJoiner = new StringJoiner("\n");
-        if (!this.columnLabelMap.isEmpty())
+        if (!columnLabelMap.isEmpty())
             // assemble first line of string representation
-            rowJoiner.add("," + this.columnLabelMap.entrySet().stream()
+            rowJoiner.add("," + columnLabelMap.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .map(Map.Entry::getKey)
                     .map(String::valueOf).collect(Collectors.joining(",")));
@@ -113,7 +113,7 @@ public class LabeledRegularMatrix<LabelType> extends RegularMatrix implements La
         double[][] elements = getElements();
         for (int i = 0; i < elements.length; i++) {
             StringJoiner columnJoiner = new StringJoiner(",");
-            if (!this.rowLabelMap.isEmpty())
+            if (!rowLabelMap.isEmpty())
                 columnJoiner.add(String.valueOf(getRowLabel(i)));
             for (int j = 0; j < elements[i].length; j++) {
                 columnJoiner.add(df.format(elements[i][j]));

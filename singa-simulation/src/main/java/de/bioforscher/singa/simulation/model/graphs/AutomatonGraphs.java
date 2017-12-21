@@ -72,7 +72,7 @@ public class AutomatonGraphs {
     }
 
     public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, GridCoordinateConverter converter,
-                                                                   EnclosedCompartment innerSection, CellSection outerSection) {
+                                                             EnclosedCompartment innerSection, CellSection outerSection) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(),
                 outerSection.getName());
         // column wise (vertical split)

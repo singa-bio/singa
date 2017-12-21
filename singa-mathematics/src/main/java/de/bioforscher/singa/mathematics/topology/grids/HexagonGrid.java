@@ -40,46 +40,46 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
     public Cell getNeighborCell(HexagonCoordinate hexagon, HexagonCoordianteDirection direction) {
         short q = hexagon.getQ();
         short r = hexagon.getR();
-        Cell[] result = {this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
-                this.get(q - 1, r + 1), this.get(q, r + 1)};
+        Cell[] result = {get(q + 1, r), get(q + 1, r - 1), get(q, r - 1), get(q - 1, r),
+                get(q - 1, r + 1), get(q, r + 1)};
         return result[direction.getValue()];
     }
 
     public Cell[] getNeighborCells(HexagonCoordinate hexagon) {
         short q = hexagon.getQ();
         short r = hexagon.getR();
-        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
-                this.get(q - 1, r + 1), this.get(q, r + 1)};
+        return new Cell[]{get(q + 1, r), get(q + 1, r - 1), get(q, r - 1), get(q - 1, r),
+                get(q - 1, r + 1), get(q, r + 1)};
     }
 
     public Cell[] getNeighborCells(Cell cell) {
         short q = cell.getQ();
         short r = cell.getR();
-        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
-                this.get(q - 1, r + 1), this.get(q, r + 1)};
+        return new Cell[]{get(q + 1, r), get(q + 1, r - 1), get(q, r - 1), get(q - 1, r),
+                get(q - 1, r + 1), get(q, r + 1)};
     }
 
     public Cell[] getNeighborCells(short q, short r) {
-        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
-                this.get(q - 1, r + 1), this.get(q, r + 1)};
+        return new Cell[]{get(q + 1, r), get(q + 1, r - 1), get(q, r - 1), get(q - 1, r),
+                get(q - 1, r + 1), get(q, r + 1)};
     }
 
     public Cell[] getNeighborCells(int q, int r) {
-        return new Cell[]{this.get(q + 1, r), this.get(q + 1, r - 1), this.get(q, r - 1), this.get(q - 1, r),
-                this.get(q - 1, r + 1), this.get(q, r + 1)};
+        return new Cell[]{get(q + 1, r), get(q + 1, r - 1), get(q, r - 1), get(q - 1, r),
+                get(q - 1, r + 1), get(q, r + 1)};
     }
 
     public Cell get(short q, short r) {
-        return this.get(new HexagonCoordinate(q, r));
+        return get(new HexagonCoordinate(q, r));
     }
 
     public Cell get(int q, int r) {
-        return this.get(new HexagonCoordinate(q, r));
+        return get(new HexagonCoordinate(q, r));
     }
 
     public int getMinQValue() {
         int minQ = Integer.MAX_VALUE;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             if (minQ > hexagon.getQ()) {
                 minQ = hexagon.getQ();
             }
@@ -89,7 +89,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
 
     public int getMaxQValue() {
         int maxQ = Integer.MIN_VALUE;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             if (maxQ < hexagon.getQ()) {
                 maxQ = hexagon.getQ();
             }
@@ -99,7 +99,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
 
     public int getMinRValue() {
         int minR = Integer.MAX_VALUE;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             if (minR > hexagon.getR()) {
                 minR = hexagon.getR();
             }
@@ -109,7 +109,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
 
     public int getMaxRValue() {
         int maxR = Integer.MIN_VALUE;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             if (maxR < hexagon.getR()) {
                 maxR = hexagon.getR();
             }
@@ -121,7 +121,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
         double minX = Double.MAX_VALUE;
         short minQ = 0;
         short minR = 0;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             double currentX = (double) hexagon.getQ() + (double) hexagon.getR() * 0.5;
             if (currentX < minX) {
                 minX = currentX;
@@ -136,7 +136,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
         double maxX = -Double.MAX_VALUE;
         short maxQ = 0;
         short maxR = 0;
-        for (HexagonCoordinate hexagon : this.keySet()) {
+        for (HexagonCoordinate hexagon : keySet()) {
             double currentX = (double) hexagon.getQ() + (double) hexagon.getR() * 0.5;
             if (currentX > maxX) {
                 maxX = currentX;
@@ -150,20 +150,20 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
     public void fillParallelogram(int qMin, int qMax, int rMin, int rMax) {
         for (int q = qMin; q <= qMax; q++) {
             for (int r = rMin; r <= rMax; r++) {
-                this.put(new HexagonCoordinate(q, r), new Cell(q, r));
+                put(new HexagonCoordinate(q, r), new Cell(q, r));
             }
         }
     }
 
     public void fillCircle(HexagonCoordinate centerHex, int radius) {
-        this.put(centerHex, new Cell(centerHex.getQ(), centerHex.getR()));
+        put(centerHex, new Cell(centerHex.getQ(), centerHex.getR()));
         HexagonCoordinate h = centerHex;
         for (int r = 1; r <= radius; r++) {
-            h = this.getNeighborHexagon(centerHex, HexagonCoordianteDirection.SouthWest, r);
+            h = getNeighborHexagon(centerHex, HexagonCoordianteDirection.SouthWest, r);
             for (HexagonCoordianteDirection direction : HexagonCoordianteDirection.values()) {
                 for (int k = 0; k < r; k++) {
-                    h = this.getNeighborHexagon(h, direction);
-                    this.put(h, new Cell(h.getQ(), h.getR()));
+                    h = getNeighborHexagon(h, direction);
+                    put(h, new Cell(h.getQ(), h.getR()));
                 }
             }
         }
@@ -173,20 +173,20 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
         for (int q = startQ; q < startQ + height; q++) {
             for (int r = startR; r < startR + width; r++) {
                 if (r % 2 == 0) {
-                    this.put(new HexagonCoordinate(q - r / 2, r), new Cell(q - r / 2, r));
+                    put(new HexagonCoordinate(q - r / 2, r), new Cell(q - r / 2, r));
                 } else {
-                    this.put(new HexagonCoordinate(q - r / 2, r), new Cell(q - r / 2, r));
+                    put(new HexagonCoordinate(q - r / 2, r), new Cell(q - r / 2, r));
                 }
             }
         }
     }
 
     public void setStateOfAllCellsWithRValue(int r, CellState state) {
-        this.keySet().stream().filter(hexagon -> hexagon.getR() == r).forEach(hexagon -> this.get(hexagon).setState(state));
+        keySet().stream().filter(hexagon -> hexagon.getR() == r).forEach(hexagon -> get(hexagon).setState(state));
     }
 
     public void setStateOfAllCellsWithQValue(int q, CellState state) {
-        this.keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> this.get(hexagon).setState(state));
+        keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> get(hexagon).setState(state));
     }
 
     public static HexagonGrid fillRadom() {

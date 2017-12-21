@@ -33,24 +33,24 @@ public class DynamicKineticLaw implements KineticLaw {
 
     public DynamicKineticLaw(AppliedExpression expression) {
         this.expression = expression;
-        this.entityReference = new HashMap<>();
+        entityReference = new HashMap<>();
     }
 
     public AppliedExpression getExpression() {
-        return this.expression;
+        return expression;
     }
 
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
-        this.entityReference.put(entity, parameterIdentifier);
-        this.expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
+        entityReference.put(entity, parameterIdentifier);
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {
-        return this.entityReference;
+        return entityReference;
     }
 
     public double getAppliedScale() {
-        return this.appliedScale;
+        return appliedScale;
     }
 
     public void setAppliedScale(Double appliedScale) {
@@ -68,12 +68,12 @@ public class DynamicKineticLaw implements KineticLaw {
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // set entity parameters
-        for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = concentrationContainer.getAvailableConcentration(currentCellSection,entry.getKey());
-            final String parameterName = this.entityReference.get(entry.getKey());
-            this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
+        for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
+            final Quantity<MolarConcentration> concentration = concentrationContainer.getAvailableConcentration(currentCellSection, entry.getKey());
+            final String parameterName = entityReference.get(entry.getKey());
+            expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        return this.expression.evaluate().getValue().doubleValue() * this.appliedScale;
+        return expression.evaluate().getValue().doubleValue() * appliedScale;
     }
 
 }

@@ -14,87 +14,87 @@ public class Vector2DTest {
 
     @Before
     public void initialize() {
-        this.first = new Vector2D(10.0, 20.0);
-        this.second = new Vector2D(15.0, 25.0);
-        this.scalar = 2.0;
+        first = new Vector2D(10.0, 20.0);
+        second = new Vector2D(15.0, 25.0);
+        scalar = 2.0;
     }
 
     @Test
     public void testAddCalculation() {
-        Vector2D actual = this.first.add(this.second);
+        Vector2D actual = first.add(second);
         assertArrayEquals(new double[]{25.0, 45.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testSubtractCalculation() {
-        Vector2D actual = this.first.subtract(this.second);
+        Vector2D actual = first.subtract(second);
         assertArrayEquals(new double[]{-5.0, -5.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testMultiplicationCalculation() {
-        Vector2D actual = this.first.multiply(this.second);
+        Vector2D actual = first.multiply(second);
         assertArrayEquals(new double[]{150.0, 500.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testMultiplicationWithScalarCalculation() {
-        Vector2D actual = this.first.multiply(this.scalar);
+        Vector2D actual = first.multiply(scalar);
         assertArrayEquals(new double[]{20.0, 40.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testAdditivelyInvertCalculation() {
-        Vector2D actual = this.first.additivelyInvert();
+        Vector2D actual = first.additivelyInvert();
         assertArrayEquals(new double[]{-10.0, -20.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testAdditivelyInvertElementCalculation() {
-        Vector2D actual = this.first.invertX().invertY();
+        Vector2D actual = first.invertX().invertY();
         assertArrayEquals(new double[]{-10, -20.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testMagnitudeCalculation() {
-        double actual = this.first.getMagnitude();
+        double actual = first.getMagnitude();
         assertEquals(10.0 * Math.sqrt(5), actual, 0.0);
     }
 
     @Test
     public void testDivisionWithScalarCalculation() {
-        Vector2D actual = this.first.divide(this.scalar);
+        Vector2D actual = first.divide(scalar);
         assertArrayEquals(new double[]{5.0, 10.0}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testDivisionCalculation() {
-        Vector2D actual = this.first.divide(this.second);
+        Vector2D actual = first.divide(second);
         assertArrayEquals(new double[]{2.0 / 3.0, 0.8}, actual.getElements(), 0.0);
     }
 
     @Test
     public void testDotProductCalculation() {
-        double actual = this.first.dotProduct(this.second);
+        double actual = first.dotProduct(second);
         assertEquals(650.0, actual, 0.0);
     }
 
     @Test
     public void testAngleCalculation() {
-        double actual = this.first.angleTo(this.second);
+        double actual = first.angleTo(second);
         assertEquals(0.07677189126977, actual, 1e-10);
     }
 
     @Test
     public void testMidpointCalculation() {
-        Vector2D actual = this.first.getMidpointTo(this.second);
+        Vector2D actual = first.getMidpointTo(second);
         assertArrayEquals(new double[]{12.5, 22.5}, actual.getElements(), 0.0);
     }
 
     @Test
     public void shouldBeNearEachOther() {
-        boolean actualTrue = this.first.isNearVector(this.second, 3.0);
-        boolean actualFalse = this.first.isNearVector(this.second, 2.0);
+        boolean actualTrue = first.isNearVector(second, 3.0);
+        boolean actualFalse = first.isNearVector(second, 2.0);
         assertTrue(actualTrue);
         assertFalse(actualFalse);
     }
@@ -116,7 +116,7 @@ public class Vector2DTest {
 
     @Test
     public void testNormalizationCalculation() {
-        Vector2D actual = this.first.normalize();
+        Vector2D actual = first.normalize();
         assertArrayEquals(new double[]{1 / Math.sqrt(5.0), 2 / Math.sqrt(5)}, actual.getElements(), 1e-15);
         assertEquals(1.0, actual.getMagnitude(), 1e-15);
     }

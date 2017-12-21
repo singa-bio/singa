@@ -21,11 +21,11 @@ public class GraphMLParserService extends AbstractXMLParser<AutomatonGraph> {
     public AutomatonGraph parse() {
         logger.debug("Parsing graph from file {}.", getFetchResult());
         try {
-            this.getXmlReader().parse(getResource());
+            getXmlReader().parse(getResource());
         } catch (IOException | SAXException e) {
             logger.error("No graph could be parsed from file {}.", getFetchResult());
             e.printStackTrace();
         }
-        return ((GraphMLContentHandler) this.getXmlReader().getContentHandler()).getGraph();
+        return ((GraphMLContentHandler) getXmlReader().getContentHandler()).getGraph();
     }
 }

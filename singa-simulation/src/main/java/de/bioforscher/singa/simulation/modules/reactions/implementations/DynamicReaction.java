@@ -22,24 +22,18 @@ public class DynamicReaction extends Reaction {
         initialize(kineticLaw);
     }
 
-    public DynamicReaction(DynamicKineticLaw kineticLaw) {
-        super();
-        initialize(kineticLaw);
-    }
-
     private void initialize(DynamicKineticLaw kineticLaw) {
         this.kineticLaw = kineticLaw;
-        this.catalyticReactants = new ArrayList<>();
+        catalyticReactants = new ArrayList<>();
         // features
-        this.availableFeatures.add(AppliedScale.class);
+        availableFeatures.add(AppliedScale.class);
         setFeature(new AppliedScale());
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
     public DynamicKineticLaw getKineticLaw() {
-        return this.kineticLaw;
+        return kineticLaw;
     }
 
     public void setKineticLaw(DynamicKineticLaw kineticLaw) {
@@ -47,7 +41,7 @@ public class DynamicReaction extends Reaction {
     }
 
     public List<CatalyticReactant> getCatalyticReactants() {
-        return this.catalyticReactants;
+        return catalyticReactants;
     }
 
     public void setCatalyticReactants(List<CatalyticReactant> catalyticReactants) {
@@ -58,7 +52,7 @@ public class DynamicReaction extends Reaction {
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         kineticLaw.setCurrentCellSection(getCurrentCellSection());
         kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class));
-        return this.kineticLaw.calculateVelocity(concentrationContainer);
+        return kineticLaw.calculateVelocity(concentrationContainer);
     }
 
 }

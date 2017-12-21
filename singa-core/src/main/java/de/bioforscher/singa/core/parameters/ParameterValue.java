@@ -15,16 +15,16 @@ public final class ParameterValue<Type extends Comparable<Type>> {
     }
 
     public Parameter<Type> getParameter() {
-        return this.parameter;
+        return parameter;
     }
 
     public Type getValue() {
-        return this.value;
+        return value;
     }
 
     @Override
     public String toString() {
-        return this.value.toString(); // parameter + " = " +
+        return value.toString(); // parameter + " = " +
     }
 
 }

@@ -21,7 +21,7 @@ public class CatalyticReactant extends Reactant {
      * @return The strength of this Reactant.
      */
     public double getStrength() {
-        return this.strength;
+        return strength;
     }
 
     /**

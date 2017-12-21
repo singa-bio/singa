@@ -29,10 +29,10 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
     private List<List<EdgeType>> edgesOfSubgraphs;
 
     private DisconnectedSubgraphFinder(GraphType graph) {
-        this.queue = new ArrayDeque<>();
-        this.unprocessedNodes = new HashSet<>(graph.getNodes());
-        this.nodesOfSubgraphs = new ArrayList<>();
-        this.edgesOfSubgraphs = new ArrayList<>();
+        queue = new ArrayDeque<>();
+        unprocessedNodes = new HashSet<>(graph.getNodes());
+        nodesOfSubgraphs = new ArrayList<>();
+        edgesOfSubgraphs = new ArrayList<>();
         this.graph = graph;
     }
 
@@ -70,8 +70,8 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
      * @return The next node, that has not already ben processed.
      */
     private Optional<NodeType> getNextSubgraphOrigin() {
-        if (!this.unprocessedNodes.isEmpty()) {
-            return Optional.of(this.unprocessedNodes.iterator().next());
+        if (!unprocessedNodes.isEmpty()) {
+            return Optional.of(unprocessedNodes.iterator().next());
         }
         return Optional.empty();
     }
@@ -84,27 +84,27 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
      */
     private void processSubgraph(NodeType initialNode) {
         // initialize collecting lists
-        this.currentNodes = new ArrayList<>();
+        currentNodes = new ArrayList<>();
         ArrayList<EdgeType> currentEdges = new ArrayList<>();
         // add to que and subgraph, remove from unprocessed nodes
         processNode(initialNode);
         // as long as there are nodes on the queue (as long as there are connected nodes in this subgraph)
         NodeType currentNode;
-        while ((currentNode = this.queue.poll()) != null) {
+        while ((currentNode = queue.poll()) != null) {
             // process neighbours
             for (NodeType neighbor : currentNode.getNeighbours()) {
                 // if neighbour is not already in the subgraph
-                if (!this.currentNodes.contains(neighbor)) {
+                if (!currentNodes.contains(neighbor)) {
                     // add to que and subgraph, remove from unprocessed nodes
                     processNode(neighbor);
                     // remember edge
-                    currentEdges.add(this.graph.getEdgeBetween(currentNode, neighbor).get());
+                    currentEdges.add(graph.getEdgeBetween(currentNode, neighbor).get());
                 }
             }
         }
         // add complete subgraph to nodes
-        this.nodesOfSubgraphs.add(this.currentNodes);
-        this.edgesOfSubgraphs.add(currentEdges);
+        nodesOfSubgraphs.add(currentNodes);
+        edgesOfSubgraphs.add(currentEdges);
     }
 
     /**
@@ -114,11 +114,11 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
      */
     private void processNode(NodeType node) {
         // add initial node to the current subgraph nodes
-        this.currentNodes.add(node);
+        currentNodes.add(node);
         // add initial node to queue
-        this.queue.offer(node);
+        queue.offer(node);
         // and remove it from the unprocessed stack
-        this.unprocessedNodes.remove(node);
+        unprocessedNodes.remove(node);
     }
 
     /**
@@ -129,23 +129,23 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
     private List<GraphType> createSubgraphs() {
         List<GraphType> subgraphs = new ArrayList<>();
         // for each extracted list of connected nodes
-        for (int i = 0; i < this.nodesOfSubgraphs.size(); i++) {
+        for (int i = 0; i < nodesOfSubgraphs.size(); i++) {
             // create a new graph
             GraphType subgraph;
             try {
-                subgraph = (GraphType) this.graph.getClass().newInstance();
+                subgraph = (GraphType) graph.getClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException("Failed to create a new graph.");
             }
             // copy and add nodes
             Objects.requireNonNull(subgraph);
-            List<NodeType> nodes = this.nodesOfSubgraphs.get(i);
+            List<NodeType> nodes = nodesOfSubgraphs.get(i);
             for (NodeType node : nodes) {
                 NodeType copy = node.getCopy();
                 subgraph.addNode(copy);
             }
             // create and add edges for the nodes (preserving edge identifier)
-            List<EdgeType> edges = this.edgesOfSubgraphs.get(i);
+            List<EdgeType> edges = edgesOfSubgraphs.get(i);
             for (EdgeType edge : edges) {
                 NodeType source = subgraph.getNode(edge.getSource().getIdentifier());
                 NodeType target = subgraph.getNode(edge.getTarget().getIdentifier());

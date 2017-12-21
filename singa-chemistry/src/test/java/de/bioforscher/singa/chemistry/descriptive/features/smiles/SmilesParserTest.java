@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.HYDROGEN;
-import static de.bioforscher.singa.chemistry.descriptive.elements.ElementProvider.OXYGEN;
+import static de.bioforscher.singa.structure.elements.ElementProvider.HYDROGEN;
+import static de.bioforscher.singa.structure.elements.ElementProvider.OXYGEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

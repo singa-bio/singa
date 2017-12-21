@@ -16,22 +16,22 @@ public final class DoubleParameter implements Parameter<Double> {
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public Double getLowerBound() {
-        return this.minimalValue.doubleValue();
+        return minimalValue.doubleValue();
     }
 
     @Override
     public Double getUpperBound() {
-        return this.maximalValue.doubleValue();
+        return maximalValue.doubleValue();
     }
 
     @Override
     public String toString() {
-        return "Parameter (Double) " + this.name + " [" + this.minimalValue + " ... " + this.maximalValue + "]";
+        return "Parameter (Double) " + name + " [" + minimalValue + " ... " + maximalValue + "]";
     }
 
 }

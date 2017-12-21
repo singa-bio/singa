@@ -14,6 +14,6 @@ public class GraphUpdatedEvent {
     }
 
     public AutomatonGraph getGraph() {
-        return this.graph;
+        return graph;
     }
 }

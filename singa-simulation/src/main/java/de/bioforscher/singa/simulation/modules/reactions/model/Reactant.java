@@ -23,7 +23,7 @@ public abstract class Reactant {
      * @return The entity representing this reactant.
      */
     public ChemicalEntity<?> getEntity() {
-        return this.entity;
+        return entity;
     }
 
     /**
@@ -41,7 +41,7 @@ public abstract class Reactant {
      * @return The role of this reactant.
      */
     public ReactantRole getRole() {
-        return this.role;
+        return role;
     }
 
     /**

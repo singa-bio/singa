@@ -14,13 +14,13 @@ public class SabioRKParserService extends AbstractHTMLParser<List<DynamicReactio
 
     public SabioRKParserService(String entryID) {
         setResource(SABIORK_FETCH_URL);
-        this.queryMap = new HashMap<>();
-        this.queryMap.put("q", entryID);
+        queryMap = new HashMap<>();
+        queryMap.put("q", entryID);
     }
 
     @Override
     public List<DynamicReaction> parse() {
-        fetchWithQuery(this.queryMap);
+        fetchWithQuery(queryMap);
         SBMLParser parser = new SBMLParser(getFetchResult());
         parser.parse();
         return parser.getReactions();

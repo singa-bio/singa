@@ -19,19 +19,19 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
     private CellSection cellSection;
 
     public SimpleConcentrationContainer(CellSection cellSection) {
-        this.concentrations = new HashMap<>();
+        concentrations = new HashMap<>();
         this.cellSection = cellSection;
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        return this.concentrations.get(chemicalEntity);
+        return concentrations.get(chemicalEntity);
     }
 
     @Override
     public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (this.cellSection.equals(cellSection)) {
-            return this.concentrations;
+            return concentrations;
         }
         return Collections.emptyMap();
     }
@@ -43,7 +43,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-        this.concentrations.put(chemicalEntity, concentration);
+        concentrations.put(chemicalEntity, concentration);
     }
 
     @Override
@@ -53,22 +53,22 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Set<ChemicalEntity<?>> getAllReferencedEntities() {
-        return this.concentrations.keySet();
+        return concentrations.keySet();
     }
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        return Collections.singleton(this.cellSection);
+        return Collections.singleton(cellSection);
     }
 
     @Override
     public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
-        return this.concentrations;
+        return concentrations;
     }
 
     @Override
     public SimpleConcentrationContainer getCopy() {
-        return new SimpleConcentrationContainer(this.cellSection);
+        return new SimpleConcentrationContainer(cellSection);
     }
 
 }

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
+import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class EnclosedCompartment extends CellSection {
         // find starting point
         AutomatonNode first = getContent().stream()
                 .filter(bioNode -> bioNode.getNeighbours().stream()
-                        .anyMatch(neighbour -> neighbour.getCellSection().getIdentifier().equals(this.getIdentifier())))
+                        .anyMatch(neighbour -> neighbour.getCellSection().getIdentifier().equals(getIdentifier())))
                 .findAny().get();
         // add first node
         nodes.add(first);
@@ -86,8 +87,8 @@ public class EnclosedCompartment extends CellSection {
 
             // try to traverse bridge
             if (!foundNeighbour) {
-                LinkedList<AutomatonNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
-                        currentNode -> this.isNewBorder(nodes, currentNode), this::isInThisCompartment);
+                GraphPath<AutomatonNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
+                        currentNode -> isNewBorder(nodes, currentNode), this::isInThisCompartment);
                 if (nextBest != null) {
                     for (AutomatonNode node : nextBest) {
                         if (!nodes.contains(node)) {
@@ -105,13 +106,13 @@ public class EnclosedCompartment extends CellSection {
 
         }
 
-        this.enclosingMembrane = Membrane.forCompartment(this);
-        this.enclosingMembrane.setContent(new HashSet<>(nodes));
-        return this.enclosingMembrane;
+        enclosingMembrane = Membrane.forCompartment(this);
+        enclosingMembrane.setContent(new HashSet<>(nodes));
+        return enclosingMembrane;
     }
 
     private boolean isInThisCompartment(AutomatonNode node) {
-        return node.getCellSection().getIdentifier().equals(this.getIdentifier());
+        return node.getCellSection().getIdentifier().equals(getIdentifier());
     }
 
     private boolean hasNeighbourInOtherCompartment(AutomatonNode node) {
@@ -130,7 +131,7 @@ public class EnclosedCompartment extends CellSection {
     }
 
     public Membrane getEnclosingMembrane() {
-        return this.enclosingMembrane;
+        return enclosingMembrane;
     }
 
     public void setEnclosingMembrane(Membrane enclosingMembrane) {

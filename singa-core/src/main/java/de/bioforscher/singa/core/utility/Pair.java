@@ -34,7 +34,7 @@ public class Pair<ValueType> {
      * @return The first value.
      */
     public ValueType getFirst() {
-        return this.first;
+        return first;
     }
 
     /**
@@ -42,7 +42,7 @@ public class Pair<ValueType> {
      * @return The second value.
      */
     public ValueType getSecond() {
-        return this.second;
+        return second;
     }
 
     @Override
@@ -52,23 +52,23 @@ public class Pair<ValueType> {
         if (o == null || getClass() != o.getClass())
             return false;
         Pair<?> pair = (Pair<?>) o;
-        if (this.first != null ? !this.first.equals(pair.first) : pair.first != null)
+        if (first != null ? !first.equals(pair.first) : pair.first != null)
             return false;
-        return this.second != null ? this.second.equals(pair.second) : pair.second == null;
+        return second != null ? second.equals(pair.second) : pair.second == null;
     }
 
     @Override
     public int hashCode() {
-        int result = this.first != null ? this.first.hashCode() : 0;
-        result = 31 * result + (this.second != null ? this.second.hashCode() : 0);
+        int result = first != null ? first.hashCode() : 0;
+        result = 31 * result + (second != null ? second.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "Pair{" +
-                "first=" + this.first +
-                ", second=" + this.second +
+                "first=" + first +
+                ", second=" + second +
                 '}';
     }
 }

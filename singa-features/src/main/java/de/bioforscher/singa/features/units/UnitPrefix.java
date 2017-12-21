@@ -38,15 +38,15 @@ public enum UnitPrefix {
     }
 
     public int getScale() {
-        return this.scale;
+        return scale;
     }
 
     public String getSymbol() {
-        return this.symbol;
+        return symbol;
     }
 
     public UnitConverter getCorrespondingConverter() {
-        return this.correspondingConverter;
+        return correspondingConverter;
     }
 
     public static EnumSet<UnitPrefix> getDefaultSpacePrefixes() {

@@ -54,7 +54,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
 
     @Override
     public int getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
@@ -64,7 +64,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
 
     @Override
     public NodeType getSource() {
-        return this.source;
+        return source;
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
 
     @Override
     public NodeType getTarget() {
-        return this.target;
+        return target;
     }
 
     @Override
@@ -89,12 +89,12 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
      * @return true only if the node is source or target of this edge.
      */
     public boolean containsNode(NodeType node) {
-        return this.source.equals(node) || this.target.equals(node);
+        return source.equals(node) || target.equals(node);
     }
 
     @Override
     public String toString() {
-        return "Edge connecting " + this.source + " and " + this.target;
+        return "Edge connecting " + source + " and " + target;
     }
 
     @Override
@@ -102,13 +102,13 @@ public abstract class AbstractEdge<NodeType extends Node<NodeType, ? extends Vec
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractEdge<?> that = (AbstractEdge<?>) o;
-        return this.identifier == that.identifier;
+        return identifier == that.identifier;
 
     }
 
     @Override
     public int hashCode() {
-        return this.identifier;
+        return identifier;
     }
 
 }

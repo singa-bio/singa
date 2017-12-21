@@ -49,14 +49,14 @@ public class VariableExpressionNode implements ExpressionNode {
      */
     public VariableExpressionNode(String name) {
         this.name = name;
-        this.valueSet = false;
+        valueSet = false;
     }
 
     /**
      * @return the name of the variable
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -67,24 +67,24 @@ public class VariableExpressionNode implements ExpressionNode {
     }
 
     /**
+     * Returns the value of the variable but throws an exception if the value has
+     * not been set
+     */
+    public double getValue() {
+        if (valueSet)
+            return value;
+        else
+            throw new EvaluationException("Variable '" + name + "' was not initialized.");
+    }
+
+    /**
      * Sets the value of the variable
      *
      * @param value the value of the variable
      */
     public void setValue(double value) {
         this.value = value;
-        this.valueSet = true;
-    }
-
-    /**
-     * Returns the value of the variable but throws an exception if the value has
-     * not been set
-     */
-    public double getValue() {
-        if (this.valueSet)
-            return this.value;
-        else
-            throw new EvaluationException("Variable '" + this.name + "' was not initialized.");
+        valueSet = true;
     }
 
     /**

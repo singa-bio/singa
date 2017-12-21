@@ -27,11 +27,11 @@ public class RegularVector implements Vector {
      */
     public RegularVector(double... elements) {
         this.elements = elements;
-        this.dimension = elements.length;
+        dimension = elements.length;
     }
 
     public RegularVector(int dimension){
-        this.elements =  new double[dimension];
+        elements = new double[dimension];
         this.dimension = dimension;
     }
 
@@ -58,26 +58,26 @@ public class RegularVector implements Vector {
 
     public <VectorClass extends Vector> VectorClass as(Class<VectorClass> vectorClass) {
         if (Vector2D.isVector2D(this) && vectorClass.equals(Vector2D.class)) {
-            return createNewVector(this.getElements(), vectorClass);
+            return createNewVector(getElements(), vectorClass);
         } else if (Vector3D.isVector3D(this) && vectorClass.equals(Vector3D.class)) {
-            return createNewVector(this.getElements(), vectorClass);
+            return createNewVector(getElements(), vectorClass);
         }
         return null;
     }
 
     @Override
     public double getElement(int index) {
-        return this.elements[index];
+        return elements[index];
     }
 
     @Override
     public double[] getElements() {
-        return this.elements;
+        return elements;
     }
 
     @Override
     public int getDimension() {
-        return this.dimension;
+        return dimension;
     }
 
     /**
@@ -87,7 +87,7 @@ public class RegularVector implements Vector {
      */
     @Override
     public String getDimensionAsString() {
-        return String.valueOf(this.dimension);
+        return String.valueOf(dimension);
     }
 
     /**
@@ -98,7 +98,7 @@ public class RegularVector implements Vector {
      */
     @Override
     public boolean hasSameDimensions(Vector vector) {
-        return vector.getDimension() == this.dimension;
+        return vector.getDimension() == dimension;
     }
 
     /**
@@ -112,9 +112,9 @@ public class RegularVector implements Vector {
     @Override
     public Vector add(Vector summand) {
         assertThatDimensionsMatch(summand);
-        double[] values = new double[this.getDimension()];
-        for (int d = 0; d < this.getDimension(); d++) {
-            values[d] = this.getElement(d) + summand.getElement(d);
+        double[] values = new double[getDimension()];
+        for (int d = 0; d < getDimension(); d++) {
+            values[d] = getElement(d) + summand.getElement(d);
         }
         return new RegularVector(values);
     }
@@ -122,9 +122,9 @@ public class RegularVector implements Vector {
     @Override
     public Vector subtract(Vector subtrahend) {
         assertThatDimensionsMatch(subtrahend);
-        double[] values = new double[this.getDimension()];
-        for (int d = 0; d < this.getDimension(); d++) {
-            values[d] = this.getElement(d) - subtrahend.getElement(d);
+        double[] values = new double[getDimension()];
+        for (int d = 0; d < getDimension(); d++) {
+            values[d] = getElement(d) - subtrahend.getElement(d);
         }
         return new RegularVector(values);
     }
@@ -136,17 +136,17 @@ public class RegularVector implements Vector {
      */
     @Override
     public Vector additivelyInvert() {
-        double[] values = new double[this.getDimension()];
-        for (int d = 0; d < this.getDimension(); d++) {
-            values[d] = -this.getElement(d);
+        double[] values = new double[getDimension()];
+        for (int d = 0; d < getDimension(); d++) {
+            values[d] = -getElement(d);
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector additiveleyInvertElement(int index) {
-        double[] values = new double[this.getDimension()];
-        System.arraycopy(this.elements, 0, values, 0, this.getDimension());
+        double[] values = new double[getDimension()];
+        System.arraycopy(elements, 0, values, 0, getDimension());
         values[index] = -values[index];
         return new RegularVector(values);
     }
@@ -162,18 +162,18 @@ public class RegularVector implements Vector {
     @Override
     public Vector multiply(Vector multiplicand) {
         assertThatDimensionsMatch(multiplicand);
-        double[] values = new double[this.getDimension()];
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            values[dimension] = this.getElement(dimension) * multiplicand.getElement(dimension);
+        double[] values = new double[getDimension()];
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            values[dimension] = getElement(dimension) * multiplicand.getElement(dimension);
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector multiply(double scalar) {
-        double[] values = new double[this.getDimension()];
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            values[dimension] = this.getElement(dimension) * scalar;
+        double[] values = new double[getDimension()];
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            values[dimension] = getElement(dimension) * scalar;
         }
         return new RegularVector(values);
     }
@@ -189,33 +189,33 @@ public class RegularVector implements Vector {
     @Override
     public Vector divide(Vector divisor) {
         assertThatDimensionsMatch(divisor);
-        double[] values = new double[this.getDimension()];
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            values[dimension] = this.getElement(dimension) / divisor.getElement(dimension);
+        double[] values = new double[getDimension()];
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            values[dimension] = getElement(dimension) / divisor.getElement(dimension);
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector divide(double scalar) {
-        double[] values = new double[this.getDimension()];
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            values[dimension] = this.getElement(dimension) / scalar;
+        double[] values = new double[getDimension()];
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            values[dimension] = getElement(dimension) / scalar;
         }
         return new RegularVector(values);
     }
 
     @Override
     public Vector normalize() {
-        return this.multiply(1.0 / this.getMagnitude());
+        return multiply(1.0 / getMagnitude());
     }
 
     @Override
     public double dotProduct(Vector vector) {
         assertThatDimensionsMatch(vector);
         double product = 0;
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            product += this.getElement(dimension) * vector.getElement(dimension);
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            product += getElement(dimension) * vector.getElement(dimension);
         }
         return product;
     }
@@ -223,10 +223,10 @@ public class RegularVector implements Vector {
     @Override
     public RegularMatrix dyadicProduct(Vector vector) {
         assertThatDimensionsMatch(vector);
-        double[][] values = new double[this.getDimension()][vector.getDimension()];
-        for (int thisDimension = 0; thisDimension < this.getDimension(); thisDimension++) {
+        double[][] values = new double[getDimension()][vector.getDimension()];
+        for (int thisDimension = 0; thisDimension < getDimension(); thisDimension++) {
             for (int otherDimension = 0; otherDimension < vector.getDimension(); otherDimension++) {
-                values[thisDimension][otherDimension] = this.getElement(thisDimension) * vector.getElement
+                values[thisDimension][otherDimension] = getElement(thisDimension) * vector.getElement
                         (otherDimension);
             }
         }
@@ -236,8 +236,8 @@ public class RegularVector implements Vector {
     @Override
     public double getMagnitude() {
         double sum = 0.0;
-        for (int dimension = 0; dimension < this.getDimension(); dimension++) {
-            sum += this.getElement(dimension) * this.getElement(dimension);
+        for (int dimension = 0; dimension < getDimension(); dimension++) {
+            sum += getElement(dimension) * getElement(dimension);
         }
         return Math.sqrt(sum);
     }
@@ -261,8 +261,8 @@ public class RegularVector implements Vector {
      */
     @Override
     public String toString() {
-        return "Vector " + this.getDimension() + "D "
-                + Arrays.toString(this.elements).replace("[", "(").replace("]", ")");
+        return "Vector " + getDimension() + "D "
+                + Arrays.toString(elements).replace("[", "(").replace("]", ")");
     }
 
     @Override
@@ -272,14 +272,14 @@ public class RegularVector implements Vector {
 
         RegularVector that = (RegularVector) o;
 
-        if (this.dimension != that.dimension) return false;
-        return Arrays.equals(this.elements, that.elements);
+        if (dimension != that.dimension) return false;
+        return Arrays.equals(elements, that.elements);
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(this.elements);
-        result = 31 * result + this.dimension;
+        int result = Arrays.hashCode(elements);
+        result = 31 * result + dimension;
         return result;
     }
 }

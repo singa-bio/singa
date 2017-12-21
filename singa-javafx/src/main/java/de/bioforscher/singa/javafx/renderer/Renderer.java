@@ -1,7 +1,5 @@
 package de.bioforscher.singa.javafx.renderer;
 
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
 import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.Parabola;
@@ -10,6 +8,7 @@ import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 
@@ -31,7 +30,9 @@ public interface Renderer {
 
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
-     * <ul> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li> </ul>
+     * <ul>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * </ul>
      *
      * @param point The position of the point.
      * @param diameter The diameter of the point.
@@ -46,9 +47,11 @@ public interface Renderer {
 
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
-     * <ul> <li> The diameter of the point is determined by the LineWidth (set by {@link
-     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the FillColor (set by {@link
-     * GraphicsContext#setFill(Paint)}).</li> </ul>
+     * <ul>
+     * <li> The diameter of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * </ul>
      *
      * @param point The position of the point.
      */
@@ -57,8 +60,11 @@ public interface Renderer {
     }
 
     /**
-     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered on the vector
-     * .<br> <ul> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered
+     * on the vector
+     * .<br>
+     * <ul>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
      *
      * @param point The position of the point.
@@ -73,9 +79,12 @@ public interface Renderer {
     }
 
     /**
-     * Connects the points given in the List in order of their appearance with a line.<br> <ul> <li> The line width of
-     * the point is determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The
-     * color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * Connects the points given in the List in order of their appearance with a line.<br>
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param vectors The points to be connected with a line.
      */
@@ -88,9 +97,12 @@ public interface Renderer {
     }
 
     /**
-     * Draws a straight by connecting the given start and end points. <ul> <li> The line width of the point is
-     * determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color is
-     * determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * Draws a straight by connecting the given start and end points.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param start The starting point.
      * @param end The ending point.
@@ -100,9 +112,12 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given line segment. <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
-     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
-     * GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * Draws the given line segment.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param lineSegment The line segment.
      */
@@ -111,10 +126,12 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given line segment. <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
-     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
-     * GraphicsContext#setStroke(Paint)}).</li> </ul>
-     *
+     * Draws the given line segment.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      * @param dashes An array of finite non negative dash length.
      * @param lineSegment The line segment.
      */
@@ -125,9 +142,12 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given line. The line is drawn over the whole displayed Canvas. <ul> <li> The line width of the point is
-     * determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color is
-     * determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * Draws the given line. The line is drawn over the whole displayed Canvas.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param line The line.
      */
@@ -153,9 +173,12 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given parabola. The parabola is drawn over the whole displayed Canvas. <ul> <li> The line width of the
-     * point is determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color
-     * is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * Draws the given parabola. The parabola is drawn over the whole displayed Canvas.
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param parabola The parabola.
      */
@@ -166,9 +189,11 @@ public interface Renderer {
     /**
      * Draws the given parabola. The parabola is drawn over the whole displayed Canvas. The sampling depth gives the
      * number of points that are connected to draw the parabola. The higher the depth, the finer the parabola is drawn.
-     * <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
-     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
-     * GraphicsContext#setStroke(Paint)}).</li> </ul>
+     * <ul>
+     * <li> The line width of the point is determined by the LineWidth (set by
+     * {@link GraphicsContext#setLineWidth(double)}).</li>
+     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
+     * </ul>
      *
      * @param parabola The parabola.
      * @param samplingDepth The number of points that are connected to draw the parabola.
@@ -226,18 +251,20 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given text centered on the given vector. <ul> <li> The font settings are determined by the graphics
-     * context.</li> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * Draws the given text centered on the given vector.
+     * <ul>
+     * <li> The font settings are determined by the graphics context.</li>
+     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
      *
      * @param text The text to draw.
      * @param center The point to center onto.
      */
     default void drawTextCenteredOnPoint(String text, Vector2D center) {
-        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(getGraphicsContext().getFont());
-        final double x = center.getX() - (fm.computeStringWidth(text) / 2);
-        final double y = center.getY() - (fm.getLineHeight() / 2) + fm.getAscent();
-        getGraphicsContext().fillText(text, x, y);
+        final TextAlignment initialTextAlign = getGraphicsContext().getTextAlign();
+        getGraphicsContext().setTextAlign(TextAlignment.CENTER);
+        getGraphicsContext().fillText(text, center.getX(), center.getY());
+        getGraphicsContext().setTextAlign(initialTextAlign);
     }
 
     /**

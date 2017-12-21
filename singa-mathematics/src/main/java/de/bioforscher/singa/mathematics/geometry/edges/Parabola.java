@@ -27,7 +27,7 @@ public class Parabola {
     /**
      * Creates a new Parabola given a focus and the directrix.
      *
-     * @param focus     The focus.
+     * @param focus The focus.
      * @param directrix The directrix.
      */
     public Parabola(Vector2D focus, Line directrix) {
@@ -42,7 +42,7 @@ public class Parabola {
      * @return The directrix
      */
     public Line getDirectrix() {
-        return this.directrix;
+        return directrix;
     }
 
     /**
@@ -51,20 +51,20 @@ public class Parabola {
      * @return The focus.
      */
     public Vector2D getFocus() {
-        return this.focus;
+        return focus;
     }
 
 
     private void prepareFormulaForm() {
-        if (Double.isNaN(this.a)) {
+        if (Double.isNaN(a)) {
             final Vector2D vertex = getVertex();
-            double p = -vertex.distanceTo(this.focus);
+            double p = -vertex.distanceTo(focus);
             if (!isOpenTowardsXAxis()) {
                 p *= -1;
             }
-            this.a = 1 / (4 * p);
-            this.b = -vertex.getX() / (2 * p);
-            this.c = vertex.getX() * vertex.getX() / (4 * p) + vertex.getY();
+            a = 1 / (4 * p);
+            b = -vertex.getX() / (2 * p);
+            c = vertex.getX() * vertex.getX() / (4 * p) + vertex.getY();
         }
     }
 
@@ -82,14 +82,14 @@ public class Parabola {
         List<Double> results = new ArrayList<>();
 
         // if both foci are on the directrix
-        if (this.focus.getY() == this.directrix.getYIntercept()
+        if (focus.getY() == directrix.getYIntercept()
                 && parabola.getFocus().getY() == parabola.getDirectrix().getYIntercept()) {
             // no solutions
             return results;
-        } else if (this.focus.getY() == this.directrix.getYIntercept()) {
+        } else if (focus.getY() == directrix.getYIntercept()) {
             // if focus of this parabola in on directrix
             // one trivial intercept
-            results.add(this.focus.getX());
+            results.add(focus.getX());
             return results;
         } else if (parabola.getFocus().getY() == parabola.getDirectrix().getYIntercept()) {
             // if focus of the other parabola is on its directrix
@@ -99,9 +99,9 @@ public class Parabola {
         }
 
         // if both foci are equidistant
-        if (this.focus.distanceTo(this.directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
+        if (focus.distanceTo(directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
             // one focus is in the middle between both foci
-            results.add((this.focus.getX() - parabola.getFocus().getX()) / 2);
+            results.add((focus.getX() - parabola.getFocus().getX()) / 2);
             return results;
         }
 
@@ -113,10 +113,10 @@ public class Parabola {
         double b2 = -h2 / (2 * p2);
         double c2 = h2 * h2 / (4 * p2) + k2;
 
-        results.add((-(this.b - b2) + Math.sqrt((this.b - b2) * (this.b - b2) - 4 * (this.a - a2) * (this.c - c2))) /
-                (2 * (this.a - a2)));
-        results.add((-(this.b - b2) - Math.sqrt((this.b - b2) * (this.b - b2) - 4 * (this.a - a2) * (this.c - c2))) /
-                (2 * (this.a - a2)));
+        results.add((-(b - b2) + Math.sqrt((b - b2) * (b - b2) - 4 * (a - a2) * (c - c2))) /
+                (2 * (a - a2)));
+        results.add((-(b - b2) - Math.sqrt((b - b2) * (b - b2) - 4 * (a - a2) * (c - c2))) /
+                (2 * (a - a2)));
 
         return results;
     }
@@ -141,13 +141,13 @@ public class Parabola {
 
     public SortedSet<Double> getXIntercepts() {
         SortedSet<Double> intercepts = new TreeSet<>();
-        intercepts.add((-this.b - Math.sqrt(this.b * this.b - 4 * this.a * this.c)) / (2 * this.a));
-        intercepts.add((-this.b + Math.sqrt(this.b * this.b - 4 * this.a * this.c)) / (2 * this.a));
+        intercepts.add((-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a));
+        intercepts.add((-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a));
         return intercepts;
     }
 
     public boolean isOpenTowardsXAxis() {
-        return this.focus.getY() < this.directrix.getYIntercept();
+        return focus.getY() < directrix.getYIntercept();
     }
 
     /**
@@ -162,7 +162,7 @@ public class Parabola {
      * @return The vertex of this parabola.
      */
     public Vector2D getVertex() {
-        return new Vector2D(this.focus.getX(), (this.focus.getY() + this.directrix.getYIntercept()) * 0.5);
+        return new Vector2D(focus.getX(), (focus.getY() + directrix.getYIntercept()) * 0.5);
     }
 
     /**
@@ -174,12 +174,12 @@ public class Parabola {
      * @return The y-value.
      */
     public double getYValue(double x) {
-        return this.a * x * x + this.b * x + this.c;
+        return a * x * x + b * x + c;
     }
 
     @Override
     public String toString() {
-        return "Parabola [focus=" + this.focus + ", directrix=" + this.directrix + "]";
+        return "Parabola [focus=" + focus + ", directrix=" + directrix + "]";
     }
 
 }

@@ -34,20 +34,20 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
      */
     public LabeledSymmetricMatrix(double[][] values) {
         super(values);
-        this.labelMap = new IdentityHashMap<>();
+        labelMap = new IdentityHashMap<>();
     }
 
     @Override
     public void setRowLabel(LabelType label, int rowIndex) {
         if (rowIndex > getRowDimension())
             throw new IllegalArgumentException("specified index " + rowIndex + " exceeds dimension " + getRowDimension());
-        this.labelMap.values().remove(rowIndex);
-        this.labelMap.put(label, rowIndex);
+        labelMap.values().remove(rowIndex);
+        labelMap.put(label, rowIndex);
     }
 
     @Override
     public RegularVector getRowByLabel(LabelType label) {
-        int index = this.labelMap.entrySet().stream()
+        int index = labelMap.entrySet().stream()
                 .filter(entry -> entry.getKey().equals(label))
                 .findFirst()
                 .map(Map.Entry::getValue)
@@ -57,13 +57,13 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
 
     @Override
     public LabelType getRowLabel(int rowIndex) {
-        return this.labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
+        return labelMap.entrySet().stream().filter(entry -> entry.getValue().equals(rowIndex)).map(Map.Entry::getKey)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("no label exists for index " + rowIndex));
     }
 
     @Override
     public List<LabelType> getRowLabels() {
-        return this.labelMap.entrySet().stream()
+        return labelMap.entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
 
     @Override
     public Pair<Integer> getPositionFromLabels(LabelType rowLabel, LabelType columnLabel) {
-        return new Pair<>(this.labelMap.get(rowLabel), this.labelMap.get(columnLabel));
+        return new Pair<>(labelMap.get(rowLabel), labelMap.get(columnLabel));
     }
 
     @Override
@@ -102,9 +102,9 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
     @Override
     public String getStringRepresentation() {
         StringJoiner rowJoiner = new StringJoiner("\n");
-        if (!this.labelMap.isEmpty())
+        if (!labelMap.isEmpty())
             // assemble first line of string representation
-            rowJoiner.add("," + this.labelMap.entrySet().stream()
+            rowJoiner.add("," + labelMap.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .map(Map.Entry::getKey)
                     .map(String::valueOf).collect(Collectors.joining(",")));
@@ -114,7 +114,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
         double[][] completeElements = getCompleteElements();
         for (int i = 0; i < completeElements.length; i++) {
             StringJoiner columnJoiner = new StringJoiner(",");
-            if (!this.labelMap.isEmpty())
+            if (!labelMap.isEmpty())
                 columnJoiner.add(String.valueOf(getColumnLabel(i)));
             for (int j = 0; j < completeElements.length; j++) {
                 columnJoiner.add(df.format(completeElements[i][j]));

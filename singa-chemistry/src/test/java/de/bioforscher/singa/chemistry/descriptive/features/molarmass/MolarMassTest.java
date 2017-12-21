@@ -2,9 +2,10 @@ package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass.GRAM_PER_MOLE;
+import static de.bioforscher.singa.structure.features.molarmass.MolarMass.GRAM_PER_MOLE;
 import static org.junit.Assert.assertEquals;
 
 /**

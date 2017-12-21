@@ -28,11 +28,11 @@ public class AssignmentRule {
     public AssignmentRule(ChemicalEntity<?> targetEntity, AppliedExpression expression) {
         this.targetEntity = targetEntity;
         this.expression = expression;
-        this.entityReference = new HashMap<>();
+        entityReference = new HashMap<>();
     }
 
     public ChemicalEntity<?> getTargetEntity() {
-        return this.targetEntity;
+        return targetEntity;
     }
 
     public void setTargetEntity(ChemicalEntity<?> targetEntity) {
@@ -40,13 +40,13 @@ public class AssignmentRule {
     }
 
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
-        this.entityReference.put(entity, parameterIdentifier);
+        entityReference.put(entity, parameterIdentifier);
         // FIXME this is not done correctly
-        this.expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {
-        return this.entityReference;
+        return entityReference;
     }
 
     public void setEntityReference(Map<ChemicalEntity, String> entityReference) {
@@ -55,14 +55,14 @@ public class AssignmentRule {
 
     public void applyRule(AutomatonNode node) {
         // set entity parameters
-        for (Map.Entry<ChemicalEntity, String> entry : this.entityReference.entrySet()) {
+        for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
             final Quantity<MolarConcentration> concentration = node.getConcentration(entry.getKey());
-            final String parameterName = this.entityReference.get(entry.getKey());
-            this.expression.acceptValue(parameterName, concentration.getValue().doubleValue());
+            final String parameterName = entityReference.get(entry.getKey());
+            expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
-        Quantity<?> concentration = this.expression.evaluate();
-        logger.debug("Initialized concentration of {} to {}.", this.targetEntity.getIdentifier(), concentration );
-        node.setConcentration(this.targetEntity, concentration.getValue().doubleValue());
+        Quantity<?> concentration = expression.evaluate();
+        logger.debug("Initialized concentration of {} to {}.", targetEntity.getIdentifier(), concentration);
+        node.setConcentration(targetEntity, concentration.getValue().doubleValue());
     }
 
 }

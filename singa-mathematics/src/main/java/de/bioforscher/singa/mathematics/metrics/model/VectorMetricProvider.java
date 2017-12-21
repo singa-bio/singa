@@ -30,7 +30,7 @@ public final class VectorMetricProvider {
      * @return All metrics in this library.
      */
     public Set<Metric<Vector>> getElements() {
-        return Collections.unmodifiableSet(this.metrics);
+        return Collections.unmodifiableSet(metrics);
     }
 
     /**

@@ -26,10 +26,10 @@ import static tec.units.ri.unit.MetricPrefix.MILLI;
 import static tec.units.ri.unit.Units.SECOND;
 
 /**
- * The simulation calss encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
+ * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
  * Each simulation requires a {@link AutomatonGraph}, a set of {@link Module}s and a set of {@link ChemicalEntity}s.
  * Additionally {@link AssignmentRule}s can be used to assign concentrations to chemical entities based on rules
- * (functions). <p> The Class {@link SimulationExamples} provides a set of examples where Simulations are being set up.
+ * (functions). <p> The class {@link SimulationExamples} provides a set of examples where Simulations are being set up.
  * Principally the following steps should be taken:
  * <pre>
  *     // initialize simulation
@@ -114,12 +114,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * Creates a new plain simulation.
      */
     public Simulation() {
-        this.modules = new HashSet<>();
-        this.chemicalEntities = new HashSet<>();
-        this.listeners = new CopyOnWriteArrayList<>();
-        this.elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
-        this.epoch = 0;
-        this.harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
+        modules = new HashSet<>();
+        chemicalEntities = new HashSet<>();
+        listeners = new CopyOnWriteArrayList<>();
+        elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
+        epoch = 0;
+        harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
     }
 
     /**
@@ -127,9 +127,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void nextEpoch() {
         // apply all modules
-        boolean timeStepChanged = this.harmonizer.step();
+        boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
-        for (AutomatonNode node : this.getGraph().getNodes()) {
+        for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
             // emit events to observers
             if (node.isObserved()) {
@@ -141,24 +141,32 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         // if time step did not change
         if (!timeStepChanged) {
             // try larger time step next time
-            this.harmonizer.increaseTimeStep();
+            harmonizer.increaseTimeStep();
         }
+    }
+
+    public void initialize() {
+        // for each module
+        // get required entity features
+        // for each entity
+        // assign feature if feature is assignable
+        // check featurable modules if features are annotated
     }
 
     /**
      * Update the epoch counter and elapsed time.
      */
     private void updateEpoch() {
-        this.epoch++;
-        this.elapsedTime = this.elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
+        epoch++;
+        elapsedTime = elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
     }
 
     /**
      * Apply all referenced assignment rules.
      */
     public void applyAssignmentRules() {
-        for (AssignmentRule rule : this.assignmentRules) {
-            for (AutomatonNode bioNode : this.graph.getNodes()) {
+        for (AssignmentRule rule : assignmentRules) {
+            for (AutomatonNode bioNode : graph.getNodes()) {
                 rule.applyRule(bioNode);
             }
         }
@@ -170,7 +178,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The simulation graph.
      */
     public AutomatonGraph getGraph() {
-        return this.graph;
+        return graph;
     }
 
     /**
@@ -181,15 +189,16 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
-        this.chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
+        chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
     }
 
     /**
      * Returns the modules.
+     *
      * @return The modules.
      */
     public Set<Module> getModules() {
-        return this.modules;
+        return modules;
     }
 
     /**
@@ -197,7 +206,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The assignment rules.
      */
     public List<AssignmentRule> getAssignmentRules() {
-        return this.assignmentRules;
+        return assignmentRules;
     }
 
     /**
@@ -215,7 +224,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The chemical entities.
      */
     public Set<ChemicalEntity<?>> getChemicalEntities() {
-        return this.chemicalEntities;
+        return chemicalEntities;
     }
 
     /**
@@ -228,10 +237,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the current epoch number.
+     *
      * @return The current epoch number
      */
     public long getEpoch() {
-        return this.epoch;
+        return epoch;
     }
 
     /**
@@ -239,21 +249,22 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * @return The elapsed time after the deltas of the current epoch are applied.
      */
     public Quantity<Time> getElapsedTime() {
-        return this.elapsedTime;
+        return elapsedTime;
     }
 
     /**
      * Emits the {@link NodeUpdatedEvent} to all listeners.
+     *
      * @param node The observed node.
      */
     public void emitNextEpochEvent(AutomatonNode node) {
-        NodeUpdatedEvent event = new NodeUpdatedEvent(this.elapsedTime, node);
+        NodeUpdatedEvent event = new NodeUpdatedEvent(elapsedTime, node);
         emitEvent(event);
     }
 
     @Override
     public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
-        return this.listeners;
+        return listeners;
     }
 
 }

@@ -24,11 +24,12 @@ public class DeltaContainer {
      * Creates a new empty delta container.
      */
     public DeltaContainer() {
-        this.deltas = new ArrayList<>();
+        deltas = new ArrayList<>();
     }
 
     /**
      * Adds a delta to the container.
+     *
      * @param delta The delta.
      */
     public void addDelta(Delta delta) {
@@ -46,6 +47,7 @@ public class DeltaContainer {
 
     /**
      * Returns all deltas.
+     *
      * @return All deltas.
      */
     public List<Delta> getDeltas() {
@@ -56,6 +58,6 @@ public class DeltaContainer {
      * Removes all deltas from this container.
      */
     public void clear() {
-        this.deltas.clear();
+        deltas.clear();
     }
 }

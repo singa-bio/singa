@@ -18,10 +18,9 @@ public class NthOrderReaction extends Reaction {
     public NthOrderReaction(Simulation simulation, Quantity<Frequency> rateConstant) {
         super(simulation);
         // feature
-        this.availableFeatures.add(RateConstant.class);
+        availableFeatures.add(RateConstant.class);
         setFeature(new RateConstant(rateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 

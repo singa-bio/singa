@@ -90,8 +90,8 @@ public class Tokenizer {
      */
     public Tokenizer() {
         super();
-        this.tokenInfos = new LinkedList<>();
-        this.tokens = new LinkedList<>();
+        tokenInfos = new LinkedList<>();
+        tokens = new LinkedList<>();
     }
 
     /**
@@ -135,7 +135,7 @@ public class Tokenizer {
      * @param token the token id that the regular expression is linked to
      */
     public void add(String regex, int token) {
-        this.tokenInfos.add(new TokenInfo(Pattern.compile("^(" + regex + ")"), token));
+        tokenInfos.add(new TokenInfo(Pattern.compile("^(" + regex + ")"), token));
     }
 
     /**
@@ -148,18 +148,18 @@ public class Tokenizer {
         logger.info("Tokenizing string+ \""+string+"\".");
         String trimmedString = string.trim();
         int totalLength = trimmedString.length();
-        this.tokens.clear();
+        tokens.clear();
         while (!trimmedString.equals("")) {
             int remaining = trimmedString.length();
             boolean match = false;
-            for (TokenInfo tokenInfo : this.tokenInfos) {
+            for (TokenInfo tokenInfo : tokenInfos) {
                 Matcher tokenMatcher = tokenInfo.regex.matcher(trimmedString);
                 if (tokenMatcher.find()) {
                     match = true;
                     String token = tokenMatcher.group().trim();
                     logger.trace("Matched token \""+token+"\" to "+tokenInfo.regex.toString());
                     trimmedString = tokenMatcher.replaceFirst("").trim();
-                    this.tokens.add(new Token(tokenInfo.token, token, totalLength - remaining));
+                    tokens.add(new Token(tokenInfo.token, token, totalLength - remaining));
                     break;
                 }
             }
@@ -174,7 +174,7 @@ public class Tokenizer {
      * @return a list of tokens to be fed to Parser
      */
     public LinkedList<Token> getTokens() {
-        return this.tokens;
+        return tokens;
     }
 
 }

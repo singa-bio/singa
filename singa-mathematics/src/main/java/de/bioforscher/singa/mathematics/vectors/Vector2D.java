@@ -65,7 +65,7 @@ public class Vector2D extends RegularVector {
      * @return The x coordinate of this vector.
      */
     public double getX() {
-        return this.getElement(X_INDEX);
+        return getElement(X_INDEX);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Vector2D extends RegularVector {
      * @return The y coordinate of this vector.
      */
     public double getY() {
-        return this.getElement(Y_INDEX);
+        return getElement(Y_INDEX);
     }
 
     /**
@@ -222,8 +222,8 @@ public class Vector2D extends RegularVector {
      * of this vector.
      */
     public boolean isNearVector(Vector2D vector, double radius) {
-        double dx = Math.abs(vector.getX() - this.getX() - radius);
-        double dy = Math.abs(vector.getY() - this.getY() - radius);
+        double dx = Math.abs(vector.getX() - getX() - radius);
+        double dy = Math.abs(vector.getY() - getY() - radius);
         return dx * dx + dy * dy <= radius * radius;
     }
 
@@ -239,27 +239,27 @@ public class Vector2D extends RegularVector {
     }
 
     public boolean isAbove(Vector2D vector) {
-        return this.getY() < vector.getY();
+        return getY() < vector.getY();
     }
 
     public boolean isBelow(Vector2D vector) {
-        return this.getY() > vector.getY();
+        return getY() > vector.getY();
     }
 
     public boolean isLeftOf(Vector2D vector2D) {
-        return this.getX() < vector2D.getX();
+        return getX() < vector2D.getX();
     }
 
     public boolean isRightOf(Vector2D vector2D) {
-        return this.getX() > vector2D.getX();
+        return getX() > vector2D.getX();
     }
 
     public boolean valueOfXIsBetween(double origin, double boundary) {
-        return this.getX() < boundary && this.getX() > origin;
+        return getX() < boundary && getX() > origin;
     }
 
     private boolean valueOfYIsBetween(double origin, double boundary) {
-        return this.getY() < boundary && this.getY() > origin;
+        return getY() < boundary && getY() > origin;
     }
 
 }

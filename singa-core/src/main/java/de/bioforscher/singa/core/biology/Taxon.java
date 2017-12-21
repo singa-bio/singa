@@ -47,7 +47,7 @@ public class Taxon implements Nameable {
      * @return The rank of this taxon.
      */
     public String getRank() {
-        return this.rank;
+        return rank;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Taxon implements Nameable {
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**

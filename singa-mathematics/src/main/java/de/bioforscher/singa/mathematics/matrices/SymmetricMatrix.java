@@ -161,8 +161,8 @@ public class SymmetricMatrix extends SquareMatrix {
      */
     public double[][] getCompleteElements() {
         double[][] values = new double[getRowDimension()][getColumnDimension()];
-        for (int rowIndex = 0; rowIndex < this.getRowDimension(); rowIndex++) {
-            for (int columnIndex = 0; columnIndex < this.getColumnDimension(); columnIndex++) {
+        for (int rowIndex = 0; rowIndex < getRowDimension(); rowIndex++) {
+            for (int columnIndex = 0; columnIndex < getColumnDimension(); columnIndex++) {
                 values[rowIndex][columnIndex] = getElement(rowIndex, columnIndex);
             }
         }

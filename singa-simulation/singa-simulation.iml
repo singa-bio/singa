@@ -12,10 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-1.2-api:2.3" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.1" level="project" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
     <orderEntry type="module" module-name="singa-core" />
@@ -25,6 +21,17 @@
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-chemistry" />
+    <orderEntry type="module" module-name="singa-structure" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.msgpack:jackson-dataformat-msgpack:0.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.msgpack:msgpack-core:0.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-api:2.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.7" level="project" />
     <orderEntry type="module" module-name="singa-javafx" />
     <orderEntry type="library" name="Maven: org.sbml.jsbml:jsbml-core:1.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.woodstox:woodstox-core:5.0.1" level="project" />

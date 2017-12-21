@@ -25,7 +25,7 @@ public class ConvexHull {
 
     public ConvexHull(Collection<Vector2D> vectors) {
         this.vectors = new ArrayList<>(vectors);
-        this.stack = new ArrayDeque<>();
+        stack = new ArrayDeque<>();
     }
 
     public static ConvexHull calculateHullFor(Collection<Vector2D> vectors) {
@@ -68,27 +68,27 @@ public class ConvexHull {
     }
 
     private Vector2D peekTop() {
-        return this.stack.peek();
+        return stack.peek();
     }
 
     private Vector2D peekNextToTop() {
-        final Vector2D top = this.stack.pop();
-        final Vector2D nextToTop = this.stack.peek();
-        this.stack.push(top);
+        final Vector2D top = stack.pop();
+        final Vector2D nextToTop = stack.peek();
+        stack.push(top);
         return nextToTop;
     }
 
     public List<Vector2D> getAllVectors() {
-        return this.vectors;
+        return vectors;
     }
 
     public List<Vector2D> getHull() {
-        return new ArrayList<>(this.stack);
+        return new ArrayList<>(stack);
     }
 
     public List<Vector2D> getNonHullVectors() {
-        return this.vectors.stream()
-                .filter(vector -> !this.getHull().contains(vector))
+        return vectors.stream()
+                .filter(vector -> !getHull().contains(vector))
                 .collect(Collectors.toList());
     }
 

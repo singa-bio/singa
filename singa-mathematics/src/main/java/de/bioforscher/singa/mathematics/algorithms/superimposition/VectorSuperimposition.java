@@ -34,22 +34,22 @@ public class VectorSuperimposition implements Superimposition<Vector> {
 
     @Override
     public double getRmsd() {
-        return this.rmsd;
+        return rmsd;
     }
 
     @Override
     public Vector getTranslation() {
-        return this.translation;
+        return translation;
     }
 
     @Override
     public Matrix getRotation() {
-        return this.rotation;
+        return rotation;
     }
 
     @Override
     public List<Vector> getMappedCandidate() {
-        return this.mappedCandidate;
+        return mappedCandidate;
     }
 
     /**
@@ -60,17 +60,17 @@ public class VectorSuperimposition implements Superimposition<Vector> {
      */
     @Override
     public List<Vector> applyTo(List<Vector> vectors) {
-        return vectors.stream().map(vector -> this.rotation.transpose().multiply(vector).add(this.translation))
+        return vectors.stream().map(vector -> rotation.transpose().multiply(vector).add(translation))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Vector> getReference() {
-        return this.reference;
+        return reference;
     }
 
     @Override
     public List<Vector> getCandidate() {
-        return this.candidate;
+        return candidate;
     }
 }

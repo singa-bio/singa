@@ -22,21 +22,21 @@ public class FunctionReference {
 
     public FunctionReference(String identifier, String functionMathString) {
         this.identifier = identifier;
-        this.parameters = new ArrayList<>();
+        parameters = new ArrayList<>();
         // remove the lambda( ... )
         String content = functionMathString.substring(7, functionMathString.length() - 1);
         String[] split = content.split(",");
         for (int i = 0; i < split.length; i++) {
             if (i == split.length - 1) {
-                this.equation = split[i].trim();
+                equation = split[i].trim();
             } else {
-                this.parameters.add(split[i].trim());
+                parameters.add(split[i].trim());
             }
         }
     }
 
     public String replaceInEquation(String equationMathString) {
-        Pattern pattern = Pattern.compile(this.identifier + "\\((.[^\\)]+)\\)");
+        Pattern pattern = Pattern.compile(identifier + "\\((.[^\\)]+)\\)");
         Matcher matcher = pattern.matcher(equationMathString);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
@@ -56,9 +56,9 @@ public class FunctionReference {
     }
 
     private String prepareEquation(String[] functionParameters) {
-        String replacedFunction = this.equation;
-        for (int i = 0; i < this.parameters.size(); i++) {
-            Pattern pattern = Pattern.compile("(\\W|^)("+this.parameters.get(i)+")(\\W|$)");
+        String replacedFunction = equation;
+        for (int i = 0; i < parameters.size(); i++) {
+            Pattern pattern = Pattern.compile("(\\W|^)(" + parameters.get(i) + ")(\\W|$)");
             Matcher matcher = pattern.matcher(replacedFunction);
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {

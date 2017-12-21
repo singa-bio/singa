@@ -82,6 +82,7 @@ public interface ConcentrationContainer {
 
     /**
      * Returns a copy of this concentration container.
+     *
      * @return A copy of this concentration container.
      */
     ConcentrationContainer getCopy();

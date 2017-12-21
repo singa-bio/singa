@@ -40,19 +40,19 @@ public class Range<RangeType extends Comparable<RangeType>> implements Bounded<R
      */
     public Range(RangeType lowerBound, RangeType upperBound) {
         if (lowerBound.compareTo(upperBound) > 0) {
-            this.values = new Pair<>(upperBound, lowerBound);
+            values = new Pair<>(upperBound, lowerBound);
         }
-        this.values = new Pair<>(lowerBound, upperBound);
+        values = new Pair<>(lowerBound, upperBound);
     }
 
     @Override
     public RangeType getLowerBound() {
-        return this.values.getFirst();
+        return values.getFirst();
     }
 
     @Override
     public RangeType getUpperBound() {
-        return this.values.getSecond();
+        return values.getSecond();
     }
 
 }

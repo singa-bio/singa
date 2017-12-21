@@ -2,14 +2,17 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An Enzyme is a Protein, that is associated with a catalytic function. For the usage in reactions this chemical
@@ -30,6 +33,14 @@ public class Enzyme extends Protein {
      */
     private List<Species> substrates;
 
+    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    static {
+        Enzyme.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+        availableFeatures.add(MichaelisConstant.class);
+        availableFeatures.add(TurnoverNumber.class);
+    }
+
     /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.
      *
@@ -37,8 +48,6 @@ public class Enzyme extends Protein {
      */
     protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
-        this.availableFeatures.add(MichaelisConstant.class);
-        this.availableFeatures.add(TurnoverNumber.class);
     }
 
     /**
@@ -47,7 +56,7 @@ public class Enzyme extends Protein {
      * @return The possible substrates
      */
     public List<Species> getSubstrates() {
-        return this.substrates;
+        return substrates;
     }
 
     /**
@@ -60,6 +69,11 @@ public class Enzyme extends Protein {
     }
 
     @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
+    }
+
+    @Override
     public String toString() {
         return "Enzyme: " + getIdentifier() + " " + getName() + " weight: " + getFeature(MolarMass.class);
     }
@@ -68,7 +82,7 @@ public class Enzyme extends Protein {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
-            this.topLevelObject.setSubstrates(new ArrayList<>());
+            topLevelObject.setSubstrates(new ArrayList<>());
         }
 
         public Builder(String identifier) {
@@ -86,12 +100,12 @@ public class Enzyme extends Protein {
         }
 
         public Builder substrates(List<Species> substrates) {
-            this.topLevelObject.setSubstrates(substrates);
+            topLevelObject.setSubstrates(substrates);
             return this;
         }
 
         public Builder addSubstrate(Species substrate) {
-            this.topLevelObject.getSubstrates().add(substrate);
+            topLevelObject.getSubstrates().add(substrate);
             return this;
         }
 

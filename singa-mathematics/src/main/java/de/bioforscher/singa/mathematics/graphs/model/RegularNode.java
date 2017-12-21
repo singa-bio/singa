@@ -28,7 +28,12 @@ public class RegularNode extends AbstractNode<RegularNode, Vector2D, Integer> {
         super(identifier, position);
     }
 
-    public RegularNode(RegularNode node) {
+    private RegularNode(RegularNode node) {
         super(node);
+    }
+
+    @Override
+    public RegularNode getCopy() {
+        return new RegularNode(this);
     }
 }

@@ -6,7 +6,6 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
@@ -20,6 +19,7 @@ import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLAssignmentRuleC
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLReactionConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLUnitConverter;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.sbml.jsbml.CVTerm;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
@@ -65,14 +65,14 @@ public class SBMLParser {
     private List<AssignmentRule> assignmentRules;
 
     public SBMLParser(InputStream inputStream) {
-        this.entities = new HashMap<>();
-        this.entitiesByDatabaseId = new HashMap<>();
-        this.startingConcentrations = new HashMap<>();
-        this.reactions = new ArrayList<>();
-        this.globalParameters = new HashMap<>();
-        this.functions = new HashMap<>();
-        this.assignmentRules = new ArrayList<>();
-        this.compartments = new HashMap<>();
+        entities = new HashMap<>();
+        entitiesByDatabaseId = new HashMap<>();
+        startingConcentrations = new HashMap<>();
+        reactions = new ArrayList<>();
+        globalParameters = new HashMap<>();
+        functions = new HashMap<>();
+        assignmentRules = new ArrayList<>();
+        compartments = new HashMap<>();
         initializeDocument(inputStream);
     }
 
@@ -80,7 +80,7 @@ public class SBMLParser {
         SBMLReader reader = new SBMLReader();
         logger.info("Parsing SBML...");
         try {
-            this.document = reader.readSBMLFromStream(inputStream);
+            document = reader.readSBMLFromStream(inputStream);
         } catch (XMLStreamException e) {
             logger.error("Could not read SBML File.");
             e.printStackTrace();
@@ -88,27 +88,27 @@ public class SBMLParser {
     }
 
     public Map<String, ChemicalEntity> getChemicalEntities() {
-        return this.entities;
+        return entities;
     }
 
     public Map<EnclosedCompartment, Double> getCompartments() {
-        return this.compartments;
+        return compartments;
     }
 
     public List<DynamicReaction> getReactions() {
-        return this.reactions;
+        return reactions;
     }
 
     public Map<ChemicalEntity, Double> getStartingConcentrations() {
-        return this.startingConcentrations;
+        return startingConcentrations;
     }
 
     public Map<String, SimulationParameter<?>> getGlobalParameters() {
-        return this.globalParameters;
+        return globalParameters;
     }
 
     public List<AssignmentRule> getAssignmentRules() {
-        return this.assignmentRules;
+        return assignmentRules;
     }
 
     public void parse() {
@@ -124,10 +124,10 @@ public class SBMLParser {
 
     private void parseCompartments() {
         logger.info("Parsing Compartments ...");
-        this.document.getModel().getListOfCompartments().forEach(compartment -> {
+        document.getModel().getListOfCompartments().forEach(compartment -> {
             EnclosedCompartment singaCompartment = new EnclosedCompartment(compartment.getId(), compartment.getName());
-            this.compartments.put(singaCompartment, compartment.getSize());
-            this.globalParameters.put(singaCompartment.getIdentifier(),
+            compartments.put(singaCompartment, compartment.getSize());
+            globalParameters.put(singaCompartment.getIdentifier(),
                     new SimulationParameter<>(singaCompartment.getIdentifier(),
                             Quantities.getQuantity(compartment.getSize(), AbstractUnit.ONE)));
         });
@@ -135,7 +135,7 @@ public class SBMLParser {
 
     private void parseSpecies() {
         logger.info("Parsing Chemical Entity Data ...");
-        this.document.getModel().getListOfSpecies().forEach(species -> {
+        document.getModel().getListOfSpecies().forEach(species -> {
             logger.debug("Parsing Chemical Entity {} ...", species.getId());
             // the annotations describe the entity used and is composed of CVTerms
             // each cv term is composed of
@@ -186,45 +186,45 @@ public class SBMLParser {
 
     private void parseAssignmentRules() {
         logger.info("Parsing Assignment Rules ...");
-        SBMLAssignmentRuleConverter converter = new SBMLAssignmentRuleConverter(this.units, this.entities, this.functions, this.globalParameters);
-        this.document.getModel().getListOfRules().forEach(rule -> {
+        SBMLAssignmentRuleConverter converter = new SBMLAssignmentRuleConverter(units, entities, functions, globalParameters);
+        document.getModel().getListOfRules().forEach(rule -> {
             if (rule.isAssignment()) {
-                this.assignmentRules.add(converter.convertAssignmentRule((org.sbml.jsbml.AssignmentRule) rule));
+                assignmentRules.add(converter.convertAssignmentRule((org.sbml.jsbml.AssignmentRule) rule));
             }
         });
     }
 
     private void parseFunctions() {
         logger.info("Parsing Functions ...");
-        this.document.getModel().getListOfFunctionDefinitions().forEach(function ->
-                this.functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()))
+        document.getModel().getListOfFunctionDefinitions().forEach(function ->
+                functions.put(function.getId(), new FunctionReference(function.getId(), function.getMath().toString()))
         );
     }
 
     private void parseReactions() {
         logger.info("Parsing Reactions ...");
-        SBMLReactionConverter converter = new SBMLReactionConverter(this.units, this.entities, this.functions, this.globalParameters);
-        this.reactions = converter.convertReactions(this.document.getModel().getListOfReactions());
+        SBMLReactionConverter converter = new SBMLReactionConverter(units, entities, functions, globalParameters);
+        reactions = converter.convertReactions(document.getModel().getListOfReactions());
     }
 
     private void parseStartingConcentrations() {
         logger.info("Parsing initial concentrations ...");
-        this.document.getModel().getListOfSpecies().forEach(species -> {
-            ChemicalEntity entity = this.entities.get(species.getId());
-            this.startingConcentrations.put(entity, species.getInitialConcentration());
+        document.getModel().getListOfSpecies().forEach(species -> {
+            ChemicalEntity entity = entities.get(species.getId());
+            startingConcentrations.put(entity, species.getInitialConcentration());
         });
     }
 
     private void parseUnits() {
         logger.info("Parsing units ...");
         SBMLUnitConverter converter = new SBMLUnitConverter();
-        this.units = converter.convertUnits(this.document.getModel().getListOfUnitDefinitions());
+        units = converter.convertUnits(document.getModel().getListOfUnitDefinitions());
     }
 
     private void parseGlobalParameters() {
         logger.info("Parsing global parameters ...");
-        SBMLParameterConverter converter = new SBMLParameterConverter(this.units);
-        this.globalParameters = converter.convertSimulationParameters(this.document.getModel().getListOfParameters());
+        SBMLParameterConverter converter = new SBMLParameterConverter(units);
+        globalParameters = converter.convertSimulationParameters(document.getModel().getListOfParameters());
     }
 
     /**
@@ -237,11 +237,11 @@ public class SBMLParser {
         for (String resource : cvTerm.getResources()) {
             Optional<ChemicalEntity> entity = parseEntity(identifier, resource);
             if (entity.isPresent()) {
-                this.entities.put(identifier, entity.get());
+                entities.put(identifier, entity.get());
                 return;
             }
         }
-        this.entities.put(identifier, createReferenceEntity(species));
+        entities.put(identifier, createReferenceEntity(species));
     }
 
     /**
@@ -258,10 +258,10 @@ public class SBMLParser {
         }
         if (complex.getAssociatedParts().size() > 1) {
             logger.debug("Parsed Chemical Entity as {}", complex);
-            this.entities.put(identifier, complex);
+            entities.put(identifier, complex);
         } else {
             ChemicalEntity referenceEntity = createReferenceEntity(species);
-            this.entities.put(referenceEntity.getIdentifier().toString(), referenceEntity);
+            entities.put(referenceEntity.getIdentifier().toString(), referenceEntity);
         }
     }
 
@@ -325,16 +325,16 @@ public class SBMLParser {
         if (complex.getAssociatedChemicalEntities().size() == 1) {
             ChemicalEntity parsedPart = complex.getAssociatedParts().keySet().iterator().next();
             logger.debug("Parsed Chemical Entity as {}", parsedPart);
-            this.entities.put(identifier, parsedPart);
+            entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
             Species species = new Species.Builder(identifier)
                     .assignFeature(new MolarMass(10, defaultOrigin))
                     .build();
             logger.debug("Parsed Chemical Entity as {}", species);
-            this.entities.put(identifier, species);
+            entities.put(identifier, species);
         } else {
             logger.debug("Parsed Chemical Entity as {}", complex);
-            this.entities.put(identifier, complex);
+            entities.put(identifier, complex);
         }
     }
 
@@ -349,13 +349,13 @@ public class SBMLParser {
         Matcher matcherChEBI = ChEBIIdentifier.PATTERN.matcher(resource);
         if (matcherChEBI.find()) {
             ChEBIIdentifier identifier = new ChEBIIdentifier(matcherChEBI.group(0));
-            if (this.entities.containsKey(primaryIdentifier)) {
+            if (entities.containsKey(primaryIdentifier)) {
                 logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
-                return Optional.of(this.entities.get(primaryIdentifier));
+                return Optional.of(entities.get(primaryIdentifier));
             } else {
                 Species species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
-                this.entities.put(primaryIdentifier, species);
-                this.entitiesByDatabaseId.put(identifier, species);
+                entities.put(primaryIdentifier, species);
+                entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
             }
         }
@@ -363,13 +363,13 @@ public class SBMLParser {
         Matcher matcherUniProt = UniProtIdentifier.PATTERN.matcher(resource);
         if (matcherUniProt.find()) {
             UniProtIdentifier identifier = new UniProtIdentifier(matcherUniProt.group(0));
-            if (this.entities.containsKey(primaryIdentifier)) {
+            if (entities.containsKey(primaryIdentifier)) {
                 logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
-                return Optional.of(this.entities.get(primaryIdentifier));
+                return Optional.of(entities.get(primaryIdentifier));
             } else {
                 Protein protein = UniProtParserService.parse(identifier.toString(), primaryIdentifier);
-                this.entities.put(primaryIdentifier, protein);
-                this.entitiesByDatabaseId.put(identifier, protein);
+                entities.put(primaryIdentifier, protein);
+                entitiesByDatabaseId.put(identifier, protein);
                 return Optional.of(protein);
             }
         }
@@ -382,12 +382,12 @@ public class SBMLParser {
         Matcher matcherChEBI = ChEBIIdentifier.PATTERN.matcher(resource);
         if (matcherChEBI.find()) {
             ChEBIIdentifier identifier = new ChEBIIdentifier(matcherChEBI.group(0));
-            if (this.entitiesByDatabaseId.containsKey(identifier)) {
+            if (entitiesByDatabaseId.containsKey(identifier)) {
                 logger.debug("Already parsed Chemical Entity for {}", identifier);
-                return Optional.of(this.entitiesByDatabaseId.get(identifier));
+                return Optional.of(entitiesByDatabaseId.get(identifier));
             } else {
                 Species species = ChEBIParserService.parse(identifier.toString());
-                this.entitiesByDatabaseId.put(identifier, species);
+                entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
             }
         }
@@ -395,12 +395,12 @@ public class SBMLParser {
         Matcher matcherUniProt = UniProtIdentifier.PATTERN.matcher(resource);
         if (matcherUniProt.find()) {
             UniProtIdentifier identifier = new UniProtIdentifier(matcherUniProt.group(0));
-            if (this.entitiesByDatabaseId.containsKey(identifier)) {
+            if (entitiesByDatabaseId.containsKey(identifier)) {
                 logger.debug("Already parsed Chemical Entity for {}", identifier);
-                return Optional.of(this.entitiesByDatabaseId.get(identifier));
+                return Optional.of(entitiesByDatabaseId.get(identifier));
             } else {
                 Protein protein = UniProtParserService.parse(identifier.toString());
-                this.entitiesByDatabaseId.put(identifier, protein);
+                entitiesByDatabaseId.put(identifier, protein);
                 return Optional.of(protein);
             }
         }

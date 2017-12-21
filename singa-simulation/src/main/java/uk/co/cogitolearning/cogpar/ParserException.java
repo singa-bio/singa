@@ -64,7 +64,7 @@ public class ParserException extends RuntimeException {
      * @return the token that caused the exception
      */
     public Token getToken() {
-        return this.token;
+        return token;
     }
 
     /**
@@ -75,8 +75,8 @@ public class ParserException extends RuntimeException {
      */
     public String getMessage() {
         String msg = super.getMessage();
-        if (this.token != null) {
-            msg = msg.replace("%s", this.token.sequence);
+        if (token != null) {
+            msg = msg.replace("%s", token.sequence);
         }
         return msg;
     }

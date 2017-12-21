@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
+import de.bioforscher.singa.structure.elements.ElectronConfiguration;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

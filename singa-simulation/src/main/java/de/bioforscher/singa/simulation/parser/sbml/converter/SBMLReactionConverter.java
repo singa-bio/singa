@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.parser.sbml.converter;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
@@ -35,7 +36,7 @@ public class SBMLReactionConverter {
 
     public SBMLReactionConverter(Map<String, Unit<?>> units, Map<String, ChemicalEntity> entities, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
         this.entities = entities;
-        this.kineticLawConverter = new SBMLKineticLawConverter(units, functions, globalParameters);
+        kineticLawConverter = new SBMLKineticLawConverter(units, functions, globalParameters);
     }
 
     public List<DynamicReaction> convertReactions(ListOf<Reaction> sbmlReactions) {
@@ -47,22 +48,23 @@ public class SBMLReactionConverter {
     }
 
     public DynamicReaction convertReaction(Reaction reaction) {
+        Simulation simulation = new Simulation();
         logger.debug("Parsing Reaction {} ...", reaction.getName());
-        DynamicKineticLaw kineticLaw = this.kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
-        this.currentReaction = new DynamicReaction(kineticLaw);
+        DynamicKineticLaw kineticLaw = kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
+        currentReaction = new DynamicReaction(simulation, kineticLaw);
         assignSubstrates(reaction.getListOfReactants());
         assignProducts(reaction.getListOfProducts());
         assignModifiers(reaction.getListOfModifiers());
-        logger.debug("Parsed Reaction:{}", this.currentReaction.getDisplayString());
-        return this.currentReaction;
+        logger.debug("Parsed Reaction:{}", currentReaction.getDisplayString());
+        return currentReaction;
     }
 
     private void assignSubstrates(ListOf<SpeciesReference> substrates) {
         for (SpeciesReference reference : substrates) {
             logger.debug("Assigning Chemical Entity {} as substrate.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            this.currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
-            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.DECREASING, reference.getStoichiometry()));
+            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.DECREASING, reference.getStoichiometry()));
         }
     }
 
@@ -70,8 +72,8 @@ public class SBMLReactionConverter {
         for (SpeciesReference reference : products) {
             logger.debug("Assigning Chemical Entity {} as product.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            this.currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
-            this.currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(this.entities.get(identifier), ReactantRole.INCREASING, reference.getStoichiometry()));
+            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.INCREASING, reference.getStoichiometry()));
         }
     }
 
@@ -79,8 +81,8 @@ public class SBMLReactionConverter {
         for (ModifierSpeciesReference reference : modifiers) {
             logger.debug("Assigning Chemical Entity {} as catalytic modifier.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            this.currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
-            this.currentReaction.getCatalyticReactants().add(new CatalyticReactant(this.entities.get(identifier), ReactantRole.INCREASING));
+            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            currentReaction.getCatalyticReactants().add(new CatalyticReactant(entities.get(identifier), ReactantRole.INCREASING));
         }
     }
 

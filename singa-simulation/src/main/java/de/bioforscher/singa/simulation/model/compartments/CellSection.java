@@ -44,7 +44,7 @@ public abstract class CellSection implements Nameable {
     public CellSection(String identifier, String name) {
         this.identifier = identifier;
         this.name = name;
-        this.content = new HashSet<>();
+        content = new HashSet<>();
     }
 
     /**
@@ -52,12 +52,12 @@ public abstract class CellSection implements Nameable {
      * @return The identifier of this cell section.
      */
     public String getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class CellSection implements Nameable {
      * @return The nodes belonging to this section.
      */
     public Set<AutomatonNode> getContent() {
-        return this.content;
+        return content;
     }
 
     /**
@@ -81,11 +81,12 @@ public abstract class CellSection implements Nameable {
      * @param node The node to add.
      */
     public void addNode(AutomatonNode node) {
-        this.content.add(node);
+        content.add(node);
     }
 
     /**
      * Returns {@code true} if this cell section is a subsection of another section.
+     *
      * @return {@code true} if this cell section is a subsection of another section.
      */
     public boolean isSubsection() {
@@ -94,6 +95,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Set {@code true} if this cell section is a subsection of another section.
+     *
      * @param subsection {@code true} if this cell section is a subsection of another section.
      */
     public void setSubsection(boolean subsection) {
@@ -107,12 +109,12 @@ public abstract class CellSection implements Nameable {
 
         CellSection that = (CellSection) o;
 
-        return this.identifier != null ? this.identifier.equals(that.identifier) : that.identifier == null;
+        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
 
     @Override
     public int hashCode() {
-        return this.identifier != null ? this.identifier.hashCode() : 0;
+        return identifier != null ? identifier.hashCode() : 0;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class SimulationParameter<QuantityType extends Quantity<QuantityType>> im
 
     public SimulationParameter(String identifier) {
         this.identifier = new SimpleStringIdentifier(identifier);
-        this.annotations = new ArrayList<>();
+        annotations = new ArrayList<>();
     }
 
     public SimulationParameter(String identifier, Quantity<QuantityType> quantity) {
@@ -49,21 +49,21 @@ public class SimulationParameter<QuantityType extends Quantity<QuantityType>> im
 
     @Override
     public SimpleStringIdentifier getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public List<Annotation> getAnnotations() {
-        return this.annotations;
+        return annotations;
     }
 
     public Quantity<QuantityType> getQuantity() {
-        return this.quantity;
+        return quantity;
     }
 
     public void setQuantity(Quantity<QuantityType> quantity) {
@@ -71,11 +71,11 @@ public class SimulationParameter<QuantityType extends Quantity<QuantityType>> im
     }
 
     public double getValue() {
-        return this.quantity.getValue().doubleValue();
+        return quantity.getValue().doubleValue();
     }
 
     public void setValue(double value) {
-        this.quantity = Quantities.getQuantity(value, this.quantity.getUnit());
+        quantity = Quantities.getQuantity(value, quantity.getUnit());
     }
 
 }

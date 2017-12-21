@@ -1,40 +1,49 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParser;
-import de.bioforscher.singa.chemistry.parser.pdb.structures.StructureParserOptions;
-import de.bioforscher.singa.chemistry.parser.plip.InteractionContainer;
-import de.bioforscher.singa.chemistry.parser.plip.PlipParser;
-import de.bioforscher.singa.chemistry.physical.model.Structure;
+import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
+import de.bioforscher.singa.javafx.geometry.AbacusVisualization;
+import de.bioforscher.singa.mathematics.algorithms.geometry.OttVolumePrediction;
+import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
+import de.bioforscher.singa.structure.model.oak.*;
 import javafx.application.Application;
 
 import java.io.IOException;
-import java.io.InputStream;
-
-import static de.bioforscher.singa.core.utility.Resources.getResourceAsStream;
+import java.util.List;
 
 /**
  * @author fk
  */
 public class StructureViewerPlayground {
+
     public static void main(String[] args) throws IOException {
 
-        InputStream inputStream = getResourceAsStream("1c0a.xml");
-        InteractionContainer interactions = PlipParser.parse("1c0a", inputStream);
-
-        StructureParserOptions options = new StructureParserOptions();
-        options.omitHydrogens(true);
-
-        Structure structure = StructureParser.online()
-                .pdbIdentifier("1C0A")
-                .everything()
-                .setOptions(options)
-                .parse();
-
-        interactions.mapToPseudoAtoms(structure);
-
-        StructureViewer.structure = structure;
         StructureViewer.colorScheme = ColorScheme.BY_ELEMENT;
+
+        final Species species = ChEBIParserService.parse("CHEBI:50104");
+
+        final Structure3D feature = species.getFeature(Structure3D.class);
+        OakStructure structure = new OakStructure();
+        OakModel model = new OakModel(1);
+        OakChain chain = new OakChain("A");
+        chain.addLeafSubstructure((OakLigand)feature.getFeatureContent());
+        model.addChain(chain);
+        structure.addModel(model);
+        StructureViewer.structure = structure;
+
+        final List<Sphere> spheres = Structures.convertToSpheres(structure);
+        StructureViewer.spheres = spheres;
+
+        OttVolumePrediction abacus = new OttVolumePrediction();
+        abacus.setSpheres(spheres);
+        abacus.calculate();
+        AbacusVisualization visualization = new AbacusVisualization(abacus.getSlices(), abacus.getScale(), abacus.getxMin(), abacus.getyMin(), abacus.getzMin());
+        StructureViewer.cubes = visualization.getZSlice(50);
+
+
 
         Application.launch(StructureViewer.class);
     }
+
 }

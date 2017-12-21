@@ -2,8 +2,8 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

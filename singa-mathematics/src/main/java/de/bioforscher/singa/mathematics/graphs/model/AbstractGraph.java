@@ -51,30 +51,30 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
      * @param edgeCapacity The initial capacity for the edge list.
      */
     public AbstractGraph(int nodeCapacity, int edgeCapacity) {
-        this.nodes = new HashMap<>(nodeCapacity);
-        this.edges = new HashMap<>(edgeCapacity);
+        nodes = new HashMap<>(nodeCapacity);
+        edges = new HashMap<>(edgeCapacity);
     }
 
 
     @Override
     public Collection<NodeType> getNodes() {
-        return this.nodes.values();
+        return nodes.values();
     }
 
     @Override
     public NodeType getNode(IdentifierType identifier) {
-        return this.nodes.get(identifier);
+        return nodes.get(identifier);
     }
 
     @Override
     public IdentifierType addNode(NodeType node) {
-        this.nodes.put(node.getIdentifier(), node);
+        nodes.put(node.getIdentifier(), node);
         return node.getIdentifier();
     }
 
     @Override
     public NodeType removeNode(NodeType node) {
-        NodeType nodeToBeRemoved = this.nodes.values().stream()
+        NodeType nodeToBeRemoved = nodes.values().stream()
                 .filter(entry -> entry.equals(node))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Could not remove node " + node + "."));
@@ -83,14 +83,14 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
             neighbor.getNeighbours().remove(nodeToBeRemoved);
         }
 
-        this.nodes.remove(node.getIdentifier());
-        this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(node));
+        nodes.remove(node.getIdentifier());
+        edges.entrySet().removeIf(edge -> edge.getValue().containsNode(node));
         return nodeToBeRemoved;
     }
 
     @Override
     public NodeType removeNode(IdentifierType identifier) {
-        NodeType nodeToBeRemoved = this.nodes.values().stream()
+        NodeType nodeToBeRemoved = nodes.values().stream()
                 .filter(entry -> entry.getIdentifier().equals(identifier))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Could not remove node with identifier" + identifier + "."));
@@ -99,25 +99,25 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
             neighbor.getNeighbours().remove(nodeToBeRemoved);
         }
 
-        this.nodes.remove(identifier);
-        this.edges.entrySet().removeIf(edge -> edge.getValue().containsNode(nodeToBeRemoved));
+        nodes.remove(identifier);
+        edges.entrySet().removeIf(edge -> edge.getValue().containsNode(nodeToBeRemoved));
         return nodeToBeRemoved;
     }
 
 
     @Override
     public int nextEdgeIdentifier() {
-        return this.nextEdgeIdentifier++;
+        return nextEdgeIdentifier++;
     }
 
     @Override
     public Collection<EdgeType> getEdges() {
-        return this.edges.values();
+        return edges.values();
     }
 
     @Override
     public EdgeType getEdge(int identifier) {
-        return this.edges.get(identifier);
+        return edges.get(identifier);
     }
 
     /**
@@ -132,7 +132,7 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
     public int addEdgeBetween(EdgeType edge, NodeType source, NodeType target) {
         edge.setSource(source);
         edge.setTarget(target);
-        this.edges.put(edge.getIdentifier(), edge);
+        edges.put(edge.getIdentifier(), edge);
         source.addNeighbour(target);
         target.addNeighbour(source);
         return edge.getIdentifier();
@@ -161,12 +161,12 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
 
     @Override
     public boolean containsNode(Object node) {
-        return this.nodes.containsValue(node);
+        return nodes.containsValue(node);
     }
 
     @Override
     public boolean containsEdge(Object edge) {
-        return this.edges.containsValue(edge);
+        return edges.containsValue(edge);
     }
 
     /**
@@ -176,7 +176,7 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
      * @return The maximal degree of the graph.
      */
     public int getMaximumDegree() {
-        return this.nodes.values().stream()
+        return nodes.values().stream()
                 .mapToInt(Node::getDegree)
                 .max()
                 .orElse(0);
@@ -184,7 +184,7 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
 
     @Override
     public String toString() {
-        return "Graph [contains " + this.nodes.size() + " nodes and " + this.edges.size() + " edges]";
+        return "Graph [contains " + nodes.size() + " nodes and " + edges.size() + " edges]";
     }
 
 }

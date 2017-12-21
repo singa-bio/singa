@@ -25,7 +25,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
      * @return The resource.
      */
     public String getResource() {
-        return this.resource;
+        return resource;
     }
 
     /**
@@ -41,7 +41,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
      * @return The fetch result.
      */
     public InputStream getFetchResult() {
-        return this.fetchResult;
+        return fetchResult;
     }
 
     /**

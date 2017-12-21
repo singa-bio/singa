@@ -40,27 +40,27 @@ public class Interval extends Range<Double> implements Ring<Interval> {
 
     @Override
     public Interval add(Interval summand) {
-        final double upperBound = this.getUpperBound() + summand.getUpperBound();
-        final double lowerBound = this.getLowerBound() + summand.getLowerBound();
+        final double upperBound = getUpperBound() + summand.getUpperBound();
+        final double lowerBound = getLowerBound() + summand.getLowerBound();
         return new Interval(lowerBound, upperBound);
     }
 
     @Override
     public Interval additivelyInvert() {
-        return new Interval(-this.getLowerBound(), -this.getUpperBound());
+        return new Interval(-getLowerBound(), -getUpperBound());
     }
 
     @Override
     public Interval multiply(Interval multiplicand) {
-        double[] minMax = minMax(this.getLowerBound() * multiplicand.getLowerBound(), this.getLowerBound() * multiplicand.getUpperBound(),
-                this.getUpperBound() * multiplicand.getLowerBound(), this.getUpperBound() * multiplicand.getUpperBound());
+        double[] minMax = minMax(getLowerBound() * multiplicand.getLowerBound(), getLowerBound() * multiplicand.getUpperBound(),
+                getUpperBound() * multiplicand.getLowerBound(), getUpperBound() * multiplicand.getUpperBound());
         return new Interval(minMax[0], minMax[1]);
     }
 
     @Override
     public Interval subtract(Interval subtrahend) {
-        final double upperBound = this.getUpperBound() - subtrahend.getUpperBound();
-        final double lowerBound = this.getLowerBound() - subtrahend.getLowerBound();
+        final double upperBound = getUpperBound() - subtrahend.getUpperBound();
+        final double lowerBound = getLowerBound() - subtrahend.getLowerBound();
         return new Interval(lowerBound, upperBound);
     }
 }

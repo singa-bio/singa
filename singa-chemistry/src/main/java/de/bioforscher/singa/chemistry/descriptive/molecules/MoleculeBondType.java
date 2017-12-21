@@ -24,7 +24,7 @@ public enum MoleculeBondType {
     }
 
     public char getSmilesRepresentation() {
-        return this.smilesRepresentation;
+        return smilesRepresentation;
     }
 
     public static MoleculeBondType getBondForSMILESSymbol(char smilesSymbol) {

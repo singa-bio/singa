@@ -27,7 +27,7 @@ public interface Featureable {
     default void scaleScalableFeatures() {
         getFeatures().stream()
                 .filter(feature -> feature instanceof ScalableFeature)
-                .map(feature -> (ScalableFeature)feature )
+                .map(feature -> (ScalableFeature) feature)
                 .forEach(ScalableFeature::scale);
     }
 

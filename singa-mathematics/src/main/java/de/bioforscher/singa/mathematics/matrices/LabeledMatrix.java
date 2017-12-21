@@ -112,6 +112,8 @@ public interface LabeledMatrix<LabelType> extends Matrix {
      * given labels. As a contract the {@link Pair#getFirst()} method will retrieve the row index and the
      * {@link Pair#getSecond()} method the column index.
      *
+     * FIXME seems to be broken due to usage of {@link java.util.IdentityHashMap}
+     *
      * @param rowLabel    The row label.
      * @param columnLabel The column label.
      * @return The position of the value as defined by the labels.

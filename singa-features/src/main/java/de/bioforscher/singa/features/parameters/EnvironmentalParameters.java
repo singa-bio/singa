@@ -41,33 +41,33 @@ public class EnvironmentalParameters extends Observable {
     }
 
     public void resetToDefaultValues() {
-        this.nodeDistance = EnvironmentalParameterDefaults.NODE_DISTANCE;
-        this.timeStep = EnvironmentalParameterDefaults.TIME_STEP;
-        this.systemTemperature = EnvironmentalParameterDefaults.SYSTEM_TEMPERATURE;
-        this.systemViscosity = EnvironmentalParameterDefaults.SYSTEM_VISCOSITY;
-        this.isCellularEnvironment = false;
+        nodeDistance = EnvironmentalParameterDefaults.NODE_DISTANCE;
+        timeStep = EnvironmentalParameterDefaults.TIME_STEP;
+        systemTemperature = EnvironmentalParameterDefaults.SYSTEM_TEMPERATURE;
+        systemViscosity = EnvironmentalParameterDefaults.SYSTEM_VISCOSITY;
+        isCellularEnvironment = false;
         setChanged();
         notifyObservers();
     }
 
     public Quantity<Length> getNodeDistance() {
-        return this.nodeDistance;
+        return nodeDistance;
     }
 
     public Quantity<Temperature> getSystemTemperature() {
-        return this.systemTemperature;
+        return systemTemperature;
     }
 
     public Quantity<DynamicViscosity> getSystemViscosity() {
-        return this.systemViscosity;
+        return systemViscosity;
     }
 
     public Quantity<Time> getTimeStep() {
-        return this.timeStep;
+        return timeStep;
     }
 
     public boolean isCellularEnvironment() {
-        return this.isCellularEnvironment;
+        return isCellularEnvironment;
     }
 
     public void setCellularEnvironment(boolean isCellularEnvironment) {
@@ -85,7 +85,7 @@ public class EnvironmentalParameters extends Observable {
 
     public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
-        this.setNodeDistance(
+        setNodeDistance(
                 Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
     }
 
@@ -111,9 +111,9 @@ public class EnvironmentalParameters extends Observable {
 
     @Override
     public String toString() {
-        return "EnvironmentalParameters [nodeDistance=" + this.nodeDistance
-                + ", timeStep=" + this.timeStep + ", systemTemperature="
-                + this.systemTemperature + ", systemViscosity=" + this.systemViscosity
+        return "EnvironmentalParameters [nodeDistance=" + nodeDistance
+                + ", timeStep=" + timeStep + ", systemTemperature="
+                + systemTemperature + ", systemViscosity=" + systemViscosity
                 + "]";
     }
 

@@ -35,7 +35,7 @@ public class GraphRenderOptions {
     private Color backgroundColor = Color.WHITE;
 
     public double getNodeDiameter() {
-        return this.nodeDiameter;
+        return nodeDiameter;
     }
 
     public void setNodeDiameter(double nodeDiameter) {
@@ -43,7 +43,7 @@ public class GraphRenderOptions {
     }
 
     public Color getNodeColor() {
-        return this.nodeColor;
+        return nodeColor;
     }
 
     public void setNodeColor(Color nodeColor) {
@@ -51,7 +51,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isDisplayingNodes() {
-        return this.displayingNodes;
+        return displayingNodes;
     }
 
     public void setDisplayingNodes(boolean displayingNodes) {
@@ -59,7 +59,7 @@ public class GraphRenderOptions {
     }
 
     public Color getEdgeColor() {
-        return this.edgeColor;
+        return edgeColor;
     }
 
     public void setEdgeColor(Color edgeColor) {
@@ -67,7 +67,7 @@ public class GraphRenderOptions {
     }
 
     public double getEdgeThickness() {
-        return this.edgeThickness;
+        return edgeThickness;
     }
 
     public void setEdgeThickness(double edgeThickness) {
@@ -75,7 +75,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isDisplayingEdges() {
-        return this.displayingEdges;
+        return displayingEdges;
     }
 
     public void setDisplayingEdges(boolean displayingEdges) {
@@ -83,7 +83,7 @@ public class GraphRenderOptions {
     }
 
     public Color getIdentifierTextColor() {
-        return this.identifierTextColor;
+        return identifierTextColor;
     }
 
     public void setIdentifierTextColor(Color identifierTextColor) {
@@ -91,7 +91,7 @@ public class GraphRenderOptions {
     }
 
     public Color getBackgroundColor() {
-        return this.backgroundColor;
+        return backgroundColor;
     }
 
     public void setBackgroundColor(Color backgroundColor) {
@@ -99,7 +99,7 @@ public class GraphRenderOptions {
     }
 
     public boolean isDisplayingIdentifierText() {
-        return this.displayingIdentifierText;
+        return displayingIdentifierText;
     }
 
     public void setDisplayingIdentifierText(boolean displayingIdentifierText) {

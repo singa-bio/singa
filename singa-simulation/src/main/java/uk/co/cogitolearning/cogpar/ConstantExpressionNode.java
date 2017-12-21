@@ -56,7 +56,7 @@ public class ConstantExpressionNode implements ExpressionNode {
      * Returns the value of the constant
      */
     public double getValue() {
-        return this.value;
+        return value;
     }
 
     /**

@@ -2,7 +2,6 @@ package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -57,14 +56,5 @@ public interface Node<NodeType extends Node<NodeType, VectorType, IdentifierType
      */
     int getDegree();
 
-    default NodeType getCopy() {
-        try {
-            return (NodeType) getClass().getConstructor(getClass()).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new UnsupportedOperationException("Instance types must match to copy successfully.");
-        }
-    }
-
+    NodeType getCopy();
 }

@@ -27,14 +27,14 @@ public class AppliedExpression {
 
     public AppliedExpression(String expression, Unit<?> resultUnit) {
         Parser parser = new Parser();
-        this.expressionString = expression;
+        expressionString = expression;
         this.expression = parser.parse(expression);
-        this.parameters = new HashMap<>();
+        parameters = new HashMap<>();
         this.resultUnit = resultUnit;
     }
 
     public Map<String, SimulationParameter> getParameters() {
-        return Collections.unmodifiableMap(this.parameters);
+        return Collections.unmodifiableMap(parameters);
     }
 
     public void setParameters(List<SimulationParameter> parameters) {
@@ -43,33 +43,33 @@ public class AppliedExpression {
 
     public void setParameter(SimulationParameter parameter) {
         final SetVariable variable = new SetVariable(parameter.getIdentifier().toString(), parameter.getValue());
-        this.parameters.put(parameter.getIdentifier().toString(), parameter);
-        this.expression.accept(variable);
+        parameters.put(parameter.getIdentifier().toString(), parameter);
+        expression.accept(variable);
     }
 
     public String getExpressionString() {
-        return this.expressionString;
+        return expressionString;
     }
 
     public void acceptValue(String parameter, double value) {
         final SetVariable variable = new SetVariable(parameter, value);
-        if (this.parameters.containsKey(parameter)) {
-            this.parameters.get(parameter).setValue(value);
-            this.expression.accept(variable);
+        if (parameters.containsKey(parameter)) {
+            parameters.get(parameter).setValue(value);
+            expression.accept(variable);
         }
     }
 
     public Quantity<?> evaluate() {
         double value = 0.0;
         try {
-            value = this.expression.getValue();
+            value = expression.getValue();
         } catch (ParserException | EvaluationException e) {
-            logger.error("Could not calculate expression for {}.", this.expression.toString(), e);
+            logger.error("Could not calculate expression for {}.", expression.toString(), e);
         }
         if (Double.isNaN(value)) {
-            logger.error("Could not calculate expression for {}, value was NaN.", this.expression.toString());
+            logger.error("Could not calculate expression for {}, value was NaN.", expression.toString());
         }
-        return Quantities.getQuantity(value, this.resultUnit);
+        return Quantities.getQuantity(value, resultUnit);
     }
 
 }

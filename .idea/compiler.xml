@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="singa-benchmark" />
         <module name="singa-chemistry" />
         <module name="singa-core" />
         <module name="singa-features" />
         <module name="singa-javafx" />
         <module name="singa-mathematics" />
         <module name="singa-simulation" />
+        <module name="singa-structure" />
         <module name="singa-units" />
       </profile>
     </annotationProcessing>
@@ -30,7 +30,9 @@
       <module name="singa-features" target="1.8" />
       <module name="singa-javafx" target="1.8" />
       <module name="singa-mathematics" target="1.8" />
+      <module name="singa-mmtf" target="1.9" />
       <module name="singa-simulation" target="1.8" />
+      <module name="singa-structure" target="1.8" />
       <module name="singa-units" target="1.8" />
       <module name="units" target="1.8" />
     </bytecodeTargetLevel>

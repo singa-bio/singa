@@ -31,6 +31,7 @@ public class Delta {
 
     /**
      * Creates a new delta for a specific {@link ChemicalEntity} in a specific {@link CellSection}.
+     *
      * @param cellSection The cell section.
      * @param chemicalEntity The chemical entity.
      * @param quantity The change in concentration.
@@ -43,45 +44,50 @@ public class Delta {
 
     /**
      * Returns the cell section.
+     *
      * @return The cell section.
      */
     public CellSection getCellSection() {
-        return this.cellSection;
+        return cellSection;
     }
 
     /**
      * Returns the chemical entity.
+     *
      * @return The chemical entity.
      */
     public ChemicalEntity getChemicalEntity() {
-        return this.chemicalEntity;
+        return chemicalEntity;
     }
 
     /**
      * Returns the quantity of the change.
+     *
      * @return The quantity of the change.
      */
     public Quantity<MolarConcentration> getQuantity() {
-        return this.quantity;
+        return quantity;
     }
 
     /**
      * Multiplies (modifies) this delta .
+     *
      * @param multiplicand The scalar that the delta is multiplied with.
      * @return This multiplied delta.
      */
     public Delta multiply(double multiplicand) {
-        this.quantity = this.quantity.multiply(multiplicand);
+        quantity = quantity.multiply(multiplicand);
         return this;
     }
 
     /**
      * Merges (adds) two deltas an returns a new delta.
+     *
      * @param anotherDelta The other delta.
      * @return A new delta with the accumulated changes.
      */
     public Delta merge(Delta anotherDelta) {
-        return new Delta(this.cellSection, this.chemicalEntity, this.quantity.add(anotherDelta.getQuantity()));
+        return new Delta(cellSection, chemicalEntity, quantity.add(anotherDelta.getQuantity()));
     }
 
     @Override

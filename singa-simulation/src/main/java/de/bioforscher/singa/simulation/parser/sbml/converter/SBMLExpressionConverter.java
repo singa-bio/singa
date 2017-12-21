@@ -31,42 +31,42 @@ public class SBMLExpressionConverter {
 
     public AppliedExpression convertRawExpression(ASTNode sbmlExpression, ListOf<LocalParameter> additionalParameters, Unit<?> resultUnit) {
         String expressionString = replaceFunction(sbmlExpression.toString());
-        this.currentExpression = new AppliedExpression(expressionString, resultUnit);
+        currentExpression = new AppliedExpression(expressionString, resultUnit);
         assignLocalParameters(additionalParameters);
         assignGlobalParameters(expressionString);
-        return this.currentExpression;
+        return currentExpression;
     }
 
     public AppliedExpression convertRawExpression(ASTNode sbmlExpression, Unit<?> resultUnit) {
         String expressionString = replaceFunction(sbmlExpression.toString());
-        this.currentExpression = new AppliedExpression(expressionString, resultUnit);
+        currentExpression = new AppliedExpression(expressionString, resultUnit);
         assignGlobalParameters(expressionString);
-        return this.currentExpression;
+        return currentExpression;
     }
 
     private String replaceFunction(String kineticLawString) {
         String replacedString = kineticLawString;
-        for (String functionIdentifier : this.functions.keySet()) {
+        for (String functionIdentifier : functions.keySet()) {
             if (kineticLawString.contains(functionIdentifier)) {
-                replacedString = this.functions.get(functionIdentifier).replaceInEquation(replacedString);
+                replacedString = functions.get(functionIdentifier).replaceInEquation(replacedString);
             }
         }
         return replacedString;
     }
 
     private void assignLocalParameters(ListOf<LocalParameter> additionalParameters) {
-        SBMLParameterConverter converter = new SBMLParameterConverter(this.units);
+        SBMLParameterConverter converter = new SBMLParameterConverter(units);
         for (LocalParameter parameter : additionalParameters) {
-            this.currentExpression.setParameter(converter.convertLocalParameter(parameter));
+            currentExpression.setParameter(converter.convertLocalParameter(parameter));
         }
     }
 
     private void assignGlobalParameters(String kineticLawString) {
-        for (String primaryIdentifier : this.globalParameters.keySet()) {
+        for (String primaryIdentifier : globalParameters.keySet()) {
             Pattern pattern = Pattern.compile("(\\W|^)(" + primaryIdentifier + ")(\\W|$)");
             Matcher matcher = pattern.matcher(kineticLawString);
             if (matcher.find()) {
-                this.currentExpression.setParameter(this.globalParameters.get(primaryIdentifier));
+                currentExpression.setParameter(globalParameters.get(primaryIdentifier));
             }
         }
     }

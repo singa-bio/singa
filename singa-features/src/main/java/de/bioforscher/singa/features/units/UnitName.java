@@ -20,7 +20,7 @@ public enum UnitName {
     }
 
     public String getSymbol() {
-        return this.symbol;
+        return symbol;
     }
 
 }

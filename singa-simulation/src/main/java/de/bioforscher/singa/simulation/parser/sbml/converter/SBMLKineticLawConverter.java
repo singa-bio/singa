@@ -29,7 +29,7 @@ public class SBMLKineticLawConverter {
 
     public SBMLKineticLawConverter(Map<String, Unit<?>> units, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
         this.units = units;
-        this.expressionConverter = new SBMLExpressionConverter(this.units, functions, globalParameters);
+        expressionConverter = new SBMLExpressionConverter(this.units, functions, globalParameters);
     }
 
     public DynamicKineticLaw convertKineticLaw(KineticLaw sbmlKineticLaw) {
@@ -39,10 +39,10 @@ public class SBMLKineticLawConverter {
             if (unitIdentifier.equalsIgnoreCase("dimensionless") || unitIdentifier.isEmpty()) {
                 parameterUnit = ONE;
             } else {
-                parameterUnit = this.units.get(unitIdentifier);
+                parameterUnit = units.get(unitIdentifier);
             }
             logger.debug("Creating kinetic law with expression {} ...", sbmlKineticLaw.getMath().toString());
-            AppliedExpression appliedExpression = this.expressionConverter.convertRawExpression(sbmlKineticLaw.getMath(), sbmlKineticLaw.getListOfLocalParameters(), parameterUnit);
+            AppliedExpression appliedExpression = expressionConverter.convertRawExpression(sbmlKineticLaw.getMath(), sbmlKineticLaw.getListOfLocalParameters(), parameterUnit);
             return new DynamicKineticLaw(appliedExpression);
         } else {
             logger.warn("Could not parse a valid expression for this reaction.");

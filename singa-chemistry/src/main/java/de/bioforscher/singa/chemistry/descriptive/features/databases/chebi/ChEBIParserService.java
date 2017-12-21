@@ -16,7 +16,6 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
     private static final Logger logger = LoggerFactory.getLogger(ChEBIParserService.class);
     private static final String CHEBI_FETCH_URL = "https://www.ebi.ac.uk/webservices/chebi/2.0/test/getCompleteEntity?chebiId=%s";
 
-
     public ChEBIParserService(ChEBIIdentifier identifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler());
         setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));
@@ -48,7 +47,7 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
         fetchResource();
         // parse xml
         try {
-            this.getXmlReader().parse(new InputSource(getFetchResult()));
+            getXmlReader().parse(new InputSource(getFetchResult()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not parse xml from fetch result, the server seems to be unavailable.", e);
         } catch (SAXException e) {
@@ -59,7 +58,7 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
     @Override
     public Species parse() {
         parseXML();
-        return ((ChEBIContentHandler) this.getXmlReader().getContentHandler()).getSpecies();
+        return ((ChEBIContentHandler) getXmlReader().getContentHandler()).getSpecies();
     }
 
     public static void main(String[] args) {

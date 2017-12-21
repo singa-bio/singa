@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
+import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.FeatureRegistry;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.ProductUnit;
@@ -55,16 +55,16 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         // transform to specified amount
         this.scaledQuantity = denominator.multiply(targetTimeScale.getValue());
         // and half of it
-        this.halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
+        halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
     public Quantity<Diffusivity> getScaledQuantity() {
-        return this.scaledQuantity;
+        return scaledQuantity;
     }
 
     @Override
     public Quantity<Diffusivity> getHalfScaledQuantity() {
-        return this.halfScaledQuantity;
+        return halfScaledQuantity;
     }
 
     @Override

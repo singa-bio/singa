@@ -22,12 +22,11 @@ public class MichaelisMentenReaction extends Reaction {
         super(simulation);
         this.enzyme = enzyme;
         // features
-        this.availableFeatures.add(TurnoverNumber.class);
-        this.availableFeatures.add(MichaelisConstant.class);
+        availableFeatures.add(TurnoverNumber.class);
+        availableFeatures.add(MichaelisConstant.class);
         setFeature(enzyme.getFeature(TurnoverNumber.class));
         setFeature(enzyme.getFeature(MichaelisConstant.class));
         // deltas
-        applyAlways();
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
@@ -37,7 +36,7 @@ public class MichaelisMentenReaction extends Reaction {
         final Quantity<Frequency> kCat = getScaledFeature(TurnoverNumber.class);
         final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent();
         // (KCAT * enzyme * substrate) / KM + substrate
-        double substrate = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), this.enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
+        double substrate = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
         double enzyme = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), this.enzyme).getValue().doubleValue();
         return (kCat.getValue().doubleValue() * enzyme * substrate) / (km.getValue().doubleValue() + substrate);
     }

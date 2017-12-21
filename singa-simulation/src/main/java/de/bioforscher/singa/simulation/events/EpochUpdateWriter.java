@@ -41,9 +41,9 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
-        this.observedEntities = initializeOrdering(entitiesToObserve);
+        observedEntities = initializeOrdering(entitiesToObserve);
         this.printEntityInformation = printEntityInformation;
-        this.registeredWriters = new HashMap<>();
+        registeredWriters = new HashMap<>();
 
     }
 
@@ -54,12 +54,12 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     public void addNodeToObserve(AutomatonNode node) throws IOException {
         Path file = createFile("node_" + node.getIdentifier() + ".csv");
         BufferedWriter writer = Files.newBufferedWriter(file, StandardOpenOption.APPEND);
-        this.registeredWriters.put(node, writer);
+        registeredWriters.put(node, writer);
         writeHeader(node);
     }
 
     private void createFolderStructure() {
-        Path workspaceFolder = Paths.get(this.workspacePath.toString(), this.folder.toString());
+        Path workspaceFolder = Paths.get(workspacePath.toString(), folder.toString());
         try {
             if (!Files.exists(workspaceFolder)) {
                 Files.createDirectory(workspaceFolder);
@@ -70,7 +70,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     private Path createFile(String fileName) throws IOException {
-        Path file = Paths.get(this.workspacePath.toString(), this.folder.toString(), fileName);
+        Path file = Paths.get(workspacePath.toString(), folder.toString(), fileName);
         if (!Files.exists(file)) {
             Files.createFile(file);
         }
@@ -83,7 +83,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
                 .append(" Node ")
                 .append(node.getIdentifier())
                 .append(LINEBREAK);
-        if (this.printEntityInformation) {
+        if (printEntityInformation) {
             sb.append(prepareEntityInformation());
         }
         sb.append(prepareEntityHeader());
@@ -92,7 +92,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     private String prepareEntityInformation() {
         StringBuilder sb = new StringBuilder();
-        for (ChemicalEntity entity : this.observedEntities) {
+        for (ChemicalEntity entity : observedEntities) {
             sb.append(COMMENT_CHARACTER)
                     .append(" ")
                     .append(entity.getName())
@@ -108,8 +108,8 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         sb.append("epoch")
                 .append(SEPARATOR_CHARACTER);
         int count = 0;
-        for (ChemicalEntity entity : this.observedEntities) {
-            if (count < this.observedEntities.size() - 1) {
+        for (ChemicalEntity entity : observedEntities) {
+            if (count < observedEntities.size() - 1) {
                 sb.append(entity.getName())
                         .append(SEPARATOR_CHARACTER);
             } else {
@@ -122,7 +122,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     private void appendContent(AutomatonNode node, String content) throws IOException {
-        this.registeredWriters.get(node).write(content);
+        registeredWriters.get(node).write(content);
     }
 
     @Override
@@ -130,8 +130,8 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         StringBuilder sb = new StringBuilder();
         sb.append(event.getTime().to(MILLI(SECOND)).getValue()).append(SEPARATOR_CHARACTER);
         int count = 0;
-        for (ChemicalEntity entity : this.observedEntities) {
-            if (count < this.observedEntities.size() - 1) {
+        for (ChemicalEntity entity : observedEntities) {
+            if (count < observedEntities.size() - 1) {
                 sb.append(Double.toString(event.getNode().getAllConcentrations().get(entity).getValue().doubleValue()))
                         .append(SEPARATOR_CHARACTER);
             } else {

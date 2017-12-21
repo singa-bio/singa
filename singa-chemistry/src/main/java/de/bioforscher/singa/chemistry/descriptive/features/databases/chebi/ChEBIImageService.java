@@ -23,17 +23,17 @@ public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
 
     private ChEBIImageService(ChEBIIdentifier chEBIIdentifier, int imageWidth) {
         setResource("http://www.ebi.ac.uk/chebi/displayImage.do?");
-        this.queryMap = new HashMap<>();
-        this.queryMap.put("defaultImage", "true");
-        this.queryMap.put("imageIndex", "0");
-        this.queryMap.put("chebiId", String.valueOf(chEBIIdentifier.getConsecutiveNumber()));
-        this.queryMap.put("dimensions", String.valueOf(imageWidth));
+        queryMap = new HashMap<>();
+        queryMap.put("defaultImage", "true");
+        queryMap.put("imageIndex", "0");
+        queryMap.put("chebiId", String.valueOf(chEBIIdentifier.getConsecutiveNumber()));
+        queryMap.put("dimensions", String.valueOf(imageWidth));
     }
 
     public void saveImageToFile(String filePath) {
         File file = new File(filePath);
         try {
-            Files.copy(this.getFetchResult(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(getFetchResult(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new UncheckedIOException("The image could not be written to \""+ filePath +"\"", e);
         }
@@ -41,8 +41,8 @@ public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
 
     @Override
     public InputStream parse() {
-        this.fetchWithQuery(this.queryMap);
-        return this.getFetchResult();
+        fetchWithQuery(queryMap);
+        return getFetchResult();
     }
 
 }

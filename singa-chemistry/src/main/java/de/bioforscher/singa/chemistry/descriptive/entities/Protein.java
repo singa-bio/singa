@@ -3,8 +3,11 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.core.biology.Organism;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.model.Feature;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType.AMINO_ACID_SEQUENCE;
 import static de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType.ORGANISM;
@@ -14,8 +17,14 @@ import static de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationT
  */
 public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
 
+    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    static {
+        Protein.availableFeatures.addAll(ChemicalEntity.availableFeatures);
+    }
+
     /**
-     * Creates a new Chemical Entity with the given identifier.
+     * Creates a new Protein with the given identifier.
      *
      * @param identifier The identifier.
      */
@@ -89,6 +98,10 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
         return getContentOfAnnotations(String.class, description, AMINO_ACID_SEQUENCE);
     }
 
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
+    }
 
     public static class Builder extends ChemicalEntity.Builder<Protein, Builder, SimpleStringIdentifier> {
 

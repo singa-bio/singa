@@ -1,5 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.elements;
 
+import de.bioforscher.singa.structure.elements.Element;
+import de.bioforscher.singa.structure.elements.ElementProvider;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

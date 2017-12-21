@@ -31,7 +31,7 @@ public class SBMLAssignmentRuleConverter {
     public SBMLAssignmentRuleConverter(Map<String, Unit<?>> units, Map<String, ChemicalEntity> entities, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
         this.units = units;
         this.entities = entities;
-        this.expressionConverter = new SBMLExpressionConverter(units, functions, globalParameters);
+        expressionConverter = new SBMLExpressionConverter(units, functions, globalParameters);
     }
 
     public AssignmentRule convertAssignmentRule(org.sbml.jsbml.AssignmentRule sbmlAssignmentRule) {
@@ -40,17 +40,17 @@ public class SBMLAssignmentRuleConverter {
         if (unitIdentifier.equalsIgnoreCase("dimensionless") || unitIdentifier.isEmpty()) {
             parameterUnit = ONE;
         } else {
-            parameterUnit = this.units.get(unitIdentifier);
+            parameterUnit = units.get(unitIdentifier);
         }
-        final AppliedExpression appliedExpression = this.expressionConverter.convertRawExpression(sbmlAssignmentRule.getMath(), parameterUnit);
-        final ChemicalEntity targetEntity = this.entities.get(sbmlAssignmentRule.getVariable());
+        final AppliedExpression appliedExpression = expressionConverter.convertRawExpression(sbmlAssignmentRule.getMath(), parameterUnit);
+        final ChemicalEntity targetEntity = entities.get(sbmlAssignmentRule.getVariable());
         AssignmentRule assignmentRule = new AssignmentRule(targetEntity, appliedExpression);
         // find referenced entities
-        for (String identifier : this.entities.keySet()) {
+        for (String identifier : entities.keySet()) {
             Pattern pattern = Pattern.compile("(\\W|^)(" + identifier + ")(\\W|$)");
             Matcher matcher = pattern.matcher(sbmlAssignmentRule.getMath().toString());
             if (matcher.find()) {
-                assignmentRule.referenceChemicalEntityToParameter(identifier, this.entities.get(identifier));
+                assignmentRule.referenceChemicalEntityToParameter(identifier, entities.get(identifier));
             }
         }
         return assignmentRule;

@@ -29,11 +29,11 @@ public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
     public double calculateDistance(Node<?, ?, ?> first, Node<?, ?, ?> second) {
 
         // registers distances of the nodes that have already been processed
-        Map<Node<?, ?, ?>, Integer> distance = new HashMap<>(this.graph.getNodes().size());
+        Map<Node<?, ?, ?>, Integer> distance = new HashMap<>(graph.getNodes().size());
 
         // degenerate case: graph does not contain one or both of the requested
         // nodes
-        if (!(this.graph.containsNode(first) && this.graph.containsNode(second))) {
+        if (!(graph.containsNode(first) && graph.containsNode(second))) {
             throw new DegenerateCaseException("The graph has to contain both nodes " + first + " and " + second
                     + " in order to calculate the shortest path between both.");
         }

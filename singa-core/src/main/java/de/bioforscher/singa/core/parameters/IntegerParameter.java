@@ -8,28 +8,28 @@ public final class IntegerParameter implements Parameter<Integer> {
 
     public IntegerParameter(String name, int lowerBound, int upperBound) {
         this.name = name;
-        this.minimalValue = lowerBound;
-        this.maximalValue = upperBound;
+        minimalValue = lowerBound;
+        maximalValue = upperBound;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public Integer getLowerBound() {
-        return this.minimalValue;
+        return minimalValue;
     }
 
     @Override
     public Integer getUpperBound() {
-        return this.maximalValue;
+        return maximalValue;
     }
 
     @Override
     public String toString() {
-        return "Parameter (Integer) " + this.name + " [" + this.minimalValue + " ... " + this.maximalValue + "]";
+        return "Parameter (Integer) " + name + " [" + minimalValue + " ... " + maximalValue + "]";
     }
 
 }

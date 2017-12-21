@@ -16,7 +16,7 @@ public enum HexagonCoordianteDirection {
     }
 
     public int getValue() {
-        return this.value;
+        return value;
     }
 
 }

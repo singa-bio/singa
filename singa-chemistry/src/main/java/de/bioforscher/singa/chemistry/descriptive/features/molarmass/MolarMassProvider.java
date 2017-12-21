@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBI
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtDatabase;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 
 /**
  * @author cl

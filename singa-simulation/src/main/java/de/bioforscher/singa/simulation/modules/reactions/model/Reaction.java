@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -27,22 +28,17 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     private List<StoichiometricReactant> stoichiometricReactants;
     private boolean elementary;
 
-    private FeatureContainer features;
     protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    private FeatureContainer features;
 
     public Reaction(Simulation simulation) {
         super(simulation);
         initialize();
     }
 
-    public Reaction() {
-        super();
-        initialize();
-    }
-
     private void initialize() {
-        this.stoichiometricReactants = new ArrayList<>();
-        this.features = new FeatureContainer();
+        stoichiometricReactants = new ArrayList<>();
+        features = new ChemistryFeatureContainer();
     }
 
     /**
@@ -51,7 +47,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      * @return The list of reactants for this reaction.
      */
     public List<StoichiometricReactant> getStoichiometricReactants() {
-        return this.stoichiometricReactants;
+        return stoichiometricReactants;
     }
 
     /**
@@ -64,14 +60,14 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     }
 
     public List<ChemicalEntity> getSubstrates() {
-        return this.stoichiometricReactants.stream()
+        return stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toList());
     }
 
     public List<ChemicalEntity> getProducts() {
-        return this.stoichiometricReactants.stream()
+        return stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toList());
@@ -125,7 +121,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      * @return {@code true} if this Reaction is considered elementary and {@code false} otherwise.
      */
     public boolean isElementary() {
-        return this.elementary;
+        return elementary;
     }
 
     /**
@@ -138,12 +134,12 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     }
 
     public String getDisplayString() {
-        String substrates = this.stoichiometricReactants.stream()
+        String substrates = stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
                 .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
                         + substrate.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
-        String products = this.stoichiometricReactants.stream()
+        String products = stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
                 .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
                         + product.getEntity().getIdentifier())
@@ -153,17 +149,17 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     @Override
     public Collection<Feature<?>> getFeatures() {
-        return this.features.getAllFeatures();
+        return features.getAllFeatures();
     }
 
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return this.features.getFeature(featureTypeClass);
+        return features.getFeature(featureTypeClass);
     }
 
     protected <FeatureContent> FeatureContent getScaledFeature(Class<? extends ScalableFeature<FeatureContent>> featureClass) {
         ScalableFeature<FeatureContent> feature = getFeature(featureClass);
-        if (this.halfTime) {
+        if (halfTime) {
             return feature.getHalfScaledQuantity();
         }
         return feature.getScaledQuantity();
@@ -171,22 +167,22 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     @Override
     public <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass) {
-        this.features.setFeature(featureTypeClass, this);
+        features.setFeature(featureTypeClass, this);
     }
 
     @Override
     public <FeatureType extends Feature> void setFeature(FeatureType feature) {
-        this.features.setFeature(feature);
+        features.setFeature(feature);
     }
 
     @Override
     public <FeatureType extends Feature> boolean hasFeature(Class<FeatureType> featureTypeClass) {
-        return this.features.hasFeature(featureTypeClass);
+        return features.hasFeature(featureTypeClass);
     }
 
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
-        return this.availableFeatures;
+        return availableFeatures;
     }
 
 }

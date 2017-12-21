@@ -30,11 +30,11 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
     public NeighbourhoodExtractor(GraphType graph, NodeType referenceNode) {
         this.referenceNode = referenceNode;
         this.graph = graph;
-        this.currentWave = new ArrayDeque<>();
-        this.nextWave = new ArrayDeque<>();
-        this.visitedNodes = new HashSet<>();
-        this.nodesOfSubgraph = new ArrayList<>();
-        this.edgesOfSubgraph = new ArrayList<>();
+        currentWave = new ArrayDeque<>();
+        nextWave = new ArrayDeque<>();
+        visitedNodes = new HashSet<>();
+        nodesOfSubgraph = new ArrayList<>();
+        edgesOfSubgraph = new ArrayList<>();
     }
 
     /**
@@ -99,35 +99,35 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
     private void extractNeighborhood(int shell, boolean onlyShell) {
         // initialize with given node
         if (!onlyShell) {
-            this.nodesOfSubgraph.add(this.referenceNode);
+            nodesOfSubgraph.add(referenceNode);
         }
-        this.currentWave.offer(this.referenceNode);
+        currentWave.offer(referenceNode);
         // reduce the remaining depth with each wave
         while (shell > 0) {
             // process current wave
-            while (!this.currentWave.isEmpty()) {
-                NodeType currentNode = this.currentWave.poll();
-                this.visitedNodes.add(currentNode);
+            while (!currentWave.isEmpty()) {
+                NodeType currentNode = currentWave.poll();
+                visitedNodes.add(currentNode);
                 // process neighbors of the current wave
                 for (NodeType neighbour : currentNode.getNeighbours()) {
                     // if this neighbor has not already been processed
-                    if (!this.visitedNodes.contains(neighbour)) {
+                    if (!visitedNodes.contains(neighbour)) {
                         if (!onlyShell) {
-                            this.nodesOfSubgraph.add(neighbour);
-                            this.edgesOfSubgraph.add(this.graph.getEdgeBetween(currentNode, neighbour).get());
+                            nodesOfSubgraph.add(neighbour);
+                            edgesOfSubgraph.add(graph.getEdgeBetween(currentNode, neighbour).get());
                             addConnectionsToVisitedNodes(neighbour);
                         }
-                        this.nextWave.add(neighbour);
-                        this.visitedNodes.add(neighbour);
+                        nextWave.add(neighbour);
+                        visitedNodes.add(neighbour);
                     }
                 }
             }
             // current wave has been processed and is updated with the nodes that have been found
-            this.currentWave = this.nextWave;
+            currentWave = nextWave;
             if (onlyShell && shell == 1) {
-                this.nodesOfSubgraph.addAll(this.nextWave);
+                nodesOfSubgraph.addAll(nextWave);
             }
-            this.nextWave = new ArrayDeque<>();
+            nextWave = new ArrayDeque<>();
             shell--;
         }
     }
@@ -137,10 +137,10 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
      * @param neighbour The neighbour to add edges to.
      */
     private void addConnectionsToVisitedNodes(NodeType neighbour) {
-        for (NodeType visitedNode : this.visitedNodes) {
+        for (NodeType visitedNode : visitedNodes) {
             Optional<EdgeType> edge;
-            if ((edge = this.graph.getEdgeBetween(neighbour, visitedNode)).isPresent()) {
-                this.edgesOfSubgraph.add(edge.get());
+            if ((edge = graph.getEdgeBetween(neighbour, visitedNode)).isPresent()) {
+                edgesOfSubgraph.add(edge.get());
             }
         }
     }
@@ -154,18 +154,18 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
         // create a new graph
         GraphType subgraph;
         try {
-            subgraph = (GraphType) this.graph.getClass().newInstance();
+            subgraph = (GraphType) graph.getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Failed to create a new graph.");
         }
         // copy and add nodes
         Objects.requireNonNull(subgraph);
-        for (NodeType node : this.nodesOfSubgraph) {
+        for (NodeType node : nodesOfSubgraph) {
             NodeType copy = node.getCopy();
             subgraph.addNode(copy);
         }
         // create and add edges for the nodes (preserving edge identifier)
-        List<EdgeType> edges = this.edgesOfSubgraph;
+        List<EdgeType> edges = edgesOfSubgraph;
         for (EdgeType edge : edges) {
             NodeType source = subgraph.getNode(edge.getSource().getIdentifier());
             NodeType target = subgraph.getNode(edge.getTarget().getIdentifier());

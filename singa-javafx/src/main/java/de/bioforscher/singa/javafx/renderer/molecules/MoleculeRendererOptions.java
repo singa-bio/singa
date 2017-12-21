@@ -17,7 +17,7 @@ public class MoleculeRendererOptions {
     private Color defaultColor = Color.DARKOLIVEGREEN;
 
     public Color getHydrogenColor() {
-        return this.hydrogenColor;
+        return hydrogenColor;
     }
 
     public void setHydrogenColor(Color hydrogenColor) {
@@ -25,7 +25,7 @@ public class MoleculeRendererOptions {
     }
 
     public Color getCarbonColor() {
-        return this.carbonColor;
+        return carbonColor;
     }
 
     public void setCarbonColor(Color carbonColor) {
@@ -33,7 +33,7 @@ public class MoleculeRendererOptions {
     }
 
     public Color getNitrogenColor() {
-        return this.nitrogenColor;
+        return nitrogenColor;
     }
 
     public void setNitrogenColor(Color nitrogenColor) {
@@ -41,7 +41,7 @@ public class MoleculeRendererOptions {
     }
 
     public Color getOxygenColor() {
-        return this.oxygenColor;
+        return oxygenColor;
     }
 
     public void setOxygenColor(Color oxygenColor) {
@@ -49,7 +49,7 @@ public class MoleculeRendererOptions {
     }
 
     public Color getSulfurColor() {
-        return this.sulfurColor;
+        return sulfurColor;
     }
 
     public void setSulfurColor(Color sulfurColor) {
@@ -57,7 +57,7 @@ public class MoleculeRendererOptions {
     }
 
     public Color getPhosphorusColor() {
-        return this.phosphorusColor;
+        return phosphorusColor;
     }
 
     public void setPhosphorusColor(Color phosphorusColor) {
@@ -66,13 +66,20 @@ public class MoleculeRendererOptions {
 
     public Color getColorForElement(String elementSymbol) {
         switch (elementSymbol) {
-            case "H": return this.hydrogenColor;
-            case "C": return this.carbonColor;
-            case "N": return this.nitrogenColor;
-            case "O": return this.oxygenColor;
-            case "S": return this.sulfurColor;
-            case "P": return this.phosphorusColor;
-            default: return this.defaultColor;
+            case "H":
+                return hydrogenColor;
+            case "C":
+                return carbonColor;
+            case "N":
+                return nitrogenColor;
+            case "O":
+                return oxygenColor;
+            case "S":
+                return sulfurColor;
+            case "P":
+                return phosphorusColor;
+            default:
+                return defaultColor;
         }
     }
 

@@ -11,11 +11,11 @@ public class MultiTreeNode<T> {
 
     public MultiTreeNode(T data) {
         this.data = data;
-        this.children = new ArrayList<>();
+        children = new ArrayList<>();
     }
 
     public T getData() {
-        return this.data;
+        return data;
     }
 
     public void setData(T data) {
@@ -23,7 +23,7 @@ public class MultiTreeNode<T> {
     }
 
     public MultiTreeNode<T> getParent() {
-        return this.parent;
+        return parent;
     }
 
     public void setParent(MultiTreeNode<T> parent) {
@@ -31,11 +31,11 @@ public class MultiTreeNode<T> {
     }
 
     public void addChild(MultiTreeNode<T> child) {
-        this.children.add(child);
+        children.add(child);
     }
 
     public MultiTreeNode<T> getChild(T data) {
-        for (MultiTreeNode<T> node : this.children) {
+        for (MultiTreeNode<T> node : children) {
             if (node.getData().equals(data)) {
                 return node;
             }
@@ -44,7 +44,7 @@ public class MultiTreeNode<T> {
     }
 
     public List<MultiTreeNode<T>> getChildren() {
-        return this.children;
+        return children;
     }
 
     public void setChildren(List<MultiTreeNode<T>> children) {

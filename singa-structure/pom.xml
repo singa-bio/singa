@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>singa-all</artifactId>
+        <groupId>de.bioforscher.singa</groupId>
+        <version>0.3.0-alpha</version>
+        <relativePath>../singa-all/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>singa-structure</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.bioforscher.singa</groupId>
+            <artifactId>singa-mathematics</artifactId>
+            <version>0.3.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>de.bioforscher.singa</groupId>
+            <artifactId>singa-features</artifactId>
+            <version>0.3.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>mmtf-codec</artifactId>
+            <version>1.0.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>mmtf-api</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+    </dependencies>
+
+</project>
