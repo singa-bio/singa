@@ -21,7 +21,7 @@
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-chemistry" />
-    <orderEntry type="library" name="Maven: de.bioforscher.singa:singa-structure:0.3.0-alpha" level="project" />
+    <orderEntry type="module" module-name="singa-structure" />
     <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.msgpack:jackson-dataformat-msgpack:0.7.1" level="project" />
