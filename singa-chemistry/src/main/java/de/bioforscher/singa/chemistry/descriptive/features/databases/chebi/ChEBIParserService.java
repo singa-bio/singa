@@ -44,6 +44,11 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
         return parser.parse();
     }
 
+    public static void main(String[] args) {
+        final Species species = ChEBIParserService.parse("CHEBI:17790");
+        System.out.println(species);
+    }
+
     private void parseXML() {
         fetchResource();
         // parse xml
@@ -60,11 +65,6 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
     public Species parse() {
         parseXML();
         return ((ChEBIContentHandler) getXmlReader().getContentHandler()).getSpecies();
-    }
-
-    public static void main(String[] args) {
-        final Species species = ChEBIParserService.parse("CHEBI:17790");
-        System.out.println(species);
     }
 
 

@@ -22,16 +22,16 @@ public class MolarMass extends AbstractFeature<Quantity<MolarMass>> implements Q
 
     public static final Unit<MolarMass> GRAM_PER_MOLE = new ProductUnit<>(GRAM.divide(MOLE));
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);
-    }
-
     public MolarMass(Quantity<MolarMass> quantity, FeatureOrigin featureOrigin) {
         super(quantity, featureOrigin);
     }
 
     public MolarMass(double quantity, FeatureOrigin featureOrigin) {
         super(Quantities.getQuantity(quantity, GRAM_PER_MOLE), featureOrigin);
+    }
+
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(MolarMass.class, MolarMassProvider.class);
     }
 
     @Override

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class NeighbourhoodExtractorTest {
 
-    private static Rectangle rectangle = new Rectangle(500, 500);
+    private static final Rectangle rectangle = new Rectangle(500, 500);
 
     @Test
     public void shouldExtractNeighborhood() {

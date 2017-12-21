@@ -19,17 +19,14 @@ public abstract class CellSection implements Nameable {
      * The identifier (should be unique).
      */
     private final String identifier;
-
-    /**
-     * Signifies if this compartment is a smaller part of another compartment (e.g. layer of a membrane)
-     */
-    private boolean isSubsection;
-
     /**
      * The qualified name.
      */
     private final String name;
-
+    /**
+     * Signifies if this compartment is a smaller part of another compartment (e.g. layer of a membrane)
+     */
+    private boolean isSubsection;
     /**
      * The nodes belonging to this section.
      */
@@ -39,7 +36,7 @@ public abstract class CellSection implements Nameable {
      * Creates a new CellSection with the given identifier and name.
      *
      * @param identifier The identifier (should be unique).
-     * @param name       The qualified name.
+     * @param name The qualified name.
      */
     public CellSection(String identifier, String name) {
         this.identifier = identifier;
@@ -49,6 +46,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Returns the identifier of this cell section.
+     *
      * @return The identifier of this cell section.
      */
     public String getIdentifier() {
@@ -62,6 +60,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Returns the nodes belonging to this cell section.
+     *
      * @return The nodes belonging to this section.
      */
     public Set<AutomatonNode> getContent() {
@@ -70,6 +69,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Sets the content of this cell section.
+     *
      * @param content The nodes contained in this cell section.
      */
     public void setContent(Set<AutomatonNode> content) {
@@ -78,6 +78,7 @@ public abstract class CellSection implements Nameable {
 
     /**
      * Adds a node to the section, without altering the state of the node.
+     *
      * @param node The node to add.
      */
     public void addNode(AutomatonNode node) {

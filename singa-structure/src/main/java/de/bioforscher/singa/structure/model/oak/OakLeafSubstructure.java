@@ -25,6 +25,21 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private final String divergingThreeLetterCode;
 
     /**
+     * The atoms representing the nodes of the atom graph.
+     */
+    private final Map<Integer, OakAtom> atoms;
+
+    /**
+     * The bonds representing the edges of the atom graph.
+     */
+    private final Map<Integer, OakBond> bonds;
+
+    /**
+     * The families to which the {@link LeafSubstructure} can be exchanged.
+     */
+    private final Set<FamilyType> exchangeableFamilies;
+
+    /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
@@ -35,24 +50,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private int nextEdgeIdentifier = 0;
 
     /**
-     * The atoms representing the nodes of the atom graph.
-     */
-    private Map<Integer, OakAtom> atoms;
-
-    /**
-     * s The bonds representing the edges of the atom graph.
-     */
-    private Map<Integer, OakBond> bonds;
-
-    /**
      * Remembers if this Leaf was an HETATOM entry
      */
     private boolean annotatedAsHetAtom;
-
-    /**
-     * The families to which the {@link LeafSubstructure} can be exchanged.
-     */
-    private Set<FamilyType> exchangeableFamilies;
 
     public OakLeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
@@ -243,7 +243,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 
 

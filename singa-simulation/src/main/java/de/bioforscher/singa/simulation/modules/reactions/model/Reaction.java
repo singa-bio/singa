@@ -24,10 +24,9 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public abstract class Reaction extends AbstractSectionSpecificModule implements Featureable {
 
+    protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
     private List<StoichiometricReactant> stoichiometricReactants;
     private boolean elementary;
-
-    protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
     private FeatureContainer features;
 
     public Reaction(Simulation simulation) {
@@ -77,7 +76,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      *
      * @param concentrationContainer The container, where the concentrations are collected.
      * @param role The role that is to be summarized ({@link ReactantRole#INCREASING} for Products and {@link
-     *             ReactantRole#DECREASING} for Substrates).
+     * ReactantRole#DECREASING} for Substrates).
      * @return The total concentration.
      */
     protected double determineConcentration(ConcentrationContainer concentrationContainer, ReactantRole role) {

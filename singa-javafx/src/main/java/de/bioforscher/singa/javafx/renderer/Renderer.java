@@ -227,7 +227,6 @@ public interface Renderer {
      * Draws the given text centered on the given vector. <ul> <li> The font settings are determined by the graphics
      * context.</li> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
-     *
      * <b>Due to current implementation restrictions this does not actually center the text.</b>
      *
      * @param text The text to draw.
@@ -246,7 +245,7 @@ public interface Renderer {
     }
 
     default Rectangle drawDraggedRectangle(Vector2D firstCorner, Vector2D secondCorner) {
-        Rectangle rectangle = null;
+        Rectangle rectangle;
         if (firstCorner.isLeftOf(secondCorner) && firstCorner.isAbove(secondCorner)) {
             rectangle = new Rectangle(firstCorner, secondCorner);
         } else if (firstCorner.isLeftOf(secondCorner) && firstCorner.isBelow(secondCorner)) {

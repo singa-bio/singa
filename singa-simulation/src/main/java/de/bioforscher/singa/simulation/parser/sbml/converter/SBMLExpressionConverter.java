@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
  */
 public class SBMLExpressionConverter {
 
-    private Map<String, Unit<?>> units;
-    private Map<String, FunctionReference> functions;
-    private Map<String, SimulationParameter<?>> globalParameters;
+    private final Map<String, Unit<?>> units;
+    private final Map<String, FunctionReference> functions;
+    private final Map<String, SimulationParameter<?>> globalParameters;
 
     private AppliedExpression currentExpression;
 

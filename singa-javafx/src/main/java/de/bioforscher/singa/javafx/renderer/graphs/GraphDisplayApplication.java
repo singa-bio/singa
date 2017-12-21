@@ -17,11 +17,15 @@ import javafx.stage.Stage;
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph<? extends Node<?,Vector2D, ?>,?,?> graph = Graphs.buildTreeGraph(10, new Rectangle(500, 500));
+    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildTreeGraph(10, new Rectangle(500, 500));
     public static GraphRenderer renderer = new GraphRenderer();
 
+    public static void main(String[] args) {
+        launch();
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         Canvas canvas = new Canvas();
         canvas.setWidth(1400);
         canvas.setHeight(1400);
@@ -42,10 +46,6 @@ public class GraphDisplayApplication extends Application {
         renderer.drawingHeightProperty().bind(canvas.heightProperty());
         renderer.setGraphicsContext(canvas.getGraphicsContext2D());
         renderer.arrangeGraph(graph);
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 
 }

@@ -25,8 +25,8 @@ public class StreamPermutations {
 
     public static <T> List<T> permutation(long no, List<T> items) {
         return permutationHelper(no,
-                                 new LinkedList<>(Objects.requireNonNull(items)),
-                                 new ArrayList<>());
+                new LinkedList<>(Objects.requireNonNull(items)),
+                new ArrayList<>());
     }
 
     private static <T> List<T> permutationHelper(long no, LinkedList<T> in, List<T> out) {
@@ -41,6 +41,6 @@ public class StreamPermutations {
     public static <T> Stream<Stream<T>> of(T... items) {
         List<T> itemList = Arrays.asList(items);
         return LongStream.range(0, factorial(items.length))
-                         .mapToObj(no -> permutation(no, itemList).stream());
+                .mapToObj(no -> permutation(no, itemList).stream());
     }
 }

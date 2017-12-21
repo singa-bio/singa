@@ -19,16 +19,16 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
 
     public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(MolarVolume.class, MolarVolumeProvider.class);
-    }
-
     public MolarVolume(Quantity<MolarVolume> quantity, FeatureOrigin featureOrigin) {
         super(quantity, featureOrigin);
     }
 
     public MolarVolume(double quantity, FeatureOrigin featureOrigin) {
         super(Quantities.getQuantity(quantity, CUBIC_METRE_PER_MOLE), featureOrigin);
+    }
+
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(MolarVolume.class, MolarVolumeProvider.class);
     }
 
     @Override

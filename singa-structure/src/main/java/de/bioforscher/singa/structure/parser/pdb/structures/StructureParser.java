@@ -315,7 +315,7 @@ public class StructureParser {
         /**
          * The reducer specifies what content is parsed.
          */
-        SingleReducingSelector selector;
+        final SingleReducingSelector selector;
 
         /**
          * Creates a new parser. The selector specifies what content should be parsed.
@@ -374,7 +374,7 @@ public class StructureParser {
         /**
          * The reducer specifies what content is parsed.
          */
-        MultiReducingSelector selector;
+        final MultiReducingSelector selector;
 
         /**
          * Creates a new parser. The selector specifies what content should be parsed.
@@ -445,12 +445,16 @@ public class StructureParser {
             selector.sourceSelector.contentIterator.forEachRemaining(lines -> {
                 try {
                     // FIXME uiuiui
-                    if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                        structures.add(new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0))));
-                    } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                        structures.add(new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false));
-                    } else {
-                        structures.add(StructureCollector.parse(lines, selector));
+                    switch (selector.sourceSelector.sourceLocation) {
+                        case ONLINE_MMTF:
+                            structures.add(new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0))));
+                            break;
+                        case OFFLINE_MMTF:
+                            structures.add(new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false));
+                            break;
+                        default:
+                            structures.add(StructureCollector.parse(lines, selector));
+                            break;
                     }
                 } catch (StructureParserException | IOException e) {
                     logger.warn("failed to parse structure", e);
@@ -490,7 +494,7 @@ public class StructureParser {
         /**
          * Creates a new selector using the supplied source selector.
          *
-         * @param sourceSelector
+         * @param sourceSelector The {@link SourceSelector} to be used.
          */
         MultiReducingSelector(SourceSelector sourceSelector) {
             super(sourceSelector);
@@ -551,7 +555,7 @@ public class StructureParser {
         /**
          * Creates a new selector using the supplied source selector.
          *
-         * @param sourceSelector
+         * @param sourceSelector The {@link SourceSelector} to be used.
          */
         SingleReducingSelector(SourceSelector sourceSelector) {
             super(sourceSelector);
@@ -603,12 +607,12 @@ public class StructureParser {
         /**
          * The content to be parsed.
          */
-        SourceSelector sourceSelector;
+        final SourceSelector sourceSelector;
 
         /**
          * A cache of {@link LeafSkeleton}s that are reused during parsing of ligands.
          */
-        Map<String, LeafSkeleton> skeletons;
+        final Map<String, LeafSkeleton> skeletons;
 
         /**
          * The current pdb identifier. This is updated by the content iterator whenever possible.
@@ -920,12 +924,15 @@ public class StructureParser {
          */
         public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
             this.sourceLocation = sourceLocation;
-            if (sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("mmtf");
-            } else if (sourceLocation == SourceLocation.OFFLINE_PDB) {
-                localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("pdb");
-            } else {
-                throw new IllegalArgumentException("Source location mus be offline.");
+            switch (sourceLocation) {
+                case OFFLINE_MMTF:
+                    localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("mmtf");
+                    break;
+                case OFFLINE_PDB:
+                    localPdbPath = Paths.get(localPdbLocation).resolve(BASE_PATH_PDB).resolve("pdb");
+                    break;
+                default:
+                    throw new IllegalArgumentException("Source location mus be offline.");
             }
 
         }

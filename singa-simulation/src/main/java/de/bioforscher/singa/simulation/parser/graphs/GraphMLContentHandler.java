@@ -9,7 +9,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
@@ -23,13 +22,11 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class GraphMLContentHandler implements ContentHandler {
 
-    private AutomatonGraph graph;
-
+    private final AutomatonGraph graph;
+    private final HashMap<String, ChemicalEntity> speciesMap;
     private AutomatonNode node;
     private double currentX;
     private double currentY;
-    private HashMap<String, ChemicalEntity> speciesMap;
-
     private String tag;
 
     public GraphMLContentHandler() {
@@ -43,7 +40,7 @@ public class GraphMLContentHandler implements ContentHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         // position
         switch (tag) {
             case "x":
@@ -61,11 +58,11 @@ public class GraphMLContentHandler implements ContentHandler {
     }
 
     @Override
-    public void endDocument() throws SAXException {
+    public void endDocument() {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         switch (qName) {
             case "data":
                 tag = "";
@@ -77,15 +74,15 @@ public class GraphMLContentHandler implements ContentHandler {
     }
 
     @Override
-    public void endPrefixMapping(String prefix) throws SAXException {
+    public void endPrefixMapping(String prefix) {
     }
 
     @Override
-    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+    public void ignorableWhitespace(char[] ch, int start, int length) {
     }
 
     @Override
-    public void processingInstruction(String target, String data) throws SAXException {
+    public void processingInstruction(String target, String data) {
     }
 
     @Override
@@ -93,15 +90,15 @@ public class GraphMLContentHandler implements ContentHandler {
     }
 
     @Override
-    public void skippedEntity(String name) throws SAXException {
+    public void skippedEntity(String name) {
     }
 
     @Override
-    public void startDocument() throws SAXException {
+    public void startDocument() {
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes atts) {
 
         switch (qName) {
             case "key":
@@ -130,7 +127,7 @@ public class GraphMLContentHandler implements ContentHandler {
     }
 
     @Override
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) {
 
     }
 

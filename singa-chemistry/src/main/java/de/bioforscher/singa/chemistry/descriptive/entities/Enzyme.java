@@ -28,11 +28,6 @@ import java.util.Set;
  */
 public class Enzyme extends Protein {
 
-    /**
-     * A list of possible substrate.
-     */
-    private List<Species> substrates;
-
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
@@ -40,6 +35,11 @@ public class Enzyme extends Protein {
         availableFeatures.add(MichaelisConstant.class);
         availableFeatures.add(TurnoverNumber.class);
     }
+
+    /**
+     * A list of possible substrate.
+     */
+    private List<Species> substrates;
 
     /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.

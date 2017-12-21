@@ -193,7 +193,7 @@ public class PfamParser {
 
         V31("ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/database_files/pdb_pfamA_reg.txt.gz");
 
-        private String pfamMappingLocation;
+        private final String pfamMappingLocation;
 
         PfamVersion(String pfamMappingLocation) {
             this.pfamMappingLocation = pfamMappingLocation;

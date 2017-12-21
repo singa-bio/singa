@@ -10,7 +10,6 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.file.Paths;
@@ -40,10 +39,9 @@ public class StarkEstimationTest {
     }
 
     @Test
-    @Ignore
     public void shouldCalculatePvalues() {
         StarkEstimation starkEstimation = new StarkEstimation();
-        StructureParser.MultiParser multiParser = StructureParser.pdb()
+        StructureParser.MultiParser multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_100.txt")), "_")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()

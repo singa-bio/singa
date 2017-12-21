@@ -18,7 +18,7 @@ public class DeltaContainer {
     /**
      * The deltas that are to be applied.
      */
-    private List<Delta> deltas;
+    private final List<Delta> deltas;
 
     /**
      * Creates a new empty delta container.

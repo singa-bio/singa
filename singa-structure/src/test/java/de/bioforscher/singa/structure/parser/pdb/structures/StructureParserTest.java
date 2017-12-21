@@ -7,10 +7,13 @@ import de.bioforscher.singa.structure.model.interfaces.Structure;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -222,5 +225,25 @@ public class StructureParserTest {
                 .fileLocation(Resources.getResourceAsFileLocation("1GL0_HDS_intra_E-H57_E-D102_E-S195.pdb"))
                 .allChains()
                 .parse();
+    }
+
+    @Test
+    public void shouldComposeIdenticalChainset() throws IOException {
+        List<String> mutualChains = new ArrayList<>();
+
+        List<String> originalChains = Files.readAllLines(Paths.get("/home/fkaiser/Workspace/CloudStation/PhD/Promotion/datasets/nrpdb/nrpdb_041416/nrpdb_041416_BLAST_e-7.txt"));
+        LocalPDB pdb = new LocalPDB("/srv/pdb", SourceLocation.OFFLINE_PDB);
+        LocalPDB mmtf = new LocalPDB("/srv/pdb", SourceLocation.OFFLINE_MMTF);
+
+        for (String originalChain : originalChains) {
+            String pdbIdentifier = originalChain.split("\t")[0];
+            Path pdbPath = pdb.getPathForPdbIdentifier(pdbIdentifier);
+            Path mmtfPath = mmtf.getPathForPdbIdentifier(pdbIdentifier);
+            if (pdbPath.toFile().exists() && mmtfPath.toFile().exists()) {
+                mutualChains.add(originalChain);
+            }
+        }
+
+        Files.write(Paths.get("/tmp/nrpdb_041416_BLAST_e-7_pdb-mmtf_mutual_subset.txt"), mutualChains.stream().collect(Collectors.joining("\n")).getBytes());
     }
 }

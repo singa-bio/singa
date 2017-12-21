@@ -19,14 +19,13 @@ import java.util.*;
 public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
         VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
-    private Queue<NodeType> queue;
-    private GraphType graph;
+    private final Queue<NodeType> queue;
+    private final GraphType graph;
 
-    private Collection<NodeType> unprocessedNodes;
+    private final Collection<NodeType> unprocessedNodes;
+    private final List<List<NodeType>> nodesOfSubgraphs;
+    private final List<List<EdgeType>> edgesOfSubgraphs;
     private ArrayList<NodeType> currentNodes;
-
-    private List<List<NodeType>> nodesOfSubgraphs;
-    private List<List<EdgeType>> edgesOfSubgraphs;
 
     private DisconnectedSubgraphFinder(GraphType graph) {
         queue = new ArrayDeque<>();
@@ -98,7 +97,7 @@ public class DisconnectedSubgraphFinder<NodeType extends Node<NodeType, VectorTy
                     // add to que and subgraph, remove from unprocessed nodes
                     processNode(neighbor);
                     // remember edge
-                    currentEdges.add(graph.getEdgeBetween(currentNode, neighbor).get());
+                    graph.getEdgeBetween(currentNode, neighbor).ifPresent(currentEdges::add);
                 }
             }
         }

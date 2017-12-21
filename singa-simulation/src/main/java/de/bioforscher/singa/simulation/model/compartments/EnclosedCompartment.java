@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * An EnclosedCompartment is a {@link CellSection} that is bordered or enclosed by a {@link Membrane}.
@@ -22,11 +23,11 @@ public class EnclosedCompartment extends CellSection {
      */
     private Membrane enclosingMembrane;
 
-     /**
+    /**
      * Creates a new EnclosedCompartment with the given identifier and name.
      *
      * @param identifier The identifier (should be unique).
-     * @param name       The qualified name.
+     * @param name The qualified name.
      */
     public EnclosedCompartment(String identifier, String name) {
         super(identifier, name);
@@ -50,7 +51,7 @@ public class EnclosedCompartment extends CellSection {
         AutomatonNode first = getContent().stream()
                 .filter(bioNode -> bioNode.getNeighbours().stream()
                         .anyMatch(neighbour -> neighbour.getCellSection().getIdentifier().equals(getIdentifier())))
-                .findAny().get();
+                .findAny().orElseThrow(NoSuchElementException::new);
         // add first node
         nodes.add(first);
         // the iterating node

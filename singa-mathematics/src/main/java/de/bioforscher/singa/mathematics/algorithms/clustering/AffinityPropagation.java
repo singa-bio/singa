@@ -29,11 +29,11 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     private final int dataSize;
     private final int maximalEpochs;
     private final LabeledMatrix<DataType> distanceMatrix;
+    private final double lambda;
     private LabeledMatrix<DataType> similarityMatrix;
     private LabeledMatrix<DataType> availabilityMatrix;
     private LabeledMatrix<DataType> responsibilityMatrix;
     private int epoch;
-    private double lambda;
     private List<List<DataType>> exemplarDecisions;
     private Map<DataType, List<DataType>> clusters;
 

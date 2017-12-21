@@ -54,10 +54,10 @@ public class Element {
     /**
      * Creates a new Element with name, symbol, proton number and atomic weight.
      *
-     * @param name                  The name.
-     * @param symbol                The symbol.
-     * @param protonNumber          The proton number.
-     * @param atomicWeight          The atomic weight.
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
      * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, Quantity<MolarMass> atomicWeight, String electronConfiguration) {
@@ -74,10 +74,10 @@ public class Element {
      * Creates a new Element with name, symbol, proton number and atomic weight in
      * {@link MolarMass#GRAM_PER_MOLE g/mol}.
      *
-     * @param name                  The name.
-     * @param symbol                The symbol.
-     * @param protonNumber          The proton number.
-     * @param atomicWeight          The atomic weight.
+     * @param name The name.
+     * @param symbol The symbol.
+     * @param protonNumber The proton number.
+     * @param atomicWeight The atomic weight.
      * @param electronConfiguration The electron configuration.
      */
     public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration) {
@@ -87,9 +87,9 @@ public class Element {
     /**
      * Creates a new Element with the possibility to specify electron and neutron number.
      *
-     * @param element        A previously defined element.
+     * @param element A previously defined element.
      * @param electronNumber The electron number.
-     * @param neutronNumber  The neutron number.
+     * @param neutronNumber The neutron number.
      */
     private Element(Element element, int electronNumber, int neutronNumber) {
         name = element.getName();

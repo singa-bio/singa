@@ -8,13 +8,13 @@ import javafx.scene.paint.Color;
  */
 public class MoleculeRendererOptions {
 
+    private final Color defaultColor = Color.DARKOLIVEGREEN;
     private Color hydrogenColor = Color.CORNFLOWERBLUE;
     private Color carbonColor = Color.SLATEGRAY;
     private Color nitrogenColor = Color.CADETBLUE;
     private Color oxygenColor = Color.INDIANRED;
     private Color sulfurColor = Color.GOLDENROD;
     private Color phosphorusColor = Color.CORAL;
-    private Color defaultColor = Color.DARKOLIVEGREEN;
 
     public Color getHydrogenColor() {
         return hydrogenColor;

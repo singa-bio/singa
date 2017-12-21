@@ -18,9 +18,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class ShortestPathFinderTest {
 
-    private UndirectedGraph linearGraph;
-
     private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
+    private UndirectedGraph linearGraph;
 
     @Before
     public void initialize() {
@@ -33,7 +32,7 @@ public class ShortestPathFinderTest {
         LinkedList<RegularNode> shortestPath = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
         Objects.requireNonNull(shortestPath);
         int start = 9;
-        for (RegularNode node: shortestPath) {
+        for (RegularNode node : shortestPath) {
             assertEquals(node.getIdentifier().intValue(), start--);
         }
     }

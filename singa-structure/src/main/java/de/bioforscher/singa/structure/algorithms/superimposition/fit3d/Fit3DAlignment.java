@@ -37,13 +37,13 @@ public class Fit3DAlignment implements Fit3D {
     private final double squaredDistanceTolerance;
     private final RepresentationScheme representationScheme;
     private final StatisticalModel statisticalModel;
+    private final double rmsdCutoff;
+    private final Predicate<Atom> atomFilter;
     private double squaredQueryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?>>> environments;
     private HashMap<List<LeafSubstructure<?>>, Set<Set<LeafSubstructure<?>>>> candidates;
-    private double rmsdCutoff;
     private List<Fit3DMatch> matches;
-    private Predicate<Atom> atomFilter;
 
     Fit3DAlignment(Fit3DBuilder.Builder builder) {
         // obtain copies of the input structures

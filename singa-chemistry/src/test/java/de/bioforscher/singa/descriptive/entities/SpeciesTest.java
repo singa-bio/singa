@@ -33,4 +33,4 @@ public class SpeciesTest {
         assertTrue(gtpAse1.equals(gtpAse2));
     }
 
-    }
+}

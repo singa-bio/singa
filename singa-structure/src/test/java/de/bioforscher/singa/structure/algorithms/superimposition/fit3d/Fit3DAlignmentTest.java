@@ -142,8 +142,49 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
+    public void shouldRunFit3DAlignmentAndExchangesWithMMTF() {
+        Structure target = StructureParser.mmtf()
+                .pdbIdentifier("2mnr")
+                .everything()
+                .parse();
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(target.getFirstModel())
+                .atomFilter(AtomFilter.isArbitrary())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+
+    @Test
     public void shouldFindInterMolecularMatches() {
         Structure target = StructureParser.pdb()
+                .pdbIdentifier("4CHA")
+                .everything()
+                .parse();
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
+                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstModel())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+    @Test
+    public void shouldFindInterMolecularMatchesWithMMTF() {
+        Structure target = StructureParser.mmtf()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();

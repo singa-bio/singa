@@ -26,7 +26,7 @@ public interface Chain extends LeafSubstructureContainer {
 
     default String flatToString() {
         final LeafIdentifier identifier = getFirstLeafSubstructure().getIdentifier();
-        return identifier.getPdbIdentifier()+"-"+identifier.getModelIdentifier()+"-"+getChainIdentifier();
+        return identifier.getPdbIdentifier() + "-" + identifier.getModelIdentifier() + "-" + getChainIdentifier();
     }
 
 }

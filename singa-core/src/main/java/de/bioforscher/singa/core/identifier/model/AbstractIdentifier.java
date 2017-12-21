@@ -17,6 +17,7 @@ public class AbstractIdentifier implements Identifier {
 
     /**
      * Creates a new identifier by validating it with the given pattern.
+     *
      * @param identifier The new identifier.
      * @param pattern A pattern to validate with.
      * @throws IllegalArgumentException If the identifier not valid.

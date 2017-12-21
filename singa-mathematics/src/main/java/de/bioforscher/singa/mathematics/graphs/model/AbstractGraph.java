@@ -12,29 +12,29 @@ import java.util.Map;
  * and removing edges as well as nodes. Nodes and edge are referenced in a HashMap with integer keys and can therefor
  * quickly be retrieved and inserted.
  *
- * @param <NodeType>   The type of the nodes in the graph.
- * @param <EdgeType>   The type of the edges in the graph.
+ * @param <NodeType> The type of the nodes in the graph.
+ * @param <EdgeType> The type of the edges in the graph.
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */
-public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType, IdentifierType>,
+public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType, IdentifierType>,
         EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType>
         implements Graph<NodeType, EdgeType, IdentifierType> {
+
+    /**
+     * The nodes of the graph.
+     */
+    private final Map<IdentifierType, NodeType> nodes;
+
+    /**
+     * The edges of the graph.
+     */
+    private final Map<Integer, EdgeType> edges;
 
     /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier;
-
-    /**
-     * The nodes of the graph.
-     */
-    private Map<IdentifierType, NodeType> nodes;
-
-    /**
-     * The edges of the graph.
-     */
-    private Map<Integer, EdgeType> edges;
 
     /**
      * Creates a new graph object.
@@ -124,7 +124,7 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
      * Adds a new edge to the graph, connecting source and target nodes. This method also references source and target
      * as neighbors to each other.
      *
-     * @param edge   The edge to be added.
+     * @param edge The edge to be added.
      * @param source The source node.
      * @param target The target node.
      * @return The identifier of the added edge.
@@ -143,8 +143,8 @@ public abstract class AbstractGraph <NodeType extends Node<NodeType, VectorType,
      * references source and target as neighbors to each other.
      *
      * @param identifier The edge identifier.
-     * @param source     The source node.
-     * @param target     The target node.
+     * @param source The source node.
+     * @param target The target node.
      * @return The identifier of the added edge.
      */
     public abstract int addEdgeBetween(int identifier, NodeType source, NodeType target);

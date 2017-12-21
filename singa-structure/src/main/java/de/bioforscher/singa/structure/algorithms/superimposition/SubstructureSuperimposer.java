@@ -44,7 +44,6 @@ public class SubstructureSuperimposer {
     private final List<LeafSubstructure<?>> reference;
     private final List<LeafSubstructure<?>> candidate;
 
-    private double rmsd;
     private Vector translation;
     private Matrix rotation;
 
@@ -59,7 +58,7 @@ public class SubstructureSuperimposer {
         this.atomFilter = atomFilter;
         this.representationScheme = representationScheme;
 
-        if (this.reference.size() != this.candidate.size() || this.reference.isEmpty() || this.candidate.isEmpty())
+        if (this.reference.size() != this.candidate.size() || this.reference.isEmpty())
             throw new IllegalArgumentException("Two lists of substructures cannot be superimposed if they " +
                     "differ in size.");
     }
@@ -364,7 +363,7 @@ public class SubstructureSuperimposer {
         // store result
         translation = vectorSuperimposition.getTranslation();
         rotation = vectorSuperimposition.getRotation();
-        rmsd = vectorSuperimposition.getRmsd();
+        double rmsd = vectorSuperimposition.getRmsd();
 
         // store mapping of atoms to vectors
         List<Vector> mappedPositions = vectorSuperimposition.getMappedCandidate();

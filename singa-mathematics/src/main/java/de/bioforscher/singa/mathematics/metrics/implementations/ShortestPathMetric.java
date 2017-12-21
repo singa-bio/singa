@@ -19,7 +19,7 @@ import java.util.Queue;
  */
 public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
 
-    private Graph<?, ?, ?> graph;
+    private final Graph<?, ?, ?> graph;
 
     public ShortestPathMetric(Graph<?, ?, ?> graph) {
         this.graph = graph;

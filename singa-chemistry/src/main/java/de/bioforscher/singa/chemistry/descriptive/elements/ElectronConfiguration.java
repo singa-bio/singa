@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 public class ElectronConfiguration {
 
-    private EnumMap<AtomicOrbital, Integer> configuration;
+    private final EnumMap<AtomicOrbital, Integer> configuration;
 
     public ElectronConfiguration() {
         configuration = new EnumMap<>(AtomicOrbital.class);
@@ -21,7 +21,7 @@ public class ElectronConfiguration {
         String[] splitOrbitals = orbitalsString.toLowerCase().split("-");
         ElectronConfiguration configuration = new ElectronConfiguration();
         for (String orbitalString : splitOrbitals) {
-            configuration.getConfiguration().put(AtomicOrbital.getAtomicOrbital(orbitalString.substring(0,2)), Integer.valueOf(orbitalString.substring(2)));
+            configuration.getConfiguration().put(AtomicOrbital.getAtomicOrbital(orbitalString.substring(0, 2)), Integer.valueOf(orbitalString.substring(2)));
         }
         return configuration;
     }
@@ -37,7 +37,7 @@ public class ElectronConfiguration {
                 .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
     }
 
-    public Map<AtomicOrbital, Integer> getOrbitalsOfShell(int shell){
+    public Map<AtomicOrbital, Integer> getOrbitalsOfShell(int shell) {
         return configuration.entrySet().stream()
                 .filter(entry -> entry.getKey().getShell() == shell)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -61,7 +61,7 @@ public class ElectronConfiguration {
             distinct.putAll(incompleteShells);
             distinct.putAll(outerShells);
             return distinct.values().stream()
-                    .reduce((v1,v2) -> v1+v2)
+                    .reduce((v1, v2) -> v1 + v2)
                     .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
         }
         return getNumberOfElectronsInOutermostShell();
@@ -74,7 +74,7 @@ public class ElectronConfiguration {
 
     private int getNumberOfElectronsInOutermostShell() {
         return getOrbitalsOfShell(getOuterMostShell()).values().stream()
-                .reduce((v1,v2) -> v1+v2)
+                .reduce((v1, v2) -> v1 + v2)
                 .orElseThrow(() -> new IllegalStateException("The configuration does not contain any orbitals."));
     }
 
@@ -87,7 +87,7 @@ public class ElectronConfiguration {
     @Override
     public String toString() {
         return configuration.entrySet().stream()
-                .map(entry -> entry.getKey().toString()+entry.getValue())
+                .map(entry -> entry.getKey().toString() + entry.getValue())
                 .collect(Collectors.joining("-"));
     }
 
@@ -105,6 +105,13 @@ public class ElectronConfiguration {
         public static final int MAX_ELECTRONS_P = 6;
         public static final int MAX_ELECTRONS_D = 10;
         public static final int MAX_ELECTRONS_F = 14;
+        private final int shell;
+        private final char subShell;
+
+        AtomicOrbital(char subShell, int shell) {
+            this.shell = shell;
+            this.subShell = subShell;
+        }
 
         public static AtomicOrbital getAtomicOrbital(final String orbitalString) {
             if (orbitalString.length() == 2) {
@@ -118,14 +125,6 @@ public class ElectronConfiguration {
                         .findAny().orElseThrow(() -> new IllegalArgumentException("The orbital " + orbitalString + " is no valid atomic orbital."));
             }
             throw new IllegalArgumentException("The orbital " + orbitalString + " is no valid atomic orbital.");
-        }
-
-        private int shell;
-        private char subShell;
-
-        AtomicOrbital(char subShell, int shell) {
-            this.shell = shell;
-            this.subShell = subShell;
         }
 
         public int getShell() {

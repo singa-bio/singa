@@ -90,7 +90,6 @@ public class PsScore {
     }
 
     private double determineS() {
-
         double sumValue = 0.0;
         for (int i = 0; i < substructureSuperimposition.getReference().size(); i++) {
             LeafSubstructure<?> referenceLeafSubstructure = substructureSuperimposition.getReference().get(i);
@@ -102,7 +101,6 @@ public class PsScore {
             double ri = calculateR(referenceLeafSubstructure, queryLeafSubstructure);
             sumValue += pi * ri * (1 + Math.pow(distance, 2) / Math.pow(distanceScalingFactor, 2));
         }
-
         return (1.0 / queryLength) * sumValue;
     }
 

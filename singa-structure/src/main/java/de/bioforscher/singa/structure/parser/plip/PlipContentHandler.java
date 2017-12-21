@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 
 /**
  * @author cl
@@ -16,11 +15,11 @@ public class PlipContentHandler implements ContentHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(InteractionContainer.class);
 
-    private InteractionContainer interactions;
+    private final InteractionContainer interactions;
 
     private String currentTag;
 
-    private String currentPdbIdentifier = "0000";
+    private String currentPdbIdentifier;
     private String firstLeafSerial;
     private String secondLeafSerial;
     private String firstLeafChain;
@@ -62,27 +61,27 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     @Override
-    public void startDocument() throws SAXException {
+    public void startDocument() {
 
     }
 
     @Override
-    public void endDocument() throws SAXException {
+    public void endDocument() {
 
     }
 
     @Override
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) {
 
     }
 
     @Override
-    public void endPrefixMapping(String prefix) throws SAXException {
+    public void endPrefixMapping(String prefix) {
 
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes atts) {
         currentTag = qName;
         switch (qName) {
             case "halogen_bond":
@@ -126,7 +125,7 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         currentTag = "";
         switch (qName) {
             case "halogen_bond":
@@ -148,7 +147,7 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         switch (currentTag) {
             case "resnr":
                 firstLeafSerial = new String(ch, start, length);
@@ -352,17 +351,17 @@ public class PlipContentHandler implements ContentHandler {
     }
 
     @Override
-    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+    public void ignorableWhitespace(char[] ch, int start, int length) {
 
     }
 
     @Override
-    public void processingInstruction(String target, String data) throws SAXException {
+    public void processingInstruction(String target, String data) {
 
     }
 
     @Override
-    public void skippedEntity(String name) throws SAXException {
+    public void skippedEntity(String name) {
 
     }
 

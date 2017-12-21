@@ -27,12 +27,12 @@ public class GraphMLParserServiceTest {
         assertEquals(node37.getPosition().getX(), 436.3636363636364, 0.0);
         assertEquals(node37.getPosition().getY(), 218.1818181818182, 0.0);
         // concentrations are empty
-        for (ChemicalEntity entity: node37.getAllReferencedEntities()) {
+        for (ChemicalEntity entity : node37.getAllReferencedEntities()) {
             assertEquals(node37.getConcentration(entity).getValue().doubleValue(), 0.0, 0.0);
         }
         // concentrations are set
         AutomatonNode node72 = graph.getNode(72);
-        for (ChemicalEntity entity: node72.getAllReferencedEntities()) {
+        for (ChemicalEntity entity : node72.getAllReferencedEntities()) {
             assertEquals(node72.getConcentration(entity).getValue().doubleValue(), 1.0, 0.0);
         }
         // connections are set

@@ -23,10 +23,10 @@ public class SBMLAssignmentRuleConverter {
     private static final Logger logger = LoggerFactory.getLogger(SBMLAssignmentRuleConverter.class);
 
     // requirements
-    private Map<String, Unit<?>> units;
-    private Map<String, ChemicalEntity> entities;
+    private final Map<String, Unit<?>> units;
+    private final Map<String, ChemicalEntity> entities;
 
-    private SBMLExpressionConverter expressionConverter;
+    private final SBMLExpressionConverter expressionConverter;
 
     public SBMLAssignmentRuleConverter(Map<String, Unit<?>> units, Map<String, ChemicalEntity> entities, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
         this.units = units;

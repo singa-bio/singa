@@ -14,7 +14,7 @@ public class IllegalFeatureRequestException extends RuntimeException {
                 "empty constructor should be accessible from the FeatureRegistry.", Objects.requireNonNull(cause));
     }
 
-    public IllegalFeatureRequestException(Class<? extends Feature>  featureClass, NoSuchMethodException cause) {
+    public IllegalFeatureRequestException(Class<? extends Feature> featureClass, NoSuchMethodException cause) {
         super("Could register the Feature " + featureClass.getSimpleName() + ". Be sure the register the Feature " +
                 "manually by calling the addProviderForFeature() method or provide a static register() method in the " +
                 "Features' class.", Objects.requireNonNull(cause));

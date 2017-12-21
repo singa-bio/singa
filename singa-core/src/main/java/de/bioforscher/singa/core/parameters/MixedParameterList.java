@@ -23,13 +23,13 @@ public class MixedParameterList {
         return parameterValues;
     }
 
+    public void setValues(List<ParameterValue<?>> parameterValues) {
+        this.parameterValues = parameterValues;
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends Comparable<T>> ParameterValue<T> getValue(int index, Class<T> typeClass) {
         return (ParameterValue<T>) parameterValues.get(index);
-    }
-
-    public void setValues(List<ParameterValue<?>> parameterValues) {
-        this.parameterValues = parameterValues;
     }
 
     @Override

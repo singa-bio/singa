@@ -167,19 +167,4 @@ public class SubstructureSuperimposerTest {
 
         assertEquals(mmtfSuperimposition.getRmsd(), pdbSuperimposition.getRmsd(), 1E-6);
     }
-
-    @Test
-    public void shouldCalculateSubstructureSuperimpositionWithMissingAtoms() {
-// FIXME: this test does not work, getCopy() of Chain shows awkward behavior
-//        BranchSubstructure<?> referenceWithMissingAtoms = this.reference.getCopy();
-//        SubstructureSuperimposition superimposition = SubstructureSuperimposer
-//                .calculateSubstructureSuperimposition(referenceWithMissingAtoms, this.candidate);
-//        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
-//                superimposition.applyTo(this.candidate.getLeafSubstructures());
-//        assertEquals(superimposition.getMappedCandidate().stream()
-//                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-//                .count(), 3);
-//        assertEquals(reconstructedAndMappedCandidate.size(),
-//                referenceWithMissingAtoms.getLeafSubstructures().size());
-    }
 }

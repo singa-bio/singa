@@ -13,7 +13,7 @@ public enum AnnotationType {
     ORGANISM("Organism"),
     ADDITIONAL_IDENTIFIER("Additional Identifier");
 
-    private String outputString;
+    private final String outputString;
 
     AnnotationType(String outputString) {
         this.outputString = outputString;

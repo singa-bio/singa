@@ -15,15 +15,14 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractModule implements Module {
 
+    protected final Map<DeltaIdentifier, Delta> currentFullDeltas;
+    protected final Map<DeltaIdentifier, Delta> currentHalfDeltas;
     protected Simulation simulation;
     protected boolean halfTime;
     protected LocalError largestLocalError;
     protected AutomatonNode currentNode;
     protected CellSection currentCellSection;
     protected Predicate<AutomatonNode> conditionalApplication;
-
-    protected Map<DeltaIdentifier, Delta> currentFullDeltas;
-    protected Map<DeltaIdentifier, Delta> currentHalfDeltas;
 
     public AbstractModule(Simulation simulation) {
         this.simulation = simulation;

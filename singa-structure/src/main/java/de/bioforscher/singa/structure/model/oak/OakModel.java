@@ -24,7 +24,7 @@ public class OakModel implements Model {
     /**
      * The substructures of this substructure.
      */
-    private TreeMap<String, OakChain> chains;
+    private final TreeMap<String, OakChain> chains;
 
     /**
      * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
@@ -128,9 +128,7 @@ public class OakModel implements Model {
             final List<LeafSubstructure<?>> allLeafSubstructures = chain.getAllLeafSubstructures();
             for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
                 final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-                if (optionalAtom.isPresent()) {
-                    leafSubstructure.removeAtom(atomIdentifier);
-                }
+                optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
             }
         }
     }
@@ -157,7 +155,7 @@ public class OakModel implements Model {
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 
 }

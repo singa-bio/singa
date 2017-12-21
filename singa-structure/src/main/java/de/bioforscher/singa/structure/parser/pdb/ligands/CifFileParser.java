@@ -7,7 +7,6 @@ import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.LigandFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;
-import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
@@ -24,18 +23,16 @@ public class CifFileParser {
 
     private static final int DEFAULT_VALUE_SPACING = 49;
 
-    private List<String> lines;
+    private final List<String> lines;
+    private final List<String> atomLines;
+    private final List<String> bondLines;
+    private final Map<String, OakAtom> atoms;
+    private final Map<Pair<String>, BondType> bonds;
     private String name;
     private String type;
     private String oneLetterCode;
     private String threeLetterCode;
     private String parent;
-
-    private List<String> atomLines;
-    private List<String> bondLines;
-
-    private Map<String, OakAtom> atoms;
-    private Map<Pair<String>, BondType> bonds;
 
     private CifFileParser(List<String> lines) {
         this.lines = lines;
@@ -227,8 +224,7 @@ public class CifFileParser {
      * @return A leaf skeleton.
      */
     private LeafSkeleton createLeafSkeleton() {
-        LeafSkeleton.AssignedFamily assignedFamily = null;
-        StructuralFamily structuralFamily = null;
+        LeafSkeleton.AssignedFamily assignedFamily;
         if (isNucleotide()) {
             // check for nucleotides
             if (!parent.equals("?")) {
@@ -251,7 +247,7 @@ public class CifFileParser {
      * Returns whether this molecule can be considered as a {@link Nucleotide}. This checks if the type is either {@code
      * RNA LINKING} or {@code DNA LINKING}.
      *
-     * @return
+     * @return True if the entity is a nucleotide.
      */
     private boolean isNucleotide() {
         return type.equalsIgnoreCase("RNA LINKING") || type.equalsIgnoreCase("DNA LINKING");
@@ -261,7 +257,7 @@ public class CifFileParser {
      * Returns whether this molecule can be considered as a {@link AminoAcid}. This checks if the type is {@code
      * L-PEPTIDE LINKING} and a valid parent is specified.
      *
-     * @return
+     * @return True if entity is amino acid.
      */
     private boolean isAminoAcid() {
         return type.equalsIgnoreCase("L-PEPTIDE LINKING"); // && AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(this.parent).isPresent();

@@ -17,22 +17,22 @@ public class MmtfAtom implements Atom {
     /**
      * The original mmtf data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The index of the parent leaf in the group data arrays.
      */
-    private int internalGroupIndex;
+    private final int internalGroupIndex;
 
     /**
      * Index of this atom in the associated group (e.g. N = 0, CA = 1, ...)
      */
-    private int groupPositionIndex;
+    private final int groupPositionIndex;
 
     /**
      * Index in atom data arrays (e.g. coordinates).
      */
-    private int internalAtomIndex;
+    private final int internalAtomIndex;
 
     /**
      * The cached position of the atom.

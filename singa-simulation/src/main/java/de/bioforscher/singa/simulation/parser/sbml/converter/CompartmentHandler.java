@@ -6,5 +6,4 @@ package de.bioforscher.singa.simulation.parser.sbml.converter;
 public class CompartmentHandler {
 
 
-
 }

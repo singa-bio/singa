@@ -23,15 +23,15 @@ import static tec.units.ri.unit.Units.SECOND;
  */
 public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 
-    private static char COMMENT_CHARACTER = '#';
-    private static char SEPARATOR_CHARACTER = ',';
-    private static String LINEBREAK = System.getProperty("line.separator");
+    private static final char COMMENT_CHARACTER = '#';
+    private static final char SEPARATOR_CHARACTER = ',';
+    private static final String LINEBREAK = System.getProperty("line.separator");
 
-    private Path workspacePath;
-    private Path folder;
-    private boolean printEntityInformation;
-    private Map<AutomatonNode, BufferedWriter> registeredWriters;
-    private List<ChemicalEntity<?>> observedEntities;
+    private final Path workspacePath;
+    private final Path folder;
+    private final boolean printEntityInformation;
+    private final Map<AutomatonNode, BufferedWriter> registeredWriters;
+    private final List<ChemicalEntity<?>> observedEntities;
 
     public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) {
         this(workspacePath, folder, entitiesToObserve, true);

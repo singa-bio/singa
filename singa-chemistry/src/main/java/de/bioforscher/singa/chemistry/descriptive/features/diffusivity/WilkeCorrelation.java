@@ -34,6 +34,17 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
     private static final Quantity<Dimensionless> WILKE_ASSOCIATION_WATER = Quantities.getQuantity(2.26, ONE);
 
     /**
+     * Estimate molar volume from weight.
+     *
+     * @param molarMass The molar mass.
+     * @return The estimated molar volume.
+     */
+    private static double estimateMolarVolume(double molarMass) {
+        // V = 0.968 * M + 13.8
+        return 0.968 * molarMass + 13.8;
+    }
+
+    /**
      * Estimates the diffusion coefficient. Always returns cm^2/s. <br>
      *
      * @param featureable The entity to be annotated.
@@ -53,16 +64,5 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETER_PER_SECOND);
         return new Diffusivity(quantity, origin);
-    }
-
-    /**
-     * Estimate molar volume from weight.
-     *
-     * @param molarMass The molar mass.
-     * @return The estimated molar volume.
-     */
-    private static double estimateMolarVolume(double molarMass) {
-        // V = 0.968 * M + 13.8
-        return 0.968 * molarMass + 13.8;
     }
 }

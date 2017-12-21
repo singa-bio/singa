@@ -124,14 +124,12 @@ public class OakStructureTest {
     @Test
     public void removeLeafSubstructure() {
         LeafIdentifier leafIdentifier = new LeafIdentifier("1BRR", 1, "A", 176);
-        Optional<LeafSubstructure<?>> leafSubstructure = structureToModify.getLeafSubstructure(leafIdentifier);
-        if (leafSubstructure.isPresent()) {
+        Optional<LeafSubstructure<?>> leafSubstructureOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+        leafSubstructureOptional.ifPresent(leafSubstructure -> {
             structureToModify.removeLeafSubstructure(leafIdentifier);
-            Optional<LeafSubstructure<?>> removed = structureToModify.getLeafSubstructure(leafIdentifier);
-            if (removed.isPresent()) {
-                fail("The leaf should have been removed and therefore the optional should be empty.");
-            }
-        }
+            Optional<LeafSubstructure<?>> removedOptional = structureToModify.getLeafSubstructure(leafIdentifier);
+            removedOptional.ifPresent(leafSubstructureRemoved -> fail("The leaf should have been removed and therefore the optional should be empty."));
+        });
     }
 
     @Test

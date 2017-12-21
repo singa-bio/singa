@@ -24,8 +24,8 @@ public class DynamicKineticLaw implements KineticLaw {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicKineticLaw.class);
 
-    private AppliedExpression expression;
-    private Map<ChemicalEntity, String> entityReference;
+    private final AppliedExpression expression;
+    private final Map<ChemicalEntity, String> entityReference;
 
     private CellSection currentCellSection;
 

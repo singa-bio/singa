@@ -9,12 +9,12 @@ import de.bioforscher.singa.features.model.FeatureRegistry;
  */
 public class Smiles extends AbstractFeature<String> {
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
-    }
-
     public Smiles(String smilesString, FeatureOrigin featureOrigin) {
         super(smilesString, featureOrigin);
+    }
+
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
     }
 
 }

@@ -1,50 +1,56 @@
 /*
-* The author of this software is Steven Fortune.  Copyright (c) 1994 by AT&T
-* Bell Laboratories.
-* Permission to use, copy, modify, and distribute this software for any
-* purpose without fee is hereby granted, provided that this entire notice
-* is included in all copies of any software which is or includes a copy
-* or modification of this software and in all copies of the supporting
-* documentation for such software.
-* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
-* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
-* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
-* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
-*/
+ * The author of this software is Steven Fortune.  Copyright (c) 1994 by AT&T
+ * Bell Laboratories.
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose without fee is hereby granted, provided that this entire notice
+ * is included in all copies of any software which is or includes a copy
+ * or modification of this software and in all copies of the supporting
+ * documentation for such software.
+ * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+ * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+ * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+ */
 
 /*
-* This code was originally written by Stephan Fortune in C code.  I, Shane O'Sullivan,
-* have since modified it, encapsulating it in a C++ class and, fixing memory leaks and
-* adding accessors to the Voronoi Edges.
-* Permission to use, copy, modify, and distribute this software for any
-* purpose without fee is hereby granted, provided that this entire notice
-* is included in all copies of any software which is or includes a copy
-* or modification of this software and in all copies of the supporting
-* documentation for such software.
-* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
-* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
-* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
-* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
-*/
+ * This code was originally written by Stephan Fortune in C code.  I, Shane O'Sullivan,
+ * have since modified it, encapsulating it in a C++ class and, fixing memory leaks and
+ * adding accessors to the Voronoi Edges.
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose without fee is hereby granted, provided that this entire notice
+ * is included in all copies of any software which is or includes a copy
+ * or modification of this software and in all copies of the supporting
+ * documentation for such software.
+ * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+ * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+ * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+ */
 
 /*
-* Java Version by Zhenyu Pan
-* Permission to use, copy, modify, and distribute this software for any
-* purpose without fee is hereby granted, provided that this entire notice
-* is included in all copies of any software which is or includes a copy
-* or modification of this software and in all copies of the supporting
-* documentation for such software.
-* THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
-* WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
-* REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
-* OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
-*/
+ * Java Version by Zhenyu Pan
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose without fee is hereby granted, provided that this entire notice
+ * is included in all copies of any software which is or includes a copy
+ * or modification of this software and in all copies of the supporting
+ * documentation for such software.
+ * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+ * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+ * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+ */
 package de.bioforscher.singa.mathematics.graphs.voronoi;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Voronoi {
 
+    private final static int LE = 0;
+    private final static int RE = 1;
+    private final double minDistanceBetweenSites;
     // ************* Private members ******************
     private double borderMinX, borderMaxX, borderMinY, borderMaxY;
     private int siteidx;
@@ -55,15 +61,10 @@ public class Voronoi {
     private Site[] sites;
     private Site bottomsite;
     private int sqrt_nsites;
-    private double minDistanceBetweenSites;
     private int PQcount;
     private int PQmin;
     private int PQhashsize;
     private Halfedge PQhash[];
-
-    private final static int LE = 0;
-    private final static int RE = 1;
-
     private int ELhashsize;
     private Halfedge ELhash[];
     private Halfedge ELleftend, ELrightend;
@@ -78,14 +79,14 @@ public class Voronoi {
     }
 
     /**
-     *  Computes a voronoi diagram.
+     * Computes a voronoi diagram.
      *
      * @param xValuesIn Array of X values for each site.
      * @param yValuesIn Array of Y values for each site. Must be of identical length to yValuesIn
-     * @param minX      The minimum X of the bounding box around the voronoi
-     * @param maxX      The maximum X of the bounding box around the voronoi
-     * @param minY      The minimum Y of the bounding box around the voronoi
-     * @param maxY      The maximum Y of the bounding box around the voronoi
+     * @param minX The minimum X of the bounding box around the voronoi
+     * @param maxX The maximum X of the bounding box around the voronoi
+     * @param minY The minimum Y of the bounding box around the voronoi
+     * @param maxY The maximum Y of the bounding box around the voronoi
      * @return The resulting edges of the voronoi diagram.
      */
     public List<VoronoiFaceEdge> generateVoronoi(double[] xValuesIn, double[] yValuesIn, double minX, double maxX,
@@ -147,33 +148,27 @@ public class Voronoi {
 
         // new list of sites and fills it with input sites
         List<Site> listSites = new ArrayList<>(sites.length);
-        for (Site s : sites) {
-            listSites.add(s);
-        }
+        Collections.addAll(listSites, sites);
 
         // sorting the list
-        Collections.sort(listSites, new Comparator<Site>() {
+        listSites.sort((p1, p2) -> {
 
-            @Override
-            public final int compare(Site p1, Site p2) {
-
-                Point s1 = p1.coord, s2 = p2.coord;
-                // compare based on y values
-                if (s1.y < s2.y) {
-                    return -1;
-                }
-                if (s1.y > s2.y) {
-                    return 1;
-                }
-                // basically irrelevant
-                if (s1.x < s2.x) {
-                    return -1;
-                }
-                if (s1.x > s2.x) {
-                    return 1;
-                }
-                return 0;
+            Point s1 = p1.coord, s2 = p2.coord;
+            // compare based on y values
+            if (s1.y < s2.y) {
+                return -1;
             }
+            if (s1.y > s2.y) {
+                return 1;
+            }
+            // basically irrelevant
+            if (s1.x < s2.x) {
+                return -1;
+            }
+            if (s1.x > s2.x) {
+                return 1;
+            }
+            return 0;
         });
 
         // Copy back into the array
@@ -819,7 +814,7 @@ public class Voronoi {
                 }
                 newsite = nextone();
             } else if (!PQempty())
-            /* intersection is smallest - this is a vector event */ {
+                /* intersection is smallest - this is a vector event */ {
                 // pop the HalfEdge with the lowest vector off the ordered list
                 // of vectors
                 lbnd = PQextractmin();

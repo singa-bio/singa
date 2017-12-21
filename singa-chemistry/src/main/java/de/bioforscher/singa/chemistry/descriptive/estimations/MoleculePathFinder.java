@@ -17,8 +17,8 @@ import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph
  */
 public class MoleculePathFinder {
 
-    private MoleculeGraph graph;
-    private List<LinkedList<MoleculeAtom>> candidates;
+    private final MoleculeGraph graph;
+    private final List<LinkedList<MoleculeAtom>> candidates;
 
     private MoleculePathFinder(MoleculeGraph molecule) {
         graph = molecule;

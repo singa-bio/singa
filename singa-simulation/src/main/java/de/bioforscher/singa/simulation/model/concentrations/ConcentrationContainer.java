@@ -64,18 +64,21 @@ public interface ConcentrationContainer {
 
     /**
      * Returns all {@link ChemicalEntity ChemicalEntities} that are referenced in this container.
+     *
      * @return All {@link ChemicalEntity ChemicalEntities} that are referenced in this container.
      */
     Set<ChemicalEntity<?>> getAllReferencedEntities();
 
     /**
      * Returns all {@link EnclosedCompartment Compartments} that are referenced in this container.
+     *
      * @return All {@link EnclosedCompartment Compartments} that are referenced in this container.
      */
     Set<CellSection> getAllReferencedSections();
 
     /**
      * Returns the representative concentrations of all referenced chemical entities.
+     *
      * @return The representative concentrations of all referenced chemical entities.
      */
     Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations();

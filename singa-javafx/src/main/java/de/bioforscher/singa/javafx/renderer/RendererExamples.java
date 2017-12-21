@@ -23,7 +23,7 @@ public class RendererExamples extends Application implements Renderer {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         canvas = new Canvas(500, 500);
 
@@ -34,14 +34,14 @@ public class RendererExamples extends Application implements Renderer {
         getGraphicsContext().setLineWidth(5);
         getGraphicsContext().setStroke(Color.BLACK);
 
-        Line xAxis = new Line(0,0);
+        Line xAxis = new Line(0, 0);
         Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
 
         drawLine(xAxis);
         drawLine(yAxis);
 
         getGraphicsContext().setStroke(Color.INDIANRED);
-        Vector2D focus = new Vector2D(150,70);
+        Vector2D focus = new Vector2D(150, 70);
         drawPoint(focus);
 
         getGraphicsContext().setLineWidth(2);

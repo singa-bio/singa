@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -42,7 +41,7 @@ public class AffinityAlignmentTest {
     }
 
     @Test
-    public void shouldRunAffinityAlignment() throws IOException {
+    public void shouldRunAffinityAlignment() {
         AffinityAlignment affinityAlignment = AffinityAlignment.create()
                 .inputStructuralMotifs(input)
                 .run();

@@ -14,8 +14,8 @@ import java.util.*;
  */
 public class MultiConcentrationContainer implements ConcentrationContainer {
 
-    private Set<ChemicalEntity<?>> referencedEntities;
-    private Map<CellSection, Map<ChemicalEntity<?>, Quantity<MolarConcentration>>> concentrations;
+    private final Set<ChemicalEntity<?>> referencedEntities;
+    private final Map<CellSection, Map<ChemicalEntity<?>, Quantity<MolarConcentration>>> concentrations;
 
     public MultiConcentrationContainer(Set<CellSection> cellSections) {
         referencedEntities = new HashSet<>();

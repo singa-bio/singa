@@ -22,6 +22,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 
     /**
      * Returns the resource.
+     *
      * @return The resource.
      */
     public String getResource() {
@@ -30,6 +31,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 
     /**
      * Sets the resource.
+     *
      * @param resource The resource.
      */
     protected void setResource(String resource) {
@@ -38,6 +40,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 
     /**
      * After fetching the current resource, this returns the fetch result.
+     *
      * @return The fetch result.
      */
     public InputStream getFetchResult() {
@@ -46,6 +49,7 @@ public abstract class AbstractParser<ResultType> implements Parser<ResultType> {
 
     /**
      * Sets the result of any fetch operation.
+     *
      * @param fetchResult The fetch result.
      */
     protected void setFetchResult(InputStream fetchResult) {

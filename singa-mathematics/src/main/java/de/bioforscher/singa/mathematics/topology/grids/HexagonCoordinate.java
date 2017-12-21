@@ -14,14 +14,6 @@ public class HexagonCoordinate {
         this((short) q, (short) r);
     }
 
-    public short getQ() {
-        return q;
-    }
-
-    public short getR() {
-        return r;
-    }
-
     /**
      * Returns the distance between two coordinates.
      *
@@ -38,6 +30,14 @@ public class HexagonCoordinate {
         int y1 = -(x1 + z1);
         int y2 = -(x2 + z2);
         return (Math.abs(x1 - x2) + Math.abs(y1 - y2) + Math.abs(z1 - z2)) / 2;
+    }
+
+    public short getQ() {
+        return q;
+    }
+
+    public short getR() {
+        return r;
     }
 
     @Override

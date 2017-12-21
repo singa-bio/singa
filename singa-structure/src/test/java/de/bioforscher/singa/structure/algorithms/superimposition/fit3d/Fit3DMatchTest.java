@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 public class Fit3DMatchTest {
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public final TemporaryFolder testFolder = new TemporaryFolder();
 
     private Structure target;
     private StructuralMotif queryMotif;

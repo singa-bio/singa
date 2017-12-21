@@ -11,7 +11,7 @@ package de.bioforscher.singa.mathematics.concepts;
  * "Multiplicative One Element" does not change the result.
  *
  * @param <NumberConcept> A reference to the class or interface which the division will
- *                        result in.
+ * result in.
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Division_(mathematics)">Wikipedia: Division</a>
  */

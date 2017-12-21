@@ -16,7 +16,7 @@ import javax.measure.quantity.Frequency;
  */
 public class MichaelisMentenReaction extends Reaction {
 
-    private Enzyme enzyme;
+    private final Enzyme enzyme;
 
     public MichaelisMentenReaction(Simulation simulation, Enzyme enzyme) {
         super(simulation);

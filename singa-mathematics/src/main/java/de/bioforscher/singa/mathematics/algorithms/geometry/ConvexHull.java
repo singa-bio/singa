@@ -14,14 +14,8 @@ import static java.util.Comparator.reverseOrder;
  */
 public class ConvexHull {
 
-    private List<Vector2D> vectors;
-    private Deque<Vector2D> stack;
-
-    private enum TurnDirection {
-        COUNTER_CLOCKWISE,
-        CLOCKWISE,
-        COLINEAR
-    }
+    private final List<Vector2D> vectors;
+    private final Deque<Vector2D> stack;
 
     public ConvexHull(Collection<Vector2D> vectors) {
         this.vectors = new ArrayList<>(vectors);
@@ -67,6 +61,18 @@ public class ConvexHull {
         return convexHull;
     }
 
+    private static TurnDirection getTurnDirection(Vector2D first, Vector2D second, Vector2D third) {
+        // (p2.x - p1.x)*(p3.y - p1.y) - (p2.y - p1.y)*(p3.x - p1.x)
+        double direction = (second.getX() - first.getX()) * (third.getY() - first.getY()) - (second.getY() - first.getY()) * (third.getX() - first.getX());
+        if (direction > 0) {
+            return TurnDirection.COUNTER_CLOCKWISE;
+        } else if (direction < 0) {
+            return TurnDirection.CLOCKWISE;
+        } else {
+            return TurnDirection.COLINEAR;
+        }
+    }
+
     private Vector2D peekTop() {
         return stack.peek();
     }
@@ -92,16 +98,10 @@ public class ConvexHull {
                 .collect(Collectors.toList());
     }
 
-    private static TurnDirection getTurnDirection(Vector2D first, Vector2D second, Vector2D third) {
-        // (p2.x - p1.x)*(p3.y - p1.y) - (p2.y - p1.y)*(p3.x - p1.x)
-        double direction = (second.getX() - first.getX())*(third.getY() - first.getY())-(second.getY()- first.getY())*(third.getX() - first.getX());
-        if (direction > 0) {
-            return TurnDirection.COUNTER_CLOCKWISE;
-        } else if (direction < 0) {
-            return TurnDirection.CLOCKWISE;
-        } else {
-            return TurnDirection.COLINEAR;
-        }
+    private enum TurnDirection {
+        COUNTER_CLOCKWISE,
+        CLOCKWISE,
+        COLINEAR
     }
 
 }

@@ -33,9 +33,6 @@ public class OakAminoAcid extends OakLeafSubstructure<AminoAcidFamily> implement
     @Override
     public Vector3D getPosition() {
         Optional<Atom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
-        if (optionalAlphaCarbon.isPresent()) {
-            return optionalAlphaCarbon.get().getPosition();
-        }
-        return super.getPosition();
+        return optionalAlphaCarbon.map(Atom::getPosition).orElseGet(super::getPosition);
     }
 }

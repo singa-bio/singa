@@ -39,7 +39,7 @@ public enum AtomToken implements PDBToken {
 
     public static final Pattern RECORD_PATTERN = Pattern.compile("^(ATOM|HETATM).*");
 
-    private static DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+    private static final DecimalFormat coordinateFormat = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
     private static DecimalFormat temperatureFormat = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final Range<Integer> columns;

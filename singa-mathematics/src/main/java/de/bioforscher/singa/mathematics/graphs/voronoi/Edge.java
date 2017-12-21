@@ -2,12 +2,11 @@ package de.bioforscher.singa.mathematics.graphs.voronoi;
 
 class Edge {
 
+    final Site[] ep; // JH: End points?
+    final Site[] reg; // JH: Sites this edge bisects?
     public double a = 0;
     public double b = 0;
     public double c = 0;
-
-    Site[] ep; // JH: End points?
-    Site[] reg; // JH: Sites this edge bisects?
     int edgenbr;
 
     Edge() {

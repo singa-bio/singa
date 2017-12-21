@@ -13,29 +13,29 @@ import java.util.Set;
 public class OakAtom implements Atom {
 
     /**
-     * The pdbIdentifier.
+     * The PDB identifier.
      */
-    private int identifier;
+    private final int identifier;
 
     /**
      * The element.
      */
-    private Element element;
+    private final Element element;
 
     /**
      * The AtomName as String
      */
-    private String atomName;
+    private final String atomName;
+
+    /**
+     * References of the neighboring atoms.
+     */
+    private final Set<OakAtom> neighbours;
 
     /**
      * The position.
      */
     private Vector3D position;
-
-    /**
-     * References of the neighboring atoms.
-     */
-    private Set<OakAtom> neighbours;
 
     /**
      * Creates a new atom with the given pdbIdentifier, element, name and position.
@@ -109,7 +109,7 @@ public class OakAtom implements Atom {
 
     @Override
     public String toString() {
-        return  flatToString();
+        return flatToString();
     }
 
     @Override

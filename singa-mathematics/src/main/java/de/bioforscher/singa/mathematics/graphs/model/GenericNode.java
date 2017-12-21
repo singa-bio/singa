@@ -30,7 +30,7 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
      * Creates a new generic node with the given identifier and the specified content.
      *
      * @param identifier The identifier.
-     * @param content    The content.
+     * @param content The content.
      */
     public GenericNode(int identifier, ContentType content) {
         super(identifier, Vectors.generateRandom2DVector(new Rectangle(500, 500)));

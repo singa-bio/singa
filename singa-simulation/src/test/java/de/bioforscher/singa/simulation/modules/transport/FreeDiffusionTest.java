@@ -47,20 +47,28 @@ public class FreeDiffusionTest {
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     // required species
-    private static Species hydrogen = new Species.Builder("h2")
+    private static final Species hydrogen = new Species.Builder("h2")
             .name("dihydrogen")
             .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    private static Species ammonia = new Species.Builder("ammonia")
+    private static final Species ammonia = new Species.Builder("ammonia")
             .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    private static Species benzene = new Species.Builder("benzene")
+    private static final Species benzene = new Species.Builder("benzene")
             .name("benzene")
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
+    @Parameter(0)
+    public Species species;
+    @Parameter(1)
+    public Quantity<Time> timeStep;
+    @Parameter(2)
+    public int numberOfNodes;
+    @Parameter(3)
+    public Quantity<Time> expectedOutcome;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -75,18 +83,6 @@ public class FreeDiffusionTest {
                 /* 7 */ {benzene, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(585.9218, MICRO(SECOND))}
         });
     }
-
-    @Parameter(0)
-    public Species species;
-
-    @Parameter(1)
-    public Quantity<Time> timeStep;
-
-    @Parameter(2)
-    public int numberOfNodes;
-
-    @Parameter(3)
-    public Quantity<Time> expectedOutcome;
 
     @Test
     public void shouldReachCorrectHalfLife() {

@@ -247,89 +247,89 @@ public enum AtomName {
     LH("LH", UNKOWN),
     SC("SC", UNKOWN);
 
-    public static EnumSet<AtomName> ALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, HA, HB1, HB2, HB3, HN, HXT, THREEHB,
+    public static final EnumSet<AtomName> ALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, HA, HB1, HB2, HB3, HN, HXT, THREEHB,
             D, D1, D2, D3, DA, DB1, DB2, DB3, C, CA, CB, N, O, OXT);
 
 
-    public static EnumSet<AtomName> ARGININE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
+    public static final EnumSet<AtomName> ARGININE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
             HE, HG1, HG2, HG3, HH11, HH12, HH21, HH22, HN, HXT, TWOHB, TWOHD, TWOHG, D, D1, D2, D3, DA, DB2, DB3, DD2,
             DD3, DE, DG2, DG3, DH11, DH12, DH21, DH22, C, CA, CB, CD, CG, CZ, N, NE, NH1, NH2, O, OXT);
 
 
-    public static EnumSet<AtomName> ASPARAGINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD21,
+    public static final EnumSet<AtomName> ASPARAGINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD21,
             HD22, HDD1, HDD2, HN, HXT, TWOHG, D, D2, DA, DB2, DB3, DD21, DD22, DDD1, DDD2, C, CA, CB, CG, N, ND2, O,
             OD1, OXT);
 
-    public static EnumSet<AtomName> ASPARTIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA2, HA3, HB1, HB2, HB3, HD2,
+    public static final EnumSet<AtomName> ASPARTIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA2, HA3, HB1, HB2, HB3, HD2,
             HN, HXT, TWOHB, D, D3, DA, DB2, DB3, DD2, C, CA, CB, CG, N, O, OD1, OD2, OXT);
 
-    public static EnumSet<AtomName> CYSTEINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HG, HB1, HB2, HB3, HN, HXT,
+    public static final EnumSet<AtomName> CYSTEINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HG, HB1, HB2, HB3, HN, HXT,
             TWOHB, D, DA, DG, DB2, DB3, C, CA, CB, N, O, OXT, SG);
 
-    public static EnumSet<AtomName> GLUTAMIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3,
+    public static final EnumSet<AtomName> GLUTAMIC_ACID_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3,
             HE2, HG1, HG2, HG3, HN, HXT, TWOHB, TWOHG, D, DA, DB2, DB3, DE2, DG2, DG3, C, CA, CB, CD, CG, N, O, OE1,
             OE2, OXT);
 
-    public static EnumSet<AtomName> GLUTAMINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE21, HE22, HG1,
+    public static final EnumSet<AtomName> GLUTAMINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE21, HE22, HG1,
             HG2, HG3, HN, HT1, HT2, HT3, TWOHB, TWOHG, D, DA, DB2, DB3, DE21, DE22, DG2, DG3, C, CA, CB, CD, CG, N,
             NE2, O, OE1, OXT);
 
-    public static EnumSet<AtomName> GLYCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA1, HA2, HA3, HB1, HB2, HB3,
+    public static final EnumSet<AtomName> GLYCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA1, HA2, HA3, HB1, HB2, HB3,
             HN, HT1, HT2, HT3, HXT, D, D1, D2, D3, DA2, DA3, C, C10, C11, CA, CB, N, N3, O, O9, OXT);
 
 
-    public static EnumSet<AtomName> HISTIDINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA3, HB1, HB2, HB3, HD1, HD2,
+    public static final EnumSet<AtomName> HISTIDINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA3, HB1, HB2, HB3, HD1, HD2,
             HD3, HE1, HE2, HN, TWOHB, D, D1, D2, D3, DA, DB2, DB3, DD1, DD2, DE1, DE2, C, CA, CB, CD2, CE1, CG, N, ND1,
             NE2, O, OXT);
 
-    public static EnumSet<AtomName> ISOLEUCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HD1, HD11, HD12, HD13,
+    public static final EnumSet<AtomName> ISOLEUCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HD1, HD11, HD12, HD13,
             HD2, HD3, HDD1, HDD2, HDD3, HG11, HG12, HG13, HG21, HG22, HG23, HN, HXT, D1, D2, D3, DA, DB, DD11, DD12,
             DD13, DD21, DDD1, DDD2, DDD3, DG12, DG13, DG21, DG22, DG23, C, CA, CB, CD, CD1, CG1, CG2, N, O, OXT);
 
-    public static EnumSet<AtomName> LEUCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD11,
+    public static final EnumSet<AtomName> LEUCINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD11,
             HD12, HD13, HD21, HD22, HD23, HG, HN, HXT, TWOHB, D, DA, DB2, DB3, DD11, DD12, DD13, DD21, DD22, DD23, DG,
             C, C12, C14, C15, C16, C17, C32, C38, C39, C53, C54, C55, C56, CA, CB, CD1, CD2, CE, CG, N, N4, N7, O, O4,
             O6, OXT, SD);
 
-    public static EnumSet<AtomName> LYSINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD1,
+    public static final EnumSet<AtomName> LYSINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HD1,
             HD2, HD3, HD21, HD22, HD23, HE1, HE2, HE3, HG1, HG2, HG3, HN, HXT, HZ1, HZ2, HZ3, TWOHB, TWOHD, TWOHE,
             TWOHG, D, D1, DB2, DB3, DA, DB2, DB3, DD2, DD3, DE2, DE3, DG2, DG3, DXT, DZ1, DZ2, DZ3,
             C, CA, CB, CD, CE, CG, N, NZ, O, OXT);
 
-    public static EnumSet<AtomName> METHIONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE1, HE2, HE3,
+    public static final EnumSet<AtomName> METHIONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HE1, HE2, HE3,
             HG1, HG2, HG3, HN, HXT, ONEHT, TWOHB, TWOHG, TWOHG, THREEHT, D, D1, D2, D3, DA, DB2, DB3, DE1, DE2, DE3,
             DG2, DG3, C, CA, CB, CE, CG, N, O, OXT, SD);
 
-    public static EnumSet<AtomName> PHENYLALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2,
+    public static final EnumSet<AtomName> PHENYLALANINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2,
             HD3, HE1, HE2, HN, HXT, HZ, TWOHB, D, D1, D2, D3, DA, DB2, DB3, DD1, DD2, DE1, DE2, DZ, C, CA, CB, CD1, CD2,
             CE1, CE2, CG, CZ, N, O, OXT);
 
-    public static EnumSet<AtomName> PROLINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
+    public static final EnumSet<AtomName> PROLINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
             HG1, HG2, HG3, TWOHB, TWOHD, TWOHG, D, D2, DA, DB2, DB3, DD2, DD3, C, C5, C26, C27, C28, C29, CA, CB, CD,
             CG, N, N6, O, O2, OXT);
 
-    public static EnumSet<AtomName> SERINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HG, HN,
+    public static final EnumSet<AtomName> SERINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HA2, HA3, HB1, HB2, HB3, HG, HN,
             HXT, TWOHB, D, D2, D3, DA, DB2, DB3, DG, C, CA, CB, N, O, OG, OXT);
 
-    public static EnumSet<AtomName> THREONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HG1, HG21,
+    public static final EnumSet<AtomName> THREONINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HG1, HG21,
             HG22, HG23, HG3, HN, HXT, D, DA, DB, DG1, DG21, DG22, DG23, C, CA, CB, CG1, CG2, N, O, OG1, OG2, OXT);
 
-    public static EnumSet<AtomName> TRYPTOPHAN_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD, HD1, HE1,
+    public static final EnumSet<AtomName> TRYPTOPHAN_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD, HD1, HE1,
             HE3, HH, HH2, HN, HXT, HZ2, HZ3, TWOHB, D, DA, DB2, DB3, DD1, DE1, DE3, DH2, DZ2, DZ3, C, CA, CB, CD1,
             CD2, CE2, CE3, CG, CH2, CZ2, CZ3, N, NE1, O, OXT);
 
-    public static EnumSet<AtomName> TYROSINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
+    public static final EnumSet<AtomName> TYROSINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB1, HB2, HB3, HD1, HD2, HD3,
             HE1, HE2, HH, HN, HXT, TWOHB, D, DA, DB2, DB3, DD1, DD2, DE1, DE2, DH, C, CA, CB, CD1, CD2, CE1, CE2, CG,
             CZ, N, O, OH, OXT);
 
-    public static EnumSet<AtomName> VALINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HB1, HB2, HB3, HG11, HG12,
+    public static final EnumSet<AtomName> VALINE_ATOM_NAMES = EnumSet.of(H, H1, H2, H3, HA, HB, HB1, HB2, HB3, HG11, HG12,
             HG13, HG21, HG22, HG23, DG11, DG12, DG13, DG21, DG22, DG23, HN, HXT, D, D1, D2, D3, DA, DB, D, C, CA, CB,
             N, O, OXT);
 
-    public static EnumSet<AtomName> UNKNOWN_ATOM_NAMES = EnumSet.of(H, C, O, N);
+    public static final EnumSet<AtomName> UNKNOWN_ATOM_NAMES = EnumSet.of(H, C, O, N);
 
-    private String name;
-    private Element element;
+    private final String name;
+    private final Element element;
 
     AtomName(String name, Element element) {
         this.name = name;

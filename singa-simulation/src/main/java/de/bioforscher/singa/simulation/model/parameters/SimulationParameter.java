@@ -23,14 +23,14 @@ public class SimulationParameter<QuantityType extends Quantity<QuantityType>> im
     private final SimpleStringIdentifier identifier;
 
     /**
+     * All annotations of this Parameter.
+     */
+    private final List<Annotation> annotations;
+
+    /**
      * A name or description of this Parameter.
      */
     private String name;
-
-    /**
-     * All annotations of this Parameter.
-     */
-    private List<Annotation> annotations;
 
     /**
      * The value and unit (quantity) of this parameter.

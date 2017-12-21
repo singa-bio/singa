@@ -5,13 +5,11 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import javafx.application.Application;
 
-import java.io.IOException;
-
 /**
  * @author fk
  */
 public class StructureViewerPlayground {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
 
         StructureParserOptions options = new StructureParserOptions();

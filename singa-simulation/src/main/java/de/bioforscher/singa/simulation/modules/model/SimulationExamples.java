@@ -60,7 +60,7 @@ public class SimulationExamples {
 
     private static final Logger logger = LoggerFactory.getLogger(SimulationExamples.class);
 
-    private static Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
+    private static final Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
 
     /**
      * This simulation simulates the thermal decomposition of dinitrogen pentaoxide. From: Brauer, G. (2012). Handbook

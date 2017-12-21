@@ -12,11 +12,11 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
  */
 public class ConsensusContainer {
 
-    private StructuralMotif structuralMotif;
+    private final StructuralMotif structuralMotif;
+    private final boolean consensus;
     private double consensusDistance;
     private BinaryTree<ConsensusContainer> consensusTree;
     private SubstructureSuperimposition superimposition;
-    private boolean consensus;
 
     public ConsensusContainer(StructuralMotif structuralMotif, boolean consensus) {
         this.structuralMotif = structuralMotif;

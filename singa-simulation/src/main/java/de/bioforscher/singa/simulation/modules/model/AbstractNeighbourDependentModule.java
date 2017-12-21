@@ -21,9 +21,9 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
+    private final Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
+    private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
     private ChemicalEntity currentChemicalEntity;
-    private Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
-    private Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
 
     public AbstractNeighbourDependentModule(Simulation simulation) {
         super(simulation);

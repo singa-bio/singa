@@ -14,8 +14,8 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
     public static final String CSV_HEADER = "match,rmsd,p-value\n";
 
-    private SubstructureSuperimposition substructureSuperimposition;
-    private double rmsd;
+    private final SubstructureSuperimposition substructureSuperimposition;
+    private final double rmsd;
     private double pvalue;
 
     private Fit3DMatch(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {

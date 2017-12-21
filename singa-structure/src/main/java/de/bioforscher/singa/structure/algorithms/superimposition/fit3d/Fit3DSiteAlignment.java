@@ -55,15 +55,13 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final boolean containsNonAminoAcids;
     private final boolean kuhnMunkres;
 
-    private double cutoffScore;
-
+    private final double cutoffScore;
+    private final List<Fit3DMatch> matches;
     private int currentAlignmentSize;
     private LabeledRegularMatrix<List<LeafSubstructure<?>>> currentSimilarityMatrix;
     private Pair<List<LeafSubstructure<?>>> currentBestMatchingPair;
     private double currentBestScore;
     private SubstructureSuperimposition currentBestSuperimposition;
-
-    private List<Fit3DMatch> matches;
     private String alignmentString;
     private boolean cutoffScoreReached;
     private XieScore xieScore;
@@ -245,8 +243,7 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         // create new partitions
         for (LeafSubstructure<?> leafSubstructure : site1.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site1Partition = new ArrayList<>();
-            site1Partition.addAll(currentBestMatchingPair.getFirst());
+            List<LeafSubstructure<?>> site1Partition = new ArrayList<>(currentBestMatchingPair.getFirst());
             if (!site1Partition.contains(leafSubstructure)) {
                 site1Partition.add(leafSubstructure);
             }
@@ -262,8 +259,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             }
         }
         for (LeafSubstructure<?> leafSubstructure : site2.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site2Partition = new ArrayList<>();
-            site2Partition.addAll(currentBestMatchingPair.getSecond());
+            List<LeafSubstructure<?>> site2Partition = new ArrayList<>(currentBestMatchingPair.getSecond());
             if (!site2Partition.contains(leafSubstructure)) {
                 site2Partition.add(leafSubstructure);
             }

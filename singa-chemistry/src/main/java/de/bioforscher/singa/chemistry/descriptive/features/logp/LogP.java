@@ -9,12 +9,12 @@ import de.bioforscher.singa.features.model.FeatureRegistry;
  */
 public class LogP extends AbstractFeature<Double> {
 
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(LogP.class, LogPProvider.class);
-    }
-
     public LogP(Double value, FeatureOrigin featureOrigin) {
         super(value, featureOrigin);
+    }
+
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(LogP.class, LogPProvider.class);
     }
 
 

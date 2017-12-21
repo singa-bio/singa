@@ -5,8 +5,8 @@ package de.bioforscher.singa.structure.model.families;
  */
 public class LigandFamily implements StructuralFamily<LigandFamily> {
 
-    private String oneLetterCode;
-    private String threeLetterCode;
+    private final String oneLetterCode;
+    private final String threeLetterCode;
 
     public LigandFamily(String threeLetterCode) {
         this("?", threeLetterCode);

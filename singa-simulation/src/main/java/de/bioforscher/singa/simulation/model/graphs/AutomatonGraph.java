@@ -30,14 +30,14 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, Vector2D, Integer> {
 
     /**
+     * The cell sections referenced in this graph.
+     */
+    private final Map<String, CellSection> cellSections;
+
+    /**
      * The identifier for the next node that is to be added.
      */
     private int nextNodeIdentifier;
-
-    /**
-     * The cell sections referenced in this graph.
-     */
-    private Map<String, CellSection> cellSections;
 
     /**
      * Creates a new empty graph.

@@ -28,7 +28,7 @@ public class BinaryTree<T> implements Serializable {
     /**
      * Traverses the tree in pre order and collects leave nodes.
      *
-     * @param startingNode       the starting node
+     * @param startingNode the starting node
      * @param leaveNodes the storage for the leave nodes
      */
     public void collectLeavesPreOrder(BinaryTreeNode<T> startingNode, List<BinaryTreeNode<T>> leaveNodes) {
@@ -47,7 +47,7 @@ public class BinaryTree<T> implements Serializable {
      * Traverses the tree in pre order and collects nodes.
      *
      * @param startingNode the starting node
-     * @param nodes        the storage for the nodes
+     * @param nodes the storage for the nodes
      */
     public void collectNodesPreOrder(BinaryTreeNode<T> startingNode, List<BinaryTreeNode<T>> nodes) {
         if (startingNode != null) {

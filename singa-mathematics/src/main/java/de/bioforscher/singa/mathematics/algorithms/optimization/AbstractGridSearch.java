@@ -9,8 +9,8 @@ import java.util.Map;
 
 public abstract class AbstractGridSearch {
 
+    private final Map<MixedParameterList, Double> resultingValues;
     private List<UniqueParameterList<?>> inputParameterList;
-    private Map<MixedParameterList, Double> resultingValues;
 
     public AbstractGridSearch(List<UniqueParameterList<?>> inputParameterList) {
         this.inputParameterList = inputParameterList;

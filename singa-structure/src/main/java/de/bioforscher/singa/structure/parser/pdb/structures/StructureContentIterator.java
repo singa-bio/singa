@@ -35,6 +35,10 @@ class StructureContentIterator implements Iterator<List<String>> {
      */
     private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
     /**
+     * The pdb identifiers that are to be parsed, if they can be inferred.
+     */
+    private final List<String> pdbIdentifiers;
+    /**
      * The local pdb, if there is any.
      */
     private StructureParser.LocalPDB localPdb;
@@ -54,10 +58,6 @@ class StructureContentIterator implements Iterator<List<String>> {
      * The iterator that traverses the paths.
      */
     private Iterator<Path> currentPath;
-    /**
-     * The pdb identifiers that are to be parsed, if they can be inferred.
-     */
-    private List<String> pdbIdentifiers;
     /**
      * The iterator that traverses the pdb identifiers.
      */
@@ -381,12 +381,13 @@ class StructureContentIterator implements Iterator<List<String>> {
 
     @Override
     public boolean hasNext() {
-        if (location == ONLINE_PDB) {
-            return currentURL.hasNext();
-        } else if (location == ONLINE_MMTF) {
-            return pdbIdentifierIterator.hasNext();
-        } else {
-            return currentPath.hasNext();
+        switch (location) {
+            case ONLINE_PDB:
+                return currentURL.hasNext();
+            case ONLINE_MMTF:
+                return pdbIdentifierIterator.hasNext();
+            default:
+                return currentPath.hasNext();
         }
     }
 
@@ -401,36 +402,37 @@ class StructureContentIterator implements Iterator<List<String>> {
                 logger.debug("Parsing structure {}.", currentPdbIdentifier);
             }
         }
-        if (location == OFFLINE_PDB) {
-            try {
-                final Path path = currentPath.next();
-                // remove extension
-                currentSource = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
-                if (path.toString().endsWith(".ent.gz")) {
-                    return fetchLines(readPacked(path));
-                } else if (path.toString().endsWith(".mmtf.gz")) {
-                    return Collections.singletonList(path.toString());
-                } else {
-                    return fetchLines(Files.newInputStream(path));
+        switch (location) {
+            case OFFLINE_PDB:
+                try {
+                    final Path path = currentPath.next();
+                    // remove extension
+                    currentSource = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
+                    if (path.toString().endsWith(".ent.gz")) {
+                        return fetchLines(readPacked(path));
+                    } else if (path.toString().endsWith(".mmtf.gz")) {
+                        return Collections.singletonList(path.toString());
+                    } else {
+                        return fetchLines(Files.newInputStream(path));
+                    }
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Could not open input stream for path.", e);
+                } finally {
+                    progressCounter++;
                 }
-            } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for path.", e);
-            } finally {
-                progressCounter++;
-            }
-        } else if (location == ONLINE_PDB) {
-            try {
-                URL url = currentURL.next();
-                currentSource = url.getFile();
-                return fetchLines(url.openStream());
-            } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for URL. The PDB identifier \""
-                        + currentPdbIdentifier + "\" does not seem to exist", e);
-            } finally {
-                progressCounter++;
-            }
-        } else {
-            return Collections.singletonList(currentPdbIdentifier);
+            case ONLINE_PDB:
+                try {
+                    URL url = currentURL.next();
+                    currentSource = url.getFile();
+                    return fetchLines(url.openStream());
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Could not open input stream for URL. The PDB identifier \""
+                            + currentPdbIdentifier + "\" does not seem to exist", e);
+                } finally {
+                    progressCounter++;
+                }
+            default:
+                return Collections.singletonList(currentPdbIdentifier);
         }
 
     }

@@ -296,7 +296,7 @@ public class RegularMatrixTest {
     }
 
     @Test
-    public void shouldCopy(){
+    public void shouldCopy() {
         RegularMatrix copy1 = squareMatrix.getCopy();
         RegularMatrix copy2 = squareMatrix.getCopy();
         copy1.getElements()[0][0] = Double.MIN_VALUE;
@@ -321,14 +321,14 @@ public class RegularMatrixTest {
     public void shouldStreamAllElements() {
         List<Double> expectedElements = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
         List<Double> actualElements = firstRectangularMatrix.streamElements().boxed().collect(Collectors.toList());
-        for (int i = 0 ; i < expectedElements.size() ; i++ ) {
+        for (int i = 0; i < expectedElements.size(); i++) {
             assertEquals(expectedElements.get(i), actualElements.get(i), 0.0);
         }
     }
 
 
     @Test
-    public void shouldRetrieveLabelsOfSymmetricMatrix(){
+    public void shouldRetrieveLabelsOfSymmetricMatrix() {
         LabeledRegularMatrix<String> lrm = new LabeledRegularMatrix<>(firstRectangularMatrix.getElements());
         lrm.setRowLabel("R3", 2);
         lrm.setRowLabel("R2", 1);

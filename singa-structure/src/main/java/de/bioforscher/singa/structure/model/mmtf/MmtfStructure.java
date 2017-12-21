@@ -22,17 +22,17 @@ public class MmtfStructure implements Structure {
     /**
      * The original bytes kept to copy.
      */
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * The original mmtf data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The models that have already been requested.
      */
-    private Map<Integer, MmtfModel> cachedModels;
+    private final Map<Integer, MmtfModel> cachedModels;
 
     /**
      * Creates a new {@link MmtfStructure}
@@ -147,10 +147,7 @@ public class MmtfStructure implements Structure {
     @Override
     public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
         Optional<Model> modelOptional = getModel(modelIdentifier);
-        if (!modelOptional.isPresent()) {
-            return Optional.empty();
-        }
-        return modelOptional.get().getChain(chainIdentifier);
+        return modelOptional.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
@@ -166,10 +163,7 @@ public class MmtfStructure implements Structure {
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
-        if (!chainOptional.isPresent()) {
-            return Optional.empty();
-        }
-        return chainOptional.get().getLeafSubstructure(leafIdentifier);
+        return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
     @Override
@@ -219,9 +213,7 @@ public class MmtfStructure implements Structure {
     public void removeAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(atomIdentifier);
-            }
+            optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }
 

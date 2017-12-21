@@ -12,9 +12,21 @@ import java.util.Set;
  */
 public class SpaceProvider {
 
+    private static final SpaceProvider INSTANCE = new SpaceProvider();
+    /**
+     * The two-dimensional Euclidean space using a Cartesian coordinate system.
+     */
+    public static final EuclideanSpace EUCLIDEAN_2D = addElement(new EuclideanSpace(2, CoordinateSystem.Cartesian));
+    /**
+     * The three-dimensional Euclidean space using a Cartesian coordinate system.
+     */
+    public static final EuclideanSpace EUCLIDEAN_3D = addElement(new EuclideanSpace(3, CoordinateSystem.Cartesian));
     private final Set<EuclideanSpace> spaces = new HashSet<>();
 
-    private static final SpaceProvider INSTANCE = new SpaceProvider();
+    private static EuclideanSpace addElement(EuclideanSpace element) {
+        INSTANCE.spaces.add(element);
+        return element;
+    }
 
     /**
      * Returns all predefined Spaces as a unmodifiable Set.
@@ -24,20 +36,5 @@ public class SpaceProvider {
     public Set<EuclideanSpace> getSpaces() {
         return Collections.unmodifiableSet(spaces);
     }
-
-    private static EuclideanSpace addElement(EuclideanSpace element) {
-        INSTANCE.spaces.add(element);
-        return element;
-    }
-
-    /**
-     * The two-dimensional Euclidean space using a Cartesian coordinate system.
-     */
-    public static final EuclideanSpace EUCLIDEAN_2D = addElement(new EuclideanSpace(2, CoordinateSystem.Cartesian));
-
-    /**
-     * The three-dimensional Euclidean space using a Cartesian coordinate system.
-     */
-    public static final EuclideanSpace EUCLIDEAN_3D = addElement(new EuclideanSpace(3, CoordinateSystem.Cartesian));
 
 }

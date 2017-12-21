@@ -13,8 +13,8 @@ public enum RepresentationSchemeType {
     LAST_HEAVY_SIDE_CHAIN(LastHeavySidechainRepresentationScheme.class, "LH"),
     SIDE_CHAIN_CENTROID(SideChainCentroidRepresentationScheme.class, "SC");
 
-    private Class<? extends AbstractRepresentationScheme> compatibleRepresentationScheme;
-    private String atomNomenclature;
+    private final Class<? extends AbstractRepresentationScheme> compatibleRepresentationScheme;
+    private final String atomNomenclature;
 
     RepresentationSchemeType(Class<? extends AbstractRepresentationScheme> compatibleRepresentationScheme,
                              String atomNomenclature) {

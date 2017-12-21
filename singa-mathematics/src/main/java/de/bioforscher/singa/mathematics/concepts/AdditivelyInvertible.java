@@ -8,7 +8,7 @@ package de.bioforscher.singa.mathematics.concepts;
  * additive operation yield the additively neutral element called "Zero Element".
  *
  * @param <NumberConcept> A reference to the Class or Interface which the inverse element
- *                        will be a type of.
+ * will be a type of.
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Additive_inverse">Wikipedia: Additive inverse</a>
  */

@@ -23,7 +23,7 @@ class ContentTreeNode {
     /**
      * The level of this node.
      */
-    private StructureLevel level;
+    private final StructureLevel level;
     /**
      * The identifying string of this node.
      */

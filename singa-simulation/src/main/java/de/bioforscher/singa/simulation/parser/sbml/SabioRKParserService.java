@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class SabioRKParserService extends AbstractHTMLParser<List<DynamicReaction>> {
 
-    private Map<String, String> queryMap;
     private static final String SABIORK_FETCH_URL = "http://sabiork.h-its.org/sabioRestWebServices/searchKineticLaws/sbml";
+    private final Map<String, String> queryMap;
 
     public SabioRKParserService(String entryID) {
         setResource(SABIORK_FETCH_URL);
@@ -25,8 +25,6 @@ public class SabioRKParserService extends AbstractHTMLParser<List<DynamicReactio
         parser.parse();
         return parser.getReactions();
     }
-
-
 
 
 }

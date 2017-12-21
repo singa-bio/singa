@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  */
 public class StructuralMotif implements LeafSubstructureContainer {
 
-    public LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
-    private String identifier;
+    public final LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
+    private final String identifier;
 
     private StructuralMotif(String identifier) {
         this.identifier = identifier;

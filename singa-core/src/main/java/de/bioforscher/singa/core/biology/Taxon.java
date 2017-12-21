@@ -26,6 +26,7 @@ public class Taxon implements Nameable {
 
     /**
      * Creates a new Taxon with rank and name.
+     *
      * @param rank The rank.
      * @param name The name.
      */
@@ -36,14 +37,16 @@ public class Taxon implements Nameable {
 
     /**
      * Creates a taxon with unknown or unspecified rank.
+     *
      * @param name The name.
      */
     public Taxon(String name) {
-        this ("Unknown", name);
+        this("Unknown", name);
     }
 
     /**
      * Returns the rank of this taxon.
+     *
      * @return The rank of this taxon.
      */
     public String getRank() {
@@ -52,6 +55,7 @@ public class Taxon implements Nameable {
 
     /**
      * Sets the rank of this taxon.
+     *
      * @param rank The rank.
      */
     public void setRank(String rank) {
@@ -65,6 +69,7 @@ public class Taxon implements Nameable {
 
     /**
      * Sets the name of this taxon.
+     *
      * @param name The name.
      */
     public void setName(String name) {

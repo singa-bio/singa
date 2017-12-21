@@ -37,6 +37,14 @@ public enum UnitPrefix {
 
     }
 
+    public static EnumSet<UnitPrefix> getDefaultSpacePrefixes() {
+        return EnumSet.of(MILI, MICRO, NANO);
+    }
+
+    public static EnumSet<UnitPrefix> getDefaultTimePrefixes() {
+        return EnumSet.of(NO_PREFIX, MILI, MICRO, NANO);
+    }
+
     public int getScale() {
         return scale;
     }
@@ -47,14 +55,6 @@ public enum UnitPrefix {
 
     public UnitConverter getCorrespondingConverter() {
         return correspondingConverter;
-    }
-
-    public static EnumSet<UnitPrefix> getDefaultSpacePrefixes() {
-        return EnumSet.of(MILI, MICRO, NANO);
-    }
-
-    public static EnumSet<UnitPrefix> getDefaultTimePrefixes() {
-        return EnumSet.of(NO_PREFIX, MILI, MICRO, NANO);
     }
 
 

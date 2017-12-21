@@ -16,9 +16,9 @@ import java.util.function.Predicate;
  */
 public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType> {
 
-    private Queue<NodeType> queue;
-    private Map<NodeType, Integer> distances;
-    private Map<NodeType, NodeType> predecessors;
+    private final Queue<NodeType> queue;
+    private final Map<NodeType, Integer> distances;
+    private final Map<NodeType, NodeType> predecessors;
 
     /**
      * Private constructor to prevent external instantiation.

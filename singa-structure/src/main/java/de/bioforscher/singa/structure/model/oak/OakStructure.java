@@ -16,6 +16,11 @@ import java.util.*;
 public class OakStructure implements Structure {
 
     /**
+     * The branches this structure contains.
+     */
+    private final TreeMap<Integer, OakModel> models;
+
+    /**
      * The PDB identifier of the structure.
      */
     private String pdbIdentifier;
@@ -24,11 +29,6 @@ public class OakStructure implements Structure {
      * The title of the structure.
      */
     private String title;
-
-    /**
-     * The branches this structure contains.
-     */
-    private TreeMap<Integer, OakModel> models;
 
     private int lastAddedAtomIdentifier;
 
@@ -93,10 +93,7 @@ public class OakStructure implements Structure {
     @Override
     public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
         final Optional<Model> optionalModel = getModel(modelIdentifier);
-        if (optionalModel.isPresent()) {
-            return optionalModel.get().getChain(chainIdentifier);
-        }
-        return Optional.empty();
+        return optionalModel.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
@@ -124,11 +121,8 @@ public class OakStructure implements Structure {
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chain = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
-        if (chain.isPresent()) {
-            return chain.get().getLeafSubstructure(leafIdentifier);
-        }
-        return Optional.empty();
+        final Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
+        return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
     }
 
     @Override

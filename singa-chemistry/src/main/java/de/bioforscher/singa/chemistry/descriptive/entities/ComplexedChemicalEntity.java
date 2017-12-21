@@ -17,7 +17,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
             "Computed by the Sum of parts",
             "none");
 
-    private Map<ChemicalEntity<?>, Integer> associatedParts;
+    private final Map<ChemicalEntity<?>, Integer> associatedParts;
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -54,7 +54,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
 
     @Override
     public String toString() {
-        return "ComplexedChemicalEntity "+super.getIdentifier()+" {" +
+        return "ComplexedChemicalEntity " + super.getIdentifier() + " {" +
                 "associatedParts=" + associatedParts +
                 '}';
     }

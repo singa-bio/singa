@@ -7,7 +7,6 @@ package de.bioforscher.singa.mathematics.concepts;
  *
  * @param <NumberConcept> A reference to the Class or Interface which the inverse element will be a type of.
  * @author cl
- *
  */
 public interface Invertible<NumberConcept> {
 

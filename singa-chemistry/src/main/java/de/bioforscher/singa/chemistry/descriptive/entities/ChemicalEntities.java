@@ -16,6 +16,7 @@ public final class ChemicalEntities {
 
     /**
      * Creates a Map, that references the Entities with their primary identifiers.
+     *
      * @param entities The entities to map.
      * @return The mapped entities.
      */

@@ -6,8 +6,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBI
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMass;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,7 +22,7 @@ public class ChEBIParserServiceTest {
     }
 
     @Test
-    public void shouldFetchImageForMethanolFromChEBIDatabase() throws IOException {
+    public void shouldFetchImageForMethanolFromChEBIDatabase() {
         ChEBIImageService service = new ChEBIImageService("CHEBI:17790");
         assertTrue(service.parse() != null);
     }

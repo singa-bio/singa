@@ -40,7 +40,7 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
      *      Understanding nature's catalytic toolkit Trends in biochemical sciences, Elsevier, 2005, 30, 622-629.
      * </pre>
      */
-    public static EnumSet<MatcherFamily> GUTTERIDGE = EnumSet.of(GUTTERIDGE_AMIDE, GUTTERIDGE_AMINE,
+    public static final EnumSet<MatcherFamily> GUTTERIDGE = EnumSet.of(GUTTERIDGE_AMIDE, GUTTERIDGE_AMINE,
             GUTTERIDGE_CARBOXYLATE, GUTTERIDGE_GUANIDIUM, GUTTERIDGE_HYDROXYL, GUTTERIDGE_IMIDAZOLE, GUTTERIDGE_OTHERS,
             GUTTERIDGE_THIOL);
 
@@ -59,9 +59,9 @@ public enum MatcherFamily implements StructuralFamily<MatcherFamily> {
 
     public static EnumSet<MatcherFamily> ALL_AMINO_ACIDS = EnumSet.of(ALL);
 
-    private EnumSet<AminoAcidFamily> members;
-    private String oneLetterCode;
-    private String threeLetterCode;
+    private final EnumSet<AminoAcidFamily> members;
+    private final String oneLetterCode;
+    private final String threeLetterCode;
 
     MatcherFamily(EnumSet<AminoAcidFamily> members, String oneLetterCode, String threeLetterCode) {
         this.members = members;

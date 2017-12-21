@@ -31,30 +31,27 @@ import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBR
 public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer> {
 
     /**
-     * The state.
-     */
-    private NodeState state;
-
-    /**
-     * A reference to the containing cell section.
-     */
-    private CellSection cellSection;
-
-    /**
-     * The contained chemical entities with their concentrations.
-     */
-    private ConcentrationContainer concentrationContainer;
-
-    /**
      * Deltas that are to be applied to the node.
      */
-    private DeltaContainer deltas;
+    private final DeltaContainer deltas;
 
     /**
      * Al list of potential deltas.
      */
-    private List<Delta> potentialDeltas;
+    private final List<Delta> potentialDeltas;
 
+    /**
+     * The state.
+     */
+    private NodeState state;
+    /**
+     * A reference to the containing cell section.
+     */
+    private CellSection cellSection;
+    /**
+     * The contained chemical entities with their concentrations.
+     */
+    private ConcentrationContainer concentrationContainer;
     /**
      * Indication whether this node should be observed.
      */

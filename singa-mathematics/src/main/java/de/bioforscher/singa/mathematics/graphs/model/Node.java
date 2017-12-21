@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The node is the elementary object contained in graphs.
  *
- * @param <NodeType>   The node type that is defined for neighbors of this node.
+ * @param <NodeType> The node type that is defined for neighbors of this node.
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */

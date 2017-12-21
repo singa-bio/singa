@@ -7,7 +7,6 @@ import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class StarkEstimation implements StatisticalModel {
 
 
     @Override
-    public void calculatePvalues(List<Fit3DMatch> matches) throws IOException, InterruptedException {
+    public void calculatePvalues(List<Fit3DMatch> matches) {
 
         for (Fit3DMatch match : matches) {
 

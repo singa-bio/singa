@@ -15,7 +15,7 @@ import java.util.Map;
 public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
 
     private static final int defaultImageWidth = 75;
-    private Map<String, String> queryMap;
+    private final Map<String, String> queryMap;
 
     public ChEBIImageService(String chEBIIdentifier) {
         this(new ChEBIIdentifier(chEBIIdentifier), defaultImageWidth);
@@ -35,7 +35,7 @@ public class ChEBIImageService extends AbstractHTMLParser<InputStream> {
         try {
             Files.copy(getFetchResult(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UncheckedIOException("The image could not be written to \""+ filePath +"\"", e);
+            throw new UncheckedIOException("The image could not be written to \"" + filePath + "\"", e);
         }
     }
 

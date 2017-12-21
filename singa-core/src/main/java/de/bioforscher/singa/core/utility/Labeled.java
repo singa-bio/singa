@@ -7,7 +7,7 @@ package de.bioforscher.singa.core.utility;
  * @param <LabelType> The type of label.
  * @param <PositionType> The type of the referenced position.
  * @param <ValueType> The type of the value.
- *     @author cl
+ * @author cl
  */
 public interface Labeled<LabelType, PositionType, ValueType> {
 
@@ -29,6 +29,7 @@ public interface Labeled<LabelType, PositionType, ValueType> {
 
     /**
      * Returns a value from a position.
+     *
      * @param position The position.
      * @return The value.
      */
@@ -36,6 +37,7 @@ public interface Labeled<LabelType, PositionType, ValueType> {
 
     /**
      * Returns the value for a label.
+     *
      * @param label The label.
      * @return The value.
      */

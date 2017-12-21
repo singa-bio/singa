@@ -14,8 +14,8 @@ import java.util.List;
  *
  * @author cl
  */
-public class VoronoiFactory <NodeType extends Node<NodeType, Vector2D, IdentifierType>,
-        EdgeType extends Edge<NodeType>, IdentifierType,  GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
+public class VoronoiFactory<NodeType extends Node<NodeType, Vector2D, IdentifierType>,
+        EdgeType extends Edge<NodeType>, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private double[] xValuesIn;
     private double[] yValuesIn;

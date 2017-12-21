@@ -48,11 +48,6 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
         super(identifier);
     }
 
-    @Override
-    public Set<Class<? extends Feature>> getAvailableFeatures() {
-        return availableFeatures;
-    }
-
     /**
      * Creates a new Species using a String representation of a {@link SimpleStringIdentifier}.
      *
@@ -60,6 +55,11 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
      */
     protected Species(String identifier) {
         this(new SimpleStringIdentifier(identifier));
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getAvailableFeatures() {
+        return availableFeatures;
     }
 
     public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {

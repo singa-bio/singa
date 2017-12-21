@@ -12,23 +12,28 @@ import javafx.scene.paint.PhongMaterial;
  */
 public class MaterialProvider {
 
-    public static PhongMaterial CARBON = crateMaterialFromColor(Color.LIGHTGRAY);
-    public static PhongMaterial NITROGEN = crateMaterialFromColor(Color.CORNFLOWERBLUE);
-    public static PhongMaterial OXYGEN = crateMaterialFromColor(Color.INDIANRED);
-    public static PhongMaterial HYDROGEN = crateMaterialFromColor(Color.LIGHTSKYBLUE);
-    public static PhongMaterial OTHER_ELEMENT = crateMaterialFromColor(Color.GREEN);
+    public static final PhongMaterial CARBON = crateMaterialFromColor(Color.LIGHTGRAY);
+    public static final PhongMaterial NITROGEN = crateMaterialFromColor(Color.CORNFLOWERBLUE);
+    public static final PhongMaterial OXYGEN = crateMaterialFromColor(Color.INDIANRED);
+    public static final PhongMaterial HYDROGEN = crateMaterialFromColor(Color.LIGHTSKYBLUE);
+    public static final PhongMaterial OTHER_ELEMENT = crateMaterialFromColor(Color.GREEN);
 
-    public static PhongMaterial NUCLEOTIDE = NITROGEN;
-    public static PhongMaterial AMINOACID = OXYGEN;
-    public static PhongMaterial OTHER_TYPE = crateMaterialFromColor(Color.DARKOLIVEGREEN);
+    public static final PhongMaterial NUCLEOTIDE = NITROGEN;
+    public static final PhongMaterial AMINOACID = OXYGEN;
+    public static final PhongMaterial OTHER_TYPE = crateMaterialFromColor(Color.DARKOLIVEGREEN);
 
     public static PhongMaterial getDefaultMaterialForElement(Element element) {
         switch (element.getSymbol()) {
-            case "C": return CARBON;
-            case "N": return NITROGEN;
-            case "O": return OXYGEN;
-            case "H": return HYDROGEN;
-            default: return OTHER_ELEMENT;
+            case "C":
+                return CARBON;
+            case "N":
+                return NITROGEN;
+            case "O":
+                return OXYGEN;
+            case "H":
+                return HYDROGEN;
+            default:
+                return OTHER_ELEMENT;
         }
     }
 

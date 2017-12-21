@@ -24,24 +24,23 @@ import java.util.HashMap;
 public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
-    private DoubleProperty drawingWidth;
-    private DoubleProperty drawingHeight;
     private final int totalIterations;
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
+    private final Force repulsiveForce;
+    private final Force attractiveForce;
+    private final Force boundaryForce;
 
-    private Force repulsiveForce;
-    private Force attractiveForce;
-    private Force boundaryForce;
-
-    private GraphType graph;
-    private HashMap<NodeType, Vector2D> velocities;
+    private final GraphType graph;
+    private final HashMap<NodeType, Vector2D> velocities;
 
     /**
      * Creates a new GraphDrawingTool.
      *
      * @param totalIterations Number of total iterations
-     * @param graph           The graph to arrange
-     * @param drawingHeight   The height property.
-     * @param drawingWidth    The width property.
+     * @param graph The graph to arrange
+     * @param drawingHeight The height property.
+     * @param drawingWidth The width property.
      */
     public GraphDrawingTool(GraphType graph, DoubleProperty drawingWidth, DoubleProperty drawingHeight, int totalIterations) {
         this.drawingWidth = drawingWidth;

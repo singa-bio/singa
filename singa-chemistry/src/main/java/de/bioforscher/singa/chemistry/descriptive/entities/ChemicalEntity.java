@@ -28,23 +28,6 @@ import java.util.*;
 public abstract class ChemicalEntity<IdentifierType extends Identifier> implements Identifiable<IdentifierType>,
         Nameable, Annotatable, Featureable {
 
-    /**
-     * The distinct {@link Identifier} by which this entity is identified.
-     */
-    private final IdentifierType identifier;
-
-    /**
-     * The name by which this entity is referenced.
-     */
-    private String name = "Unnamed chemical entity";
-
-    /**
-     * All annotations of this entity.
-     */
-    private List<Annotation> annotations;
-
-    private FeatureContainer features;
-
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
@@ -52,6 +35,20 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         availableFeatures.add(MolarMass.class);
         availableFeatures.add(MolarVolume.class);
     }
+
+    /**
+     * The distinct {@link Identifier} by which this entity is identified.
+     */
+    private final IdentifierType identifier;
+    /**
+     * The name by which this entity is referenced.
+     */
+    private String name = "Unnamed chemical entity";
+    /**
+     * All annotations of this entity.
+     */
+    private List<Annotation> annotations;
+    private FeatureContainer features;
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -179,8 +176,8 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {
 
-        TopLevelType topLevelObject;
-        BuilderType builderObject;
+        final TopLevelType topLevelObject;
+        final BuilderType builderObject;
 
         public Builder(IdentifierType identifier) {
             topLevelObject = createObject(identifier);

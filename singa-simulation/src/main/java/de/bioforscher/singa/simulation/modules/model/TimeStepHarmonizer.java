@@ -16,10 +16,8 @@ import javax.measure.quantity.Time;
 public class TimeStepHarmonizer {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
-
+    private final Simulation simulation;
     private double epsilon = 0.01;
-
-    private Simulation simulation;
     private Quantity<Time> currentTimeStep;
 
     private Module criticalModule;

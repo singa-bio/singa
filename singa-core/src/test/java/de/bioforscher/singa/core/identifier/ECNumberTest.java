@@ -7,9 +7,9 @@ import static org.junit.Assert.assertNotNull;
 
 public class ECNumberTest {
 
-	/*
+    /*
      * Valid EC Numbers
-	 */
+     */
 
     @Test
     public void testECNumber01() {
@@ -58,10 +58,10 @@ public class ECNumberTest {
         Identifier ecNumber = new ECNumber("1.23.45.678");
         assertNotNull(ecNumber);
     }
-	
-	/*
-	 * Invalid EC Numbers
-	 */
+
+    /*
+     * Invalid EC Numbers
+     */
 
     @Test(expected = IllegalArgumentException.class)
     public void testECNumber02() {

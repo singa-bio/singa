@@ -16,6 +16,7 @@ import static tec.units.ri.unit.Units.*;
 
 /**
  * Converts JSBML Units to UnitsOfMeasurement Units.
+ *
  * @author cl
  */
 public class SBMLUnitConverter {
@@ -33,7 +34,7 @@ public class SBMLUnitConverter {
         return units;
     }
 
-    public  Unit<?> convertUnit(UnitDefinition unitDefinition) {
+    public Unit<?> convertUnit(UnitDefinition unitDefinition) {
         Unit<?> resultUnit = new ProductUnit();
         for (org.sbml.jsbml.Unit sbmlUnit : unitDefinition.getListOfUnits()) {
             Unit unitComponent = getUnitForKind(sbmlUnit.getKind());

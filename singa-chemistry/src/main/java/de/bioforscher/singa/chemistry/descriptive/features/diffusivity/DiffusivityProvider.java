@@ -16,15 +16,6 @@ import static tec.units.ri.AbstractUnit.ONE;
  */
 public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
 
-    private final WilkeCorrelation wilkeCorrelation = new WilkeCorrelation();
-    private final YoungCorrelation youngCorrelation = new YoungCorrelation();
-
-    /**
-     * The correlation threshold determines, whether to use Wikle correlation (lighter than the threshold) or Young
-     * correlation (heavier than the threshold).
-     */
-    private static final Quantity<MolarMass> CORRELATION_THRESHOLD = Quantities.getQuantity(10000, GRAM_PER_MOLE);
-
     /**
      * Solute transitional diffusion coefficient. Describes the ratio of D in cells to D in water.
      * May be taken as a term to slow diffusion to account for the cytoplasmic density in cells.<br>
@@ -32,6 +23,13 @@ public class DiffusivityProvider extends FeatureProvider<Diffusivity> {
      * solute in cell cytoplasm. The Journal of cell biology, 120(1):175-184.
      */
     public static final Quantity<Dimensionless> STDF_CELL_WATER = Quantities.getQuantity(0.27, ONE);
+    /**
+     * The correlation threshold determines, whether to use Wikle correlation (lighter than the threshold) or Young
+     * correlation (heavier than the threshold).
+     */
+    private static final Quantity<MolarMass> CORRELATION_THRESHOLD = Quantities.getQuantity(10000, GRAM_PER_MOLE);
+    private final WilkeCorrelation wilkeCorrelation = new WilkeCorrelation();
+    private final YoungCorrelation youngCorrelation = new YoungCorrelation();
 
     public DiffusivityProvider() {
         setProvidedFeature(Diffusivity.class);

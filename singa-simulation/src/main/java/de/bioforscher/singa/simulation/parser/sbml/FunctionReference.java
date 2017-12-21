@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
  */
 public class FunctionReference {
 
-    private String identifier;
+    private final String identifier;
+    private final List<String> parameters;
     private String equation;
-    private List<String> parameters;
 
     public FunctionReference(String identifier, String equation, List<String> parameters) {
         this.identifier = identifier;
@@ -36,7 +36,7 @@ public class FunctionReference {
     }
 
     public String replaceInEquation(String equationMathString) {
-        Pattern pattern = Pattern.compile(identifier + "\\((.[^\\)]+)\\)");
+        Pattern pattern = Pattern.compile(identifier + "\\((.[^)]+)\\)");
         Matcher matcher = pattern.matcher(equationMathString);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
@@ -62,7 +62,7 @@ public class FunctionReference {
             Matcher matcher = pattern.matcher(replacedFunction);
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
-                matcher.appendReplacement(sb, matcher.group(1) +functionParameters[i].trim() + matcher.group(3));
+                matcher.appendReplacement(sb, matcher.group(1) + functionParameters[i].trim() + matcher.group(3));
             }
             matcher.appendTail(sb);
             replacedFunction = sb.toString();

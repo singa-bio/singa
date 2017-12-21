@@ -22,37 +22,37 @@ public class MmtfChain implements Chain {
     /**
      * The original bytes kept to copy.
      */
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * The original data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The identifier of this chain.
      */
-    private String chainIdentifier;
+    private final String chainIdentifier;
 
     /**
      * The leaves that have already been requested.
      */
-    private Map<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
+    private final Map<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
 
     /**
      * The indices of the relevant leaves in the group data arrays.
      */
-    private List<Integer> relevantGroups;
+    private final List<Integer> relevantGroups;
 
     /**
      * The generated leaf identifiers for all relevant leaves.
      */
-    private Map<Integer, LeafIdentifier> leafIdentifiers;
+    private final Map<Integer, LeafIdentifier> leafIdentifiers;
 
     /**
      * Contains the relevant atom ranges for all relevant leaves.
      */
-    private Map<Integer, Range<Integer>> atomRanges;
+    private final Map<Integer, Range<Integer>> atomRanges;
 
     /**
      * Creates a new {@link MmtfChain}.
@@ -152,7 +152,7 @@ public class MmtfChain implements Chain {
 
     @Override
     public LeafSubstructure<?> getFirstLeafSubstructure() {
-        return getLeafSubstructure(leafIdentifiers.values().iterator().next()).get();
+        return getLeafSubstructure(leafIdentifiers.values().iterator().next()).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
@@ -173,7 +173,6 @@ public class MmtfChain implements Chain {
      * Removes all {@link LeafSubstructure}s from this container that are not referenced in the given
      * {@link LeafSubstructureContainer}. Basically all LeafSubstructures are removed that do not match any of the
      * given containers families. This method also keeps exchangeable families if any are defined.
-     *
      * Further, this method does not cache the leafs that are being removed in contrary to the default implementation.
      *
      * @param leafSubstructuresToKeep The leaf structures that are kept.
@@ -218,9 +217,9 @@ public class MmtfChain implements Chain {
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                return optionalAtom;
+            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+            if (atomOptional.isPresent()) {
+                return atomOptional;
             }
         }
         return Optional.empty();
@@ -229,10 +228,8 @@ public class MmtfChain implements Chain {
     @Override
     public void removeAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(atomIdentifier);
-            }
+            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+            atomOptional.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }
 

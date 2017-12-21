@@ -27,13 +27,13 @@ public class ConvexHullPlayground extends Application implements Renderer {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         // setup the canvas
         canvas = new Canvas(500, 500);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         // setup root
         BorderPane root = new BorderPane();
         root.setCenter(canvas);

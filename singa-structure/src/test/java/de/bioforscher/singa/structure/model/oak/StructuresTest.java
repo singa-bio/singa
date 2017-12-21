@@ -27,9 +27,9 @@ public class StructuresTest {
                 .getFirstChain();
         final LabeledSymmetricMatrix<LeafSubstructure<?>> distanceMatrix = Structures.calculateDistanceMatrix(chain);
         assertTrue(distanceMatrix.getMainDiagonal().isZero());
-        assertEquals(5.608368621087599, distanceMatrix.getElement(5, 3), 0.0);
-        assertEquals(7.765433778659168, distanceMatrix.getElement(17, 18), 0.0);
-        assertEquals(21.53673508245474, distanceMatrix.getElement(23, 11), 0.0);
+        assertEquals(5.461240152199864, distanceMatrix.getElement(5, 3), 0.0);
+        assertEquals(3.792725405298938, distanceMatrix.getElement(17, 18), 0.0);
+        assertEquals(20.372810778093434, distanceMatrix.getElement(23, 11), 0.0);
     }
 
     @Test

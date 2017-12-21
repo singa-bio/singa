@@ -69,7 +69,7 @@ public class StructureViewer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         chainMaterials = new HashMap<>();
 
@@ -254,28 +254,30 @@ public class StructureViewer extends Application {
     }
 
     private PhongMaterial getMaterial(LeafSubstructure origin, Atom atom) {
-        if (colorScheme == ColorScheme.BY_ELEMENT) {
-            return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
-        } else if (colorScheme == ColorScheme.BY_FAMILY) {
-            return MaterialProvider.getMaterialForType(origin.getFamily());
-        } else {
+        switch (colorScheme) {
+            case BY_ELEMENT:
+                return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
+            case BY_FAMILY:
+                return MaterialProvider.getMaterialForType(origin.getFamily());
+            default:
                 String chain = origin.getIdentifier().getChainIdentifier();
-            if (chainMaterials.containsKey(chain)) {
-                return chainMaterials.get(chain);
+                if (chainMaterials.containsKey(chain)) {
+                    return chainMaterials.get(chain);
                 } else {
                     return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
                 }
-            }
+        }
 
     }
 
     private PhongMaterial getMaterial(LeafSubstructure origin, OakBond edge) {
-        if (colorScheme == ColorScheme.BY_ELEMENT) {
-            return MaterialProvider.CARBON;
-        } else if (colorScheme == ColorScheme.BY_FAMILY) {
-            return MaterialProvider.getMaterialForType(origin.getFamily());
-        } else {
-            return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
+        switch (colorScheme) {
+            case BY_ELEMENT:
+                return MaterialProvider.CARBON;
+            case BY_FAMILY:
+                return MaterialProvider.getMaterialForType(origin.getFamily());
+            default:
+                return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
         }
     }
 

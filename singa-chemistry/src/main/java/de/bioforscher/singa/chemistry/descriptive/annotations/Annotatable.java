@@ -37,8 +37,8 @@ public interface Annotatable {
      */
     default List<Annotation> getAnnotationsOfType(AnnotationType type) {
         return getAnnotations().stream()
-                               .filter(annotation -> annotation.getAnnotationType() == type)
-                               .collect(Collectors.toList());
+                .filter(annotation -> annotation.getAnnotationType() == type)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -53,9 +53,9 @@ public interface Annotatable {
     default <ContentType> List<ContentType> getContentOfAnnotations(Class<ContentType> expectedContent,
                                                                     AnnotationType type) {
         return getAnnotationsOfType(type).stream()
-                                         .map(Annotation::getContent)
-                                         .map(expectedContent::cast)
-                                         .collect(Collectors.toList());
+                .map(Annotation::getContent)
+                .map(expectedContent::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -71,10 +71,10 @@ public interface Annotatable {
     default <ContentType> List<ContentType> getContentOfAnnotations(Class<ContentType> expectedContent,
                                                                     String description, AnnotationType type) {
         return getAnnotationsOfType(type).stream()
-                                         .filter(annotation -> annotation.getDescription().equals(description))
-                                         .map(Annotation::getContent)
-                                         .map(expectedContent::cast)
-                                         .collect(Collectors.toList());
+                .filter(annotation -> annotation.getDescription().equals(description))
+                .map(Annotation::getContent)
+                .map(expectedContent::cast)
+                .collect(Collectors.toList());
     }
 
     /**

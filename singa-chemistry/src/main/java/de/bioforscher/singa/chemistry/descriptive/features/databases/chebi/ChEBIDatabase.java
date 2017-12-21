@@ -17,13 +17,11 @@ import java.util.Optional;
  */
 public class ChEBIDatabase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChEBIDatabase.class);
-
     public static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.DATABASE,
             "ChEBI Database",
             "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
                     "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");
-
+    private static final Logger logger = LoggerFactory.getLogger(ChEBIDatabase.class);
     /**
      * The instance.
      */
@@ -36,23 +34,17 @@ public class ChEBIDatabase {
     public static <FeaturableType extends Featureable> MolarMass fetchMolarMass(Featureable featureable) {
         // try to get Chebi identifier
         ChemicalEntity<?> species = (ChemicalEntity) featureable;
-        Optional<Identifier> identifier = ChEBIIdentifier.find(species.getAllIdentifiers());
+        Optional<Identifier> identifierOptional = ChEBIIdentifier.find(species.getAllIdentifiers());
         // try to get weight from ChEBI Database
-        if (identifier.isPresent()) {
-            return ChEBIParserService.parse(identifier.get().toString()).getFeature(MolarMass.class);
-        }
-        return null;
+        return identifierOptional.map(identifier -> ChEBIParserService.parse(identifier.toString()).getFeature(MolarMass.class)).orElse(null);
     }
 
     public static <FeaturableType extends Featureable> Smiles fetchSmiles(Featureable featureable) {
         // try to get Chebi identifier
         ChemicalEntity<?> species = (ChemicalEntity) featureable;
-        Optional<Identifier> identifier = ChEBIIdentifier.find(species.getAllIdentifiers());
+        Optional<Identifier> identifierOptional = ChEBIIdentifier.find(species.getAllIdentifiers());
         // try to get weight from ChEBI Database
-        if (identifier.isPresent()) {
-            return ChEBIParserService.parse(identifier.get().toString()).getFeature(Smiles.class);
-        }
-        return null;
+        return identifierOptional.map(identifier -> ChEBIParserService.parse(identifier.toString()).getFeature(Smiles.class)).orElse(null);
     }
 
 }
