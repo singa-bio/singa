@@ -6,6 +6,7 @@ import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.Parabola;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
@@ -30,11 +31,9 @@ public interface Renderer {
 
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
-     * <ul>
-     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
-     * </ul>
+     * <ul> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li> </ul>
      *
-     * @param point    The position of the point.
+     * @param point The position of the point.
      * @param diameter The diameter of the point.
      */
     default void drawPoint(Vector2D point, double diameter) {
@@ -47,11 +46,9 @@ public interface Renderer {
 
     /**
      * Draws a point (filled circle) where the {@link Vector2D} is positioned. The point is centered on the vector.<br>
-     * <ul>
-     * <li> The diameter of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
-     * </ul>
+     * <ul> <li> The diameter of the point is determined by the LineWidth (set by {@link
+     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the FillColor (set by {@link
+     * GraphicsContext#setFill(Paint)}).</li> </ul>
      *
      * @param point The position of the point.
      */
@@ -60,14 +57,11 @@ public interface Renderer {
     }
 
     /**
-     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered
-     * on the vector
-     * .<br>
-     * <ul>
-     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered on the vector
+     * .<br> <ul> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
      *
-     * @param point    The position of the point.
+     * @param point The position of the point.
      * @param diameter The diameter of the circle.
      */
     default void circlePoint(Vector2D point, double diameter) {
@@ -79,12 +73,9 @@ public interface Renderer {
     }
 
     /**
-     * Connects the points given in the List in order of their appearance with a line.<br>
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Connects the points given in the List in order of their appearance with a line.<br> <ul> <li> The line width of
+     * the point is determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The
+     * color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
      * @param vectors The points to be connected with a line.
      */
@@ -97,27 +88,21 @@ public interface Renderer {
     }
 
     /**
-     * Draws a straight by connecting the given start and end points.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Draws a straight by connecting the given start and end points. <ul> <li> The line width of the point is
+     * determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color is
+     * determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
      * @param start The starting point.
-     * @param end   The ending point.
+     * @param end The ending point.
      */
     default void drawStraight(Vector2D start, Vector2D end) {
         getGraphicsContext().strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
     /**
-     * Draws the given line segment.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Draws the given line segment. <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
+     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
+     * GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
      * @param lineSegment The line segment.
      */
@@ -126,12 +111,10 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given line segment.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Draws the given line segment. <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
+     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
+     * GraphicsContext#setStroke(Paint)}).</li> </ul>
+     *
      * @param dashes An array of finite non negative dash length.
      * @param lineSegment The line segment.
      */
@@ -142,12 +125,9 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given line. The line is drawn over the whole displayed Canvas.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Draws the given line. The line is drawn over the whole displayed Canvas. <ul> <li> The line width of the point is
+     * determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color is
+     * determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
      * @param line The line.
      */
@@ -173,12 +153,9 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given parabola. The parabola is drawn over the whole displayed Canvas.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * Draws the given parabola. The parabola is drawn over the whole displayed Canvas. <ul> <li> The line width of the
+     * point is determined by the LineWidth (set by {@link GraphicsContext#setLineWidth(double)}).</li> <li> The color
+     * is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
      * @param parabola The parabola.
      */
@@ -189,13 +166,11 @@ public interface Renderer {
     /**
      * Draws the given parabola. The parabola is drawn over the whole displayed Canvas. The sampling depth gives the
      * number of points that are connected to draw the parabola. The higher the depth, the finer the parabola is drawn.
-     * <ul>
-     * <li> The line width of the point is determined by the LineWidth (set by
-     * {@link GraphicsContext#setLineWidth(double)}).</li>
-     * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
-     * </ul>
+     * <ul> <li> The line width of the point is determined by the LineWidth (set by {@link
+     * GraphicsContext#setLineWidth(double)}).</li> <li> The color is determined by the StrokeColor (set by {@link
+     * GraphicsContext#setStroke(Paint)}).</li> </ul>
      *
-     * @param parabola      The parabola.
+     * @param parabola The parabola.
      * @param samplingDepth The number of points that are connected to draw the parabola.
      */
     default void drawParabola(Parabola parabola, int samplingDepth) {
@@ -251,13 +226,11 @@ public interface Renderer {
     }
 
     /**
-     * Draws the given text centered on the given vector.
-     * <ul>
-     * <li> The font settings are determined by the graphics context.</li>
-     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
+     * Draws the given text centered on the given vector. <ul> <li> The font settings are determined by the graphics
+     * context.</li> <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
      * </ul>
      *
-     * @param text   The text to draw.
+     * @param text The text to draw.
      * @param center The point to center onto.
      */
     default void drawTextCenteredOnPoint(String text, Vector2D center) {
@@ -267,13 +240,29 @@ public interface Renderer {
         getGraphicsContext().fillText(text, x, y);
     }
 
-    default void drawRectangle(Vector2D firstCorner, Vector2D secondCorner) {
-        Rectangle rectange = new Rectangle(firstCorner, secondCorner);
-        getGraphicsContext().fillRect(firstCorner.getX(), firstCorner.getY(), rectange.getHeight(), rectange.getWidth());
+    /**
+     * Draws the given rectangle. <ul> <li> The color is determined by the FillColor (set by {@link
+     * GraphicsContext#setFill(Paint)}).</li> </ul>
+     *
+     * @param topLeftCorner The top left corner of the rectangle;
+     * @param bottomRightCorner The bottom right corner of the rectangle.
+     */
+    default void drawRectangle(Vector2D topLeftCorner, Vector2D bottomRightCorner) {
+        Rectangle rectangle = new Rectangle(topLeftCorner, bottomRightCorner);
+        getGraphicsContext().fillRect(topLeftCorner.getX(), topLeftCorner.getY(), rectangle.getHeight(), rectangle.getWidth());
     }
 
+    /**
+     * Draws a dragged rectangle evaluating and rearranging the corners, such that there is always a valid rectangle
+     * that can be filled. <ul> <li> The color is determined by the FillColor (set by {@link
+     * GraphicsContext#setFill(Paint)}).</li> </ul>
+     *
+     * @param firstCorner The first corner.
+     * @param secondCorner The second (dragged) corner.
+     * @return The rectangle that was drawn.
+     */
     default Rectangle drawDraggedRectangle(Vector2D firstCorner, Vector2D secondCorner) {
-        Rectangle rectangle = null;
+        Rectangle rectangle;
         if (firstCorner.isLeftOf(secondCorner) && firstCorner.isAbove(secondCorner)) {
             rectangle = new Rectangle(firstCorner, secondCorner);
         } else if (firstCorner.isLeftOf(secondCorner) && firstCorner.isBelow(secondCorner)) {
@@ -287,5 +276,22 @@ public interface Renderer {
         return rectangle;
     }
 
+    /**
+     * Fills the polygon. <ul> <li> The color is determined by the FillColor (set by {@link
+     * GraphicsContext#setFill(Paint)}).</li> </ul>
+     * @param polygon The polygon to draw.
+     */
+    default void fillPolygon(Polygon polygon) {
+        int numberOfVertices = polygon.getNumberOfVertices();
+        double[] xPositions = new double[polygon.getNumberOfVertices()];
+        double[] yPositions = new double[polygon.getNumberOfVertices()];
+        Vector2D[] vertices = polygon.getVertices();
+        for (int index = 0; index < vertices.length; index++) {
+            Vector2D vertex = vertices[index];
+            xPositions[index] = vertex.getX();
+            yPositions[index] = vertex.getY();
+        }
+        getGraphicsContext().fillPolygon(xPositions, yPositions, numberOfVertices);
+    }
 
 }

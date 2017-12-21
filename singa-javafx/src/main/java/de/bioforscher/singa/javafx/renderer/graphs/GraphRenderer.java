@@ -1,7 +1,10 @@
 package de.bioforscher.singa.javafx.renderer.graphs;
 
 import de.bioforscher.singa.javafx.renderer.Renderer;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Edge;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
@@ -10,9 +13,12 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -42,22 +48,25 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         this.start();
     }
 
+    public void relaxGraph(GraphType graph) {
+        Thread graphProducer = new Thread(new RelaxationProducer<>(this, graph, 100));
+        graphProducer.start();
+        this.start();
+    }
+
     @Override
     public void handle(long now) {
         GraphType graph;
         while ((graph = this.graphQueue.poll()) != null) {
-            fillBackground();
-            if (this.renderBeforeFunction != null) {
-                this.renderBeforeFunction.apply(graph);
-            }
             render(graph);
-            if (this.renderAfterFunction != null) {
-                this.renderAfterFunction.apply(graph);
-            }
         }
     }
 
     public void render(GraphType graph) {
+        fillBackground();
+        if (renderBeforeFunction != null) {
+            renderBeforeFunction.apply(graph);
+        }
         // render edges
         if (this.renderingOptions.isDisplayingEdges()) {
             graph.getEdges().forEach(this::drawEdge);
@@ -65,6 +74,9 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         // render nodes
         if (this.renderingOptions.isDisplayingNodes()) {
             graph.getNodes().forEach(this::drawNode);
+        }
+        if (renderAfterFunction != null) {
+            renderAfterFunction.apply(graph);
         }
     }
 
@@ -102,6 +114,28 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         getGraphicsContext().setStroke(this.renderingOptions.getEdgeColor());
         // draw
         drawLineSegment(new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
+    }
+
+    public void renderVoronoi(boolean flag) {
+        if (flag) {
+            this.renderBeforeFunction = graph -> {
+                List<Vector2D> sites = graph.getNodes().stream().map(Node::getPosition).collect(Collectors.toList());
+                final VoronoiDiagram voronoiDiagram = VoronoiGenerator.generateVoronoiDiagram(sites, new Rectangle(drawingWidth.doubleValue(), drawingHeight.doubleValue()));
+                drawDiagram(voronoiDiagram);
+                return null;
+            };
+        } else  {
+            this.renderBeforeFunction = null;
+        }
+    }
+
+    private void drawDiagram(VoronoiDiagram diagram) {
+        getGraphicsContext().setStroke(Color.SEAGREEN);
+        getGraphicsContext().setLineWidth(4);
+        diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+        getGraphicsContext().setLineWidth(6);
+        getGraphicsContext().setFill(Color.SEAGREEN.darker());
+        diagram.getVertices().forEach(this::drawPoint);
     }
 
     public DoubleProperty drawingWidthProperty() {

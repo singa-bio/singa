@@ -27,7 +27,7 @@ public class Parabola {
     /**
      * Creates a new Parabola given a focus and the directrix.
      *
-     * @param focus The focus.
+     * @param focus     The focus.
      * @param directrix The directrix.
      */
     public Parabola(Vector2D focus, Line directrix) {
@@ -123,14 +123,19 @@ public class Parabola {
 
     public SortedSet<Vector2D> getIntercepts(Line line) {
         SortedSet<Vector2D> intercepts = new TreeSet<>(Comparator.comparing(Vector2D::getX));
-        double x1 = (-this.b + line.getSlope() + Math.sqrt(
-                4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
-                        2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
-        double x2 = (-this.b + line.getSlope() - Math.sqrt(
-                4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
-                        2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
-        intercepts.add(new Vector2D(x1, line.getYValue(x1)));
-        intercepts.add(new Vector2D(x2, line.getYValue(x2)));
+        if (line.isVertical()) {
+            double x = line.getXIntercept();
+            intercepts.add(new Vector2D(x, getYValue(x)));
+        } else {
+            double x1 = (-this.b + line.getSlope() + Math.sqrt(
+                    4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
+                            2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
+            double x2 = (-this.b + line.getSlope() - Math.sqrt(
+                    4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
+                            2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
+            intercepts.add(new Vector2D(x1, line.getYValue(x1)));
+            intercepts.add(new Vector2D(x2, line.getYValue(x2)));
+        }
         return intercepts;
     }
 
@@ -169,7 +174,6 @@ public class Parabola {
      * @return The y-value.
      */
     public double getYValue(double x) {
-
         return this.a * x * x + this.b * x + this.c;
     }
 

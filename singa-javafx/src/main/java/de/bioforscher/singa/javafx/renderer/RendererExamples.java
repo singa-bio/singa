@@ -52,7 +52,7 @@ public class RendererExamples extends Application implements Renderer {
         Parabola parabola = new Parabola(focus, directrix);
         drawParabola(parabola, 30);
 
-        Line randomLine = new Line(70, 0.1);
+        Line randomLine = new Line(new Vector2D(140, 60), Double.POSITIVE_INFINITY);
         getGraphicsContext().setStroke(Color.DARKGOLDENROD);
         drawLine(randomLine);
         getGraphicsContext().setLineWidth(5);
