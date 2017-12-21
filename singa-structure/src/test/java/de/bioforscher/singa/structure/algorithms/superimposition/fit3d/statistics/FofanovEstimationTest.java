@@ -10,6 +10,7 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
+    @Ignore
     public void shouldCalculatePvalues() throws IOException, InterruptedException {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
         StructureParser.MultiParser multiParser = StructureParser.online()
@@ -59,6 +61,7 @@ public class FofanovEstimationTest {
     }
 
     @Test
+    @Ignore
     public void shouldCalculatePvaluesWithCorrectnessCutoff() {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);

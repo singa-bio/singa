@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
+import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class EnclosedCompartment extends CellSection {
 
             // try to traverse bridge
             if (!foundNeighbour) {
-                LinkedList<AutomatonNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
+                GraphPath<AutomatonNode> nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
                         currentNode -> isNewBorder(nodes, currentNode), this::isInThisCompartment);
                 if (nextBest != null) {
                     for (AutomatonNode node : nextBest) {

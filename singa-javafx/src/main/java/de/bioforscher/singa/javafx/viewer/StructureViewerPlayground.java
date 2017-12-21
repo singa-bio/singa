@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.javafx.geometry.AbacusVisualization;
-import de.bioforscher.singa.mathematics.algorithms.geometry.Abacus;
+import de.bioforscher.singa.mathematics.algorithms.geometry.OttVolumePrediction;
 import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import de.bioforscher.singa.structure.model.oak.*;
 import javafx.application.Application;
@@ -35,7 +35,7 @@ public class StructureViewerPlayground {
         final List<Sphere> spheres = Structures.convertToSpheres(structure);
         StructureViewer.spheres = spheres;
 
-        Abacus abacus = new Abacus();
+        OttVolumePrediction abacus = new OttVolumePrediction();
         abacus.setSpheres(spheres);
         abacus.calculate();
         AbacusVisualization visualization = new AbacusVisualization(abacus.getSlices(), abacus.getScale(), abacus.getxMin(), abacus.getyMin(), abacus.getzMin());

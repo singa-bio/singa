@@ -8,11 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Predicts the molar volume of a set of spheres.
+ *
+ * <pre>
+ *     Ott, Rolf, et al. "A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres."
+ *     Mathematical and computer modelling 16.12 (1992): 83-98.
+ * </pre>
+ *
  * @author cl
  */
-public class Abacus {
+public class OttVolumePrediction {
 
-    private static final Logger logger = LoggerFactory.getLogger(Abacus.class);
+    private static final Logger logger = LoggerFactory.getLogger(OttVolumePrediction.class);
 
     private static final int DEFAULT_CUBE_SIDE_LENGTH = 200;
 
@@ -46,7 +53,7 @@ public class Abacus {
     private int numberOfSpheres;
     private double scale;
 
-    public Abacus() {
+    public OttVolumePrediction() {
         slices = new ArrayList<>();
     }
 
@@ -117,7 +124,7 @@ public class Abacus {
     }
 
     public static double predict(List<Sphere> spheres) {
-        Abacus abacus = new Abacus();
+        OttVolumePrediction abacus = new OttVolumePrediction();
         abacus.spheres = spheres;
         return abacus.calculate();
     }

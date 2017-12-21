@@ -43,6 +43,6 @@ public class FeatureOrigin {
 
     @Override
     public String toString() {
-        return originType == MANUAL_ANNOTATION ? "manual annotation" : name + " (" + publication + ")";
+        return originType == MANUAL_ANNOTATION ? "manual annotation" : originType + " " + name;
     }
 }

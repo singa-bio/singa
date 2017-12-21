@@ -12,7 +12,5 @@ public class Structure3D extends AbstractFeature<AtomContainer> {
     public Structure3D(AtomContainer structure, FeatureOrigin featureOrigin) {
         super(structure, featureOrigin);
     }
-
-
-
+    
 }

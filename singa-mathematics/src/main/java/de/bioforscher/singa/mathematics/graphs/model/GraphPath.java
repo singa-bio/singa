@@ -9,6 +9,14 @@ public class GraphPath<NodeType> implements List<NodeType>, Deque<NodeType> {
 
     private LinkedList<NodeType> path;
 
+    public GraphPath() {
+        path = new LinkedList<>();
+    }
+
+    public GraphPath(LinkedList<NodeType> path) {
+        this.path = path;
+    }
+
     @Override
     public void addFirst(NodeType node) {
         path.addFirst(node);

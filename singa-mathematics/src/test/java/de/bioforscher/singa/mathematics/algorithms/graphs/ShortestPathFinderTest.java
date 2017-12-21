@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
@@ -8,7 +9,6 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.LinkedList;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +30,7 @@ public class ShortestPathFinderTest {
     @Test
     public void shouldFindWithPredicate() {
         RegularNode source = linearGraph.getNode(9);
-        LinkedList<RegularNode> shortestPath = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
+        GraphPath<RegularNode> shortestPath = ShortestPathFinder.findBasedOnPredicate(source, n -> n.getIdentifier() == 1);
         Objects.requireNonNull(shortestPath);
         int start = 9;
         for (RegularNode node: shortestPath) {

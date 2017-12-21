@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMassProvider;
-import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolumeProvider;
+import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolumePredictor;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.IllegalFeatureRequestException;
@@ -21,7 +21,7 @@ public class FeatureRegistry {
 
     static {
         addProviderForFeature(MolarMass.class, MolarMassProvider.class);
-        addProviderForFeature(MolarVolume.class, MolarVolumeProvider.class);
+        addProviderForFeature(MolarVolume.class, MolarVolumePredictor.class);
     }
 
     private final Map<Class<? extends Feature>, Class<? extends FeatureProvider>> featureRegistry;

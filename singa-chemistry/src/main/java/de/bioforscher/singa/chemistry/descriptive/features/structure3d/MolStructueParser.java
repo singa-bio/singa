@@ -59,7 +59,7 @@ public class MolStructueParser {
             final int charge = Integer.valueOf(line.substring(36, 39).trim());
             // create entities
             final Element element = optinalElement.orElse(ElementProvider.UNKOWN);
-            final OakAtom atom = new OakAtom(blockIndex, element, element.getSymbol(), new Vector3D(x, y, z));
+            final OakAtom atom = new OakAtom(blockIndex, element.asIon(charge), element.getSymbol(), new Vector3D(x, y, z));
             atoms.add(atom);
         }
 
