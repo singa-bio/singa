@@ -14,7 +14,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="module" module-name="singa-structure" />
+    <orderEntry type="library" name="Maven: de.bioforscher.singa:singa-structure:0.3.0-alpha" level="project" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-core" />
     <orderEntry type="module" module-name="singa-features" />
