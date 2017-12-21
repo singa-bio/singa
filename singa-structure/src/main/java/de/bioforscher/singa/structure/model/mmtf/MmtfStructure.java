@@ -47,6 +47,7 @@ public class MmtfStructure implements Structure {
      * Creates a new {@link MmtfStructure}
      *
      * @param bytes The original undecoded bytes.
+     * @param deflate Signifies if the byte array should be deflated.
      */
     public MmtfStructure(byte[] bytes, boolean deflate) {
         this.bytes = bytes;

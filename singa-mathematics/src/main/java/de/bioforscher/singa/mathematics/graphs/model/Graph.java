@@ -48,6 +48,7 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
     /**
      * Removes the node with the given identifier from the graph. Edges connected to this node will also be removed.
      *
+     * @param identifier The identifier of the node to be removed.
      * @return The node that has been removed.
      */
     NodeType removeNode(IdentifierType identifier);

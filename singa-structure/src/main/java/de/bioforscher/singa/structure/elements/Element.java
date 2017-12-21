@@ -83,6 +83,7 @@ public class Element {
      * @param protonNumber The proton number.
      * @param atomicWeight The atomic weight.
      * @param electronConfiguration The electron configuration.
+     * @param vanDerWaalsRadius The van der Waals radius.
      */
     public Element(String name, String symbol, int protonNumber, double atomicWeight, String electronConfiguration,  double vanDerWaalsRadius) {
         this(name, symbol, protonNumber, Quantities.getQuantity(atomicWeight, GRAM_PER_MOLE), electronConfiguration);

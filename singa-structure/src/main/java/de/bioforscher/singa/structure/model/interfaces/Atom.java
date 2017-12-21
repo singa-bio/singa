@@ -29,6 +29,8 @@ public interface Atom {
 
     /**
      * Sets the position in three dimensional space.
+     *
+     * @param position The position.
      */
     void setPosition(Vector3D position);
 

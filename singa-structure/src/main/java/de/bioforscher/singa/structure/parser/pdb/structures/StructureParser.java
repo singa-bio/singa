@@ -921,6 +921,7 @@ public class StructureParser {
          * Creates a new reference for a local pdb installation.
          *
          * @param localPdbLocation The location of the local PDB installation.
+         * @param sourceLocation The type of file used (either {@link SourceLocation#OFFLINE_MMTF} or {@link SourceLocation#OFFLINE_PDB}).
          */
         public LocalPDB(String localPdbLocation, SourceLocation sourceLocation) {
             this.sourceLocation = sourceLocation;

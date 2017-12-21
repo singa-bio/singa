@@ -7,12 +7,12 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * The edges of voronoi diagrams. A left and right side is assigned to each edge, as well as its starting and ending
  * point. The direction of  the line is considered as follows (relative to the left side):
  * <pre>
- * upward: left.x < right.x
- * downward: left.x > right.x
+ * upward: left.x lt right.x
+ * downward: left.x gt right.x
  * horizontal: left.x == right.x
- * upward: left.x < right.x
- * rightward: left.y < right.y
- * leftward: left.y > right.y
+ * upward: left.x lt right.x
+ * rightward: left.y lt right.y
+ * leftward: left.y gt right.y
  * vertical: left.y == right.y
  * </pre>
  */
