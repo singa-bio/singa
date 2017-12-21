@@ -84,8 +84,8 @@ public class RegularMatrix implements Matrix, Serializable {
      * Tries to create a new Matrix of the given class with the given values. This method should be used sparingly! Only
      * matrices can be constructed that provide a double[][] constructor.
      *
-     * @param values        The values of the matrix.
-     * @param matrixClass   The class of the matrix.
+     * @param values The values of the matrix.
+     * @param matrixClass The class of the matrix.
      * @param <MatrixClass> An implementation of {@link Matrix} that extends the Matrix interface
      * @return The new matrix.
      */

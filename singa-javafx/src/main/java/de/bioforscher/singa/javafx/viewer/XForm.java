@@ -38,33 +38,25 @@ import javafx.scene.transform.Translate;
 
 public class XForm extends Group {
 
-    public enum RotateOrder {
-        XYZ, XZY, YXZ, YZX, ZXY, ZYX
-    }
-
-    public Translate translate = new Translate();
-    public Translate p = new Translate();
-    public Translate ip = new Translate();
-
-    public Rotate rx = new Rotate();
+    public final Translate translate = new Translate();
+    public final Translate p = new Translate();
+    public final Translate ip = new Translate();
+    public final Rotate rx = new Rotate();
+    public final Rotate ry = new Rotate();
+    public final Rotate rz = new Rotate();
+    public final Scale s = new Scale();
 
     {
         rx.setAxis(Rotate.X_AXIS);
     }
 
-    public Rotate ry = new Rotate();
-
     {
         ry.setAxis(Rotate.Y_AXIS);
     }
 
-    public Rotate rz = new Rotate();
-
     {
         rz.setAxis(Rotate.Z_AXIS);
     }
-
-    public Scale s = new Scale();
 
     public XForm() {
         super();
@@ -200,6 +192,10 @@ public class XForm extends Group {
         ip.setX(0.0);
         ip.setY(0.0);
         ip.setZ(0.0);
+    }
+
+    public enum RotateOrder {
+        XYZ, XZY, YXZ, YZX, ZXY, ZYX
     }
 
 }

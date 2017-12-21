@@ -28,62 +28,50 @@ public class StructureCollector {
      * The logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(StructureCollector.class);
-
+    /**
+     * The string builder building the title.
+     */
+    private final StringBuilder titleBuilder = new StringBuilder();
+    /**
+     * A cache of all atoms identified by unique atom identifiers.
+     */
+    private final Map<UniqueAtomIdentifer, OakAtom> atoms;
+    /**
+     * A cache of all leafs and their three letter codes.
+     */
+    private final Map<LeafIdentifier, String> leafCodes;
+    /**
+     * Remembers all leafs that have been parsed from HETATM entries.
+     */
+    private final Set<LeafIdentifier> hetAtoms;
+    /**
+     * Remembers all leafs the were part of the consecutive part of the chain.
+     */
+    private final Set<LeafIdentifier> notInConsecutiveChain;
+    /**
+     * Chains that have already been terminated by a terminate record.
+     */
+    private final Set<String> closedChains;
+    /**
+     * The reducer containing the information of what should be parsed and how it should be done.
+     */
+    private final StructureParser.Reducer reducer;
     /**
      * The currently parsed pdb file.
      */
     private String currentPDB = LeafIdentifier.DEFAULT_PDB_IDENTIFIER;
-
     /**
      * The current model.
      */
     private int currentModel = LeafIdentifier.DEFAULT_MODEL_IDENTIFIER;
-
     /**
      * The current chain.
      */
     private String currentChain = LeafIdentifier.DEFAULT_CHAIN_IDENTIFIER;
-
-    /**
-     * The string builder building the title.
-     */
-    private StringBuilder titleBuilder = new StringBuilder();
-
-    /**
-     * A cache of all atoms identified by unique atom identifiers.
-     */
-    private Map<UniqueAtomIdentifer, OakAtom> atoms;
-
-    /**
-     * A cache of all leafs and their three letter codes.
-     */
-    private Map<LeafIdentifier, String> leafCodes;
-
-    /**
-     * Remembers all leafs that have been parsed from HETATM entries.
-     */
-    private Set<LeafIdentifier> hetAtoms;
-
-    /**
-     * Remembers all leafs the were part of the consecutive part of the chain.
-     */
-    private Set<LeafIdentifier> notInConsecutiveChain;
-
-    /**
-     * Chains that have already been terminated by a terminate record.
-     */
-    private Set<String> closedChains;
-
     /**
      * The root node of the content tree.
      */
     private ContentTreeNode contentTree;
-
-    /**
-     * The reducer containing the information of what should be parsed and how it should be done.
-     */
-    private StructureParser.Reducer reducer;
-
     /**
      * The list of relevant pdb lines.
      */
@@ -263,7 +251,7 @@ public class StructureCollector {
     /**
      * Collects and creates the actual structure from all remaining lines.
      *
-     * @return The parsde structure.
+     * @return The parsed structure.
      */
     private Structure collectStructure() {
         collectAtomInformation();
@@ -275,7 +263,6 @@ public class StructureCollector {
         structure.setPdbIdentifier(contentTree.getIdentifier());
         structure.setTitle(titleBuilder.toString());
 
-        int chainGraphId = 0;
         for (ContentTreeNode modelNode : contentTree.getNodesFromLevel(ContentTreeNode.StructureLevel.MODEL)) {
             logger.debug("Collecting chains for model {}", modelNode.getIdentifier());
             OakModel model = new OakModel(Integer.valueOf(modelNode.getIdentifier()));
@@ -314,6 +301,10 @@ public class StructureCollector {
         for (String currentLine : pdbLines) {
             String currentRecordType = AtomToken.RECORD_TYPE.extract(currentLine);
             if (AtomToken.RECORD_PATTERN.matcher(currentRecordType).matches()) {
+                // TODO move this to reducer?
+                if (!reducer.options.isHeteroAtoms() && currentRecordType.equals("HETATM")) {
+                    continue;
+                }
                 UniqueAtomIdentifer identifier = createUniqueAtomIdentifier(currentLine);
                 atoms.put(identifier, AtomToken.assembleAtom(currentLine));
                 LeafIdentifier leafIdentifier = new LeafIdentifier(identifier.getPdbIdentifier(),
@@ -381,12 +372,14 @@ public class StructureCollector {
         // log it
         logger.trace("Creating leaf {}-{} in chain {}", leafNode.getIdentifier(), leafName, chainIdentifer);
         // find most suitable implementation
-        if (isPlainAminoAcid(leafName)) {
-            AminoAcidFamily family = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName).get();
+        Optional<AminoAcidFamily> aminoAcidFamilyOptional = AminoAcidFamily.getAminoAcidTypeByThreeLetterCode(leafName);
+        if (aminoAcidFamilyOptional.isPresent()) {
+            AminoAcidFamily family = aminoAcidFamilyOptional.get();
             return createAminoAcid(leafIdentifier, family, atoms);
         }
-        if (isPlainNucleotide(leafName)) {
-            NucleotideFamily family = NucleotideFamily.getNucleotideByThreeLetterCode(leafName).get();
+        Optional<NucleotideFamily> nucleotideFamilyOptional = NucleotideFamily.getNucleotideByThreeLetterCode(leafName);
+        if (nucleotideFamilyOptional.isPresent()) {
+            NucleotideFamily family = nucleotideFamilyOptional.get();
             return createNucleotide(leafIdentifier, family, atoms);
         }
         if (reducer.options.isRetrievingLigandInformation()) {

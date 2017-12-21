@@ -20,21 +20,21 @@ import static org.junit.Assert.assertTrue;
 public class StructuresTest {
 
     @Test
-    public void calculateDistanceMatrix() throws Exception {
-        Chain chain = StructureParser.online()
+    public void calculateDistanceMatrix() {
+        Chain chain = StructureParser.pdb()
                 .pdbIdentifier("1HRR")
                 .parse()
                 .getFirstChain();
         final LabeledSymmetricMatrix<LeafSubstructure<?>> distanceMatrix = Structures.calculateDistanceMatrix(chain);
         assertTrue(distanceMatrix.getMainDiagonal().isZero());
-        assertEquals(5.608368621087599, distanceMatrix.getElement(5, 3), 0.0);
-        assertEquals(7.765433778659168, distanceMatrix.getElement(17, 18), 0.0);
-        assertEquals(21.53673508245474, distanceMatrix.getElement(23, 11), 0.0);
+        assertEquals(5.461240152199864, distanceMatrix.getElement(5, 3), 0.0);
+        assertEquals(3.792725405298938, distanceMatrix.getElement(17, 18), 0.0);
+        assertEquals(20.372810778093434, distanceMatrix.getElement(23, 11), 0.0);
     }
 
     @Test
     public void calculateAtomDistanceMatrix() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("5kqr")
                 .chainIdentifier("A")
                 .parse();
@@ -48,8 +48,8 @@ public class StructuresTest {
     }
 
     @Test
-    public void isAlphaCarbonStructure() throws Exception {
-        Structure alphaCarbonStructure = StructureParser.online()
+    public void isAlphaCarbonStructure() {
+        Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("1hrb")
                 .parse();
         assertTrue(Structures.isAlphaCarbonStructure(alphaCarbonStructure));
@@ -57,7 +57,7 @@ public class StructuresTest {
 
     @Test
     public void isBackboneOnlyStructure() {
-        Structure alphaCarbonStructure = StructureParser.online()
+        Structure alphaCarbonStructure = StructureParser.pdb()
                 .pdbIdentifier("2plp")
                 .parse();
         assertTrue(Structures.isBackboneStructure(alphaCarbonStructure));

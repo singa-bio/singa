@@ -36,7 +36,7 @@ public class YoungCorrelation implements Correlation<Diffusivity> {
      * @return The Diffusivity of the entity in cm^2/s.
      */
     @Override
-    public  <FeaturableType extends Featureable> Diffusivity predict(FeaturableType featureable) {
+    public <FeaturableType extends Featureable> Diffusivity predict(FeaturableType featureable) {
         final double molarMass = featureable.getFeature(MolarMass.class).getValue().doubleValue();
         // D = coefficient * (T/n*M^1/3)
         final double diffusivity = YOUNG_COEFFICIENT.getValue().doubleValue()

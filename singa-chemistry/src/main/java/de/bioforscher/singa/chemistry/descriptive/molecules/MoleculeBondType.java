@@ -2,6 +2,9 @@ package de.bioforscher.singa.chemistry.descriptive.molecules;
 
 import java.util.stream.Stream;
 
+/**
+ * @author cl
+ */
 public enum MoleculeBondType {
 
     SINGLE_BOND('-'),
@@ -14,17 +17,10 @@ public enum MoleculeBondType {
     UNCONNECTED('.');
     // '.' is a "non bond"
 
-    /**
-     * @author cl
-     */
-    private char smilesRepresentation;
+    private final char smilesRepresentation;
 
     MoleculeBondType(char smilesRepresentation) {
         this.smilesRepresentation = smilesRepresentation;
-    }
-
-    public char getSmilesRepresentation() {
-        return smilesRepresentation;
     }
 
     public static MoleculeBondType getBondForSMILESSymbol(char smilesSymbol) {
@@ -32,5 +28,9 @@ public enum MoleculeBondType {
                 .filter(type -> type.getSmilesRepresentation() == smilesSymbol)
                 .findAny()
                 .orElse(SINGLE_BOND);
+    }
+
+    public char getSmilesRepresentation() {
+        return smilesRepresentation;
     }
 }

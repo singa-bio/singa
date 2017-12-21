@@ -23,12 +23,12 @@ public class UniqueParameterList<Type extends Comparable<Type>> {
         return parameterValues;
     }
 
-    public ParameterValue<Type> getValue(int index) {
-        return parameterValues.get(index);
-    }
-
     public void setValues(List<ParameterValue<Type>> parameterValues) {
         this.parameterValues = parameterValues;
+    }
+
+    public ParameterValue<Type> getValue(int index) {
+        return parameterValues.get(index);
     }
 
     @Override

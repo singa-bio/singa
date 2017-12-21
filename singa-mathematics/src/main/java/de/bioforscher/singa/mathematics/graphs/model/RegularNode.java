@@ -22,7 +22,7 @@ public class RegularNode extends AbstractNode<RegularNode, Vector2D, Integer> {
      * Creates a new regular node with the given identifier and the specified position.
      *
      * @param identifier The identifier.
-     * @param position   The position.
+     * @param position The position.
      */
     public RegularNode(int identifier, Vector2D position) {
         super(identifier, position);

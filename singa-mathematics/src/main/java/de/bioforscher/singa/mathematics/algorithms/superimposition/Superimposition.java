@@ -20,6 +20,7 @@ public interface Superimposition<T> {
 
     /**
      * Returns the reference that was used for this {@link Superimposition}.
+     *
      * @return The reference of this {@link Superimposition}.
      */
     List<T> getReference();
@@ -59,6 +60,7 @@ public interface Superimposition<T> {
 
     /**
      * Returns the candidate that was used for this {@link Superimposition}.
+     *
      * @return The candidate of this {@link Superimposition}.
      */
     List<T> getCandidate();

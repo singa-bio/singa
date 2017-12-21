@@ -19,11 +19,11 @@ import static de.bioforscher.singa.structure.algorithms.superimposition.fit3d.re
  */
 public class XieScore {
 
-    private double score;
+    private final double score;
+    private final SubstitutionMatrix substitutionMatrix;
+    private final SubstructureSuperimposition substructureSuperimposition;
     private double normalizedScore;
     private double significance;
-    private SubstitutionMatrix substitutionMatrix;
-    private SubstructureSuperimposition substructureSuperimposition;
 
     private XieScore(SubstitutionMatrix substitutionMatrix, SubstructureSuperimposition substructureSuperimposition) {
         this.substitutionMatrix = substitutionMatrix;

@@ -16,6 +16,11 @@ import java.util.*;
 public class OakStructure implements Structure {
 
     /**
+     * The branches this structure contains.
+     */
+    private final TreeMap<Integer, OakModel> models;
+
+    /**
      * The PDB identifier of the structure.
      */
     private String pdbIdentifier;
@@ -24,11 +29,6 @@ public class OakStructure implements Structure {
      * The title of the structure.
      */
     private String title;
-
-    /**
-     * The branches this structure contains.
-     */
-    private TreeMap<Integer, OakModel> models;
 
     private int lastAddedAtomIdentifier;
 
@@ -42,7 +42,7 @@ public class OakStructure implements Structure {
         models = new TreeMap<>();
         lastAddedAtomIdentifier = structure.lastAddedAtomIdentifier;
         for (OakModel model : structure.models.values()) {
-            models.put(model.getIdentifier(), model.getCopy());
+            models.put(model.getModelIdentifier(), model.getCopy());
         }
     }
 
@@ -52,8 +52,8 @@ public class OakStructure implements Structure {
     }
 
     public void setPdbIdentifier(String pdbIdentifier) {
-        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches()) {
-            this.pdbIdentifier = pdbIdentifier;
+        if (PDBIdentifier.PATTERN.matcher(pdbIdentifier).matches() || pdbIdentifier.equals(LeafIdentifier.DEFAULT_PDB_IDENTIFIER)) {
+            this.pdbIdentifier = pdbIdentifier.toLowerCase();
         } else {
             throw new IllegalArgumentException("The pdb identifier must match to the pdb identifier pattern.");
         }
@@ -87,16 +87,13 @@ public class OakStructure implements Structure {
     }
 
     public void addModel(OakModel model) {
-        models.put(model.getIdentifier(), model);
+        models.put(model.getModelIdentifier(), model);
     }
 
     @Override
     public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
         final Optional<Model> optionalModel = getModel(modelIdentifier);
-        if (optionalModel.isPresent()) {
-            return optionalModel.get().getChain(chainIdentifier);
-        }
-        return Optional.empty();
+        return optionalModel.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
@@ -124,11 +121,13 @@ public class OakStructure implements Structure {
 
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
-        final Optional<Chain> chain = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
-        if (chain.isPresent()) {
-            return chain.get().getLeafSubstructure(leafIdentifier);
-        }
-        return Optional.empty();
+        final Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
+        return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstModel().getFirstChain().getFirstLeafSubstructure();
     }
 
     @Override
@@ -160,9 +159,9 @@ public class OakStructure implements Structure {
             for (Chain chain : model.getAllChains()) {
                 for (LeafSubstructure leafSubstructure : chain.getAllLeafSubstructures()) {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
-                        if (atom.getIdentifier().equals(atomSerial)) {
-                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getIdentifier(),
-                                    chain.getIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
+                        if (atom.getAtomIdentifier().equals(atomSerial)) {
+                            UniqueAtomIdentifer identifier = new UniqueAtomIdentifer(pdbIdentifier, model.getModelIdentifier(),
+                                    chain.getChainIdentifier(), leafSubstructure.getIdentifier().getSerial(), leafSubstructure.getIdentifier().getInsertionCode(),
                                     atomSerial);
                             return Optional.of(new AbstractMap.SimpleEntry<>(identifier, atom));
                         }
@@ -173,6 +172,14 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
+    /**
+     * Adds an {@link Atom} to the {@link Structure}
+     * FIXME: atom serial overflow may happen (if exceeds 9999)
+     *
+     * @param chainIdentifier The identifier of the {@link Chain} to which it should be added.
+     * @param threeLetterCode The three-letter code of the associated {@link LeafSubstructure}.
+     * @param position The position of the {@link Atom}.
+     */
     public void addAtom(String chainIdentifier, String threeLetterCode, Vector3D position) {
         Optional<Chain> optionalChain = getFirstModel().getChain(chainIdentifier);
         if (optionalChain.isPresent()) {
@@ -212,14 +219,6 @@ public class OakStructure implements Structure {
     }
 
     @Override
-    public String toString() {
-        return "OakStructure{" +
-                "pdbIdentifier='" + pdbIdentifier + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -233,4 +232,10 @@ public class OakStructure implements Structure {
     public int hashCode() {
         return pdbIdentifier != null ? pdbIdentifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return flatToString();
+    }
+
 }

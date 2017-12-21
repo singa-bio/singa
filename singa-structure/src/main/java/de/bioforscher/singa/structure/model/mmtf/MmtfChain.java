@@ -1,10 +1,12 @@
 package de.bioforscher.singa.structure.model.mmtf;
 
 import de.bioforscher.singa.core.utility.Range;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.*;
@@ -20,37 +22,37 @@ public class MmtfChain implements Chain {
     /**
      * The original bytes kept to copy.
      */
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * The original data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The identifier of this chain.
      */
-    private String chainIdentifier;
+    private final String chainIdentifier;
 
     /**
      * The leaves that have already been requested.
      */
-    private Map<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
+    private final Map<Integer, MmtfLeafSubstructure<?>> cachedLeaves;
 
     /**
      * The indices of the relevant leaves in the group data arrays.
      */
-    private List<Integer> relevantGroups;
+    private final List<Integer> relevantGroups;
 
     /**
      * The generated leaf identifiers for all relevant leaves.
      */
-    private Map<Integer, LeafIdentifier> leafIdentifiers;
+    private final Map<Integer, LeafIdentifier> leafIdentifiers;
 
     /**
      * Contains the relevant atom ranges for all relevant leaves.
      */
-    private Map<Integer, Range<Integer>> atomRanges;
+    private final Map<Integer, Range<Integer>> atomRanges;
 
     /**
      * Creates a new {@link MmtfChain}.
@@ -103,15 +105,16 @@ public class MmtfChain implements Chain {
      */
     private MmtfChain(MmtfChain mmtfChain) {
         bytes = mmtfChain.bytes;
-        data = MmtfStructure.bytesToStructureData(bytes);
+        data = mmtfChain.data;
         chainIdentifier = mmtfChain.chainIdentifier;
+        cachedLeaves = new HashMap<>(mmtfChain.cachedLeaves);
         relevantGroups = new ArrayList<>(mmtfChain.relevantGroups);
         leafIdentifiers = new HashMap<>(mmtfChain.leafIdentifiers);
         atomRanges = new HashMap<>(mmtfChain.atomRanges);
     }
 
     @Override
-    public String getIdentifier() {
+    public String getChainIdentifier() {
         return chainIdentifier;
     }
 
@@ -142,8 +145,14 @@ public class MmtfChain implements Chain {
         } else {
             final Range<Integer> atomRange = atomRanges.get(internalIndex);
             MmtfLeafSubstructure<?> leaf = MmtfLeafFactory.createLeaf(data, bytes, leafIdentifiers.get(internalIndex), internalIndex, atomRange.getLowerBound(), atomRange.getUpperBound());
+            cachedLeaves.put(internalIndex, leaf);
             return Optional.of(leaf);
         }
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getLeafSubstructure(leafIdentifiers.values().iterator().next()).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
@@ -154,37 +163,47 @@ public class MmtfChain implements Chain {
         }
         leafIdentifiers.remove(internalIndex);
         cachedLeaves.remove(internalIndex);
+        // the Integer cast has to be there
         relevantGroups.remove((Integer) internalIndex);
         atomRanges.remove(internalIndex);
         return true;
     }
 
-    @Override
-    public Optional<Atom> getAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                return optionalAtom;
+    /**
+     * Removes all {@link LeafSubstructure}s from this container that are not referenced in the given
+     * {@link LeafSubstructureContainer}. Basically all LeafSubstructures are removed that do not match any of the
+     * given containers families. This method also keeps exchangeable families if any are defined.
+     * Further, this method does not cache the leafs that are being removed in contrary to the default implementation.
+     *
+     * @param leafSubstructuresToKeep The leaf structures that are kept.
+     */
+    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+        // this method is somewhat optimized for speed
+        // collect all containing types (own types <b>plus</b> exchangeable types) of the query motif
+        Set<String> relevantFamilies = new HashSet<>();
+        for (LeafSubstructure<?> leafSubstructure : leafSubstructuresToKeep.getAllLeafSubstructures()) {
+            relevantFamilies.add(leafSubstructure.getFamily().getThreeLetterCode().toUpperCase());
+            for (StructuralFamily structuralFamily : leafSubstructure.getExchangeableFamilies()) {
+                relevantFamilies.add(structuralFamily.getThreeLetterCode().toUpperCase());
             }
         }
-        return Optional.empty();
-    }
-
-    @Override
-    public void removeAtom(Integer atomIdentifier) {
-        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
-            final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(atomIdentifier);
+        // remove references by mmtf group name
+        final ListIterator<Integer> relevantGroupIterator = relevantGroups.listIterator();
+        while (relevantGroupIterator.hasNext()) {
+            int internalIndex = relevantGroupIterator.next();
+            final String groupFamily = data.getGroupName(data.getGroupTypeIndices()[internalIndex]);
+            if (!relevantFamilies.contains(groupFamily)) {
+                leafIdentifiers.remove(internalIndex);
+                atomRanges.remove(internalIndex);
+                relevantGroupIterator.remove();
             }
         }
     }
 
     @Override
-    public Chain getCopy() {
-        return new MmtfChain(this);
+    public int getNumberOfLeafSubstructures() {
+        return leafIdentifiers.size();
     }
-
 
     private int getInternalIndexForLeafIdentifier(LeafIdentifier leafIdentifier) {
         for (Map.Entry<Integer, LeafIdentifier> leafIdentifierEntry : leafIdentifiers.entrySet()) {
@@ -194,4 +213,47 @@ public class MmtfChain implements Chain {
         }
         return -1;
     }
+
+    @Override
+    public Optional<Atom> getAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+            if (atomOptional.isPresent()) {
+                return atomOptional;
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void removeAtom(Integer atomIdentifier) {
+        for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
+            final Optional<Atom> atomOptional = leafSubstructure.getAtom(atomIdentifier);
+            atomOptional.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
+        }
+    }
+
+    @Override
+    public Chain getCopy() {
+        return new MmtfChain(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MmtfChain mmtfChain = (MmtfChain) o;
+        return Objects.equals(chainIdentifier, mmtfChain.chainIdentifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chainIdentifier);
+    }
+
+    @Override
+    public String toString() {
+        return flatToString();
+    }
+
 }

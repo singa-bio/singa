@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 public class ConsensusAlignmentTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
     private List<StructuralMotif> input;
 
     @Before

@@ -15,29 +15,29 @@ import org.rcsb.mmtf.api.StructureDataInterface;
 public class MmtfAtom implements Atom {
 
     /**
-     * The original bytes kept to copy.
-     */
-    private byte[] bytes;
-
-    /**
      * The original mmtf data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The index of the parent leaf in the group data arrays.
      */
-    private int internalGroupIndex;
+    private final int internalGroupIndex;
 
     /**
      * Index of this atom in the associated group (e.g. N = 0, CA = 1, ...)
      */
-    private int groupPositionIndex;
+    private final int groupPositionIndex;
 
     /**
      * Index in atom data arrays (e.g. coordinates).
      */
-    private int internalAtomIndex;
+    private final int internalAtomIndex;
+
+    /**
+     * The cached position of the atom.
+     */
+    private Vector3D cachedPosition;
 
     /**
      * Creates a new {@link MmtfAtom}.
@@ -47,16 +47,23 @@ public class MmtfAtom implements Atom {
      * @param groupPositionIndex Index of this atom in the associated group.
      * @param internalAtomIndex Index in atom data arrays.
      */
-    MmtfAtom(StructureDataInterface data, byte[] bytes, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
-        this.bytes = bytes;
+    MmtfAtom(StructureDataInterface data, int internalGroupIndex, int groupPositionIndex, int internalAtomIndex) {
         this.data = data;
         this.internalGroupIndex = internalGroupIndex;
         this.internalAtomIndex = internalAtomIndex;
         this.groupPositionIndex = groupPositionIndex;
     }
 
+    public MmtfAtom(MmtfAtom mmtfAtom) {
+        data = mmtfAtom.data;
+        internalGroupIndex = mmtfAtom.internalGroupIndex;
+        internalAtomIndex = mmtfAtom.internalAtomIndex;
+        groupPositionIndex = mmtfAtom.groupPositionIndex;
+        cachedPosition = mmtfAtom.cachedPosition;
+    }
+
     @Override
-    public Integer getIdentifier() {
+    public Integer getAtomIdentifier() {
         return internalAtomIndex + 1;
     }
 
@@ -68,21 +75,28 @@ public class MmtfAtom implements Atom {
 
     @Override
     public Vector3D getPosition() {
-        // assemble position from internal atom identifier
-        return new Vector3D(data.getxCoords()[internalAtomIndex], data.getyCoords()[internalAtomIndex], data.getzCoords()[internalAtomIndex]);
+        if (cachedPosition == null) {
+            // assemble position from internal atom identifier
+            cachedPosition = new Vector3D(data.getxCoords()[internalAtomIndex], data.getyCoords()[internalAtomIndex], data.getzCoords()[internalAtomIndex]);
+        }
+        return cachedPosition;
+
     }
 
     @Override
     public void setPosition(Vector3D position) {
-        data.getxCoords()[internalAtomIndex] = (float) position.getX();
-        data.getyCoords()[internalAtomIndex] = (float) position.getY();
-        data.getzCoords()[internalAtomIndex] = (float) position.getZ();
+        cachedPosition = position;
     }
 
     @Override
     public Element getElement() {
         return ElementProvider.getElementBySymbol(data.getGroupElementNames(data.getGroupTypeIndices()[internalGroupIndex])[groupPositionIndex])
                 .orElse(ElementProvider.UNKOWN);
+    }
+
+    @Override
+    public Atom getCopy() {
+        return new MmtfAtom(this);
     }
 
     @Override

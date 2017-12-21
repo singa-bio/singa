@@ -18,7 +18,7 @@ public class UnitPrefixes {
     /**
      * recognizes if a string contains a divisor
      */
-    private static Pattern divisorPattern = Pattern.compile(".+/1(\\d+)");
+    private static final Pattern divisorPattern = Pattern.compile(".+/1(\\d+)");
 
     /**
      * Gets the {@link UnitPrefix} from the {@code String} representation of a prefix.
@@ -130,6 +130,7 @@ public class UnitPrefixes {
 
     /**
      * Generates a list of units for the all supplied prefixes in combination with the supplied unit.
+     *
      * @param prefixes A set of prefixes.
      * @param unit The unit to be modified.
      * @param <Q> The resulting unit type.

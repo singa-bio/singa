@@ -14,8 +14,8 @@ public class Membrane extends CellSection {
 
     private final EnclosedCompartment innerCompartment;
 
-    private CellSection innerLayer;
-    private CellSection outerLayer;
+    private final CellSection innerLayer;
+    private final CellSection outerLayer;
 
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
@@ -27,7 +27,7 @@ public class Membrane extends CellSection {
     }
 
     public static Membrane forCompartment(EnclosedCompartment enclosedCompartment) {
-        return new Membrane(enclosedCompartment.getIdentifier()+"-M", enclosedCompartment.getName()+" Membrane", enclosedCompartment);
+        return new Membrane(enclosedCompartment.getIdentifier() + "-M", enclosedCompartment.getName() + " Membrane", enclosedCompartment);
     }
 
     public EnclosedCompartment getInnerCompartment() {
@@ -51,7 +51,7 @@ public class Membrane extends CellSection {
                     .filter(cellSection -> !cellSection.equals(innerCompartment) && !cellSection.equals(this))
                     .collect(Collectors.toSet());
             if (sections.size() != 1) {
-                throw new IllegalStateException("The node "+node+" is considered as a membrane node but has neighbours " +
+                throw new IllegalStateException("The node " + node + " is considered as a membrane node but has neighbours " +
                         "in more than 3 states (inner section, outer section, membrane section)");
             }
             node.setConcentrationContainer(new MembraneContainer(sections.iterator().next(), innerCompartment, this));

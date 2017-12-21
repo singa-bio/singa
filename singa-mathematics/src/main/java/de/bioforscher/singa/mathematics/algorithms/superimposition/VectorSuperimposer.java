@@ -54,6 +54,8 @@ public class VectorSuperimposer {
      * Finds the superimposition with the minimal distances between pairs of {@link Vector}s by using {@link
      * KuhnMunkres} optimization. This is only useful if candidate and reference vectors are already pre-aligned.
      *
+     * @param reference The reference {@link Vector}s to which should be aligned.
+     * @param candidate The candidate {@link Vector}s for the alignment should be carried out.
      * @return The {@link VectorSuperimposition} with the minimal distances between pairs.
      */
     public static VectorSuperimposition calculateKuhnMunkresSuperimposition(List<Vector> reference, List<Vector> candidate) {

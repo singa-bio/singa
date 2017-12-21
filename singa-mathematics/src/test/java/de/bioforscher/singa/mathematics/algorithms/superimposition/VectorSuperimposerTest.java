@@ -22,7 +22,7 @@ public class VectorSuperimposerTest {
     private List<Vector> candidate;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reference = new ArrayList<>();
         reference.add(new Vector3D(6.994, 8.354, 42.405));
         reference.add(new Vector3D(9.429, 7.479, 48.266));
@@ -35,19 +35,19 @@ public class VectorSuperimposerTest {
     }
 
     @Test
-    public void calculateSuperimposition() throws Exception {
+    public void calculateSuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(reference, candidate);
         assertEquals(0.19986139479017428, vectorSuperimposition.getRmsd(), 0.1E-6);
     }
 
     @Test
-    public void calculateIdealSuperimposition() throws Exception {
+    public void calculateIdealSuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateIdealVectorSuperimposition(reference, candidate);
         assertEquals(0.19986139479017428, vectorSuperimposition.getRmsd(), 0.1E-6);
     }
 
     @Test
-    public void calculateKuhnMunkresSuperimposition() throws Exception {
+    public void calculateKuhnMunkresSuperimposition() {
         VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateKuhnMunkresSuperimposition(reference, candidate);
         assertEquals(1.3611043603449626, vectorSuperimposition.getRmsd(), 0.1E-6);
     }

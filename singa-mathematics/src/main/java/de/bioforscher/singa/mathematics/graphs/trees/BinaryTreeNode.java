@@ -2,7 +2,7 @@ package de.bioforscher.singa.mathematics.graphs.trees;
 
 import java.io.Serializable;
 
-public class BinaryTreeNode<T> implements Serializable{
+public class BinaryTreeNode<T> implements Serializable {
 
     private static final long serialVersionUID = -6444789577851989492L;
 

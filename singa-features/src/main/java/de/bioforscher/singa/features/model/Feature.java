@@ -11,12 +11,14 @@ public interface Feature<FeatureContent> {
 
     /**
      * Returns the information bearing content of the feature.
+     *
      * @return The information bearing content of the feature.
      */
     FeatureContent getFeatureContent();
 
     /**
      * Returns the origin of the feature.
+     *
      * @return The origin of the feature.
      */
     FeatureOrigin getFeatureOrigin();

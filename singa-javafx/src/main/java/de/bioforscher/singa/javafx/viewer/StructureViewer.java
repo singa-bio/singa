@@ -74,7 +74,7 @@ public class StructureViewer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         chainMaterials = new HashMap<>();
 
@@ -177,7 +177,7 @@ public class StructureViewer extends Application {
 
         // add tooltip
         Tooltip tooltip = new Tooltip(atom.getElement().getName() + " (" + (atom.getAtomName()) + ":" +
-                atom.getIdentifier() + ") of " + origin.getFamily().getThreeLetterCode() + ":" + origin.getIdentifier());
+                atom.getAtomIdentifier() + ") of " + origin.getFamily().getThreeLetterCode() + ":" + origin.getIdentifier());
         Tooltip.install(atomShape, tooltip);
 
         moleculeGroup.getChildren().add(atomShape);
@@ -187,11 +187,11 @@ public class StructureViewer extends Application {
         TreeItem<String> rootItem = new TreeItem<>(structure.getPdbIdentifier());
 
         for (Model model : structure.getAllModels()) {
-            TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getIdentifier()));
+            TreeItem<String> modelNode = new TreeItem<>("Model: " + String.valueOf(model.getModelIdentifier()));
             model.getAllChains().stream()
-                    .sorted(Comparator.comparing(Chain::getIdentifier))
+                    .sorted(Comparator.comparing(Chain::getChainIdentifier))
                     .forEach(chain -> {
-                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getIdentifier()));
+                        TreeItem<String> chainNode = new TreeItem<>("Chain: " + String.valueOf(chain.getChainIdentifier()));
                         modelNode.getChildren().add(chainNode);
                     });
             rootItem.getChildren().add(modelNode);
@@ -223,7 +223,7 @@ public class StructureViewer extends Application {
         world = new XForm();
         moleculeGroup = new XForm();
         OakChain chain = (OakChain) structure.getAllChains().stream()
-                .filter(aChain -> aChain.getIdentifier().equals(identifier.replace("Chain: ", "")))
+                .filter(aChain -> aChain.getChainIdentifier().equals(identifier.replace("Chain: ", "")))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Chould not retrieve chainIdentifier " + identifier.replace("Chain: ", "")));
         final OakModel model = new OakModel(1);
@@ -267,28 +267,30 @@ public class StructureViewer extends Application {
     }
 
     private PhongMaterial getMaterial(LeafSubstructure origin, Atom atom) {
-        if (colorScheme == ColorScheme.BY_ELEMENT) {
-            return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
-        } else if (colorScheme == ColorScheme.BY_FAMILY) {
-            return MaterialProvider.getMaterialForType(origin.getFamily());
-        } else {
-            String chain = origin.getIdentifier().getChainIdentifier();
-            if (chainMaterials.containsKey(chain)) {
-                return chainMaterials.get(chain);
-            } else {
-                return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
-            }
+        switch (colorScheme) {
+            case BY_ELEMENT:
+                return MaterialProvider.getDefaultMaterialForElement(atom.getElement());
+            case BY_FAMILY:
+                return MaterialProvider.getMaterialForType(origin.getFamily());
+            default:
+                String chain = origin.getIdentifier().getChainIdentifier();
+                if (chainMaterials.containsKey(chain)) {
+                    return chainMaterials.get(chain);
+                } else {
+                    return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
+                }
         }
 
     }
 
     private PhongMaterial getMaterial(LeafSubstructure origin, OakBond edge) {
-        if (colorScheme == ColorScheme.BY_ELEMENT) {
-            return MaterialProvider.CARBON;
-        } else if (colorScheme == ColorScheme.BY_FAMILY) {
-            return MaterialProvider.getMaterialForType(origin.getFamily());
-        } else {
-            return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
+        switch (colorScheme) {
+            case BY_ELEMENT:
+                return MaterialProvider.CARBON;
+            case BY_FAMILY:
+                return MaterialProvider.getMaterialForType(origin.getFamily());
+            default:
+                return getMaterialForChain(origin.getIdentifier().getChainIdentifier());
         }
     }
 
@@ -296,7 +298,7 @@ public class StructureViewer extends Application {
         if (colorScheme == ColorScheme.BY_ELEMENT) {
             return MaterialProvider.CARBON;
         } else {
-            return getMaterialForChain(origin.getIdentifier());
+            return getMaterialForChain(origin.getChainIdentifier());
         }
     }
 

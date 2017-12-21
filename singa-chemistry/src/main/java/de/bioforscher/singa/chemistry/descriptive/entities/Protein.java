@@ -44,7 +44,7 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
     /**
      * Adds an organism with a description as an annotation to
      *
-     * @param organism    The organism.
+     * @param organism The organism.
      * @param description The description.
      */
     public void addOrganism(Organism organism, String description) {

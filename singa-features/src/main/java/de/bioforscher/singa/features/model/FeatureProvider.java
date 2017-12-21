@@ -8,8 +8,8 @@ import java.util.Set;
  */
 public abstract class FeatureProvider<FeatureType extends Feature> {
 
+    private final Set<Class<? extends Feature>> requirements;
     private Class<? extends Feature> providedFeature;
-    private Set<Class<? extends Feature>> requirements;
 
     protected FeatureProvider() {
         requirements = new HashSet<>();
@@ -38,7 +38,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
         }
     }
 
-    public  <FeatureableType extends Featureable> void assign(FeatureableType featureable) {
+    public <FeatureableType extends Featureable> void assign(FeatureableType featureable) {
         if (!featureable.hasFeature(providedFeature)) {
             if (featureable.canBeFeaturedWith(providedFeature)) {
                 resolveRequirements(featureable);

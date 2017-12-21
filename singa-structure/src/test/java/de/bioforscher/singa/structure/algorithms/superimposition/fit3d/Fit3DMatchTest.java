@@ -24,14 +24,14 @@ import static org.junit.Assert.assertTrue;
 public class Fit3DMatchTest {
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public final TemporaryFolder testFolder = new TemporaryFolder();
 
     private Structure target;
     private StructuralMotif queryMotif;
 
     @Before
     public void setUp() {
-        target = StructureParser.online()
+        target = StructureParser.pdb()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()

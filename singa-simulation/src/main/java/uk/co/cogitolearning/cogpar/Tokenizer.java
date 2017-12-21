@@ -1,18 +1,18 @@
 /*
  * This software and all files contained in it are distrubted under the MIT license.
- * 
+ *
  * Copyright (c) 2013 Cogito Learning Ltd
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,48 +42,20 @@ import java.util.regex.Pattern;
 public class Tokenizer {
 
     private static final Logger logger = LoggerFactory.getLogger(Tokenizer.class);
-
-    /**
-     * Internal class holding the information about a token type.
-     */
-    private class TokenInfo {
-
-        /**
-         * the regular expression to match against
-         */
-        final Pattern regex;
-
-        /**
-         * the token id that the regular expression is linked to
-         */
-        final int token;
-
-        /**
-         * Construct TokenInfo with its values
-         */
-        TokenInfo(Pattern regex, int token) {
-            super();
-            this.regex = regex;
-            this.token = token;
-        }
-
-    }
-
-    /**
-     * a list of TokenInfo objects
-     * Each token type corresponds to one entry in the list
-     */
-    private LinkedList<TokenInfo> tokenInfos;
-
-    /**
-     * the list of tokens produced when tokenizing the input
-     */
-    private LinkedList<Token> tokens;
-
     /**
      * a tokenizer that can handle mathematical expressions
      */
     private static Tokenizer expressionTokenizer = null;
+    /**
+     * a list of TokenInfo objects
+     * Each token type corresponds to one entry in the list
+     */
+    private final LinkedList<TokenInfo> tokenInfos;
+
+    /**
+     * the list of tokens produced when tokenizing the input
+     */
+    private final LinkedList<Token> tokens;
 
     /**
      * Default constructor
@@ -145,7 +117,7 @@ public class Tokenizer {
      * @param string the string to tokenize
      */
     public void tokenize(String string) {
-        logger.info("Tokenizing string+ \""+string+"\".");
+        logger.info("Tokenizing string+ \"" + string + "\".");
         String trimmedString = string.trim();
         int totalLength = trimmedString.length();
         tokens.clear();
@@ -157,7 +129,7 @@ public class Tokenizer {
                 if (tokenMatcher.find()) {
                     match = true;
                     String token = tokenMatcher.group().trim();
-                    logger.trace("Matched token \""+token+"\" to "+tokenInfo.regex.toString());
+                    logger.trace("Matched token \"" + token + "\" to " + tokenInfo.regex.toString());
                     trimmedString = tokenMatcher.replaceFirst("").trim();
                     tokens.add(new Token(tokenInfo.token, token, totalLength - remaining));
                     break;
@@ -175,6 +147,32 @@ public class Tokenizer {
      */
     public LinkedList<Token> getTokens() {
         return tokens;
+    }
+
+    /**
+     * Internal class holding the information about a token type.
+     */
+    private class TokenInfo {
+
+        /**
+         * the regular expression to match against
+         */
+        final Pattern regex;
+
+        /**
+         * the token id that the regular expression is linked to
+         */
+        final int token;
+
+        /**
+         * Construct TokenInfo with its values
+         */
+        TokenInfo(Pattern regex, int token) {
+            super();
+            this.regex = regex;
+            this.token = token;
+        }
+
     }
 
 }

@@ -10,7 +10,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,26 +25,26 @@ public class OakChainTest {
     private static OakChain anotherChain;
 
     @BeforeClass
-    public static void prepareData() throws IOException {
-        Structure structure2N5E = StructureParser.online().pdbIdentifier("2N5E").parse();
+    public static void prepareData() {
+        Structure structure2N5E = StructureParser.pdb().pdbIdentifier("2N5E").parse();
         firstChain = (OakChain) structure2N5E.getFirstChain();
         chainToModify = (OakChain) structure2N5E.getFirstModel().getChain("B").get();
-        anotherChain = (OakChain) StructureParser.online().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
+        anotherChain = (OakChain) StructureParser.pdb().pdbIdentifier("1BRR").parse().getFirstModel().getFirstChain();
     }
 
     @Test
-    public void getIdentifier() throws Exception {
-        assertEquals("A", firstChain.getIdentifier());
+    public void getIdentifier() {
+        assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getAllLeafSubstructures() throws Exception {
+    public void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = firstChain.getAllLeafSubstructures();
         assertEquals(167, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() throws Exception {
+    public void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");
@@ -58,36 +57,36 @@ public class OakChainTest {
 
 
     @Test
-    public void addLeafSubstructure() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
+    public void addLeafSubstructure() {
+        final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         chainToModify.addLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "A", 244), AminoAcidFamily.HISTIDINE));
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void addLeafSubstructureToConsecutive() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size() + 1;
+    public void addLeafSubstructureToConsecutive() {
+        final int expected = chainToModify.getNumberOfLeafSubstructures() + 1;
         final OakAminoAcid newAminoAcid = new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 244), AminoAcidFamily.HISTIDINE);
         chainToModify.addLeafSubstructure(newAminoAcid, true);
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
         assertTrue(chainToModify.getConsecutivePart().contains(newAminoAcid));
     }
 
     @Test
-    public void removeLeafSubstructure() throws Exception {
-        final int expected = chainToModify.getAllLeafSubstructures().size() - 1;
+    public void removeLeafSubstructure() {
+        final int expected = chainToModify.getNumberOfLeafSubstructures() - 1;
         final boolean response = chainToModify.removeLeafSubstructure(new OakAminoAcid(new LeafIdentifier("2N5E", 1, "B", 243), AminoAcidFamily.HISTIDINE));
         if (!response) {
             fail("Response was false but should be true if any leaf substructure was removed.");
         }
-        final int actual = chainToModify.getAllLeafSubstructures().size();
+        final int actual = chainToModify.getNumberOfLeafSubstructures();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void getAtom() throws Exception {
+    public void getAtom() {
         // ATOM     17  OG1 THR A  56       5.624   2.561  -0.853  1.00  0.00           O
         final Optional<Atom> atom = firstChain.getAtom(17);
         if (!atom.isPresent()) {
@@ -98,7 +97,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void removeAtom() throws Exception {
+    public void removeAtom() {
         final int expected = chainToModify.getAllAtoms().size() - 1;
         chainToModify.removeAtom(5272);
         final int actual = chainToModify.getAllAtoms().size();
@@ -106,7 +105,7 @@ public class OakChainTest {
     }
 
     @Test
-    public void connectChainBackbone() throws Exception {
+    public void connectChainBackbone() {
         // should have happened at parsing
         final Optional<LeafSubstructure<?>> first = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 108));
         final Optional<LeafSubstructure<?>> second = firstChain.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "A", 109));
@@ -125,25 +124,25 @@ public class OakChainTest {
     }
 
     @Test
-    public void getConsecutivePart() throws Exception {
+    public void getConsecutivePart() {
         final int actual = firstChain.getConsecutivePart().size();
         assertEquals(167, actual);
     }
 
     @Test
-    public void getNonConsecutivePart() throws Exception {
+    public void getNonConsecutivePart() {
         final int actual = anotherChain.getNonConsecutivePart().size();
         assertEquals(5, actual);
     }
 
     @Test
-    public void getNextLeafIdentifier() throws Exception {
+    public void getNextLeafIdentifier() {
         final LeafIdentifier actual = anotherChain.getNextLeafIdentifier();
         assertEquals(new LeafIdentifier("1brr", 1, "A", 1004), actual);
     }
 
     @Test
-    public void getCopy() throws Exception {
+    public void getCopy() {
         final OakChain anotherChainCopy = anotherChain.getCopy();
         assertTrue(anotherChain != anotherChainCopy);
         assertTrue(anotherChain.equals(anotherChainCopy));

@@ -12,8 +12,8 @@ public class GraphProducer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> implements Runnable {
 
     private final GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer;
-    private GraphType graph;
-    private int totalIterations;
+    private final GraphType graph;
+    private final int totalIterations;
 
     public GraphProducer(GraphRenderer<NodeType, EdgeType, IdentifierType, GraphType> renderer, GraphType graph, int totalIterations) {
         this.renderer = renderer;

@@ -50,6 +50,7 @@ public class ConsensusAlignment {
     private final List<Integer> alignmentCounts;
     private final Predicate<Atom> atomFilter;
     private final boolean alignWithinClusters;
+    private final double clusterCutoff;
     private RepresentationScheme representationScheme;
     private double consensusScore;
     private int iterationCounter;
@@ -57,7 +58,6 @@ public class ConsensusAlignment {
     private LabeledSymmetricMatrix<ConsensusContainer> distanceMatrix;
     private List<BinaryTreeNode<ConsensusContainer>> leaves;
     private ConsensusContainer currentConsensus;
-    private double clusterCutoff;
     private List<BinaryTree<ConsensusContainer>> clusters;
 
     ConsensusAlignment(ConsensusBuilder.Builder builder) {

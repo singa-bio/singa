@@ -16,13 +16,14 @@ import static tec.units.ri.AbstractUnit.ONE;
 
 /**
  * Converts JSBML Parameters to SiNGA Parameters.
+ *
  * @author cl
  */
 public class SBMLParameterConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLParameterConverter.class);
 
-    private Map<String, Unit<?>> units;
+    private final Map<String, Unit<?>> units;
 
     public SBMLParameterConverter(Map<String, Unit<?>> units) {
         this.units = units;
@@ -30,7 +31,7 @@ public class SBMLParameterConverter {
 
     public Map<String, SimulationParameter<?>> convertSimulationParameters(ListOf<Parameter> sbmlParameters) {
         Map<String, SimulationParameter<?>> parameters = new HashMap<>();
-        for (Parameter parameter: sbmlParameters) {
+        for (Parameter parameter : sbmlParameters) {
             parameters.put(parameter.getId(), convertSimulationParameter(parameter));
         }
         return parameters;
@@ -56,8 +57,6 @@ public class SBMLParameterConverter {
         logger.debug("Set parameter {} to {}.", simulationParameter.getIdentifier(), simulationParameter.getQuantity());
         return simulationParameter;
     }
-
-
 
 
 }

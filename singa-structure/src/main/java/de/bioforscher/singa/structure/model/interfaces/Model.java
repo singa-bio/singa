@@ -15,7 +15,7 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
      *
      * @return The model identifier.
      */
-    Integer getIdentifier();
+    Integer getModelIdentifier();
 
     /**
      * Returns an {@link Optional} of the {@link Chain} with the given identifier. If no chain with the identifier could
@@ -32,5 +32,9 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
      * @return A copy of this model.
      */
     Model getCopy();
+
+    default String flatToString() {
+        return getFirstChain().getFirstLeafSubstructure().getPdbIdentifier() + "-" + getModelIdentifier();
+    }
 
 }

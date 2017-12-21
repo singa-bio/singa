@@ -44,7 +44,6 @@ public class SubstructureSuperimposer {
     private final List<LeafSubstructure<?>> reference;
     private final List<LeafSubstructure<?>> candidate;
 
-    private double rmsd;
     private Vector translation;
     private Matrix rotation;
 
@@ -59,7 +58,7 @@ public class SubstructureSuperimposer {
         this.atomFilter = atomFilter;
         this.representationScheme = representationScheme;
 
-        if (this.reference.size() != this.candidate.size() || this.reference.isEmpty() || this.candidate.isEmpty())
+        if (this.reference.size() != this.candidate.size() || this.reference.isEmpty())
             throw new IllegalArgumentException("Two lists of substructures cannot be superimposed if they " +
                     "differ in size.");
     }
@@ -309,6 +308,14 @@ public class SubstructureSuperimposer {
         perAtomAlignment.entrySet()
                 .forEach(this::defineIntersectingAtoms);
 
+        boolean nonMatchingAtoms = perAtomAlignment.values().stream()
+                .anyMatch(Set::isEmpty);
+
+        if (nonMatchingAtoms) {
+            logger.error("reference {} against candidate {} has no compatible atom strings: {} {}", reference, candidate);
+            throw new SubstructureSuperimpositionException("failed to collect per atom alignment sets, no compatible atoms");
+        }
+
         List<Atom> referenceAtoms;
         List<Atom> candidateAtoms;
 
@@ -356,13 +363,13 @@ public class SubstructureSuperimposer {
         // store result
         translation = vectorSuperimposition.getTranslation();
         rotation = vectorSuperimposition.getRotation();
-        rmsd = vectorSuperimposition.getRmsd();
+        double rmsd = vectorSuperimposition.getRmsd();
 
         // store mapping of atoms to vectors
         List<Vector> mappedPositions = vectorSuperimposition.getMappedCandidate();
         Map<Integer, Integer> positionMapping = new HashMap<>();
         for (int i = 0; i < mappedPositions.size(); i++) {
-            positionMapping.put(candidateAtoms.get(i).getIdentifier(), i);
+            positionMapping.put(candidateAtoms.get(i).getAtomIdentifier(), i);
         }
 
         // use a copy of the candidate to apply the mapping after calculating the superimposition
@@ -380,24 +387,22 @@ public class SubstructureSuperimposer {
         // remove all atoms and bonds not part of the alignment
         List<List<Atom>> atomsToBeRemoved = mappedCandidate.stream()
                 .map(subStructure -> subStructure.getAllAtoms().stream()
-                        .filter(atom -> !positionMapping.containsKey(atom.getIdentifier()))
+                        .filter(atom -> !positionMapping.containsKey(atom.getAtomIdentifier()))
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < atomsToBeRemoved.size(); i++) {
             List<Atom> atoms = atomsToBeRemoved.get(i);
             for (Atom atom : atoms) {
-                mappedCandidate.get(i).removeAtom(atom.getIdentifier());
+                mappedCandidate.get(i).removeAtom(atom.getAtomIdentifier());
             }
         }
 
         // apply superimposition to copy of the candidate
         for (LeafSubstructure<?> subStructure : mappedCandidate) {
             for (Atom atom : subStructure.getAllAtoms()) {
-                Vector newPosition = mappedPositions.get(positionMapping.get(atom.getIdentifier()));
-                // FIXME provide class for 3d vector superimposition
-                Vector3D v3 = newPosition.as(Vector3D.class);
-                atom.setPosition(v3);
+                Vector newPosition = mappedPositions.get(positionMapping.get(atom.getAtomIdentifier()));
+                atom.setPosition(newPosition.as(Vector3D.class));
             }
         }
 

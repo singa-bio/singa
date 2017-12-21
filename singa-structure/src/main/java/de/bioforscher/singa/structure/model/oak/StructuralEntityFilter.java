@@ -114,7 +114,7 @@ public class StructuralEntityFilter {
         }
 
         public static Predicate<Atom> hasIdentifier(int identifier) {
-            return atom -> atom.getIdentifier() == identifier;
+            return atom -> atom.getAtomIdentifier() == identifier;
         }
 
         public static Predicate<Atom> isAlphaCarbon() {
@@ -174,7 +174,7 @@ public class StructuralEntityFilter {
 
         public static Predicate<Atom> isWithinRange(int startId, int endId) {
             Range<Integer> range = new Range<>(startId, endId);
-            return atom -> range.isInRange(atom.getIdentifier());
+            return atom -> range.isInRange(atom.getAtomIdentifier());
         }
     }
 }

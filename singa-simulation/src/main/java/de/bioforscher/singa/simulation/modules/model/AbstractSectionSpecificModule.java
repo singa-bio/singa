@@ -22,8 +22,8 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public abstract class AbstractSectionSpecificModule extends AbstractModule {
 
+    private final Map<Function<ConcentrationContainer, List<Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
     private ConcentrationContainer currentHalfConcentrations;
-    private Map<Function<ConcentrationContainer, List<Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
 
     public AbstractSectionSpecificModule(Simulation simulation) {
         super(simulation);

@@ -14,6 +14,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public static final int DEFAULT_MODEL_IDENTIFIER = 1;
     public static final String DEFAULT_CHAIN_IDENTIFIER = "X";
     public static final char DEFAULT_INSERTION_CODE = '\u0000';
+    public static final char DEFAULT_ALTERNATIVE_POSITION_CODE = '\u0000';
 
     public static final LeafIdentifier DEFAULT_LEAF_IDENTIFIER = new LeafIdentifier(1);
 

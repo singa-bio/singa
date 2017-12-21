@@ -15,8 +15,8 @@ import java.util.Set;
  */
 public class SimpleConcentrationContainer implements ConcentrationContainer {
 
-    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations;
-    private CellSection cellSection;
+    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations;
+    private final CellSection cellSection;
 
     public SimpleConcentrationContainer(CellSection cellSection) {
         concentrations = new HashMap<>();

@@ -1,18 +1,18 @@
 /*
  * This software and all files contained in it are distrubted under the MIT license.
- * 
+ *
  * Copyright (c) 2013 Cogito Learning Ltd
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,29 +41,29 @@ import java.util.LinkedList;
  * A parser for mathematical expressions. The parser class defines a method
  * parse() which takes a string and returns an ExpressionNode that holds a
  * representation of the expression.
- *
  * Parsing is implemented in the form of a recursive descent parser.
- *
  */
 public class Parser {
 
-    /** the tokens to parse */
+    /**
+     * the tokens to parse
+     */
     private LinkedList<Token> tokens;
 
-    /** the next token */
+    /**
+     * the next token
+     */
     private Token lookahead;
 
     /**
      * Parse a mathematical expression in a string and return an ExpressionNode.
-     *
      * This is a convenience method that first converts the string into a linked
      * list of tokens using the expression tokenizer provided by the Tokenizer
      * class.
      *
-     * @param expression
-     *          the string holding the input
+     * @param expression the string holding the input
      * @return the internal representation of the expression in form of an
-     *         expression tree made out of ExpressionNode objects
+     * expression tree made out of ExpressionNode objects
      */
     public ExpressionNode parse(String expression) {
         Tokenizer tokenizer = Tokenizer.getExpressionTokenizer();
@@ -76,10 +76,9 @@ public class Parser {
      * Parse a mathematical expression in contained in a list of tokens and return
      * an ExpressionNode.
      *
-     * @param tokens
-     *          a list of tokens holding the tokenized input
+     * @param tokens a list of tokens holding the tokenized input
      * @return the internal representation of the expression in form of an
-     *         expression tree made out of ExpressionNode objects
+     * expression tree made out of ExpressionNode objects
      */
     public ExpressionNode parse(LinkedList<Token> tokens) {
         // implementing a recursive descent parser
@@ -95,7 +94,9 @@ public class Parser {
         return expr;
     }
 
-    /** handles the non-terminal expression */
+    /**
+     * handles the non-terminal expression
+     */
     private ExpressionNode expression() {
         // only one rule
         // expression -> signed_term sum_op
@@ -104,7 +105,9 @@ public class Parser {
         return expr;
     }
 
-    /** handles the non-terminal sum_op */
+    /**
+     * handles the non-terminal sum_op
+     */
     private ExpressionNode sumOp(ExpressionNode expr) {
         // sum_op -> PLUSMINUS term sum_op
         if (lookahead.token == Token.PLUSMINUS) {
@@ -129,7 +132,9 @@ public class Parser {
         return expr;
     }
 
-    /** handles the non-terminal signed_term */
+    /**
+     * handles the non-terminal signed_term
+     */
     private ExpressionNode signedTerm() {
         // signed_term -> PLUSMINUS term
         if (lookahead.token == Token.PLUSMINUS) {
@@ -146,14 +151,18 @@ public class Parser {
         return term();
     }
 
-    /** handles the non-terminal term */
+    /**
+     * handles the non-terminal term
+     */
     private ExpressionNode term() {
         // term -> factor term_op
         ExpressionNode f = factor();
         return termOp(f);
     }
 
-    /** handles the non-terminal term_op */
+    /**
+     * handles the non-terminal term_op
+     */
     private ExpressionNode termOp(ExpressionNode expression) {
         // term_op -> MULTDIV factor term_op
         if (lookahead.token == Token.MULTDIV) {
@@ -179,7 +188,9 @@ public class Parser {
         return expression;
     }
 
-    /** handles the non-terminal signed_factor */
+    /**
+     * handles the non-terminal signed_factor
+     */
     private ExpressionNode signedFactor() {
         // signed_factor -> PLUSMINUS factor
         if (lookahead.token == Token.PLUSMINUS) {
@@ -196,7 +207,9 @@ public class Parser {
         return factor();
     }
 
-    /** handles the non-terminal factor */
+    /**
+     * handles the non-terminal factor
+     */
     private ExpressionNode factor() {
         // factor -> argument factor_op
         ExpressionNode a = argument();
@@ -204,7 +217,9 @@ public class Parser {
     }
 
 
-    /** handles the non-terminal factor_op */
+    /**
+     * handles the non-terminal factor_op
+     */
     private ExpressionNode factorOp(ExpressionNode expr) {
         // factor_op -> RAISED expression
         if (lookahead.token == Token.RAISED) {
@@ -218,7 +233,9 @@ public class Parser {
         return expr;
     }
 
-    /** handles the non-terminal argument */
+    /**
+     * handles the non-terminal argument
+     */
     private ExpressionNode argument() {
         // argument -> FUNCTION argument
         if (lookahead.token == Token.FUNCTION) {
@@ -241,7 +258,9 @@ public class Parser {
         return value();
     }
 
-    /** handles the non-terminal value */
+    /**
+     * handles the non-terminal value
+     */
     private ExpressionNode value() {
         // argument -> NUMBER
         if (lookahead.token == Token.NUMBER) {

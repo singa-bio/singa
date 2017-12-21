@@ -72,8 +72,9 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     String getThreeLetterCode();
 
     /**
-     * Returns a copy of this leaf substructure.
+     * Returns a copy of this {@link LeafSubstructure}.
      *
+     * @param <LeafImplementation> The type of the {@link LeafSubstructure}.
      * @return A copy of this leaf substructure.
      */
     <LeafImplementation extends LeafSubstructure> LeafImplementation getCopy();
@@ -81,19 +82,19 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     /**
      * Returns the flat String representation of this leaf substructure in the form:
      * <pre>
-     *     [LeafFamily] ([ThreeLetterCode]) [LeafIdentifier]
+     *     [LeafIdentifier] [ThreeLetterCode]
      * </pre>
      * For example:
      * <pre>
-     *     Nucleotide (C) 1C0A-1-B-631
-     *     AminoAcid (ARG) 1C0A-1-A-78
-     *     Ligand (HOH) 1C0A-1-A-1048
+     *     1C0A-1-B-631 C
+     *     1C0A-1-A-78 ARG
+     *     1C0A-1-A-1048 HOH
      * </pre>
      *
      * @return The flat String representation of this leaf substructure.
      */
     default String flatToString() {
-        return getThreeLetterCode() + "-" + getIdentifier().getChainIdentifier() + "-" + getIdentifier().getSerial();
+        return getIdentifier() + " " + getThreeLetterCode();
     }
 
 }

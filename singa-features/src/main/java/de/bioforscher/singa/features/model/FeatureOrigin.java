@@ -7,12 +7,7 @@ import static de.bioforscher.singa.features.model.FeatureOrigin.OriginType.MANUA
  */
 public class FeatureOrigin {
 
-    public static FeatureOrigin MANUALLY_ANNOTATED = new FeatureOrigin(MANUAL_ANNOTATION);
-
-    public enum OriginType {
-        PREDICTION, DATABASE, MANUAL_ANNOTATION
-    }
-
+    public static final FeatureOrigin MANUALLY_ANNOTATED = new FeatureOrigin(MANUAL_ANNOTATION);
     private final OriginType originType;
     private final String name;
     private final String publication;
@@ -44,5 +39,9 @@ public class FeatureOrigin {
     @Override
     public String toString() {
         return originType == MANUAL_ANNOTATION ? "manual annotation" : originType + " " + name;
+    }
+
+    public enum OriginType {
+        PREDICTION, DATABASE, MANUAL_ANNOTATION
     }
 }

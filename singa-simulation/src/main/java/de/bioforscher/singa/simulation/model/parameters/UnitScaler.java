@@ -18,7 +18,7 @@ public class UnitScaler {
      * unit specified by target time and multiplied by the value of the time scale.
      *
      * @param unscaledQuantity The quantity that is to be scaled.
-     * @param targetScale      The required time step.
+     * @param targetScale The required time step.
      * @return The scaled reaction rate.
      */
     public static Quantity<Frequency> rescaleReactionRate(Quantity<Frequency> unscaledQuantity,
@@ -36,8 +36,8 @@ public class UnitScaler {
      * unit specified by target time and length scales. Further the unscaled quantity is divided by the squared length
      * scale and multiplied by the time scale.
      *
-     * @param unscaledQuantity  The quantity that is to be scaled.
-     * @param targetTimeScale   The required time step.
+     * @param unscaledQuantity The quantity that is to be scaled.
+     * @param targetTimeScale The required time step.
      * @param targetLengthScale The required spatial step.
      * @return The scaled diffusivity.
      */

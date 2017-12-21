@@ -23,7 +23,7 @@ public class AppliedExpression {
     private final ExpressionNode expression;
     private final String expressionString;
     private final Unit<?> resultUnit;
-    private Map<String, SimulationParameter> parameters;
+    private final Map<String, SimulationParameter> parameters;
 
     public AppliedExpression(String expression, Unit<?> resultUnit) {
         Parser parser = new Parser();

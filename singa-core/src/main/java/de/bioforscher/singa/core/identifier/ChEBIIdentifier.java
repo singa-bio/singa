@@ -76,7 +76,7 @@ public class ChEBIIdentifier extends AbstractIdentifier {
         Matcher matcherCHEBI = PATTERN.matcher(getIdentifier());
         if (matcherCHEBI.matches()) {
             return Integer.parseInt(matcherCHEBI.group(1));
-        }  else {
+        } else {
             // should no be possible
             throw new IllegalStateException("This identifier has been created with an unexpected pattern.");
         }

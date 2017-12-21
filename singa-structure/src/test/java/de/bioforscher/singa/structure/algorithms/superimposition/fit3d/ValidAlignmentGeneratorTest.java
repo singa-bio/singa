@@ -1,11 +1,15 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Pair;
+import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.OakAminoAcid;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,6 +95,82 @@ public class ValidAlignmentGeneratorTest {
                 assertTrue(alignmentPair.getFirst().equals(validAlignment.get(j).getFirst()));
                 assertTrue(alignmentPair.getSecond().equals(validAlignment.get(j).getSecond()));
             }
+        }
+    }
+
+    @Test
+    public void shouldGenerateValidAlignmentsWithMMTF() {
+
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+
+
+        Structure target = StructureParser.mmtf()
+                .pdbIdentifier("2mnr")
+                .everything()
+                .parse();
+
+        List<LeafSubstructure<?>> candidate = new ArrayList<>();
+        candidate.add(target.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().toString().equals("2mnr-1-A-120"))
+                .findFirst().get());
+        candidate.add(target.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().toString().equals("2mnr-1-A-119"))
+                .findFirst().get());
+        candidate.add(target.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().toString().equals("2mnr-1-A-341"))
+                .findFirst().get());
+        candidate.add(target.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().toString().equals("2mnr-1-A-117"))
+                .findFirst().get());
+        candidate.add(target.getAllLeafSubstructures().stream()
+                .filter(leafSubstructure -> leafSubstructure.getIdentifier().toString().equals("2mnr-1-A-113"))
+                .findFirst().get());
+
+        List<List<Pair<LeafSubstructure<?>>>> correctAssignment = new ArrayList<>();
+        List<Pair<LeafSubstructure<?>>> firstAssignment = new ArrayList<>();
+        firstAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(0), candidate.get(3)));
+        firstAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(1), candidate.get(4)));
+        firstAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(2), candidate.get(0)));
+        firstAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(3), candidate.get(2)));
+        firstAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(4), candidate.get(1)));
+        correctAssignment.add(firstAssignment);
+
+        List<Pair<LeafSubstructure<?>>> secondAssignment = new ArrayList<>();
+        secondAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(0), candidate.get(3)));
+        secondAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(1), candidate.get(2)));
+        secondAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(2), candidate.get(0)));
+        secondAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(3), candidate.get(4)));
+        secondAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(4), candidate.get(1)));
+        correctAssignment.add(secondAssignment);
+
+        List<Pair<LeafSubstructure<?>>> thirdAssignment = new ArrayList<>();
+        thirdAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(0), candidate.get(1)));
+        thirdAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(1), candidate.get(4)));
+        thirdAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(2), candidate.get(0)));
+        thirdAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(3), candidate.get(2)));
+        thirdAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(4), candidate.get(3)));
+        correctAssignment.add(thirdAssignment);
+
+        List<Pair<LeafSubstructure<?>>> fourthAssignment = new ArrayList<>();
+        fourthAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(0), candidate.get(1)));
+        fourthAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(1), candidate.get(2)));
+        fourthAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(2), candidate.get(0)));
+        fourthAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(3), candidate.get(4)));
+        fourthAssignment.add(new Pair<>(structuralMotif.getAllLeafSubstructures().get(4), candidate.get(3)));
+        correctAssignment.add(fourthAssignment);
+
+        ValidAlignmentGenerator validAlignmentGenerator = new ValidAlignmentGenerator(structuralMotif.getAllLeafSubstructures(), candidate);
+        List<List<Pair<LeafSubstructure<?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
+        for (int i = 0; i < validAlignments.size(); i++) {
+            List<Pair<LeafSubstructure<?>>> assignment = validAlignments.get(i);
+            assertEquals(correctAssignment.get(i), assignment);
         }
     }
 }

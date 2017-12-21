@@ -21,7 +21,8 @@ public class AssignmentRule {
 
     private static final Logger logger = LoggerFactory.getLogger(AssignmentRule.class);
 
-    private AppliedExpression expression;
+    private final AppliedExpression expression;
+
     private ChemicalEntity<?> targetEntity;
     private Map<ChemicalEntity, String> entityReference;
 

@@ -11,8 +11,8 @@ import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
  */
 public class Scalar implements Vector {
 
-    private final double value;
     private static final int dimension = 1;
+    private final double value;
 
     /**
      * Creates a new scalar with the given value.
@@ -71,7 +71,6 @@ public class Scalar implements Vector {
      *
      * @return The string representation of the dimension of this vector. ( Can
      * only result in "1".)
-     *
      */
     @Override
     public String getDimensionAsString() {

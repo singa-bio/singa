@@ -10,10 +10,8 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
@@ -41,10 +39,9 @@ public class FofanovEstimationTest {
     }
 
     @Test
-    @Ignore
-    public void shouldCalculatePvalues() throws IOException, InterruptedException {
+    public void shouldCalculatePvalues() {
         FofanovEstimation fofanovEstimation = new FofanovEstimation(2.5);
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
@@ -61,12 +58,11 @@ public class FofanovEstimationTest {
     }
 
     @Test
-    @Ignore
     public void shouldCalculatePvaluesWithCorrectnessCutoff() {
         double modelCorrectnessCutoff = 3.0;
         double epsilon = FofanovEstimation.determineEpsilon(queryMotif, modelCorrectnessCutoff);
         FofanovEstimation fofanovEstimation = new FofanovEstimation(epsilon, FofanovEstimation.DEFAULT_REFERENCE_SIZE, modelCorrectnessCutoff);
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.mmtf()
                 .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
                 .setOptions(structureParserOptions);
         Fit3D fit3dBatch = Fit3DBuilder.create()
@@ -81,6 +77,6 @@ public class FofanovEstimationTest {
                 .anyMatch(match -> match.getPvalue() != 0.0));
         assertTrue(fit3dBatch.getMatches().stream()
                 .anyMatch(match -> match.getPvalue() != Double.NaN));
-        System.out.println();
     }
+
 }

@@ -23,15 +23,16 @@ import java.util.Map;
 
 /**
  * Converts JSBML Reactions to SiNGA Reactions
+ *
  * @author cl
  */
 public class SBMLReactionConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLReactionConverter.class);
 
-    private Map<String, ChemicalEntity> entities;
+    private final Map<String, ChemicalEntity> entities;
 
-    private SBMLKineticLawConverter kineticLawConverter;
+    private final SBMLKineticLawConverter kineticLawConverter;
     private DynamicReaction currentReaction;
 
     public SBMLReactionConverter(Map<String, Unit<?>> units, Map<String, ChemicalEntity> entities, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
@@ -41,7 +42,7 @@ public class SBMLReactionConverter {
 
     public List<DynamicReaction> convertReactions(ListOf<Reaction> sbmlReactions) {
         List<DynamicReaction> reactions = new ArrayList<>();
-        for (Reaction reaction: sbmlReactions) {
+        for (Reaction reaction : sbmlReactions) {
             reactions.add(convertReaction(reaction));
         }
         return reactions;

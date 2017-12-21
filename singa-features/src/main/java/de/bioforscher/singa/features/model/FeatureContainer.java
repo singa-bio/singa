@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public abstract class FeatureContainer {
 
-    private HashMap<Class<? extends Feature>, Feature<?>> content;
+    private final HashMap<Class<? extends Feature>, Feature<?>> content;
 
     public FeatureContainer() {
         content = new HashMap<>();

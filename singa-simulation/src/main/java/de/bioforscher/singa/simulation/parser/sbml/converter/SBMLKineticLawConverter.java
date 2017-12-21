@@ -23,9 +23,9 @@ public class SBMLKineticLawConverter {
     private static final Logger logger = LoggerFactory.getLogger(SBMLKineticLawConverter.class);
 
     // requirements
-    private Map<String, Unit<?>> units;
+    private final Map<String, Unit<?>> units;
 
-    private SBMLExpressionConverter expressionConverter;
+    private final SBMLExpressionConverter expressionConverter;
 
     public SBMLKineticLawConverter(Map<String, Unit<?>> units, Map<String, FunctionReference> functions, Map<String, SimulationParameter<?>> globalParameters) {
         this.units = units;

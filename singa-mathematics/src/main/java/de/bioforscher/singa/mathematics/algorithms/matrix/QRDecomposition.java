@@ -26,7 +26,7 @@ public class QRDecomposition {
     /**
      * The original Matrix.
      */
-    private Matrix originalMatrix;
+    private final Matrix originalMatrix;
 
     /**
      * The orthogonal Matrix.
@@ -45,6 +45,45 @@ public class QRDecomposition {
      */
     private QRDecomposition(Matrix originalMatrix) {
         this.originalMatrix = originalMatrix;
+    }
+
+    /**
+     * Calculates the QR decomposition of the given matrix, using the modified Graham-Schmidt algorithm.
+     *
+     * @param originalMatrix The matrix to be decomposed.
+     * @return The QR Decomposition
+     */
+    public static QRDecomposition calculateQRDecomposition(Matrix originalMatrix) {
+        // initialize decomposition
+        QRDecomposition decomposition = new QRDecomposition(originalMatrix);
+        // divide matrix into column vectors
+        List<Vector> columns = Matrices.divideIntoColumns(originalMatrix);
+        // use Gram-Schmidt process to calculate orthonormal vectors
+        List<Vector> orthonormalizedVectors = Vectors.orthonormalizeVectors(columns);
+        // assemble orthonormal columns
+        decomposition.matrixQ = Matrices.assembleMatrixFromColumns(orthonormalizedVectors);
+        // compose R from previous results
+        decomposition.matrixR = composeR(columns, orthonormalizedVectors);
+        return decomposition;
+    }
+
+    /**
+     * Composes the upper triangular Matrix R from the original column vectors and the orthonormalized Vectors.
+     *
+     * @param originalColumns The original column vectors.
+     * @param orthonormalizedVectors The orthonormalized vectors.
+     * @return The upper triangular Matrix R.
+     */
+    private static Matrix composeR(List<Vector> originalColumns, List<Vector> orthonormalizedVectors) {
+        double[][] elements = new double[originalColumns.size()][originalColumns.size()];
+        for (int column = 0; column < originalColumns.size(); column++) {
+            // only for the upper triangle of the matrix
+            for (int row = column; row < originalColumns.size(); row++) {
+                // each element is the dot product from the orthonormalized vector and the original column
+                elements[column][row] = orthonormalizedVectors.get(column).dotProduct(originalColumns.get(row));
+            }
+        }
+        return new RegularMatrix(elements);
     }
 
     /**
@@ -72,45 +111,6 @@ public class QRDecomposition {
      */
     public Matrix getMatrixR() {
         return matrixR;
-    }
-
-    /**
-     * Calculates the QR decomposition of the given matrix, using the modified Graham-Schmidt algorithm.
-     *
-     * @param originalMatrix The matrix to be decomposed.
-     * @return The QR Decomposition
-     */
-    public static QRDecomposition calculateQRDecomposition(Matrix originalMatrix) {
-        // initialize decomposition
-        QRDecomposition decomposition = new QRDecomposition(originalMatrix);
-        // divide matrix into column vectors
-        List<Vector> columns = Matrices.divideIntoColumns(originalMatrix);
-        // use Gram-Schmidt process to calculate orthonormal vectors
-        List<Vector> orthonormalizedVectors = Vectors.orthonormalizeVectors(columns);
-        // assemble orthonormal columns
-        decomposition.matrixQ = Matrices.assembleMatrixFromColumns(orthonormalizedVectors);
-        // compose R from previous results
-        decomposition.matrixR = composeR(columns, orthonormalizedVectors);
-        return decomposition;
-    }
-
-    /**
-     * Composes the upper triangular Matrix R from the original column vectors and the orthonormalized Vectors.
-     *
-     * @param originalColumns        The original column vectors.
-     * @param orthonormalizedVectors The orthonormalized vectors.
-     * @return The upper triangular Matrix R.
-     */
-    private static Matrix composeR(List<Vector> originalColumns, List<Vector> orthonormalizedVectors) {
-        double[][] elements = new double[originalColumns.size()][originalColumns.size()];
-        for (int column = 0; column < originalColumns.size(); column++) {
-            // only for the upper triangle of the matrix
-            for (int row = column; row < originalColumns.size(); row++) {
-                // each element is the dot product from the orthonormalized vector and the original column
-                elements[column][row] = orthonormalizedVectors.get(column).dotProduct(originalColumns.get(row));
-            }
-        }
-        return new RegularMatrix(elements);
     }
 
 }

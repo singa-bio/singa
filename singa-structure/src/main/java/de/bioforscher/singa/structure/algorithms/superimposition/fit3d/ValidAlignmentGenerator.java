@@ -35,8 +35,8 @@ import java.util.stream.IntStream;
  */
 public class ValidAlignmentGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<LeafSubstructure<?>> reference;
-    private List<LeafSubstructure<?>> candidate;
+    private final List<LeafSubstructure<?>> reference;
+    private final List<LeafSubstructure<?>> candidate;
 
     private List<List<LeafSubstructure<?>>> pathsThroughSecondMotif;
 

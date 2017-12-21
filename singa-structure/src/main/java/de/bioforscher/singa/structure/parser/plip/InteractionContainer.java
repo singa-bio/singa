@@ -29,9 +29,9 @@ public class InteractionContainer {
     /**
      * The interactions
      */
-    private List<Interaction> interactions;
+    private final List<Interaction> interactions;
 
-    private List<Interaction> ligandInteractions;
+    private final List<Interaction> ligandInteractions;
 
     /**
      * Creates a new empty interaction container.

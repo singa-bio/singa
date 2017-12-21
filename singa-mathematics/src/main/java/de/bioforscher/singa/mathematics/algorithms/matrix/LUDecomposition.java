@@ -66,8 +66,8 @@ public class LUDecomposition {
         List<Vector> echelonRows = Matrices.divideIntoRows(calculateRowEchelonMatrix(matrix));
         // count non-zero rows
         int rank = 0;
-        for (Vector row: echelonRows) {
-            if (!row.isZero()){
+        for (Vector row : echelonRows) {
+            if (!row.isZero()) {
                 rank++;
             }
         }

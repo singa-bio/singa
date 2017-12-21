@@ -40,6 +40,7 @@ public class LineSegment extends Line {
 
     /**
      * Returns the starting point.
+     *
      * @return The starting point.
      */
     public Vector2D getStartingPoint() {
@@ -48,6 +49,7 @@ public class LineSegment extends Line {
 
     /**
      * Returns the ending point.
+     *
      * @return The ending point.
      */
     public Vector2D getEndingPoint() {
@@ -122,6 +124,7 @@ public class LineSegment extends Line {
      * Returns a new LineSegment parallel to this one, separated by the given
      * ({@link VectorMetricProvider#EUCLIDEAN_METRIC Euclidean}-)distance.
      * Negative distances return lines below, respectively left of this line and positive distances vice versa.
+     *
      * @param distance The offset distance of the new parallel line.
      * @return A new line parallel to this one.
      */
@@ -143,6 +146,7 @@ public class LineSegment extends Line {
 
     /**
      * Creates a new line using the attributes of this line segment.
+     *
      * @return A new line using the attributes of this line segment.
      */
     public Line getLineRepresentation() {
@@ -151,6 +155,7 @@ public class LineSegment extends Line {
 
     /**
      * Returns a new Line that passes through the middle of this segment with a perpendicular slope.
+     *
      * @return A new perpendicular bisecting Line.
      * @see <a href="https://en.wikipedia.org/wiki/Bisection#Line_segment_bisector">Wikipedia: Bisection</a>
      */
@@ -163,6 +168,7 @@ public class LineSegment extends Line {
 
     /**
      * Returns the length of this segment (i.e. the euclidean distance between start and endpoint).
+     *
      * @return The length.
      */
     public double getLength() {

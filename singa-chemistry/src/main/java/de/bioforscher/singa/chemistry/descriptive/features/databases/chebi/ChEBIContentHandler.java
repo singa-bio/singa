@@ -12,7 +12,6 @@ import de.bioforscher.singa.structure.model.interfaces.Ligand;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 
 import java.util.Arrays;
 
@@ -78,27 +77,27 @@ public class ChEBIContentHandler implements ContentHandler {
     }
 
     @Override
-    public void startDocument() throws SAXException {
+    public void startDocument() {
 
     }
 
     @Override
-    public void endDocument() throws SAXException {
+    public void endDocument() {
 
     }
 
     @Override
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) {
 
     }
 
     @Override
-    public void endPrefixMapping(String prefix) throws SAXException {
+    public void endPrefixMapping(String prefix) {
 
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes atts) {
         switch (qName) {
             case "ChemicalStructures":
                 isInChemicalStructure = true;
@@ -156,7 +155,7 @@ public class ChEBIContentHandler implements ContentHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         switch (currentTag) {
             case "chebiId": {
                 if (identifier == null) {
@@ -213,17 +212,17 @@ public class ChEBIContentHandler implements ContentHandler {
     }
 
     @Override
-    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+    public void ignorableWhitespace(char[] ch, int start, int length) {
 
     }
 
     @Override
-    public void processingInstruction(String target, String data) throws SAXException {
+    public void processingInstruction(String target, String data) {
 
     }
 
     @Override
-    public void skippedEntity(String name) throws SAXException {
+    public void skippedEntity(String name) {
 
     }
 

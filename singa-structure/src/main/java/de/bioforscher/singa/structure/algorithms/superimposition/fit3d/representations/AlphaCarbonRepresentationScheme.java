@@ -8,8 +8,8 @@ import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import java.util.Optional;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its alpha carbon. This is only available for
- * {@link GraphAminoAcid}s.
+ * An implementation to represent a given {@link LeafSubstructure} by its alpha carbon. This is only available for
+ * {@link AminoAcid}s.
  *
  * @author fk
  */

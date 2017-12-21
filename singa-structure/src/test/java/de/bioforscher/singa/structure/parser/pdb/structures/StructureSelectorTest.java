@@ -14,7 +14,7 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectModelFromStructure() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
         Model structuralModel = StructureSelector.selectFrom(structure)
@@ -25,7 +25,7 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectChainFromStructure() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
         Chain chain = StructureSelector.selectFrom(structure)
@@ -37,7 +37,7 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectAminoAcidFromStructure() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .parse();
         AminoAcid aminoAcid = StructureSelector.selectFrom(structure)
@@ -50,7 +50,7 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectNucleotideFromStructure() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .parse();
         Nucleotide nucleotide = StructureSelector.selectFrom(structure)
@@ -63,7 +63,7 @@ public class StructureSelectorTest {
 
     @Test
     public void shouldSelectAtomFromStructure() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1C0A")
                 .parse();
         Atom atom = StructureSelector.selectFrom(structure)

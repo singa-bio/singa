@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
 public class SubstitutionMatrixTest {
 
     @Test
-    public void getMatrix() throws Exception {
+    public void getMatrix() {
         assertNotNull(SubstitutionMatrix.BLOSUM_45.getMatrix());
     }
 

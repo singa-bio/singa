@@ -15,7 +15,7 @@ public class GyrationTest {
 
     @BeforeClass
     public static void setup() {
-        structure = StructureParser.online()
+        structure = StructureParser.pdb()
                 .pdbIdentifier("2q6n")
                 .parse();
     }

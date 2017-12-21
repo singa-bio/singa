@@ -18,8 +18,12 @@ import javafx.stage.Stage;
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph<? extends Node<?,Vector2D, ?>,?,?> graph = Graphs.buildTreeGraph(10, new Rectangle(500, 500));
+    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildTreeGraph(10, new Rectangle(500, 500));
     public static GraphRenderer renderer = new GraphRenderer();
+
+    public static void main(String[] args) {
+        launch();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -66,10 +70,6 @@ public class GraphDisplayApplication extends Application {
 
     public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> getGraph() {
         return graph;
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 
 }

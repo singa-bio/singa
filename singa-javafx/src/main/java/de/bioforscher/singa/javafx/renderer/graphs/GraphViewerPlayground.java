@@ -26,7 +26,7 @@ public class GraphViewerPlayground {
 
     public static void main(String[] args) {
 
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1c0a")
                 .parse();
 

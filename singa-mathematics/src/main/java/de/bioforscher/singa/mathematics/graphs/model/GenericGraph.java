@@ -71,6 +71,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
 
     /**
      * Adds a new node with the given content to the graph.
+     *
      * @param content The content of the new node.
      * @return The node that was added.
      */
@@ -82,6 +83,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
 
     /**
      * Returns true if a node with the given content is already present.
+     *
      * @param content The content to check.
      * @return true if a node with the given content is already present.
      */
@@ -96,6 +98,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
 
     /**
      * Returns the node with the given content or an empty optional if no node could be found.
+     *
      * @param content The content of the node.
      * @return The node with the given content or an empty optional if no node could be found.
      */
@@ -110,7 +113,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
 
     public GenericGraph<ContentType> getCopy() {
         // create a new graph
-       GenericGraph<ContentType> graphCopy = new GenericGraph<>();
+        GenericGraph<ContentType> graphCopy = new GenericGraph<>();
         // copy and add nodes
         Collection<GenericNode<ContentType>> nodes = getNodes();
         for (GenericNode<ContentType> node : nodes) {
@@ -119,7 +122,7 @@ public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<Content
             graphCopy.addNode(nodeCopy);
         }
         // create and add edges for the nodes (preserving edge identifier)
-       Collection<GenericEdge<ContentType>> edges = getEdges();
+        Collection<GenericEdge<ContentType>> edges = getEdges();
         for (GenericEdge<ContentType> edge : edges) {
             GenericNode<ContentType> source = graphCopy.getNode(edge.getSource().getIdentifier());
             GenericNode<ContentType> target = graphCopy.getNode(edge.getTarget().getIdentifier());

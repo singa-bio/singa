@@ -20,7 +20,7 @@ class MmtfLeafFactory {
     /**
      * A cache containing the already seen ligand families.
      */
-    private static HashMap<String, LigandFamily> ligandFamilyCache = new HashMap<>();
+    private static final HashMap<String, LigandFamily> ligandFamilyCache = new HashMap<>();
 
     /**
      * Prevent external instantiation.

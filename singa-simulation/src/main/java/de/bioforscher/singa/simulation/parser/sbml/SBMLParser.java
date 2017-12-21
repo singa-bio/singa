@@ -41,28 +41,26 @@ public class SBMLParser {
 
     private static final Logger logger = LoggerFactory.getLogger(SBMLParser.class);
     private static final FeatureOrigin defaultOrigin = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION,
-                    "Defaulted during SBML Parsing, due to lack of information.", "none");
-
+            "Defaulted during SBML Parsing, due to lack of information.", "none");
+    // the controlpanles mapped to their sizes
+    private final Map<EnclosedCompartment, Double> compartments;
+    // the chemical entities
+    private final Map<String, ChemicalEntity> entities;
+    // their starting concentrations
+    private final Map<ChemicalEntity, Double> startingConcentrations;
+    // a utility map to provide species by their database identifier
+    private final Map<Identifier, ChemicalEntity> entitiesByDatabaseId;
+    // the functions
+    private final Map<String, FunctionReference> functions;
+    // assignment rules
+    private final List<AssignmentRule> assignmentRules;
     private SBMLDocument document;
-
     // the units
     private Map<String, Unit<?>> units;
-    // the controlpanles mapped to their sizes
-    private Map<EnclosedCompartment, Double> compartments;
-    // the chemical entities
-    private Map<String, ChemicalEntity> entities;
-    // their starting concentrations
-    private Map<ChemicalEntity, Double> startingConcentrations;
-    // a utility map to provide species by their database identifier
-    private Map<Identifier, ChemicalEntity> entitiesByDatabaseId;
     // the reactions
     private List<DynamicReaction> reactions;
-    // the functions
-    private Map<String, FunctionReference> functions;
     // the global parameters
     private Map<String, SimulationParameter<?>> globalParameters;
-    // assignment rules
-    private List<AssignmentRule> assignmentRules;
 
     public SBMLParser(InputStream inputStream) {
         entities = new HashMap<>();
@@ -231,7 +229,7 @@ public class SBMLParser {
      * Parses and adds a component using the first parsable resource in the given CVTerm.
      *
      * @param identifier The identifier as referenced in the model.
-     * @param cvTerm     The CVTerm containing the resources.
+     * @param cvTerm The CVTerm containing the resources.
      */
     private void parseAndAddSingularComponent(String identifier, CVTerm cvTerm, org.sbml.jsbml.Species species) {
         for (String resource : cvTerm.getResources()) {
@@ -248,7 +246,7 @@ public class SBMLParser {
      * Parses and adds a complex component using a CVTerm with multiple resources.
      *
      * @param identifier The identifier as referenced in the model.
-     * @param cvTerm     The CVTerm containing the resources.
+     * @param cvTerm The CVTerm containing the resources.
      */
     private void parseAndAddComplexComponent(String identifier, org.sbml.jsbml.Species species, CVTerm cvTerm) {
         ComplexedChemicalEntity complex = new ComplexedChemicalEntity.Builder(identifier).build();
@@ -284,7 +282,7 @@ public class SBMLParser {
      * Parses and adds a complex component using a List of CVTerms.
      *
      * @param identifier The identifier as referenced in the model.
-     * @param cvTerms    The CVTerms containing the resources.
+     * @param cvTerms The CVTerms containing the resources.
      */
     private void parseAndAddAllComponents(String identifier, List<CVTerm> cvTerms) {
         ComplexedChemicalEntity complex = new ComplexedChemicalEntity.Builder(identifier).build();
@@ -301,16 +299,16 @@ public class SBMLParser {
     /**
      * Parses and adds the resource to the given complex.
      *
-     * @param complex  The complex to add to.
+     * @param complex The complex to add to.
      * @param resource The resource to parse.
      */
     private void addPartToComplex(ComplexedChemicalEntity complex, String resource) {
-        Optional<ChemicalEntity> chemicalEntity = parseEntity(resource);
-        if (chemicalEntity.isPresent()) {
-            if (!complex.getAssociatedChemicalEntities().contains(chemicalEntity.get())) {
-                complex.addAssociatedPart(chemicalEntity.get());
+        Optional<ChemicalEntity> chemicalEntityOptional = parseEntity(resource);
+        chemicalEntityOptional.ifPresent(chemicalEntity -> {
+            if (!complex.getAssociatedChemicalEntities().contains(chemicalEntity)) {
+                complex.addAssociatedPart(chemicalEntity);
             }
-        }
+        });
     }
 
     /**
@@ -319,7 +317,7 @@ public class SBMLParser {
      * just added to the map of entities.
      *
      * @param identifier The identifier as referenced in the model.
-     * @param complex    The complex to add to the map of entities.
+     * @param complex The complex to add to the map of entities.
      */
     private void checkAndAddComplexedChemicalEntity(String identifier, ComplexedChemicalEntity complex) {
         if (complex.getAssociatedChemicalEntities().size() == 1) {

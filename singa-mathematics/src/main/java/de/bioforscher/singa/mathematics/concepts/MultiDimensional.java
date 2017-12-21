@@ -35,7 +35,7 @@ public interface MultiDimensional<NumberConcept extends MultiDimensional<NumberC
      *
      * @param element Another number concept.
      * @throws IncompatibleDimensionsException if this number concept has another dimension than the given
-     *                                         number concept.
+     * number concept.
      */
     default void assertThatDimensionsMatch(NumberConcept element) {
         if (!hasSameDimensions(element)) {

@@ -41,10 +41,10 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
 
     private static final String RESIDUE_PROTOTYPES_BASE_DIR = "de/bioforscher/singa/structure/leaves/prototypes/";
-    private String name;
-    private String oneLetterCode;
-    private String threeLetterCode;
-    private EnumSet<AtomName> allowedAtoms;
+    private final String name;
+    private final String oneLetterCode;
+    private final String threeLetterCode;
+    private final EnumSet<AtomName> allowedAtoms;
 
     AminoAcidFamily(String name, String oneLetterCode, String threeLetterCode, EnumSet<AtomName> allowedAtoms) {
         this.name = name;

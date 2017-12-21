@@ -30,20 +30,20 @@ public class Circle {
 
     }
 
-    public void setMidpoint(Vector2D midpoint) {
-        this.midpoint = midpoint;
-    }
-
     public Vector2D getMidpoint() {
         return midpoint;
     }
 
-    public void setRadius(double radius) {
-        this.radius = radius;
+    public void setMidpoint(Vector2D midpoint) {
+        this.midpoint = midpoint;
     }
 
     public double getRadius() {
         return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
 }

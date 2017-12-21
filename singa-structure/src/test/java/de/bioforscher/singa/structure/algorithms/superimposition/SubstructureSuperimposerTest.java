@@ -16,7 +16,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class SubstructureSuperimposerTest {
     private static Chain reference;
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup() {
         Structure motif1 = StructureParser.local()
                 .fileLocation(Resources.getResourceAsFileLocation("motif_HDS_01.pdb"))
                 .parse();
@@ -73,7 +72,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 3);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -85,7 +84,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum(), 12);
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -97,7 +96,7 @@ public class SubstructureSuperimposerTest {
         assertEquals(12, superimposition.getMappedCandidate().stream()
                 .mapToLong(subStructure -> subStructure.getAllAtoms().size())
                 .sum());
-        assertEquals(reconstructedAndMappedCandidate.size(), reference.getAllLeafSubstructures().size());
+        assertEquals(reconstructedAndMappedCandidate.size(), reference.getNumberOfLeafSubstructures());
     }
 
     @Test
@@ -152,21 +151,20 @@ public class SubstructureSuperimposerTest {
         List<LeafIdentifier> secondIdentifiers = LeafIdentifiers.of("A-58", "A-59");
         StructuralMotif secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
 
-        SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
-    }
+        SubstructureSuperimposition mmtfSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
 
-    @Test
-    public void shouldCalculateSubstructureSuperimpositionWithMissingAtoms() {
-// FIXME: this test does not work, getCopy() of Chain shows awkward behavior
-//        BranchSubstructure<?> referenceWithMissingAtoms = this.reference.getCopy();
-//        SubstructureSuperimposition superimposition = SubstructureSuperimposer
-//                .calculateSubstructureSuperimposition(referenceWithMissingAtoms, this.candidate);
-//        List<LeafSubstructure<?,?>> reconstructedAndMappedCandidate =
-//                superimposition.applyTo(this.candidate.getLeafSubstructures());
-//        assertEquals(superimposition.getMappedCandidate().stream()
-//                .flatMap(subStructure -> subStructure.getAllAtoms().stream())
-//                .count(), 3);
-//        assertEquals(reconstructedAndMappedCandidate.size(),
-//                referenceWithMissingAtoms.getLeafSubstructures().size());
+        first = StructureParser.pdb()
+                .pdbIdentifier("1cd9")
+                .parse();
+        firstMotif = StructuralMotif.fromLeafIdentifiers(first, firstIdentifiers);
+
+        second = StructureParser.pdb()
+                .pdbIdentifier("1cn4")
+                .parse();
+        secondMotif = StructuralMotif.fromLeafIdentifiers(second, secondIdentifiers);
+
+        SubstructureSuperimposition pdbSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(firstMotif, secondMotif, isArbitrary());
+
+        assertEquals(mmtfSuperimposition.getRmsd(), pdbSuperimposition.getRmsd(), 1E-6);
     }
 }

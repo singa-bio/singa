@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
  */
 public class ValidCandidateGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ValidAlignmentGenerator.class);
-    private List<LeafSubstructure<?>> queryMotif;
-    private List<LeafSubstructure<?>> environment;
+    private final List<LeafSubstructure<?>> queryMotif;
+    private final List<LeafSubstructure<?>> environment;
 
     private List<List<LeafSubstructure<?>>> acceptedElementsAtEachPosition;
     private Set<Set<LeafSubstructure<?>>> candidates;

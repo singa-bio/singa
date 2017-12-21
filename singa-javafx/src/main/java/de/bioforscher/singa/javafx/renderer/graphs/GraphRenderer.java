@@ -26,15 +26,12 @@ import java.util.stream.Collectors;
 public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierType>, EdgeType extends Edge<NodeType>,
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
-    private ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();
-
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
-
-    private DoubleProperty drawingWidth;
-    private DoubleProperty drawingHeight;
-
     private GraphicsContext graphicsContext;
 
     public GraphRenderer() {

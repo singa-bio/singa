@@ -21,6 +21,7 @@ public class Pair<ValueType> {
 
     /**
      * Creates a new {@link Pair}.
+     *
      * @param first The first value.
      * @param second The second value.
      */
@@ -31,6 +32,7 @@ public class Pair<ValueType> {
 
     /**
      * Returns the first value.
+     *
      * @return The first value.
      */
     public ValueType getFirst() {
@@ -39,6 +41,7 @@ public class Pair<ValueType> {
 
     /**
      * Returns the second value.
+     *
      * @return The second value.
      */
     public ValueType getSecond() {

@@ -15,7 +15,7 @@ public class LabeledSymmetricMatrix<LabelType> extends SymmetricMatrix implement
 
     private static final long serialVersionUID = 2860722869189599846L;
 
-    private Map<LabelType, Integer> labelMap;
+    private final Map<LabelType, Integer> labelMap;
 
     /**
      * Creates a new {@code SymmetricMatrix} with the given double values. The first index of the double array

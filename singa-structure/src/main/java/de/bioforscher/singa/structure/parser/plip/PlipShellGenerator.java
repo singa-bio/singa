@@ -27,7 +27,7 @@ public class PlipShellGenerator {
     private final InteractionContainer referenceInteractions;
     private final Map<InteractionShell, List<LeafSubstructure<?>>> shells;
 
-    private GenericGraph<LeafSubstructure<?>> graph;
+    private final GenericGraph<LeafSubstructure<?>> graph;
 
     private PlipShellGenerator(Chain chain, LeafSubstructure reference, InteractionContainer interChainInteractions,
                                InteractionContainer referenceInteractions) {

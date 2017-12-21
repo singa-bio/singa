@@ -27,7 +27,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * be converted. The new matrix is a copy of the old one.
      *
      * @param matrixClass The new class of the matrix.
-     * @param <M>         Any implementation of this matrix.
+     * @param <M> Any implementation of this matrix.
      * @return The new converted matrix.
      */
     <M extends Matrix> M as(Class<M> matrixClass);
@@ -57,7 +57,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * @param multiplicand The vector to be transformed.
      * @return The transformed vector.
      * @throws IncompatibleDimensionsException if the column dimension of the matrix and the dimension of the vector do
-     *                                         not agree.
+     * not agree.
      */
     Vector multiply(Vector multiplicand);
 
@@ -69,7 +69,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      * @param multiplicand The multiplicand.
      * @return The Hadamard product.
      * @throws IncompatibleDimensionsException if the column dimension and the row dimension of this matrix and the
-     *                                         given matrix do not agree.
+     * given matrix do not agree.
      */
     Matrix hadamardMultiply(Matrix multiplicand);
 
@@ -131,7 +131,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
     /**
      * Returns an element of this matrix.
      *
-     * @param rowIndex    The row index.
+     * @param rowIndex The row index.
      * @param columnIndex The column index.
      * @return A single element of this matrix at the given position.
      */
@@ -183,7 +183,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      *
      * @param matrix The other matrix.
      * @throws IncompatibleDimensionsException if the column dimension and the row dimension of this matrix and the
-     *                                         given matrix do not agree.
+     * given matrix do not agree.
      */
     default void assertThatInnerDimensionsMatch(Matrix matrix) {
         if (!hasSameInnerDimension(matrix)) {
@@ -210,7 +210,7 @@ public interface Matrix extends MultiDimensional<Matrix>, Ring<Matrix> {
      *
      * @param vector The vector.
      * @throws IncompatibleDimensionsException if the inner (column) dimensions of the matrix and the dimension of
-     *                                         the vector do not agree.
+     * the vector do not agree.
      */
     default void assertThatInnerDimensionsMatch(Vector vector) {
         if (!hasSameInnerDimension(vector)) {

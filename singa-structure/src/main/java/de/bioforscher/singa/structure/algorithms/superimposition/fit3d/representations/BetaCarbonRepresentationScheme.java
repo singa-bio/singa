@@ -49,7 +49,7 @@ public class BetaCarbonRepresentationScheme extends AbstractRepresentationScheme
                     .filter(AtomFilter.isBetaCarbon())
                     .findAny();
             if (optionalVirtualBetaCarbon.isPresent()) {
-                return new OakAtom(leafSubstructure.getAllAtoms().get(0).getIdentifier(),
+                return new OakAtom(leafSubstructure.getAllAtoms().get(0).getAtomIdentifier(),
                         ElementProvider.CARBON,
                         RepresentationSchemeType.BETA_CARBON.getAtomNameString(),
                         optionalVirtualBetaCarbon.get().getPosition().getCopy());

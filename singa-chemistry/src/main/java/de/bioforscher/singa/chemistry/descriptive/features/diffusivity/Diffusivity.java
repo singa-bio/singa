@@ -29,20 +29,20 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
     private Quantity<Diffusivity> scaledQuantity;
     private Quantity<Diffusivity> halfScaledQuantity;
 
-    /**
-     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
-     * for the first time.
-     */
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
-    }
-
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
         super(diffusivityQuantity, origin);
     }
 
     public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETER_PER_SECOND), origin);
+    }
+
+    /**
+     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
+     * for the first time.
+     */
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
     }
 
     @Override

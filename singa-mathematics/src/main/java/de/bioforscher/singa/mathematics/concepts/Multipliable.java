@@ -14,21 +14,11 @@ package de.bioforscher.singa.mathematics.concepts;
  * will return the Zero element.
  *
  * @param <NumberConcept> A reference to the class or interface which the multiplication
- *                        will result in.
+ * will result in.
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Multiplication">Wikipedia: Multiplication</a>
  */
 public interface Multipliable<NumberConcept extends Multipliable<NumberConcept>> {
-
-    /**
-     * Multiplies the given Object (called multiplicand) to this Object (called
-     * multiplier) and returns a new Object (called product). Neither
-     * multiplicand nor multiplier shall be changed.
-     *
-     * @param multiplicand Another Object.
-     * @return The product of this Object and the given multiplicand.
-     */
-    NumberConcept multiply(NumberConcept multiplicand);
 
     /**
      * Multiplies all given Objects (called factors) and returns a new Object
@@ -48,5 +38,15 @@ public interface Multipliable<NumberConcept extends Multipliable<NumberConcept>>
         }
         return returnValue;
     }
+
+    /**
+     * Multiplies the given Object (called multiplicand) to this Object (called
+     * multiplier) and returns a new Object (called product). Neither
+     * multiplicand nor multiplier shall be changed.
+     *
+     * @param multiplicand Another Object.
+     * @return The product of this Object and the given multiplicand.
+     */
+    NumberConcept multiply(NumberConcept multiplicand);
 
 }

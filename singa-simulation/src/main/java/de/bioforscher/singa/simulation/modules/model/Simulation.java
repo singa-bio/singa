@@ -66,49 +66,41 @@ import static tec.units.ri.unit.Units.SECOND;
 public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
+     * The updating modules.
+     */
+    private final Set<Module> modules;
+    /**
+     * The manager of time steps sizes.
+     */
+    private final TimeStepHarmonizer harmonizer;
+    /**
+     * Any registered listeners.
+     */
+    private final CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
+    /**
      * The graph structure.
      */
     private AutomatonGraph graph;
-
-    /**
-     * The updating modules.
-     */
-    private Set<Module> modules;
-
     /**
      * The assignment rules.
      */
     private List<AssignmentRule> assignmentRules;
-
     /**
      * The chemical entities referenced in the graph.
      */
     private Set<ChemicalEntity<?>> chemicalEntities;
-
     /**
      * The globally applied parameters.
      */
     private Set<SimulationParameter> globalParameters;
-
     /**
      * The current epoch.
      */
     private long epoch;
-
     /**
      * The currently elapsed time.
      */
     private Quantity<Time> elapsedTime;
-
-    /**
-     * The manager of time steps sizes.
-     */
-    private TimeStepHarmonizer harmonizer;
-
-    /**
-     * Any registered listeners.
-     */
-    private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
 
     /**
      * Creates a new plain simulation.
@@ -203,6 +195,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the assignment rules.
+     *
      * @return The assignment rules.
      */
     public List<AssignmentRule> getAssignmentRules() {
@@ -211,6 +204,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Adds a list of assignment rules, sorting them by their dependencies.
+     *
      * @param assignmentRules The assignment rules.
      * @see AssignmentRules#sortAssignmentRulesByPriority(List)
      */
@@ -221,6 +215,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the chemical entities.
+     *
      * @return The chemical entities.
      */
     public Set<ChemicalEntity<?>> getChemicalEntities() {
@@ -229,6 +224,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Sets all chemical entities at once.
+     *
      * @param chemicalEntities The chemical entities.
      */
     public void setChemicalEntities(Set<ChemicalEntity<?>> chemicalEntities) {
@@ -246,6 +242,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
      * Returns the elapsed time after the deltas of the current epoch are applied.
+     *
      * @return The elapsed time after the deltas of the current epoch are applied.
      */
     public Quantity<Time> getElapsedTime() {

@@ -37,25 +37,23 @@ public class FofanovEstimation implements StatisticalModel {
      * The number of chains in the BLASTe-80 nrpdb dataset according to VAST as of 2017-10-17.
      */
     public static final int DEFAULT_REFERENCE_SIZE = 39592;
-
+    private static final Logger logger = LoggerFactory.getLogger(FofanovEstimation.class);
     private static final String BINARY_NAME = "Rscript";
     private static final double START_RMSD = 0.0;
     private static final double SAMPLE_SIZE = 100000;
-    private static Logger logger = LoggerFactory.getLogger(FofanovEstimation.class);
+
+    private final double rmsdCutoff;
+    private final AtomicInteger gs;
+    private final AtomicInteger ns;
+    private final double modelCorrectnessCutoff;
 
     private int referenceSize = DEFAULT_REFERENCE_SIZE;
-    private double rmsdCutoff;
-
-    private AtomicInteger gs;
-    private AtomicInteger ns;
-
     private Path temporaryDirectoryPath;
     private Path scriptPath;
     private Path rmsdValuesPath;
     private Path pvaluesPath;
     private Vector pvalues;
     private List<Fit3DMatch> matches;
-    private double modelCorrectnessCutoff;
 
     public FofanovEstimation(double rmsdCutoff) {
         this(rmsdCutoff, DEFAULT_REFERENCE_SIZE, rmsdCutoff);

@@ -20,7 +20,7 @@ public class Line {
      * Creates a new line from it's y-intercept and slope.
      *
      * @param yIntercept The y-intercept.
-     * @param slope      The slope.
+     * @param slope The slope.
      */
     public Line(double yIntercept, double slope) {
         if (Double.isNaN(yIntercept)) {
@@ -36,7 +36,7 @@ public class Line {
      * Creates a new Point from a strut point and the slope;
      *
      * @param strutPoint The strut point.
-     * @param slope      The slope.
+     * @param slope The slope.
      */
     public Line(Vector2D strutPoint, double slope) {
         if (!Double.isInfinite(slope)) {
@@ -66,7 +66,7 @@ public class Line {
     /**
      * Creates a new Line from two points.
      *
-     * @param first  The first point.
+     * @param first The first point.
      * @param second The second point.
      */
     public Line(Vector2D first, Vector2D second) {
@@ -91,7 +91,7 @@ public class Line {
      * <pre>
      * m = (y2 - y1)/(x2 - x1).</pre>
      *
-     * @param first  The first point of the line.
+     * @param first The first point of the line.
      * @param second The second point of the line.
      * @return The slope.
      */

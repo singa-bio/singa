@@ -16,13 +16,11 @@ import java.util.Optional;
  */
 public class UniProtDatabase {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniProtDatabase.class);
-
     public static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.DATABASE,
             "UniProt Database",
             "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
                     "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");
-
+    private static final Logger logger = LoggerFactory.getLogger(UniProtDatabase.class);
     /**
      * The instance.
      */
@@ -35,12 +33,9 @@ public class UniProtDatabase {
     public static <FeaturableType extends Featureable> MolarMass fetchMolarMass(Featureable featureable) {
         // try to get UniProt identifier
         ChemicalEntity<?> entity = (ChemicalEntity) featureable;
-        Optional<Identifier> identifier = UniProtIdentifier.find(entity.getAllIdentifiers());
+        Optional<Identifier> identifierOptional = UniProtIdentifier.find(entity.getAllIdentifiers());
         // try to get weight from UniProt Database
-        if (identifier.isPresent()) {
-            return new MolarMass(UniProtParserService.fetchMolarMass(identifier.get()), origin);
-        }
-        return null;
+        return identifierOptional.map(identifier1 -> new MolarMass(UniProtParserService.fetchMolarMass(identifier1), origin)).orElse(null);
     }
 
 }

@@ -17,15 +17,13 @@ import java.util.*;
 public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
         VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
-    private GraphType graph;
-    private NodeType referenceNode;
-
+    private final GraphType graph;
+    private final NodeType referenceNode;
+    private final Set<NodeType> visitedNodes;
+    private final List<NodeType> nodesOfSubgraph;
+    private final List<EdgeType> edgesOfSubgraph;
     private Queue<NodeType> currentWave;
     private Queue<NodeType> nextWave;
-    private Set<NodeType> visitedNodes;
-
-    private List<NodeType> nodesOfSubgraph;
-    private List<EdgeType> edgesOfSubgraph;
 
     public NeighbourhoodExtractor(GraphType graph, NodeType referenceNode) {
         this.referenceNode = referenceNode;
@@ -114,7 +112,8 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
                     if (!visitedNodes.contains(neighbour)) {
                         if (!onlyShell) {
                             nodesOfSubgraph.add(neighbour);
-                            edgesOfSubgraph.add(graph.getEdgeBetween(currentNode, neighbour).get());
+                            Optional<EdgeType> edgeOptional = graph.getEdgeBetween(currentNode, neighbour);
+                            edgeOptional.ifPresent(edgesOfSubgraph::add);
                             addConnectionsToVisitedNodes(neighbour);
                         }
                         nextWave.add(neighbour);
@@ -134,6 +133,7 @@ public class NeighbourhoodExtractor<NodeType extends Node<NodeType, VectorType, 
 
     /**
      * Adds edges to the newly added neighbour to eventually already visited nodes.
+     *
      * @param neighbour The neighbour to add edges to.
      */
     private void addConnectionsToVisitedNodes(NodeType neighbour) {

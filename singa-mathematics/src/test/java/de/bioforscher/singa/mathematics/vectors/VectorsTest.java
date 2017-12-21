@@ -19,12 +19,12 @@ public class VectorsTest {
     }
 
     @Test
-    public void getAverage() throws Exception {
+    public void getAverage() {
         assertEquals(0.65, Vectors.getAverage(vector), 0.0);
     }
 
     @Test
-    public void getMedian() throws Exception {
+    public void getMedian() {
         assertEquals((0.6 + 0.7) / 2, Vectors.getMedian(vector), 0.0);
         double[] doubles = {0.5, 0.6, 0.7, 0.8, 0.9};
         RegularVector oddVector = new RegularVector(doubles);
@@ -32,12 +32,12 @@ public class VectorsTest {
     }
 
     @Test
-    public void getStandardDeviation() throws Exception {
+    public void getStandardDeviation() {
         assertEquals(0.12909, Vectors.getStandardDeviation(vector), 1E-4);
     }
 
     @Test
-    public void getVariance() throws Exception {
+    public void getVariance() {
         assertEquals(0.01666, Vectors.getVariance(vector), 1E-4);
     }
 

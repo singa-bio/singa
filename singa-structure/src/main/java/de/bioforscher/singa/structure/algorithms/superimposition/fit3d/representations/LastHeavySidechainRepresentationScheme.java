@@ -11,12 +11,13 @@ import de.bioforscher.singa.structure.model.oak.OakAtom;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.Structures;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * An implementation to represent a given {@link GraphLeafSubstructure} by its last heavy sidechain atom (the atom most
- * far from the alpha carbon). This is only available for {@link GraphAminoAcid}s with defined alpha carbons. For
+ * An implementation to represent a given {@link LeafSubstructure} by its last heavy sidechain atom (the atom most
+ * far from the alpha carbon). This is only available for {@link AminoAcid}s with defined alpha carbons. For
  * glycine this defaults to {@link BetaCarbonRepresentationScheme}.
  *
  * @author fk
@@ -38,11 +39,7 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
             return new BetaCarbonRepresentationScheme().determineCentroid(leafSubstructure);
         }
         // fallback if no sidechain atoms exist or no alpha carbon is present
-        if (leafSubstructure.getAllAtoms().stream()
-                .filter(StructuralEntityFilter.AtomFilter.isSideChain())
-                .count() == 0 || leafSubstructure.getAllAtoms().stream()
-                .filter(StructuralEntityFilter.AtomFilter.isAlphaCarbon())
-                .count() == 0) {
+        if (leafSubstructure.getAllAtoms().stream().noneMatch(StructuralEntityFilter.AtomFilter.isSideChain()) || leafSubstructure.getAllAtoms().stream().noneMatch(StructuralEntityFilter.AtomFilter.isAlphaCarbon())) {
             return determineCentroid(leafSubstructure);
         }
         // FIXME :this takes squared distances
@@ -53,9 +50,9 @@ public class LastHeavySidechainRepresentationScheme extends AbstractRepresentati
         if (atomDistanceMatrix.getRowDimension() == 1) {
             return atomDistanceMatrix.getColumnLabel(0);
         }
-        int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(((AminoAcid) leafSubstructure).getAtomByName("CA").get()));
+        int maximalElementIndex = Vectors.getIndexWithMaximalElement(atomDistanceMatrix.getRowByLabel(leafSubstructure.getAtomByName("CA").orElseThrow(NoSuchElementException::new)));
         Atom referenceAtom = atomDistanceMatrix.getColumnLabel(maximalElementIndex);
-        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getIdentifier(),
+        return new OakAtom(leafSubstructure.getAllAtoms().get(leafSubstructure.getAllAtoms().size() - 1).getAtomIdentifier(),
                 ElementProvider.UNKOWN,
                 RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN.getAtomNameString(),
                 referenceAtom.getPosition());

@@ -13,7 +13,6 @@ import java.util.*;
 /**
  * In this representation of a membrane is divided into four parts. An outer aqueous phase, an inner aqueous phase, the
  * layer of the membrane oriented to the outer phase, and the layer of the membrane oriented to the inner phase.
- *
  * This class is modelled after the representation in:
  * Dickson 2016 - Structure-kinetic relationships of passive membrane permeation from multiscale modeling.
  *
@@ -21,14 +20,14 @@ import java.util.*;
  */
 public class MembraneContainer implements ConcentrationContainer {
 
-    private CellSection outerPhaseSection;
-    private CellSection innerPhaseSection;
-    private Membrane membrane;
+    private final CellSection outerPhaseSection;
+    private final CellSection innerPhaseSection;
+    private final Membrane membrane;
 
-    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerPhase;
-    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerLayer;
-    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerLayer;
-    private Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerPhase;
+    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerPhase;
+    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerLayer;
+    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerLayer;
+    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerPhase;
 
     public MembraneContainer(CellSection outerPhaseSection, CellSection innerPhaseSection, Membrane membrane) {
         this.outerPhaseSection = outerPhaseSection;

@@ -10,6 +10,7 @@ public interface UpdateEventListener<EventType> {
 
     /**
      * Performs an operation based on the received event.
+     *
      * @param event The received event.
      */
     void onEventReceived(EventType event);

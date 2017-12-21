@@ -23,7 +23,7 @@ public class PubChemParserServiceTest {
         // molar mass
         assertEquals("O", species.getFeature(Smiles.class).getFeatureContent());
         // logP
-        assertEquals(-1.38, species.getFeature(LogP.class).getFeatureContent(), 0.0 );
+        assertEquals(-1.38, species.getFeature(LogP.class).getFeatureContent(), 0.0);
     }
 
 

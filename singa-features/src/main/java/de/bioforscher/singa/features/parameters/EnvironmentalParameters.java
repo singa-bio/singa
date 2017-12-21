@@ -27,6 +27,10 @@ public class EnvironmentalParameters extends Observable {
     private Quantity<DynamicViscosity> systemViscosity;
     private boolean isCellularEnvironment;
 
+    private EnvironmentalParameters() {
+        resetToDefaultValues();
+    }
+
     public static EnvironmentalParameters getInstance() {
         if (instance == null) {
             synchronized (EnvironmentalParameters.class) {
@@ -34,10 +38,6 @@ public class EnvironmentalParameters extends Observable {
             }
         }
         return instance;
-    }
-
-    private EnvironmentalParameters() {
-        resetToDefaultValues();
     }
 
     public void resetToDefaultValues() {
@@ -54,16 +54,43 @@ public class EnvironmentalParameters extends Observable {
         return nodeDistance;
     }
 
+    public void setNodeDistance(Quantity<Length> nodeDistance) {
+        logger.debug("Setting new spatial step size to {}.", nodeDistance);
+        this.nodeDistance = nodeDistance;
+        setChanged();
+        notifyObservers();
+    }
+
     public Quantity<Temperature> getSystemTemperature() {
         return systemTemperature;
+    }
+
+    public void setSystemTemperature(Quantity<Temperature> systemTemperature) {
+        // always in kelvin
+        this.systemTemperature = systemTemperature.to(KELVIN);
+        setChanged();
+        notifyObservers();
     }
 
     public Quantity<DynamicViscosity> getSystemViscosity() {
         return systemViscosity;
     }
 
+    public void setSystemViscosity(Quantity<DynamicViscosity> systemViscosity) {
+        this.systemViscosity = systemViscosity.to(MILLI(PASCAL_SECOND));
+        setChanged();
+        notifyObservers();
+    }
+
     public Quantity<Time> getTimeStep() {
         return timeStep;
+    }
+
+    public void setTimeStep(Quantity<Time> timeStep) {
+        logger.debug("Setting new time step size to {}.", timeStep);
+        this.timeStep = timeStep;
+        setChanged();
+        notifyObservers();
     }
 
     public boolean isCellularEnvironment() {
@@ -76,37 +103,10 @@ public class EnvironmentalParameters extends Observable {
         notifyObservers();
     }
 
-    public void setNodeDistance(Quantity<Length> nodeDistance) {
-        logger.debug("Setting new spatial step size to {}.", nodeDistance);
-        this.nodeDistance = nodeDistance;
-        setChanged();
-        notifyObservers();
-    }
-
     public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
         setNodeDistance(
                 Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
-    }
-
-    public void setSystemTemperature(Quantity<Temperature> systemTemperature) {
-        // always in kelvin
-        this.systemTemperature = systemTemperature.to(KELVIN);
-        setChanged();
-        notifyObservers();
-    }
-
-    public void setSystemViscosity(Quantity<DynamicViscosity> systemViscosity) {
-        this.systemViscosity = systemViscosity.to(MILLI(PASCAL_SECOND));
-        setChanged();
-        notifyObservers();
-    }
-
-    public void setTimeStep(Quantity<Time> timeStep) {
-        logger.debug("Setting new time step size to {}.", timeStep);
-        this.timeStep = timeStep;
-        setChanged();
-        notifyObservers();
     }
 
     @Override

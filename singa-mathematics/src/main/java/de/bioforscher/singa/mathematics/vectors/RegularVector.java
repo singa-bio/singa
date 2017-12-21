@@ -30,7 +30,7 @@ public class RegularVector implements Vector {
         dimension = elements.length;
     }
 
-    public RegularVector(int dimension){
+    public RegularVector(int dimension) {
         elements = new double[dimension];
         this.dimension = dimension;
     }
@@ -46,7 +46,7 @@ public class RegularVector implements Vector {
      */
     public static <VectorDimension extends Vector> VectorDimension createNewVector(double[] elements,
                                                                                    Class<VectorDimension>
-                                                                                                  typeClass) {
+                                                                                           typeClass) {
         try {
             return typeClass.getConstructor(double[].class).newInstance(elements);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

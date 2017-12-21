@@ -13,9 +13,9 @@ public class OakChain implements Chain {
 
     private final String identifier;
 
-    private TreeMap<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
+    private final TreeMap<LeafIdentifier, OakLeafSubstructure<?>> leafSubstructures;
 
-    private Set<LeafIdentifier> consecutiveIdentifiers;
+    private final Set<LeafIdentifier> consecutiveIdentifiers;
 
     public OakChain(String chainIdentifier) {
         identifier = chainIdentifier;
@@ -33,7 +33,7 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getChainIdentifier() {
         return identifier;
     }
 
@@ -49,6 +49,11 @@ public class OakChain implements Chain {
         }
         return Optional.empty();
 
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return leafSubstructures.values().iterator().next();
     }
 
     public void addLeafSubstructure(OakLeafSubstructure leafSubstructure, boolean consecutivePart) {
@@ -67,12 +72,13 @@ public class OakChain implements Chain {
         if (leafSubstructures.containsKey(leafIdentifier)) {
             // collect all atoms that should be removed
             List<Integer> atomsToBeRemoved = leafSubstructures.get(leafIdentifier).getAllAtoms().stream()
-                    .map(Atom::getIdentifier)
+                    .map(Atom::getAtomIdentifier)
                     .collect(Collectors.toList());
             // remove them
             atomsToBeRemoved.forEach(this::removeAtom);
             // remove the leaf
             leafSubstructures.remove(leafIdentifier);
+            consecutiveIdentifiers.remove(leafIdentifier);
             return true;
         } else {
             return false;
@@ -95,7 +101,7 @@ public class OakChain implements Chain {
         for (LeafSubstructure<?> leafSubstructure : leafSubstructures.values()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
             if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(optionalAtom.get().getIdentifier());
+                leafSubstructure.removeAtom(optionalAtom.get().getAtomIdentifier());
                 return;
             }
         }
@@ -124,15 +130,19 @@ public class OakChain implements Chain {
      */
     public void connectPeptideBonds(OakAminoAcid source, OakAminoAcid target) {
         // creates the peptide backbone
-        if (source.containsAtomWithName("C") && target.containsAtomWithName("N")) {
-            source.addBondBetween((OakAtom) source.getAtomByName("C").get(), (OakAtom) target.getAtomByName("N").get());
+        Optional<Atom> sourceAtomOptional = source.getAtomByName("C");
+        Optional<Atom> targetAtomOptional = target.getAtomByName("N");
+        if (sourceAtomOptional.isPresent() && targetAtomOptional.isPresent()) {
+            source.addBondBetween((OakAtom) sourceAtomOptional.get(), (OakAtom) targetAtomOptional.get());
         }
     }
 
     public void connectNucleotideBonds(OakNucleotide source, OakNucleotide target) {
         // creates the peptide backbone
-        if (source.containsAtomWithName("O3'") && target.containsAtomWithName("P")) {
-            source.addBondBetween((OakAtom) source.getAtomByName("O3'").get(), (OakAtom) target.getAtomByName("P").get());
+        Optional<Atom> sourceAtomOptional = source.getAtomByName("O3'");
+        Optional<Atom> targetAtomOptional = target.getAtomByName("P");
+        if (sourceAtomOptional.isPresent() && targetAtomOptional.isPresent()) {
+            source.addBondBetween((OakAtom) sourceAtomOptional.get(), (OakAtom) targetAtomOptional.get());
         }
     }
 
@@ -168,11 +178,6 @@ public class OakChain implements Chain {
     }
 
     @Override
-    public String toString() {
-        return " Chain " + identifier;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -186,4 +191,10 @@ public class OakChain implements Chain {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return flatToString();
+    }
+
 }

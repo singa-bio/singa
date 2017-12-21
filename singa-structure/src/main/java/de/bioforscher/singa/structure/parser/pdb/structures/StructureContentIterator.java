@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import static de.bioforscher.singa.structure.parser.pdb.structures.StructureContentIterator.SourceLocation.*;
+import static de.bioforscher.singa.structure.parser.pdb.structures.SourceLocation.*;
 
 /**
  * This iterator administers each structure that should be parsed and its origin.
@@ -35,6 +34,10 @@ class StructureContentIterator implements Iterator<List<String>> {
      * The URL the where pdb files are parsed from.
      */
     private static final String PDB_FETCH_URL = "https://files.rcsb.org/download/%s.pdb";
+    /**
+     * The pdb identifiers that are to be parsed, if they can be inferred.
+     */
+    private final List<String> pdbIdentifiers;
     /**
      * The local pdb, if there is any.
      */
@@ -55,10 +58,6 @@ class StructureContentIterator implements Iterator<List<String>> {
      * The iterator that traverses the paths.
      */
     private Iterator<Path> currentPath;
-    /**
-     * The pdb identifiers that are to be parsed, if they can be inferred.
-     */
-    private List<String> pdbIdentifiers;
     /**
      * The iterator that traverses the pdb identifiers.
      */
@@ -107,7 +106,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param path The path of a file that is to be parsed.
      */
     StructureContentIterator(Path path) {
-        this(Path.class, Collections.singletonList(path), OFFLINE);
+        this(Path.class, Collections.singletonList(path), OFFLINE_PDB);
     }
 
     /**
@@ -116,7 +115,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @param file The  file that is to be parsed.
      */
     StructureContentIterator(File file) {
-        this(File.class, Collections.singletonList(file), OFFLINE);
+        this(File.class, Collections.singletonList(file), OFFLINE_PDB);
     }
 
     /**
@@ -227,7 +226,7 @@ class StructureContentIterator implements Iterator<List<String>> {
     private void prepareOfflinePaths(List<Path> paths) {
         this.paths = paths;
         currentPath = this.paths.iterator();
-        location = OFFLINE;
+        location = OFFLINE_PDB;
     }
 
     /**
@@ -240,7 +239,7 @@ class StructureContentIterator implements Iterator<List<String>> {
             paths.add(file.toPath());
         }
         currentPath = paths.iterator();
-        location = OFFLINE;
+        location = OFFLINE_PDB;
     }
 
     /**
@@ -255,7 +254,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         }
         currentPath = paths.iterator();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
-        location = OFFLINE;
+        location = OFFLINE_PDB;
     }
 
     /**
@@ -272,7 +271,7 @@ class StructureContentIterator implements Iterator<List<String>> {
         currentPath = paths.iterator();
         pdbIdentifierIterator = pdbIdentifiers.iterator();
         chainIdentifierIterator = chains.iterator();
-        location = OFFLINE;
+        location = OFFLINE_PDB;
     }
 
     /**
@@ -305,9 +304,7 @@ class StructureContentIterator implements Iterator<List<String>> {
      * @return The assembled path.
      */
     private Path assemblePath(String identifier) {
-        return localPdb.getLocalPdbPath().resolve(Paths.get(StructureParser.LocalPDB.BASE_PATH + "/"
-                + identifier.substring(1, identifier.length() - 1).toLowerCase()
-                + "/pdb" + identifier.toLowerCase() + ".ent.gz"));
+        return localPdb.getPathForPdbIdentifier(identifier);
     }
 
     /**
@@ -384,12 +381,13 @@ class StructureContentIterator implements Iterator<List<String>> {
 
     @Override
     public boolean hasNext() {
-        if (location == ONLINE_PDB) {
-            return currentURL.hasNext();
-        } else if (location == ONLINE_MMTF) {
-            return pdbIdentifierIterator.hasNext();
-        } else {
-            return currentPath.hasNext();
+        switch (location) {
+            case ONLINE_PDB:
+                return currentURL.hasNext();
+            case ONLINE_MMTF:
+                return pdbIdentifierIterator.hasNext();
+            default:
+                return currentPath.hasNext();
         }
     }
 
@@ -404,34 +402,37 @@ class StructureContentIterator implements Iterator<List<String>> {
                 logger.debug("Parsing structure {}.", currentPdbIdentifier);
             }
         }
-        if (location == OFFLINE) {
-            try {
-                final Path path = currentPath.next();
-                // remove extension
-                currentSource = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
-                if (path.toString().endsWith(".ent.gz")) {
-                    return fetchLines(readPacked(path));
-                } else {
-                    return fetchLines(Files.newInputStream(path));
+        switch (location) {
+            case OFFLINE_PDB:
+                try {
+                    final Path path = currentPath.next();
+                    // remove extension
+                    currentSource = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
+                    if (path.toString().endsWith(".ent.gz")) {
+                        return fetchLines(readPacked(path));
+                    } else if (path.toString().endsWith(".mmtf.gz")) {
+                        return Collections.singletonList(path.toString());
+                    } else {
+                        return fetchLines(Files.newInputStream(path));
+                    }
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Could not open input stream for path.", e);
+                } finally {
+                    progressCounter++;
                 }
-            } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for path.", e);
-            } finally {
-                progressCounter++;
-            }
-        } else if (location == ONLINE_PDB) {
-            try {
-                URL url = currentURL.next();
-                currentSource = url.getFile();
-                return fetchLines(url.openStream());
-            } catch (IOException e) {
-                throw new UncheckedIOException("Could not open input stream for URL. The PDB identifier \""
-                        + currentPdbIdentifier + "\" does not seem to exist", e);
-            } finally {
-                progressCounter++;
-            }
-        } else {
-            return Collections.singletonList(currentPdbIdentifier);
+            case ONLINE_PDB:
+                try {
+                    URL url = currentURL.next();
+                    currentSource = url.getFile();
+                    return fetchLines(url.openStream());
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Could not open input stream for URL. The PDB identifier \""
+                            + currentPdbIdentifier + "\" does not seem to exist", e);
+                } finally {
+                    progressCounter++;
+                }
+            default:
+                return Collections.singletonList(currentPdbIdentifier);
         }
 
     }
@@ -450,12 +451,4 @@ class StructureContentIterator implements Iterator<List<String>> {
             }
         }
     }
-
-    /**
-     * The location the files should be parsed from.
-     */
-    enum SourceLocation {
-        ONLINE_PDB, ONLINE_MMTF, OFFLINE
-    }
-
 }

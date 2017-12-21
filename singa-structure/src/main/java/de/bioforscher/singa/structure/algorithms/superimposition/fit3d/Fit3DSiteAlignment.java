@@ -1,7 +1,9 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Pair;
+import de.bioforscher.singa.mathematics.algorithms.optimization.KuhnMunkres;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
+import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
 import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
@@ -51,20 +53,20 @@ public class Fit3DSiteAlignment implements Fit3D {
     private final boolean restrictToExchanges;
     private final SubstitutionMatrix substitutionMatrix;
     private final boolean containsNonAminoAcids;
+    private final boolean kuhnMunkres;
 
-    private double cutoffScore;
-
+    private final double cutoffScore;
+    private final List<Fit3DMatch> matches;
     private int currentAlignmentSize;
     private LabeledRegularMatrix<List<LeafSubstructure<?>>> currentSimilarityMatrix;
     private Pair<List<LeafSubstructure<?>>> currentBestMatchingPair;
     private double currentBestScore;
     private SubstructureSuperimposition currentBestSuperimposition;
-
-    private List<Fit3DMatch> matches;
     private String alignmentString;
     private boolean cutoffScoreReached;
     private XieScore xieScore;
     private PsScore psScore;
+    private List<Pair<LeafSubstructure<?>>> assignment;
 
     public Fit3DSiteAlignment(Fit3DBuilder.Builder builder) throws SubstructureSuperimpositionException {
         site1 = builder.site1.getCopy();
@@ -80,6 +82,7 @@ public class Fit3DSiteAlignment implements Fit3D {
         }
 
         exhaustive = builder.exhaustive;
+        kuhnMunkres = builder.kuhnMunkres;
         restrictToExchanges = builder.restrictToExchanges;
 
         // add exchanges against arbitrary types if not restricted
@@ -110,8 +113,16 @@ public class Fit3DSiteAlignment implements Fit3D {
         logger.info("computing Fit3DSite alignment for {} (size: {}) against {} (size: {}) with cutoff score {}", site1,
                 site1.size(), site2, site2.size(), cutoffScore);
 
-        calculateSimilarities();
-        extendAlignment();
+        // combinatorial extension alignment if Kuhn-Munkres is not used
+        if (!kuhnMunkres) {
+            logger.info("using combinatorial extension to find alignment");
+            calculateSimilarities();
+            extendAlignment();
+        } else {
+            logger.info("using Kuhn-Munkres optimization with substitution matrix {} to find alignment", substitutionMatrix);
+            calculateAssignment();
+            calculateAlignment();
+        }
 
         Collections.sort(matches);
     }
@@ -166,8 +177,8 @@ public class Fit3DSiteAlignment implements Fit3D {
     }
 
     private void calculatePsScore() {
-        psScore = PsScore.of(currentBestSuperimposition, site1.getAllLeafSubstructures().size(),
-                site2.getAllLeafSubstructures().size());
+        psScore = PsScore.of(currentBestSuperimposition, site1.getNumberOfLeafSubstructures(),
+                site2.getNumberOfLeafSubstructures());
     }
 
     /**
@@ -232,8 +243,7 @@ public class Fit3DSiteAlignment implements Fit3D {
 
         // create new partitions
         for (LeafSubstructure<?> leafSubstructure : site1.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site1Partition = new ArrayList<>();
-            site1Partition.addAll(currentBestMatchingPair.getFirst());
+            List<LeafSubstructure<?>> site1Partition = new ArrayList<>(currentBestMatchingPair.getFirst());
             if (!site1Partition.contains(leafSubstructure)) {
                 site1Partition.add(leafSubstructure);
             }
@@ -249,8 +259,7 @@ public class Fit3DSiteAlignment implements Fit3D {
             }
         }
         for (LeafSubstructure<?> leafSubstructure : site2.getAllLeafSubstructures()) {
-            List<LeafSubstructure<?>> site2Partition = new ArrayList<>();
-            site2Partition.addAll(currentBestMatchingPair.getSecond());
+            List<LeafSubstructure<?>> site2Partition = new ArrayList<>(currentBestMatchingPair.getSecond());
             if (!site2Partition.contains(leafSubstructure)) {
                 site2Partition.add(leafSubstructure);
             }
@@ -431,6 +440,74 @@ public class Fit3DSiteAlignment implements Fit3D {
         return partitions;
     }
 
+
+    /**
+     * Calculates the optimal assignment of the input sites using Kuhn-Munkres optimization and the given {@link SubstitutionMatrix}.
+     */
+    private void calculateAssignment() {
+        double[][] costValues = new double[site1.size()][site2.size()];
+        for (int i = 0; i < site1.getNumberOfLeafSubstructures(); i++) {
+            for (int j = 0; j < site2.getNumberOfLeafSubstructures(); j++) {
+                LeafSubstructure<?> residue1 = site1.getAllLeafSubstructures().get(i);
+                LeafSubstructure<?> residue2 = site2.getAllLeafSubstructures().get(j);
+                if (restrictToExchanges && residue1.getFamily() != residue2.getFamily()) {
+                    // exchanges do not penalize the score
+                    if (residue1.getExchangeableFamilies().contains(residue2.getFamily()) ||
+                            residue2.getExchangeableFamilies().contains(residue1.getFamily())) {
+                        continue;
+                    }
+                    costValues[i][j] = Double.MAX_VALUE;
+                    continue;
+                }
+                costValues[i][j] = substitutionMatrix.getMatrix().getValueForLabel(residue1.getFamily(), residue2.getFamily());
+            }
+        }
+        LabeledMatrix<LeafSubstructure<?>> costMatrix = new LabeledRegularMatrix<>(costValues);
+        costMatrix.setRowLabels(site1.getAllLeafSubstructures());
+        costMatrix.setColumnLabels(site2.getAllLeafSubstructures());
+
+        KuhnMunkres<LeafSubstructure<?>> kuhnMunkres = new KuhnMunkres<>(costMatrix);
+        assignment = kuhnMunkres.getAssignedPairs();
+
+        // remove last assigned pair if strong restriction to exchanges is desired
+        if (restrictToExchanges) {
+            assignment.remove(assignment.size() - 1);
+        }
+
+        String assignmentString = kuhnMunkres.getAssignedPairs().stream()
+                .map(pair -> pair.getFirst() + "+" + pair.getSecond() + ":" + costMatrix.getValueForLabel(pair.getFirst(), pair.getSecond()))
+                .collect(Collectors.joining("\n"));
+
+        logger.debug("optimal assignment of binding sites is:\n{}", assignmentString);
+    }
+
+
+    /**
+     * Calculates the alignment of sites based on the Kuhn-Munkres assignment.
+     */
+    private void calculateAlignment() {
+        List<LeafSubstructure<?>> reference = assignment.stream()
+                .map(Pair::getFirst)
+                .collect(Collectors.toList());
+        List<LeafSubstructure<?>> candidate = assignment.stream()
+                .map(Pair::getSecond)
+                .collect(Collectors.toList());
+        currentAlignmentSize = reference.size();
+        if (representationScheme != null) {
+            currentBestSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, representationScheme);
+        } else {
+            currentBestSuperimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(reference, candidate, atomFilter);
+        }
+        currentBestScore = currentBestSuperimposition.getRmsd();
+        matches.add(Fit3DMatch.of(currentBestSuperimposition.getRmsd(), currentBestSuperimposition));
+        if (!containsNonAminoAcids) {
+            calculateXieScore();
+            calculatePsScore();
+        }
+        outputSummary();
+    }
+
+
     @Override
     public void writeMatches(Path outputDirectory) {
         if (matches.isEmpty()) {
@@ -446,7 +523,7 @@ public class Fit3DSiteAlignment implements Fit3D {
                                     + leafSubstructure.getIdentifier().getSerial())
                             .collect(Collectors.joining("_", bestSuperimposition.getFormattedRmsd() + "_"
                                     + site1.getAllLeafSubstructures().get(0).getPdbIdentifier()
-                                    + "|", "")) + "_site1.pdb"));
+                                    + "_", "")) + "_site1.pdb"));
             StructureWriter.writeLeafSubstructures(mappedSite2,
                     outputDirectory.resolve(site2.getAllLeafSubstructures().stream()
                             .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))

@@ -53,7 +53,7 @@ public class SquareMatrixTest {
     }
 
     @Test
-    public void shouldCopy(){
+    public void shouldCopy() {
         Matrix firstCopy = regularSquareMatrix.getCopy();
         Matrix secondCopy = regularSquareMatrix.getCopy();
         firstCopy.getElements()[0][0] = 50;

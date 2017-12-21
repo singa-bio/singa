@@ -19,7 +19,7 @@ public class EuclideanSpace implements MetricSpace, TopologicalSpace {
     /**
      * Creates a new EuclideanSpace.
      *
-     * @param dimension        The dimension of the space.
+     * @param dimension The dimension of the space.
      * @param coordinateSystem The used coordinate system.
      */
     public EuclideanSpace(int dimension, CoordinateSystem coordinateSystem) {

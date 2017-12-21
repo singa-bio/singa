@@ -16,7 +16,6 @@ import javafx.scene.paint.Color;
  * <li> displaying identifer text (default = false)
  * <li> background color (default = {@link Color#WHITE})
  * </ul>
- *
  */
 public class GraphRenderOptions {
 

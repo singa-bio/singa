@@ -39,8 +39,8 @@ public class Fit3DAlignmentTest {
     private Structure target;
 
     @Before
-    public void setUp() throws IOException {
-        target = StructureParser.online()
+    public void setUp() {
+        target = StructureParser.mmtf()
                 .pdbIdentifier("1GL0")
                 .parse();
         Structure motifContainingStructure = StructureParser.local()
@@ -76,7 +76,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldRunFit3DAlignmentBatch() throws IOException {
-        Structure nucleotideTarget = StructureParser.online()
+        Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
@@ -101,6 +101,7 @@ public class Fit3DAlignmentTest {
     @Test
     public void shouldRunFit3DAlignmentWithMMTF() {
         Structure target = StructureParser.mmtf()
+                // Structure target = StructureParser.pdb()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -115,9 +116,75 @@ public class Fit3DAlignmentTest {
         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
+
     @Test
-    public void shouldFindInterMolecularMatches() throws IOException {
-        Structure target = StructureParser.online()
+    public void shouldRunFit3DAlignmentAndExchanges() {
+        Structure target = StructureParser.pdb()
+                .pdbIdentifier("2mnr")
+                .everything()
+                .parse();
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(target.getFirstModel())
+                .atomFilter(AtomFilter.isArbitrary())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+    @Test
+    public void shouldRunFit3DAlignmentAndExchangesWithMMTF() {
+        Structure target = StructureParser.mmtf()
+                .pdbIdentifier("2mnr")
+                .everything()
+                .parse();
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
+                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
+                .parse()
+                .getAllLeafSubstructures());
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(target.getFirstModel())
+                .atomFilter(AtomFilter.isArbitrary())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+
+    @Test
+    public void shouldFindInterMolecularMatches() {
+        Structure target = StructureParser.pdb()
+                .pdbIdentifier("4CHA")
+                .everything()
+                .parse();
+        StructuralMotif queryMotif = StructuralMotif.fromLeafIdentifiers(target,
+                LeafIdentifiers.of("B-57", "B-102", "C-195"));
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstModel())
+                .run();
+        List<Fit3DMatch> matches = fit3d.getMatches();
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+    }
+
+    @Test
+    public void shouldFindInterMolecularMatchesWithMMTF() {
+        Structure target = StructureParser.mmtf()
                 .pdbIdentifier("4CHA")
                 .everything()
                 .parse();
@@ -137,8 +204,8 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldAlignNucleotideMotif() throws IOException {
-        Structure nucleotideTarget = StructureParser.online()
+    public void shouldAlignNucleotideMotif() {
+        Structure nucleotideTarget = StructureParser.pdb()
                 .pdbIdentifier("2EES")
                 .chainIdentifier("A")
                 .parse();
@@ -154,8 +221,8 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindLigandContainingMotif() throws IOException {
-        Structure queryStructure = StructureParser.online()
+    public void shouldFindLigandContainingMotif() {
+        Structure queryStructure = StructureParser.pdb()
                 .pdbIdentifier("1ACJ")
                 .everything()
                 .parse();
@@ -176,7 +243,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -195,7 +262,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
-        StructureParser.MultiParser multiParser = StructureParser.online()
+        StructureParser.MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -210,10 +277,10 @@ public class Fit3DAlignmentTest {
     }
 
     @Test
-    public void shouldFindInteractionMotif() throws IOException {
+    public void shouldFindInteractionMotif() {
         InteractionContainer interactionContainer = PlipParser.parse("1k1i",
                 Resources.getResourceAsStream("plip/1k1i.xml"));
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("1k1i")
                 .chainIdentifier("A")
                 .parse();
@@ -235,7 +302,7 @@ public class Fit3DAlignmentTest {
 
     @Test
     public void shouldHandleInsertionCodeMotifs() {
-        Structure structure = StructureParser.online()
+        Structure structure = StructureParser.pdb()
                 .pdbIdentifier("2w0l")
                 .parse();
 

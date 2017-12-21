@@ -37,6 +37,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Creates a new organism with the given scientific name.
+     *
      * @param scientificName A scientific name.
      */
     public Organism(String scientificName) {
@@ -46,6 +47,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Returns the scientific name (such as "Sus scrofa").
+     *
      * @return The scientific name.
      */
     public String getScientificName() {
@@ -54,6 +56,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Sets the scientific name (such as "Sus scrofa").
+     *
      * @param scientificName The scientific name.
      */
     public void setScientificName(String scientificName) {
@@ -62,6 +65,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Returns a common name (such as "wild boar").
+     *
      * @return The common name.
      */
     public String getCommonName() {
@@ -70,6 +74,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Sets a common name (such as "wild boar").
+     *
      * @param commonName The common name.
      */
     public void setCommonName(String commonName) {
@@ -88,6 +93,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Sets the {@link NCBITaxonomyIdentifier}.
+     *
      * @param identifier The identifier.
      */
     public void setIdentifier(NCBITaxonomyIdentifier identifier) {
@@ -96,6 +102,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Returns the linage as a list of {@link Taxon}s.
+     *
      * @return The linage.
      */
     public List<Taxon> getLineage() {
@@ -104,6 +111,7 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
 
     /**
      * Sets the linage for this organism.
+     *
      * @param lineage The linage.
      */
     public void setLineage(List<Taxon> lineage) {

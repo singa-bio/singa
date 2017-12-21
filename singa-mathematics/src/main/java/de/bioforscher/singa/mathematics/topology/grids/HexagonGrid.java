@@ -23,6 +23,22 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
         super(m);
     }
 
+    public static HexagonGrid fillRadom() {
+        HexagonGrid grid = new HexagonGrid(400);
+        for (int i = -5; i <= 5; i++) {
+            for (int j = -5; j <= 5; j++) {
+                if (Math.random() < 0.6) {
+                    if (Math.random() < 0.6) {
+                        grid.put(new HexagonCoordinate(i, j), new Cell(i, j, CellState.Alive));
+                    } else {
+                        grid.put(new HexagonCoordinate(i, j), new Cell(i, j, CellState.Dead));
+                    }
+                }
+            }
+        }
+        return grid;
+    }
+
     public HexagonCoordinate getNeighborHexagon(HexagonCoordinate coordinate, HexagonCoordianteDirection direction) {
         return getNeighborHexagon(coordinate, direction, 1);
     }
@@ -157,7 +173,7 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
 
     public void fillCircle(HexagonCoordinate centerHex, int radius) {
         put(centerHex, new Cell(centerHex.getQ(), centerHex.getR()));
-        HexagonCoordinate h = centerHex;
+        HexagonCoordinate h;
         for (int r = 1; r <= radius; r++) {
             h = getNeighborHexagon(centerHex, HexagonCoordianteDirection.SouthWest, r);
             for (HexagonCoordianteDirection direction : HexagonCoordianteDirection.values()) {
@@ -187,22 +203,6 @@ public class HexagonGrid extends HashMap<HexagonCoordinate, Cell> {
 
     public void setStateOfAllCellsWithQValue(int q, CellState state) {
         keySet().stream().filter(hexagon -> hexagon.getQ() == q).forEach(hexagon -> get(hexagon).setState(state));
-    }
-
-    public static HexagonGrid fillRadom() {
-        HexagonGrid grid = new HexagonGrid(400);
-        for (int i = -5; i <= 5; i++) {
-            for (int j = -5; j <= 5; j++) {
-                if (Math.random() < 0.6) {
-                    if (Math.random() < 0.6) {
-                        grid.put(new HexagonCoordinate(i, j), new Cell(i, j, CellState.Alive));
-                    } else {
-                        grid.put(new HexagonCoordinate(i, j), new Cell(i, j, CellState.Dead));
-                    }
-                }
-            }
-        }
-        return grid;
     }
 
     // public Graphics2D simpledraw(double hexagonSize, Graphics g) {

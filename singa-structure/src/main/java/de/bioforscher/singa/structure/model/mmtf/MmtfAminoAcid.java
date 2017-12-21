@@ -1,11 +1,15 @@
 package de.bioforscher.singa.structure.model.mmtf;
 
+import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
+import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.oak.AtomName;
 import org.rcsb.mmtf.api.StructureDataInterface;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * The implementation of {@link AminoAcid}s for mmtf structures.
@@ -45,13 +49,9 @@ public class MmtfAminoAcid extends MmtfLeafSubstructure<AminoAcidFamily> impleme
     }
 
     @Override
-    public String flatToString() {
-        return "AminoAcid (" + getThreeLetterCode() + ") " + getIdentifier();
-    }
-
-    @Override
-    public String toString() {
-        return flatToString();
+    public Vector3D getPosition() {
+        Optional<Atom> optionalAlphaCarbon = getAtomByName(AtomName.CA.getName());
+        return optionalAlphaCarbon.map(Atom::getPosition).orElseGet(super::getPosition);
     }
 
     @Override

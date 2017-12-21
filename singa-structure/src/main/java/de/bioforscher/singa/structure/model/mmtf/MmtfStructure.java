@@ -22,17 +22,17 @@ public class MmtfStructure implements Structure {
     /**
      * The original bytes kept to copy.
      */
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * The original mmtf data.
      */
-    private StructureDataInterface data;
+    private final StructureDataInterface data;
 
     /**
      * The models that have already been requested.
      */
-    private Map<Integer, MmtfModel> cachedModels;
+    private final Map<Integer, MmtfModel> cachedModels;
 
     /**
      * Creates a new {@link MmtfStructure}
@@ -40,8 +40,17 @@ public class MmtfStructure implements Structure {
      * @param bytes The original undecoded bytes.
      */
     public MmtfStructure(byte[] bytes) {
+        this(bytes, true);
+    }
+
+    /**
+     * Creates a new {@link MmtfStructure}
+     *
+     * @param bytes The original undecoded bytes.
+     */
+    public MmtfStructure(byte[] bytes, boolean deflate) {
         this.bytes = bytes;
-        data = bytesToStructureData(bytes);
+        data = bytesToStructureData(bytes, deflate);
         cachedModels = new HashMap<>();
     }
 
@@ -54,10 +63,16 @@ public class MmtfStructure implements Structure {
         this(mmtfStructure.bytes);
     }
 
-    static StructureDataInterface bytesToStructureData(byte[] bytes) {
+    static StructureDataInterface bytesToStructureData(byte[] bytes, boolean deflate) {
         MessagePackSerialization mmtfBeanSeDeMessagePackImpl = new MessagePackSerialization();
         try {
-            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(ReaderUtils.deflateGzip(bytes))));
+            byte[] gzip;
+            if (deflate) {
+                gzip = ReaderUtils.deflateGzip(bytes);
+            } else {
+                gzip = bytes;
+            }
+            return new GenericDecoder(mmtfBeanSeDeMessagePackImpl.deserialize(new ByteArrayInputStream(gzip)));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -65,7 +80,7 @@ public class MmtfStructure implements Structure {
 
     @Override
     public String getPdbIdentifier() {
-        return data.getStructureId();
+        return data.getStructureId().toLowerCase();
     }
 
     @Override
@@ -132,10 +147,7 @@ public class MmtfStructure implements Structure {
     @Override
     public Optional<Chain> getChain(int modelIdentifier, String chainIdentifier) {
         Optional<Model> modelOptional = getModel(modelIdentifier);
-        if (!modelOptional.isPresent()) {
-            return Optional.empty();
-        }
-        return modelOptional.get().getChain(chainIdentifier);
+        return modelOptional.flatMap(model -> model.getChain(chainIdentifier));
     }
 
     @Override
@@ -151,10 +163,12 @@ public class MmtfStructure implements Structure {
     @Override
     public Optional<LeafSubstructure<?>> getLeafSubstructure(LeafIdentifier leafIdentifier) {
         Optional<Chain> chainOptional = getChain(leafIdentifier.getModelIdentifier(), leafIdentifier.getChainIdentifier());
-        if (!chainOptional.isPresent()) {
-            return Optional.empty();
-        }
-        return chainOptional.get().getLeafSubstructure(leafIdentifier);
+        return chainOptional.flatMap(chain -> chain.getLeafSubstructure(leafIdentifier));
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstChain().getFirstLeafSubstructure();
     }
 
     @Override
@@ -165,6 +179,23 @@ public class MmtfStructure implements Structure {
             }
         }
         return false;
+    }
+
+    @Override
+    public void removeLeafSubstructuresNotRelevantFor(LeafSubstructureContainer leafSubstructuresToKeep) {
+        for (Chain chain : getAllChains()) {
+            chain.removeLeafSubstructuresNotRelevantFor(leafSubstructuresToKeep);
+        }
+    }
+
+
+    @Override
+    public int getNumberOfLeafSubstructures() {
+        int sum = 0;
+        for (Chain chain : getAllChains()) {
+            sum += chain.getNumberOfLeafSubstructures();
+        }
+        return sum;
     }
 
     @Override
@@ -182,9 +213,7 @@ public class MmtfStructure implements Structure {
     public void removeAtom(Integer atomIdentifier) {
         for (LeafSubstructure leafSubstructure : getAllLeafSubstructures()) {
             final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-            if (optionalAtom.isPresent()) {
-                leafSubstructure.removeAtom(atomIdentifier);
-            }
+            optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
         }
     }
 
@@ -195,9 +224,6 @@ public class MmtfStructure implements Structure {
 
     @Override
     public String toString() {
-        return "MmtfStructure{" +
-                "pdbIdentifier='" + data.getStructureId() + '\'' +
-                ", title='" + data.getTitle() + '\'' +
-                '}';
+        return flatToString();
     }
 }

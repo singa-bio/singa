@@ -9,7 +9,7 @@ import java.util.List;
  * A simple implementation of the node interface. References to neighboring nodes are stored in a list. Every node is
  * positioned using a vector.
  *
- * @param <NodeType>   The node type that is defined for neighbors of this node.
+ * @param <NodeType> The node type that is defined for neighbors of this node.
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */

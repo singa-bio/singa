@@ -32,5 +32,4 @@ public class MoleculeBond extends AbstractEdge<MoleculeAtom> {
     }
 
 
-
 }

@@ -37,10 +37,10 @@ public class GraphMLExportService {
      * Exports a Graph to a GraphML file.
      *
      * @param graph The graph.
-     * @param file  The new target file.
+     * @param file The new target file.
      */
     public static void exportGraph(AutomatonGraph graph, File file) {
-        logger.info("Writing graph to file {}" , file.getAbsolutePath());
+        logger.info("Writing graph to file {}", file.getAbsolutePath());
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

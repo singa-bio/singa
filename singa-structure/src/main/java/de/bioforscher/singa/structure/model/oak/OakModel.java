@@ -24,7 +24,7 @@ public class OakModel implements Model {
     /**
      * The substructures of this substructure.
      */
-    private TreeMap<String, OakChain> chains;
+    private final TreeMap<String, OakChain> chains;
 
     /**
      * Creates a new BranchSubstructure. The identifier is considered in the superordinate BranchSubstructure.
@@ -37,16 +37,16 @@ public class OakModel implements Model {
     }
 
     public OakModel(OakModel model) {
-        identifier = model.getIdentifier();
+        identifier = model.getModelIdentifier();
         chains = new TreeMap<>();
         for (OakChain chain : model.chains.values()) {
-            chains.put(chain.getIdentifier(), chain.getCopy());
+            chains.put(chain.getChainIdentifier(), chain.getCopy());
         }
 
     }
 
     @Override
-    public Integer getIdentifier() {
+    public Integer getModelIdentifier() {
         return identifier;
     }
 
@@ -67,7 +67,7 @@ public class OakModel implements Model {
     }
 
     public void addChain(OakChain chain) {
-        chains.put(chain.getIdentifier(), chain);
+        chains.put(chain.getChainIdentifier(), chain);
     }
 
     @Override
@@ -89,6 +89,11 @@ public class OakModel implements Model {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return getFirstChain().getFirstLeafSubstructure();
     }
 
     @Override
@@ -123,9 +128,7 @@ public class OakModel implements Model {
             final List<LeafSubstructure<?>> allLeafSubstructures = chain.getAllLeafSubstructures();
             for (LeafSubstructure leafSubstructure : allLeafSubstructures) {
                 final Optional<Atom> optionalAtom = leafSubstructure.getAtom(atomIdentifier);
-                if (optionalAtom.isPresent()) {
-                    leafSubstructure.removeAtom(atomIdentifier);
-                }
+                optionalAtom.ifPresent(atom -> leafSubstructure.removeAtom(atomIdentifier));
             }
         }
     }
@@ -133,11 +136,6 @@ public class OakModel implements Model {
     @Override
     public OakModel getCopy() {
         return new OakModel(this);
-    }
-
-    @Override
-    public String toString() {
-        return "Model " + identifier;
     }
 
     @Override
@@ -154,4 +152,10 @@ public class OakModel implements Model {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return flatToString();
+    }
+
 }

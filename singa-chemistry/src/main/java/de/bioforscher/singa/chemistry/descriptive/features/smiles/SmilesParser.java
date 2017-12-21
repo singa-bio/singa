@@ -23,73 +23,59 @@ public class SmilesParser {
     /**
      * The symbols of the SMILES String
      */
-    private Queue<Character> symbols;
-
+    private final Queue<Character> symbols;
+    /**
+     * Collections of symbols that are handled as contextual connected
+     */
+    private final List<String> tokens;
+    /**
+     * The resulting MoleculeGraph
+     */
+    private final MoleculeGraph molecule;
+    /**
+     * Maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
+     */
+    private final HashMap<Pair<Integer>, MoleculeBondType> connectors;
+    /**
+     * Maps the ring closure identifier to atom identifier that is to be connected
+     */
+    private final HashMap<Integer, Integer> ringClosures;
+    /**
+     * Holds the atom identifer, where hydrogen need to be added
+     */
+    private final List<Integer> hydrogens;
+    /**
+     * Remembers at which index a branch was opened
+     */
+    private final Deque<Integer> branches;
     /**
      * The symbol that is currently handled
      */
     private Character currentSymbol;
-
-    /**
-     * Collections of symbols that are handled as contextual connected
-     */
-    private List<String> tokens;
-
     /**
      * The token that is currently handled
      */
     private String currentToken;
-
-    /**
-     * The resulting MoleculeGraph
-     */
-    private MoleculeGraph molecule;
-
     /**
      * The identifier of the last atom, that has been added to the graph
      */
     private int currentIdentifer = Integer.MIN_VALUE;
-
     /**
      * The current number of neutrons
      */
     private int currentMassNumber;
-
     /**
      * The current charge
      */
     private int currentCharge;
-
     /**
      * The current element
      */
     private Element currentElement;
-
     /**
      * The bond type to connect the next atom with
      */
     private MoleculeBondType currentBondType;
-
-    /**
-     * Maps the consecutive connections between atoms (as a pair of identifiers) to the bond type
-     */
-    private HashMap<Pair<Integer>, MoleculeBondType> connectors;
-
-    /**
-     * Maps the ring closure identifier to atom identifier that is to be connected
-     */
-    private HashMap<Integer, Integer> ringClosures;
-
-    /**
-     * Holds the atom identifer, where hydrogen need to be added
-     */
-    private List<Integer> hydrogens;
-
-    /**
-     * Remembers at which index a branch was opened
-     */
-    private Deque<Integer> branches;
-
     /**
      * A flag that is set true when a branch is closed, so the last referenced branch is used to connect the next atom
      */

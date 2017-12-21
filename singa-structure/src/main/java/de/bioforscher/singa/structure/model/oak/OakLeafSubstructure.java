@@ -6,7 +6,6 @@ import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author cl
@@ -26,6 +25,21 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private final String divergingThreeLetterCode;
 
     /**
+     * The atoms representing the nodes of the atom graph.
+     */
+    private final Map<Integer, OakAtom> atoms;
+
+    /**
+     * The bonds representing the edges of the atom graph.
+     */
+    private final Map<Integer, OakBond> bonds;
+
+    /**
+     * The families to which the {@link LeafSubstructure} can be exchanged.
+     */
+    private final Set<FamilyType> exchangeableFamilies;
+
+    /**
      * A iterating variable to add a new node.
      */
     private int nextNodeIdentifier;
@@ -36,24 +50,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private int nextEdgeIdentifier = 0;
 
     /**
-     * The atoms representing the nodes of the atom graph.
-     */
-    private Map<Integer, OakAtom> atoms;
-
-    /**
-     * s The bonds representing the edges of the atom graph.
-     */
-    private Map<Integer, OakBond> bonds;
-
-    /**
      * Remembers if this Leaf was an HETATOM entry
      */
     private boolean annotatedAsHetAtom;
-
-    /**
-     * The families to which the {@link LeafSubstructure} can be exchanged.
-     */
-    private Set<FamilyType> exchangeableFamilies;
 
     public OakLeafSubstructure(LeafIdentifier leafIdentifier, FamilyType family) {
         this.leafIdentifier = leafIdentifier;
@@ -87,13 +86,13 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         this(leafSubstructure.leafIdentifier, leafSubstructure.family);
         // copy and add all atoms
         for (OakAtom atom : leafSubstructure.atoms.values()) {
-            atoms.put(atom.getIdentifier(), atom.getCopy());
+            atoms.put(atom.getAtomIdentifier(), atom.getCopy());
         }
         // copy and add all bonds
         for (OakBond bond : leafSubstructure.bonds.values()) {
             OakBond edgeCopy = bond.getCopy();
-            OakAtom sourceCopy = atoms.get(bond.getSource().getIdentifier());
-            OakAtom targetCopy = atoms.get(bond.getTarget().getIdentifier());
+            OakAtom sourceCopy = atoms.get(bond.getSource().getAtomIdentifier());
+            OakAtom targetCopy = atoms.get(bond.getTarget().getAtomIdentifier());
             addBondBetween(edgeCopy, sourceCopy, targetCopy);
         }
         // add exchangeable types
@@ -158,7 +157,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     public void addAtom(OakAtom atom) {
-        atoms.put(atom.getIdentifier(), atom);
+        atoms.put(atom.getAtomIdentifier(), atom);
     }
 
     @Override
@@ -169,7 +168,7 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
                 neighbor.getNeighbours().remove(atom);
             }
 
-            atoms.remove(atom.getIdentifier());
+            atoms.remove(atom.getAtomIdentifier());
             bonds.entrySet().removeIf(edge -> edge.getValue().connectsAtom(atom));
         }
     }
@@ -235,26 +234,16 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     @Override
-    public String toString() {
-        return leafIdentifier.toString();
-    }
-
-    @Override
     public int hashCode() {
         int result = leafIdentifier != null ? leafIdentifier.hashCode() : 0;
         result = 31 * result + (family != null ? family.hashCode() : 0);
         return result;
     }
 
-    @Override
-    public String flatToString() {
-        return getClass().getSimpleName() + ": " + getFamily().getThreeLetterCode() + " " + getIdentifier();
-    }
 
-    public String deepToString() {
-        return flatToString() + ", with Atoms: {" + getAllAtoms().stream()
-                .map(atom -> atom.getAtomName() + "-" + atom.getIdentifier())
-                .collect(Collectors.joining(", ")) + "}";
+    @Override
+    public String toString() {
+        return flatToString();
     }
 
 

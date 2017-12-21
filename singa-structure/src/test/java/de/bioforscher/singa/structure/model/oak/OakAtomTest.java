@@ -8,7 +8,6 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -23,8 +22,8 @@ public class OakAtomTest {
     private static OakAtom atomToModify;
 
     @BeforeClass
-    public static void prepareData() throws IOException {
-        Structure structure1C0A = StructureParser.online().pdbIdentifier("1C0A").parse();
+    public static void prepareData() {
+        Structure structure1C0A = StructureParser.pdb().pdbIdentifier("1C0A").parse();
         // no offset to regular pdb file
         atom412 = (OakAtom) structure1C0A.getAtom(412).get();
         // one offset to regular pdb file
@@ -33,38 +32,38 @@ public class OakAtomTest {
     }
 
     @Test
-    public void getIdentifier() throws Exception {
-        assertEquals(412, (int) atom412.getIdentifier());
-        assertEquals(5444, (int) atom5444.getIdentifier());
+    public void getIdentifier() {
+        assertEquals(412, (int) atom412.getAtomIdentifier());
+        assertEquals(5444, (int) atom5444.getAtomIdentifier());
     }
 
     @Test
-    public void getAtomName() throws Exception {
+    public void getAtomName() {
         assertEquals("N2", atom412.getAtomName());
         assertEquals("N", atom5444.getAtomName());
     }
 
     @Test
-    public void getPosition() throws Exception {
+    public void getPosition() {
         assertEquals(new Vector3D(62.204, -8.506, 22.574), atom412.getPosition());
         assertEquals(new Vector3D(69.813, 36.839, -11.546), atom5444.getPosition());
     }
 
     @Test
-    public void getElement() throws Exception {
+    public void getElement() {
         assertEquals(ElementProvider.NITROGEN, atom412.getElement());
         assertEquals(ElementProvider.NITROGEN, atom5444.getElement());
     }
 
     @Test
-    public void setPosition() throws Exception {
+    public void setPosition() {
         final Vector3D newPosition = new Vector3D(1.0, 2.0, 3.0);
         atomToModify.setPosition(newPosition);
         assertEquals(newPosition, atomToModify.getPosition());
     }
 
     @Test
-    public void getNeighbours() throws Exception {
+    public void getNeighbours() {
         final Set<OakAtom> neighbours = atom412.getNeighbours();
         System.out.println(neighbours);
     }

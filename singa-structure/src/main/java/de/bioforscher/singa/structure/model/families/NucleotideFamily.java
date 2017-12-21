@@ -20,8 +20,8 @@ public enum NucleotideFamily implements StructuralFamily<NucleotideFamily> {
     DESOXYCYTIDINE("C", "dC"),
     UNKNOWN("X", "UNK");
 
-    private String oneLetterCode;
-    private String threeLetterCode;
+    private final String oneLetterCode;
+    private final String threeLetterCode;
 
     NucleotideFamily(String oneLetterCode, String threeLetterCode) {
         this.oneLetterCode = oneLetterCode;

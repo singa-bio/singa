@@ -14,10 +14,9 @@ import java.util.List;
  * An implementation of the Kuhn-Munkres algorithm, or Hungarian algorithm, to solve the assignment problem. This
  * implementation determines the assignment with minimal costs according to a given cost matrix in O(n^3). The
  * implementation was adapted from:
- * <pre>
  * Copyright (c) 2012 Kevin L. Stern
  * <a href="https://github.com/KevinStern/software-and-algorithms">https://github.com/KevinStern/software-and-algorithms</a>
- * <pre>
+ *
  * @param <DataType> The type of the data that is assigned.
  * @author fk
  */
@@ -41,7 +40,8 @@ public class KuhnMunkres<DataType> {
     private List<Pair<DataType>> assignedPairs;
 
     public KuhnMunkres(LabeledMatrix<DataType> labeledCostMatrix) {
-        logger.info("calculating optimal assignment for cost matrix\n{}", labeledCostMatrix.getStringRepresentation());
+        logger.info("calculating optimal assignment for cost matrix with {} rows and {} columns", labeledCostMatrix.getRowDimension(),
+                labeledCostMatrix.getColumnDimension());
         this.labeledCostMatrix = labeledCostMatrix;
         if (this.labeledCostMatrix instanceof LabeledSymmetricMatrix) {
             throw new IllegalArgumentException("cost matrix cannot be symmetric because elements cannot be assigned to themselves");
@@ -73,6 +73,10 @@ public class KuhnMunkres<DataType> {
     private void assignPairs(int[] result) {
         assignedPairs = new ArrayList<>();
         for (int i = 0; i < labeledCostMatrix.getRowDimension(); i++) {
+            if (result[i] == -1) {
+                logger.info("no assignment made for {}", labeledCostMatrix.getRowLabel(i));
+                continue;
+            }
             assignedPairs.add(new Pair<>(labeledCostMatrix.getRowLabel(i), labeledCostMatrix.getColumnLabel(result[i])));
         }
 

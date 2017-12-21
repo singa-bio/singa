@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  */
 public class StructuralMotif implements LeafSubstructureContainer {
 
-    public LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
-    private String identifier;
+    public final LinkedHashMap<LeafIdentifier, LeafSubstructure<?>> leafSubstructures;
+    private final String identifier;
 
     private StructuralMotif(String identifier) {
         this.identifier = identifier;
@@ -95,6 +95,11 @@ public class StructuralMotif implements LeafSubstructureContainer {
     }
 
     @Override
+    public LeafSubstructure<?> getFirstLeafSubstructure() {
+        return leafSubstructures.values().iterator().next();
+    }
+
+    @Override
     public boolean removeLeafSubstructure(LeafIdentifier leafIdentifier) {
         final LeafSubstructure leafSubstructure = leafSubstructures.remove(leafIdentifier);
         return leafSubstructure != null;
@@ -114,7 +119,6 @@ public class StructuralMotif implements LeafSubstructureContainer {
     public int size() {
         return leafSubstructures.size();
     }
-
 
     @Override
     public Optional<Atom> getAtom(Integer atomIdentifier) {

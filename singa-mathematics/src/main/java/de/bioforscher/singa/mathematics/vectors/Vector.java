@@ -189,7 +189,7 @@ public interface Vector extends Ring<Vector>, MultiDimensional<Vector>, Divisibl
     /**
      * Returns the angle between this vector and the given vector in radians.
      *
-     * @param  another Another vector.
+     * @param another Another vector.
      * @return The angle in radians.
      */
     default double angleTo(Vector another) {

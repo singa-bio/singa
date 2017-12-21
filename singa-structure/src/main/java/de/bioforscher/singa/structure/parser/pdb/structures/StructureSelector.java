@@ -127,7 +127,7 @@ public class StructureSelector {
         @Override
         public ChainStep model(int identifier) {
             structuralModel = structure.getAllModels().stream()
-                    .filter(structuralModel -> structuralModel.getIdentifier() == identifier)
+                    .filter(structuralModel -> structuralModel.getModelIdentifier() == identifier)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no structural model with ID " + identifier));
             return this;
@@ -141,7 +141,7 @@ public class StructureSelector {
         @Override
         public ResidueStep chain(String identifier) {
             chain = structuralModel.getAllChains().stream()
-                    .filter(chain -> chain.getIdentifier().equals(identifier))
+                    .filter(chain -> chain.getChainIdentifier().equals(identifier))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no chainIdentifier with index " + identifier));
             return this;
@@ -216,7 +216,7 @@ public class StructureSelector {
 
         private Atom getAtomFromLeafSubstructure(LeafSubstructure leafSubstructure, int atomId) {
             return leafSubstructure.getAllAtoms().stream()
-                    .filter(atom -> atom.getIdentifier() == atomId)
+                    .filter(atom -> atom.getAtomIdentifier() == atomId)
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("no atom with ID " + atomId));
         }

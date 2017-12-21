@@ -14,11 +14,10 @@ import static org.junit.Assert.assertEquals;
 
 public class ShortestPathMetricTest {
 
+    private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
     private UndirectedGraph linearGraph;
     private UndirectedGraph circularGraph;
     private UndirectedGraph treeGraph;
-
-    private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
 
     @Before
     public void initObjects() {

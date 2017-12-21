@@ -17,7 +17,7 @@ public interface LabeledMatrix<LabelType> extends Matrix {
     /**
      * Assigns a label to a row.
      *
-     * @param label    The label.
+     * @param label The label.
      * @param rowIndex The row index.
      */
     void setRowLabel(LabelType label, int rowIndex);
@@ -40,6 +40,7 @@ public interface LabeledMatrix<LabelType> extends Matrix {
 
     /**
      * Returns all row labels as list.
+     *
      * @return The row labels as list.
      */
     List<LabelType> getRowLabels();
@@ -58,7 +59,7 @@ public interface LabeledMatrix<LabelType> extends Matrix {
     /**
      * Assigns a label to a column.
      *
-     * @param label       The label.
+     * @param label The label.
      * @param columnIndex the column index.
      */
     void setColumnLabel(LabelType label, int columnIndex);
@@ -81,6 +82,7 @@ public interface LabeledMatrix<LabelType> extends Matrix {
 
     /**
      * Returns all column labels as list.
+     *
      * @return The column labels as list.
      */
     List<LabelType> getColumnLabels();
@@ -99,7 +101,7 @@ public interface LabeledMatrix<LabelType> extends Matrix {
     /**
      * Returns a value using a row and column label.
      *
-     * @param rowLabel    The row label.
+     * @param rowLabel The row label.
      * @param columnLabel The column label.
      * @return The actual value from the matrix
      */
@@ -111,10 +113,9 @@ public interface LabeledMatrix<LabelType> extends Matrix {
      * Returns a {@link Pair} of {@link Integer}s that represent the position of a value that is assigned to the
      * given labels. As a contract the {@link Pair#getFirst()} method will retrieve the row index and the
      * {@link Pair#getSecond()} method the column index.
-     *
      * FIXME seems to be broken due to usage of {@link java.util.IdentityHashMap}
      *
-     * @param rowLabel    The row label.
+     * @param rowLabel The row label.
      * @param columnLabel The column label.
      * @return The position of the value as defined by the labels.
      */

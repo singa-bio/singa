@@ -32,40 +32,40 @@ public class MmtfModelTest {
     }
 
     @Test
-    public void getIdentifier() throws Exception {
-        assertEquals(1, (int) firstModel.getIdentifier());
-        assertEquals(2, (int) secondModel.getIdentifier());
+    public void getIdentifier() {
+        assertEquals(1, (int) firstModel.getModelIdentifier());
+        assertEquals(2, (int) secondModel.getModelIdentifier());
     }
 
     @Test
-    public void getAllChains() throws Exception {
+    public void getAllChains() {
         final List<Chain> allChains = firstModel.getAllChains();
         assertEquals(2, allChains.size());
     }
 
     @Test
-    public void getFirstChain() throws Exception {
+    public void getFirstChain() {
         final Chain firstChain = firstModel.getFirstChain();
-        assertEquals("A", firstChain.getIdentifier());
+        assertEquals("A", firstChain.getChainIdentifier());
     }
 
     @Test
-    public void getChain() throws Exception {
+    public void getChain() {
         final Optional<Chain> chain = firstModel.getChain("B");
         if (!chain.isPresent()) {
             fail("Optional chain was empty.");
         }
-        assertEquals("B", chain.get().getIdentifier());
+        assertEquals("B", chain.get().getChainIdentifier());
     }
 
     @Test
-    public void getAllLeafSubstructures() throws Exception {
+    public void getAllLeafSubstructures() {
         final List<LeafSubstructure<?>> leafSubstructures = secondModel.getAllLeafSubstructures();
         assertEquals(334, leafSubstructures.size());
     }
 
     @Test
-    public void getLeafSubstructure() throws Exception {
+    public void getLeafSubstructure() {
         Optional<LeafSubstructure<?>> leafSubstructure = firstModel.getLeafSubstructure(new LeafIdentifier("2N5E", 1, "B", 64));
         if (!leafSubstructure.isPresent()) {
             fail("Optional leaf substructure was empty.");

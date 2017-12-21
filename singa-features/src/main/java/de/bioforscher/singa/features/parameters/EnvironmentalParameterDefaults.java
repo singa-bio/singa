@@ -41,5 +41,4 @@ public final class EnvironmentalParameterDefaults {
     public static final double MOLAR_MASS_OF_WATER = 18.0153;
 
 
-
 }

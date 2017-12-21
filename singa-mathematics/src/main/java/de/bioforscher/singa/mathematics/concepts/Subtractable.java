@@ -10,7 +10,7 @@ package de.bioforscher.singa.mathematics.concepts;
  * "Additive Zero Element" does not change a number.
  *
  * @param <NumberConcept> A reference to the class or interface which the subtraction will
- *                        result in.
+ * result in.
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Subtraction">Wikipedia: Subtraction</a>
  */

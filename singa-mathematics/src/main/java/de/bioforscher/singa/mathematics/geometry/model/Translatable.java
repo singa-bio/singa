@@ -10,7 +10,7 @@ public interface Translatable {
      * specified by the distance and direction of a vector.
      *
      * @param translator The vector specifies distance and direction of the
-     *                   translation.
+     * translation.
      */
     void translate(Vector2D translator);
 
