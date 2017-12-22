@@ -2,6 +2,7 @@ package de.bioforscher.singa.javafx.renderer.graphs;
 
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
+import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
@@ -12,6 +13,8 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -20,6 +23,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer.RenderingMode.FORCE_DIRECTED;
+
 /**
  * @author cl
  */
@@ -27,16 +32,19 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
-    private final DoubleProperty drawingWidth;
-    private final DoubleProperty drawingHeight;
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
 
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
+    private StringProperty renderingMode;
+
     public GraphRenderer() {
         drawingWidth = new SimpleDoubleProperty();
         drawingHeight = new SimpleDoubleProperty();
+        renderingMode = new SimpleStringProperty(FORCE_DIRECTED.name());
     }
 
     public void arrangeGraph(GraphType graph) {
@@ -45,16 +53,27 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         start();
     }
 
+    public void arrangeOnce(GraphType graph) {
+        GraphDrawingTool<NodeType, EdgeType, IdentifierType, GraphType> gdt = new GraphDrawingTool<>(graph,
+                drawingWidthProperty(), drawingHeightProperty(), 100);
+        render(gdt.arrangeGraph(80));
+    }
+
     public void relaxGraph(GraphType graph) {
         Thread graphProducer = new Thread(new RelaxationProducer<>(this, graph, 100));
         graphProducer.start();
-        this.start();
+        start();
+    }
+
+    public void relaxOnce(GraphType graph) {
+        final Rectangle boundingBox = new Rectangle(drawingWidthProperty().doubleValue(), drawingHeightProperty().doubleValue());
+        render(VoronoiRelaxation.relax(graph, boundingBox));
     }
 
     @Override
     public void handle(long now) {
         GraphType graph;
-        while ((graph = this.graphQueue.poll()) != null) {
+        while ((graph = graphQueue.poll()) != null) {
             render(graph);
         }
     }
@@ -115,14 +134,14 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     public void renderVoronoi(boolean flag) {
         if (flag) {
-            this.renderBeforeFunction = graph -> {
+            renderBeforeFunction = graph -> {
                 List<Vector2D> sites = graph.getNodes().stream().map(Node::getPosition).collect(Collectors.toList());
                 final VoronoiDiagram voronoiDiagram = VoronoiGenerator.generateVoronoiDiagram(sites, new Rectangle(drawingWidth.doubleValue(), drawingHeight.doubleValue()));
                 drawDiagram(voronoiDiagram);
                 return null;
             };
         } else  {
-            this.renderBeforeFunction = null;
+            renderBeforeFunction = null;
         }
     }
 
@@ -168,6 +187,33 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
 
     public void setRenderingOptions(GraphRenderOptions renderingOptions) {
         this.renderingOptions = renderingOptions;
+    }
+
+    public String getRenderingMode() {
+        return renderingMode.get();
+    }
+
+    public StringProperty renderingModeProperty() {
+        return renderingMode;
+    }
+
+    public void setRenderingMode(String renderingMode) {
+        this.renderingMode.set(renderingMode);
+    }
+
+    public enum RenderingMode {
+        FORCE_DIRECTED("Force directed"), LLOYDS_RELAXATION("Lloyd's relaxation");
+
+        private final String dispayText;
+
+        RenderingMode(String dispayText) {
+            this.dispayText = dispayText;
+        }
+
+        public String getDispayText() {
+            return dispayText;
+        }
+
     }
 
 }
