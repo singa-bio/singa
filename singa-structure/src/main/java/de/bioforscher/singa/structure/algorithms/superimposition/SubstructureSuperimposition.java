@@ -9,9 +9,10 @@ import de.bioforscher.singa.structure.model.interfaces.AtomContainer;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static de.bioforscher.singa.structure.model.identifiers.LeafIdentifier.DEFAULT_INSERTION_CODE;
 
 /**
  * An implementation of a {@link Superimposition} for {@link AtomContainer}s.
@@ -55,17 +56,16 @@ public class SubstructureSuperimposition implements Superimposition<LeafSubstruc
     /**
      * Returns a string representation of the {@link SubstructureSuperimposition}, that is:
      * <pre>[RMSD]_[PDB-ID of mapped candidates]_[candidate residues]...</pre>
+     * The ordering of {@link LeafIdentifier}s corresponds to the actual found optimal alignment to the reference.
      * TODO move this to interface, as other superimpositions should also get a string representation.
      *
      * @return The full string representation of this {@link SubstructureSuperimposition}.
      */
     public String getStringRepresentation() {
         return mappedCandidate.stream()
-                .sorted(Comparator.comparing(LeafSubstructure::getIdentifier))
                 .map(leafSubstructure -> leafSubstructure.getChainIdentifier() + "-"
                         + leafSubstructure.getIdentifier().getSerial()
-                        + (leafSubstructure.getInsertionCode() == LeafIdentifier.DEFAULT_INSERTION_CODE ? "" : leafSubstructure.getInsertionCode())
-                )
+                        + (leafSubstructure.getInsertionCode() != DEFAULT_INSERTION_CODE ? leafSubstructure.getInsertionCode() : ""))
                 .collect(Collectors.joining("_", getFormattedRmsd() + "_"
                         + mappedCandidate.get(0).getPdbIdentifier()
                         + "_", ""));

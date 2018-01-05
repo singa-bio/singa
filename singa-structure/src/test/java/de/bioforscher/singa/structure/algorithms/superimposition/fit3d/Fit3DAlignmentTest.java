@@ -2,6 +2,7 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
+import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;
@@ -322,5 +323,33 @@ public class Fit3DAlignmentTest {
                 .target(structure.getFirstChain())
                 .run();
         assertEquals(0.00, fit3d.getMatches().get(0).getRmsd(), 1E-6);
+    }
+
+    @Test
+    public void shouldFindInsertionCodeMotifs() {
+        Structure structure = StructureParser.pdb()
+                .pdbIdentifier("1a0j")
+                .parse();
+
+        Structure targetStructure = StructureParser.pdb()
+                .pdbIdentifier("1m9u")
+                .parse();
+
+        List<LeafIdentifier> leafIdentifiers = LeafIdentifiers.of("A-57", "A-102", "A-193", "A-195");
+        StructuralMotif structuralMotif = StructuralMotif.fromLeafIdentifiers(structure, leafIdentifiers);
+
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(structuralMotif)
+                .target(targetStructure)
+                .atomFilter(AtomFilter.isArbitrary())
+                .rmsdCutoff(3.0)
+                .distanceTolerance(2.0)
+                .run();
+
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getSubstructureSuperimposition)
+                .map(SubstructureSuperimposition::getStringRepresentation)
+                .filter(string -> string.contains("A-98B"))
+                .count() >= 1);
     }
 }
