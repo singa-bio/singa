@@ -69,10 +69,6 @@ public class ResidueMapContentHandler implements ContentHandler {
         // skip entry if no pdb reference is there
         if (!skip) {
             switch (qName) {
-                case "entity": {
-                    currentChain = atts.getValue("entityId");
-                    break;
-                }
                 case "residue": {
                     inResidue = true;
                 }
@@ -81,6 +77,7 @@ public class ResidueMapContentHandler implements ContentHandler {
                         String dbSource = atts.getValue("dbSource");
                         if (dbSource.equals("PDB")) {
                             final String dbResNum = atts.getValue("dbResNum");
+                            currentChain = atts.getValue("dbChainId");
                             if (dbResNum.equals("null")) {
                                 skip = true;
                             } else {

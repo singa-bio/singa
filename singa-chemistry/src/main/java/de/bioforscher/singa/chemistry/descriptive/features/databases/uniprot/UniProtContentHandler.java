@@ -243,6 +243,7 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "dbReference": {
                 if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
+                    // TODO are "Genomic_DNA" and "mRNA" equivalent?
                     if (moleculeType.equals("Genomic_DNA")) {
                         genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID));
                     }
