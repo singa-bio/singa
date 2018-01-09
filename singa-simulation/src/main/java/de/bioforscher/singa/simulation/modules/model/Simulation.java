@@ -12,6 +12,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -66,6 +68,10 @@ import static tec.units.ri.unit.Units.SECOND;
 public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
+    /**
      * The updating modules.
      */
     private final Set<Module> modules;
@@ -118,9 +124,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * Calculates the next epoch.
      */
     public void nextEpoch() {
+        logger.debug("Starting epoch {}.", epoch);
         // apply all modules
         boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
+        logger.debug("Applying deltas.");
         for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
             // emit events to observers

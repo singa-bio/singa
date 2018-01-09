@@ -41,7 +41,14 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     public MembraneContainer(MembraneContainer container) {
-        this(container.outerPhaseSection, container.innerPhaseSection, container.membrane);
+        outerPhaseSection = container.outerPhaseSection;
+        innerPhaseSection = container.innerPhaseSection;
+        membrane = container.membrane;
+
+        outerPhase = new HashMap<>(container.outerPhase);
+        outerLayer = new HashMap<>(container.outerLayer);
+        innerLayer = new HashMap<>(container.innerLayer);
+        innerPhase = new HashMap<>(container.innerPhase);
     }
 
     @Override
@@ -207,6 +214,5 @@ public class MembraneContainer implements ConcentrationContainer {
     public MembraneContainer getCopy() {
         return new MembraneContainer(this);
     }
-
 
 }

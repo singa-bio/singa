@@ -60,6 +60,7 @@ public class TimeStepHarmonizer {
     }
 
     private void executeAllModules() {
+        logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
             // determine deltas and corresponding local errors

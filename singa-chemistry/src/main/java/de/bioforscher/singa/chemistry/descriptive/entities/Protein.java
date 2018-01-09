@@ -98,6 +98,10 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
         return getContentOfAnnotations(String.class, description, AMINO_ACID_SEQUENCE);
     }
 
+    public Transporter asTransporter() {
+        return new Transporter(this);
+    }
+
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;

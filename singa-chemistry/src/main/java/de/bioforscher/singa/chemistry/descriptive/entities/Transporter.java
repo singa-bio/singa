@@ -28,6 +28,13 @@ public class Transporter extends Protein {
         super(identifier);
     }
 
+    public Transporter(Protein protein) {
+        this(protein.getIdentifier());
+        name = protein.name;
+        annotations = protein.annotations;
+        features = protein.features;
+    }
+
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;

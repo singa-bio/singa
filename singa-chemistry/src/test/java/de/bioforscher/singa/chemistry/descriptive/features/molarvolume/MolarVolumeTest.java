@@ -21,7 +21,6 @@ public class MolarVolumeTest {
         // Species benzene = ChEBIParserService.parse("CHEBI:16716");
         // Species biphenyl = ChEBIParserService.parse("CHEBI:17097");
 
-        ammonia.setFeature(MolarVolume.class);
         final MolarVolume ammoniaFeature = ammonia.getFeature(MolarVolume.class);
         assertEquals(21.91, ammoniaFeature.getValue().doubleValue(), 2.0);
 

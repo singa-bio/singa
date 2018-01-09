@@ -6,6 +6,8 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
@@ -20,6 +22,11 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  * @author cl
  */
 public abstract class AbstractNeighbourIndependentModule extends AbstractModule {
+
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
 
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
     private ChemicalEntity currentChemicalEntity;
@@ -43,6 +50,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         // determine deltas
         for (AutomatonNode node : graph.getNodes()) {
             if (conditionalApplication.test(node)) {
+                logger.trace("Determining delta for node {}.", node.getIdentifier());
                 determineDeltasForNode(node);
             }
         }
@@ -85,6 +93,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
             if (entry.getValue().test(concentrationContainer)) {
                 Delta fullDelta = entry.getKey().apply(concentrationContainer);
                 setHalfStepConcentration(fullDelta);
+                logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                 currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
             }
         }
@@ -96,6 +105,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
             if (entry.getValue().test(concentrationContainer)) {
                 Delta halfDelta = entry.getKey().apply(currentHalfConcentrations).multiply(2.0);
                 currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
+                logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), halfDelta.getQuantity());
             }
         }
         // and register potential deltas at node

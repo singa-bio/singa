@@ -42,19 +42,19 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    private final IdentifierType identifier;
+    protected final IdentifierType identifier;
 
     /**
      * The name by which this entity is referenced.
      */
-    private String name = "Unnamed chemical entity";
+    protected String name = "Unnamed chemical entity";
 
     /**
      * All annotations of this entity.
      */
-    private List<Annotation> annotations;
+    protected List<Annotation> annotations;
 
-    private FeatureContainer features;
+    protected FeatureContainer features;
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -128,6 +128,9 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        if (!features.hasFeature(featureTypeClass)) {
+            setFeature(featureTypeClass);
+        }
         return features.getFeature(featureTypeClass);
     }
 
