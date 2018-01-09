@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.core.biology.Organism;
 import de.bioforscher.singa.core.biology.Taxon;
 import de.bioforscher.singa.core.identifier.ECNumber;
+import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
 import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -45,6 +46,7 @@ public class UniProtContentHandler implements ContentHandler {
     private Organism sourceOrganism;
     private List<Annotation<String>> textComments;
     private List<ECNumber> ecNumbers;
+    private List<ENAAccessionNumber> genomicSequenceIdentifiers;
 
     // parser attributes
     private String currentTag = "";
@@ -57,11 +59,17 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean inRelevantComment = false;
     private boolean isScientificName = false;
     private boolean isCommonName = false;
+    private boolean inEMBLReference = false;
+
+    private String proteinSequenceID;
+    private String moleculeType;
+
 
     public UniProtContentHandler() {
         additionalNames = new ArrayList<>();
         textComments = new ArrayList<>();
         ecNumbers = new ArrayList<>();
+        genomicSequenceIdentifiers = new ArrayList<>();
     }
 
     public UniProtContentHandler(String primaryIdentifier) {
@@ -88,6 +96,7 @@ public class UniProtContentHandler implements ContentHandler {
         protein.addOrganism(sourceOrganism);
         // add sequence without white spaces
         protein.addAminoAcidSequence(aminoAcidSequence.replaceAll("\\s", ""));
+        genomicSequenceIdentifiers.forEach(protein::addAdditionalIdentifier);
         // add additional names
         additionalNames.forEach(protein::addAdditionalName);
         // add textComments
@@ -178,6 +187,21 @@ public class UniProtContentHandler implements ContentHandler {
                 if (inOrganism && atts.getValue("type").equals("NCBI Taxonomy")) {
                     // set tax id for organism
                     sourceOrganism.setIdentifier(new NCBITaxonomyIdentifier(atts.getValue("id")));
+                } else {
+                    if (atts.getValue("type").equals("EMBL")) {
+                        inEMBLReference = true;
+                    }
+                }
+                break;
+            }
+            case "property": {
+                if (inEMBLReference) {
+                    if (atts.getValue("type").equals("protein sequence ID")) {
+                        proteinSequenceID = atts.getValue("value");
+                    }
+                    if (atts.getValue("type").equals("molecule type")) {
+                        moleculeType = atts.getValue("value");
+                    }
                 }
                 break;
             }
@@ -215,6 +239,17 @@ public class UniProtContentHandler implements ContentHandler {
             case "name": {
                 isScientificName = false;
                 isCommonName = false;
+                break;
+            }
+            case "dbReference": {
+                if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
+                    if (moleculeType.equals("Genomic_DNA")) {
+                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID));
+                    }
+                    moleculeType = null;
+                    proteinSequenceID = null;
+                }
+                inEMBLReference = false;
                 break;
             }
             case "comment": {

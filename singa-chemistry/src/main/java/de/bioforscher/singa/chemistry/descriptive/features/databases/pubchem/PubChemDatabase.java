@@ -16,6 +16,7 @@ public class PubChemDatabase {
             "Kim, Sunghwan, et al. \"PubChem substance and compound databases.\" Nucleic acids research " +
                     "44.D1 (2016): D1202-D1213.");
     private static final Logger logger = LoggerFactory.getLogger(PubChemDatabase.class);
+
     /**
      * The instance.
      */
