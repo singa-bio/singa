@@ -13,7 +13,6 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 import tec.units.ri.quantity.Quantities;
 
-import static de.bioforscher.singa.features.quantities.NaturalConstants.AVOGADRO_CONSTANT;
 import static de.bioforscher.singa.features.quantities.NaturalConstants.BOLTZMANN_CONSTANT;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -63,7 +62,7 @@ public class MediatedMembraneTransport extends AbstractNeighbourIndependentModul
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue() * AVOGADRO_CONSTANT.getValue().doubleValue();
+            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue();
             final double deltaCargo = membraneContainer.getOuterPhaseConcentration(cargo).getValue().doubleValue() - membraneContainer.getInnerPhaseConcentration(cargo).getValue().doubleValue();
             value = cargoConstant * deltaCargo * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
         } else {
@@ -90,7 +89,7 @@ public class MediatedMembraneTransport extends AbstractNeighbourIndependentModul
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue() * AVOGADRO_CONSTANT.getValue().doubleValue();
+            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue();
             final double deltaCargo = membraneContainer.getOuterPhaseConcentration(cargo).getValue().doubleValue() - membraneContainer.getInnerPhaseConcentration(cargo).getValue().doubleValue();
             value = -cargoConstant * deltaCargo * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
         } else {

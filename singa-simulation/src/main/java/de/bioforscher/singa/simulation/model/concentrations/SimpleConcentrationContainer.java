@@ -2,7 +2,9 @@ package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.Collections;
@@ -25,7 +27,10 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        return concentrations.get(chemicalEntity);
+        if (concentrations.containsKey(chemicalEntity)) {
+            return concentrations.get(chemicalEntity);
+        }
+        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
     }
 
     @Override

@@ -2,7 +2,6 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -11,9 +10,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.units.ri.quantity.Quantities;
-
-import javax.measure.Quantity;
-import java.util.Map;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -42,18 +38,15 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-            Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations = neighbour.getAllConcentrationsForSection(currentCellSection);
-            if (!concentrations.isEmpty()) {
-                numberOfNeighbors++;
-                concentration += concentrations.get(currentChemicalEntity).getValue().doubleValue();
-            }
+            concentration += neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
+            numberOfNeighbors ++;
         }
         // entering amount
         final double enteringConcentration = concentration * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
         // calculate leaving amount
         final double leavingConcentration = numberOfNeighbors * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
-        final double delta = enteringConcentration - leavingConcentration; //+ currentConcentration;
+        final double delta = enteringConcentration - leavingConcentration;
         // return delta
         return new Delta(currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, MOLE_PER_LITRE));
     }
