@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
 
 import de.bioforscher.singa.core.biology.NucleotideSequence;
+import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -17,16 +18,18 @@ public class ENAContentHandler implements ContentHandler {
     private StringBuilder sequenceBuilder;
     private int translationTable;
 
-    public ENAContentHandler() {
+    private ENAAccessionNumber enaAccessionNumber;
+
+    public ENAContentHandler(ENAAccessionNumber enaAccessionNumber) {
+        this.enaAccessionNumber = enaAccessionNumber;
         translationSequenceBuilder = new StringBuilder();
         sequenceBuilder = new StringBuilder();
     }
 
-
     public NucleotideSequence getSequence() {
         final String sequence = sequenceBuilder.toString().replaceAll("\\s", "");
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
-        return new NucleotideSequence(sequence, translationSequence, translationTable);
+        return new NucleotideSequence(enaAccessionNumber, sequence, translationSequence, translationTable);
     }
 
     @Override

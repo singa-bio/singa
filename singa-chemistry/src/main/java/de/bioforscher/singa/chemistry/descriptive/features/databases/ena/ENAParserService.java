@@ -20,7 +20,7 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
     private static final String ENA_FETCH_URL = "https://www.ebi.ac.uk/ena/data/view/%s&display=xml";
 
     public ENAParserService(ENAAccessionNumber enaAccessionNumber) {
-        getXmlReader().setContentHandler(new ENAContentHandler());
+        getXmlReader().setContentHandler(new ENAContentHandler(enaAccessionNumber));
         setResource(String.format(ENA_FETCH_URL, enaAccessionNumber.getIdentifier()));
     }
 

@@ -50,7 +50,7 @@ public class UniProtContentHandler implements ContentHandler {
 
     // parser attributes
     private String currentTag = "";
-    private Annotation<String> temoraryCommentAnnotation;
+    private Annotation<String> temporaryCommentAnnotation;
 
     // reading name
     private boolean inRecommendedName = false;
@@ -167,8 +167,8 @@ public class UniProtContentHandler implements ContentHandler {
                 if (TEXT_COMMENTS_TO_PARSE.contains(atts.getValue("type"))) {
                     currentTag = qName;
                     inRelevantComment = true;
-                    temoraryCommentAnnotation = new Annotation<>(AnnotationType.NOTE);
-                    temoraryCommentAnnotation.setDescription(atts.getValue("type"));
+                    temporaryCommentAnnotation = new Annotation<>(AnnotationType.NOTE);
+                    temporaryCommentAnnotation.setDescription(atts.getValue("type"));
                 }
                 break;
             }
@@ -245,7 +245,9 @@ public class UniProtContentHandler implements ContentHandler {
                 if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
                     // TODO are "Genomic_DNA" and "mRNA" equivalent?
                     if (moleculeType.equals("Genomic_DNA")) {
-                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID));
+                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID, ENAAccessionNumber.ExpressionType.GENOMIC_DNA));
+                    } else if (moleculeType.equals("mRNA")) {
+                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID, ENAAccessionNumber.ExpressionType.MRNA));
                     }
                     moleculeType = null;
                     proteinSequenceID = null;
@@ -255,9 +257,9 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "comment": {
                 if (inRelevantComment) {
-                    if (temoraryCommentAnnotation.getContent() != null &&
-                            !temoraryCommentAnnotation.getContent().trim().isEmpty()) {
-                        textComments.add(temoraryCommentAnnotation);
+                    if (temporaryCommentAnnotation.getContent() != null &&
+                            !temporaryCommentAnnotation.getContent().trim().isEmpty()) {
+                        textComments.add(temporaryCommentAnnotation);
                     }
                     inRelevantComment = false;
                 }
@@ -320,10 +322,10 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "text": {
                 if (inRelevantComment) {
-                    if (temoraryCommentAnnotation.getContent() == null) {
-                        temoraryCommentAnnotation.setContent(new String(ch, start, length));
+                    if (temporaryCommentAnnotation.getContent() == null) {
+                        temporaryCommentAnnotation.setContent(new String(ch, start, length));
                     } else {
-                        temoraryCommentAnnotation.setContent(temoraryCommentAnnotation.getContent()
+                        temporaryCommentAnnotation.setContent(temporaryCommentAnnotation.getContent()
                                 + new String(ch, start, length));
                     }
                 }

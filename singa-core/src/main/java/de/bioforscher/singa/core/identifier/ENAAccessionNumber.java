@@ -12,10 +12,16 @@ import java.util.regex.Pattern;
  */
 public class ENAAccessionNumber extends AbstractIdentifier {
 
+    public enum ExpressionType {
+        GENOMIC_DNA, MRNA
+    }
+
     /**
      * The pattern to verify the identifier.
      */
     public static final Pattern PATTERN = Pattern.compile("[A-Z]{3}\\d{5}\\.\\d+");
+
+    private ExpressionType expressionType;
 
     /**
      * Creates a new identifier by validating it with the given pattern.
@@ -23,8 +29,13 @@ public class ENAAccessionNumber extends AbstractIdentifier {
      * @param identifier The new identifier.
      * @throws IllegalArgumentException If the identifier not valid.
      */
-    public ENAAccessionNumber(String identifier) throws IllegalArgumentException {
+    public ENAAccessionNumber(String identifier, ExpressionType expressionType) throws IllegalArgumentException {
         super(identifier, PATTERN);
+        this.expressionType = expressionType;
+    }
+
+    public ExpressionType getExpressionType() {
+        return expressionType;
     }
 
     /**
