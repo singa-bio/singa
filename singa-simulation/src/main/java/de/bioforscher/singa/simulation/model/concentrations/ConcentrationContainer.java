@@ -37,6 +37,7 @@ public interface ConcentrationContainer {
 
     /**
      * Returns the concentration of the specified {@link ChemicalEntity} available in the {@link CellSection}.
+     * This returns null if the concentration of the chemical entity is not available for the cell section.
      *
      * @param cellSection The CellSection
      * @param chemicalEntity The ChemicalEntity.

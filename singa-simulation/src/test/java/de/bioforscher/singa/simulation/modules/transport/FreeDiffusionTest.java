@@ -43,7 +43,7 @@ public class FreeDiffusionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FreeDiffusionTest.class);
 
-    private static final Rectangle boundingBox = new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0));
+    private static final Rectangle boundingBox = new Rectangle(400, 400);
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     // required species

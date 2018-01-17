@@ -64,28 +64,36 @@ public class MembraneContainer implements ConcentrationContainer {
         if (outerPhase.containsKey(chemicalEntity)) {
             return outerPhase.get(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        outerPhase.put(chemicalEntity, quantity);
+        return quantity;
     }
 
     public Quantity<MolarConcentration> getInnerPhaseConcentration(ChemicalEntity chemicalEntity) {
         if (innerPhase.containsKey(chemicalEntity)) {
             return innerPhase.get(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        innerPhase.put(chemicalEntity, quantity);
+        return quantity;
     }
 
     public Quantity<MolarConcentration> getOuterMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
         if (outerLayer.containsKey(chemicalEntity)) {
             return outerLayer.get(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        outerLayer.put(chemicalEntity, quantity);
+        return quantity;
     }
 
     public Quantity<MolarConcentration> getInnerMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
         if (innerLayer.containsKey(chemicalEntity)) {
             return innerLayer.get(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        innerLayer.put(chemicalEntity, quantity);
+        return quantity;
     }
 
     @Override
@@ -115,16 +123,15 @@ public class MembraneContainer implements ConcentrationContainer {
         } else if (cellSection.equals(innerPhaseSection)) {
             return getInnerPhaseConcentration(chemicalEntity);
         } else if (cellSection.equals(membrane)) {
-            Quantity<MolarConcentration> concentrationSum;
-                return getInnerMembraneLayerConcentration(chemicalEntity)
-                        .add(getOuterMembraneLayerConcentration(chemicalEntity))
-                        .divide(2.0);
+            return getInnerMembraneLayerConcentration(chemicalEntity)
+                    .add(getOuterMembraneLayerConcentration(chemicalEntity))
+                    .divide(2.0);
         } else if (cellSection.equals(membrane.getInnerLayer())) {
             return getInnerMembraneLayerConcentration(chemicalEntity);
         } else if (cellSection.equals(membrane.getOuterLayer())) {
             return getOuterMembraneLayerConcentration(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        return null;
     }
 
     @Override

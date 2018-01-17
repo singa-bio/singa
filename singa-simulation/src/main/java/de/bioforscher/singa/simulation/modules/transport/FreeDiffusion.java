@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -10,6 +11,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.units.ri.quantity.Quantities;
+
+import javax.measure.Quantity;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
@@ -38,8 +41,11 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-            concentration += neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
-            numberOfNeighbors ++;
+            final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+            if (availableConcentration != null) {
+                concentration += availableConcentration.getValue().doubleValue();
+                numberOfNeighbors++;
+            }
         }
         // entering amount
         final double enteringConcentration = concentration * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();

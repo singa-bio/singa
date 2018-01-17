@@ -63,6 +63,7 @@ public class TimeStepHarmonizer {
         logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
+            logger.debug("Calculating deltas for Module {}", module.getClass().getSimpleName());
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error

@@ -6,6 +6,8 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  * @author cl
  */
 public abstract class AbstractNeighbourDependentModule extends AbstractModule {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
 
     private final Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
@@ -54,8 +58,8 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
         // half step deltas
         halfTime = true;
         for (Map.Entry<AutomatonNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
-            currentNode = entry.getKey();
-            determineHalfStepDeltas(entry.getValue());
+           currentNode = entry.getKey();
+           determineHalfStepDeltas(entry.getValue());
         }
 
         // examine local errors
@@ -70,6 +74,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     public void determineFullDeltas(ConcentrationContainer concentrationContainer) {
+        logger.trace("Determining full deltas for node {}.", currentNode.getIdentifier());
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
@@ -88,6 +93,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     private void determineHalfStepDeltas(ConcentrationContainer concentrationContainer) {
+        logger.trace("Determining half deltas for node {}.", currentNode.getIdentifier());
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {

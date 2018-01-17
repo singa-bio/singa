@@ -30,7 +30,9 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
         if (concentrations.containsKey(chemicalEntity)) {
             return concentrations.get(chemicalEntity);
         }
-        return Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+        concentrations.put(chemicalEntity, quantity);
+        return quantity;
     }
 
     @Override
@@ -43,7 +45,15 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
-        return getConcentration(chemicalEntity);
+        if (this.cellSection.equals(cellSection)) {
+            if (concentrations.containsKey(chemicalEntity)) {
+                return getConcentration(chemicalEntity);
+            }
+            final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+            concentrations.put(chemicalEntity, quantity);
+            return quantity;
+        }
+        return null;
     }
 
     @Override

@@ -146,6 +146,19 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public void initialize() {
+        // initialize concentrations
+        // for each referenced species set concentration to 0 in each compartment
+        // this requires all entities to be present in chemicalEntities
+        // this also is true for eventual products of reactions
+//        for (AutomatonNode node : graph.getNodes()) {
+//            for (CellSection section : node.getAllReferencedSections()) {
+//                for (ChemicalEntity<?> entity : chemicalEntities) {
+//                }
+//            }
+//        }
+
+
+
         // for each module
         // get required entity features
         // for each entity
