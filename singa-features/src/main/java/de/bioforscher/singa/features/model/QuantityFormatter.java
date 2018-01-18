@@ -24,7 +24,7 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
         this.targetUnit = targetUnit;
     }
 
-    private String format(Quantity<UnitType> quantity) {
+    public String format(Quantity<UnitType> quantity) {
         return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + " " + targetUnit.toString();
     }
 

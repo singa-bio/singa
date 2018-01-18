@@ -2,47 +2,39 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
-import de.bioforscher.singa.chemistry.descriptive.features.transporterflux.TransporterFlux;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 import tec.units.ri.quantity.Quantities;
 
-import static de.bioforscher.singa.features.quantities.NaturalConstants.BOLTZMANN_CONSTANT;
+import java.util.Set;
+
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
  */
-public class MediatedMembraneTransport extends AbstractNeighbourIndependentModule {
+public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndependentModule {
 
     private Transporter transporter;
     private ChemicalEntity<?> cargo;
+    private Set<ChemicalEntity<?>> solutes;
 
-    private double cargoConstant;
-
-    public MediatedMembraneTransport(Simulation simulation, Transporter transporter, ChemicalEntity cargo) {
+    public SingleFileChannelMembraneTransport(Simulation simulation, Transporter transporter, ChemicalEntity cargo, Set<ChemicalEntity<?>> solutes) {
         super(simulation);
         this.transporter = transporter;
         this.cargo = cargo;
-        // calculate cargo constant
-        cargoConstant = calculateCargoConstant(cargo);
+        this.solutes = solutes;
         // apply this module only to membranes
         onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
         // change of inner phase
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
-    }
-
-    private static double calculateCargoConstant(ChemicalEntity<?> cargo) {
-        double cargoVolume = cargo.getFeature(MolarVolume.class).getValue().doubleValue();
-        return -BOLTZMANN_CONSTANT.getValue().doubleValue() * EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue() * cargoVolume;
     }
 
     /**
@@ -62,14 +54,12 @@ public class MediatedMembraneTransport extends AbstractNeighbourIndependentModul
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue();
-            final double deltaCargo = membraneContainer.getOuterPhaseConcentration(cargo).getValue().doubleValue() - membraneContainer.getInnerPhaseConcentration(cargo).getValue().doubleValue();
-            value = cargoConstant * deltaCargo * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
+            final double flux = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            value = getSoluteDelta(membraneContainer) * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
         } else {
             value = 0.0;
         }
-        final Delta delta = new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
-        return delta;
+        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
     }
 
     /**
@@ -89,13 +79,27 @@ public class MediatedMembraneTransport extends AbstractNeighbourIndependentModul
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, TransporterFlux.class).getValue().doubleValue();
-            final double deltaCargo = membraneContainer.getOuterPhaseConcentration(cargo).getValue().doubleValue() - membraneContainer.getInnerPhaseConcentration(cargo).getValue().doubleValue();
-            value = -cargoConstant * deltaCargo * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
+            final double flux = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            value = getSoluteDelta(membraneContainer) * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
         } else {
             value = 0.0;
         }
         return new Delta(membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+    }
+
+    private double getSoluteDelta(MembraneContainer container) {
+        // sum outer solutes
+        double outerConcentration = 0.0;
+        for (ChemicalEntity<?> solute : solutes) {
+            outerConcentration += container.getOuterPhaseConcentration(solute).getValue().doubleValue();
+        }
+        // sum inner solutes
+        double innerConcentration = 0.0;
+        for (ChemicalEntity<?> solute : solutes) {
+            outerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
+        }
+        // return delta
+        return outerConcentration - innerConcentration;
     }
 
     private boolean isCargo() {

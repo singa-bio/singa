@@ -132,9 +132,9 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
             // emit events to observers
-            if (node.isObserved()) {
-                emitNextEpochEvent(node);
-            }
+            // if (node.isObserved()) {
+            //    emitNextEpochEvent(node);
+            // }
         }
         // update epoch and elapsed time
         updateEpoch();

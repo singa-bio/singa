@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
-import de.bioforscher.singa.chemistry.descriptive.features.transporterflux.TransporterFlux;
+import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 
@@ -16,7 +16,7 @@ public class Transporter extends Protein {
 
     static {
         Transporter.availableFeatures.addAll(ChemicalEntity.availableFeatures);
-        availableFeatures.add(TransporterFlux.class);
+        availableFeatures.add(OsmoticPermeability.class);
     }
 
     /**
