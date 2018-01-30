@@ -4,16 +4,16 @@ import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * Diffusivity or diffusion coefficient is a proportionality constant between the molar flux due to molecular diffusion

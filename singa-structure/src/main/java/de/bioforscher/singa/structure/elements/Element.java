@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.elements;
 
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

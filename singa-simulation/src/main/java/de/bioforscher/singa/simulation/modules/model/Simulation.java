@@ -14,7 +14,7 @@ import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
@@ -146,7 +146,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     public void initialize() {
-        // initialize concentrations
+        // initialize concentrationsEn
         // for each referenced species set concentration to 0 in each compartment
         // this requires all entities to be present in chemicalEntities
         // this also is true for eventual products of reactions
@@ -156,8 +156,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 //                }
 //            }
 //        }
-
-
 
         // for each module
         // get required entity features
@@ -171,7 +169,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
+        elapsedTime = elapsedTime.add(EnvironmentalParameters.getTimeStep());
     }
 
     /**

@@ -1,6 +1,5 @@
-import de.bioforscher.singa.features.units.UnitName;
-import de.bioforscher.singa.features.units.UnitPrefix;
-import de.bioforscher.singa.features.units.UnitPrefixes;
+package de.bioforscher.singa.features.units;
+
 import org.junit.Test;
 
 import java.util.List;

@@ -2,12 +2,13 @@ package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
+
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -34,7 +35,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         return Quantities.getQuantity(concentrations.keySet().stream()
                 .mapToDouble(identifier -> getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue())
-                .average().orElse(0.0), UnitProvider.MOLE_PER_LITRE);
+                .average().orElse(0.0), MOLE_PER_LITRE);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
         if (!concentrations.containsKey(cellSection)) {
-            Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
+            return Quantities.getQuantity(0.0, MOLE_PER_LITRE);
         }
         return concentrations.get(cellSection).get(chemicalEntity);
     }

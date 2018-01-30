@@ -33,7 +33,7 @@ import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -46,10 +46,10 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.MetricPrefix.NANO;
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
@@ -85,7 +85,7 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(oxygen, 0.0);
 
         // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
@@ -124,7 +124,7 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(octatriene, 0.0);
 
         // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.614, PER_SECOND));
@@ -169,7 +169,7 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(speciesB, 0.0);
 
         // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reaction
         EquilibriumReaction reaction = new EquilibriumReaction(simulation, Quantities.getQuantity(10, PER_SECOND),
@@ -224,7 +224,7 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(glyceraldehyde, 0.0);
 
         // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // create reaction using the properties of the enzyme
         MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
@@ -280,10 +280,9 @@ public class SimulationExamples {
         }
 
         // setup time step size as given
-        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
+        EnvironmentalParameters.setTimeStep(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
-        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -336,7 +335,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         logger.debug("Composing simulation ... ");
 
@@ -410,7 +409,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // add graph
         simulation.setGraph(graph);
@@ -499,11 +498,10 @@ public class SimulationExamples {
 
         // setup time step size as given
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
-        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
 
         // setup simulation
         logger.debug("Composing simulation ... ");

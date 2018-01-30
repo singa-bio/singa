@@ -8,7 +8,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,7 +93,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
             if (entry.getValue().test(concentrationContainer)) {
                 Delta fullDelta = entry.getKey().apply(concentrationContainer);
                 setHalfStepConcentration(fullDelta);
-                logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
+                logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                 currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
             }
         }

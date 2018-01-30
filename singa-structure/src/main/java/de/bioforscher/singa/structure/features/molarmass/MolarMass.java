@@ -2,14 +2,14 @@ package de.bioforscher.singa.structure.features.molarmass;
 
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.units.ri.unit.Units.GRAM;
-import static tec.units.ri.unit.Units.MOLE;
+import static tec.uom.se.unit.Units.GRAM;
+import static tec.uom.se.unit.Units.MOLE;
 
 /**
  * In chemistry, the molar mass is a physical property. It is defined as the mass of a given substance (chemical element

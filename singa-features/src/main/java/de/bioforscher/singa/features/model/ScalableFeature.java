@@ -15,7 +15,7 @@ public interface ScalableFeature<FeatureContent> extends Feature<FeatureContent>
     void scale(Quantity<Time> time, Quantity<Length> space);
 
     default void scale() {
-        scale(EnvironmentalParameters.getInstance().getTimeStep(), EnvironmentalParameters.getInstance().getNodeDistance());
+        scale(EnvironmentalParameters.getTimeStep(), EnvironmentalParameters.getNodeDistance());
     }
 
     FeatureContent getScaledQuantity();

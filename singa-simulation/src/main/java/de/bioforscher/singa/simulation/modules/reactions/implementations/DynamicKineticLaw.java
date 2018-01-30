@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
 import de.bioforscher.singa.simulation.modules.reactions.model.KineticLaw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;

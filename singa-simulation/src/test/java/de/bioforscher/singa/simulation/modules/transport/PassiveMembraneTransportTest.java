@@ -15,7 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl

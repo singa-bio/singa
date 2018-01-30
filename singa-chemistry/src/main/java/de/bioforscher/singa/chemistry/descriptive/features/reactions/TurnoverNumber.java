@@ -3,8 +3,8 @@ package de.bioforscher.singa.chemistry.descriptive.features.reactions;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -12,9 +12,9 @@ import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.AbstractUnit.ONE;
-import static tec.units.ri.unit.Units.HERTZ;
-import static tec.units.ri.unit.Units.MINUTE;
+import static tec.uom.se.AbstractUnit.ONE;
+import static tec.uom.se.unit.Units.HERTZ;
+import static tec.uom.se.unit.Units.MINUTE;
 
 /**
  * The turnover number is the maximal number of substrate molecules converted to product by enzyme and second.

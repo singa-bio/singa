@@ -10,7 +10,7 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.modules.model.AbstractSectionSpecificModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 import java.util.stream.Collectors;

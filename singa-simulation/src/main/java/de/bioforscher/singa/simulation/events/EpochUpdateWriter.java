@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * This class can be used to write the concentrations of a node to a file while

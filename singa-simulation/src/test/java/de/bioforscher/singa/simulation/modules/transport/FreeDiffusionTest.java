@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -30,10 +30,10 @@ import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Di
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
-import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.MetricPrefix.NANO;
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -61,13 +61,12 @@ public class FreeDiffusionTest {
             .name("benzene")
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
+
     @Parameter(0)
     public Species species;
     @Parameter(1)
-    public Quantity<Time> timeStep;
-    @Parameter(2)
     public int numberOfNodes;
-    @Parameter(3)
+    @Parameter(2)
     public Quantity<Time> expectedOutcome;
 
     @Parameters
@@ -75,26 +74,26 @@ public class FreeDiffusionTest {
         return Arrays.asList(new Object[][]{
                 /* species, time step, number of nodes, expected result */
                 /* test different numbers of nodes (10, 20, 50)*/
-                /* 0 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 10, Quantities.getQuantity(167.2309, MICRO(SECOND))},
-                /* 1 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 20, Quantities.getQuantity(150.2405, MICRO(SECOND))},
-                /* 2 */ {hydrogen, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(145.1471, MICRO(SECOND))},
+                /* 0 */ {hydrogen, 10, Quantities.getQuantity(167.2309, MICRO(SECOND))},
+                /* 1 */ {hydrogen, 20, Quantities.getQuantity(150.2405, MICRO(SECOND))},
+                /* 2 */ {hydrogen, 30, Quantities.getQuantity(145.1471, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 6 */ {ammonia, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(280.1091, MICRO(SECOND))},
-                /* 7 */ {benzene, Quantities.getQuantity(10, NANO(SECOND)), 30, Quantities.getQuantity(585.9218, MICRO(SECOND))}
+                /* 6 */ {ammonia, 30, Quantities.getQuantity(280.1091, MICRO(SECOND))},
+                /* 7 */ {benzene, 30, Quantities.getQuantity(585.9218, MICRO(SECOND))}
         });
     }
 
     @Test
     public void shouldReachCorrectHalfLife() {
-        logger.info("Performing free diffusion test for {} with a time step of {} and {} nodes ...", species.getName(), timeStep, numberOfNodes);
+        logger.info("Performing free diffusion test for {} with {} nodes ...", species.getName(), numberOfNodes);
         // setup and run simulation
-        Simulation simulation = setUpSimulation(numberOfNodes, timeStep, species);
+        Simulation simulation = setUpSimulation(numberOfNodes, species);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, numberOfNodes, species);
         // test results
         assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1e-4);
     }
 
-    private Simulation setUpSimulation(int numberOfNodes, Quantity<Time> timeStep, Species species) {
+    private Simulation setUpSimulation(int numberOfNodes, Species species) {
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
                 numberOfNodes, numberOfNodes, boundingBox, false));
@@ -107,9 +106,9 @@ public class FreeDiffusionTest {
             }
         }
         // setup time step size as given
-        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10, NANO(SECOND)));
         // setup node distance to diameter
-        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
+        EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup simulation
         Simulation simulation = new Simulation();
         // add graph

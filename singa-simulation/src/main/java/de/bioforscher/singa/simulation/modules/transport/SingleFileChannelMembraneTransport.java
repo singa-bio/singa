@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.Set;
 
@@ -54,8 +54,9 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            value = getSoluteDelta(membraneContainer) * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
+            final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            // FIXME: fix magic number, this is the total number of transporters possible in the membrane
+            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 49382;
         } else {
             value = 0.0;
         }
@@ -79,8 +80,9 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double flux = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            value = getSoluteDelta(membraneContainer) * flux * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue();
+            final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            // FIXME: fix magic number, this is the total number of transporters possible in the membrane
+            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 49382;
         } else {
             value = 0.0;
         }
@@ -96,10 +98,10 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         // sum inner solutes
         double innerConcentration = 0.0;
         for (ChemicalEntity<?> solute : solutes) {
-            outerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
+            innerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
         }
         // return delta
-        return outerConcentration - innerConcentration;
+        return isInnerPhase(container) ? outerConcentration - innerConcentration : innerConcentration - outerConcentration;
     }
 
     private boolean isCargo() {

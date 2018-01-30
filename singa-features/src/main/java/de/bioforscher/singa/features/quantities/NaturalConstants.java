@@ -1,13 +1,13 @@
 package de.bioforscher.singa.features.quantities;
 
 
-import tec.units.ri.AbstractUnit;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.AbstractUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 
-import static tec.units.ri.unit.Units.*;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * This class holds values and units of natural constants.

@@ -4,16 +4,16 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * Represents the rate at which a substrate of a {@link Transporter} may be transported through the membrane.
@@ -35,82 +35,102 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
     private Quantity<OsmoticPermeability> scaledQuantity;
     private Quantity<OsmoticPermeability> halfScaledQuantity;
 
+    /**
+     * Creates a new Instance of the {@link OsmoticPermeability} Feature. Internally osmotic permeability is saved as
+     * {@link OsmoticPermeability#LITRE_PER_SECOND} for easier calculations.
+     *
+     * @param osmoticPermeabilityQuantity The osmotic permeability.
+     * @param featureOrigin The origin of the feature.
+     */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
         super(osmoticPermeabilityQuantity.to(LITRE_PER_SECOND), featureOrigin);
     }
 
+    /**
+     * Creates a new Instance of the {@link OsmoticPermeability} Feature. Quantity is interpreted as
+     * {@link OsmoticPermeability#CUBIC_CENTIMETER_PER_SECOND}. Internally osmotic permeability is saved as
+     * {@link OsmoticPermeability#LITRE_PER_SECOND} for easier calculations.
+     *
+     * @param osmoticPermeabilityQuantity The osmotic permeability in {@link OsmoticPermeability#CUBIC_CENTIMETER_PER_SECOND}
+     * @param featureOrigin The origin of the feature.
+     */
     public OsmoticPermeability(double osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
         super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND).to(LITRE_PER_SECOND), featureOrigin);
     }
 
     @Override
     public Quantity<OsmoticPermeability> add(Quantity<OsmoticPermeability> augend) {
-        return null;
+        return getFeatureContent().add(augend);
     }
 
     @Override
     public Quantity<OsmoticPermeability> subtract(Quantity<OsmoticPermeability> subtrahend) {
-        return null;
+        return getFeatureContent().subtract(subtrahend);
     }
 
     @Override
     public Quantity<?> divide(Quantity<?> divisor) {
-        return null;
+        return getFeatureContent().divide(divisor);
     }
 
     @Override
     public Quantity<OsmoticPermeability> divide(Number divisor) {
-        return null;
+        return getFeatureContent().divide(divisor);
     }
 
     @Override
     public Quantity<?> multiply(Quantity<?> multiplier) {
-        return null;
+        return getFeatureContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<OsmoticPermeability> multiply(Number multiplier) {
-        return null;
+        return getFeatureContent().multiply(multiplier);
     }
 
     @Override
     public Quantity<?> inverse() {
-        return null;
+        return getFeatureContent().inverse();
     }
 
     @Override
     public Quantity<OsmoticPermeability> to(Unit<OsmoticPermeability> unit) {
-        return null;
+        return getFeatureContent().to(unit);
     }
 
     @Override
     public <T extends Quantity<T>> Quantity<T> asType(Class<T> type) throws ClassCastException {
-        return null;
+        return getFeatureContent().asType(type);
     }
 
     @Override
     public Number getValue() {
-        return null;
+        return getFeatureContent().getValue();
     }
 
     @Override
     public Unit<OsmoticPermeability> getUnit() {
-        return null;
+        return getFeatureContent().getUnit();
     }
 
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
-
+        // transform to specified unit
+        Quantity<OsmoticPermeability> scaledQuantity = getFeatureContent().to(new ProductUnit<>(METRE.divide(10).pow(3).divide(time.getUnit())));
+        // transform to specified amount
+        this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
+        // and half
+        halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
     }
 
     @Override
     public Quantity<OsmoticPermeability> getScaledQuantity() {
-        return null;
+        return scaledQuantity;
     }
 
     @Override
     public Quantity<OsmoticPermeability> getHalfScaledQuantity() {
-        return null;
+        return halfScaledQuantity;
     }
 
 }

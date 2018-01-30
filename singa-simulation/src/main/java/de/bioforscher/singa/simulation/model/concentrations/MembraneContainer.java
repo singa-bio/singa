@@ -5,7 +5,7 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -33,7 +33,6 @@ public class MembraneContainer implements ConcentrationContainer {
         this.outerPhaseSection = outerPhaseSection;
         this.innerPhaseSection = innerPhaseSection;
         this.membrane = membrane;
-
         outerPhase = new HashMap<>();
         outerLayer = new HashMap<>();
         innerLayer = new HashMap<>();
@@ -44,7 +43,6 @@ public class MembraneContainer implements ConcentrationContainer {
         outerPhaseSection = container.outerPhaseSection;
         innerPhaseSection = container.innerPhaseSection;
         membrane = container.membrane;
-
         outerPhase = new HashMap<>(container.outerPhase);
         outerLayer = new HashMap<>(container.outerLayer);
         innerLayer = new HashMap<>(container.innerLayer);
@@ -136,6 +134,7 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
+
         outerPhase.put(chemicalEntity, concentration);
         outerLayer.put(chemicalEntity, concentration);
         innerLayer.put(chemicalEntity, concentration);

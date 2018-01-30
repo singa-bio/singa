@@ -1,23 +1,53 @@
 package de.bioforscher.singa.features.parameters;
 
 import de.bioforscher.singa.features.quantities.DynamicViscosity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.function.MultiplyConverter;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.TransformedUnit;
 
 import javax.measure.Quantity;
+import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 import java.util.Observable;
 
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.features.units.UnitProvider.PASCAL_SECOND;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.KELVIN;
+import static tec.uom.se.unit.MetricPrefix.*;
+import static tec.uom.se.unit.Units.*;
 
 public class EnvironmentalParameters extends Observable {
 
     private static final Logger logger = LoggerFactory.getLogger(EnvironmentalParameters.class);
+
+    /**
+     * Standard node distance [length] (100 nm)
+     */
+    public static final Quantity<Length> DEFAULT_NODE_DISTANCE = Quantities.getQuantity(100.0, NANO(METRE));
+
+    /**
+     * Standard time step size [time] (1 us)
+     */
+    public static final Quantity<Time> DEFAULT_TIME_STEP = Quantities.getQuantity(10.0, MICRO(SECOND));
+
+    /**
+     * Standard system temperature [temperature] (293 K = 20 C)
+     */
+    public static final Quantity<Temperature> DEFAULT_TEMPERATURE = Quantities.getQuantity(293.0, KELVIN);
+
+    /**
+     * Standard system viscosity [pressure per time] (1 mPa*s = 1cP = Viscosity of Water at 20 C)
+     */
+    public static final Quantity<DynamicViscosity> DEFAULT_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
+
+    /**
+     * The molar mass of water.
+     */
+    public static final double MOLAR_MASS_OF_WATER = 18.0153;
 
     private static EnvironmentalParameters instance;
 
@@ -25,13 +55,17 @@ public class EnvironmentalParameters extends Observable {
     private Quantity<Time> timeStep;
     private Quantity<Temperature> systemTemperature;
     private Quantity<DynamicViscosity> systemViscosity;
-    private boolean isCellularEnvironment;
+
+    private Unit<MolarConcentration> transformedMolarConcentration = MOLE_PER_LITRE;
 
     private EnvironmentalParameters() {
-        resetToDefaultValues();
+        nodeDistance = DEFAULT_NODE_DISTANCE;
+        timeStep = DEFAULT_TIME_STEP;
+        systemTemperature = DEFAULT_TEMPERATURE;
+        systemViscosity = DEFAULT_VISCOSITY;
     }
 
-    public static EnvironmentalParameters getInstance() {
+    private static EnvironmentalParameters getInstance() {
         if (instance == null) {
             synchronized (EnvironmentalParameters.class) {
                 instance = new EnvironmentalParameters();
@@ -40,82 +74,77 @@ public class EnvironmentalParameters extends Observable {
         return instance;
     }
 
-    public void resetToDefaultValues() {
-        nodeDistance = EnvironmentalParameterDefaults.NODE_DISTANCE;
-        timeStep = EnvironmentalParameterDefaults.TIME_STEP;
-        systemTemperature = EnvironmentalParameterDefaults.SYSTEM_TEMPERATURE;
-        systemViscosity = EnvironmentalParameterDefaults.SYSTEM_VISCOSITY;
-        isCellularEnvironment = false;
-        setChanged();
-        notifyObservers();
+    public static void resetToDefaultValues() {
+        getInstance().nodeDistance = DEFAULT_NODE_DISTANCE;
+        getInstance().timeStep = DEFAULT_TIME_STEP;
+        getInstance().systemTemperature = DEFAULT_TEMPERATURE;
+        getInstance().systemViscosity = DEFAULT_VISCOSITY;
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public Quantity<Length> getNodeDistance() {
-        return nodeDistance;
+    public static Quantity<Length> getNodeDistance() {
+        return instance.nodeDistance;
     }
 
-    public void setNodeDistance(Quantity<Length> nodeDistance) {
-        logger.debug("Setting new spatial step size to {}.", nodeDistance);
-        this.nodeDistance = nodeDistance;
-        setChanged();
-        notifyObservers();
+    public static void setNodeDistance(Quantity<Length> nodeDistance) {
+        logger.debug("Setting node distance to {}.", nodeDistance);
+        getInstance().nodeDistance = nodeDistance;
+        getInstance().setTransformedMolarConcentrationUnit();
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public Quantity<Temperature> getSystemTemperature() {
-        return systemTemperature;
+    private void setTransformedMolarConcentrationUnit() {
+        final Unit<Length> nodeDistanceUnit = nodeDistance.getUnit();
+        final Unit<MolarConcentration> transformedUnit = MOLE.divide(nodeDistanceUnit.multiply(nodeDistanceUnit).multiply(nodeDistanceUnit)).asType(MolarConcentration.class);
+        if (nodeDistance.getValue().doubleValue() == 1.0) {
+            transformedMolarConcentration = transformedUnit;
+        } else {
+            transformedMolarConcentration = new TransformedUnit<>(transformedUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(),3)));
+        }
     }
 
-    public void setSystemTemperature(Quantity<Temperature> systemTemperature) {
-        // always in kelvin
-        this.systemTemperature = systemTemperature.to(KELVIN);
-        setChanged();
-        notifyObservers();
+    public static Unit<MolarConcentration> getTransformedMolarConcentration() {
+        return getInstance().transformedMolarConcentration;
     }
 
-    public Quantity<DynamicViscosity> getSystemViscosity() {
-        return systemViscosity;
+    public static Quantity<Temperature> getTemperature() {
+        return getInstance().systemTemperature;
     }
 
-    public void setSystemViscosity(Quantity<DynamicViscosity> systemViscosity) {
-        this.systemViscosity = systemViscosity.to(MILLI(PASCAL_SECOND));
-        setChanged();
-        notifyObservers();
+    public static void setDefaultTemperature(Quantity<Temperature> temperature) {
+        logger.debug("Setting environmental temperature to {}.", temperature);
+        getInstance().systemTemperature = temperature.to(KELVIN);
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public Quantity<Time> getTimeStep() {
-        return timeStep;
+    public static Quantity<DynamicViscosity> getViscosity() {
+        return getInstance().systemViscosity;
     }
 
-    public void setTimeStep(Quantity<Time> timeStep) {
-        logger.debug("Setting new time step size to {}.", timeStep);
-        this.timeStep = timeStep;
-        setChanged();
-        notifyObservers();
+    public static void setSystemViscosity(Quantity<DynamicViscosity> voscosity) {
+        logger.debug("Setting environmental dynamic viscosity of to {}.", voscosity);
+        getInstance().systemViscosity = voscosity.to(MILLI(PASCAL_SECOND));
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public boolean isCellularEnvironment() {
-        return isCellularEnvironment;
+    public static Quantity<Time> getTimeStep() {
+        return getInstance().timeStep;
     }
 
-    public void setCellularEnvironment(boolean isCellularEnvironment) {
-        this.isCellularEnvironment = isCellularEnvironment;
-        setChanged();
-        notifyObservers();
+    public static void setTimeStep(Quantity<Time> timeStep) {
+        logger.debug("Setting time step size to {}.", timeStep);
+        getInstance().timeStep = timeStep;
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
+    public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
-        setNodeDistance(
-                Quantities.getQuantity(diameter.getValue().doubleValue() / (spanningNodes - 1), diameter.getUnit()));
+        setNodeDistance(diameter.divide(spanningNodes - 1));
     }
-
-    @Override
-    public String toString() {
-        return "EnvironmentalParameters [nodeDistance=" + nodeDistance
-                + ", timeStep=" + timeStep + ", systemTemperature="
-                + systemTemperature + ", systemViscosity=" + systemViscosity
-                + "]";
-    }
-
 
 }

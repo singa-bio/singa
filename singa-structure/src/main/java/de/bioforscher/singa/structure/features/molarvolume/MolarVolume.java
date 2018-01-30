@@ -2,14 +2,14 @@ package de.bioforscher.singa.structure.features.molarvolume;
 
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.units.ri.unit.Units.CUBIC_METRE;
-import static tec.units.ri.unit.Units.MOLE;
+import static tec.uom.se.unit.Units.CUBIC_METRE;
+import static tec.uom.se.unit.Units.MOLE;
 
 /**
  * @author cl

@@ -25,7 +25,7 @@ public class TimeStepHarmonizer {
     private boolean timeStepChanged;
 
     public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
-        EnvironmentalParameters.getInstance().setTimeStep(initialTimeStep);
+        EnvironmentalParameters.setTimeStep(initialTimeStep);
         this.simulation = simulation;
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
@@ -34,7 +34,7 @@ public class TimeStepHarmonizer {
         // TODO optimize the number of times the parameters have to be rescaled (only if time step has changed)
         // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
-        currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+        currentTimeStep = EnvironmentalParameters.getTimeStep();
         rescaleParameters();
         // request local error for each module
         executeAllModules();
@@ -92,7 +92,7 @@ public class TimeStepHarmonizer {
         boolean errorIsTooLarge = tryToDecreaseTimeStep(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
-            currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+            currentTimeStep = EnvironmentalParameters.getTimeStep();
             // determine biggest local error
             localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
             // logger.info("Current local error is {}",localError);
@@ -116,13 +116,13 @@ public class TimeStepHarmonizer {
 
     public void increaseTimeStep() {
         logger.trace("Increasing time step for the next epoch.");
-        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(1.2));
+        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(1.2));
         rescaleParameters();
     }
 
     public void decreaseTimeStep() {
         logger.trace("Reducing time step and trying again.");
-        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(0.8));
+        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(0.8));
         rescaleParameters();
     }
 

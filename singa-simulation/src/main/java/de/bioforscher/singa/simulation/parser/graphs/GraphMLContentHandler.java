@@ -9,7 +9,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.HashMap;
 

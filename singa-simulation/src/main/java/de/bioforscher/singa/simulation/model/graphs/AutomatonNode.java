@@ -12,7 +12,7 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.DeltaContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;

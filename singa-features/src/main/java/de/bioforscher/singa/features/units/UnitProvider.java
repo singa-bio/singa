@@ -3,12 +3,12 @@ package de.bioforscher.singa.features.units;
 
 import de.bioforscher.singa.features.quantities.DynamicViscosity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import static tec.units.ri.unit.Units.*;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * This class defines some units commonly used in systems biology, that ar not explicitly attributed to any feature.

@@ -16,11 +16,11 @@ import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.structure.features.molarvolume.MolarVolume.CUBIC_METRE_PER_MOLE;
-import static tec.units.ri.unit.MetricPrefix.CENTI;
+import static tec.uom.se.unit.MetricPrefix.CENTI;
 
 /**
  * @author cl
