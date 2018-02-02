@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -90,7 +89,7 @@ public abstract class AbstractSectionSpecificModule extends AbstractModule {
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentNode.getAvailableConcentration(fullDelta.getChemicalEntity(), fullDelta.getCellSection()).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
-        currentHalfConcentrations.setAvailableConcentration(fullDelta.getCellSection(), fullDelta.getChemicalEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
+        currentHalfConcentrations.setAvailableConcentration(fullDelta.getCellSection(), fullDelta.getChemicalEntity(), Quantities.getQuantity(halfStepConcentration, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private void determineHalfDeltas(ConcentrationContainer concentrationContainer) {

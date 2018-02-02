@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
@@ -117,7 +116,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         listeners = new CopyOnWriteArrayList<>();
         elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         epoch = 0;
-        harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
+        harmonizer = new TimeStepHarmonizer(this);
     }
 
     /**
@@ -140,8 +139,11 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         updateEpoch();
         // if time step did not change
         if (!timeStepChanged) {
-            // try larger time step next time
-            harmonizer.increaseTimeStep();
+            // if error was below tolerance threshold (10 percent of epsilon)
+            if (harmonizer.getEpsilon() - harmonizer.getLargestLocalError().getValue() > 0.1 * harmonizer.getEpsilon()) {
+                // try larger time step next time
+                harmonizer.increaseTimeStep();
+            }
         }
     }
 
@@ -266,6 +268,10 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public Quantity<Time> getElapsedTime() {
         return elapsedTime;
+    }
+
+    public void setEpsilon(double epsilon) {
+        harmonizer.setEpsilon(epsilon);
     }
 
     /**

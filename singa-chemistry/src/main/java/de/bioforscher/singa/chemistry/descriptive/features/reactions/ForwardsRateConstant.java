@@ -19,6 +19,8 @@ import static tec.uom.se.unit.Units.HERTZ;
  */
 public class ForwardsRateConstant extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
 
+    public static final String SYMBOL = "k_fwd";
+
     private Quantity<Frequency> scaledQuantity;
     private Quantity<Frequency> halfScaledQuantity;
 
@@ -48,6 +50,11 @@ public class ForwardsRateConstant extends AbstractFeature<Quantity<Frequency>> i
     @Override
     public Quantity<Frequency> getHalfScaledQuantity() {
         return halfScaledQuantity;
+    }
+
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
     }
 
 }

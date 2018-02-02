@@ -1,14 +1,13 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -33,9 +32,20 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        return Quantities.getQuantity(concentrations.keySet().stream()
-                .mapToDouble(identifier -> getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue())
-                .average().orElse(0.0), MOLE_PER_LITRE);
+        double sum = 0;
+        long count = 0;
+        for (CellSection identifier : concentrations.keySet()) {
+            double v = getAvailableConcentration(identifier, chemicalEntity).getValue().doubleValue();
+            sum += v;
+            count++;
+        }
+
+
+        if (count > 0) {
+            return Quantities.getQuantity(sum / count, EnvironmentalParameters.getTransformedMolarConcentration());
+        } else {
+            return EnvironmentalParameters.emptyConcentration();
+        }
     }
 
     @Override
@@ -49,7 +59,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
         if (!concentrations.containsKey(cellSection)) {
-            return Quantities.getQuantity(0.0, MOLE_PER_LITRE);
+            return EnvironmentalParameters.emptyConcentration();
         }
         return concentrations.get(cellSection).get(chemicalEntity);
     }

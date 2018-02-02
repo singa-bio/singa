@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -32,6 +33,8 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
      */
     public static final Unit<OsmoticPermeability> LITRE_PER_SECOND = new ProductUnit<>(METRE.divide(10).pow(3).divide(SECOND));
 
+    public static final String SYMBOL = "p_f";
+
     private Quantity<OsmoticPermeability> scaledQuantity;
     private Quantity<OsmoticPermeability> halfScaledQuantity;
 
@@ -43,7 +46,7 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(osmoticPermeabilityQuantity.to(LITRE_PER_SECOND), featureOrigin);
+        super(osmoticPermeabilityQuantity.to(new ProductUnit<>(EnvironmentalParameters.getTransformedVolume().divide(SECOND))), featureOrigin);
     }
 
     /**
@@ -55,7 +58,7 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(double osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND).to(LITRE_PER_SECOND), featureOrigin);
+        this(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
     }
 
     @Override
@@ -116,11 +119,11 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<OsmoticPermeability> scaledQuantity = getFeatureContent().to(new ProductUnit<>(METRE.divide(10).pow(3).divide(time.getUnit())));
+        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(EnvironmentalParameters.getTransformedVolume().divide(time.getUnit())));
         // transform to specified amount
-        this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
+        scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
         // and half
-        halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
+        halfScaledQuantity = transformedQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
     }
 
     @Override
@@ -133,4 +136,8 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
         return halfScaledQuantity;
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
@@ -12,8 +13,6 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.Set;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -60,7 +59,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         } else {
             value = 0.0;
         }
-        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     /**
@@ -86,7 +85,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         } else {
             value = 0.0;
         }
-        return new Delta(membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private double getSoluteDelta(MembraneContainer container) {
@@ -120,6 +119,8 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         return getCurrentCellSection().equals(container.getInnerPhaseSection());
     }
 
-
-
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+" ("+transporter.getName()+")";
+    }
 }

@@ -1,11 +1,10 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.features.units.UnitProvider;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -62,36 +61,32 @@ public class MembraneContainer implements ConcentrationContainer {
         if (outerPhase.containsKey(chemicalEntity)) {
             return outerPhase.get(chemicalEntity);
         }
-        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
-        outerPhase.put(chemicalEntity, quantity);
-        return quantity;
+        outerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getInnerPhaseConcentration(ChemicalEntity chemicalEntity) {
         if (innerPhase.containsKey(chemicalEntity)) {
             return innerPhase.get(chemicalEntity);
         }
-        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
-        innerPhase.put(chemicalEntity, quantity);
-        return quantity;
+        innerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getOuterMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
         if (outerLayer.containsKey(chemicalEntity)) {
             return outerLayer.get(chemicalEntity);
         }
-        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
-        outerLayer.put(chemicalEntity, quantity);
-        return quantity;
+        outerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getInnerMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
         if (innerLayer.containsKey(chemicalEntity)) {
             return innerLayer.get(chemicalEntity);
         }
-        final Quantity<MolarConcentration> quantity = Quantities.getQuantity(0.0, UnitProvider.MOLE_PER_LITRE);
-        innerLayer.put(chemicalEntity, quantity);
-        return quantity;
+        innerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        return EnvironmentalParameters.emptyConcentration();
     }
 
     @Override
@@ -134,7 +129,6 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public void setConcentration(ChemicalEntity chemicalEntity, Quantity<MolarConcentration> concentration) {
-
         outerPhase.put(chemicalEntity, concentration);
         outerLayer.put(chemicalEntity, concentration);
         innerLayer.put(chemicalEntity, concentration);

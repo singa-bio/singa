@@ -25,6 +25,7 @@ import static tec.uom.se.unit.Units.SECOND;
 public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity>, ScalableFeature<Quantity<Diffusivity>> {
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
+    public static final String SYMBOL = "D";
 
     private Quantity<Diffusivity> scaledQuantity;
     private Quantity<Diffusivity> halfScaledQuantity;
@@ -122,4 +123,8 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         return getFeatureContent().getUnit();
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

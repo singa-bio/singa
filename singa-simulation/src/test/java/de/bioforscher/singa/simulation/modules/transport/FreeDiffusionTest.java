@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
@@ -72,31 +73,32 @@ public class FreeDiffusionTest {
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                /* species, time step, number of nodes, expected result */
-                /* test different numbers of nodes (10, 20, 50)*/
-                /* 0 */ {hydrogen, 10, Quantities.getQuantity(167.2309, MICRO(SECOND))},
-                /* 1 */ {hydrogen, 20, Quantities.getQuantity(150.2405, MICRO(SECOND))},
-                /* 2 */ {hydrogen, 30, Quantities.getQuantity(145.1471, MICRO(SECOND))},
+                /* species, number of nodes (node distance), expected result */
+                /* test different numbers of nodes (10, 20, 30)*/
+                /* 0 */ {hydrogen, 10, Quantities.getQuantity(167.370, MICRO(SECOND))},
+                /* 1 */ {hydrogen, 20, Quantities.getQuantity(150.329, MICRO(SECOND))},
+                /* 2 */ {hydrogen, 30, Quantities.getQuantity(145.224, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 6 */ {ammonia, 30, Quantities.getQuantity(280.1091, MICRO(SECOND))},
-                /* 7 */ {benzene, 30, Quantities.getQuantity(585.9218, MICRO(SECOND))}
+                /* 3 */ {ammonia, 30, Quantities.getQuantity(280.206, MICRO(SECOND))},
+                /* 4 */ {benzene, 30, Quantities.getQuantity(586.206, MICRO(SECOND))}
         });
     }
 
     @Test
     public void shouldReachCorrectHalfLife() {
-        logger.info("Performing free diffusion test for {} with {} nodes ...", species.getName(), numberOfNodes);
+        logger.info("Performing free diffusion test for {} with {}x{} nodes ...", species.getName(), numberOfNodes, numberOfNodes);
         // setup and run simulation
         Simulation simulation = setUpSimulation(numberOfNodes, species);
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, numberOfNodes, species);
         // test results
-        assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1e-4);
+        assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1e-3);
     }
 
     private Simulation setUpSimulation(int numberOfNodes, Species species) {
+        // setup node distance to diameter
+        EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
-                numberOfNodes, numberOfNodes, boundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, boundingBox, false));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
@@ -105,10 +107,6 @@ public class FreeDiffusionTest {
                 node.setConcentration(species, 0.0);
             }
         }
-        // setup time step size as given
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10, NANO(SECOND)));
-        // setup node distance to diameter
-        EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup simulation
         Simulation simulation = new Simulation();
         // add graph
@@ -129,7 +127,7 @@ public class FreeDiffusionTest {
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(observedNodeIdentifier).getConcentration(species);
+            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(observedNodeIdentifier).getConcentration(species).to(MOLE_PER_LITRE);
             currentConcentration = concentration.getValue().doubleValue();
             //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }

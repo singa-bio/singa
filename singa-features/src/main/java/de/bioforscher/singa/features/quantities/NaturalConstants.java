@@ -16,6 +16,8 @@ import static tec.uom.se.unit.Units.*;
  */
 public class NaturalConstants {
 
+
+
     /**
      * The Boltzmann constant is the constant of proportionality that relates the average kinetic energy of particles in
      * a gas with the temperature of the gas.

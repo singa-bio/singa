@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -95,7 +96,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param concentration The concentration in mol/l.
      */
     public void setConcentration(ChemicalEntity entity, double concentration) {
-        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE));
+        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     /**

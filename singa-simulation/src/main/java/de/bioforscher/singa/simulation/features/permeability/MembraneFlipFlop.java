@@ -19,6 +19,8 @@ import static tec.uom.se.unit.Units.HERTZ;
  */
 public class MembraneFlipFlop extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
 
+    public static final String SYMBOL = "k_flip";
+
     private Quantity<Frequency> scaledQuantity;
     private Quantity<Frequency> halfScaledQuantity;
 
@@ -51,4 +53,8 @@ public class MembraneFlipFlop extends AbstractFeature<Quantity<Frequency>> imple
         return halfScaledQuantity;
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

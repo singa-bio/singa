@@ -7,7 +7,7 @@ import static de.bioforscher.singa.features.model.FeatureOrigin.OriginType.MANUA
  */
 public class FeatureOrigin {
 
-    public static final FeatureOrigin MANUALLY_ANNOTATED = new FeatureOrigin(MANUAL_ANNOTATION);
+    public static final FeatureOrigin MANUALLY_ANNOTATED = new FeatureOrigin(MANUAL_ANNOTATION, "manual", "none");
     private final OriginType originType;
     private final String name;
     private final String publication;

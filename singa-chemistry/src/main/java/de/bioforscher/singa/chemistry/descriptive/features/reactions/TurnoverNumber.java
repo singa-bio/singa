@@ -25,6 +25,7 @@ public class TurnoverNumber extends AbstractFeature<Quantity<Frequency>> impleme
 
     public static final Unit<Frequency> PER_SECOND = HERTZ;
     public static final Unit<Frequency> PER_MINUTE = new ProductUnit<>(ONE.divide(MINUTE));
+    public static final String SYMBOL = "k_cat";
 
     private Quantity<Frequency> scaledQuantity;
     private Quantity<Frequency> halfScaledQuantity;
@@ -56,6 +57,11 @@ public class TurnoverNumber extends AbstractFeature<Quantity<Frequency>> impleme
     @Override
     public Quantity<Frequency> getHalfScaledQuantity() {
         return halfScaledQuantity;
+    }
+
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
     }
 
 }

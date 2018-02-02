@@ -99,17 +99,17 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.0457, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
+                assertEquals(0.043, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
                 assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
+        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
         assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 

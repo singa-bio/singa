@@ -19,6 +19,8 @@ import static tec.uom.se.unit.Units.HERTZ;
  */
 public class MembraneEntry extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
 
+    public static final String SYMBOL = "k_in";
+
     private Quantity<Frequency> scaledQuantity;
     private Quantity<Frequency> halfScaledQuantity;
 
@@ -51,4 +53,8 @@ public class MembraneEntry extends AbstractFeature<Quantity<Frequency>> implemen
         return halfScaledQuantity;
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

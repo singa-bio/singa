@@ -12,8 +12,8 @@ import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 
 import java.util.*;
 

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -9,13 +10,10 @@ import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
 import de.bioforscher.singa.simulation.modules.reactions.model.KineticLaw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -42,7 +40,7 @@ public class DynamicKineticLaw implements KineticLaw {
 
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         entityReference.put(entity, parameterIdentifier);
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, EnvironmentalParameters.emptyConcentration()));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {

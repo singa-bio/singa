@@ -24,10 +24,11 @@ public class TimeStepHarmonizer {
     private LocalError largestLocalError;
     private boolean timeStepChanged;
 
-    public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
-        EnvironmentalParameters.setTimeStep(initialTimeStep);
+    public TimeStepHarmonizer(Simulation simulation) {
+        EnvironmentalParameters.setTimeStep(EnvironmentalParameters.getTimeStep());
         this.simulation = simulation;
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        timeStepChanged = true;
     }
 
     public boolean step() {
@@ -35,7 +36,9 @@ public class TimeStepHarmonizer {
         // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
         currentTimeStep = EnvironmentalParameters.getTimeStep();
-        rescaleParameters();
+        if (timeStepChanged) {
+            rescaleParameters();
+        }
         // request local error for each module
         executeAllModules();
         // optimize simulation for the largest local error
@@ -63,7 +66,7 @@ public class TimeStepHarmonizer {
         logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
-            logger.debug("Calculating deltas for Module {}", module.getClass().getSimpleName());
+            logger.debug("Calculating deltas for Module {}", module.toString());
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error
@@ -103,6 +106,10 @@ public class TimeStepHarmonizer {
         logger.debug("Optimized local error was {}.", localError);
     }
 
+    public LocalError getLargestLocalError() {
+        return largestLocalError;
+    }
+
     public void rescaleParameters() {
         for (ChemicalEntity<?> entity : simulation.getChemicalEntities()) {
             entity.scaleScalableFeatures();
@@ -118,19 +125,20 @@ public class TimeStepHarmonizer {
         logger.trace("Increasing time step for the next epoch.");
         EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(1.2));
         rescaleParameters();
+        timeStepChanged = true;
     }
 
     public void decreaseTimeStep() {
         logger.trace("Reducing time step and trying again.");
         EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(0.8));
         rescaleParameters();
+        timeStepChanged = true;
     }
 
     private boolean tryToDecreaseTimeStep(double localError) {
         // determine whether to increase or reduce time step size
         if (localError > epsilon) {
             decreaseTimeStep();
-            timeStepChanged = true;
             return true;
         }
         return false;

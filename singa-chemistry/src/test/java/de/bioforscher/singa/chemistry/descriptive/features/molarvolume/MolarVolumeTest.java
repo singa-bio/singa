@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.molarvolume;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
