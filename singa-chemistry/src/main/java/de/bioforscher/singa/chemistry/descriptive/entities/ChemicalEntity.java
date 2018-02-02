@@ -168,6 +168,25 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
                 '}';
     }
 
+    public String getStringForProtocol() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getSimpleName()).append(" summary:").append(System.lineSeparator())
+                .append("  ").append("identifier: ").append(getIdentifier()).append(System.lineSeparator())
+                .append("  ").append("name: ").append(getName()).append(System.lineSeparator())
+                .append("  ").append("features: ").append(System.lineSeparator());
+        Iterator<Feature<?>> iterator = features.getAllFeatures().iterator();
+        while (iterator.hasNext()) {
+            Feature<?> feature = iterator.next();
+            if (iterator.hasNext()) {
+                builder.append("    ").append(feature).append(System.lineSeparator());
+            } else {
+                builder.append("    ").append(feature);
+        }
+
+        }
+        return builder.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

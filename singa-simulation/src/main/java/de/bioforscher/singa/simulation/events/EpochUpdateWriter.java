@@ -2,8 +2,11 @@ package de.bioforscher.singa.simulation.events;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
+import de.bioforscher.singa.features.model.QuantityFormatter;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
+import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -32,6 +36,9 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     private final boolean printEntityInformation;
     private final Map<AutomatonNode, BufferedWriter> registeredWriters;
     private final List<ChemicalEntity<?>> observedEntities;
+
+    private QuantityFormatter<Time> timeFormatter = new QuantityFormatter<>(MILLI(SECOND), false);
+    private QuantityFormatter<MolarConcentration> concentrationFormatter = new QuantityFormatter<>(MOLE_PER_LITRE, false);
 
     public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve) {
         this(workspacePath, folder, entitiesToObserve, true);
@@ -128,14 +135,15 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append(event.getTime().to(MILLI(SECOND)).getValue()).append(SEPARATOR_CHARACTER);
+        sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
         int count = 0;
         for (ChemicalEntity entity : observedEntities) {
             if (count < observedEntities.size() - 1) {
-                sb.append(Double.toString(event.getNode().getAllConcentrations().get(entity).getValue().doubleValue()))
+                //TODO seperate values by compartments
+                sb.append(concentrationFormatter.format(event.getNode().getAllConcentrations().get(entity)))
                         .append(SEPARATOR_CHARACTER);
             } else {
-                sb.append(Double.toString(event.getNode().getAllConcentrations().get(entity).getValue().doubleValue()))
+                sb.append(concentrationFormatter.format(event.getNode().getAllConcentrations().get(entity)))
                         .append(LINEBREAK);
             }
             count++;

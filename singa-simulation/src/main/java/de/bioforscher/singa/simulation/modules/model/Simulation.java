@@ -1,11 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.core.events.UpdateEventEmitter;
-import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
-import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -21,7 +17,6 @@ import javax.measure.quantity.Time;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.SECOND;
@@ -55,16 +50,11 @@ import static tec.uom.se.unit.Units.SECOND;
  * up to a given epsilon. The method ({@link TimeStepHarmonizer#setEpsilon(double)}) sets the epsilon and the error
  * between two time steps will be kept below that threshold. Epsilons approaching 0 naturally result in very small time
  * steps and therefore long simulation times, at default epsilon is at 0.01. The time step will be optimized for each
- * epoch, resulting in many epochs for critical simulation regimes and large ones for stable regimes. <p> Changes in
- * simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. By setting {@link
- * AutomatonNode#setObserved(boolean)} to {@code true} the simulation emits {@link NodeUpdatedEvent} for every observed node
- * and every time step to every registered {@link UpdateEventListener} (to register a listener use {@link
- * Simulation#addEventListener(UpdateEventListener)} method). As a standard implementation there is the {@link
- * EpochUpdateWriter} that can be added to the Simulation that will write log files to the specified file locations.
+ * epoch, resulting in many epochs for critical simulation regimes and large ones for stable regimes. <p>
  *
  * @author cl
  */
-public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
+public class Simulation {
 
     /**
      * The logger.
@@ -78,10 +68,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      * The manager of time steps sizes.
      */
     private final TimeStepHarmonizer harmonizer;
-    /**
-     * Any registered listeners.
-     */
-    private final CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
     /**
      * The graph structure.
      */
@@ -113,7 +99,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     public Simulation() {
         modules = new HashSet<>();
         chemicalEntities = new HashSet<>();
-        listeners = new CopyOnWriteArrayList<>();
         elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
@@ -272,21 +257,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
 
     public void setEpsilon(double epsilon) {
         harmonizer.setEpsilon(epsilon);
-    }
-
-    /**
-     * Emits the {@link NodeUpdatedEvent} to all listeners.
-     *
-     * @param node The observed node.
-     */
-    public void emitNextEpochEvent(AutomatonNode node) {
-        NodeUpdatedEvent event = new NodeUpdatedEvent(elapsedTime, node);
-        emitEvent(event);
-    }
-
-    @Override
-    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
-        return listeners;
     }
 
 }

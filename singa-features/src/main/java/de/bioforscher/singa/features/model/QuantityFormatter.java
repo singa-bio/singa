@@ -13,19 +13,20 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
 
     private DecimalFormat valueFormat;
     private Unit<UnitType> targetUnit;
+    private boolean displayUnit;
 
-    public QuantityFormatter(DecimalFormat valueFormat, Unit<UnitType> targetUnit) {
+    public QuantityFormatter(DecimalFormat valueFormat, Unit<UnitType> targetUnit, boolean displayUnit) {
         this.valueFormat = valueFormat;
         this.targetUnit = targetUnit;
+        this.displayUnit = displayUnit;
     }
 
-    public QuantityFormatter(Unit<UnitType> targetUnit) {
-        this.valueFormat = DEFAULT_VALUE_FORMAT;
-        this.targetUnit = targetUnit;
+    public QuantityFormatter(Unit<UnitType> targetUnit, boolean displayUnit) {
+        this(DEFAULT_VALUE_FORMAT, targetUnit, displayUnit);
     }
 
     public String format(Quantity<UnitType> quantity) {
-        return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + " " + targetUnit.toString();
+        return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + (displayUnit ? " " + targetUnit.toString() : "");
     }
 
 }
