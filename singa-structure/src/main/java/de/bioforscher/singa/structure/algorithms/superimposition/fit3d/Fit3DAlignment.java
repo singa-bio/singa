@@ -75,7 +75,8 @@ public class Fit3DAlignment implements Fit3D {
             return;
         }
         // calculate squared motif extent
-        calculateMotifExtent();
+        squaredQueryExtent = Structures.calculateSquaredExtent(queryMotif);
+        logger.debug("the squared query motif extent is {}", squaredQueryExtent);
 
         // calculate squared distance matrix
         squaredDistanceMatrix = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(target.getAllLeafSubstructures(), LeafSubstructure::getPosition);
@@ -202,21 +203,6 @@ public class Fit3DAlignment implements Fit3D {
 
     public List<List<LeafSubstructure<?>>> getEnvironments() {
         return environments;
-    }
-
-    /**
-     * Determines the maximal spatial extent of the query motif, measured on the centroid of all atoms.
-     */
-    private void calculateMotifExtent() {
-        LabeledSymmetricMatrix<LeafSubstructure<?>> queryDistanceMatrix =
-                Structures.calculateSquaredDistanceMatrix(queryMotif);
-        // position of maximal element is always symmetric, hence we consider the first
-        Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix).stream()
-                .findFirst()
-                .orElseThrow(() -> new Fit3DException("could not determine extent of the query motif"));
-        squaredQueryExtent = queryDistanceMatrix.getElement(positionOfMaximalElement.getFirst(),
-                positionOfMaximalElement.getSecond());
-        logger.debug("the squared query motif extent is {}", squaredQueryExtent);
     }
 
     /**
