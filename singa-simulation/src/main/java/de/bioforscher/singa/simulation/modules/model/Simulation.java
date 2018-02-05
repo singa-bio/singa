@@ -10,9 +10,9 @@ import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.HashSet;
 import java.util.List;
@@ -91,7 +91,7 @@ public class Simulation {
     /**
      * The currently elapsed time.
      */
-    private Quantity<Time> elapsedTime;
+    private ComparableQuantity<Time> elapsedTime;
 
     /**
      * Creates a new plain simulation.
@@ -251,7 +251,7 @@ public class Simulation {
      *
      * @return The elapsed time after the deltas of the current epoch are applied.
      */
-    public Quantity<Time> getElapsedTime() {
+    public ComparableQuantity<Time> getElapsedTime() {
         return elapsedTime;
     }
 

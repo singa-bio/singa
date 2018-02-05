@@ -3,7 +3,9 @@ package de.bioforscher.singa.simulation.events;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.model.QuantityFormatter;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import javax.measure.quantity.Time;
@@ -11,7 +13,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
@@ -29,6 +30,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     private static final char COMMENT_CHARACTER = '#';
     private static final char SEPARATOR_CHARACTER = ',';
+    private static final char SECTION_SPACER = '.';
     private static final String LINEBREAK = System.getProperty("line.separator");
 
     private final Path workspacePath;
@@ -60,13 +62,14 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     public void addNodeToObserve(AutomatonNode node) throws IOException {
         Path file = createFile("node_" + node.getIdentifier() + ".csv");
-        BufferedWriter writer = Files.newBufferedWriter(file, StandardOpenOption.APPEND);
+        BufferedWriter writer = Files.newBufferedWriter(file, StandardOpenOption.CREATE);
         registeredWriters.put(node, writer);
+        node.setObserved(true);
         writeHeader(node);
     }
 
     private void createFolderStructure() {
-        Path workspaceFolder = Paths.get(workspacePath.toString(), folder.toString());
+        Path workspaceFolder = workspacePath.resolve(folder);
         try {
             if (!Files.exists(workspaceFolder)) {
                 Files.createDirectory(workspaceFolder);
@@ -77,7 +80,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     private Path createFile(String fileName) throws IOException {
-        Path file = Paths.get(workspacePath.toString(), folder.toString(), fileName);
+        Path file = workspacePath.resolve(folder).resolve(fileName);
         if (!Files.exists(file)) {
             Files.createFile(file);
         }
@@ -86,14 +89,14 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     private void writeHeader(AutomatonNode node) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append(COMMENT_CHARACTER)
-                .append(" Node ")
-                .append(node.getIdentifier())
-                .append(LINEBREAK);
         if (printEntityInformation) {
-            sb.append(prepareEntityInformation());
+            sb.append(COMMENT_CHARACTER)
+                    .append(" Node ")
+                    .append(node.getIdentifier())
+                    .append(LINEBREAK)
+                    .append(prepareEntityInformation());
         }
-        sb.append(prepareEntityHeader());
+        sb.append(prepareColumnHeader(node));
         appendContent(node, sb.toString());
     }
 
@@ -110,20 +113,27 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return sb.toString();
     }
 
-    private String prepareEntityHeader() {
+    private String prepareColumnHeader(AutomatonNode node) {
+        Set<CellSection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
-        sb.append("epoch")
-                .append(SEPARATOR_CHARACTER);
+        sb.append("elapsed time (").append(EnvironmentalParameters.getTimeStep().getUnit()).append(")").append(SEPARATOR_CHARACTER);
         int count = 0;
+        int size = observedEntities.size() * referencedSections.size() - 1;
         for (ChemicalEntity entity : observedEntities) {
-            if (count < observedEntities.size() - 1) {
-                sb.append(entity.getName())
-                        .append(SEPARATOR_CHARACTER);
-            } else {
-                sb.append(entity.getName())
-                        .append(LINEBREAK);
+            for (CellSection cellSection : referencedSections) {
+                if (count < size) {
+                    sb.append(entity.getIdentifier())
+                            .append(SECTION_SPACER)
+                            .append(cellSection.getIdentifier())
+                            .append(SEPARATOR_CHARACTER);
+                } else {
+                    sb.append(entity.getIdentifier())
+                            .append(SECTION_SPACER)
+                            .append(cellSection.getIdentifier()).
+                            append(LINEBREAK);
+                }
+                count++;
             }
-            count++;
         }
         return sb.toString();
     }
@@ -132,24 +142,38 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         registeredWriters.get(node).write(content);
     }
 
+    public void closeWriters() {
+        for (BufferedWriter bufferedWriter : registeredWriters.values()) {
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void onEventReceived(NodeUpdatedEvent event) {
+        AutomatonNode node = event.getNode();
+        Set<CellSection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
         int count = 0;
+        int size = observedEntities.size() * referencedSections.size() - 1;
         for (ChemicalEntity entity : observedEntities) {
-            if (count < observedEntities.size() - 1) {
-                //TODO seperate values by compartments
-                sb.append(concentrationFormatter.format(event.getNode().getAllConcentrations().get(entity)))
-                        .append(SEPARATOR_CHARACTER);
-            } else {
-                sb.append(concentrationFormatter.format(event.getNode().getAllConcentrations().get(entity)))
-                        .append(LINEBREAK);
+            for (CellSection cellSection : referencedSections) {
+                if (count < size) {
+                    sb.append(concentrationFormatter.format(node.getAvailableConcentration(entity, cellSection)))
+                            .append(SEPARATOR_CHARACTER);
+                } else {
+                    sb.append(concentrationFormatter.format(node.getAvailableConcentration(entity, cellSection)))
+                            .append(LINEBREAK);
+                }
+                count++;
             }
-            count++;
         }
         try {
-            appendContent(event.getNode(), sb.toString());
+            appendContent(node, sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

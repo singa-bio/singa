@@ -26,6 +26,9 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
     }
 
     public String format(Quantity<UnitType> quantity) {
+        if(quantity == null) {
+
+        }
         return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + (displayUnit ? " " + targetUnit.toString() : "");
     }
 
