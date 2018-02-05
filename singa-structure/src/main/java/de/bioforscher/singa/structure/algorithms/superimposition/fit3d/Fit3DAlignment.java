@@ -1,8 +1,10 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
+import de.bioforscher.singa.core.identifier.ECNumber;
+import de.bioforscher.singa.core.identifier.PfamIdentifier;
+import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
-import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
@@ -14,6 +16,9 @@ import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.model.oak.Structures;
+import de.bioforscher.singa.structure.parser.sifts.PDBEnzymeMapper;
+import de.bioforscher.singa.structure.parser.sifts.PDBPfamMapper;
+import de.bioforscher.singa.structure.parser.sifts.PDBUniProtMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +44,9 @@ public class Fit3DAlignment implements Fit3D {
     private final StatisticalModel statisticalModel;
     private final double rmsdCutoff;
     private final Predicate<Atom> atomFilter;
+    private final boolean mapEcNumbers;
+    private final boolean mapPfamIdentifiers;
+    private final boolean mapUniprotIdentifiers;
     private double squaredQueryExtent;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?>>> environments;
@@ -55,7 +63,9 @@ public class Fit3DAlignment implements Fit3D {
         atomFilter = builder.atomFilter;
         representationScheme = builder.representationScheme;
         statisticalModel = builder.statisticalModel;
-
+        mapUniprotIdentifiers = builder.mapUniprotIdentifiers;
+        mapPfamIdentifiers = builder.mapPfamIdentifiers;
+        mapEcNumbers = builder.mapEcNumbers;
         if (queryMotif.size() > target.getNumberOfLeafSubstructures()) {
             throw new Fit3DException("search target " + target + " must contain at least as many atom-containing substructures " +
                     "as the query motif");
@@ -85,6 +95,7 @@ public class Fit3DAlignment implements Fit3D {
         generateCandidates();
         computeMatches();
         calculateStatistics();
+        mapIdentifiers();
     }
 
     /**
@@ -104,6 +115,44 @@ public class Fit3DAlignment implements Fit3D {
                     ((FofanovEstimation) statisticalModel).incrementNs();
                 }
             }
+        }
+    }
+
+    /**
+     * Maps diverse identifiers if specified.
+     */
+    private void mapIdentifiers() {
+        if (mapUniprotIdentifiers || mapPfamIdentifiers || mapEcNumbers) {
+            logger.debug("mapping identifiers for matches: UniProt: {}, Pfam: {}, EC: {}", mapUniprotIdentifiers, mapPfamIdentifiers, mapEcNumbers);
+            matches.forEach(match -> {
+                String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getPdbIdentifier();
+                List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
+                        .map(LeafSubstructure::getChainIdentifier)
+                        .distinct()
+                        .collect(Collectors.toList());
+                Map<String, UniProtIdentifier> uniProtIdentifiers;
+                if (mapUniprotIdentifiers) {
+                    uniProtIdentifiers = PDBUniProtMapper.map(pdbIdentifier);
+                    uniProtIdentifiers.keySet().retainAll(chainIdentifiers);
+                    if (!uniProtIdentifiers.isEmpty()) {
+                        match.setUniProtIdentifiers(uniProtIdentifiers);
+                    }
+                }
+                if (mapPfamIdentifiers) {
+                    Map<String, PfamIdentifier> pfamIdentifiers = PDBPfamMapper.map(pdbIdentifier);
+                    pfamIdentifiers.keySet().retainAll(chainIdentifiers);
+                    if (!pfamIdentifiers.isEmpty()) {
+                        match.setPfamIdentifiers(pfamIdentifiers);
+                    }
+                }
+                if (mapEcNumbers) {
+                    Map<String, ECNumber> ecNumbers = PDBEnzymeMapper.map(pdbIdentifier);
+                    ecNumbers.keySet().retainAll(chainIdentifiers);
+                    if (!ecNumbers.isEmpty()) {
+                        match.setEcNumbers(ecNumbers);
+                    }
+                }
+            });
         }
     }
 

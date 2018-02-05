@@ -41,6 +41,9 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final boolean skipAlphaCarbonTargets;
     private final boolean skipBackboneTargets;
     private final StatisticalModel statisticalModel;
+    private final boolean mapUniprotIdentifiers;
+    private final boolean mapPfamIdentifiers;
+    private final boolean mapEcNumbers;
     private List<Fit3DMatch> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
@@ -55,6 +58,9 @@ public class Fit3DAlignmentBatch implements Fit3D {
         rmsdCutoff = builder.rmsdCutoff;
         distanceTolerance = builder.distanceTolerance;
         statisticalModel = builder.statisticalModel;
+        mapUniprotIdentifiers = builder.mapUniprotIdentifiers;
+        mapPfamIdentifiers = builder.mapPfamIdentifiers;
+        mapEcNumbers = builder.mapEcNumbers;
         logger.info("Fit3D alignment batch initialized with {} target structures", multiParser.getNumberOfQueuedStructures());
         computeAlignments();
         logger.info("found {} matches in {} target structures", allMatches.size(), multiParser.getNumberOfQueuedStructures());
@@ -141,25 +147,36 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     Model target = structure.getFirstModel();
                     logger.info("computing Fit3D alignment against {}", target);
                     // create Fit3DAlignment and decide between AtomFilter or RepresentationScheme
+                    Fit3DBuilder.ParameterStep parameterStep;
                     if (representationScheme == null) {
-                        fit3d = Fit3DBuilder.create()
+                        parameterStep = Fit3DBuilder.create()
                                 .query(queryMotif)
                                 .target(target)
                                 .atomFilter(atomFilter)
                                 .rmsdCutoff(rmsdCutoff)
                                 .distanceTolerance(distanceTolerance)
-                                .statisticalModel(statisticalModel)
-                                .run();
+                                .statisticalModel(statisticalModel);
                     } else {
-                        fit3d = Fit3DBuilder.create()
+                        parameterStep = Fit3DBuilder.create()
                                 .query(queryMotif)
                                 .target(target)
                                 .representationScheme(representationScheme.getType())
                                 .rmsdCutoff(rmsdCutoff)
                                 .distanceTolerance(distanceTolerance)
-                                .statisticalModel(statisticalModel)
-                                .run();
+                                .statisticalModel(statisticalModel);
                     }
+
+                    if (mapUniprotIdentifiers) {
+                        parameterStep.mapUniProtIdentifiers();
+                    }
+                    if (mapPfamIdentifiers) {
+                        parameterStep.mapPfamIdentifiers();
+                    }
+                    if (mapEcNumbers) {
+                        parameterStep.mapECNumbers();
+                    }
+                    fit3d = parameterStep.run();
+
                     return fit3d.getMatches();
 //                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
                 } catch (Exception e) {

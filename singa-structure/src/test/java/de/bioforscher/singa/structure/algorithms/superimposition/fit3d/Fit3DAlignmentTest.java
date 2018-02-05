@@ -10,8 +10,10 @@ import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.OakStructure;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.MultiParser;
 import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
 import de.bioforscher.singa.structure.parser.plip.PlipParser;
 import org.junit.Before;
@@ -21,8 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.structure.model.oak.StructuralEntityFilter.AtomFilter;
@@ -87,7 +88,7 @@ public class Fit3DAlignmentTest {
         List<Path> targetStructures = Files.list(
                 Paths.get(Resources.getResourceAsFileLocation("RF00167")))
                 .collect(Collectors.toList());
-        StructureParser.MultiParser multiParser = StructureParser.local()
+        MultiParser multiParser = StructureParser.local()
                 .paths(targetStructures)
                 .everything();
         Fit3D fit3dBatch = Fit3DBuilder.create()
@@ -244,7 +245,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("1zlg");
-        StructureParser.MultiParser multiParser = StructureParser.pdb()
+        MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -263,7 +264,7 @@ public class Fit3DAlignmentTest {
         queryMotif.addExchangeableFamilyToAll(MatcherFamily.ALL);
         List<String> alphaCarbonStructures = new ArrayList<>();
         alphaCarbonStructures.add("2plp");
-        StructureParser.MultiParser multiParser = StructureParser.pdb()
+        MultiParser multiParser = StructureParser.pdb()
                 .pdbIdentifiers(alphaCarbonStructures)
                 .everything();
         Fit3D fit3d = Fit3DBuilder.create().query(queryMotif)
@@ -351,5 +352,74 @@ public class Fit3DAlignmentTest {
                 .map(SubstructureSuperimposition::getStringRepresentation)
                 .filter(string -> string.contains("A-98B"))
                 .count() >= 1);
+    }
+
+    @Test
+    public void shouldAnnotateIdentifiers() {
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getAllChains().get(0))
+                .atomFilter(AtomFilter.isArbitrary())
+                .mapUniProtIdentifiers()
+                .mapPfamIdentifiers()
+                .mapECNumbers()
+                .run();
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getPfamIdentifiers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(pfamIdentifier -> pfamIdentifier.getIdentifier().equals("PF00089")));
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getUniProtIdentifiers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getIdentifier().equals("P00766")));
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getEcNumbers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.1")));
+    }
+
+    @Test
+    public void shouldAnnotateIdentifiersInBatch() {
+        MultiParser multiParser = StructureParser.mmtf()
+                .chainList(Paths.get(Resources.getResourceAsFileLocation("chain_list_PF00089.txt")), "\t");
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .targets(multiParser)
+                .maximalParallelism()
+                .atomFilter(StructuralEntityFilter.AtomFilter.isArbitrary())
+                .mapUniProtIdentifiers()
+                .mapPfamIdentifiers()
+                .mapECNumbers()
+                .run();
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getPfamIdentifiers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(pfamIdentifier -> pfamIdentifier.getIdentifier().equals("PF00089")));
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getUniProtIdentifiers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(uniProtIdentifier -> uniProtIdentifier.getIdentifier().equals("Q9EXR9")));
+        assertTrue(fit3d.getMatches().stream()
+                .map(Fit3DMatch::getEcNumbers)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
     }
 }

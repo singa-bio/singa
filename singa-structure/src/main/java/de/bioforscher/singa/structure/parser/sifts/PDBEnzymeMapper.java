@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.core.identifier.ECNumber;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
 
 import java.io.BufferedReader;
@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @author cl
+ * @author fk
  */
-public class PDBUniProtMapper extends AbstractHTMLParser<Map<String, UniProtIdentifier>> {
+public class PDBEnzymeMapper extends AbstractHTMLParser<Map<String, ECNumber>> {
 
-    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_uniprot.tsv.gz";
+    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_enzyme.tsv.gz";
     private static List<String> mappingStrings;
 
-    private static PDBUniProtMapper pdbUniProtMapper;
+    private static PDBEnzymeMapper pdbUniProtMapper;
 
     private String currentPDBIdentifier;
 
-    private PDBUniProtMapper() {
+    private PDBEnzymeMapper() {
         setResource(MAP_URL);
         fetchResource();
         try {
@@ -39,28 +39,28 @@ public class PDBUniProtMapper extends AbstractHTMLParser<Map<String, UniProtIden
         }
     }
 
-    private static PDBUniProtMapper getInstance() {
+    private static PDBEnzymeMapper getInstance() {
         if (pdbUniProtMapper == null) {
-            pdbUniProtMapper = new PDBUniProtMapper();
+            pdbUniProtMapper = new PDBEnzymeMapper();
         }
         return pdbUniProtMapper;
     }
 
-    public static Map<String, UniProtIdentifier> map(String pdbIdentifier) {
+    public static Map<String, ECNumber> map(String pdbIdentifier) {
         getInstance().currentPDBIdentifier = pdbIdentifier;
         return getInstance().parse();
     }
 
     @Override
-    public Map<String, UniProtIdentifier> parse() {
-        Map<String, UniProtIdentifier> result = new HashMap<>();
-        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t(\\w*)\\t.*$");
+    public Map<String, ECNumber> parse() {
+        Map<String, ECNumber> result = new HashMap<>();
+        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t\\w*\\t.*$");
         for (String mappingString : mappingStrings) {
             Matcher matcher = pattern.matcher(mappingString);
             if (matcher.matches()) {
                 String chain = matcher.group(1);
-                String uniProtIdentifier = matcher.group(2);
-                result.put(chain, new UniProtIdentifier(uniProtIdentifier));
+                String ecNumber = mappingString.split("\t")[3];
+                result.put(chain, new ECNumber(ecNumber));
             }
         }
         return result;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.core.identifier.PfamIdentifier;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
 
 import java.io.BufferedReader;
@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @author cl
+ * @author fk
  */
-public class PDBUniProtMapper extends AbstractHTMLParser<Map<String, UniProtIdentifier>> {
+public class PDBPfamMapper extends AbstractHTMLParser<Map<String, PfamIdentifier>> {
 
-    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_uniprot.tsv.gz";
+    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_pfam.tsv.gz";
     private static List<String> mappingStrings;
 
-    private static PDBUniProtMapper pdbUniProtMapper;
+    private static PDBPfamMapper pdbPfamMapper;
 
     private String currentPDBIdentifier;
 
-    private PDBUniProtMapper() {
+    private PDBPfamMapper() {
         setResource(MAP_URL);
         fetchResource();
         try {
@@ -39,28 +39,28 @@ public class PDBUniProtMapper extends AbstractHTMLParser<Map<String, UniProtIden
         }
     }
 
-    private static PDBUniProtMapper getInstance() {
-        if (pdbUniProtMapper == null) {
-            pdbUniProtMapper = new PDBUniProtMapper();
+    private static PDBPfamMapper getInstance() {
+        if (pdbPfamMapper == null) {
+            pdbPfamMapper = new PDBPfamMapper();
         }
-        return pdbUniProtMapper;
+        return pdbPfamMapper;
     }
 
-    public static Map<String, UniProtIdentifier> map(String pdbIdentifier) {
+    public static Map<String, PfamIdentifier> map(String pdbIdentifier) {
         getInstance().currentPDBIdentifier = pdbIdentifier;
         return getInstance().parse();
     }
 
     @Override
-    public Map<String, UniProtIdentifier> parse() {
-        Map<String, UniProtIdentifier> result = new HashMap<>();
-        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t(\\w*)\\t.*$");
+    public Map<String, PfamIdentifier> parse() {
+        Map<String, PfamIdentifier> result = new HashMap<>();
+        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t\\w*\\t(\\w*)$");
         for (String mappingString : mappingStrings) {
             Matcher matcher = pattern.matcher(mappingString);
             if (matcher.matches()) {
                 String chain = matcher.group(1);
-                String uniProtIdentifier = matcher.group(2);
-                result.put(chain, new UniProtIdentifier(uniProtIdentifier));
+                String pfamIdentifier = matcher.group(2);
+                result.put(chain, new PfamIdentifier(pfamIdentifier));
             }
         }
         return result;

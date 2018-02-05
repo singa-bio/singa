@@ -18,4 +18,41 @@ public interface PfamToken {
     default String extract(String line) {
         return extractValueFromPfamLine(line, this);
     }
+
+    enum PDBToken implements PfamToken {
+
+        PDB_IDENTIFIER(2),
+        CHAIN_IDENTIFIER(5),
+        PDB_RESIDUE_START(10),
+        PDB_RESIDUE_END(11);
+
+        private final int column;
+
+        PDBToken(int column) {
+            this.column = column;
+        }
+
+        @Override
+        public int getColumn() {
+            return column;
+
+        }
+    }
+
+    enum IdentifierToken implements PfamToken {
+
+        PFAM_IDENTIFIER(3),
+        UNIPROT_IDENTIFIER(4);
+
+        private final int column;
+
+        IdentifierToken(int column) {
+            this.column = column;
+        }
+
+        @Override
+        public int getColumn() {
+            return column;
+        }
+    }
 }
