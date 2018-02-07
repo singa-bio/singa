@@ -5,6 +5,7 @@ import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Before;
@@ -39,7 +40,7 @@ public class Fit3DMatchTest {
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
@@ -60,5 +61,39 @@ public class Fit3DMatchTest {
         File summaryFile = testFolder.newFile("summary.csv");
         fit3d.writeSummaryFile(summaryFile.toPath());
         assertTrue(summaryFile.exists());
+    }
+
+    @Test
+    public void shouldAssembleCandidateStructuralMotif() {
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getCandidateMotif)
+                .count());
+    }
+
+    @Test
+    public void shouldDetermineAlignedSequence(){
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getAlignedSequence)
+                .count());
+    }
+
+    @Test
+    public void shouldDetermineType(){
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getMatchType)
+                .peek(System.out::println)
+                .count());
     }
 }

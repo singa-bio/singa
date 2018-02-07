@@ -5,10 +5,12 @@ import de.bioforscher.singa.core.identifier.ECNumber;
 import de.bioforscher.singa.core.identifier.PfamIdentifier;
 import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
+import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * A data object encapsulating a match of the {@link Fit3D} algorithms.
@@ -22,14 +24,19 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     private final SubstructureSuperimposition substructureSuperimposition;
     private final double rmsd;
     private double pvalue;
+    private StructuralMotif candidateMotif;
+    private StructuralMotif.Type matchType;
     private Map<String, UniProtIdentifier> uniProtIdentifiers;
     private Map<String, PfamIdentifier> pfamIdentifiers;
     private Map<String, ECNumber> ecNumbers;
+    private String alignedSequence;
+    private String title;
 
     private Fit3DMatch(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
         this.rmsd = rmsd;
         this.substructureSuperimposition = substructureSuperimposition;
         this.pvalue = pvalue;
+        analyzeMatch();
     }
 
     public static Fit3DMatch of(double rmsd) {
@@ -42,6 +49,26 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
     public static Fit3DMatch of(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
         return new Fit3DMatch(rmsd, substructureSuperimposition, pvalue);
+    }
+
+    private void analyzeMatch() {
+        alignedSequence = substructureSuperimposition.getMappedCandidate().stream()
+                .map(leafSubstructure -> leafSubstructure.getFamily().getOneLetterCode())
+                .collect(Collectors.joining(""));
+        candidateMotif = StructuralMotif.fromLeafSubstructures(substructureSuperimposition.getMappedFullCandidate());
+        matchType = StructuralMotif.Type.determine(candidateMotif);
+    }
+
+    public String getAlignedSequence() {
+        return alignedSequence;
+    }
+
+    public StructuralMotif getCandidateMotif() {
+        return candidateMotif;
+    }
+
+    public StructuralMotif.Type getMatchType() {
+        return matchType;
     }
 
     public Optional<Map<String, UniProtIdentifier>> getUniProtIdentifiers() {

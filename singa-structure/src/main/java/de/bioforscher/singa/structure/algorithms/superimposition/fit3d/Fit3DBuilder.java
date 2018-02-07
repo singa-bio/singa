@@ -275,6 +275,13 @@ public class Fit3DBuilder {
          */
         ParameterStep mapECNumbers();
 
+        /**
+         * Enables pre-filtering of extracted environments, i.e. each pair of residues has to have a compatible pair
+         * in the environment within distance cutoff.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep filterEnvironments();
     }
 
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
@@ -300,6 +307,7 @@ public class Fit3DBuilder {
         boolean mapUniprotIdentifiers;
         boolean mapPfamIdentifiers;
         boolean mapEcNumbers;
+        boolean filterEnvironments;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -423,6 +431,12 @@ public class Fit3DBuilder {
         @Override
         public ParameterStep mapECNumbers() {
             mapEcNumbers = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep filterEnvironments() {
+            filterEnvironments = true;
             return this;
         }
 

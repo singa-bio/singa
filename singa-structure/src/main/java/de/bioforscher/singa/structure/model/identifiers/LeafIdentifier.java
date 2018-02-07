@@ -1,5 +1,7 @@
 package de.bioforscher.singa.structure.model.identifiers;
 
+import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
+
 import java.util.Comparator;
 
 /**
@@ -59,11 +61,11 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
      * Constructs a {@link LeafIdentifier} from the given simple string. Only chain-ID, residue number and optional
      * insertion code is required.
      *
-     * @param identifier The identifier in string format (e.g. A-62 or A-62B).
+     * @param simpleString The identifier in string format (e.g. A-62 or A-62B).
      * @return The {@link LeafIdentifier}.
      */
-    public static LeafIdentifier fromString(String identifier) {
-        String[] split = identifier.split("-");
+    public static LeafIdentifier fromSimpleString(String simpleString) {
+        String[] split = simpleString.split("-");
         // decide whether insertion code was specified
         String firstPart = split[0];
         String secondPart = split[1];
@@ -102,6 +104,14 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     @Override
     public String toString() {
         return pdbIdentifer + "-" + modelIdentifer + "-" + chainIdentifer + "-" + serial + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
+    }
+
+    /**
+     * Returns a simple version of this {@link LeafIdentifier} (e.g. A-62 or A-62B).
+     * @return The simple string version.
+     */
+    public String toSimpleString(){
+        return chainIdentifer + "-" + serial + (insertionCode != DEFAULT_INSERTION_CODE ? insertionCode : "");
     }
 
     @Override
