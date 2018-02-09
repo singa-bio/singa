@@ -182,7 +182,10 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     }
                     fit3d = parameterStep.run();
 
-                    return fit3d.getMatches();
+                    List<Fit3DMatch> matches = fit3d.getMatches();
+                    matches.forEach(match -> match.setStructureTitle(structure.getTitle()));
+
+                    return matches;
 //                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
                 } catch (Exception e) {
                     logger.warn("failed to run Fit3D", e);

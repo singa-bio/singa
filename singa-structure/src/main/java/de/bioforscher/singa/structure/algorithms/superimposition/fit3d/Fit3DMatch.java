@@ -31,6 +31,7 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     private Map<String, ECNumber> ecNumbers;
     private String alignedSequence;
     private String title;
+    private String structureTitle;
 
     private Fit3DMatch(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
         this.rmsd = rmsd;
@@ -93,6 +94,14 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
     void setEcNumbers(Map<String, ECNumber> ecNumbers) {
         this.ecNumbers = ecNumbers;
+    }
+
+    public String getStructureTitle() {
+        return structureTitle;
+    }
+
+    void setStructureTitle(String structureTitle) {
+        this.structureTitle = structureTitle;
     }
 
     @Override

@@ -17,6 +17,7 @@ import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistic
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.sifts.PDBEnzymeMapper;
 import de.bioforscher.singa.structure.parser.sifts.PDBPfamMapper;
@@ -177,6 +178,10 @@ public class Fit3DAlignment implements Fit3D {
                     }
                 }
             });
+            // annotate title if original target was a structure
+            if (target instanceof Structure) {
+                matches.forEach(match -> match.setStructureTitle(((Structure) target).getTitle()));
+            }
         }
     }
 
