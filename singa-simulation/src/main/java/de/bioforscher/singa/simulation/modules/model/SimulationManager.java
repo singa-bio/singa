@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.core.events.UpdateEventListener;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.*;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -8,6 +9,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.uom.se.ComparableQuantity;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -33,8 +36,8 @@ public class SimulationManager extends Task<Simulation> {
     private NodeEventEmitter nodeEventEmitter;
     private GraphEventEmitter graphEventEmitter;
 
-    private int skips;
     private long nextTick = System.currentTimeMillis();
+    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
 
 
     public SimulationManager(Simulation simulation) {
@@ -64,28 +67,37 @@ public class SimulationManager extends Task<Simulation> {
         this.terminationCondition = terminationCondition;
     }
 
-    public void setSimulationTime(Quantity<Time> time) {
+    public void setSimulationTerminationToTime(Quantity<Time> time) {
         setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
     }
 
-    public void setSimulationEpochs(long epochs) {
+    public void setSimulationTerminationToEpochs(long epochs) {
         setTerminationCondition(s -> s.getEpoch() < epochs);
     }
 
-    public void setEmitCondition(Predicate<Simulation> emitCondition) {
+    public void setUpdateEmissionCondition(Predicate<Simulation> emitCondition) {
         this.emitCondition = emitCondition;
     }
 
-    public void setEmitToFPS(int fps) {
+    public void setUpdateEmissionToFPS(int fps) {
         int skipTicks = 1000 / fps;
         emitCondition = s -> {
             long currentMillis = System.currentTimeMillis();
             if (currentMillis > nextTick) {
                 nextTick = currentMillis + skipTicks;
-                skips = 0;
                 return true;
             }
-            skips++;
+            return false;
+        };
+    }
+
+    public void setUpdateEmissionToTimePassed(Quantity<Time> timePassed) {
+        emitCondition = s -> {
+            ComparableQuantity<Time> currentTime = s.getElapsedTime();
+            if (currentTime.isGreaterThan(scheduledEmitTime)) {
+                scheduledEmitTime = currentTime.add(timePassed);
+                return true;
+            }
             return false;
         };
     }

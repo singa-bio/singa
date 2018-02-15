@@ -18,9 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.SECOND;
-
 /**
  * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
  * Each simulation requires a {@link AutomatonGraph}, a set of {@link Module}s and a set of {@link ChemicalEntity}s.
@@ -99,7 +96,7 @@ public class Simulation {
     public Simulation() {
         modules = new HashSet<>();
         chemicalEntities = new HashSet<>();
-        elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
+        elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
     }
