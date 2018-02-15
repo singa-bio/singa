@@ -5,13 +5,13 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
-import static tec.units.ri.AbstractUnit.ONE;
+import static tec.uom.se.AbstractUnit.ONE;
 
 /**
  * @author cl
@@ -40,8 +40,8 @@ public class YoungCorrelation implements Correlation<Diffusivity> {
         final double molarMass = featureable.getFeature(MolarMass.class).getValue().doubleValue();
         // D = coefficient * (T/n*M^1/3)
         final double diffusivity = YOUNG_COEFFICIENT.getValue().doubleValue()
-                * (EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue()
-                / (EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
+                * (EnvironmentalParameters.getTemperature().getValue().doubleValue()
+                / (EnvironmentalParameters.getViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, SQUARE_CENTIMETER_PER_SECOND);
         return new Diffusivity(quantity, origin);
     }

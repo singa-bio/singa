@@ -1,25 +1,28 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import tec.units.ri.quantity.Quantities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-
 /**
  * @author cl
  */
 public abstract class AbstractNeighbourDependentModule extends AbstractModule {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
 
     private final Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
@@ -54,8 +57,8 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
         // half step deltas
         halfTime = true;
         for (Map.Entry<AutomatonNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
-            currentNode = entry.getKey();
-            determineHalfStepDeltas(entry.getValue());
+           currentNode = entry.getKey();
+           determineHalfStepDeltas(entry.getValue());
         }
 
         // examine local errors
@@ -70,6 +73,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     public void determineFullDeltas(ConcentrationContainer concentrationContainer) {
+        logger.trace("Determining full deltas for node {}.", currentNode.getIdentifier());
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
@@ -79,6 +83,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                     if (entry.getValue().test(concentrationContainer)) {
                         Delta fullDelta = entry.getKey().apply(concentrationContainer);
                         if (fullDelta.getQuantity().getValue().doubleValue() != 0.0) {
+                            logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                             currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
                         }
                     }
@@ -88,6 +93,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     private void determineHalfStepDeltas(ConcentrationContainer concentrationContainer) {
+        logger.trace("Determining half deltas for node {}.", currentNode.getIdentifier());
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
@@ -97,6 +103,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                     if (entry.getValue().test(concentrationContainer)) {
                         Delta halfDelta = entry.getKey().apply(concentrationContainer).multiply(2.0);
                         if (halfDelta.getQuantity().getValue().doubleValue() != 0.0) {
+                            logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), halfDelta.getQuantity());
                             currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
                         }
                         // and register potential deltas at node
@@ -112,16 +119,16 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
             DeltaIdentifier key = entry.getKey();
             Delta value = entry.getValue();
             // determine half step deltas
-            final double fullConcentration = key.getNode().getAvailableConcentration(key.getEntity(), key.getSection()).getValue().doubleValue();
-            final double halfStepConcentration = fullConcentration + 0.5 * value.getQuantity().getValue().doubleValue();
+            Quantity<MolarConcentration> fullConcentration = key.getNode().getAvailableConcentration(key.getEntity(), key.getSection());
+            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(2.0));
             ConcentrationContainer halfConcentration;
             if (!halfConcentrations.containsKey(key.getNode())) {
                 halfConcentration = key.getNode().getConcentrationContainer().getCopy();
-                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
+                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), halfStepConcentration);
                 halfConcentrations.put(key.getNode(), halfConcentration);
             } else {
                 halfConcentration = halfConcentrations.get(key.getNode());
-                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), Quantities.getQuantity(halfStepConcentration, MOLE_PER_LITRE));
+                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), halfStepConcentration);
             }
         }
     }

@@ -13,8 +13,15 @@ import javax.measure.Quantity;
  */
 public class MichaelisConstant extends AbstractFeature<Quantity<MolarConcentration>> {
 
+    public static final String SYMBOL = "k_m";
+
     public MichaelisConstant(Quantity<MolarConcentration> molarConcentrationQuantity, FeatureOrigin featureOrigin) {
         super(molarConcentrationQuantity, featureOrigin);
+    }
+
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
     }
 
 }

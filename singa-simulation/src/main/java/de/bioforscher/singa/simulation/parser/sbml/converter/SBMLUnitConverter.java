@@ -5,14 +5,14 @@ import org.sbml.jsbml.ListOf;
 import org.sbml.jsbml.UnitDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Unit;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tec.units.ri.AbstractUnit.ONE;
-import static tec.units.ri.unit.Units.*;
+import static tec.uom.se.AbstractUnit.ONE;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * Converts JSBML Units to UnitsOfMeasurement Units.

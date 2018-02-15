@@ -8,13 +8,15 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
  */
 public class AppliedScale extends AbstractFeature<Double> implements ScalableFeature<Double> {
+
+    public static final String SYMBOL = "scale";
 
     private Double scaledQuantity;
     private Double halfScaledQuantity;
@@ -55,4 +57,8 @@ public class AppliedScale extends AbstractFeature<Double> implements ScalableFea
         return halfScaledQuantity;
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

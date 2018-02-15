@@ -3,17 +3,16 @@ package de.bioforscher.singa.simulation.parser.graphs;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.HashMap;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Currently supports parsing nodes and connecting them with the given edges.
@@ -53,7 +52,7 @@ public class GraphMLContentHandler implements ContentHandler {
         // chemical entities
         if (tag.startsWith("CHEBI")) {
             Double value = Double.parseDouble(new String(ch, start, length));
-            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
+            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
         }
     }
 

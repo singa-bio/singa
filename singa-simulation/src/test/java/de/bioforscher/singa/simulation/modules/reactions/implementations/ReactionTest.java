@@ -19,7 +19,7 @@ import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -30,8 +30,8 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -99,17 +99,17 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.0457, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
+                assertEquals(0.043, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
                 assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
+        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
         assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 

@@ -5,13 +5,13 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameterDefaults.MOLAR_MASS_OF_WATER;
-import static tec.units.ri.AbstractUnit.ONE;
+import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.MOLAR_MASS_OF_WATER;
+import static tec.uom.se.AbstractUnit.ONE;
 
 /**
  * @author cl
@@ -57,9 +57,9 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
         // a = coefficient * (x * M(H2O))^0.5 * T
         final double dividend = WILKE_COEFFICIENT.getValue().doubleValue()
                 * Math.pow(MOLAR_MASS_OF_WATER * WILKE_ASSOCIATION_WATER.getValue().doubleValue(), 0.5)
-                * EnvironmentalParameters.getInstance().getSystemTemperature().getValue().doubleValue();
+                * EnvironmentalParameters.getTemperature().getValue().doubleValue();
         // b = n * M(Sp)^0.6
-        final double divisor = EnvironmentalParameters.getInstance().getSystemViscosity().getValue().doubleValue()
+        final double divisor = EnvironmentalParameters.getViscosity().getValue().doubleValue()
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
         final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETER_PER_SECOND);

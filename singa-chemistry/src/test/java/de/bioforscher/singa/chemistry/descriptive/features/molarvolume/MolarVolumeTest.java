@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.molarvolume;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +21,6 @@ public class MolarVolumeTest {
         // Species benzene = ChEBIParserService.parse("CHEBI:16716");
         // Species biphenyl = ChEBIParserService.parse("CHEBI:17097");
 
-        ammonia.setFeature(MolarVolume.class);
         final MolarVolume ammoniaFeature = ammonia.getFeature(MolarVolume.class);
         assertEquals(21.91, ammoniaFeature.getValue().doubleValue(), 2.0);
 

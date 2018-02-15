@@ -6,16 +6,15 @@ import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.modules.model.AbstractSectionSpecificModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * A chemical reaction is a process that leads to the transformation of one set of chemical substances to another.
@@ -107,7 +106,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
                 deltaValue = velocity * reactant.getStoichiometricNumber();
 
             }
-            deltas.add(new Delta(getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, MOLE_PER_LITRE)));
+            deltas.add(new Delta(getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, EnvironmentalParameters.getTransformedMolarConcentration())));
         }
         return deltas;
     }

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
@@ -10,12 +11,10 @@ import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -50,7 +49,7 @@ public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule
         MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         final double value = -kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
@@ -69,7 +68,7 @@ public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule
         final double value = kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getOuterLayerSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getOuterLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
@@ -88,7 +87,7 @@ public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule
         final double value = kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getInnerLayerSection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getInnerLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
@@ -105,7 +104,7 @@ public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule
         MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         final double value = -kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(getCurrentChemicalEntity()).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(getCurrentChemicalEntity()).getValue().doubleValue();
-        return new Delta(membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, MOLE_PER_LITRE));
+        return new Delta(membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
 }

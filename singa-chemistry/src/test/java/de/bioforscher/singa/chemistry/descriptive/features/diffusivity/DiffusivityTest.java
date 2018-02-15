@@ -4,14 +4,14 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
 import static org.junit.Assert.assertEquals;
-import static tec.units.ri.unit.MetricPrefix.CENTI;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.CENTI;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -22,11 +22,8 @@ public class DiffusivityTest {
     public void shouldResolveRequiredFeature() {
         Species testSpecies = new Species.Builder("CHEBI:29802")
                 .build();
-        // assign feature
-        // this also needs to resolve the molar mass feature
-        testSpecies.setFeature(Diffusivity.class);
-        // get features
         Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
+        // this also needs to resolve the molar mass feature
         MolarMass molarMass = testSpecies.getFeature(MolarMass.class);
         assertEquals(7.889770977995664E-6, diffusivity.getValue().doubleValue(), 0.0);
         assertEquals(108.0104, molarMass.getValue().doubleValue(), 0.0);
@@ -37,8 +34,6 @@ public class DiffusivityTest {
         Species testSpecies = new Species.Builder("light entity")
                 .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
-        // assign feature
-        testSpecies.setFeature(Diffusivity.class);
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values
@@ -52,8 +47,6 @@ public class DiffusivityTest {
         Species testSpecies = new Species.Builder("heavy entity")
                 .assignFeature(new MolarMass(10000, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
-        // assign feature
-        testSpecies.setFeature(Diffusivity.class);
         // get feature
         Diffusivity feature = testSpecies.getFeature(Diffusivity.class);
         // assert attributes and values

@@ -33,7 +33,7 @@ import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -46,10 +46,10 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.MetricPrefix.NANO;
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
@@ -69,6 +69,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createDecompositionReactionExample() {
+        // setup time step size
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -83,9 +85,6 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
         graph.initializeSpeciesWithConcentration(nitrogenDioxide, 0.0);
         graph.initializeSpeciesWithConcentration(oxygen, 0.0);
-
-        // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
@@ -110,6 +109,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createSynthesisReactionExample() {
+        // setup time step size
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -122,9 +123,6 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
         graph.initializeSpeciesWithConcentration(octatriene, 0.0);
-
-        // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // create reaction
         NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.614, PER_SECOND));
@@ -149,6 +147,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createEquilibriumReactionExample() {
+        // setup time step size
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
 
@@ -167,9 +167,6 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
         graph.initializeSpeciesWithConcentration(speciesB, 0.0);
-
-        // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
 
         // create reaction
         EquilibriumReaction reaction = new EquilibriumReaction(simulation, Quantities.getQuantity(10, PER_SECOND),
@@ -197,7 +194,8 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createMichaelisMentenReactionExample() {
-
+        // setup time step size
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -210,7 +208,7 @@ public class SimulationExamples {
                 .name("Fructose-bisphosphate aldolase")
                 .addSubstrate(fructosePhosphate)
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()), MANUALLY_ANNOTATED))
                 .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
@@ -222,9 +220,6 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(aldolase, 0.2);
         graph.initializeSpeciesWithConcentration(glyceronePhosphate, 0.0);
         graph.initializeSpeciesWithConcentration(glyceraldehyde, 0.0);
-
-        // setup time step size
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // create reaction using the properties of the enzyme
         MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
@@ -250,6 +245,11 @@ public class SimulationExamples {
      * @return The ready to go simulation.
      */
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
+
+        // setup time step size as given
+        EnvironmentalParameters.setTimeStep(timeStep);
+        // setup node distance to diameter / (numberOfNodes - 1)
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // get required species
         Species methanol = ChEBIParserService.parse("CHEBI:17790");
@@ -279,12 +279,6 @@ public class SimulationExamples {
             }
         }
 
-        // setup time step size as given
-        EnvironmentalParameters.getInstance().setTimeStep(timeStep);
-        // setup node distance to diameter / (numberOfNodes - 1)
-        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
-
         // setup simulation
         Simulation simulation = new Simulation();
         // add graph
@@ -304,8 +298,13 @@ public class SimulationExamples {
      */
     public static Simulation createIodineMultiReactionExample() {
 
+        // setup time step size
+        logger.debug("Adjusting time step size ... ");
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+
         // setup simulation
         Simulation simulation = new Simulation();
+
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
         logger.debug("Importing species ...");
@@ -334,9 +333,7 @@ public class SimulationExamples {
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         graph.getNode(0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
-        // setup time step size
-        logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+
 
         logger.debug("Composing simulation ... ");
 
@@ -384,6 +381,11 @@ public class SimulationExamples {
     }
 
     public static Simulation createSimulationFromSBML() {
+
+        // setup time step size
+        logger.debug("Adjusting time step size ... ");
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
+
         // setup simulation
         Simulation simulation = new Simulation();
         // BIOMD0000000023
@@ -408,9 +410,7 @@ public class SimulationExamples {
             bioNode.setConcentration(entity, value);
         });
 
-        // setup time step size
-        logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(1.0, SECOND));
+
 
         // add graph
         simulation.setGraph(graph);
@@ -425,7 +425,6 @@ public class SimulationExamples {
     }
 
     public static Simulation createCompartmentTestEnvironment() {
-
         logger.info("Setting up Compartment Test Example ...");
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
@@ -445,7 +444,14 @@ public class SimulationExamples {
         logger.info("Setting up the passive membrane diffusion example ...");
         // get required species
         logger.debug("Importing species ...");
-
+        // setup time step size as given
+        logger.debug("Adjusting time step size ... ");
+        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
+        // setup rectangular graph with number of nodes
+        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
+        // setup node distance to diameter
+        logger.debug("Adjusting spatial step size ... ");
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
         // all species
         Set<Species> allSpecies = new HashSet<>();
         // Domperidone
@@ -473,14 +479,12 @@ public class SimulationExamples {
         desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
         allSpecies.add(desipramine);
 
-        // setup rectangular graph with number of nodes
-        logger.debug("Setting up example graph ...");
-        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
 
+        logger.debug("Setting up example graph ...");
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
         AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, right, left);
 
         // set concentrations
@@ -496,14 +500,6 @@ public class SimulationExamples {
                 }
             }
         }
-
-        // setup time step size as given
-        logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.getInstance().setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
-        // setup node distance to diameter
-        logger.debug("Adjusting spatial step size ... ");
-        EnvironmentalParameters.getInstance().setNodeSpacingToDiameter(
-                Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
 
         // setup simulation
         logger.debug("Composing simulation ... ");
@@ -547,7 +543,7 @@ public class SimulationExamples {
                 // setup membrane
                 node.setCellSection(membrane);
                 node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
-                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
             } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 27 && coordinate.getY() < 17) {
                 node.setCellSection(inner);
                 node.setConcentration(domperidone, 0.0);
