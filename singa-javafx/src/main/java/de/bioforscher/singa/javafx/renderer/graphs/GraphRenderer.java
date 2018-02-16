@@ -145,7 +145,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         }
     }
 
-    private void drawDiagram(VoronoiDiagram diagram) {
+    public void drawDiagram(VoronoiDiagram diagram) {
         getGraphicsContext().setStroke(Color.SEAGREEN);
         getGraphicsContext().setLineWidth(4);
         diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));

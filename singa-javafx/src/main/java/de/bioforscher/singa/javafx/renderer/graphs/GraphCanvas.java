@@ -13,20 +13,20 @@ import javafx.scene.input.MouseEvent;
  */
 public class GraphCanvas extends Canvas {
 
-    private BooleanProperty editMode;
-    private Vector2D dragStart;
-    private Node<?, Vector2D, ?> draggedNode;
+    public BooleanProperty editMode;
+    public Vector2D dragStart;
+    public Node<?, Vector2D, ?> draggedNode;
 
     public GraphCanvas() {
         editMode = new SimpleBooleanProperty(true);
         // handle events
-        addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
-        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
-        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
-        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
+//        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
     }
 
-    private void handleDrag(MouseEvent event) {
+    public void handleDrag(MouseEvent event) {
         // drag moves node
         if (event.getButton().equals(MouseButton.PRIMARY)) {
             if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {

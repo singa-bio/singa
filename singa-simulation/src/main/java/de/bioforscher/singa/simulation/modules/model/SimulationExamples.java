@@ -271,12 +271,12 @@ public class SimulationExamples {
                 node.setConcentration(ethyleneGlycol, 1);
                 node.setConcentration(valine, 1);
                 node.setConcentration(sucrose, 1);
-            } else {
+            } /* else {
                 node.setConcentration(methanol, 0);
                 node.setConcentration(ethyleneGlycol, 0);
                 node.setConcentration(valine, 0);
                 node.setConcentration(sucrose, 0);
-            }
+            } */
         }
 
         // setup simulation

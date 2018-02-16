@@ -108,6 +108,8 @@ public class SimulationManager extends Task<Simulation> {
 
     @Override
     protected Simulation call() {
+        System.out.println(simulation);
+        System.out.println(terminationCondition);
         while (!isCancelled() && terminationCondition.test(simulation)) {
             simulation.nextEpoch();
             if (emitCondition.test(simulation)) {
