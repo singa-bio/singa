@@ -19,9 +19,9 @@ import javax.measure.quantity.Frequency;
 /**
  * @author cl
  */
-public class PassiveMembraneTransport extends AbstractNeighbourIndependentModule {
+public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModule {
 
-    public PassiveMembraneTransport(Simulation simulation) {
+    public FlipFlopMembraneTransport(Simulation simulation) {
         super(simulation);
         // apply this module only to membranes
         onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));

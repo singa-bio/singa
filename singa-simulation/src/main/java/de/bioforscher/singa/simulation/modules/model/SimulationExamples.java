@@ -26,8 +26,8 @@ import de.bioforscher.singa.simulation.modules.reactions.implementations.Michael
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.singa.simulation.modules.transport.FlipFlopMembraneTransport;
 import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
-import de.bioforscher.singa.simulation.modules.transport.PassiveMembraneTransport;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -509,7 +509,7 @@ public class SimulationExamples {
         // add diffusion module
         simulation.getModules().add(new FreeDiffusion(simulation));
         // add transmembrane transport
-        simulation.getModules().add(new PassiveMembraneTransport(simulation));
+        simulation.getModules().add(new FlipFlopMembraneTransport(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(allSpecies);
         return simulation;
@@ -556,7 +556,7 @@ public class SimulationExamples {
         simulation.setGraph(graph);
 
         FreeDiffusion diffusion = new FreeDiffusion(simulation);
-        PassiveMembraneTransport membraneTransport = new PassiveMembraneTransport(simulation);
+        FlipFlopMembraneTransport membraneTransport = new FlipFlopMembraneTransport(simulation);
 
         simulation.getModules().add(diffusion);
         simulation.getModules().add(membraneTransport);

@@ -10,10 +10,7 @@ import tec.uom.se.unit.TransformedUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
-import javax.measure.quantity.Volume;
+import javax.measure.quantity.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -62,6 +59,9 @@ public class EnvironmentalParameters extends Observable {
     private Quantity<MolarConcentration> emptyConcentration = Quantities.getQuantity(0.0, MOLE_PER_LITRE);
 
     private Unit<Volume> transformedVolume = CUBIC_METRE;
+    private Unit<Area> transformedArea = SQUARE_METRE;
+    private Unit<Length> transformedLength = METRE;
+
 
     private EnvironmentalParameters() {
         nodeDistance = DEFAULT_NODE_DISTANCE;
@@ -87,7 +87,7 @@ public class EnvironmentalParameters extends Observable {
         logger.debug("Setting node distance to {}.", nodeDistance);
         getInstance().nodeDistance = nodeDistance;
         getInstance().setTransformedMolarConcentrationUnit();
-        getInstance().setTransformedVolume();
+        getInstance().transformSpaceScales();
         getInstance().emptyConcentration = Quantities.getQuantity(0.0, getTransformedMolarConcentration());
         getInstance().setChanged();
         getInstance().notifyObservers();
@@ -103,7 +103,7 @@ public class EnvironmentalParameters extends Observable {
         if (nodeDistance.getValue().doubleValue() == 1.0) {
             transformedMolarConcentration = transformedUnit;
         } else {
-            transformedMolarConcentration = new TransformedUnit<>(transformedUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(),3)));
+            transformedMolarConcentration = new TransformedUnit<>(transformedUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
         }
     }
 
@@ -111,14 +111,31 @@ public class EnvironmentalParameters extends Observable {
         return getInstance().transformedMolarConcentration;
     }
 
-    public void setTransformedVolume() {
-        final Unit<Length> nodeDistanceUnit = nodeDistance.getUnit();
-        final Unit<Volume> transformedUnit = nodeDistanceUnit.pow(3).asType(Volume.class);
+    public void transformSpaceScales() {
+        // base length unit
+        final Unit<Length> lengthUnit = nodeDistance.getUnit();
+        // base area unit
+        final Unit<Area> areaUnit = lengthUnit.pow(2).asType(Area.class);
+        // base volume unit
+        final Unit<Volume> volumeUnit = lengthUnit.pow(3).asType(Volume.class);
+        // transform with multiplier if necessary
         if (nodeDistance.getValue().doubleValue() == 1.0) {
-            transformedVolume = transformedUnit;
+            transformedLength = lengthUnit;
+            transformedArea = areaUnit;
+            transformedVolume = volumeUnit;
         } else {
-            transformedVolume = new TransformedUnit<>(transformedUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(),3)));
+            transformedLength = new TransformedUnit<>(lengthUnit, new MultiplyConverter(nodeDistance.getValue().doubleValue()));
+            transformedArea = new TransformedUnit<>(areaUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 2)));
+            transformedVolume = new TransformedUnit<>(volumeUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
         }
+    }
+
+    public static Unit<Area> getTransformedArea() {
+        return getInstance().transformedArea;
+    }
+
+    public static Unit<Length> getTransformedLength() {
+        return getInstance().transformedLength;
     }
 
     public static Unit<Volume> getTransformedVolume() {
