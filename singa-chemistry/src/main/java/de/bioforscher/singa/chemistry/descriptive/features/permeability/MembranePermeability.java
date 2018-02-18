@@ -25,7 +25,7 @@ public class MembranePermeability extends AbstractFeature<Quantity<MembranePerme
     private Quantity<MembranePermeability> halfScaledQuantity;
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(membranePermeabilityQuantity, featureOrigin);
+        super(membranePermeabilityQuantity.to(new ProductUnit<>(EnvironmentalParameters.getTransformedLength().divide(SECOND))), featureOrigin);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MembranePermeability extends AbstractFeature<Quantity<MembranePerme
 
     @Override
     public String getSymbol() {
-        return getSymbol();
+        return SYMBOL;
     }
 
     @Override

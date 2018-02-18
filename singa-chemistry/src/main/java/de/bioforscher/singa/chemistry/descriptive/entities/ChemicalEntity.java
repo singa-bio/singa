@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
@@ -34,6 +35,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     static {
         availableFeatures.add(Diffusivity.class);
+        availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
         availableFeatures.add(MolarVolume.class);
         availableFeatures.add(Structure3D.class);

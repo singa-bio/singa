@@ -22,7 +22,10 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
-    private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AbstractNeighbourDependentModule.class);
 
     private final Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;

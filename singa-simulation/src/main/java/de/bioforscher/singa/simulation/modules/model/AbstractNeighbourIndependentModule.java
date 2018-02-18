@@ -25,7 +25,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     /**
      * The logger.
      */
-    private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractNeighbourIndependentModule.class);
 
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
     private ChemicalEntity currentChemicalEntity;

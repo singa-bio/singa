@@ -15,8 +15,9 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
 
     private ChemicalEntity<?> cargo;
 
-    public MembraneDiffusion(Simulation simulation) {
+    public MembraneDiffusion(Simulation simulation, ChemicalEntity<?> cargo) {
         super(simulation);
+        this.cargo = cargo;
         // apply this module only to membranes
         onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
         // change of inner phase
