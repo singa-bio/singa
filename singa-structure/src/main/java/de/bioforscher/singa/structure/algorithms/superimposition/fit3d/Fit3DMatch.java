@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class Fit3DMatch implements Comparable<Fit3DMatch> {
 
-    public static final String CSV_HEADER = "match,rmsd,p-value\n";
+    public static final String CSV_HEADER = "match,rmsd,p-value,title,UniProt,Pfam,EC\n";
 
     private final SubstructureSuperimposition substructureSuperimposition;
     private final double rmsd;
@@ -30,7 +30,6 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
     private Map<String, PfamIdentifier> pfamIdentifiers;
     private Map<String, ECNumber> ecNumbers;
     private String alignedSequence;
-    private String title;
     private String structureTitle;
 
     private Fit3DMatch(double rmsd, SubstructureSuperimposition substructureSuperimposition, double pvalue) {
@@ -135,6 +134,16 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
         stringJoiner.add(stringRepresentation.replaceFirst("\\d+\\.\\d+_", ""));
         stringJoiner.add(String.valueOf(rmsd));
         stringJoiner.add(String.valueOf(pvalue));
+        stringJoiner.add(((structureTitle != null) ? "\"" + structureTitle.replaceAll("\"", "") + "\"" : "n/a"));
+        stringJoiner.add(((uniProtIdentifiers != null) ? uniProtIdentifiers.entrySet().stream()
+                .map(entry -> entry.getKey() + ":" + entry.getValue())
+                .collect(Collectors.joining(",", "[", "]")) : "n/a"));
+        stringJoiner.add(((pfamIdentifiers != null) ? pfamIdentifiers.entrySet().stream()
+                .map(entry -> entry.getKey() + ":" + entry.getValue())
+                .collect(Collectors.joining(",", "[", "]")) : "n/a"));
+        stringJoiner.add(((ecNumbers != null) ? ecNumbers.entrySet().stream()
+                .map(entry -> entry.getKey() + ":" + entry.getValue())
+                .collect(Collectors.joining(",", "[", "]")) : "n/a"));
         return stringJoiner.toString();
     }
 

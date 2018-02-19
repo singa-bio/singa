@@ -412,6 +412,7 @@ public class Fit3DBuilder {
         //TODO this should only be valid for classical Fit3D run (not for Fit3Ds)
         @Override
         public ParameterStep statisticalModel(StatisticalModel statisticalModel) {
+            Objects.requireNonNull(statisticalModel);
             this.statisticalModel = statisticalModel;
             return this;
         }

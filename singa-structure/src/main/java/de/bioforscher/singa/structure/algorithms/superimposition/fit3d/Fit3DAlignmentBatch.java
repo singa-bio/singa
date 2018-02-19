@@ -156,16 +156,18 @@ public class Fit3DAlignmentBatch implements Fit3D {
                                 .target(target)
                                 .atomFilter(atomFilter)
                                 .rmsdCutoff(rmsdCutoff)
-                                .distanceTolerance(distanceTolerance)
-                                .statisticalModel(statisticalModel);
+                                .distanceTolerance(distanceTolerance);
                     } else {
                         parameterStep = Fit3DBuilder.create()
                                 .query(queryMotif)
                                 .target(target)
                                 .representationScheme(representationScheme.getType())
                                 .rmsdCutoff(rmsdCutoff)
-                                .distanceTolerance(distanceTolerance)
-                                .statisticalModel(statisticalModel);
+                                .distanceTolerance(distanceTolerance);
+                    }
+
+                    if (statisticalModel != null) {
+                        parameterStep.statisticalModel(statisticalModel);
                     }
 
                     if (mapUniprotIdentifiers) {
