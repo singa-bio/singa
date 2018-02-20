@@ -97,4 +97,9 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
         return getCurrentChemicalEntity().equals(cargo);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+" ("+cargo.getName()+")";
+    }
+
 }

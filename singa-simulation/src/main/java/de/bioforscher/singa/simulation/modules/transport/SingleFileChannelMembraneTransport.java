@@ -54,8 +54,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         double value;
         if (entity.equals(cargo)) {
             final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            // FIXME: fix magic number, this is the total number of transporters possible in the membrane
-            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 49382;
+            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;
         }
@@ -80,8 +79,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         double value;
         if (entity.equals(cargo)) {
             final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            // FIXME: fix magic number, this is the total number of transporters possible in the membrane
-            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 49382;
+            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;
         }
@@ -108,7 +106,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     }
 
     private boolean transporterInMembrane(MembraneContainer container) {
-        return container.getOuterPhaseConcentration(cargo).getValue().doubleValue() != 0.0;
+        return container.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() != 0.0;
     }
 
     private boolean isOuterPhase(MembraneContainer container) {

@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class AutomatonGraphs {
 
     private static final Logger logger = LoggerFactory.getLogger(AutomatonGraphs.class);
-    private static final Rectangle defaultBoundingBox = new Rectangle(600, 600);
 
     private AutomatonGraphs() {
 
@@ -43,7 +41,7 @@ public class AutomatonGraphs {
     }
 
     public static AutomatonGraph createRectangularAutomatonGraph(int numberOfColumns, int numberOfRows) {
-        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows, defaultBoundingBox, false));
+        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows));
     }
 
     /**

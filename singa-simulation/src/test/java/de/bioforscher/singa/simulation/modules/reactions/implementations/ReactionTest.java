@@ -5,9 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -52,7 +50,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // prepare species
         Species fp = ChEBIParserService.parse("CHEBI:18105");
@@ -122,7 +120,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // prepare species
         Species speciesA = new Species.Builder("Species A")
@@ -182,7 +180,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // prepare species
         Species dpo = ChEBIParserService.parse("CHEBI:29802");
@@ -261,12 +259,6 @@ public class ReactionTest {
         // check final values
         assertEquals(0.2975, node.getConcentration(x).getValue().doubleValue(), 1e-4);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
-    }
-
-
-    private AutomatonGraph prepareGraph() {
-        return AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1,
-                new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
     }
 
 }

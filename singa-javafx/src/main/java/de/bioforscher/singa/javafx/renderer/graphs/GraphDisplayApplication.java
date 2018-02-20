@@ -1,6 +1,5 @@
 package de.bioforscher.singa.javafx.renderer.graphs;
 
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
@@ -23,7 +22,7 @@ import static de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer.Renderin
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildTreeGraph(4, new Rectangle(500, 500));
+    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildTreeGraph(4);
     public static GraphRenderer renderer = new GraphRenderer();
 
     public static void main(String[] args) {

@@ -218,8 +218,14 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
     public void applyDeltas() {
         if (!concentrationFixed) {
             for (Delta delta : deltas.getDeltas()) {
-                setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(),
-                        getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity()));
+                Quantity<MolarConcentration> updatedConcentration = getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity());
+                if (updatedConcentration.getValue().doubleValue() < 0.0) {
+                    // FIXME updated concentration should probably not be capped
+                    // FIXME the the delta that resulted in the decrease probably had a corresponding increase
+                    updatedConcentration = EnvironmentalParameters.emptyConcentration();
+                }
+                setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(), updatedConcentration);
+
             }
         }
         deltas.clear();

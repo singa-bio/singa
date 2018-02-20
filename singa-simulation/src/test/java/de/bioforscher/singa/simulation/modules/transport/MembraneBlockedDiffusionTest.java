@@ -3,7 +3,6 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -24,18 +23,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class MembraneBlockedDiffusionTest {
 
-    private static final Rectangle boundingBox = new Rectangle(400, 400);
-
-    private static final Species ammonia = new Species.Builder("ammonia")
-            .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-            .build();
-
     @Test
     public void shouldSimulateBlockedDiffusion() {
+
+        Species ammonia = new Species.Builder("ammonia")
+                .name("ammonia")
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
+
         Simulation simulation = new Simulation();
 
-        final AutomatonGraph automatonGraph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(3, boundingBox));
+        final AutomatonGraph automatonGraph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(3));
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");

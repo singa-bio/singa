@@ -7,6 +7,7 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
@@ -29,6 +30,15 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         super(simulation);
         // apply everywhere
         addDeltaFunction(this::calculateDelta, node -> true);
+    }
+
+    private boolean onlyOuterPhase(ConcentrationContainer concentrationContainer) {
+        MembraneContainer container = (MembraneContainer) concentrationContainer;
+        return concentrationNonNull(container);
+    }
+
+    private boolean concentrationNonNull(MembraneContainer container) {
+        return container.getAvailableConcentration(getCurrentCellSection(), getCurrentChemicalEntity()).getValue().doubleValue() != 0.0;
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {

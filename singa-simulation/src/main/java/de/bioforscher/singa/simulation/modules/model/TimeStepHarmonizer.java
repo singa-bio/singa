@@ -32,8 +32,6 @@ public class TimeStepHarmonizer {
     }
 
     public boolean step() {
-        // TODO optimize the number of times the parameters have to be rescaled (only if time step has changed)
-        // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
         currentTimeStep = EnvironmentalParameters.getTimeStep();
         if (timeStepChanged) {
@@ -96,6 +94,9 @@ public class TimeStepHarmonizer {
         while (errorIsTooLarge) {
             // set full time step
             currentTimeStep = EnvironmentalParameters.getTimeStep();
+//            if (currentTimeStep .getValue().doubleValue() == 1.0E-323) {
+//                System.out.println();
+//            }
             // determine biggest local error
             localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
             // logger.info("Current local error is {}",localError);

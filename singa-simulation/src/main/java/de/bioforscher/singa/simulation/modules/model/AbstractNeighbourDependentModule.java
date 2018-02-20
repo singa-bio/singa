@@ -146,6 +146,10 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
         for (DeltaIdentifier identifier : currentFullDeltas.keySet()) {
             double fullDelta = currentFullDeltas.get(identifier).getQuantity().getValue().doubleValue();
             double halfDelta = currentHalfDeltas.get(identifier).getQuantity().getValue().doubleValue();
+            // if change is reasonably small (1e-100) the error is not calculated since numerical errors get unreasonably big
+            if (fullDelta < 1e-100) {
+                continue;
+            }
             double localError = 0.0;
             // if there is no change, there is no error
             if (fullDelta != 0.0 && halfDelta != 0) {

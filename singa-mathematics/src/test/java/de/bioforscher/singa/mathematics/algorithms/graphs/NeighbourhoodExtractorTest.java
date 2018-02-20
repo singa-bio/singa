@@ -1,6 +1,5 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
@@ -17,11 +16,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class NeighbourhoodExtractorTest {
 
-    private static final Rectangle rectangle = new Rectangle(500, 500);
 
     @Test
     public void shouldExtractNeighborhood() {
-        UndirectedGraph undirectedGraph = Graphs.buildLinearGraph(10, rectangle);
+        UndirectedGraph undirectedGraph = Graphs.buildLinearGraph(10);
         RegularNode node = undirectedGraph.getNode(4);
         UndirectedGraph neighborhood = NeighbourhoodExtractor.extractNeighborhood(undirectedGraph, node, 2);
         assertGraphContainsNodes(neighborhood, 2, 3, 4, 5, 6);
@@ -29,7 +27,7 @@ public class NeighbourhoodExtractorTest {
 
     @Test
     public void shouldExtractShell() {
-        UndirectedGraph undirectedGraph = Graphs.buildTreeGraph(4, rectangle);
+        UndirectedGraph undirectedGraph = Graphs.buildTreeGraph(4);
         RegularNode node = undirectedGraph.getNode(4);
         List<RegularNode> shellNodes = NeighbourhoodExtractor.extractShell(undirectedGraph, node, 2);
         Iterator<RegularNode> iterator = shellNodes.iterator();

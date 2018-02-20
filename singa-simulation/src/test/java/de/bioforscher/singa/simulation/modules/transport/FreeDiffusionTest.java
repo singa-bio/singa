@@ -98,7 +98,7 @@ public class FreeDiffusionTest {
         // setup node distance to diameter
         EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, boundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {

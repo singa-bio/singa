@@ -8,7 +8,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -60,8 +59,6 @@ public class SimulationExamples {
 
     private static final Logger logger = LoggerFactory.getLogger(SimulationExamples.class);
 
-    private static final Rectangle defaultBoundingBox = new Rectangle(new Vector2D(0, 600), new Vector2D(600, 0));
-
     /**
      * This simulation simulates the thermal decomposition of dinitrogen pentaoxide. From: Brauer, G. (2012). Handbook
      * of preparative inorganic chemistry, volume 2. Elsevier. 489–491.
@@ -79,7 +76,7 @@ public class SimulationExamples {
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
@@ -118,7 +115,7 @@ public class SimulationExamples {
         Species octatriene = ChEBIParserService.parse("CHEBI:77504");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
@@ -162,7 +159,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
@@ -213,7 +210,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
@@ -262,7 +259,7 @@ public class SimulationExamples {
         sucrose.setFeature(Diffusivity.class);
 
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
 
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
@@ -327,12 +324,10 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         graph.getNode(0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
-
 
 
         logger.debug("Composing simulation ... ");
@@ -397,8 +392,7 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(
-                Graphs.buildLinearGraph(1, defaultBoundingBox));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
 
         model.getCompartments().keySet().forEach(graph::addCellSection);
 
@@ -409,7 +403,6 @@ public class SimulationExamples {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
             bioNode.setConcentration(entity, value);
         });
-
 
 
         // add graph
@@ -429,8 +422,7 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         logger.debug("Setting up example graph ...");
         int numberOfNodes = 50;
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
-                numberOfNodes, numberOfNodes, defaultBoundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // setup simulation
         logger.debug("Composing simulation ... ");
         Simulation simulation = new Simulation();
@@ -527,8 +519,7 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
         GridCoordinateConverter gcc = new GridCoordinateConverter(30, 20);
         // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(
-                20, 30, defaultBoundingBox, false));
+        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(20, 30));
         // create compartments and membrane
         EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
         EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");

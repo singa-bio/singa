@@ -13,7 +13,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
@@ -62,7 +61,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     public void addNodeToObserve(AutomatonNode node) throws IOException {
         Path file = createFile("node_" + node.getIdentifier() + ".csv");
-        BufferedWriter writer = Files.newBufferedWriter(file, StandardOpenOption.CREATE);
+        BufferedWriter writer = Files.newBufferedWriter(file);
         registeredWriters.put(node, writer);
         node.setObserved(true);
         writeHeader(node);
