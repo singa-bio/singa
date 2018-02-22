@@ -28,6 +28,7 @@
         <option value="$PROJECT_DIR$/singa-all/pom.xml" />
         <option value="$PROJECT_DIR$/core/pom.xml" />
         <option value="$PROJECT_DIR$/benchmark/pom.xml" />
+        <option value="$PROJECT_DIR$/singa-sequence/pom.xml" />
       </list>
     </option>
   </component>

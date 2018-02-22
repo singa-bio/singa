@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/singa-features/singa-features.iml" filepath="$PROJECT_DIR$/singa-features/singa-features.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-javafx/singa-javafx.iml" filepath="$PROJECT_DIR$/singa-javafx/singa-javafx.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" filepath="$PROJECT_DIR$/singa-mathematics/singa-mathematics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singa-sequence/singa-sequence.iml" filepath="$PROJECT_DIR$/singa-sequence/singa-sequence.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-simulation/singa-simulation.iml" filepath="$PROJECT_DIR$/singa-simulation/singa-simulation.iml" />
       <module fileurl="file://$PROJECT_DIR$/singa-structure/singa-structure.iml" filepath="$PROJECT_DIR$/singa-structure/singa-structure.iml" />
     </modules>
