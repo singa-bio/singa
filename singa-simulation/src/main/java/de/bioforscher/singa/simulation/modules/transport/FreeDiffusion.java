@@ -7,7 +7,6 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.Delta;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
@@ -15,6 +14,7 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
+import java.util.Set;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
@@ -26,19 +26,23 @@ import javax.measure.Quantity;
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
-    public FreeDiffusion(Simulation simulation) {
+    private Set<ChemicalEntity<?>> chemicalEntities;
+
+    public FreeDiffusion(Simulation simulation, Set<ChemicalEntity<?>> chemicalEntities) {
         super(simulation);
         // apply everywhere
-        addDeltaFunction(this::calculateDelta, node -> true);
+        this.chemicalEntities = chemicalEntities;
+        addDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
     }
 
-    private boolean onlyOuterPhase(ConcentrationContainer concentrationContainer) {
-        MembraneContainer container = (MembraneContainer) concentrationContainer;
-        return concentrationNonNull(container);
-    }
-
-    private boolean concentrationNonNull(MembraneContainer container) {
-        return container.getAvailableConcentration(getCurrentCellSection(), getCurrentChemicalEntity()).getValue().doubleValue() != 0.0;
+    /**
+     * Only apply, if current chemical entity is assigned in the referenced chemical entities.
+     *
+     * @param concentrationContainer
+     * @return
+     */
+    private boolean onlyForReferencedEntities(ConcentrationContainer concentrationContainer) {
+        return chemicalEntities.contains(currentChemicalEntity);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {

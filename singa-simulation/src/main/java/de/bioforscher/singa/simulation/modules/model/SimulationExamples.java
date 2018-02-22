@@ -280,10 +280,10 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
+        // add diffusion module
+        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
 
         return simulation;
     }
@@ -498,12 +498,13 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation));
         // add transmembrane transport
         simulation.getModules().add(new FlipFlopMembraneTransport(simulation));
         // add desired species to the simulation for easy access
         simulation.getChemicalEntities().addAll(allSpecies);
+        // add diffusion module
+        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+
         return simulation;
     }
 
@@ -546,7 +547,7 @@ public class SimulationExamples {
 
         simulation.setGraph(graph);
 
-        FreeDiffusion diffusion = new FreeDiffusion(simulation);
+        FreeDiffusion diffusion = new FreeDiffusion(simulation, simulation.getChemicalEntities());
         FlipFlopMembraneTransport membraneTransport = new FlipFlopMembraneTransport(simulation);
 
         simulation.getModules().add(diffusion);

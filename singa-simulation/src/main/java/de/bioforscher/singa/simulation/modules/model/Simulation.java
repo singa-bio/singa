@@ -105,7 +105,7 @@ public class Simulation {
      * Calculates the next epoch.
      */
     public void nextEpoch() {
-        logger.debug("Starting epoch {}.", epoch);
+        logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
         // apply all modules
         boolean timeStepChanged = harmonizer.step();
         // apply generated deltas

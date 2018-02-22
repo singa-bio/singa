@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -29,7 +28,6 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
     private final Map<AutomatonNode, ConcentrationContainer> halfConcentrations;
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
-    private ChemicalEntity currentChemicalEntity;
 
     public AbstractNeighbourDependentModule(Simulation simulation) {
         super(simulation);
@@ -39,10 +37,6 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
     public void addDeltaFunction(Function<ConcentrationContainer, Delta> deltaFunction, Predicate<ConcentrationContainer> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
-    }
-
-    public ChemicalEntity getCurrentChemicalEntity() {
-        return currentChemicalEntity;
     }
 
     public void determineAllDeltas() {
@@ -60,13 +54,15 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
         // half step deltas
         halfTime = true;
         for (Map.Entry<AutomatonNode, ConcentrationContainer> entry : halfConcentrations.entrySet()) {
-           currentNode = entry.getKey();
-           determineHalfStepDeltas(entry.getValue());
+            currentNode = entry.getKey();
+            determineHalfStepDeltas(entry.getValue());
         }
 
         // examine local errors
-        examineLocalError();
-
+        largestLocalError = determineLargestLocalError();
+        // clear used deltas
+        currentFullDeltas.clear();
+        currentHalfDeltas.clear();
     }
 
     public LocalError determineDeltasForNode(AutomatonNode node) {
@@ -85,7 +81,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                 for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
                     if (entry.getValue().test(concentrationContainer)) {
                         Delta fullDelta = entry.getKey().apply(concentrationContainer);
-                        if (fullDelta.getQuantity().getValue().doubleValue() != 0.0) {
+                        if (deltaIsValid(fullDelta)) {
                             logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                             currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
                         }
@@ -104,17 +100,20 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                 // determine half step deltas and half step concentrations
                 for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
                     if (entry.getValue().test(concentrationContainer)) {
-                        Delta halfDelta = entry.getKey().apply(concentrationContainer).multiply(2.0);
-                        if (halfDelta.getQuantity().getValue().doubleValue() != 0.0) {
-                            logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), halfDelta.getQuantity());
-                            currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
-                        }
-                        // and register potential deltas at node
-                        currentNode.addPotentialDelta(halfDelta);
+                        Delta halfDelta = entry.getKey().apply(concentrationContainer);
+                        applyHalfDelta(halfDelta);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    void applyHalfDelta(Delta halfDelta) {
+        halfDelta = halfDelta.multiply(2.0);
+        logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getName(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+        currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
+        currentNode.addPotentialDelta(halfDelta);
     }
 
     private void determineHalfStepConcentration() {
@@ -123,7 +122,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
             Delta value = entry.getValue();
             // determine half step deltas
             Quantity<MolarConcentration> fullConcentration = key.getNode().getAvailableConcentration(key.getEntity(), key.getSection());
-            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(2.0));
+            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(0.5));
             ConcentrationContainer halfConcentration;
             if (!halfConcentrations.containsKey(key.getNode())) {
                 halfConcentration = key.getNode().getConcentrationContainer().getCopy();
@@ -134,37 +133,6 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                 halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), halfStepConcentration);
             }
         }
-    }
-
-    private void examineLocalError() {
-        // no deltas mean this module did not change anything in the course of this simulation step
-        if (currentFullDeltas.isEmpty()) {
-            return;
-        }
-        double largestLocalError = -Double.MAX_VALUE;
-        DeltaIdentifier largestIdentifier = null;
-        for (DeltaIdentifier identifier : currentFullDeltas.keySet()) {
-            double fullDelta = currentFullDeltas.get(identifier).getQuantity().getValue().doubleValue();
-            double halfDelta = currentHalfDeltas.get(identifier).getQuantity().getValue().doubleValue();
-            // if change is reasonably small (1e-100) the error is not calculated since numerical errors get unreasonably big
-            if (fullDelta < 1e-100) {
-                continue;
-            }
-            double localError = 0.0;
-            // if there is no change, there is no error
-            if (fullDelta != 0.0 && halfDelta != 0) {
-                // calculate error
-                localError = Math.abs(1 - (fullDelta / halfDelta));
-            }
-            // determine the largest error in the current deltas
-            if (largestLocalError < localError) {
-                largestIdentifier = identifier;
-                largestLocalError = localError;
-            }
-        }
-        Objects.requireNonNull(largestIdentifier);
-        // set local error and return local error
-        this.largestLocalError = new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
     }
 
 }

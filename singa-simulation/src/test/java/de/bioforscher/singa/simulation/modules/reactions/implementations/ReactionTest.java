@@ -97,9 +97,9 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.043, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
-                assertEquals(0.056, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
-                assertEquals(0.056, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
+                assertEquals(0.045, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.054, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+                assertEquals(0.054, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
                 assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
@@ -219,17 +219,17 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(9E-4, node.getConcentration(oxygen).getValue().doubleValue(), 1e-3);
-                assertEquals(0.003, node.getConcentration(ndo).getValue().doubleValue(), 1e-3);
-                assertEquals(0.018, node.getConcentration(dpo).getValue().doubleValue(), 1e-3);
+                assertEquals(9E-4, node.getConcentration(oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.003, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.018, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.006, node.getConcentration(oxygen).getValue().doubleValue(), 1e-3);
-        assertEquals(0.025, node.getConcentration(ndo).getValue().doubleValue(), 1e-3);
-        assertEquals(0.007, node.getConcentration(dpo).getValue().doubleValue(), 1e-3);
+        assertEquals(0.006, node.getConcentration(oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.025, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.007, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
     }
 

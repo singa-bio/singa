@@ -64,7 +64,7 @@ public class TimeStepHarmonizer {
         logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
-            logger.debug("Calculating deltas for Module {}", module.toString());
+            logger.trace("Calculating deltas for Module {}", module.toString());
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error
@@ -94,9 +94,6 @@ public class TimeStepHarmonizer {
         while (errorIsTooLarge) {
             // set full time step
             currentTimeStep = EnvironmentalParameters.getTimeStep();
-//            if (currentTimeStep .getValue().doubleValue() == 1.0E-323) {
-//                System.out.println();
-//            }
             // determine biggest local error
             localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
             // logger.info("Current local error is {}",localError);
@@ -104,7 +101,7 @@ public class TimeStepHarmonizer {
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = tryToDecreaseTimeStep(localError);
         }
-        logger.debug("Optimized local error was {}.", localError);
+        logger.debug("Optimized local error for {} was {} with time step of {}.", criticalModule, localError, EnvironmentalParameters.getTimeStep());
     }
 
     public LocalError getLargestLocalError() {
@@ -123,15 +120,15 @@ public class TimeStepHarmonizer {
     }
 
     public void increaseTimeStep() {
-        logger.trace("Increasing time step for the next epoch.");
         EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(1.2));
+        logger.debug("Increasing time step to {}.", EnvironmentalParameters.getTimeStep());
         rescaleParameters();
         timeStepChanged = true;
     }
 
     public void decreaseTimeStep() {
-        logger.trace("Reducing time step and trying again.");
         EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(0.8));
+        logger.debug("Decreasing time step to {}.", EnvironmentalParameters.getTimeStep());
         rescaleParameters();
         timeStepChanged = true;
     }

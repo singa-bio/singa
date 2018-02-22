@@ -169,7 +169,7 @@ public class EnvironmentalParameters extends Observable {
     }
 
     public static void setTimeStep(Quantity<Time> timeStep) {
-        logger.debug("Setting time step size to {}.", timeStep);
+        logger.trace("Setting time step size to {}.", timeStep);
         getInstance().timeStep = timeStep;
         // getInstance().setChanged();
         // getInstance().notifyObservers();

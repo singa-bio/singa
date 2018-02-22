@@ -178,6 +178,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
         this.potentialDeltas.addAll(potentialDeltas);
     }
 
+    public List<Delta> getPotentialDeltas() {
+        return potentialDeltas;
+    }
+
     /**
      * Adds a potential delta to this node.
      *

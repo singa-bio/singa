@@ -30,7 +30,7 @@ public class Delta {
     private Quantity<MolarConcentration> quantity;
 
     /**
-     * Creates a new delta for a specific {@link ChemicalEntity} in a specific {@link CellSection}.
+     * Creates a new delta.
      *
      * @param cellSection The cell section.
      * @param chemicalEntity The chemical entity.

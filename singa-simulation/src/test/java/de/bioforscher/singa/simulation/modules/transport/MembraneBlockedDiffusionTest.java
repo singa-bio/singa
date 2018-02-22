@@ -1,9 +1,11 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
@@ -15,7 +17,11 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -50,11 +56,26 @@ public class MembraneBlockedDiffusionTest {
 
         AutomatonNode membraneNode = automatonGraph.getNode(1);
         membraneNode.setState(NodeState.MEMBRANE);
-        membraneNode.setConcentrationContainer(new MembraneContainer(left, right, membrane));
+        MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
+        concentrationContainer.setAvailableConcentration(left, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
+        Set<ChemicalEntity<?>> entities = new HashSet<>();
+        entities.add(ammonia);
+        concentrationContainer.setReferencedEntities(entities);
+
+        Set<CellSection> sections = new HashSet<>();
+        sections.add(left);
+        sections.add(membrane.getOuterLayer());
+        sections.add(membrane.getInnerLayer());
+        sections.add(right);
+        concentrationContainer.setRefencedSections(sections);
+
+        membraneNode.setConcentrationContainer(concentrationContainer);
 
         simulation.setGraph(automatonGraph);
+        simulation.getChemicalEntities().add(ammonia);
 
-        simulation.getModules().add(new FreeDiffusion(simulation));
+
+        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();

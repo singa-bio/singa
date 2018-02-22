@@ -18,10 +18,12 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations;
     private final CellSection cellSection;
+    private final Set<CellSection> cellSections;
 
     public SimpleConcentrationContainer(CellSection cellSection) {
         concentrations = new HashMap<>();
         this.cellSection = cellSection;
+        cellSections = Collections.singleton(cellSection);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        return Collections.singleton(cellSection);
+        return cellSections;
     }
 
     @Override

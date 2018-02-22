@@ -23,6 +23,9 @@ public class MembraneContainer implements ConcentrationContainer {
     private final CellSection innerPhaseSection;
     private final Membrane membrane;
 
+    private Set<ChemicalEntity<?>> referencedEntities;
+    private Set<CellSection> refencedSections;
+
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerPhase;
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerLayer;
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerLayer;
@@ -32,10 +35,14 @@ public class MembraneContainer implements ConcentrationContainer {
         this.outerPhaseSection = outerPhaseSection;
         this.innerPhaseSection = innerPhaseSection;
         this.membrane = membrane;
+
         outerPhase = new HashMap<>();
         outerLayer = new HashMap<>();
         innerLayer = new HashMap<>();
         innerPhase = new HashMap<>();
+
+        referencedEntities = new HashSet<>();
+        refencedSections = new HashSet<>();
     }
 
     public MembraneContainer(MembraneContainer container) {
@@ -58,35 +65,27 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     public Quantity<MolarConcentration> getOuterPhaseConcentration(ChemicalEntity chemicalEntity) {
-        if (outerPhase.containsKey(chemicalEntity)) {
-            return outerPhase.get(chemicalEntity);
-        }
-        outerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
-        return EnvironmentalParameters.emptyConcentration();
+        return outerPhase.get(chemicalEntity);
+        // outerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        // return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getInnerPhaseConcentration(ChemicalEntity chemicalEntity) {
-        if (innerPhase.containsKey(chemicalEntity)) {
-            return innerPhase.get(chemicalEntity);
-        }
-        innerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
-        return EnvironmentalParameters.emptyConcentration();
+        return innerPhase.get(chemicalEntity);
+        // innerPhase.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        // return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getOuterMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
-        if (outerLayer.containsKey(chemicalEntity)) {
-            return outerLayer.get(chemicalEntity);
-        }
-        outerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
-        return EnvironmentalParameters.emptyConcentration();
+        return outerLayer.get(chemicalEntity);
+        // outerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        // return EnvironmentalParameters.emptyConcentration();
     }
 
     public Quantity<MolarConcentration> getInnerMembraneLayerConcentration(ChemicalEntity chemicalEntity) {
-        if (innerLayer.containsKey(chemicalEntity)) {
-            return innerLayer.get(chemicalEntity);
-        }
-        innerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
-        return EnvironmentalParameters.emptyConcentration();
+        return innerLayer.get(chemicalEntity);
+        // innerLayer.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        // return EnvironmentalParameters.emptyConcentration();
     }
 
     @Override
@@ -111,20 +110,24 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
+        Quantity<MolarConcentration> concentration = null;
         if (cellSection.equals(outerPhaseSection)) {
-            return getOuterPhaseConcentration(chemicalEntity);
+            concentration = getOuterPhaseConcentration(chemicalEntity);
         } else if (cellSection.equals(innerPhaseSection)) {
-            return getInnerPhaseConcentration(chemicalEntity);
+            concentration = getInnerPhaseConcentration(chemicalEntity);
         } else if (cellSection.equals(membrane)) {
-            return getInnerMembraneLayerConcentration(chemicalEntity)
+            concentration = getInnerMembraneLayerConcentration(chemicalEntity)
                     .add(getOuterMembraneLayerConcentration(chemicalEntity))
                     .divide(2.0);
         } else if (cellSection.equals(membrane.getInnerLayer())) {
-            return getInnerMembraneLayerConcentration(chemicalEntity);
+            concentration = getInnerMembraneLayerConcentration(chemicalEntity);
         } else if (cellSection.equals(membrane.getOuterLayer())) {
-            return getOuterMembraneLayerConcentration(chemicalEntity);
+            concentration = getOuterMembraneLayerConcentration(chemicalEntity);
         }
-        return null;
+        if (concentration == null) {
+            return EnvironmentalParameters.emptyConcentration();
+        }
+        return concentration;
     }
 
     @Override
@@ -153,22 +156,20 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Set<ChemicalEntity<?>> getAllReferencedEntities() {
-        Set<ChemicalEntity<?>> entities = new HashSet<>();
-        entities.addAll(innerLayer.keySet());
-        entities.addAll(innerPhase.keySet());
-        entities.addAll(outerPhase.keySet());
-        entities.addAll(outerLayer.keySet());
-        return entities;
+        return referencedEntities;
+    }
+
+    public void setReferencedEntities(Set<ChemicalEntity<?>> referencedEntities) {
+        this.referencedEntities = referencedEntities;
     }
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        Set<CellSection> sections = new HashSet<>();
-        sections.add(innerPhaseSection);
-        sections.add(outerPhaseSection);
-        sections.add(membrane.getInnerLayer());
-        sections.add(membrane.getOuterLayer());
-        return sections;
+        return refencedSections;
+    }
+
+    public void setRefencedSections(Set<CellSection> refencedSections) {
+        this.refencedSections = refencedSections;
     }
 
     public Membrane getMembrane() {

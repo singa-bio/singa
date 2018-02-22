@@ -5,7 +5,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -44,7 +43,6 @@ public class FreeDiffusionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FreeDiffusionTest.class);
 
-    private static final Rectangle boundingBox = new Rectangle(400, 400);
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     // required species
@@ -75,12 +73,12 @@ public class FreeDiffusionTest {
         return Arrays.asList(new Object[][]{
                 /* species, number of nodes (node distance), expected result */
                 /* test different numbers of nodes (10, 20, 30)*/
-                /* 0 */ {hydrogen, 10, Quantities.getQuantity(167.370, MICRO(SECOND))},
-                /* 1 */ {hydrogen, 20, Quantities.getQuantity(150.329, MICRO(SECOND))},
-                /* 2 */ {hydrogen, 30, Quantities.getQuantity(145.224, MICRO(SECOND))},
+                /* 0 */ {hydrogen, 10, Quantities.getQuantity(167.323, MICRO(SECOND))},
+                /* 1 */ {hydrogen, 20, Quantities.getQuantity(150.354, MICRO(SECOND))},
+                /* 2 */ {hydrogen, 30, Quantities.getQuantity(145.169, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 3 */ {ammonia, 30, Quantities.getQuantity(280.206, MICRO(SECOND))},
-                /* 4 */ {benzene, 30, Quantities.getQuantity(586.206, MICRO(SECOND))}
+                /* 3 */ {ammonia, 30, Quantities.getQuantity(280.205, MICRO(SECOND))},
+                /* 4 */ {benzene, 30, Quantities.getQuantity(586.024, MICRO(SECOND))}
         });
     }
 
@@ -109,10 +107,11 @@ public class FreeDiffusionTest {
         }
         // setup simulation
         Simulation simulation = new Simulation();
+        simulation.getChemicalEntities().add(species);
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation));
+        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
         // return complete simulation
         return simulation;
     }

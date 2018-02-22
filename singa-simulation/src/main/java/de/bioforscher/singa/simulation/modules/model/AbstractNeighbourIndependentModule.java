@@ -13,7 +13,6 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -28,7 +27,6 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNeighbourIndependentModule.class);
 
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
-    private ChemicalEntity currentChemicalEntity;
     private ConcentrationContainer currentHalfConcentrations;
 
     public AbstractNeighbourIndependentModule(Simulation simulation) {
@@ -38,10 +36,6 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
 
     public void addDeltaFunction(Function<ConcentrationContainer, Delta> deltaFunction, Predicate<ConcentrationContainer> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
-    }
-
-    public ChemicalEntity getCurrentChemicalEntity() {
-        return currentChemicalEntity;
     }
 
     public void determineAllDeltas() {
@@ -82,7 +76,11 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
             }
         }
         // examine local errors
-        examineLocalError();
+        largestLocalError = determineLargestLocalError();
+        // clear used deltas
+        currentFullDeltas.clear();
+        currentHalfDeltas.clear();
+        // return largest error
         return largestLocalError;
     }
 
@@ -91,60 +89,29 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
                 Delta fullDelta = entry.getKey().apply(concentrationContainer);
-                setHalfStepConcentration(fullDelta);
-                logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
-                currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
+                if (deltaIsValid(fullDelta)) {
+                    setHalfStepConcentration(fullDelta);
+                    logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
+                    currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
+                }
             }
         }
-    }
-
-    private void determineHalfDeltas(ConcentrationContainer concentrationContainer) {
-        // determine half step deltas
-        for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
-            if (entry.getValue().test(concentrationContainer)) {
-                Delta halfDelta = entry.getKey().apply(currentHalfConcentrations).multiply(2.0);
-                logger.trace("Calculated half delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), halfDelta.getQuantity());
-                currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
-            }
-        }
-        // and register potential deltas at node
-        currentNode.addPotentialDeltas(currentHalfDeltas.values());
-    }
-
-    private void examineLocalError() {
-        // no deltas mean this module did not change anything in the course of this simulation step
-        if (currentFullDeltas.isEmpty()) {
-            return;
-        }
-        double largestLocalError = -Double.MAX_VALUE;
-        DeltaIdentifier largestIdentifier = null;
-        for (DeltaIdentifier identifier : currentFullDeltas.keySet()) {
-            double fullDelta = currentFullDeltas.get(identifier).getQuantity().getValue().doubleValue();
-            double halfDelta = currentHalfDeltas.get(identifier).getQuantity().getValue().doubleValue();
-            double localError = 0.0;
-            // if there is no change, there is no error
-            if (fullDelta != 0.0 && halfDelta != 0) {
-                // calculate error
-                localError = Math.abs(1 - (fullDelta / halfDelta));
-            }
-            // determine the largest error in the current deltas
-            if (largestLocalError < localError) {
-                largestIdentifier = identifier;
-                largestLocalError = localError;
-            }
-        }
-        Objects.requireNonNull(largestIdentifier);
-        // set local error and return local error
-        this.largestLocalError = new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
-        // clear used deltas
-        currentFullDeltas.clear();
-        currentHalfDeltas.clear();
     }
 
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentNode.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
         currentHalfConcentrations.setAvailableConcentration(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, EnvironmentalParameters.getTransformedMolarConcentration()));
+    }
+
+    private void determineHalfDeltas(ConcentrationContainer concentrationContainer) {
+        // determine half step deltas
+        for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
+            if (entry.getValue().test(concentrationContainer)) {
+                Delta halfDelta = entry.getKey().apply(currentHalfConcentrations);
+                applyHalfDelta(halfDelta);
+            }
+        }
     }
 
 }

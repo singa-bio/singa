@@ -98,7 +98,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
             innerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
         }
         // return delta
-        return isInnerPhase(container) ? outerConcentration - innerConcentration : innerConcentration - outerConcentration;
+        return isInnerPhase(container) ?  innerConcentration - outerConcentration : outerConcentration - innerConcentration;
     }
 
     private boolean isCargo() {
@@ -106,7 +106,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     }
 
     private boolean transporterInMembrane(MembraneContainer container) {
-        return container.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() != 0.0;
+        return container.getAvailableConcentration(container.getInnerLayerSection(), transporter).getValue().doubleValue() != 0.0;
     }
 
     private boolean isOuterPhase(MembraneContainer container) {
@@ -119,6 +119,6 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+" ("+transporter.getName()+")";
+        return getClass().getSimpleName() + " (" + transporter.getName() + ")";
     }
 }
