@@ -39,7 +39,6 @@ public class SimulationManager extends Task<Simulation> {
     private long nextTick = System.currentTimeMillis();
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
 
-
     public SimulationManager(Simulation simulation) {
         logger.debug("Initializing simulation manager ...");
         this.simulation = simulation;
@@ -112,23 +111,9 @@ public class SimulationManager extends Task<Simulation> {
             if (emitCondition.test(simulation)) {
                 logger.info("Emitting event after {} (epoch {}).", simulation.getElapsedTime(), simulation.getEpoch());
                 graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph()));
-                for (AutomatonNode automatonNode : simulation.getGraph().getNodes()) {
-                    if (automatonNode.isObserved()) {
-                        nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
-//                        for (Module module : simulation.getModules()) {
-//                            if (module.getClass().equals(SingleFileChannelMembraneTransport.class)) {
-//                                automatonNode.clearPotentialDeltas();
-//                                module.determineDeltasForNode(automatonNode);
-//                                if (!automatonNode.getPotentialDeltas().isEmpty()) {
-//                                    System.out.println("module " + module + ", node " + automatonNode);
-//                                    for (Delta delta : automatonNode.getPotentialDeltas()) {
-//                                        System.out.println(delta);
-//                                    }
-//                                }
-//                            }
-//                        }
-                        logger.debug("Emitted next epoch event for node {}.", automatonNode.getIdentifier());
-                    }
+                for (AutomatonNode automatonNode : simulation.getObservedNodes()) {
+                    nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
+                    logger.debug("Emitted next epoch event for node {}.", automatonNode.getIdentifier());
                 }
             }
             simulation.nextEpoch();

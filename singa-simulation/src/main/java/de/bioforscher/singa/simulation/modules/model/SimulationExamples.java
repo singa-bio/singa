@@ -401,9 +401,8 @@ public class SimulationExamples {
         AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-            bioNode.setConcentration(entity, value);
+            bioNode.setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
         });
-
 
         // add graph
         simulation.setGraph(graph);
@@ -470,7 +469,6 @@ public class SimulationExamples {
         desipramine.setFeature(new MembraneExit(4.86e4, MANUALLY_ANNOTATED));
         desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
         allSpecies.add(desipramine);
-
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");

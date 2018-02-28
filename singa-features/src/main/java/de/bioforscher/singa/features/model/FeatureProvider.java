@@ -1,5 +1,7 @@
 package de.bioforscher.singa.features.model;
 
+import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +31,14 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
      * @param featureable The {@link Featureable} entity to be annotated.
      */
     private void resolveRequirements(Featureable featureable) {
-        if (requirements != null) {
-            for (Class<? extends Feature> requirement : requirements) {
+        for (Class<? extends Feature> requirement : requirements) {
+            // if feature is not present
+            if (!featureable.hasFeature(requirement)) {
+                // assign it
+                featureable.setFeature(requirement);
+                // check if feature could be assigned
                 if (!featureable.hasFeature(requirement)) {
-                    featureable.setFeature(requirement);
+                    throw new FeatureUnassignableException("The feature " + providedFeature + " could not be assigned, since " + requirement + " could not be resolved.");
                 }
             }
         }
@@ -44,7 +50,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
                 resolveRequirements(featureable);
                 featureable.setFeature(provide(featureable));
             } else {
-                throw new IllegalArgumentException("The Feature " + providedFeature + " is not available for " + featureable.getClass().getSimpleName());
+                throw new FeatureUnassignableException("The feature " + providedFeature + " is not assignable to " + featureable.getClass().getSimpleName());
             }
         }
     }

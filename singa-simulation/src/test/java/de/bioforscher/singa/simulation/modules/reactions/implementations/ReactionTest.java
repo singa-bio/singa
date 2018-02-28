@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -97,10 +98,10 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.045, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
-                assertEquals(0.054, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
-                assertEquals(0.054, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
-                assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
+                assertEquals(0.045, node.getConcentration(fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.054, node.getConcentration(gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.054, node.getConcentration(ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.2, node.getConcentration(aldolase).to(MOLE_PER_LITRE).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
         }
@@ -160,15 +161,15 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.8901, node.getConcentration(speciesA).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1098, node.getConcentration(speciesB).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8901, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1098, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.66666, node.getConcentration(speciesA).getValue().doubleValue(), 1e-5);
-        assertEquals(0.33333, node.getConcentration(speciesB).getValue().doubleValue(), 1e-5);
+        assertEquals(0.66666, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.33333, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 
     }
@@ -188,7 +189,7 @@ public class ReactionTest {
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setConcentration(dpo, 0.020);
+            node.setConcentration(dpo, Quantities.getQuantity(0.020, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
             node.setConcentration(ndo, 0.0);
             node.setConcentration(oxygen, 0.0);
         }

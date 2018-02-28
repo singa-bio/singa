@@ -1,5 +1,6 @@
 package de.bioforscher.singa.features.parameters;
 
+import de.bioforscher.singa.features.model.QuantityFormatter;
 import de.bioforscher.singa.features.quantities.DynamicViscosity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import tec.uom.se.unit.TransformedUnit;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.*;
+import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -22,6 +24,11 @@ import static tec.uom.se.unit.Units.*;
 public class EnvironmentalParameters extends Observable {
 
     private static final Logger logger = LoggerFactory.getLogger(EnvironmentalParameters.class);
+
+    public static final QuantityFormatter<Time> TIME_FORMATTER = new QuantityFormatter<>(SECOND, true);
+
+    private static final DecimalFormat DELTA_VALUE_FORMATTER = new DecimalFormat("0.####E00");
+    public static final QuantityFormatter<MolarConcentration> DELTA_FORMATTER = new QuantityFormatter<>(DELTA_VALUE_FORMATTER, MOLE_PER_LITRE, false);
 
     /**
      * Standard node distance [length] (100 nm)

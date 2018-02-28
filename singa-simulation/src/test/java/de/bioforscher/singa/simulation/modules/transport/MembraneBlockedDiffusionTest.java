@@ -4,7 +4,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
+import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -23,6 +25,8 @@ import java.util.Set;
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertTrue;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
@@ -89,6 +93,54 @@ public class MembraneBlockedDiffusionTest {
         assertTrue(membraneNode.getAvailableConcentration(ammonia, membrane.getInnerLayer()).getValue().doubleValue() == 0.0);
         assertTrue(membraneNode.getAvailableConcentration(ammonia, right).getValue().doubleValue() == 0.0);
         assertTrue(rightNode.getAvailableConcentration(ammonia, right).getValue().doubleValue() == 0.0);
+
+    }
+
+    @Test
+    public void shouldSimulateLargeScaleBlockedDiffusion() {
+
+        Species ammonia = new Species.Builder("ammonia")
+                .name("ammonia")
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
+
+        Simulation simulation = new Simulation();
+        simulation.getChemicalEntities().add(ammonia);
+
+        // setup rectangular graph with number of nodes
+        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
+        // setup node distance to diameter);
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
+
+        EnclosedCompartment up = new EnclosedCompartment("Up", "Up");
+        EnclosedCompartment down = new EnclosedCompartment("Down", "Down");
+        // Membrane membrane = Membrane.forCompartment(right);
+
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, down, up);
+
+        // set concentrations
+        // only 5 left most nodes
+        for (AutomatonNode node : graph.getNodes()) {
+            if (converter.convert(node.getIdentifier()).getY() < 5) {
+                node.setConcentration(ammonia, 1.0);
+            } else {
+                node.setConcentration(ammonia, 0.0);
+            }
+            if (node.getConcentrationContainer() instanceof MembraneContainer) {
+                node.setAvailableConcentration(ammonia, up, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+            }
+        }
+
+        simulation.setGraph(graph);
+        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+
+        for (int i = 0; i < 100; i++) {
+            simulation.nextEpoch();
+        }
+
+        // nothing should permeate to the lower part
+        assertTrue(graph.getNode(66).getAvailableConcentration(ammonia, down).getValue().doubleValue() == 0.0);
 
     }
 

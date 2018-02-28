@@ -7,9 +7,9 @@ import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
+import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
@@ -49,7 +49,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         final double value = -kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
@@ -68,7 +68,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getOuterLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getOuterLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
@@ -87,7 +87,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(membraneContainer.getInnerLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getInnerLayerSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
@@ -104,7 +104,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         final double value = -kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(getCurrentChemicalEntity()).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(getCurrentChemicalEntity()).getValue().doubleValue();
-        return new Delta(membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
 }

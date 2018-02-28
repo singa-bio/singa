@@ -1,4 +1,6 @@
-package de.bioforscher.singa.features.model;
+package de.bioforscher.singa.features.exceptions;
+
+import de.bioforscher.singa.features.model.Feature;
 
 import java.util.Objects;
 

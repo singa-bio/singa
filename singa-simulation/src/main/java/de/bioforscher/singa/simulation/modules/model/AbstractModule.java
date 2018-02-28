@@ -5,14 +5,12 @@ import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -237,7 +235,11 @@ public abstract class AbstractModule implements Module {
                 largestLocalError = localError;
             }
         }
-        Objects.requireNonNull(largestIdentifier);
+        // largest identifier being null is a result of half deltas being blocked by numerical validity check
+        if (largestIdentifier == null) {
+            return LocalError.MINIMAL_EMPTY_ERROR;
+        }
+        // Objects.requireNonNull(largestIdentifier);
         // set local error and return local error
         return new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
 

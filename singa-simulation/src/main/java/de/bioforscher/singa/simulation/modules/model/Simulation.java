@@ -2,8 +2,8 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
@@ -14,6 +14,7 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Time;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,34 +58,52 @@ public class Simulation {
      * The logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
+
     /**
      * The updating modules.
      */
     private final Set<Module> modules;
+
     /**
      * The manager of time steps sizes.
      */
     private final TimeStepHarmonizer harmonizer;
+
     /**
      * The graph structure.
      */
     private AutomatonGraph graph;
+
+    /**
+     * The logger for any changes in the simulation.
+     */
+    private EpochUpdateWriter epochUpdateWriter;
+
+    /**
+     * The nodes, that are observed during simulation.
+     */
+    private Set<AutomatonNode> observedNodes;
+
     /**
      * The assignment rules.
      */
     private List<AssignmentRule> assignmentRules;
+
     /**
      * The chemical entities referenced in the graph.
      */
     private Set<ChemicalEntity<?>> chemicalEntities;
+
     /**
      * The globally applied parameters.
      */
     private Set<SimulationParameter> globalParameters;
+
     /**
      * The current epoch.
      */
     private long epoch;
+
     /**
      * The currently elapsed time.
      */
@@ -96,6 +115,7 @@ public class Simulation {
     public Simulation() {
         modules = new HashSet<>();
         chemicalEntities = new HashSet<>();
+        observedNodes = new HashSet<>();
         elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
@@ -106,16 +126,18 @@ public class Simulation {
      */
     public void nextEpoch() {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
+        // clear observed nodes if necessary
+        if (!observedNodes.isEmpty()) {
+            for (AutomatonNode observedNode : observedNodes) {
+                observedNode.clearPotentialDeltas();
+            }
+        }
         // apply all modules
         boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
-            // emit events to observers
-            // if (node.isObserved()) {
-            //    emitNextEpochEvent(node);
-            // }
         }
         // update epoch and elapsed time
         updateEpoch();
@@ -127,25 +149,6 @@ public class Simulation {
                 harmonizer.increaseTimeStep();
             }
         }
-    }
-
-    public void initialize() {
-        // initialize concentrationsEn
-        // for each referenced species set concentration to 0 in each compartment
-        // this requires all entities to be present in chemicalEntities
-        // this also is true for eventual products of reactions
-//        for (AutomatonNode node : graph.getNodes()) {
-//            for (CellSection section : node.getAllReferencedSections()) {
-//                for (ChemicalEntity<?> entity : chemicalEntities) {
-//                }
-//            }
-//        }
-
-        // for each module
-        // get required entity features
-        // for each entity
-        // assign feature if feature is assignable
-        // check featurable modules if features are annotated
     }
 
     /**
@@ -184,7 +187,6 @@ public class Simulation {
      */
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
-        chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
     }
 
     /**
@@ -213,7 +215,6 @@ public class Simulation {
      */
     public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
         this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
-
     }
 
     /**
@@ -232,6 +233,26 @@ public class Simulation {
      */
     public void setChemicalEntities(Set<ChemicalEntity<?>> chemicalEntities) {
         this.chemicalEntities = chemicalEntities;
+    }
+
+    public void setEpochUpdateWriter(EpochUpdateWriter epochUpdateWriter) {
+        this.epochUpdateWriter = epochUpdateWriter;
+    }
+
+    public void observeNode(AutomatonNode node) {
+        observedNodes.add(node);
+        node.setObserved(true);
+        if (epochUpdateWriter != null) {
+            try {
+                epochUpdateWriter.addNodeToObserve(node);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Set<AutomatonNode> getObservedNodes() {
+        return observedNodes;
     }
 
     /**

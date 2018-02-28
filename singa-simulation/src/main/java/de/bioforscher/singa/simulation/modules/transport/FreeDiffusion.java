@@ -6,10 +6,10 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
+import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
@@ -46,29 +46,6 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
-//        ChemicalEntity currentChemicalEntity = getCurrentChemicalEntity();
-//        CellSection currentCellSection = getCurrentCellSection();
-//        Quantity<MolarConcentration> currentConcentration = concentrationContainer.getAvailableConcentration(currentCellSection, currentChemicalEntity);
-//        Quantity<MolarConcentration> sum = Quantities.getQuantity(0.0, EnvironmentalParameters.getTransformedMolarConcentration());
-//        // calculate entering term
-//        int numberOfNeighbors = 0;
-//        // traverse each neighbouring cells
-//        for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-//            final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
-//            if (availableConcentration != null) {
-//                sum = sum.add(availableConcentration);
-//                numberOfNeighbors++;
-//            }
-//        }
-//        // entering amount
-//        Quantity<MolarConcentration> enteringConcentration = sum.multiply(getFeature(currentChemicalEntity, Diffusivity.class).getValue());
-//        // calculate leaving amount
-//        Quantity<MolarConcentration> leavingConcentration = currentConcentration.multiply(getFeature(currentChemicalEntity, Diffusivity.class).getValue()).multiply(numberOfNeighbors);
-//        // calculate next concentration
-//        Quantity<MolarConcentration> delta = enteringConcentration.subtract(leavingConcentration);
-//        // return delta
-//        return new Delta(currentCellSection, currentChemicalEntity, delta);
-
         ChemicalEntity currentChemicalEntity = getCurrentChemicalEntity();
         CellSection currentCellSection = getCurrentCellSection();
         final double currentConcentration = concentrationContainer.getAvailableConcentration(currentCellSection, currentChemicalEntity).getValue().doubleValue();
@@ -90,7 +67,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new Delta(currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
 
     }
 

@@ -1,6 +1,7 @@
-package de.bioforscher.singa.simulation.model.concentrations;
+package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 
@@ -13,6 +14,11 @@ import javax.measure.Quantity;
  * @author cl
  */
 public class Delta {
+
+    /**
+     * The module, that calculated this delta.
+     */
+    private final Module module;
 
     /**
      * The cell section.
@@ -36,10 +42,20 @@ public class Delta {
      * @param chemicalEntity The chemical entity.
      * @param quantity The change in concentration.
      */
-    public Delta(CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+    public Delta(Module module, CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+        this.module = module;
         this.chemicalEntity = chemicalEntity;
         this.cellSection = cellSection;
         this.quantity = quantity;
+    }
+
+    /**
+     * Reutns the module, that calculated this delta.
+     *
+     * @return The module, that calculated this delta.
+     */
+    public Module getModule() {
+        return module;
     }
 
     /**
@@ -80,22 +96,8 @@ public class Delta {
         return this;
     }
 
-    /**
-     * Merges (adds) two deltas an returns a new delta.
-     *
-     * @param anotherDelta The other delta.
-     * @return A new delta with the accumulated changes.
-     */
-    public Delta merge(Delta anotherDelta) {
-        return new Delta(cellSection, chemicalEntity, quantity.add(anotherDelta.getQuantity()));
-    }
-
     @Override
     public String toString() {
-        return "Delta{" +
-                "cellSection=" + cellSection.getIdentifier() +
-                ", entity=" + chemicalEntity.getIdentifier() +
-                ", quantity=" + quantity +
-                '}';
+        return module + " : " + cellSection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+EnvironmentalParameters.DELTA_FORMATTER.format(quantity);
     }
 }

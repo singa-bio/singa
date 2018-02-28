@@ -6,9 +6,9 @@ import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticP
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
+import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
@@ -58,7 +58,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         } else {
             value = 0.0;
         }
-        return new Delta(membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     /**
@@ -83,7 +83,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         } else {
             value = 0.0;
         }
-        return new Delta(membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     private double getSoluteDelta(MembraneContainer container) {
