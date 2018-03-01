@@ -110,6 +110,10 @@ public class MmtfModel implements Model {
         return chains;
     }
 
+    public Set<String> getAllChainIdentifiers() {
+        return new HashSet<>(chainMap.keySet());
+    }
+
     @Override
     public Chain getFirstChain() {
         final Map.Entry<String, List<Integer>> first = chainMap.entrySet().iterator().next();
@@ -135,6 +139,12 @@ public class MmtfModel implements Model {
             cachedChains.put(chainIdentifier, mmtfChain);
             return Optional.of(mmtfChain);
         }
+    }
+
+    @Override
+    public void removeChain(String chainIdentifier) {
+        chainMap.remove(chainIdentifier);
+        cachedChains.remove(chainIdentifier);
     }
 
     @Override

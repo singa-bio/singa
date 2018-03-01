@@ -4,6 +4,7 @@ import de.bioforscher.singa.structure.model.identifiers.PDBIdentifier;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Structures represent chemical objects in three dimensional space. <br> <br> Structures may contain one ore more
@@ -39,6 +40,13 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
     List<Model> getAllModels();
 
     /**
+     * Returns all model identifiers referenced in the model.
+     *
+     * @return All model identifiers referenced in the model.
+     */
+    Set<Integer> getAllModelIdentifiers();
+
+    /**
      * Returns the first {@link Model} (with the smallest identifier).
      *
      * @return The first model.
@@ -53,6 +61,13 @@ public interface Structure extends LeafSubstructureContainer, ChainContainer {
      * @return An {@link Optional} encapsulating the {@link Model}.
      */
     Optional<Model> getModel(int modelIdentifier);
+
+    /**
+     * Removes a {@link Model} with the given identifier from the structure.
+     *
+     * @param modelIdentifier The identifier of the model.
+     */
+    void removeModel(int modelIdentifier);
 
     /**
      * Returns an {@link Optional} of the {@link Chain} with the given identifier from the model with the given

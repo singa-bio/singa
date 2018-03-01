@@ -74,6 +74,11 @@ public class OakStructure implements Structure {
     }
 
     @Override
+    public Set<Integer> getAllModelIdentifiers() {
+        return new HashSet<>(models.keySet());
+    }
+
+    @Override
     public Model getFirstModel() {
         return models.firstEntry().getValue();
     }
@@ -84,6 +89,11 @@ public class OakStructure implements Structure {
             return Optional.of(models.get(modelIdentifier));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void removeModel(int modelIdentifier) {
+        models.remove(modelIdentifier);
     }
 
     public void addModel(OakModel model) {

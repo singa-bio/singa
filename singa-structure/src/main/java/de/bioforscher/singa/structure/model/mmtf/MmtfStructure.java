@@ -30,6 +30,11 @@ public class MmtfStructure implements Structure {
     private final StructureDataInterface data;
 
     /**
+     * The models that have been removed from the structure.
+     */
+    private Set<Integer> removedModels;
+
+    /**
      * The models that have already been requested.
      */
     private final Map<Integer, MmtfModel> cachedModels;
@@ -53,6 +58,7 @@ public class MmtfStructure implements Structure {
         this.bytes = bytes;
         data = bytesToStructureData(bytes, deflate);
         cachedModels = new HashMap<>();
+        removedModels = new HashSet<>();
     }
 
     /**
@@ -96,12 +102,25 @@ public class MmtfStructure implements Structure {
             if (cachedModels.containsKey(internalModelIndex)) {
                 models.add(cachedModels.get(internalModelIndex));
             } else {
-                MmtfModel mmtfModel = new MmtfModel(data, bytes, internalModelIndex);
-                cachedModels.put(internalModelIndex, mmtfModel);
-                models.add(mmtfModel);
+                if (!removedModels.contains(internalModelIndex)) {
+                    MmtfModel mmtfModel = new MmtfModel(data, bytes, internalModelIndex);
+                    cachedModels.put(internalModelIndex, mmtfModel);
+                    models.add(mmtfModel);
+                }
             }
         }
         return models;
+    }
+
+    @Override
+    public Set<Integer> getAllModelIdentifiers() {
+        Set<Integer> modelIdentifiers = new HashSet<>();
+        for (int internalModelIndex = 0; internalModelIndex < data.getNumModels(); internalModelIndex++) {
+            if (!removedModels.contains(internalModelIndex)) {
+                modelIdentifiers.add(internalModelIndex + 1);
+            }
+        }
+        return modelIdentifiers;
     }
 
     @Override
@@ -109,25 +128,39 @@ public class MmtfStructure implements Structure {
         if (cachedModels.containsKey(0)) {
             return cachedModels.get(0);
         } else {
-            MmtfModel mmtfModel = new MmtfModel(data, bytes, 0);
-            cachedModels.put(0, mmtfModel);
-            return mmtfModel;
+            TreeSet<Integer> sortedModelIdentifiers = new TreeSet<>(getAllModelIdentifiers());
+            for (Integer modelIdentifier : sortedModelIdentifiers) {
+                int internalModelIndex = modelIdentifier - 1;
+                if (!removedModels.contains(internalModelIndex)) {
+                    MmtfModel mmtfModel = new MmtfModel(data, bytes, internalModelIndex);
+                    cachedModels.put(internalModelIndex, mmtfModel);
+                    return mmtfModel;
+                }
+            }
         }
+        throw new IllegalStateException("The structure does not contain any model. Either each model has been removed or no models have been assigned to this strucutre.");
     }
 
     @Override
     public Optional<Model> getModel(int modelIdentifier) {
-        int modelIndex = modelIdentifier - 1;
-        if (modelIdentifier < 0 ^ modelIdentifier > data.getNumModels()) {
+        int internalModelIndex = modelIdentifier - 1;
+        if (modelIdentifier < 0 ^ modelIdentifier > data.getNumModels() || removedModels.contains(internalModelIndex)) {
             return Optional.empty();
         }
-        if (cachedModels.containsKey(modelIndex)) {
-            return Optional.of(cachedModels.get(modelIndex));
+        if (cachedModels.containsKey(internalModelIndex)) {
+            return Optional.of(cachedModels.get(internalModelIndex));
         } else {
-            MmtfModel mmtfModel = new MmtfModel(data, bytes, modelIndex);
-            cachedModels.put(modelIndex, mmtfModel);
+            MmtfModel mmtfModel = new MmtfModel(data, bytes, internalModelIndex);
+            cachedModels.put(internalModelIndex, mmtfModel);
             return Optional.of(mmtfModel);
         }
+    }
+
+    @Override
+    public void removeModel(int modelIdentifier) {
+        int internalModelIndex = modelIdentifier - 1;
+        cachedModels.remove(internalModelIndex);
+        removedModels.add(internalModelIndex);
     }
 
     @Override
