@@ -12,6 +12,7 @@ import org.rcsb.mmtf.decoder.ReaderUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -23,12 +24,14 @@ public class MmtfModelTest {
 
     private static Model firstModel;
     private static Model secondModel;
+    private static Model modelToModify;
 
     @BeforeClass
     public static void prepareData() throws IOException {
         Structure structure2N5E = new MmtfStructure(ReaderUtils.getByteArrayFromUrl("2N5E"));
         firstModel = structure2N5E.getFirstModel();
         secondModel = structure2N5E.getModel(2).get();
+        modelToModify = structure2N5E.getModel(3).get();
     }
 
     @Test
@@ -76,4 +79,20 @@ public class MmtfModelTest {
         assertEquals(64, identifier.getSerial());
     }
 
+    @Test
+    public void getAllChainIdentifiers() {
+        Set<String> allChainIdentifiers = secondModel.getAllChainIdentifiers();
+        assertEquals(allChainIdentifiers.size(), 2);
+    }
+
+    @Test
+    public void removeChain() {
+        final int expectedChains = modelToModify.getAllChainIdentifiers().size() - 1;
+        final int expectedLeafs = modelToModify.getNumberOfLeafSubstructures() - 167;
+        modelToModify.removeChain("A");
+        final int actualChains = modelToModify.getAllChainIdentifiers().size();
+        final int actualLeafs = modelToModify.getNumberOfLeafSubstructures();
+        assertEquals(expectedChains, actualChains);
+        assertEquals(expectedLeafs, actualLeafs);
+    }
 }
