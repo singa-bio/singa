@@ -21,6 +21,11 @@
             <artifactId>singa-chemistry</artifactId>
             <version>0.3.2-alpha</version>
         </dependency>
+        <dependency>
+            <groupId>de.bioforscher.singa</groupId>
+            <artifactId>singa-sequence</artifactId>
+            <version>0.3.2-alpha</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -16,6 +16,10 @@ public interface Sequence<FamilyType extends StructuralFamily> {
         return getSequence().size();
     }
 
+    default FamilyType getLetter(int position) {
+        return getSequence().get(position);
+    }
+
     default String getSequenceAsString() {
         return getSequence().stream()
                 .map(StructuralFamily::getOneLetterCode)
