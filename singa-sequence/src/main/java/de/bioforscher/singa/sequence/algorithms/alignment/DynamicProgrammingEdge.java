@@ -1,14 +1,15 @@
 package de.bioforscher.singa.sequence.algorithms.alignment;
 
 import de.bioforscher.singa.mathematics.graphs.model.DirectedWeightedEdge;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 
 /**
  * @author cl
  */
 public class DynamicProgrammingEdge extends DirectedWeightedEdge<DynamicProgrammingNode> {
 
-    private String firstLetter;
-    private String secondLetter;
+    private AminoAcidFamily first;
+    private AminoAcidFamily second;
 
     public DynamicProgrammingEdge(int identifier) {
         super(identifier);
@@ -18,19 +19,25 @@ public class DynamicProgrammingEdge extends DirectedWeightedEdge<DynamicProgramm
         super(identifier, weight);
     }
 
-    public String getFirstLetter() {
-        return firstLetter;
+    public DynamicProgrammingEdge(int identifier, double weight, AminoAcidFamily first, AminoAcidFamily second) {
+        super(identifier, weight);
+        this.first = first;
+        this.second = second;
     }
 
-    public void setFirstLetter(String firstLetter) {
-        this.firstLetter = firstLetter;
+    public AminoAcidFamily getFirst() {
+        return first;
     }
 
-    public String getSecondLetter() {
-        return secondLetter;
+    public void setFirst(AminoAcidFamily first) {
+        this.first = first;
     }
 
-    public void setSecondLetter(String secondLetter) {
-        this.secondLetter = secondLetter;
+    public AminoAcidFamily getSecond() {
+        return second;
+    }
+
+    public void setSecond(AminoAcidFamily second) {
+        this.second = second;
     }
 }
