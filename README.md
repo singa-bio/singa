@@ -15,7 +15,7 @@ SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/ar
 <dependencies>
     <dependency>
         <groupId>de.bioforscher.singa</groupId>
-        <artifactId>singa-all</artifactId>
+        <artifactId>singa-[module]</artifactId>
         <version>0.3.1</version>
     </dependency>
     <!-- more dependencies -->
@@ -33,7 +33,7 @@ For _p_-value calculation for Fit3D:
 - local package installation privileges or the `sfsmisc` package pre-installed
 
 ## Contributors
- - Christoph Leberecht | christoph.leberecht(at)hs-mittweida.de | https://github.com/leberechtc
+ - Christoph Leberecht | christoph.leberecht(at)hs-mittweida.de | https://github.com/cleberecht
  - Florian Kaiser | contact(at)fkaiser.bio | https://github.com/fkaiserbio
 
 ## Projects using SiNGA
