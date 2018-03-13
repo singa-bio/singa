@@ -1,14 +1,10 @@
 package de.bioforscher.singa.sequence.algorithms.alignment;
 
-import de.bioforscher.singa.core.utility.Pair;
-import de.bioforscher.singa.sequence.model.NucleotideSequence;
+import de.bioforscher.singa.sequence.model.ProteinSequence;
 import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
-import de.bioforscher.singa.structure.model.families.NucleotideFamily;
-import de.bioforscher.singa.structure.model.oak.OakNucleotide;
+import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.Test;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author fk
@@ -17,24 +13,27 @@ public class NeedlemanWunschTest {
 
     @Test
     public void shouldComputeAlignment() {
-//        GAAC
-//        CAAGAC
-        NucleotideSequence firstSequence = NucleotideSequence.of(Stream.of(
-                new OakNucleotide(null, NucleotideFamily.GUANOSINE),
-                new OakNucleotide(null, NucleotideFamily.ADENOSINE),
-                new OakNucleotide(null, NucleotideFamily.ADENOSINE),
-                new OakNucleotide(null, NucleotideFamily.CYTIDINE))
-                .collect(Collectors.toList()));
 
-        NucleotideSequence secondSequence = NucleotideSequence.of(Stream.of(
-                new OakNucleotide(null, NucleotideFamily.CYTIDINE),
-                new OakNucleotide(null, NucleotideFamily.ADENOSINE),
-                new OakNucleotide(null, NucleotideFamily.ADENOSINE),
-                new OakNucleotide(null, NucleotideFamily.GUANOSINE),
-                new OakNucleotide(null, NucleotideFamily.ADENOSINE),
-                new OakNucleotide(null, NucleotideFamily.CYTIDINE))
-                .collect(Collectors.toList()));
+        // ProteinSequence first = ProteinSequence.of("ASTGLM");
+        // ProteinSequence second = ProteinSequence.of("ASTHILM");
 
-        NeedlemanWunsch needlemanWunsch = new NeedlemanWunsch(SubstitutionMatrix.BLOSUM_45, new Pair<>(firstSequence, secondSequence));
+        Structure first = StructureParser.pdb()
+                .pdbIdentifier("1n3l")
+                .chainIdentifier("A")
+                .parse();
+
+        ProteinSequence firstSequence = ProteinSequence.of(first.getAllLeafSubstructures());
+
+        Structure second = StructureParser.pdb()
+                .pdbIdentifier("1pfv")
+                .chainIdentifier("A")
+                .parse();
+
+        ProteinSequence secondSequence = ProteinSequence.of(second.getAllLeafSubstructures());
+
+        NeedlemanWunschAlignment alignment = new NeedlemanWunschAlignment(SubstitutionMatrix.BLOSUM_45, firstSequence, secondSequence);
+
+        // TODO test alignment
+
     }
 }

@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
+import de.bioforscher.singa.mathematics.graphs.model.Edge;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
 import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
@@ -15,16 +16,19 @@ import java.util.function.Predicate;
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia: Dijkstra's algorithm</a>
  */
-public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, VectorType extends Vector, IdentifierType> {
+public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
+        VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private final Queue<NodeType> queue;
     private final Map<NodeType, Integer> distances;
     private final Map<NodeType, NodeType> predecessors;
+    private final GraphType graph;
 
     /**
      * Private constructor to prevent external instantiation.
      */
-    private ShortestPathFinder(NodeType sourceNode) {
+    private ShortestPathFinder(GraphType graph, NodeType sourceNode) {
+        this.graph = graph;
         distances = new HashMap<>();
         predecessors = new HashMap<>();
         queue = new LinkedList<>();
@@ -45,13 +49,14 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            VectorType extends Vector, IdentifierType> GraphPath<NodeType> findBasedOnPredicate(NodeType sourceNode, Predicate<NodeType> targetPredicate) {
-        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GraphPath<NodeType, EdgeType> findBasedOnPredicate(GraphType graph, NodeType sourceNode, Predicate<NodeType> targetPredicate) {
+        ShortestPathFinder<NodeType, EdgeType, VectorType, IdentifierType, GraphType> pathfinder = new ShortestPathFinder<>(graph, sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
-                GraphPath<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
+                GraphPath<NodeType, EdgeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                 if (path != null) {
                     return path;
                 }
@@ -74,14 +79,15 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            VectorType extends Vector, IdentifierType> GraphPath<NodeType> trackBasedOnPredicates(NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
-        ShortestPathFinder<NodeType, VectorType, IdentifierType> pathfinder = new ShortestPathFinder<>(sourceNode);
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
+            GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GraphPath<NodeType, EdgeType> trackBasedOnPredicates(GraphType graph, NodeType sourceNode, Predicate<NodeType> targetPredicate, Predicate<NodeType> trackPredicate) {
+        ShortestPathFinder<NodeType, EdgeType, VectorType, IdentifierType, GraphType> pathfinder = new ShortestPathFinder<>(graph, sourceNode);
         // processes
         while (!pathfinder.queue.isEmpty()) {
             NodeType currentNode = pathfinder.queue.poll();
             for (NodeType neighbour : currentNode.getNeighbours()) {
                 if (trackPredicate.test(currentNode)) {
-                    GraphPath<NodeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
+                    GraphPath<NodeType, EdgeType> path = pathfinder.checkTarget(currentNode, neighbour, targetPredicate);
                     if (path != null) {
                         return path;
                     }
@@ -101,7 +107,7 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @param targetPredicate The predicate to fulfill.
      * @return The shortest path if the target fulfills the predicate and null otherwise.
      */
-    private GraphPath<NodeType> checkTarget(NodeType source, NodeType target, Predicate<NodeType> targetPredicate) {
+    private GraphPath<NodeType, EdgeType> checkTarget(NodeType source, NodeType target, Predicate<NodeType> targetPredicate) {
         if (!distances.containsKey(target)) {
             // until predicate is fulfilled the first time
             if (targetPredicate.test(target)) {
@@ -122,18 +128,33 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * @param targetNode The target node.
      * @return The path to the node.
      */
-    private GraphPath<NodeType> getPath(NodeType targetNode) {
-        GraphPath<NodeType> path = new GraphPath<>();
+    private GraphPath<NodeType, EdgeType> getPath(NodeType targetNode) {
+        GraphPath<NodeType, EdgeType> path = new GraphPath<>();
         NodeType step = targetNode;
         if (predecessors.get(step) == null) {
             return null;
         }
-        path.add(step);
+        // add nodes on path
+        path.addNode(step);
         while (predecessors.get(step) != null) {
             step = predecessors.get(step);
-            path.add(step);
+            path.addNode(step);
         }
-        Collections.reverse(path);
+        Collections.reverse(path.getNodes());
+        // add edges
+        LinkedList<NodeType> nodes = path.getNodes();
+        Iterator<NodeType> iterator = nodes.iterator();
+        NodeType current = iterator.next();
+        while (iterator.hasNext()) {
+            NodeType next = iterator.next();
+            Optional<EdgeType> edge;
+            if ((edge = graph.getEdgeBetween(current, next)).isPresent()) {
+                path.addEdge(edge.get());
+            } else {
+                throw new IllegalStateException("Unable to determine edge between "+current+" and "+next+".");
+            }
+            current = next;
+        }
         return path;
     }
 

@@ -19,7 +19,7 @@ public class DynamicProgrammingGraph extends DirectedWeightedGraph<DynamicProgra
     public DynamicProgrammingGraph(ProteinSequence firstSequence, ProteinSequence secondSequence) {
         this.firstSequence = firstSequence;
         this.secondSequence = secondSequence;
-        nodes = new DynamicProgrammingNode[firstSequence.getLength()][secondSequence.getLength()];
+        nodes = new DynamicProgrammingNode[firstSequence.getLength()+1][secondSequence.getLength()+1];
     }
 
     public Integer addNode(DynamicProgrammingNode node, int firstIndex, int secondIndex) {
@@ -65,12 +65,5 @@ public class DynamicProgrammingGraph extends DirectedWeightedGraph<DynamicProgra
     public int addEdgeBetween(int identifier, double weight, DynamicProgrammingNode source, DynamicProgrammingNode target) {
         return addEdgeBetween(new DynamicProgrammingEdge(identifier, weight), source, target);
     }
-
-    public int addEdgeBetween(DynamicProgrammingNode source, DynamicProgrammingNode target, double weight) {
-        return addEdgeBetween(nextNodeIdentifier(), weight, source, target);
-    }
-
-
-
 
 }

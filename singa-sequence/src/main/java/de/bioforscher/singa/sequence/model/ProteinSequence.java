@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class ProteinSequence extends AbstractSequence<AminoAcidFamily> {
 
-    private ProteinSequence(List<AminoAcidFamily> sequence) {
+    public ProteinSequence(List<AminoAcidFamily> sequence) {
         super(sequence);
     }
 

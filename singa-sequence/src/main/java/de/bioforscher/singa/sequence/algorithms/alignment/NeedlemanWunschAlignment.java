@@ -1,31 +1,43 @@
 package de.bioforscher.singa.sequence.algorithms.alignment;
 
+import de.bioforscher.singa.mathematics.algorithms.graphs.ShortestPathFinder;
+import de.bioforscher.singa.mathematics.graphs.model.GraphPath;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.sequence.model.ProteinSequence;
 import de.bioforscher.singa.structure.algorithms.superimposition.scores.SubstitutionMatrix;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.StructuralFamily;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.structure.model.families.AminoAcidFamily.GAP;
 
 /**
  * @author cl
  */
-public class NeedlemanWunschGraph {
+public class NeedlemanWunschAlignment {
+
+    private static final Logger logger = LoggerFactory.getLogger(NeedlemanWunschAlignment.class);
 
     private static final int DEFAULT_GAP_COST = -8;
-    private final LabeledSymmetricMatrix<StructuralFamily> substitutionMatrix;
-
     private int gapCost = DEFAULT_GAP_COST;
 
+    private final LabeledSymmetricMatrix<StructuralFamily> substitutionMatrix;
     private DynamicProgrammingGraph graph;
-    private DynamicProgrammingNode previousNode;
 
-    public NeedlemanWunschGraph(SubstitutionMatrix substitutionMatrix, ProteinSequence firstSequence, ProteinSequence secondSequence) {
+    private ProteinSequence alignedFirstSequence;
+    private ProteinSequence alignedSecondSequence;
+
+    public NeedlemanWunschAlignment(SubstitutionMatrix substitutionMatrix, ProteinSequence firstSequence, ProteinSequence secondSequence) {
         this.substitutionMatrix = substitutionMatrix.getMatrix();
         graph = new DynamicProgrammingGraph(firstSequence, secondSequence);
+        logger.info("Computing alignment using Neddleman Wunsch for sequences:\n {} \n {}", firstSequence, secondSequence);
         initialize();
         fillMatrix();
+        backTrack();
     }
 
     public DynamicProgrammingGraph getGraph() {
@@ -40,46 +52,60 @@ public class NeedlemanWunschGraph {
         this.gapCost = gapCost;
     }
 
+    public double getScore() {
+        return graph.getNode(graph.getFirstSequenceLength(), graph.getSecondSequenceLength()).getScore();
+    }
+
+    public ProteinSequence getAlignedFirstSequence() {
+        return alignedFirstSequence;
+    }
+
+    public ProteinSequence getAlignedSecondSequence() {
+        return alignedSecondSequence;
+    }
+
     private void initialize() {
         // initialize initial node
         DynamicProgrammingNode initialNode = new DynamicProgrammingNode(graph.nextNodeIdentifier());
         graph.addNode(initialNode, 0, 0);
         // initialize nodes for first sequence
-        previousNode = initialNode;
-        for (int firstSequenceIndex = 1; firstSequenceIndex < graph.getFirstSequence().getSequence().size(); firstSequenceIndex++) {
+        DynamicProgrammingNode previousNode = initialNode;
+        for (int firstSequenceIndex = 0; firstSequenceIndex < graph.getFirstSequence().getSequence().size(); firstSequenceIndex++) {
             final double score = firstSequenceIndex * gapCost;
             DynamicProgrammingNode currentNode = new DynamicProgrammingNode(graph.nextNodeIdentifier());
             currentNode.setScore(score);
-            graph.addNode(currentNode, firstSequenceIndex, 0);
+            graph.addNode(currentNode, firstSequenceIndex + 1, 0);
             graph.addEdgeBetween(new DynamicProgrammingEdge(graph.nextEdgeIdentifier(), gapCost, getGraph().getFirstSequence().getLetter(firstSequenceIndex), GAP), currentNode, previousNode);
             previousNode = currentNode;
         }
         // initialize nodes for second sequence
         previousNode = initialNode;
-        for (int secondSequenceIndex = 1; secondSequenceIndex < graph.getSecondSequence().getSequence().size(); secondSequenceIndex++) {
+        for (int secondSequenceIndex = 0; secondSequenceIndex < graph.getSecondSequence().getSequence().size(); secondSequenceIndex++) {
             final double score = secondSequenceIndex * gapCost;
             DynamicProgrammingNode currentNode = new DynamicProgrammingNode(graph.nextNodeIdentifier());
             currentNode.setScore(score);
-            graph.addNode(currentNode, 0, secondSequenceIndex);
+            graph.addNode(currentNode, 0, secondSequenceIndex + 1);
             graph.addEdgeBetween(new DynamicProgrammingEdge(graph.nextEdgeIdentifier(), gapCost, GAP, getGraph().getSecondSequence().getLetter(secondSequenceIndex)), currentNode, previousNode);
             previousNode = currentNode;
         }
+        logger.debug("Initialized dynamic programming matrix.");
     }
 
     private void fillMatrix() {
-        for (int firstIndex = 1; firstIndex < getGraph().getFirstSequenceLength(); firstIndex++) {
-            for (int secondIndex = 1; secondIndex < getGraph().getSecondSequenceLength(); secondIndex++) {
+        for (int firstIndex = 1; firstIndex < getGraph().getFirstSequenceLength() + 1; firstIndex++) {
+            for (int secondIndex = 1; secondIndex < getGraph().getSecondSequenceLength() + 1; secondIndex++) {
                 determineMatrixElement(firstIndex, secondIndex);
             }
         }
+        logger.debug("Calculated alignment sores and paths.");
     }
 
     private void determineMatrixElement(int i, int j) {
 
         DynamicProgrammingNode currentNode = new DynamicProgrammingNode(graph.nextNodeIdentifier());
         graph.addNode(currentNode, i, j);
-        AminoAcidFamily firstLetter = graph.getFirstSequence().getLetter(i);
-        AminoAcidFamily secondLetter = graph.getSecondSequence().getLetter(j);
+        AminoAcidFamily firstLetter = graph.getFirstSequence().getLetter(i - 1);
+        AminoAcidFamily secondLetter = graph.getSecondSequence().getLetter(j - 1);
 
         DynamicProgrammingNode diagonalNode = graph.getNode(i - 1, j - 1);
         DynamicProgrammingNode leftNode = graph.getNode(i - 1, j);
@@ -146,13 +172,13 @@ public class NeedlemanWunschGraph {
 
     }
 
-    public void backTrack() {
-
-
-
-
+    private void backTrack() {
+        DynamicProgrammingNode lastNode = graph.getNode(graph.getFirstSequenceLength(), graph.getSecondSequenceLength());
+        GraphPath<DynamicProgrammingNode, DynamicProgrammingEdge> path = ShortestPathFinder.findBasedOnPredicate(graph, lastNode, node -> node.getIdentifier() == 0);
+        Collections.reverse(path.getEdges());
+        alignedFirstSequence = new ProteinSequence(path.getEdges().stream().map(DynamicProgrammingEdge::getFirst).collect(Collectors.toList()));
+        alignedSecondSequence = new ProteinSequence(path.getEdges().stream().map(DynamicProgrammingEdge::getSecond).collect(Collectors.toList()));
+        logger.debug("Backtracked optimal alignment with score {} :\n {} \n {}", lastNode.getScore(), alignedFirstSequence, alignedSecondSequence);
     }
-
-
 
 }
