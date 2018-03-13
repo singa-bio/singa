@@ -17,7 +17,7 @@ public class PubChemParserServiceTest {
     public void shouldParseSpecies() {
         Species species = PubChemParserService.parse("CID:962");
         // name
-        assertEquals("water", species.getName());
+        assertEquals("water", species.getName().toLowerCase());
         // molar mass
         assertEquals(18.015, species.getFeature(MolarMass.class).getValue().doubleValue(), 0.0);
         // molar mass
