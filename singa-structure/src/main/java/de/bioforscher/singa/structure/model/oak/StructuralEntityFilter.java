@@ -52,7 +52,7 @@ public class StructuralEntityFilter {
         NITROGEN(AtomFilter.isNitrogen(), "any nitrogen atom"),
         OXYGEN(AtomFilter.isOxygen(), "any oxygen atom"),
         PHOSPHORUS(AtomFilter.isPhosphorus(), "any phosphorus atom"),
-        SIDE_CHAIN(AtomFilter.isSideChain(), "any side chain atom");
+        SIDE_CHAIN(AtomFilter.isSideChain(), "side chain");
 
         private final Predicate<Atom> filter;
         private final String description;
