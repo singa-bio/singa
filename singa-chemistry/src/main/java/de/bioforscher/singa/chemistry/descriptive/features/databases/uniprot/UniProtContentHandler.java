@@ -56,6 +56,7 @@ public class UniProtContentHandler implements ContentHandler {
     private boolean inRecommendedName = false;
     private boolean inAlternativeName = false;
     private boolean inOrganism = false;
+    private boolean inSubcellularLocation = false;
     private boolean inRelevantComment = false;
     private boolean isScientificName = false;
     private boolean isCommonName = false;
@@ -63,7 +64,6 @@ public class UniProtContentHandler implements ContentHandler {
 
     private String proteinSequenceID;
     private String moleculeType;
-
 
     public UniProtContentHandler() {
         additionalNames = new ArrayList<>();
@@ -99,7 +99,7 @@ public class UniProtContentHandler implements ContentHandler {
         genomicSequenceIdentifiers.forEach(protein::addAdditionalIdentifier);
         // add additional names
         additionalNames.forEach(protein::addAdditionalName);
-        // add textComments
+        // add text comments
         textComments.forEach(protein::addAnnotation);
         // add ecNumbers
         ecNumbers.forEach(protein::addAdditionalIdentifier);
@@ -142,6 +142,7 @@ public class UniProtContentHandler implements ContentHandler {
         switch (qName) {
             case "accession":
             case "fullName":
+            case "location":
             case "text":
             case "ecNumber":
             case "taxon": {
@@ -161,6 +162,11 @@ public class UniProtContentHandler implements ContentHandler {
             case "organism": {
                 currentTag = qName;
                 inOrganism = true;
+                break;
+            }
+            case "subcellularLocation": {
+                currentTag = qName;
+                inSubcellularLocation = true;
                 break;
             }
             case "comment": {
@@ -241,9 +247,12 @@ public class UniProtContentHandler implements ContentHandler {
                 isCommonName = false;
                 break;
             }
+            case "subcellularLocation": {
+                inSubcellularLocation = false;
+                break;
+            }
             case "dbReference": {
                 if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
-                    // TODO are "Genomic_DNA" and "mRNA" equivalent?
                     if (moleculeType.equals("Genomic_DNA")) {
                         genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID, ENAAccessionNumber.ExpressionType.GENOMIC_DNA));
                     } else if (moleculeType.equals("mRNA")) {
@@ -270,7 +279,6 @@ public class UniProtContentHandler implements ContentHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) {
-
         switch (currentTag) {
             case "accession": {
                 // set pdbIdentifier
@@ -328,6 +336,13 @@ public class UniProtContentHandler implements ContentHandler {
                         temporaryCommentAnnotation.setContent(temporaryCommentAnnotation.getContent()
                                 + new String(ch, start, length));
                     }
+                }
+                break;
+            }
+            case "location": {
+                // set location
+                if (inSubcellularLocation) {
+                    textComments.add(new Annotation<>(AnnotationType.NOTE, "location", new String(ch, start, length)));
                 }
                 break;
             }
