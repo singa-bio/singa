@@ -17,11 +17,12 @@ public class ColorScale {
     private static final double defaultSaturation = 0.6;
     private static final double defaultBrightness = 0.9;
 
-    private final double minimalValue;
-    private final double maximalValue;
-    private final double scalingFactor;
+    private double minimalValue;
+    private double maximalValue;
+    private double scalingFactor;
 
     private final double minimalHue;
+    private final double maximalHue;
 
     private final double saturation;
     private final double brightness;
@@ -31,6 +32,7 @@ public class ColorScale {
         maximalValue = builder.maximalValue;
         scalingFactor = builder.scalingFactor;
         minimalHue = builder.minimalHue;
+        maximalHue = builder.maximalHue;
         saturation = builder.saturation;
         brightness = builder.brightness;
     }
@@ -49,6 +51,24 @@ public class ColorScale {
         }
         final double requestedHue = (value - minimalValue) * scalingFactor + minimalHue;
         return Color.hsb(requestedHue, saturation, brightness);
+    }
+
+    public double getMinimalValue() {
+        return minimalValue;
+    }
+
+    public void setMinimalValue(double minimalValue) {
+        this.minimalValue = minimalValue;
+        scalingFactor = (maximalHue - minimalHue) / (maximalValue - minimalValue);
+    }
+
+    public double getMaximalValue() {
+        return maximalValue;
+    }
+
+    public void setMaximalValue(double maximalValue) {
+        this.maximalValue = maximalValue;
+        scalingFactor = (maximalHue - minimalHue) / (maximalValue - minimalValue);
     }
 
     public static class Builder {

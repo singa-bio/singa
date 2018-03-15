@@ -1,22 +1,27 @@
-package de.bioforscher.singa.structure.features.molarvolume;
+package de.bioforscher.singa.features.quantities;
 
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import static tec.units.ri.unit.Units.CUBIC_METRE;
-import static tec.units.ri.unit.Units.MOLE;
+import static tec.uom.se.unit.Units.CUBIC_METRE;
+import static tec.uom.se.unit.Units.MOLE;
 
 /**
+ * The molar volume, symbol Vm, is the volume occupied by one mole of a substance (chemical element or chemical
+ * compound) at a given temperature and pressure. It is equal to the molar mass (M) divided by the mass density (ρ). It
+ * has the SI unit cubic metres per mole (m3/mol)
+ *
  * @author cl
  */
 public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implements Quantity<MolarVolume> {
 
     public static final Unit<MolarVolume> CUBIC_METRE_PER_MOLE = new ProductUnit<>(CUBIC_METRE.divide(MOLE));
+    public static final String SYMBOL = "V_m";
 
     public MolarVolume(Quantity<MolarVolume> quantity, FeatureOrigin featureOrigin) {
         super(quantity, featureOrigin);
@@ -80,4 +85,10 @@ public class MolarVolume extends AbstractFeature<Quantity<MolarVolume>> implemen
     public Unit<MolarVolume> getUnit() {
         return getFeatureContent().getUnit();
     }
+
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
+
 }

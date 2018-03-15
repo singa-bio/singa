@@ -1,5 +1,6 @@
 package de.bioforscher.singa.features.quantities;
 
+
 import javax.measure.Quantity;
 
 /**

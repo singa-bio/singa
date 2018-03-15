@@ -38,7 +38,7 @@ public class ShortestPathMetric implements Metric<Node<?, ?, ?>> {
                     + " in order to calculate the shortest path between both.");
         }
 
-        // trivial solution: first is equal to first2DVector
+        // trivial solution: first is equal to first
         if (first.equals(second)) {
             return 0.0;
         }

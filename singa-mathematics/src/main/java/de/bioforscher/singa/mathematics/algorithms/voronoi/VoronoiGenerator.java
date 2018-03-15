@@ -70,27 +70,27 @@ public class VoronoiGenerator {
      */
     private VoronoiGenerator(Collection<Vector2D> sites, Rectangle boundingBox) {
         // initialize beach line with bounding box
-        this.beachLine = new BeachLine(boundingBox);
+        beachLine = new BeachLine(boundingBox);
         // sort the original vectors from top to bottom
         TreeSet<Vector2D> sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY).reversed());
         sortedCopy.addAll(sites);
         // add them as site events to the deque
-        this.siteEvents = new ArrayDeque<>();
-        sortedCopy.forEach(vector -> this.siteEvents.push(new SiteEvent(vector)));
-        logger.trace("Sorted sites in queue: {}", this.siteEvents);
+        siteEvents = new ArrayDeque<>();
+        sortedCopy.forEach(vector -> siteEvents.push(new SiteEvent(vector)));
+        logger.trace("Sorted sites in queue: {}", siteEvents);
     }
 
     private <IdentifierType, NodeType extends Node<NodeType, Vector2D, IdentifierType>> VoronoiGenerator(Map<Integer, NodeType> nodeMap, Rectangle boundingBox) {
         // initialize beach line with bounding box
-        this.beachLine = new BeachLine(boundingBox);
+        beachLine = new BeachLine(boundingBox);
         // sort the original vectors from top to bottom
         Comparator<AbstractMap.Entry<Integer,NodeType>> comparator = Comparator.comparing(nodeType -> nodeType.getValue().getPosition().getY());
         TreeSet<AbstractMap.Entry<Integer,NodeType>> sortedCopy = new TreeSet<>(comparator.reversed());
         sortedCopy.addAll(nodeMap.entrySet());
         // add them as site events to the deque
-        this.siteEvents = new ArrayDeque<>();
-        sortedCopy.forEach(entry -> this.siteEvents.push(new SiteEvent(entry.getKey(), entry.getValue().getPosition())));
-        logger.trace("Sorted sites in queue: {}", this.siteEvents);
+        siteEvents = new ArrayDeque<>();
+        sortedCopy.forEach(entry -> siteEvents.push(new SiteEvent(entry.getKey(), entry.getValue().getPosition())));
+        logger.trace("Sorted sites in queue: {}", siteEvents);
     }
 
     /**
@@ -99,13 +99,13 @@ public class VoronoiGenerator {
     private void generateDiagram() {
         // set first site and previous site
         int siteIdentifier = 0;
-        SiteEvent siteEvent = this.siteEvents.pop();
+        SiteEvent siteEvent = siteEvents.pop();
         SiteEvent previousSite = null;
 
         // loop breaks if neither circle nor site events remain
         while (true) {
             // get next circle event
-            CircleEvent circleEvent = this.beachLine.getFirstCircleEvent();
+            CircleEvent circleEvent = beachLine.getFirstCircleEvent();
             // determine next event
             if (siteEvent != null && (circleEvent == null || siteEventIsBeforeCircleEvent(siteEvent, circleEvent))) {
                 // only if the site is not a duplicate
@@ -113,24 +113,24 @@ public class VoronoiGenerator {
                     logger.trace("Processing site event: {}", siteEvent);
                     // first create cell for new site
                     if (siteEvent.getIdentifier() == -1) {
-                        this.beachLine.getDiagram().createCell(siteIdentifier, siteEvent);
+                        beachLine.getDiagram().createCell(siteIdentifier, siteEvent);
                         siteIdentifier++;
                     } else {
-                        this.beachLine.getDiagram().createCell(siteEvent.getIdentifier(), siteEvent);
+                        beachLine.getDiagram().createCell(siteEvent.getIdentifier(), siteEvent);
                     }
                     // then create a beach section for that site
-                    this.beachLine.addBeachSection(siteEvent);
+                    beachLine.addBeachSection(siteEvent);
                     previousSite = siteEvent;
                 }
                 // get next site event
-                if (!this.siteEvents.isEmpty()) {
-                    siteEvent = this.siteEvents.pop();
+                if (!siteEvents.isEmpty()) {
+                    siteEvent = siteEvents.pop();
                 } else {
                     siteEvent = null;
                 }
             } else if (circleEvent != null) {
                 logger.trace("Processing circle event: {}", circleEvent);
-                this.beachLine.removeBeachSection(circleEvent.getBeachSection());
+                beachLine.removeBeachSection(circleEvent.getBeachSection());
             } else {
                 break;
             }
@@ -144,8 +144,8 @@ public class VoronoiGenerator {
      * discard edges which are point-like, and add missing edges in order to close opened cells.
      */
     private void postProcess() {
-        this.beachLine.getDiagram().clipEdges();
-        this.beachLine.getDiagram().closeCells();
+        beachLine.getDiagram().clipEdges();
+        beachLine.getDiagram().closeCells();
     }
 
     /**

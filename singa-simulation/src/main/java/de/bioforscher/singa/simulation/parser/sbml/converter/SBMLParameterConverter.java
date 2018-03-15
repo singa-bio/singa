@@ -6,13 +6,13 @@ import org.sbml.jsbml.LocalParameter;
 import org.sbml.jsbml.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Unit;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tec.units.ri.AbstractUnit.ONE;
+import static tec.uom.se.AbstractUnit.ONE;
 
 /**
  * Converts JSBML Parameters to SiNGA Parameters.
@@ -52,8 +52,7 @@ public class SBMLParameterConverter {
         } else {
             parameterUnit = units.get(unit);
         }
-        SimulationParameter<?> simulationParameter = new SimulationParameter<>(primaryIdentifier,
-                Quantities.getQuantity(value, parameterUnit));
+        SimulationParameter<?> simulationParameter = new SimulationParameter<>(primaryIdentifier, Quantities.getQuantity(value, parameterUnit));
         logger.debug("Set parameter {} to {}.", simulationParameter.getIdentifier(), simulationParameter.getQuantity());
         return simulationParameter;
     }

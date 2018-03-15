@@ -16,8 +16,6 @@ public class MolarMassTest {
     @Test
     public void shouldUseChEBIToFetchMolarMass() {
         Species testSpecies = new Species.Builder("CHEBI:29802").build();
-        // assign feature
-        testSpecies.setFeature(MolarMass.class);
         // get feature
         MolarMass feature = testSpecies.getFeature(MolarMass.class);
         // assert attributes and values
@@ -29,8 +27,6 @@ public class MolarMassTest {
     @Test
     public void shouldUseUniProtToFetchMolarMass() {
         Protein testProtein = new Protein.Builder("Q4DA54").build();
-        // assign feature
-        testProtein.setFeature(MolarMass.class);
         // get feature
         MolarMass feature = testProtein.getFeature(MolarMass.class);
         // assert attributes and values

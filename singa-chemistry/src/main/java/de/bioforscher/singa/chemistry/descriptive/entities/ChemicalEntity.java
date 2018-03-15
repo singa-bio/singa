@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
@@ -12,8 +13,8 @@ import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 
 import java.util.*;
 
@@ -34,6 +35,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     static {
         availableFeatures.add(Diffusivity.class);
+        availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
         availableFeatures.add(MolarVolume.class);
         availableFeatures.add(Structure3D.class);
@@ -42,19 +44,19 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    private final IdentifierType identifier;
+    protected final IdentifierType identifier;
 
     /**
      * The name by which this entity is referenced.
      */
-    private String name = "Unnamed chemical entity";
+    protected String name = "Unnamed chemical entity";
 
     /**
      * All annotations of this entity.
      */
-    private List<Annotation> annotations;
+    protected List<Annotation> annotations;
 
-    private FeatureContainer features;
+    protected FeatureContainer features;
 
     /**
      * Creates a new Chemical Entity with the given pdbIdentifier.
@@ -128,6 +130,9 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
 
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        if (!features.hasFeature(featureTypeClass)) {
+            setFeature(featureTypeClass);
+        }
         return features.getFeature(featureTypeClass);
     }
 
@@ -163,6 +168,25 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
                 "identifier=" + identifier +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public String getStringForProtocol() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getSimpleName()).append(" summary:").append(System.lineSeparator())
+                .append("  ").append("identifier: ").append(getIdentifier()).append(System.lineSeparator())
+                .append("  ").append("name: ").append(getName()).append(System.lineSeparator())
+                .append("  ").append("features: ").append(System.lineSeparator());
+        Iterator<Feature<?>> iterator = features.getAllFeatures().iterator();
+        while (iterator.hasNext()) {
+            Feature<?> feature = iterator.next();
+            if (iterator.hasNext()) {
+                builder.append("    ").append(feature).append(System.lineSeparator());
+            } else {
+                builder.append("    ").append(feature);
+        }
+
+        }
+        return builder.toString();
     }
 
     @Override

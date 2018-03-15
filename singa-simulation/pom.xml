@@ -36,11 +36,6 @@
             <artifactId>singa-chemistry</artifactId>
             <version>0.3.1</version>
         </dependency>
-        <dependency>
-            <groupId>de.bioforscher.singa</groupId>
-            <artifactId>singa-javafx</artifactId>
-            <version>0.3.1</version>
-        </dependency>
         <!-- this is used to parse sbml files conveniently -->
         <dependency>
             <groupId>org.sbml.jsbml</groupId>

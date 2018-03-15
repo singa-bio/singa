@@ -4,16 +4,16 @@ import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.unit.Units.METRE;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * Diffusivity or diffusion coefficient is a proportionality constant between the molar flux due to molecular diffusion
@@ -25,6 +25,7 @@ import static tec.units.ri.unit.Units.SECOND;
 public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity>, ScalableFeature<Quantity<Diffusivity>> {
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
+    public static final String SYMBOL = "D";
 
     private Quantity<Diffusivity> scaledQuantity;
     private Quantity<Diffusivity> halfScaledQuantity;
@@ -122,4 +123,8 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         return getFeatureContent().getUnit();
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

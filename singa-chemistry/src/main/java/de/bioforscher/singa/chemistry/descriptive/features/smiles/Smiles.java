@@ -9,6 +9,8 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
  */
 public class Smiles extends AbstractFeature<String> {
 
+    public static final String SYMBOL = "smiles";
+
     public Smiles(String smilesString, FeatureOrigin featureOrigin) {
         super(smilesString, featureOrigin);
     }
@@ -17,4 +19,8 @@ public class Smiles extends AbstractFeature<String> {
         FeatureRegistry.addProviderForFeature(Smiles.class, SmilesProvider.class);
     }
 
+    @Override
+    public String getSymbol() {
+        return SYMBOL;
+    }
 }

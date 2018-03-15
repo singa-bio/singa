@@ -24,18 +24,19 @@ public class TimeStepHarmonizer {
     private LocalError largestLocalError;
     private boolean timeStepChanged;
 
-    public TimeStepHarmonizer(Simulation simulation, Quantity<Time> initialTimeStep) {
-        EnvironmentalParameters.getInstance().setTimeStep(initialTimeStep);
+    public TimeStepHarmonizer(Simulation simulation) {
+        EnvironmentalParameters.setTimeStep(EnvironmentalParameters.getTimeStep());
         this.simulation = simulation;
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
+        timeStepChanged = true;
     }
 
     public boolean step() {
-        // TODO optimize the number of times the parameters have to be rescaled (only if time step has changed)
-        // TODO optimize the increasing of the time step (only when the error is very small, not every time it was good)
         // set initial step
-        currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
-        rescaleParameters();
+        currentTimeStep = EnvironmentalParameters.getTimeStep();
+        if (timeStepChanged) {
+            rescaleParameters();
+        }
         // request local error for each module
         executeAllModules();
         // optimize simulation for the largest local error
@@ -60,8 +61,10 @@ public class TimeStepHarmonizer {
     }
 
     private void executeAllModules() {
+        logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
+            logger.trace("Calculating deltas for Module {}", module.toString());
             // determine deltas and corresponding local errors
             module.determineAllDeltas();
             // determine critical node and module and chemical entity and local error
@@ -90,7 +93,7 @@ public class TimeStepHarmonizer {
         boolean errorIsTooLarge = tryToDecreaseTimeStep(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
-            currentTimeStep = EnvironmentalParameters.getInstance().getTimeStep();
+            currentTimeStep = EnvironmentalParameters.getTimeStep();
             // determine biggest local error
             localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
             // logger.info("Current local error is {}",localError);
@@ -98,7 +101,11 @@ public class TimeStepHarmonizer {
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = tryToDecreaseTimeStep(localError);
         }
-        logger.debug("Optimized local error was {}.", localError);
+        logger.debug("Optimized local error for {} was {} with time step of {}.", criticalModule, localError, EnvironmentalParameters.getTimeStep());
+    }
+
+    public LocalError getLargestLocalError() {
+        return largestLocalError;
     }
 
     public void rescaleParameters() {
@@ -113,22 +120,23 @@ public class TimeStepHarmonizer {
     }
 
     public void increaseTimeStep() {
-        logger.trace("Increasing time step for the next epoch.");
-        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(1.2));
+        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(1.2));
+        logger.debug("Increasing time step to {}.", EnvironmentalParameters.getTimeStep());
         rescaleParameters();
+        timeStepChanged = true;
     }
 
     public void decreaseTimeStep() {
-        logger.trace("Reducing time step and trying again.");
-        EnvironmentalParameters.getInstance().setTimeStep(currentTimeStep.multiply(0.8));
+        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(0.8));
+        logger.debug("Decreasing time step to {}.", EnvironmentalParameters.getTimeStep());
         rescaleParameters();
+        timeStepChanged = true;
     }
 
     private boolean tryToDecreaseTimeStep(double localError) {
         // determine whether to increase or reduce time step size
         if (localError > epsilon) {
             decreaseTimeStep();
-            timeStepChanged = true;
             return true;
         }
         return false;

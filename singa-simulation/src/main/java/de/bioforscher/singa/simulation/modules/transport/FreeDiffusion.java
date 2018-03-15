@@ -2,20 +2,19 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
+import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.Map;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import java.util.Set;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
@@ -27,10 +26,23 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
-    public FreeDiffusion(Simulation simulation) {
+    private Set<ChemicalEntity<?>> chemicalEntities;
+
+    public FreeDiffusion(Simulation simulation, Set<ChemicalEntity<?>> chemicalEntities) {
         super(simulation);
         // apply everywhere
-        addDeltaFunction(this::calculateDelta, node -> true);
+        this.chemicalEntities = chemicalEntities;
+        addDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
+    }
+
+    /**
+     * Only apply, if current chemical entity is assigned in the referenced chemical entities.
+     *
+     * @param concentrationContainer
+     * @return
+     */
+    private boolean onlyForReferencedEntities(ConcentrationContainer concentrationContainer) {
+        return chemicalEntities.contains(currentChemicalEntity);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
@@ -42,10 +54,10 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-            Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations = neighbour.getAllConcentrationsForSection(currentCellSection);
-            if (!concentrations.isEmpty()) {
+            final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+            if (availableConcentration != null) {
+                concentration += availableConcentration.getValue().doubleValue();
                 numberOfNeighbors++;
-                concentration += concentrations.get(currentChemicalEntity).getValue().doubleValue();
             }
         }
         // entering amount
@@ -53,9 +65,15 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         // calculate leaving amount
         final double leavingConcentration = numberOfNeighbors * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
-        final double delta = enteringConcentration - leavingConcentration; //+ currentConcentration;
+        final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new Delta(currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, MOLE_PER_LITRE));
+        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
+
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 
 }

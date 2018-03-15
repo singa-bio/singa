@@ -1,12 +1,10 @@
 package de.bioforscher.singa.mathematics.metrics;
 
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.Node;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.metrics.implementations.ShortestPathMetric;
 import de.bioforscher.singa.mathematics.metrics.model.Metric;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,16 +12,15 @@ import static org.junit.Assert.assertEquals;
 
 public class ShortestPathMetricTest {
 
-    private final Rectangle boundingBox = new Rectangle(new Vector2D(0, 100), new Vector2D(100, 0));
     private UndirectedGraph linearGraph;
     private UndirectedGraph circularGraph;
     private UndirectedGraph treeGraph;
 
     @Before
     public void initObjects() {
-        linearGraph = Graphs.buildLinearGraph(10, boundingBox);
-        circularGraph = Graphs.buildCircularGraph(10, boundingBox);
-        treeGraph = Graphs.buildTreeGraph(4, boundingBox);
+        linearGraph = Graphs.buildLinearGraph(10);
+        circularGraph = Graphs.buildCircularGraph(10);
+        treeGraph = Graphs.buildTreeGraph(4);
     }
 
     @Test
@@ -55,5 +52,6 @@ public class ShortestPathMetricTest {
     }
 
     // TODO degenerate case
-    // TODO first and second in different subgraphs
+    // TODO first and second in different disconnected subgraphs
+
 }

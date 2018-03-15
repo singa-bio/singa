@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.model.rules;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;

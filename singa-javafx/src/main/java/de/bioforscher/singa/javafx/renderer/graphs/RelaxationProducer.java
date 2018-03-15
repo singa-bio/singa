@@ -26,8 +26,8 @@ public class RelaxationProducer<NodeType extends Node<NodeType, Vector2D, Identi
     @Override
     public void run() {
         final Rectangle boundingBox = new Rectangle(renderer.drawingWidthProperty().doubleValue(), renderer.drawingHeightProperty().doubleValue());
-        for (int i = 0; i < this.totalIterations; i++) {
-            this.renderer.getGraphQueue().add(VoronoiRelaxation.relax(graph, boundingBox));
+        for (int i = 0; i < totalIterations; i++) {
+            renderer.getGraphQueue().add(VoronoiRelaxation.relax(graph, boundingBox));
             try {
                 Thread.sleep(40);
             } catch (InterruptedException e) {
@@ -35,4 +35,5 @@ public class RelaxationProducer<NodeType extends Node<NodeType, Vector2D, Identi
             }
         }
     }
+
 }

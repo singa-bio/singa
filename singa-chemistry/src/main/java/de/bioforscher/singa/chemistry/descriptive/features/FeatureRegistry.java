@@ -2,11 +2,11 @@ package de.bioforscher.singa.chemistry.descriptive.features;
 
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMassProvider;
 import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolumePredictor;
+import de.bioforscher.singa.features.exceptions.IllegalFeatureRequestException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureProvider;
-import de.bioforscher.singa.features.model.IllegalFeatureRequestException;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

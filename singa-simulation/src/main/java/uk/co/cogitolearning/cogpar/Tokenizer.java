@@ -117,7 +117,7 @@ public class Tokenizer {
      * @param string the string to tokenize
      */
     public void tokenize(String string) {
-        logger.info("Tokenizing string+ \"" + string + "\".");
+        logger.info("Tokenizing string \"{}\".",string);
         String trimmedString = string.trim();
         int totalLength = trimmedString.length();
         tokens.clear();

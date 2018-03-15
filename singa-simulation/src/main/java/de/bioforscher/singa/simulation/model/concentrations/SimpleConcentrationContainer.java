@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 
@@ -17,15 +18,21 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations;
     private final CellSection cellSection;
+    private final Set<CellSection> cellSections;
 
     public SimpleConcentrationContainer(CellSection cellSection) {
         concentrations = new HashMap<>();
         this.cellSection = cellSection;
+        cellSections = Collections.singleton(cellSection);
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
-        return concentrations.get(chemicalEntity);
+        if (concentrations.containsKey(chemicalEntity)) {
+            return concentrations.get(chemicalEntity);
+        }
+        concentrations.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+        return EnvironmentalParameters.emptyConcentration();
     }
 
     @Override
@@ -38,7 +45,14 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
-        return getConcentration(chemicalEntity);
+        if (this.cellSection.equals(cellSection)) {
+            if (concentrations.containsKey(chemicalEntity)) {
+                return getConcentration(chemicalEntity);
+            }
+            concentrations.put(chemicalEntity, EnvironmentalParameters.emptyConcentration());
+            return EnvironmentalParameters.emptyConcentration();
+        }
+        return null;
     }
 
     @Override
@@ -58,7 +72,7 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        return Collections.singleton(cellSection);
+        return cellSections;
     }
 
     @Override

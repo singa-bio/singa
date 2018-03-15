@@ -4,9 +4,9 @@ import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;
+import de.bioforscher.singa.features.quantities.MolarVolume;
 import de.bioforscher.singa.mathematics.algorithms.geometry.OttVolumePrediction;
 import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
-import de.bioforscher.singa.structure.features.molarvolume.MolarVolume;
 import de.bioforscher.singa.structure.model.oak.Structures;
 
 import java.util.List;

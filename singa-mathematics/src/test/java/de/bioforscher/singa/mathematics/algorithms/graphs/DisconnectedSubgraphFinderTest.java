@@ -1,6 +1,5 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs;
 
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import org.junit.Test;
@@ -16,7 +15,7 @@ public class DisconnectedSubgraphFinderTest {
 
     @Test
     public void shouldFindSubgraphs() {
-        UndirectedGraph graph = Graphs.buildCircularGraph(20, new Rectangle(400, 400));
+        UndirectedGraph graph = Graphs.buildCircularGraph(20);
         graph.removeNode(5);
         graph.removeNode(16);
 
