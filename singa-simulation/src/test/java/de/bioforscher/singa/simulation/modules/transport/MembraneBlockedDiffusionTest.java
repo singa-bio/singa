@@ -94,6 +94,8 @@ public class MembraneBlockedDiffusionTest {
         assertTrue(membraneNode.getAvailableConcentration(ammonia, right).getValue().doubleValue() == 0.0);
         assertTrue(rightNode.getAvailableConcentration(ammonia, right).getValue().doubleValue() == 0.0);
 
+        EnvironmentalParameters.reset();
+
     }
 
     @Test
@@ -141,6 +143,8 @@ public class MembraneBlockedDiffusionTest {
 
         // nothing should permeate to the lower part
         assertTrue(graph.getNode(66).getAvailableConcentration(ammonia, down).getValue().doubleValue() == 0.0);
+
+        EnvironmentalParameters.reset();
 
     }
 

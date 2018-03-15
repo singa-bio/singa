@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -62,6 +63,8 @@ public class MembraneDiffusionTest {
 
         assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getAvailableConcentration(water, left).getValue().doubleValue(), 1e-5);
         assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getAvailableConcentration(water, right).getValue().doubleValue(), 1e-5);
+
+        EnvironmentalParameters.reset();
 
     }
 

@@ -14,11 +14,13 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
+    <orderEntry type="library" name="Maven: tec.units:unit-ri:1.0" level="project" />
+    <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />
     <orderEntry type="module" module-name="singa-core" />
     <orderEntry type="module" module-name="singa-features" />
-    <orderEntry type="library" name="Maven: tec.units:unit-ri:1.0" level="project" />
+    <orderEntry type="library" name="Maven: tec.uom:uom-se:1.0.8" level="project" />
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0" level="project" />
+    <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0.2" level="project" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-chemistry" />
     <orderEntry type="module" module-name="singa-structure" />
@@ -33,7 +35,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-api:2.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.7" level="project" />
     <orderEntry type="module" module-name="singa-javafx" />
-    <orderEntry type="module" module-name="singa-sequence" />
+    <orderEntry type="library" name="Maven: de.bioforscher.singa:singa-sequence:0.3.2-alpha" level="project" />
     <orderEntry type="library" name="Maven: org.sbml.jsbml:jsbml-core:1.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.woodstox:woodstox-core:5.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />

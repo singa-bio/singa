@@ -38,7 +38,7 @@ public class EnvironmentalParameters extends Observable {
     /**
      * Standard time step size [time] (1 us)
      */
-    public static final Quantity<Time> DEFAULT_TIME_STEP = Quantities.getQuantity(10.0, MICRO(SECOND));
+    public static final Quantity<Time> DEFAULT_TIME_STEP = Quantities.getQuantity(1.0, MICRO(SECOND));
 
     /**
      * Standard system temperature [temperature] (293 K = 20 C)
@@ -84,6 +84,10 @@ public class EnvironmentalParameters extends Observable {
             }
         }
         return instance;
+    }
+
+    public static void reset() {
+        instance = new EnvironmentalParameters();
     }
 
     public static Quantity<Length> getNodeDistance() {

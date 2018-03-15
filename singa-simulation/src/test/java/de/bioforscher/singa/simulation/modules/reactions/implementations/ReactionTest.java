@@ -98,9 +98,9 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.045, node.getConcentration(fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.054, node.getConcentration(gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.054, node.getConcentration(ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.043, node.getConcentration(fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 assertEquals(0.2, node.getConcentration(aldolase).to(MOLE_PER_LITRE).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
@@ -111,7 +111,7 @@ public class ReactionTest {
         assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
         assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-
+        EnvironmentalParameters.reset();
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ReactionTest {
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
                 assertEquals(0.8901, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1098, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1108, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
@@ -171,7 +171,7 @@ public class ReactionTest {
         assertEquals(0.66666, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         assertEquals(0.33333, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-
+        EnvironmentalParameters.reset();
     }
 
     @Test
@@ -232,6 +232,7 @@ public class ReactionTest {
         assertEquals(0.025, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(0.007, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
+        EnvironmentalParameters.reset();
     }
 
 
@@ -252,7 +253,7 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(SECOND));
-                assertEquals(0.2958, node.getConcentration(x).getValue().doubleValue(), 1e-4);
+                assertEquals(0.2958, node.getConcentration(x).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-4);
                 firstCheckpointPassed = true;
             }
         }
@@ -260,6 +261,7 @@ public class ReactionTest {
         // check final values
         assertEquals(0.2975, node.getConcentration(x).getValue().doubleValue(), 1e-4);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
+        EnvironmentalParameters.reset();
     }
 
 }

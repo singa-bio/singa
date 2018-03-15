@@ -72,7 +72,7 @@ public class ConcentrationContainerTest {
         // asking specifically will get available concentration
         assertEquals(0.3, node.getAvailableConcentration(entity, innerSection).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
         assertEquals(0.5, node.getAvailableConcentration(entity, outerSection).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-1);
-        assertEquals(0.1, node.getAvailableConcentration(entity, membrane).to(MOLE_PER_LITRE).getValue().doubleValue(), 0.0);
+        assertEquals(0.1, node.getAvailableConcentration(entity, membrane).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-1);
         // set inner and outer layer
         node.setAvailableConcentration(entity, membrane.getInnerLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
         node.setAvailableConcentration(entity, membrane.getOuterLayer(), Quantities.getQuantity(0.2, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
