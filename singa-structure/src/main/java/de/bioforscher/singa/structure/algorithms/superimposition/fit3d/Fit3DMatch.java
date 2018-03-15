@@ -36,7 +36,9 @@ public class Fit3DMatch implements Comparable<Fit3DMatch> {
         this.rmsd = rmsd;
         this.substructureSuperimposition = substructureSuperimposition;
         this.pvalue = pvalue;
-        analyzeMatch();
+        if (substructureSuperimposition != null) {
+            analyzeMatch();
+        }
     }
 
     public static Fit3DMatch of(double rmsd) {
