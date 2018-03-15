@@ -1,6 +1,7 @@
 package de.bioforscher.singa.structure.model.interfaces;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Models represent macro molecular structures. Models are most often grouped in Structures where they are different
@@ -18,6 +19,12 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
     Integer getModelIdentifier();
 
     /**
+     * Returns A set of all chin identifiers referenced in th model.
+     * @return A set of all chin identifiers referenced in th model.
+     */
+    Set<String> getAllChainIdentifiers();
+
+    /**
      * Returns an {@link Optional} of the {@link Chain} with the given identifier. If no chain with the identifier could
      * be found, an empty optional is returned.
      *
@@ -25,6 +32,13 @@ public interface Model extends LeafSubstructureContainer, ChainContainer {
      * @return An {@link Optional} encapsulating the {@link Chain}.
      */
     Optional<Chain> getChain(String chainIdentifier);
+
+    /**
+     * Removes a {@link Chain} with the given identifier from the structure.
+     *
+     * @param chainIdentifier The identifier of the chain.
+     */
+    void removeChain(String chainIdentifier);
 
     /**
      * Returns a copy of this model.

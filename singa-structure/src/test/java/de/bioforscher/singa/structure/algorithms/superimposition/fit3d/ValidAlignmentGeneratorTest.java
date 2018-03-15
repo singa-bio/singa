@@ -105,10 +105,10 @@ public class ValidAlignmentGeneratorTest {
                 .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
                 .parse()
                 .getAllLeafSubstructures());
-        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-164"), AminoAcidFamily.HISTIDINE);
-        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
-        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-247"), AminoAcidFamily.ASPARAGINE);
-        structuralMotif.addExchangeableFamily(LeafIdentifier.fromString("A-297"), AminoAcidFamily.LYSINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-164"), AminoAcidFamily.HISTIDINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-247"), AminoAcidFamily.ASPARTIC_ACID);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-247"), AminoAcidFamily.ASPARAGINE);
+        structuralMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-297"), AminoAcidFamily.LYSINE);
 
 
         Structure target = StructureParser.mmtf()

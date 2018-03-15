@@ -432,6 +432,7 @@ class StructureContentIterator implements Iterator<List<String>> {
                     progressCounter++;
                 }
             default:
+                progressCounter++;
                 return Collections.singletonList(currentPdbIdentifier);
         }
 

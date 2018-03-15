@@ -8,28 +8,34 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * This identifier is used by the <a href="http://www.uniprot.org/">Uniprot Database</a> to identify proteins.
- * <p>
- * The identifier is a combination of numbers and letters.
- *
  * @author cl
- * @see <a href="http://www.uniprot.org/help/accession_numbers">Uniprot identifier</a>
  */
-public class UniProtIdentifier extends AbstractIdentifier {
+public class ENAAccessionNumber extends AbstractIdentifier {
+
+    public enum ExpressionType {
+        GENOMIC_DNA, MRNA
+    }
 
     /**
      * The pattern to verify the identifier.
      */
-    public static final Pattern PATTERN = Pattern.compile("[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}");
+    public static final Pattern PATTERN = Pattern.compile("[A-Z]{3}\\d{5}\\.\\d+");
+
+    private ExpressionType expressionType;
 
     /**
-     * Creates a new identifier.
+     * Creates a new identifier by validating it with the given pattern.
      *
-     * @param identifier The identifier.
+     * @param identifier The new identifier.
      * @throws IllegalArgumentException If the identifier not valid.
      */
-    public UniProtIdentifier(String identifier) throws IllegalArgumentException {
+    public ENAAccessionNumber(String identifier, ExpressionType expressionType) throws IllegalArgumentException {
         super(identifier, PATTERN);
+        this.expressionType = expressionType;
+    }
+
+    public ExpressionType getExpressionType() {
+        return expressionType;
     }
 
     /**
@@ -43,10 +49,10 @@ public class UniProtIdentifier extends AbstractIdentifier {
     }
 
     /**
-     * Searches a valid UniProt identifier in a collection of identifiers and returns it.
+     * Searches the first ENA Accession Number in a collection of identifiers and returns it.
      *
      * @param identifiers A collection of identifiers.
-     * @return The first UniProt identifier or an empty optional if no identifier could be found.
+     * @return The first ENA Accession Number identifier or an empty optional if no identifier could be found.
      */
     public static Optional<Identifier> find(Collection<Identifier> identifiers) {
         for (Identifier identifier : identifiers) {

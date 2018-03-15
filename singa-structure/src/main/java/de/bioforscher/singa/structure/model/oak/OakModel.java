@@ -6,10 +6,7 @@ import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author cl
@@ -59,6 +56,11 @@ public class OakModel implements Model {
     }
 
     @Override
+    public Set<String> getAllChainIdentifiers() {
+        return new HashSet<>(chains.keySet());
+    }
+
+    @Override
     public Optional<Chain> getChain(String chainIdentifier) {
         if (chains.containsKey(chainIdentifier)) {
             return Optional.of(chains.get(chainIdentifier));
@@ -68,6 +70,11 @@ public class OakModel implements Model {
 
     public void addChain(OakChain chain) {
         chains.put(chain.getChainIdentifier(), chain);
+    }
+
+    @Override
+    public void removeChain(String chainIdentifier) {
+        chains.remove(chainIdentifier);
     }
 
     @Override

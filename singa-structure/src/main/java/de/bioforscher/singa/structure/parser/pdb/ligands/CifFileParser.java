@@ -172,7 +172,7 @@ public class CifFileParser {
         collectLines(false);
         extractAtoms();
         extractBonds();
-        return createLeafSubstructure(LeafIdentifier.fromString("A-1"));
+        return createLeafSubstructure(LeafIdentifier.fromSimpleString("A-1"));
     }
 
     /**

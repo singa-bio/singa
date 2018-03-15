@@ -39,7 +39,7 @@ public class Fit3DMatchTest {
                 .parse();
         queryMotif = StructuralMotif.fromLeafIdentifiers(motifContainingStructure,
                 LeafIdentifiers.of("E-57", "E-102", "E-195"));
-        queryMotif.addExchangeableFamily(LeafIdentifier.fromString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("E-57"), AminoAcidFamily.GLUTAMIC_ACID);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class Fit3DMatchTest {
                 .query(queryMotif)
                 .target(target.getFirstChain())
                 .run();
-        assertEquals("1gl0_E-57_E-102_E-195,4.6807102570267135E-4,NaN", fit3d.getMatches().get(0).toCsvLine());
+        assertEquals("1gl0_E-57_E-102_E-195,4.6807102570267135E-4,NaN,n/a,n/a,n/a,n/a", fit3d.getMatches().get(0).toCsvLine());
     }
 
     @Test
@@ -60,5 +60,39 @@ public class Fit3DMatchTest {
         File summaryFile = testFolder.newFile("summary.csv");
         fit3d.writeSummaryFile(summaryFile.toPath());
         assertTrue(summaryFile.exists());
+    }
+
+    @Test
+    public void shouldAssembleCandidateStructuralMotif() {
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getCandidateMotif)
+                .count());
+    }
+
+    @Test
+    public void shouldDetermineAlignedSequence(){
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getAlignedSequence)
+                .count());
+    }
+
+    @Test
+    public void shouldDetermineType(){
+        Fit3D fit3d = Fit3DBuilder.create()
+                .query(queryMotif)
+                .target(target.getFirstChain())
+                .run();
+        assertEquals(2, fit3d.getMatches().stream()
+                .map(Fit3DMatch::getMatchType)
+                .peek(System.out::println)
+                .count());
     }
 }

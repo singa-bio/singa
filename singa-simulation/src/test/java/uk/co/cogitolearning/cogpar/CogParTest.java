@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author cl
  */
-public class ParserTest {
+public class CogParTest {
 
     @Test
     public void shoudparsAndEvaulateExpression() {

@@ -96,5 +96,4 @@ public interface LeafSubstructure<FamilyType extends StructuralFamily> extends A
     default String flatToString() {
         return getIdentifier() + " " + getThreeLetterCode();
     }
-
 }

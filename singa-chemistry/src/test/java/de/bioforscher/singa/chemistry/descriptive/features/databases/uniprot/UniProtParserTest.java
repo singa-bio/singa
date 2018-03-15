@@ -3,7 +3,12 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.core.biology.Organism;
+import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
+import de.bioforscher.singa.core.identifier.model.Identifier;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +46,14 @@ public class UniProtParserTest {
                 " form kynurenic acid (KA). Plays a key role in amino acid metabolism. Important for metabolite exchange" +
                 " between mitochondria and cytosol. Facilitates cellular uptake of long-chain free fatty acids" +
                 " (By similarity).", functionNote);
+
+        Protein aars = UniProtParserService.parse("P21889");
+
+        final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
+        final Optional<Identifier> firstIdentifier = ENAAccessionNumber.find(additionalIdentifiers);
+
+        System.out.println(firstIdentifier);
+
     }
 
 }

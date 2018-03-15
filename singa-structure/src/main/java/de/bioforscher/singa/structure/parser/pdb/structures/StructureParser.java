@@ -346,10 +346,9 @@ public class StructureParser {
         public Structure parse() throws StructureParserException {
             try {
                 if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                    // FIXME uiuiui
-
-                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
-
+                    MmtfStructure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
+                    MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
+                    return mmtfStructure;
                 } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
                     return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), false);
                 }
@@ -447,10 +446,14 @@ public class StructureParser {
                     // FIXME uiuiui
                     switch (selector.sourceSelector.sourceLocation) {
                         case ONLINE_MMTF:
-                            structures.add(new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0))));
+                            MmtfStructure structureOnline = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(lines.get(0)));
+                            MmtfReducer.reduceMMTFStructure(structureOnline, selector);
+                            structures.add(structureOnline);
                             break;
                         case OFFLINE_MMTF:
-                            structures.add(new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false));
+                            MmtfStructure structureOffline = new MmtfStructure(Files.readAllBytes(Paths.get(lines.get(0))), false);
+                            MmtfReducer.reduceMMTFStructure(structureOffline, selector);
+                            structures.add(structureOffline);
                             break;
                         default:
                             structures.add(StructureCollector.parse(lines, selector));
@@ -474,9 +477,13 @@ public class StructureParser {
             try {
                 // FIXME uiuiui
                 if (selector.sourceSelector.sourceLocation == SourceLocation.ONLINE_MMTF) {
-                    return new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
+                    MmtfStructure mmtfStructure = new MmtfStructure(ReaderUtils.getByteArrayFromUrl(selector.sourceSelector.contentIterator.next().get(0)));
+                    MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
+                    return mmtfStructure;
                 } else if (selector.sourceSelector.sourceLocation == SourceLocation.OFFLINE_MMTF) {
-                    return new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), true);
+                    MmtfStructure mmtfStructure = new MmtfStructure(Files.readAllBytes(Paths.get(selector.sourceSelector.contentIterator.next().get(0))), true);
+                    MmtfReducer.reduceMMTFStructure(mmtfStructure, selector);
+                    return mmtfStructure;
                 }
             } catch (IOException e) {
                 logger.warn("failed to parse structure", e);

@@ -143,6 +143,27 @@ public class StructureParserTest {
     }
 
     @Test
+    public void shouldParseMMTFChain() {
+        Structure structure = mmtf()
+                .pdbIdentifier("4v5d")
+                .allModels()
+                .chainIdentifier("BA")
+                .parse();
+        List<LeafSubstructure<?>> allLeafSubstructures = structure.getAllLeafSubstructures();
+        assertEquals(3229, allLeafSubstructures.size());
+    }
+
+    @Test
+    public void shouldParseMMTFModel() {
+        Structure structure = mmtf()
+                .pdbIdentifier("1pqs")
+                .model(3)
+                .parse();
+        List<LeafSubstructure<?>> allLeafSubstructures = structure.getAllLeafSubstructures();
+        assertEquals(77, allLeafSubstructures.size());
+    }
+
+    @Test
     public void shouldParseFromLocalPDBWithChainList() {
         LocalPDB localPdb = new LocalPDB(Resources.getResourceAsFileLocation("pdb"), OFFLINE_PDB);
         Path chainList = Paths.get(Resources.getResourceAsFileLocation("chain_list.txt"));

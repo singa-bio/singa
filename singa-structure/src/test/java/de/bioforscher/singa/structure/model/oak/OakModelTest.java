@@ -2,10 +2,7 @@ package de.bioforscher.singa.structure.model.oak;
 
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
-import de.bioforscher.singa.structure.model.interfaces.Atom;
-import de.bioforscher.singa.structure.model.interfaces.Chain;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
-import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.interfaces.*;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,6 +20,7 @@ public class OakModelTest {
     private static OakModel firstModel;
     private static OakModel secondModel;
     private static OakModel modelToModify;
+    private static Model anotherModelToModify;
 
     @BeforeClass
     public static void prepareData() {
@@ -30,6 +28,7 @@ public class OakModelTest {
         firstModel = (OakModel) structure2N5E.getFirstModel();
         secondModel = (OakModel) structure2N5E.getModel(2).get();
         modelToModify = (OakModel) structure2N5E.getModel(3).get();
+        anotherModelToModify = structure2N5E.getModel(4).get();
     }
 
     @Test
@@ -122,6 +121,23 @@ public class OakModelTest {
         final OakModel firstModelCopy = firstModel.getCopy();
         assertTrue(firstModel != firstModelCopy);
         assertTrue(firstModel.equals(firstModelCopy));
+    }
+
+    @Test
+    public void getAllChainIdentifiers() {
+        int actual = firstModel.getAllChainIdentifiers().size();
+        assertEquals(2, actual);
+    }
+
+    @Test
+    public void removeChain() {
+        final int expectedChains = anotherModelToModify.getAllChainIdentifiers().size() - 1;
+        final int expectedLeafs = anotherModelToModify.getNumberOfLeafSubstructures() - 167;
+        anotherModelToModify.removeChain("A");
+        final int actualChains = anotherModelToModify.getAllChainIdentifiers().size();
+        final int actualLeafs = anotherModelToModify.getNumberOfLeafSubstructures();
+        assertEquals(expectedChains, actualChains);
+        assertEquals(expectedLeafs, actualLeafs);
     }
 
 }
