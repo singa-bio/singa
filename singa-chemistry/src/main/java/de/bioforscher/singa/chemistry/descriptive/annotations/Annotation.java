@@ -117,6 +117,6 @@ public class Annotation<ContentType> {
 
     @Override
     public String toString() {
-        return annotationType.toString() + ": " + content.toString();
+        return annotationType.toString() + (annotationType == AnnotationType.NOTE ? " on "+description : "")+": " + content.toString();
     }
 }
