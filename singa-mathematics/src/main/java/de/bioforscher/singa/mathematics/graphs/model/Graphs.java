@@ -2,15 +2,18 @@ package de.bioforscher.singa.mathematics.graphs.model;
 
 import de.bioforscher.singa.mathematics.algorithms.graphs.DisconnectedSubgraphFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.grid.GridGraph;
+import de.bioforscher.singa.mathematics.graphs.grid.GridNode;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTree;
 import de.bioforscher.singa.mathematics.graphs.trees.BinaryTreeNode;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularDirection;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,7 +23,18 @@ import java.util.List;
  */
 public class Graphs {
 
+    public static final Rectangle DEFAULT_BOUNDING_BOX = new Rectangle(400, 400);
     private static final Logger logger = LoggerFactory.getLogger(Graphs.class);
+
+    /**
+     * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
+     *
+     * @param numberOfNodes The number of nodes the graph should contain.
+     * @return A linear Graph
+     */
+    public static UndirectedGraph buildLinearGraph(int numberOfNodes) {
+        return buildLinearGraph(numberOfNodes, DEFAULT_BOUNDING_BOX);
+    }
 
     /**
      * Generates a linear graph with the given number of nodes. Each node will be connected to its predecessor.
@@ -30,6 +44,7 @@ public class Graphs {
      * @return A linear Graph
      */
     public static UndirectedGraph buildLinearGraph(int numberOfNodes, Rectangle boundingBox) {
+        logger.debug("Creating linear graph with {} nodes.", numberOfNodes);
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
             graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
@@ -45,13 +60,36 @@ public class Graphs {
      * successor.
      *
      * @param numberOfNodes The number of nodes the circle should contain.
+     * @return A circular graph.
+     */
+    public static UndirectedGraph buildCircularGraph(int numberOfNodes) {
+        return buildCircularGraph(numberOfNodes, DEFAULT_BOUNDING_BOX);
+    }
+
+    /**
+     * Generates a circular Graph with the given number of nodes. Each node will be connected to its predecessor and
+     * successor.
+     *
+     * @param numberOfNodes The number of nodes the circle should contain.
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A circular graph.
      */
     public static UndirectedGraph buildCircularGraph(int numberOfNodes, Rectangle boundingBox) {
+        logger.debug("Creating circular graph with {} nodes.", numberOfNodes);
         UndirectedGraph graph = buildLinearGraph(numberOfNodes, boundingBox);
         graph.addEdgeBetween(numberOfNodes, graph.getNode(numberOfNodes - 1), graph.getNode(0));
         return graph;
+    }
+
+    /**
+     * Generates a graph with a tree-like structure, where every node is connected to one predecessor and two
+     * successors, thus forming a fractal structure.
+     *
+     * @param depth The depth of the tree.
+     * @return A tree-like graph.
+     */
+    public static UndirectedGraph buildTreeGraph(int depth) {
+        return buildTreeGraph(depth, DEFAULT_BOUNDING_BOX);
     }
 
     /**
@@ -63,6 +101,7 @@ public class Graphs {
      * @return A tree-like graph.
      */
     public static UndirectedGraph buildTreeGraph(int depth, Rectangle boundingBox) {
+        logger.debug("Creating tree graph with with a depth of {}.", depth);
         if (depth < 1) {
             throw new IllegalArgumentException("The depth of a tree-like graph must be at least 1");
         }
@@ -96,10 +135,25 @@ public class Graphs {
      *
      * @param numberOfNodes The number of nodes the graph should contain.
      * @param edgeProbability The probability, that two nodes will be connected.
+     * @return A randomized graph.
+     */
+    public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability) {
+        return buildRandomGraph(numberOfNodes, edgeProbability, DEFAULT_BOUNDING_BOX);
+    }
+
+    /**
+     * Generates a randomised graph based on the Erdös - Renyi model.
+     *
+     * @param numberOfNodes The number of nodes the graph should contain.
+     * @param edgeProbability The probability, that two nodes will be connected (must be between 0.0 (no nodes are connected) and 1.0 (every node is connected))
      * @param boundingBox A bounding box where the nodes should be positioned.
      * @return A randomized graph.
      */
     public static UndirectedGraph buildRandomGraph(int numberOfNodes, double edgeProbability, Rectangle boundingBox) {
+        if (edgeProbability < 0.0 || edgeProbability > 1.0) {
+            throw new IllegalArgumentException("To create a randomized graph, the edge probability must be between 0.0 (no nodes are connected) and 1.0 (every node is connected).");
+        }
+        logger.debug("Creating randomized graph with with {} nodes and an edge probability of {}.", numberOfNodes, edgeProbability);
         UndirectedGraph graph = new UndirectedGraph();
         for (int i = 0; i < numberOfNodes; i++) {
             graph.addNode(Nodes.createRandomlyPlacedNode(i, boundingBox));
@@ -118,8 +172,15 @@ public class Graphs {
         return graph;
     }
 
-    public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
-        return buildGridGraph(columns, rows, boundingBox, false);
+    /**
+     * Generates a grid graph with columns and rows.
+     *
+     * @param columns The Number of columns
+     * @param rows The Number of rows
+     * @return A rectangular grid graph.
+     */
+    public static GridGraph buildGridGraph(int columns, int rows) {
+        return buildGridGraph(columns, rows, DEFAULT_BOUNDING_BOX);
     }
 
     /**
@@ -128,75 +189,41 @@ public class Graphs {
      * @param boundingBox Rectangle where the Graph is positioned.
      * @param columns The Number of columns
      * @param rows The Number of rows
-     * @param periodic Applies periodic boundary condition, if {@code true}.
      * @return A rectangular grid graph.
      */
-    public static UndirectedGraph buildGridGraph(int columns, int rows, Rectangle boundingBox, boolean periodic) {
-        logger.debug("Creating grid graph ...");
-        UndirectedGraph graph = new UndirectedGraph();
+    public static GridGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
+        logger.debug("Creating randomized grid graph with with {} columns and {} rows.", columns, rows);
+        GridGraph graph = new GridGraph(columns, rows);
         double horizontalSpacing = boundingBox.getWidth() / (rows + 1);
         double verticalSpacing = boundingBox.getHeight() / (columns + 1);
 
         // adding nodes
-        logger.debug("Creating and placing nodes ...");
-        int nodeCounter = 0;
-        for (int row = 0; row < columns; row++) {
-            for (int column = 0; column < rows; column++) {
-                RegularNode node = new RegularNode(nodeCounter);
-                node.setPosition(new Vector2D(horizontalSpacing * (column + 1), verticalSpacing * (row + 1)));
+        logger.trace("Creating and placing nodes ...");
+        for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
+                GridNode node = new GridNode(new RectangularCoordinate(columnIndex, rowIndex));
+                node.setPosition(new Vector2D(horizontalSpacing * (columnIndex + 1), verticalSpacing * (rowIndex + 1)));
                 graph.addNode(node);
-                nodeCounter++;
             }
         }
 
-        Collection<RegularNode> nodes = graph.getNodes();
-
-        // horizontal connections
-        logger.debug("Adding horizontal connections ...");
-        int horizontalCounter = 0;
-        for (int row = 0; row < columns; row++) {
-            for (int column = 0; column < rows; column++) {
-                RegularNode source = graph.getNode(horizontalCounter);
-                RegularNode target = graph.getNode(horizontalCounter + 1);
-                if (horizontalCounter < nodes.size() - 1) {
-                    if (horizontalCounter % rows != rows - 1) {
-                        graph.addEdgeBetween(horizontalCounter, source, target);
-                    }
+         // add connections
+        logger.trace("Adding connections ...");
+        for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
+                RectangularCoordinate coordinate = new RectangularCoordinate(columnIndex, rowIndex);
+                GridNode source = graph.getNode(coordinate);
+                if (columnIndex < columns - 1) {
+                    GridNode target = graph.getNode(coordinate.getNeighbour(RectangularDirection.EAST));
+                    graph.addEdgeBetween(source, target);
                 }
-                horizontalCounter++;
-            }
-        }
-
-        // vertical connections
-        logger.debug("Adding vertical connections ...");
-        int verticalCounter = 0;
-        for (int row = 0; row < columns; row++) {
-            for (int column = 0; column < rows; column++) {
-                RegularNode source = graph.getNode(verticalCounter);
-                RegularNode target = graph.getNode(verticalCounter + rows);
-                if (verticalCounter + rows < nodes.size()) {
-                    graph.addEdgeBetween(horizontalCounter + verticalCounter + 1, source, target);
+                if (rowIndex < rows - 1) {
+                    GridNode target = graph.getNode(coordinate.getNeighbour(RectangularDirection.SOUTH));
+                    graph.addEdgeBetween(source, target);
                 }
-                verticalCounter++;
             }
         }
 
-        // periodic border conditions
-        if (periodic) {
-            logger.debug("Adding periodic boundary connections");
-            // horizontal connections
-            for (int c = 0; c < rows; c++) {
-                RegularNode source = graph.getNode(c);
-                RegularNode target = graph.getNode(graph.getNodes().size() - (rows - c));
-                graph.addEdgeBetween(horizontalCounter + verticalCounter + c + 1, source, target);
-            }
-            // vertical connections
-            for (int r = 0; r < columns; r++) {
-                RegularNode source = graph.getNode(r * columns);
-                RegularNode target = graph.getNode(r * columns + columns - 1);
-                graph.addEdgeBetween(horizontalCounter + verticalCounter + rows + r + 1, source, target);
-            }
-        }
         return graph;
     }
 
@@ -208,6 +235,7 @@ public class Graphs {
      * @return The generic graph.
      */
     public static <ContentType> GenericGraph<ContentType> convertTreeToGraph(BinaryTree<ContentType> tree) {
+        logger.debug("Converting tree to graph.");
         GenericGraph<ContentType> graph = new GenericGraph<>();
         BinaryTreeNode<ContentType> root = tree.getRoot();
         GenericNode<ContentType> rootNode = convertNode(root, graph);

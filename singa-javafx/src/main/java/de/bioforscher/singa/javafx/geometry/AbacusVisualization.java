@@ -2,7 +2,7 @@ package de.bioforscher.singa.javafx.geometry;
 
 import de.bioforscher.singa.mathematics.algorithms.geometry.BitPlane;
 import de.bioforscher.singa.mathematics.geometry.bodies.Cube;
-import de.bioforscher.singa.mathematics.topology.grids.UnitCubeCoordinate;
+import de.bioforscher.singa.mathematics.topology.grids.cube.CubeCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector3D;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class AbacusVisualization {
     private double yMin;
     private double zMin;
 
-    private Map<UnitCubeCoordinate, Cube> unitCubes;
+    private Map<CubeCoordinate, Cube> unitCubes;
 
     public AbacusVisualization(List<BitPlane> slices, double scale, double xMin, double yMin, double zMin) {
         this.slices = slices;
@@ -44,7 +44,7 @@ public class AbacusVisualization {
                         double cubeY = y / scale + yMin;
                         double cubeZ = z / scale + zMin;
                         double cubeSideLength = 0.15;
-                        unitCubes.put(new UnitCubeCoordinate(x, y, z), new Cube(new Vector3D(cubeX, cubeY, cubeZ), cubeSideLength));
+                        unitCubes.put(new CubeCoordinate(x, y, z), new Cube(new Vector3D(cubeX, cubeY, cubeZ), cubeSideLength));
                     }
                 }
             }

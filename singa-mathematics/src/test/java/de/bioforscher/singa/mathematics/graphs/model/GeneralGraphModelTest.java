@@ -1,27 +1,19 @@
 package de.bioforscher.singa.mathematics.graphs.model;
 
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class GeneralGraphModelTest {
 
-    private Rectangle boundingBox;
-
-    @Before
-    public void initialize() {
-        boundingBox = new Rectangle(100, 100);
-    }
-
     @Test
     public void shouldAddNode() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0, boundingBox);
-        RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1, boundingBox);
+        RegularNode nodeToAdd = Nodes.createRandomlyPlacedNode(0);
+        RegularNode nodeNotToAdd = Nodes.createRandomlyPlacedNode(1);
         testGraph.addNode(nodeToAdd);
         assertTrue(testGraph.containsNode(nodeToAdd));
         assertFalse(testGraph.containsEdge(nodeNotToAdd));
@@ -30,8 +22,8 @@ public class GeneralGraphModelTest {
     @Test
     public void shouldConnectNodes() {
         UndirectedGraph testGraph = new UndirectedGraph();
-        RegularNode source = Nodes.createRandomlyPlacedNode(0, boundingBox);
-        RegularNode target = Nodes.createRandomlyPlacedNode(1, boundingBox);
+        RegularNode source = Nodes.createRandomlyPlacedNode(0);
+        RegularNode target = Nodes.createRandomlyPlacedNode(1);
         testGraph.addNode(source);
         testGraph.addNode(target);
         testGraph.addEdgeBetween(0, source, target);
@@ -44,7 +36,7 @@ public class GeneralGraphModelTest {
 
     @Test
     public void shouldRemoveNode() {
-        UndirectedGraph linearGraph = Graphs.buildLinearGraph(10, boundingBox);
+        UndirectedGraph linearGraph = Graphs.buildLinearGraph(10);
         int unexpectedNodeIdentifier = 5;
         RegularNode removedNode = linearGraph.removeNode(unexpectedNodeIdentifier);
         // check if node has been removed correctly

@@ -8,13 +8,6 @@ package de.bioforscher.singa.mathematics.graphs.model;
 public class UndirectedEdge extends AbstractEdge<RegularNode> {
 
     /**
-     * Creates a new empty edge.
-     */
-    public UndirectedEdge() {
-        super();
-    }
-
-    /**
      * Creates a new edge with the given identifier.
      *
      * @param identifier The identifier.

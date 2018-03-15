@@ -1,29 +1,23 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.core.events.UpdateEventEmitter;
-import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
-import de.bioforscher.singa.simulation.events.NodeUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
-import tec.units.ri.quantity.Quantities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tec.uom.se.ComparableQuantity;
+import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static tec.units.ri.unit.MetricPrefix.MICRO;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
 
 /**
  * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
@@ -54,53 +48,66 @@ import static tec.units.ri.unit.Units.SECOND;
  * up to a given epsilon. The method ({@link TimeStepHarmonizer#setEpsilon(double)}) sets the epsilon and the error
  * between two time steps will be kept below that threshold. Epsilons approaching 0 naturally result in very small time
  * steps and therefore long simulation times, at default epsilon is at 0.01. The time step will be optimized for each
- * epoch, resulting in many epochs for critical simulation regimes and large ones for stable regimes. <p> Changes in
- * simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. By setting {@link
- * AutomatonNode#setObserved(boolean)} to {@code true} the simulation emits {@link NodeUpdatedEvent} for every observed node
- * and every time step to every registered {@link UpdateEventListener} (to register a listener use {@link
- * Simulation#addEventListener(UpdateEventListener)} method). As a standard implementation there is the {@link
- * EpochUpdateWriter} that can be added to the Simulation that will write log files to the specified file locations.
+ * epoch, resulting in many epochs for critical simulation regimes and large ones for stable regimes. <p>
  *
  * @author cl
  */
-public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
+public class Simulation {
+
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
 
     /**
      * The updating modules.
      */
     private final Set<Module> modules;
+
     /**
      * The manager of time steps sizes.
      */
     private final TimeStepHarmonizer harmonizer;
-    /**
-     * Any registered listeners.
-     */
-    private final CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
+
     /**
      * The graph structure.
      */
     private AutomatonGraph graph;
+
+    /**
+     * The logger for any changes in the simulation.
+     */
+    private EpochUpdateWriter epochUpdateWriter;
+
+    /**
+     * The nodes, that are observed during simulation.
+     */
+    private Set<AutomatonNode> observedNodes;
+
     /**
      * The assignment rules.
      */
     private List<AssignmentRule> assignmentRules;
+
     /**
      * The chemical entities referenced in the graph.
      */
     private Set<ChemicalEntity<?>> chemicalEntities;
+
     /**
      * The globally applied parameters.
      */
     private Set<SimulationParameter> globalParameters;
+
     /**
      * The current epoch.
      */
     private long epoch;
+
     /**
      * The currently elapsed time.
      */
-    private Quantity<Time> elapsedTime;
+    private ComparableQuantity<Time> elapsedTime;
 
     /**
      * Creates a new plain simulation.
@@ -108,41 +115,40 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
     public Simulation() {
         modules = new HashSet<>();
         chemicalEntities = new HashSet<>();
-        listeners = new CopyOnWriteArrayList<>();
-        elapsedTime = Quantities.getQuantity(0.0, MICRO(SECOND));
+        observedNodes = new HashSet<>();
+        elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
         epoch = 0;
-        harmonizer = new TimeStepHarmonizer(this, Quantities.getQuantity(1.0, MILLI(SECOND)));
+        harmonizer = new TimeStepHarmonizer(this);
     }
 
     /**
      * Calculates the next epoch.
      */
     public void nextEpoch() {
+        logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
+        // clear observed nodes if necessary
+        if (!observedNodes.isEmpty()) {
+            for (AutomatonNode observedNode : observedNodes) {
+                observedNode.clearPotentialDeltas();
+            }
+        }
         // apply all modules
         boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
+        logger.debug("Applying deltas.");
         for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
-            // emit events to observers
-            if (node.isObserved()) {
-                emitNextEpochEvent(node);
-            }
         }
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change
         if (!timeStepChanged) {
-            // try larger time step next time
-            harmonizer.increaseTimeStep();
+            // if error was below tolerance threshold (10 percent of epsilon)
+            if (harmonizer.getEpsilon() - harmonizer.getLargestLocalError().getValue() > 0.1 * harmonizer.getEpsilon()) {
+                // try larger time step next time
+                harmonizer.increaseTimeStep();
+            }
         }
-    }
-
-    public void initialize() {
-        // for each module
-        // get required entity features
-        // for each entity
-        // assign feature if feature is assignable
-        // check featurable modules if features are annotated
     }
 
     /**
@@ -150,7 +156,7 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(EnvironmentalParameters.getInstance().getTimeStep());
+        elapsedTime = elapsedTime.add(EnvironmentalParameters.getTimeStep());
     }
 
     /**
@@ -181,7 +187,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void setGraph(AutomatonGraph graph) {
         this.graph = graph;
-        chemicalEntities = new HashSet<>(AutomatonGraphs.generateMapOfEntities(graph).values());
     }
 
     /**
@@ -210,7 +215,6 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      */
     public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
         this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
-
     }
 
     /**
@@ -231,6 +235,26 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
         this.chemicalEntities = chemicalEntities;
     }
 
+    public void setEpochUpdateWriter(EpochUpdateWriter epochUpdateWriter) {
+        this.epochUpdateWriter = epochUpdateWriter;
+    }
+
+    public void observeNode(AutomatonNode node) {
+        observedNodes.add(node);
+        node.setObserved(true);
+        if (epochUpdateWriter != null) {
+            try {
+                epochUpdateWriter.addNodeToObserve(node);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Set<AutomatonNode> getObservedNodes() {
+        return observedNodes;
+    }
+
     /**
      * Returns the current epoch number.
      *
@@ -245,23 +269,12 @@ public class Simulation implements UpdateEventEmitter<NodeUpdatedEvent> {
      *
      * @return The elapsed time after the deltas of the current epoch are applied.
      */
-    public Quantity<Time> getElapsedTime() {
+    public ComparableQuantity<Time> getElapsedTime() {
         return elapsedTime;
     }
 
-    /**
-     * Emits the {@link NodeUpdatedEvent} to all listeners.
-     *
-     * @param node The observed node.
-     */
-    public void emitNextEpochEvent(AutomatonNode node) {
-        NodeUpdatedEvent event = new NodeUpdatedEvent(elapsedTime, node);
-        emitEvent(event);
-    }
-
-    @Override
-    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
-        return listeners;
+    public void setEpsilon(double epsilon) {
+        harmonizer.setEpsilon(epsilon);
     }
 
 }

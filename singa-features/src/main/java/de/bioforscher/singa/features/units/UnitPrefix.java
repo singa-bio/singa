@@ -1,7 +1,8 @@
 package de.bioforscher.singa.features.units;
 
-import tec.units.ri.AbstractConverter;
-import tec.units.ri.unit.MetricPrefix;
+
+import tec.uom.se.AbstractConverter;
+import tec.uom.se.unit.MetricPrefix;
 
 import javax.measure.UnitConverter;
 import java.util.EnumSet;

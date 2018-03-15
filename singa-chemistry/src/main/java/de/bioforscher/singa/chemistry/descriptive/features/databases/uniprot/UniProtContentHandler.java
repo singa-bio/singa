@@ -14,7 +14,7 @@ import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;

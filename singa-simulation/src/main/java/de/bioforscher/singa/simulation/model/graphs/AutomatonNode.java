@@ -1,18 +1,19 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.Delta;
-import de.bioforscher.singa.simulation.model.concentrations.DeltaContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
-import tec.units.ri.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.model.Delta;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -28,15 +29,15 @@ import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBR
  *
  * @author cl
  */
-public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer> {
+public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> {
 
     /**
      * Deltas that are to be applied to the node.
      */
-    private final DeltaContainer deltas;
+    private final List<Delta> finalDeltas;
 
     /**
-     * Al list of potential deltas.
+     * A list of potential deltas.
      */
     private final List<Delta> potentialDeltas;
 
@@ -44,18 +45,26 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * The state.
      */
     private NodeState state;
+
     /**
      * A reference to the containing cell section.
      */
     private CellSection cellSection;
+
     /**
      * The contained chemical entities with their concentrations.
      */
     private ConcentrationContainer concentrationContainer;
+
     /**
-     * Indication whether this node should be observed.
+     * A flag signifying if this node is observed.
      */
-    private boolean isObserved;
+    private boolean observed;
+
+    /**
+     * A flag signifying if this node has a fixed concentration.
+     */
+    private boolean concentrationFixed;
 
     /**
      * Creates a new plain automaton node. Initialized as {@link NodeState#AQUEOUS} in a "default" compartment with a
@@ -63,13 +72,19 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      *
      * @param identifier The identifier of the node.
      */
-    public AutomatonNode(int identifier) {
+    public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         state = AQUEOUS;
         cellSection = new EnclosedCompartment("default", "Default Compartment");
         concentrationContainer = new SimpleConcentrationContainer(cellSection);
-        deltas = new DeltaContainer();
+        finalDeltas = new ArrayList<>();
         potentialDeltas = new ArrayList<>();
+        observed = false;
+        concentrationFixed = false;
+    }
+
+    public AutomatonNode(int column, int row) {
+        this(new RectangularCoordinate(column, row));
     }
 
     /**
@@ -91,7 +106,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param concentration The concentration in mol/l.
      */
     public void setConcentration(ChemicalEntity entity, double concentration) {
-        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE));
+        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
     /**
@@ -160,8 +175,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      *
      * @return All deltas that are going to be applied to this node.
      */
-    public List<Delta> getDeltas() {
-        return deltas.getDeltas();
+    public List<Delta> getFinalDeltas() {
+        return finalDeltas;
     }
 
     /**
@@ -171,6 +186,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      */
     public void addPotentialDeltas(Collection<Delta> potentialDeltas) {
         this.potentialDeltas.addAll(potentialDeltas);
+    }
+
+    public List<Delta> getPotentialDeltas() {
+        return potentialDeltas;
     }
 
     /**
@@ -194,28 +213,28 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
-        potentialDeltas.forEach(this::addDelta);
-        potentialDeltas.clear();
-    }
-
-    /**
-     * Adds a delta that will be applied at the end of a epoch.
-     *
-     * @param delta Tha delta.
-     */
-    private void addDelta(Delta delta) {
-        deltas.addDelta(delta);
+        finalDeltas.addAll(potentialDeltas);
+        if (!observed) {
+            potentialDeltas.clear();
+        }
     }
 
     /**
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        for (Delta delta : deltas.getDeltas()) {
-            setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(),
-                    getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity()));
+        if (!concentrationFixed) {
+            for (Delta delta : finalDeltas) {
+                Quantity<MolarConcentration> updatedConcentration = getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity());
+                if (updatedConcentration.getValue().doubleValue() < 0.0) {
+                    // FIXME updated concentration should probably not be capped
+                    // FIXME the the delta that resulted in the decrease probably had a corresponding increase
+                    updatedConcentration = EnvironmentalParameters.emptyConcentration();
+                }
+                setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(), updatedConcentration);
+            }
         }
-        deltas.clear();
+        finalDeltas.clear();
     }
 
     /**
@@ -260,7 +279,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return isObserved;
+        return observed;
     }
 
     /**
@@ -269,7 +288,15 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
-        this.isObserved = isObserved;
+        observed = isObserved;
+    }
+
+    public boolean isConcentrationFixed() {
+        return concentrationFixed;
+    }
+
+    public void setConcentrationFixed(boolean concentrationFixed) {
+        this.concentrationFixed = concentrationFixed;
     }
 
     /**
@@ -316,7 +343,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
 
     @Override
     public String toString() {
-        return "BioNode [id=" + getIdentifier() + "]";
+        return "Node "+getIdentifier()+" ("+getState()+")";
     }
 
     @Override

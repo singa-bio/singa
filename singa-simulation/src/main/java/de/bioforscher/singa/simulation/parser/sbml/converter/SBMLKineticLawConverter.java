@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import javax.measure.Unit;
 import java.util.Map;
 
-import static tec.units.ri.AbstractUnit.ONE;
+import static tec.uom.se.AbstractUnit.ONE;
 
 /**
  * Converts JSBML KineticLaws to SiNGA KineticLaws

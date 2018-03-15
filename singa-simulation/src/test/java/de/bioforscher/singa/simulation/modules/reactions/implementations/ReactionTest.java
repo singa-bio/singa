@@ -5,9 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -19,7 +17,7 @@ import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -30,8 +28,8 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
-import static tec.units.ri.unit.MetricPrefix.MILLI;
-import static tec.units.ri.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -52,7 +50,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species fp = ChEBIParserService.parse("CHEBI:18105");
@@ -89,7 +87,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(200.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -99,20 +97,20 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.0457, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-                assertEquals(0.0542, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
-                assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
+                assertEquals(0.043, node.getConcentration(fp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(gp).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.056, node.getConcentration(ga).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.2, node.getConcentration(aldolase).to(MOLE_PER_LITRE).getValue().doubleValue(), 0);
                 firstCheckpointPassed = true;
             }
         }
         // check final values
-        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-4);
-        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-4);
+        assertEquals(0.0, node.getConcentration(fp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(gp).getValue().doubleValue(), 1e-3);
+        assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
         assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-
+        EnvironmentalParameters.reset();
     }
 
     @Test
@@ -122,7 +120,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species speciesA = new Species.Builder("Species A")
@@ -152,7 +150,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(25.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -162,17 +160,17 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.8901, node.getConcentration(speciesA).getValue().doubleValue(), 1e-3);
-                assertEquals(0.1098, node.getConcentration(speciesB).getValue().doubleValue(), 1e-3);
+                assertEquals(0.8901, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.1108, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.66666, node.getConcentration(speciesA).getValue().doubleValue(), 1e-5);
-        assertEquals(0.33333, node.getConcentration(speciesB).getValue().doubleValue(), 1e-5);
+        assertEquals(0.66666, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
+        assertEquals(0.33333, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-
+        EnvironmentalParameters.reset();
     }
 
     @Test
@@ -182,7 +180,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = prepareGraph();
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species dpo = ChEBIParserService.parse("CHEBI:29802");
@@ -190,7 +188,7 @@ public class ReactionTest {
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setConcentration(dpo, 0.020);
+            node.setConcentration(dpo, Quantities.getQuantity(0.020, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
             node.setConcentration(ndo, 0.0);
             node.setConcentration(oxygen, 0.0);
         }
@@ -211,7 +209,7 @@ public class ReactionTest {
         // add the reaction
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(500.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -221,18 +219,19 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(9E-4, node.getConcentration(oxygen).getValue().doubleValue(), 1e-3);
-                assertEquals(0.003, node.getConcentration(ndo).getValue().doubleValue(), 1e-3);
-                assertEquals(0.018, node.getConcentration(dpo).getValue().doubleValue(), 1e-3);
+                assertEquals(9E-4, node.getConcentration(oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.003, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.018, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.006, node.getConcentration(oxygen).getValue().doubleValue(), 1e-3);
-        assertEquals(0.025, node.getConcentration(ndo).getValue().doubleValue(), 1e-3);
-        assertEquals(0.007, node.getConcentration(dpo).getValue().doubleValue(), 1e-3);
+        assertEquals(0.006, node.getConcentration(oxygen).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.025, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+        assertEquals(0.007, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
+        EnvironmentalParameters.reset();
     }
 
 
@@ -253,7 +252,7 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(SECOND));
-                assertEquals(0.2958, node.getConcentration(x).getValue().doubleValue(), 1e-4);
+                assertEquals(0.2958, node.getConcentration(x).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-4);
                 firstCheckpointPassed = true;
             }
         }
@@ -261,12 +260,7 @@ public class ReactionTest {
         // check final values
         assertEquals(0.2975, node.getConcentration(x).getValue().doubleValue(), 1e-4);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
-    }
-
-
-    private AutomatonGraph prepareGraph() {
-        return AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1,
-                new Rectangle(new Vector2D(0, 400), new Vector2D(400, 0))));
+        EnvironmentalParameters.reset();
     }
 
 }

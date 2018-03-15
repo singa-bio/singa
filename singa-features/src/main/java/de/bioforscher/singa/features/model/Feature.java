@@ -23,4 +23,10 @@ public interface Feature<FeatureContent> {
      */
     FeatureOrigin getFeatureOrigin();
 
+    /**
+     * Returns the symbol associated to this feature.
+     * @return The symbol associated to this feature.
+     */
+    String getSymbol();
+
 }

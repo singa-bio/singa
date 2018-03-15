@@ -2,14 +2,14 @@ package de.bioforscher.singa.simulation.model.parameters;
 
 
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import tec.units.ri.unit.ProductUnit;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
-import static tec.units.ri.AbstractUnit.ONE;
+import static tec.uom.se.AbstractUnit.ONE;
 
 public class UnitScaler {
 

@@ -25,8 +25,8 @@ import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.AbstractUnit;
-import tec.units.ri.quantity.Quantities;
+import tec.uom.se.AbstractUnit;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Unit;
 import javax.xml.stream.XMLStreamException;

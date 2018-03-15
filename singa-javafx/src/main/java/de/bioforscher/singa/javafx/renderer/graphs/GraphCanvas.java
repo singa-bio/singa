@@ -13,22 +13,20 @@ import javafx.scene.input.MouseEvent;
  */
 public class GraphCanvas extends Canvas {
 
-    private GraphDisplayApplication owner;
-    private BooleanProperty editMode;
-    private Vector2D dragStart;
-    private Node<?, Vector2D, ?> draggedNode;
+    public BooleanProperty editMode;
+    public Vector2D dragStart;
+    public Node<?, Vector2D, ?> draggedNode;
 
-    public GraphCanvas(GraphDisplayApplication owner) {
-        this.owner = owner;
-        this.editMode = new SimpleBooleanProperty(true);
+    public GraphCanvas() {
+        editMode = new SimpleBooleanProperty(true);
         // handle events
-        this.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
-        this.addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
-        this.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
-        this.addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClick);
+//        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleDrag);
+//        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleDrag);
     }
 
-    private void handleDrag(MouseEvent event) {
+    public void handleDrag(MouseEvent event) {
         // drag moves node
         if (event.getButton().equals(MouseButton.PRIMARY)) {
             if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
@@ -42,11 +40,11 @@ public class GraphCanvas extends Canvas {
             } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                 if (draggedNode != null) {
                     draggedNode.setPosition(new Vector2D(event.getX(), event.getY()));
+                    handleArrangement();
                 }
-                owner.triggerRendering();
             } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 draggedNode = null;
-                owner.triggerRendering();
+                GraphDisplayApplication.renderer.render(GraphDisplayApplication.getGraph());
             }
         }
     }
@@ -79,6 +77,14 @@ public class GraphCanvas extends Canvas {
                 // do something in case of left click on node
                 break;
             }
+        }
+    }
+
+    private void handleArrangement() {
+        if (GraphDisplayApplication.renderer.getRenderingMode().equals(GraphRenderer.RenderingMode.LLOYDS_RELAXATION.name())) {
+            GraphDisplayApplication.renderer.relaxOnce(GraphDisplayApplication.getGraph());
+        } else {
+            GraphDisplayApplication.renderer.arrangeOnce(GraphDisplayApplication.getGraph());
         }
     }
 

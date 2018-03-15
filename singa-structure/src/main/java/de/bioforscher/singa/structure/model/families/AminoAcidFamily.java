@@ -38,7 +38,10 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
     TRYPTOPHAN("Tryptophan", "W", "Trp", TRYPTOPHAN_ATOM_NAMES),
     TYROSINE("Tyrosine", "Y", "Tyr", TYROSINE_ATOM_NAMES),
     VALINE("Valine", "V", "Val", VALINE_ATOM_NAMES),
-    UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES);
+
+    UNKNOWN("Unknown", "X", "Unk", UNKNOWN_ATOM_NAMES),
+    GAP("Gap", "-", "Gap", UNKNOWN_ATOM_NAMES);
+
 
     private static final String RESIDUE_PROTOTYPES_BASE_DIR = "de/bioforscher/singa/structure/leaves/prototypes/";
     private final String name;
@@ -57,6 +60,10 @@ public enum AminoAcidFamily implements StructuralFamily<AminoAcidFamily> {
         return Arrays.stream(values())
                 .filter(type -> threeLetterCode.equalsIgnoreCase(type.getThreeLetterCode()))
                 .findAny();
+    }
+
+    public static Optional<AminoAcidFamily> getAminoAcidTypeByOneLetterCode(char oneLetterCode) {
+        return getAminoAcidTypeByOneLetterCode(String.valueOf(oneLetterCode));
     }
 
     public static Optional<AminoAcidFamily> getAminoAcidTypeByOneLetterCode(String oneLetterCode) {

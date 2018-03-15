@@ -1,19 +1,14 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
+import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import tec.units.ri.quantity.Quantities;
 
 import java.util.HashMap;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * Currently supports parsing nodes and connecting them with the given edges.
@@ -22,20 +17,21 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  */
 public class GraphMLContentHandler implements ContentHandler {
 
-    private final AutomatonGraph graph;
+    private final UndirectedGraph graph;
     private final HashMap<String, ChemicalEntity> speciesMap;
-    private AutomatonNode node;
+    private RegularNode node;
     private double currentX;
     private double currentY;
     private String tag;
 
     public GraphMLContentHandler() {
-        graph = new AutomatonGraph();
+        graph = new UndirectedGraph();
         speciesMap = new HashMap<>();
         tag = "";
     }
 
-    public AutomatonGraph getGraph() {
+    public UndirectedGraph getGraph() {
+
         return graph;
     }
 
@@ -51,10 +47,10 @@ public class GraphMLContentHandler implements ContentHandler {
                 break;
         }
         // chemical entities
-        if (tag.startsWith("CHEBI")) {
-            Double value = Double.parseDouble(new String(ch, start, length));
-            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, MOLE_PER_LITRE));
-        }
+//        if (tag.startsWith("CHEBI")) {
+//            Double value = Double.parseDouble(new String(ch, start, length));
+//            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+//        }
     }
 
     @Override
@@ -102,24 +98,24 @@ public class GraphMLContentHandler implements ContentHandler {
 
         switch (qName) {
             case "key":
-                String chEBIIdentifier = atts.getValue("id");
+//                String chEBIIdentifier = atts.getValue("id");
                 // parse species that are present as keys
-                if (chEBIIdentifier.startsWith("CHEBI")) {
-                    Species entity = ChEBIParserService.parse(chEBIIdentifier);
-                    speciesMap.put(chEBIIdentifier, entity);
-                }
+//                if (chEBIIdentifier.startsWith("CHEBI")) {
+//                    Species entity = ChEBIParserService.parse(chEBIIdentifier);
+//                    speciesMap.put(chEBIIdentifier, entity);
+//                }
                 break;
             case "data":
                 tag = atts.getValue("key");
                 break;
             case "node":
                 int nodeId = Integer.parseInt(atts.getValue("id"));
-                node = new AutomatonNode(nodeId);
+                node = new RegularNode(nodeId);
                 break;
             case "edge":
                 int edgeId = Integer.parseInt(atts.getValue("id"));
-                AutomatonNode source = graph.getNode(Integer.parseInt(atts.getValue("source")));
-                AutomatonNode target = graph.getNode(Integer.parseInt(atts.getValue("target")));
+                RegularNode source = graph.getNode(Integer.parseInt(atts.getValue("source")));
+                RegularNode target = graph.getNode(Integer.parseInt(atts.getValue("target")));
                 graph.addEdgeBetween(edgeId, source, target);
                 break;
         }

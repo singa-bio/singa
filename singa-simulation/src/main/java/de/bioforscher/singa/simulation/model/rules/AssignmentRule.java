@@ -1,18 +1,16 @@
 package de.bioforscher.singa.simulation.model.rules;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.units.ri.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
-
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -43,7 +41,7 @@ public class AssignmentRule {
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         entityReference.put(entity, parameterIdentifier);
         // FIXME this is not done correctly
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Quantities.getQuantity(0.0, MOLE_PER_LITRE)));
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, EnvironmentalParameters.emptyConcentration()));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {
