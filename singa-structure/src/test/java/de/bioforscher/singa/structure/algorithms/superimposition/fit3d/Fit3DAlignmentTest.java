@@ -14,7 +14,6 @@ import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.MultiParser;
-import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
 import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
 import de.bioforscher.singa.structure.parser.plip.PlipParser;
 import org.junit.Before;
@@ -450,26 +449,4 @@ public class Fit3DAlignmentTest {
                 .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
     }
 
-    @Test
-    public void shouldRunForLargeMotif(){
-        StructuralMotif structuralMotif = StructuralMotif.fromLeafSubstructures(StructureParser.local()
-                .inputStream(Resources.getResourceAsStream("motif_KDEEH.pdb"))
-                .parse()
-                .getAllLeafSubstructures());
-        StructureParserOptions structureParserOptions = StructureParserOptions.withSettings(
-                StructureParserOptions.Setting.OMIT_EDGES,
-                StructureParserOptions.Setting.OMIT_HYDROGENS,
-                StructureParserOptions.Setting.OMIT_LIGAND_INFORMATION,
-                StructureParserOptions.Setting.GET_IDENTIFIER_FROM_FILENAME);
-        StructureParser.MultiParser multiParser = StructureParser.mmtf()
-                .chainList(Paths.get(Resources.getResourceAsFileLocation("nrpdb_BLAST_10e80_500.txt")), "_")
-                .setOptions(structureParserOptions);
-        Fit3DBuilder.create()
-                .query(structuralMotif)
-                .targets(multiParser)
-                .maximalParallelism()
-                .atomFilter(AtomFilter.isArbitrary())
-//                .filterEnvironments()
-                .run();
-    }
 }
