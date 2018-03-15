@@ -21,7 +21,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class PDBEnzymeMapper extends AbstractHTMLParser<Map<String, ECNumber>> {
 
-    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_enzyme.tsv.gz";
+    private static final String MAP_URL = "http://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_enzyme.tsv.gz";
     private static List<String> mappingStrings;
 
     private static PDBEnzymeMapper pdbUniProtMapper;

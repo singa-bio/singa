@@ -19,7 +19,7 @@ import java.util.zip.GZIPInputStream;
 public class UniProtResidueMapParser extends AbstractXMLParser<Map<LeafIdentifier, Integer>> {
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtResidueMapParser.class);
-    private static final String RESIDUE_MAP_FETCH_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/xml/%s.xml.gz";
+    private static final String RESIDUE_MAP_FETCH_URL = "http://ftp.ebi.ac.uk/pub/databases/msd/sifts/xml/%s.xml.gz";
 
     public UniProtResidueMapParser(PDBIdentifier identifier) {
         getXmlReader().setContentHandler(new ResidueMapContentHandler(identifier.toString()));
