@@ -34,7 +34,6 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/singa-benchmark/pom.xml" />
-        <option value="$PROJECT_DIR$/singa-sequence/pom.xml" />
       </set>
     </option>
   </component>

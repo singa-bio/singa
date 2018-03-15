@@ -7,24 +7,24 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>de.bioforscher.singa</groupId>
-        <version>0.3.2-alpha</version>
+        <version>0.3.2</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-javafx</artifactId>
-    <version>0.3.2-alpha</version>
+    <version>0.3.2</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-chemistry</artifactId>
-            <version>0.3.2-alpha</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>de.bioforscher.singa</groupId>
             <artifactId>singa-sequence</artifactId>
-            <version>0.3.2-alpha</version>
+            <version>0.3.2</version>
         </dependency>
     </dependencies>
 
