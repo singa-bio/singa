@@ -7,7 +7,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  *
  * @author cl
  */
-public class UndirectedGraph extends AbstractGraph<RegularNode, UndirectedEdge, Vector2D, Integer> {
+public class UndirectedGraph extends AbstractMapGraph<RegularNode, UndirectedEdge, Vector2D, Integer> {
 
     @Override
     public int addEdgeBetween(int identifier, RegularNode source, RegularNode target) {

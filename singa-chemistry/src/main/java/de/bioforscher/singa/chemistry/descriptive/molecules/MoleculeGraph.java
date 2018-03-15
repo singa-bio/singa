@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.molecules;
 
 import de.bioforscher.singa.chemistry.descriptive.estimations.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
+import de.bioforscher.singa.mathematics.graphs.model.AbstractMapGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.structure.elements.Element;
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class MoleculeGraph extends AbstractGraph<MoleculeAtom, MoleculeBond, Vector2D, Integer> {
+public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, Vector2D, Integer> {
 
     // TODO add a reference of this to Species
 

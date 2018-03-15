@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.graphs.model.AbstractGraph;
+import de.bioforscher.singa.mathematics.graphs.model.AbstractMapGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -24,7 +24,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  *
  * @author cl
  */
-public class AutomatonGraph extends AbstractGraph<AutomatonNode, AutomatonEdge, Vector2D, Integer> {
+public class AutomatonGraph extends AbstractMapGraph<AutomatonNode, AutomatonEdge, Vector2D, Integer> {
 
     /**
      * The cell sections referenced in this graph.

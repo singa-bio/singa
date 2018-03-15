@@ -1,15 +1,15 @@
-package de.bioforscher.singa.mathematics.topology.grids;
+package de.bioforscher.singa.mathematics.topology.grids.cube;
 
 /**
  * @author cl
  */
-public class UnitCubeCoordinate {
+public class CubeCoordinate {
 
     private final int x;
     private final int y;
     private final int z;
 
-    public UnitCubeCoordinate(int x, int y, int z) {
+    public CubeCoordinate(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;

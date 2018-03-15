@@ -14,9 +14,6 @@ public class NeedlemanWunschTest {
     @Test
     public void shouldComputeAlignment() {
 
-        // ProteinSequence first = ProteinSequence.of("ASTGLM");
-        // ProteinSequence second = ProteinSequence.of("ASTHILM");
-
         Structure first = StructureParser.pdb()
                 .pdbIdentifier("1n3l")
                 .chainIdentifier("A")
@@ -32,8 +29,6 @@ public class NeedlemanWunschTest {
         ProteinSequence secondSequence = ProteinSequence.of(second.getAllLeafSubstructures());
 
         NeedlemanWunschAlignment alignment = new NeedlemanWunschAlignment(SubstitutionMatrix.BLOSUM_45, firstSequence, secondSequence);
-
-        // TODO test alignment
 
     }
 }

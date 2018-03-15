@@ -17,7 +17,7 @@ import java.util.Map;
  * @param <VectorType> The vector that is used to define the position of this node.
  * @author cl
  */
-public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType, IdentifierType>,
+public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorType, IdentifierType>,
         EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType>
         implements Graph<NodeType, EdgeType, IdentifierType> {
 
@@ -39,7 +39,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType, 
     /**
      * Creates a new graph object.
      */
-    public AbstractGraph() {
+    public AbstractMapGraph() {
         this(10, 10);
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractGraph<NodeType extends Node<NodeType, VectorType, 
      * @param nodeCapacity The initial capacity for the node list.
      * @param edgeCapacity The initial capacity for the edge list.
      */
-    public AbstractGraph(int nodeCapacity, int edgeCapacity) {
+    public AbstractMapGraph(int nodeCapacity, int edgeCapacity) {
         nodes = new HashMap<>(nodeCapacity);
         edges = new HashMap<>(edgeCapacity);
     }
