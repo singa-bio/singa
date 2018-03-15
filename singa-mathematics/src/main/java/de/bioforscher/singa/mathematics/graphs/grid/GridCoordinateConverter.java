@@ -1,4 +1,4 @@
-package de.bioforscher.singa.mathematics.graphs.model;
+package de.bioforscher.singa.mathematics.graphs.grid;
 
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 

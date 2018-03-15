@@ -27,13 +27,13 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
     public RectangularCoordinate getNeighbour(RectangularDirection rectangularDirection) {
         switch (rectangularDirection) {
             case NORTH:
-                return new RectangularCoordinate(row - 1, column);
+                return new RectangularCoordinate(column, row - 1);
             case SOUTH:
-                return new RectangularCoordinate(row + 1, column);
+                return new RectangularCoordinate(column, row + 1);
             case EAST:
-                return new RectangularCoordinate(row, column + 1);
+                return new RectangularCoordinate(column + 1, row);
             case WEST:
-                return new RectangularCoordinate(row, column - 1);
+                return new RectangularCoordinate(column - 1, row);
             default:
                 throw new IllegalStateException("The direction " + rectangularDirection + " is invalid for this coordinate type");
         }
@@ -44,4 +44,8 @@ public class RectangularCoordinate implements DiscreteCoordinate<RectangularCoor
         return RectangularDirection.values();
     }
 
+    @Override
+    public String toString() {
+        return "(" + column + ", " + row + ")";
+    }
 }

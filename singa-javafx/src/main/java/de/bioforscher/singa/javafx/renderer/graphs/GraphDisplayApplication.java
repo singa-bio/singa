@@ -22,7 +22,7 @@ import static de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer.Renderin
  */
 public class GraphDisplayApplication extends Application {
 
-    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildTreeGraph(4);
+    public static Graph<? extends Node<?, Vector2D, ?>, ?, ?> graph = Graphs.buildGridGraph(5,5);
     public static GraphRenderer renderer = new GraphRenderer();
 
     public static void main(String[] args) {

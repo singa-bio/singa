@@ -8,9 +8,9 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
@@ -76,7 +76,7 @@ public class SimulationExamples {
         Species oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(dinitrogenPentaoxide, 0.02);
@@ -115,7 +115,7 @@ public class SimulationExamples {
         Species octatriene = ChEBIParserService.parse("CHEBI:77504");
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
@@ -159,7 +159,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
@@ -210,7 +210,7 @@ public class SimulationExamples {
                 .build();
 
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // initialize species in graph with desired concentration
         graph.initializeSpeciesWithConcentration(fructosePhosphate, 0.1);
@@ -263,7 +263,7 @@ public class SimulationExamples {
 
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
+            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 node.setConcentration(methanol, 1);
                 node.setConcentration(ethyleneGlycol, 1);
                 node.setConcentration(valine, 1);
@@ -324,10 +324,10 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
+        graph.getNode(0,0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
 
         logger.debug("Composing simulation ... ");
@@ -392,7 +392,7 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         model.getCompartments().keySet().forEach(graph::addCellSection);
 
@@ -438,11 +438,9 @@ public class SimulationExamples {
         // setup time step size as given
         logger.debug("Adjusting time step size ... ");
         EnvironmentalParameters.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
-        // setup rectangular graph with number of nodes
-        GridCoordinateConverter converter = new GridCoordinateConverter(11, 11);
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
-        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), converter.getNumberOfColumns());
+        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
         // all species
         Set<Species> allSpecies = new HashSet<>();
         // Domperidone
@@ -474,13 +472,13 @@ public class SimulationExamples {
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
 
         logger.debug("Setting up example graph ...");
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(converter.getNumberOfColumns(), converter.getNumberOfRows());
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, converter, right, left);
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, right, left);
 
         // set concentrations
         // only 5 left most nodes
         for (AutomatonNode node : graph.getNodes()) {
-            if (node.getIdentifier() % converter.getNumberOfColumns() < 5) {
+            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 for (Species species : allSpecies) {
                     node.setConcentration(species, 1.0);
                 }
@@ -525,16 +523,16 @@ public class SimulationExamples {
         Membrane membrane = Membrane.forCompartment(inner);
         // initialize species in graph with desired concentration
         for (AutomatonNode node : graph.getNodes()) {
-            Vector2D coordinate = gcc.convert(node.getIdentifier());
-            if ((coordinate.getX() == 2 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
-                    (coordinate.getX() == 27 && coordinate.getY() > 2 && coordinate.getY() < 17) ||
-                    (coordinate.getY() == 2 && coordinate.getX() > 1 && coordinate.getX() < 28) ||
-                    (coordinate.getY() == 17 && coordinate.getX() > 1 && coordinate.getX() < 28)) {
+            RectangularCoordinate coordinate = node.getIdentifier();
+            if ((coordinate.getColumn() == 2 && coordinate.getRow() > 2 && coordinate.getRow() < 17) ||
+                    (coordinate.getColumn() == 27 && coordinate.getRow() > 2 && coordinate.getRow() < 17) ||
+                    (coordinate.getRow() == 2 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28) ||
+                    (coordinate.getRow() == 17 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28)) {
                 // setup membrane
                 node.setCellSection(membrane);
                 node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
                 node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
-            } else if (coordinate.getX() > 2 && coordinate.getY() > 2 && coordinate.getX() < 27 && coordinate.getY() < 17) {
+            } else if (coordinate.getColumn() > 2 && coordinate.getRow() > 2 && coordinate.getColumn() < 27 && coordinate.getRow() < 17) {
                 node.setCellSection(inner);
                 node.setConcentration(domperidone, 0.0);
             } else {

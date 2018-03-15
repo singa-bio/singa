@@ -4,6 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -28,7 +29,7 @@ import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBR
  *
  * @author cl
  */
-public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer> {
+public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> {
 
     /**
      * Deltas that are to be applied to the node.
@@ -71,7 +72,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
      *
      * @param identifier The identifier of the node.
      */
-    public AutomatonNode(int identifier) {
+    public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         state = AQUEOUS;
         cellSection = new EnclosedCompartment("default", "Default Compartment");
@@ -80,6 +81,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Integer
         potentialDeltas = new ArrayList<>();
         observed = false;
         concentrationFixed = false;
+    }
+
+    public AutomatonNode(int column, int row) {
+        this(new RectangularCoordinate(column, row));
     }
 
     /**

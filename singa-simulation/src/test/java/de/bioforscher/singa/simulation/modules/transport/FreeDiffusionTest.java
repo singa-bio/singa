@@ -6,8 +6,7 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.graphs.model.GridCoordinateConverter;
-import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -100,7 +99,7 @@ public class FreeDiffusionTest {
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
-            if (node.getIdentifier() % numberOfNodes < numberOfNodes / 2) {
+            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 node.setConcentration(species, 1.0);
             } else {
                 node.setConcentration(species, 0.0);
@@ -118,16 +117,14 @@ public class FreeDiffusionTest {
     }
 
     private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, Species species) {
-        // observe the node in the middle on the right
-        GridCoordinateConverter converter = new GridCoordinateConverter(numberOfNodes, numberOfNodes);
         // returns the node in the middle on the right
-        int observedNodeIdentifier = converter.convert(new Vector2D(numberOfNodes - 1, (numberOfNodes / 2) - 1));
-        simulation.getGraph().getNode(observedNodeIdentifier).setObserved(true);
+        RectangularCoordinate coordinate = new RectangularCoordinate(numberOfNodes - 1, (numberOfNodes / 2) - 1);
+        simulation.getGraph().getNode(coordinate).setObserved(true);
         // simulate until half life concentration has been reached
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(observedNodeIdentifier).getConcentration(species).to(MOLE_PER_LITRE);
+            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentration(species).to(MOLE_PER_LITRE);
             currentConcentration = concentration.getValue().doubleValue();
             //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }

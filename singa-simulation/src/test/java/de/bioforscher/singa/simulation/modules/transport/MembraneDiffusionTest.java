@@ -10,6 +10,7 @@ import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
@@ -39,14 +40,14 @@ public class MembraneDiffusionTest {
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(35E-04, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
-        final AutomatonGraph automatonGraph = new AutomatonGraph();
+        final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
         simulation.setGraph(automatonGraph);
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
         Membrane membrane = Membrane.forCompartment(right);
 
-        AutomatonNode membraneNode = new AutomatonNode(0);
+        AutomatonNode membraneNode = automatonGraph.getNode(0,0);
         membraneNode.setState(NodeState.MEMBRANE);
         membraneNode.setConcentrationContainer(new MembraneContainer(left, right, membrane));
         membraneNode.setAvailableConcentration(water, left, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));

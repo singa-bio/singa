@@ -6,7 +6,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBI
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -51,7 +50,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species fp = ChEBIParserService.parse("CHEBI:18105");
@@ -88,7 +87,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(200.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -121,7 +120,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species speciesA = new Species.Builder("Species A")
@@ -151,7 +150,7 @@ public class ReactionTest {
         // add the reaction module
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(25.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -181,7 +180,7 @@ public class ReactionTest {
         Simulation simulation = new Simulation();
 
         // setup graph
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildLinearGraph(1));
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
         Species dpo = ChEBIParserService.parse("CHEBI:29802");
@@ -210,7 +209,7 @@ public class ReactionTest {
         // add the reaction
         simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0);
+        AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(500.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;

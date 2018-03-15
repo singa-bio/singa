@@ -21,7 +21,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class PDBPfamMapper extends AbstractHTMLParser<Map<String, PfamIdentifier>> {
 
-    private static final String MAP_URL = "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_pfam.tsv.gz";
+    private static final String MAP_URL = "http://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_pfam.tsv.gz";
     private static List<String> mappingStrings;
 
     private static PDBPfamMapper pdbPfamMapper;

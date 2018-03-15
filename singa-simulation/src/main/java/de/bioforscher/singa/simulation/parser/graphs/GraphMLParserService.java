@@ -1,14 +1,14 @@
 package de.bioforscher.singa.simulation.parser.graphs;
 
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-public class GraphMLParserService extends AbstractXMLParser<AutomatonGraph> {
+public class GraphMLParserService extends AbstractXMLParser<UndirectedGraph> {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphMLParserService.class);
 
@@ -18,7 +18,7 @@ public class GraphMLParserService extends AbstractXMLParser<AutomatonGraph> {
     }
 
     @Override
-    public AutomatonGraph parse() {
+    public UndirectedGraph parse() {
         logger.debug("Parsing graph from file {}.", getFetchResult());
         try {
             getXmlReader().parse(getResource());

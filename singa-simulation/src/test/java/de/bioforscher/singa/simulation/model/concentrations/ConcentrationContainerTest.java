@@ -30,7 +30,7 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfSimpleConcentration() {
         // by default with simple concentration set
-        AutomatonNode n1 = new AutomatonNode(0);
+        AutomatonNode n1 = new AutomatonNode(0,0);
         // initialize value
         n1.setConcentration(entity, 0.3);
         // retrieve value
@@ -40,7 +40,7 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfMultiConcentration() {
         // and with multi concentration set
-        AutomatonNode node = new AutomatonNode(1);
+        AutomatonNode node = new AutomatonNode(0,0);
         // create set of sections
         Set<CellSection> sections = new HashSet<>();
         sections.add(innerSection);
@@ -60,7 +60,7 @@ public class ConcentrationContainerTest {
     @Test
     public void testReturnOfMembraneConcentration() {
         // and with membrane concentration set
-        AutomatonNode node = new AutomatonNode(1);
+        AutomatonNode node = new AutomatonNode(0,0);
         // and initialize node as multi section container
         node.setConcentrationContainer(new MembraneContainer(outerSection, innerSection, membrane));
         // initialize values

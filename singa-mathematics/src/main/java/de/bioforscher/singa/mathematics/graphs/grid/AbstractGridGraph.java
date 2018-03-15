@@ -1,5 +1,8 @@
-package de.bioforscher.singa.mathematics.graphs.model;
+package de.bioforscher.singa.mathematics.graphs.grid;
 
+import de.bioforscher.singa.mathematics.graphs.model.Edge;
+import de.bioforscher.singa.mathematics.graphs.model.Graph;
+import de.bioforscher.singa.mathematics.graphs.model.Node;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularGrid;
 import de.bioforscher.singa.mathematics.vectors.Vector;
@@ -25,10 +28,19 @@ public abstract class AbstractGridGraph<NodeType extends Node<NodeType, VectorTy
      */
     private final Map<Integer, EdgeType> edges;
 
-    public AbstractGridGraph(int width, int height) {
-        grid = new RectangularGrid<>(width, height);
+    public AbstractGridGraph(int columns, int rows) {
+        grid = new RectangularGrid<>(columns, rows);
         edges = new HashMap<>();
     }
+
+    public int getNumberOfColumns() {
+        return grid.getWidth();
+    }
+
+    public int getNumberOfRows() {
+        return grid.getHeight();
+    }
+
 
     @Override
     public Collection<NodeType> getNodes() {

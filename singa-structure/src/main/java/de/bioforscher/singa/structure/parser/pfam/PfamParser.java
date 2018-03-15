@@ -191,7 +191,7 @@ public class PfamParser {
 
     public enum PfamVersion {
 
-        V31("ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/database_files/pdb_pfamA_reg.txt.gz");
+        V31("http://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/database_files/pdb_pfamA_reg.txt.gz");
 
         private final String pfamMappingLocation;
 

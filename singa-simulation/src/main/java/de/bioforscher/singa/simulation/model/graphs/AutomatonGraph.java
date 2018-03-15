@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.model.graphs;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.graphs.model.AbstractMapGraph;
+import de.bioforscher.singa.mathematics.graphs.grid.AbstractGridGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -25,7 +25,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
  *
  * @author cl
  */
-public class AutomatonGraph extends AbstractMapGraph<AutomatonNode, AutomatonEdge, Vector2D, Integer> {
+public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEdge, Vector2D> {
 
     /**
      * The cell sections referenced in this graph.
@@ -33,25 +33,13 @@ public class AutomatonGraph extends AbstractMapGraph<AutomatonNode, AutomatonEdg
     private final Map<String, CellSection> cellSections;
 
     /**
-     * The identifier for the next node that is to be added.
-     */
-    private int nextNodeIdentifier;
-
-    /**
-     * Creates a new empty graph.
-     */
-    public AutomatonGraph() {
-        cellSections = new HashMap<>();
-    }
-
-    /**
      * Creates a new empty graph, initialized with node and edge capacity.
      *
-     * @param nodeCapacity The node capacity.
-     * @param edgeCapacity The edge capacity.
+     * @param columns The node capacity.
+     * @param rows The edge capacity.
      */
-    public AutomatonGraph(int nodeCapacity, int edgeCapacity) {
-        super(nodeCapacity, edgeCapacity);
+    public AutomatonGraph(int columns, int rows) {
+        super(columns, rows);
         cellSections = new HashMap<>();
     }
 
@@ -63,11 +51,6 @@ public class AutomatonGraph extends AbstractMapGraph<AutomatonNode, AutomatonEdg
     @Override
     public int addEdgeBetween(AutomatonNode source, AutomatonNode target) {
         return addEdgeBetween(nextEdgeIdentifier(), source, target);
-    }
-
-    @Override
-    public Integer nextNodeIdentifier() {
-        return nextNodeIdentifier++;
     }
 
     /**
@@ -118,30 +101,5 @@ public class AutomatonGraph extends AbstractMapGraph<AutomatonNode, AutomatonEdg
     public void addCellSection(CellSection cellSection) {
         cellSections.put(cellSection.getIdentifier(), cellSection);
     }
-
-    /**
-     * Adds nodes in a rectangular region to the cell section. Each node in the graph that lies inside of the rectangle
-     * is associated to the compartment. Additionally the outermost nodes are assigned as membrane nodes of this
-     * compartment.
-     *
-     * @param enclosedCompartment The enclosed compartment.
-     * @param rectangle The rectangle.
-     */
-//    public void addNodesToCompartment(EnclosedCompartment enclosedCompartment, Rectangle rectangle) {
-//        Set<AutomatonNode> compartmentContent = new HashSet<>();
-//        Rectangle r = new Rectangle(rectangle.getTopRightVertex(), rectangle.getBottomLeftVertex());
-//        getNodes().forEach(node -> {
-//            if (node.getPosition().canBePlacedIn(r)) {
-//                compartmentContent.add(node);
-//                node.setCellSection(enclosedCompartment);
-//            }
-//        });
-//        if (!compartmentContent.isEmpty()) {
-//            cellSections.get(enclosedCompartment.getIdentifier()).getContent().addAll(compartmentContent);
-//            Membrane membrane = enclosedCompartment.generateMembrane();
-//            enclosedCompartment.getEnclosingMembrane().initializeNodes(this);
-//            cellSections.put(membrane.getIdentifier(), membrane);
-//        }
-//    }
 
 }
