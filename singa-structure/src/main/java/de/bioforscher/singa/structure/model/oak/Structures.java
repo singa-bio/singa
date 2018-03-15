@@ -1,8 +1,11 @@
 package de.bioforscher.singa.structure.model.oak;
 
+import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
+import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
+import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DException;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ public class Structures {
     /**
      * Returns the distance matrix of the given {@link LeafSubstructureContainer}.
      *
-     * @param leafSubstructureContainer A leaf container with the leaves.
+     * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
      * @return The distance matrix.
      */
     public static LabeledSymmetricMatrix<LeafSubstructure<?>> calculateDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
@@ -36,11 +39,38 @@ public class Structures {
     /**
      * Returns the squared distance matrix of the given {@link LeafSubstructureContainer}.
      *
-     * @param leafSubstructureContainer A leaf container with the leaves.
+     * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
      * @return The squared distance matrix.
      */
     public static LabeledSymmetricMatrix<LeafSubstructure<?>> calculateSquaredDistanceMatrix(LeafSubstructureContainer leafSubstructureContainer) {
         return VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(leafSubstructureContainer.getAllLeafSubstructures(), LeafSubstructure::getPosition);
+    }
+
+    /**
+     * Returns the maximal extent of the given {@link LeafSubstructureContainer}.
+     *
+     * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
+     * @return The maximal extent.
+     */
+    public static double calculateExtent(LeafSubstructureContainer leafSubstructureContainer) {
+        return Math.sqrt(calculateSquaredExtent(leafSubstructureContainer));
+    }
+
+    /**
+     * Returns the maximal squared extent of the given {@link LeafSubstructureContainer}.
+     *
+     * @param leafSubstructureContainer A {@link LeafSubstructureContainer}.
+     * @return The maximal squared extent.
+     */
+    public static double calculateSquaredExtent(LeafSubstructureContainer leafSubstructureContainer) {
+        LabeledSymmetricMatrix<LeafSubstructure<?>> queryDistanceMatrix = calculateSquaredDistanceMatrix(leafSubstructureContainer);
+        // position of maximal element is always symmetric, hence we consider the first
+        Pair<Integer> positionOfMaximalElement = Matrices.getPositionsOfMaximalElement(queryDistanceMatrix).stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("could not determine the maximal squared extent of " +
+                        leafSubstructureContainer));
+        return queryDistanceMatrix.getElement(positionOfMaximalElement.getFirst(),
+                positionOfMaximalElement.getSecond());
     }
 
     /**

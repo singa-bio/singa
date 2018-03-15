@@ -1,5 +1,8 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
+import de.bioforscher.singa.core.identifier.ECNumber;
+import de.bioforscher.singa.core.identifier.PfamIdentifier;
+import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;
@@ -250,6 +253,35 @@ public class Fit3DBuilder {
          * @return The {@link BatchParameterStep} that can be used to define optional parameters.
          */
         ParameterStep statisticalModel(StatisticalModel statisticalModel);
+
+        /**
+         * Enables mapping of each chain of a {@link Fit3DMatch} to a {@link UniProtIdentifier} using the SIFTS project.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep mapUniProtIdentifiers();
+
+        /**
+         * Enables mapping of each chain of a {@link Fit3DMatch} to a {@link PfamIdentifier} using the SIFTS project.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep mapPfamIdentifiers();
+
+        /**
+         * Enables mapping of each chain of a {@link Fit3DMatch} to an {@link ECNumber} using the SIFTS project.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep mapECNumbers();
+
+        /**
+         * Enables pre-filtering of extracted environments, i.e. each pair of residues has to have a compatible pair
+         * in the environment within distance cutoff.
+         *
+         * @return The {@link ParameterStep} that can be used to define optional parameters.
+         */
+        ParameterStep filterEnvironments();
     }
 
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
@@ -272,6 +304,10 @@ public class Fit3DBuilder {
         boolean skipAlphaCarbonTargets;
         boolean skipBackboneTargets;
         StatisticalModel statisticalModel;
+        boolean mapUniprotIdentifiers;
+        boolean mapPfamIdentifiers;
+        boolean mapEcNumbers;
+        boolean filterEnvironments;
 
         @Override
         public TargetStep query(StructuralMotif query) {
@@ -373,9 +409,35 @@ public class Fit3DBuilder {
             return this;
         }
 
+        //TODO this should only be valid for classical Fit3D run (not for Fit3Ds)
         @Override
         public ParameterStep statisticalModel(StatisticalModel statisticalModel) {
+            Objects.requireNonNull(statisticalModel);
             this.statisticalModel = statisticalModel;
+            return this;
+        }
+
+        @Override
+        public ParameterStep mapUniProtIdentifiers() {
+            mapUniprotIdentifiers = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep mapPfamIdentifiers() {
+            mapPfamIdentifiers = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep mapECNumbers() {
+            mapEcNumbers = true;
+            return this;
+        }
+
+        @Override
+        public ParameterStep filterEnvironments() {
+            filterEnvironments = true;
             return this;
         }
 

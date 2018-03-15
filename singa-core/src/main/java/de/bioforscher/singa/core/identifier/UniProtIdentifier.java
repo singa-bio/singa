@@ -43,14 +43,14 @@ public class UniProtIdentifier extends AbstractIdentifier {
     }
 
     /**
-     * Searches a valid PubChem identifier in a collection of identifiers and returns it.
+     * Searches a valid UniProt identifier in a collection of identifiers and returns it.
      *
      * @param identifiers A collection of identifiers.
-     * @return The first PubChem identifier or an empty optional if no identifier could be found.
+     * @return The first UniProt identifier or an empty optional if no identifier could be found.
      */
     public static Optional<Identifier> find(Collection<Identifier> identifiers) {
         for (Identifier identifier : identifiers) {
-            if (UniProtIdentifier.check(identifier)) {
+            if (check(identifier)) {
                 return Optional.of(identifier);
             }
         }

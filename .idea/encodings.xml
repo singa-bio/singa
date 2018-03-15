@@ -2,13 +2,12 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/singa-all" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/singa-benchmark" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-chemistry" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-features" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-javafx" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-mathematics" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/singa-mmtf" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/singa-sequence" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-simulation" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/singa-structure" charset="UTF-8" />
   </component>

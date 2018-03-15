@@ -1,13 +1,12 @@
 package de.bioforscher.singa.structure.parser.pfam;
 
+import de.bioforscher.singa.core.identifier.PfamIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptions;
-import de.bioforscher.singa.structure.parser.pfam.tokens.IdentifierToken;
-import de.bioforscher.singa.structure.parser.pfam.tokens.PdbToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+
+import static de.bioforscher.singa.structure.parser.pfam.tokens.PfamToken.IdentifierToken;
+import static de.bioforscher.singa.structure.parser.pfam.tokens.PfamToken.PDBToken;
 
 /**
  * A parser for the The Pfam protein families database. This can be used to parse protein structures directly from Pfam.
@@ -39,14 +40,13 @@ import java.util.zip.GZIPInputStream;
  */
 public class PfamParser {
 
-    private static final Pattern PFAM_IDENTIFIER_PATTERN = Pattern.compile("PF[0-9]{5}");
     private static final String DEFAULT_CHAIN_LIST_SEPARATOR = "\t";
     private static final Predicate<LeafSubstructure<?>> LEAF_SUBSTRUCTURE_FILTER = leafSubstructure -> !(leafSubstructure instanceof AminoAcid);
 
     private static final Logger logger = LoggerFactory.getLogger(PfamParser.class);
 
     private final PfamVersion version;
-    private final String pfamIdentifier;
+    private final PfamIdentifier pfamIdentifier;
     private final Path chainListPath;
     private final String chainListSeparator;
     private final boolean parseChains;
@@ -81,8 +81,8 @@ public class PfamParser {
                         .map(line -> line.split(chainListSeparator))
                         .collect(Collectors.toList());
                 relevantLines.removeIf(line -> chainsToCollect.stream()
-                        .noneMatch(chain -> PdbToken.PDB_IDENTIFIER.extract(line).equalsIgnoreCase(chain[0])
-                                && PdbToken.CHAIN_IDENTIFIER.extract(line).equals(chain[1])));
+                        .noneMatch(chain -> PDBToken.PDB_IDENTIFIER.extract(line).equalsIgnoreCase(chain[0])
+                                && PDBToken.CHAIN_IDENTIFIER.extract(line).equals(chain[1])));
                 logger.info("Pfam covers {} of {} chains in the provided list", relevantLines.size(), chainsToCollect.size());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -100,10 +100,10 @@ public class PfamParser {
     private void parseDomains() {
         List<List<LeafSubstructure<?>>> domains = new ArrayList<>();
         for (String relevantLine : relevantLines) {
-            String pdbIdentifier = PdbToken.PDB_IDENTIFIER.extract(relevantLine);
-            String chainIdentifier = PdbToken.CHAIN_IDENTIFIER.extract(relevantLine);
-            int startPdb = Integer.valueOf(PdbToken.PDB_RESIDUE_START.extract(relevantLine));
-            int endPdb = Integer.valueOf(PdbToken.PDB_RESIDUE_END.extract(relevantLine));
+            String pdbIdentifier = PDBToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase();
+            String chainIdentifier = PDBToken.CHAIN_IDENTIFIER.extract(relevantLine);
+            int startPdb = Integer.valueOf(PDBToken.PDB_RESIDUE_START.extract(relevantLine));
+            int endPdb = Integer.valueOf(PDBToken.PDB_RESIDUE_END.extract(relevantLine));
             List<LeafSubstructure<?>> domain;
             if (structureParserOptions != null) {
                 domain = StructureParser.pdb()
@@ -135,8 +135,8 @@ public class PfamParser {
     private void parseChains() {
         List<Chain> chains = new ArrayList<>();
         for (String relevantLine : relevantLines) {
-            String pdbIdentifier = PdbToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase().toLowerCase();
-            String chainIdentifier = PdbToken.CHAIN_IDENTIFIER.extract(relevantLine);
+            String pdbIdentifier = PDBToken.PDB_IDENTIFIER.extract(relevantLine).toLowerCase();
+            String chainIdentifier = PDBToken.CHAIN_IDENTIFIER.extract(relevantLine);
             logger.info("parsing Pfam chain {}_{}", pdbIdentifier, chainIdentifier);
             Chain chain;
             if (structureParserOptions != null) {
@@ -172,7 +172,7 @@ public class PfamParser {
             try (GZIPInputStream zip = new GZIPInputStream(new FileInputStream(temporaryZippedFile.toFile()));
                  BufferedReader reader = new BufferedReader(new InputStreamReader(zip, "UTF-8"))) {
                 relevantLines = reader.lines()
-                        .filter(line -> IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier))
+                        .filter(line -> IdentifierToken.PFAM_IDENTIFIER.extract(line).equals(pfamIdentifier.getIdentifier()))
                         .collect(Collectors.toList());
                 logger.info("Pfam {} has {} entries", pfamIdentifier, relevantLines.size());
             }
@@ -278,7 +278,7 @@ public class PfamParser {
 
         public StructureParserOptions structureParserOptions;
         private PfamVersion version;
-        private String pfamIdentifier;
+        private PfamIdentifier pfamIdentifier;
         private Path chainListPath;
         private String chainListSeparator;
         private boolean parseChains;
@@ -293,10 +293,7 @@ public class PfamParser {
         @Override
         public ChainStep pfamIdentifier(String pfamIdentifier) {
             Objects.requireNonNull(pfamIdentifier);
-            if (!PFAM_IDENTIFIER_PATTERN.asPredicate().test(pfamIdentifier)) {
-                throw new IllegalArgumentException("Pfam identifier '" + pfamIdentifier + "' seems to be invalid.");
-            }
-            this.pfamIdentifier = pfamIdentifier;
+            this.pfamIdentifier = new PfamIdentifier(pfamIdentifier);
             return this;
         }
 

@@ -12,7 +12,7 @@ import java.util.Optional;
  * @param <ContentType> The content type of the nodes.
  * @author cl
  */
-public class GenericGraph<ContentType> extends AbstractGraph<GenericNode<ContentType>, GenericEdge<ContentType>, Vector2D, Integer> {
+public class GenericGraph<ContentType> extends AbstractMapGraph<GenericNode<ContentType>, GenericEdge<ContentType>, Vector2D, Integer> {
 
     /**
      * A iterating variable to add a new node.

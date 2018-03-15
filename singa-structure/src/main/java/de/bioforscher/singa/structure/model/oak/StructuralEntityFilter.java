@@ -40,24 +40,30 @@ public class StructuralEntityFilter {
      * Simple {@link AtomFilter} representation as functional Enum class.
      */
     public enum AtomFilterType {
-        ALPHA_CARBON(AtomFilter.isAlphaCarbon()),
-        ARBITRARY(AtomFilter.isArbitrary()),
-        BACKBONE(AtomFilter.isBackbone()),
-        BACKBONE_CARBON(AtomFilter.isBackboneCarbon()),
-        BACKBONE_NITROGEN(AtomFilter.isBackboneNitrogen()),
-        BACKBONE_OXYGEN(AtomFilter.isBackboneOxygen()),
-        BETA_CARBON(AtomFilter.isBetaCarbon()),
-        CARBON(AtomFilter.isCarbon()),
-        HYDROGEN(AtomFilter.isHydrogen()),
-        NITROGEN(AtomFilter.isNitrogen()),
-        OXYGEN(AtomFilter.isOxygen()),
-        PHOSPHORUS(AtomFilter.isPhosphorus()),
-        SIDE_CHAIN(AtomFilter.isSideChain());
+        ALPHA_CARBON(AtomFilter.isAlphaCarbon(), "alpha carbon"),
+        ARBITRARY(AtomFilter.isArbitrary(), "all-atom"),
+        BACKBONE(AtomFilter.isBackbone(), "backbone"),
+        BACKBONE_CARBON(AtomFilter.isBackboneCarbon(), "backbone carbon"),
+        BACKBONE_NITROGEN(AtomFilter.isBackboneNitrogen(), "backbone nitrogen"),
+        BACKBONE_OXYGEN(AtomFilter.isBackboneOxygen(), "backbone oxygen"),
+        BETA_CARBON(AtomFilter.isBetaCarbon(), "beta carbon"),
+        CARBON(AtomFilter.isCarbon(), "any carbon atom"),
+        HYDROGEN(AtomFilter.isHydrogen(), "any hydrogen atom"),
+        NITROGEN(AtomFilter.isNitrogen(), "any nitrogen atom"),
+        OXYGEN(AtomFilter.isOxygen(), "any oxygen atom"),
+        PHOSPHORUS(AtomFilter.isPhosphorus(), "any phosphorus atom"),
+        SIDE_CHAIN(AtomFilter.isSideChain(), "any side chain atom");
 
         private final Predicate<Atom> filter;
+        private final String description;
 
-        AtomFilterType(Predicate<Atom> filter) {
+        AtomFilterType(Predicate<Atom> filter, String description) {
             this.filter = filter;
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
         }
 
         public Predicate<Atom> getFilter() {

@@ -238,4 +238,29 @@ public class StructuralMotif implements LeafSubstructureContainer {
         return new StructuralMotif(this);
     }
 
+    /**
+     * The type of a {@link StructuralMotif}, representing inter (across multiple protein chains) and intra
+     * (within one protein chain) {@link StructuralMotif}s.
+     */
+    public enum Type {
+
+        INTRA("intra"), INTER("inter");
+
+        private final String description;
+
+        Type(String name) {
+            description = name;
+        }
+
+        public static Type determine(StructuralMotif structuralMotif) {
+            return structuralMotif.getAllLeafSubstructures().stream()
+                    .map(LeafSubstructure::getChainIdentifier)
+                    .distinct()
+                    .count() == 1 ? INTRA : INTER;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
 }
