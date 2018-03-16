@@ -1,14 +1,11 @@
-package de.bioforscher.singa.simulation.parser.graphs;
+package de.bioforscher.singa.mathematics.graphs.parser;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-
-import java.util.HashMap;
 
 /**
  * Currently supports parsing nodes and connecting them with the given edges.
@@ -18,7 +15,6 @@ import java.util.HashMap;
 public class GraphMLContentHandler implements ContentHandler {
 
     private final UndirectedGraph graph;
-    private final HashMap<String, ChemicalEntity> speciesMap;
     private RegularNode node;
     private double currentX;
     private double currentY;
@@ -26,7 +22,6 @@ public class GraphMLContentHandler implements ContentHandler {
 
     public GraphMLContentHandler() {
         graph = new UndirectedGraph();
-        speciesMap = new HashMap<>();
         tag = "";
     }
 
@@ -46,11 +41,6 @@ public class GraphMLContentHandler implements ContentHandler {
                 currentY = Double.parseDouble(new String(ch, start, length));
                 break;
         }
-        // chemical entities
-//        if (tag.startsWith("CHEBI")) {
-//            Double value = Double.parseDouble(new String(ch, start, length));
-//            node.setConcentration(speciesMap.get(tag), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
-//        }
     }
 
     @Override
@@ -97,14 +87,6 @@ public class GraphMLContentHandler implements ContentHandler {
     public void startElement(String uri, String localName, String qName, Attributes atts) {
 
         switch (qName) {
-            case "key":
-//                String chEBIIdentifier = atts.getValue("id");
-                // parse species that are present as keys
-//                if (chEBIIdentifier.startsWith("CHEBI")) {
-//                    Species entity = ChEBIParserService.parse(chEBIIdentifier);
-//                    speciesMap.put(chEBIIdentifier, entity);
-//                }
-                break;
             case "data":
                 tag = atts.getValue("key");
                 break;

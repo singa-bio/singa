@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.parser.graphs;
+package de.bioforscher.singa.mathematics.graphs.parser;
 
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;

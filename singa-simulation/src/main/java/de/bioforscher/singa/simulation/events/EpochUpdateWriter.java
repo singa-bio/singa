@@ -9,6 +9,7 @@ import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Module;
+import de.bioforscher.singa.simulation.modules.model.SimulationManager;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
@@ -16,41 +17,108 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
- * This class can be used to write the concentrations of a node to a file while
- * simulating. This appends ech time
+ * This class can be used to write the concentration of chemical entities of a node and the changes applied to the node
+ * to a file. The updates are written each time a event is received. The events can be scheduled by using the
+ * {@link SimulationManager#setUpdateEmissionCondition(Predicate)}. A node is observed by calling
+ * {@link EpochUpdateWriter#addNodeToObserve(AutomatonNode)}.
  *
  * @author cl
  */
 public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
 
+    /**
+     * The character indication a comment line.
+     */
     private static final char COMMENT_CHARACTER = '#';
+
+    /**
+     * The character separating different values.
+     */
     private static final char SEPARATOR_CHARACTER = ',';
+
+    /**
+     * The character separating sections in nodes.
+     */
     private static final char SECTION_SPACER = '.';
+
+    /**
+     * The line separator of the current system.
+     */
     private static final String LINEBREAK = System.getProperty("line.separator");
 
+    /**
+     * The path to the user defined workspace.
+     */
     private final Path workspacePath;
+
+    /**
+     * The folder for the current simulation.
+     */
     private final Path folder;
+
+    /**
+     * Determines whether general entity information should be printed in the header.
+     */
     private final boolean printHeader;
 
+    /**
+     * The writers for concentration files.
+     */
     private final Map<AutomatonNode, BufferedWriter> concentrationWriters;
+
+    /**
+     * The writers for deltas or changes.
+     */
     private final Map<AutomatonNode, BufferedWriter> deltaWriters;
 
+    /**
+     * The entities that should be observed.
+     */
     private final List<ChemicalEntity<?>> observedEntities;
+
+    /**
+     * The modules deltas should be recorded for.
+     */
     private final List<Module> observedModules;
 
+    /**
+     * The formatter for time based values.
+     */
     private QuantityFormatter<Time> timeFormatter = new QuantityFormatter<>(MILLI(SECOND), false);
+
+    /**
+     * The formatter for concentration based values.
+     */
     private QuantityFormatter<MolarConcentration> concentrationFormatter = new QuantityFormatter<>(MOLE_PER_LITRE, false);
 
+    /**
+     * Creates a new {@link EpochUpdateWriter}. A extended header is printed in each file.
+     *
+     * @param workspacePath The location of the simulation workspace.
+     * @param folder The folder, where the files written by this class should be located.
+     * @param entitiesToObserve The entities to observe.
+     * @param modulesToObserve The modules to record deltas from.
+     */
     public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, Set<Module> modulesToObserve) {
         this(workspacePath, folder, entitiesToObserve, modulesToObserve, true);
     }
 
+    /**
+     * Creates a new {@link EpochUpdateWriter}.
+     *
+     * @param workspacePath The location of the simulation workspace.
+     * @param folder The folder, where the files written by this class should be located.
+     * @param entitiesToObserve The entities to observe.
+     * @param modulesToObserve The modules to record deltas from.
+     * @param printHeader True, if an extended header should be printed.
+     */
     public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, Set<Module> modulesToObserve, boolean printHeader) {
         this.workspacePath = workspacePath;
         this.folder = folder;
@@ -62,10 +130,20 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         deltaWriters = new HashMap<>();
     }
 
-    private <Type> List<Type> initializeOrdering(Set<Type> unorderedEntities) {
+    /**
+     * Takes care that the ordering of entities is the same across all files by converting the set to a list.
+     *
+     * @param unorderedEntities The unordered entities.
+     * @param <ValueType> The type of the values in the set.
+     * @return The ordered entities.
+     */
+    private static <ValueType> List<ValueType> initializeOrdering(Set<ValueType> unorderedEntities) {
         return new ArrayList<>(unorderedEntities);
     }
 
+    /**
+     * Initialized the folder for the current simulation.
+     */
     private void createFolderStructure() {
         Path workspaceFolder = workspacePath.resolve(folder);
         try {
@@ -77,28 +155,50 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         }
     }
 
-    private Path createFile(String fileName) throws IOException {
+    /**
+     * Creates a new file in the current folder.
+     *
+     * @param fileName The name of the file.
+     * @return The path to the newly created file.
+     */
+    private Path createFile(String fileName) {
         Path file = workspacePath.resolve(folder).resolve(fileName);
         if (!Files.exists(file)) {
-            Files.createFile(file);
+            try {
+                Files.createFile(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return file;
     }
 
+    /**
+     * Initializes a node that will be observed during simulation. Also prepares the files that will be written during
+     * simulation.
+     *
+     * @param node The node to be observed.
+     * @throws IOException If the file can not be created.
+     */
     public void addNodeToObserve(AutomatonNode node) throws IOException {
         // add concentration writers
         Path concentrationFile = createFile("node_" + node.getIdentifier() + "_concentrations.csv");
         BufferedWriter concentrationWriter = Files.newBufferedWriter(concentrationFile);
         concentrationWriters.put(node, concentrationWriter);
-        writeEntityHeader(node);
+        writeConcentrationFileHeader(node);
         // add delta writers
         Path deltaFile = createFile("node_" + node.getIdentifier() + "_deltas.csv");
         BufferedWriter deltaWriter = Files.newBufferedWriter(deltaFile);
         deltaWriters.put(node, deltaWriter);
-        writeDeltaHeader(node);
+        writeDeltaFileHeader(node);
     }
 
-    private void writeDeltaHeader(AutomatonNode node) throws IOException {
+    /**
+     * Writes the header for delta files.
+     * @param node The node.
+     * @throws IOException If the file could not be written.
+     */
+    private void writeDeltaFileHeader(AutomatonNode node) throws IOException {
         StringBuilder sb = new StringBuilder();
         if (printHeader) {
             sb.append(COMMENT_CHARACTER)
@@ -110,6 +210,10 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         appendDeltaContent(node, sb.toString());
     }
 
+    /**
+     * Creates a String for the column header of delta files.
+     * @return The column header.
+     */
     private String prepareDeltaColumnHeader() {
         return "elapsed_time" + SEPARATOR_CHARACTER +
                 "time_step_size" + SEPARATOR_CHARACTER +
@@ -120,7 +224,12 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
                 "delta_adjusted" + LINEBREAK;
     }
 
-    private void writeEntityHeader(AutomatonNode node) throws IOException {
+    /**
+     * Writes the header for concentration files.
+     * @param node The node.
+     * @throws IOException If the file could not be written.
+     */
+    private void writeConcentrationFileHeader(AutomatonNode node) throws IOException {
         StringBuilder sb = new StringBuilder();
         if (printHeader) {
             sb.append(COMMENT_CHARACTER)
@@ -129,10 +238,14 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
                     .append(LINEBREAK)
                     .append(prepareEntityInformation());
         }
-        sb.append(prepareEntityColumnHeader(node));
+        sb.append(prepareConcentrationColumnHeader(node));
         appendConcentrationContent(node, sb.toString());
     }
 
+    /**
+     * Creates a String with information about the observed entities.
+     * @return The entity information.
+     */
     private String prepareEntityInformation() {
         StringBuilder sb = new StringBuilder();
         for (ChemicalEntity entity : observedEntities) {
@@ -146,7 +259,12 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return sb.toString();
     }
 
-    private String prepareEntityColumnHeader(AutomatonNode node) {
+    /**
+     * Creates a String for the column header of concentration files.
+     * @param node The node.
+     * @return The column header.
+     */
+    private String prepareConcentrationColumnHeader(AutomatonNode node) {
         Set<CellSection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append("elapsed time").append(SEPARATOR_CHARACTER);
@@ -171,14 +289,29 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         return sb.toString();
     }
 
+    /**
+     * Appends content to the concentration file associated to a node.
+     * @param node The corresponding node.
+     * @param content The content to be written.
+     * @throws IOException The the file could not be written.
+     */
     private void appendConcentrationContent(AutomatonNode node, String content) throws IOException {
         concentrationWriters.get(node).write(content);
     }
 
+    /**
+     * Appends content to the delta file associated to a node.
+     * @param node The corresponding node.
+     * @param content The content to be written.
+     * @throws IOException The the file could not be written.
+     */
     private void appendDeltaContent(AutomatonNode node, String content) throws IOException {
         deltaWriters.get(node).write(content);
     }
 
+    /**
+     * Close all associated writers. Usually called after simulation finishes.
+     */
     public void closeWriters() {
         for (BufferedWriter bufferedWriter : concentrationWriters.values()) {
             try {
@@ -203,6 +336,10 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         appendDeltaContent(event);
     }
 
+    /**
+     * Appends the latest concentrations to the prepared files.
+     * @param event The event.
+     */
     private void appendConcentrationContent(NodeUpdatedEvent event) {
         AutomatonNode node = event.getNode();
         Set<CellSection> referencedSections = node.getAllReferencedSections();
@@ -229,6 +366,10 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         }
     }
 
+    /**
+     * Appends the latest deltas to the prepared files.
+     * @param event The event.
+     */
     private void appendDeltaContent(NodeUpdatedEvent event) {
         AutomatonNode node = event.getNode();
         StringBuilder sb = new StringBuilder();

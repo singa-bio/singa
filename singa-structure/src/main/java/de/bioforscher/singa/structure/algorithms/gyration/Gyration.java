@@ -22,31 +22,66 @@ import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvide
  */
 public class Gyration {
 
+    /**
+     * All atoms.
+     */
     private final List<Atom> atoms;
+
+    /**
+     * The gyration radius.
+     */
     private double radius;
+
+    /**
+     * The centroid or centre of gyration.
+     */
     private Vector3D centroid;
 
+    /**
+     * Calculates the gyration with the given list of atoms.
+     * @param atoms The atoms.
+     */
     private Gyration(List<Atom> atoms) {
         this.atoms = atoms;
         calculateRadius();
     }
 
-    public static Gyration of(AtomContainer structuralEntity) {
-        return new Gyration(structuralEntity.getAllAtoms());
+    /**
+     * Calculates the gyration for the atoms in the container.
+     * @param atomContainer The atom container.
+     * @return The Gyration.
+     */
+    public static Gyration of(AtomContainer atomContainer) {
+        return new Gyration(atomContainer.getAllAtoms());
     }
 
+    /**
+     * Returns the atoms the gyration has been calculated from.
+     * @return The atoms the gyration has been calculated from.
+     */
     public List<Atom> getAtoms() {
         return atoms;
     }
 
+    /**
+     * Returns the centroid of this gyration.
+     * @return The centroid of this gyration.
+     */
     public Vector3D getCentroid() {
         return centroid;
     }
 
+    /**
+     * Returns the radius of this gyration.
+     * @return The radius of this gyration.
+     */
     public double getRadius() {
         return radius;
     }
 
+    /**
+     * Calculates the radius of gyration.
+     */
     private void calculateRadius() {
         // determine geometric centroid
         List<Vector3D> positions = atoms.stream()

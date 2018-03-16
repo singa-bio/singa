@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.parser.graphs;
+package de.bioforscher.singa.mathematics.graphs.parser;
 
 import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
@@ -31,6 +31,5 @@ public class GraphMLParserServiceTest {
         assertTrue(node72.hasNeighbour(graph.getNode(62)));
         assertTrue(node72.hasNeighbour(graph.getNode(82)));
     }
-
 
 }

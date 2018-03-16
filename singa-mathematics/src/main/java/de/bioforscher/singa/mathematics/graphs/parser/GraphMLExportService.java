@@ -1,10 +1,8 @@
-package de.bioforscher.singa.simulation.parser.graphs;
+package de.bioforscher.singa.mathematics.graphs.parser;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.mathematics.graphs.model.RegularNode;
+import de.bioforscher.singa.mathematics.graphs.model.UndirectedEdge;
+import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -20,7 +18,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.util.Map;
 
 /**
  * This class contains a single static method to export a
@@ -39,7 +36,7 @@ public class GraphMLExportService {
      * @param graph The graph.
      * @param file The new target file.
      */
-    public static void exportGraph(AutomatonGraph graph, File file) {
+    public static void exportGraph(UndirectedGraph graph, File file) {
         logger.info("Writing graph to file {}", file.getAbsolutePath());
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -50,7 +47,6 @@ public class GraphMLExportService {
             Element rootElement = doc.createElement("graphml");
             doc.appendChild(rootElement);
 
-            Map<String, ChemicalEntity<?>> entityMap = AutomatonGraphs.generateMapOfEntities(graph);
             // x coordiante key
             Element keyXCoordinate = doc.createElement("key");
             keyXCoordinate.setAttribute("id", "x");
@@ -67,22 +63,6 @@ public class GraphMLExportService {
             keyYCoordinate.setAttribute("attr.type", "double");
             rootElement.appendChild(keyYCoordinate);
 
-            // species concentrations keys
-            for (ChemicalEntity entity : entityMap.values()) {
-
-                Element keyConcentration = doc.createElement("key");
-                keyConcentration.setAttribute("id", entity.getIdentifier().toString());
-                keyConcentration.setAttribute("for", "node");
-                keyConcentration.setAttribute("attr.name", "Concentration_" + entity.getIdentifier());
-                keyConcentration.setAttribute("attr.type", "double");
-                rootElement.appendChild(keyConcentration);
-
-                // concentration default
-                Element concentrationDefault = doc.createElement("default");
-                concentrationDefault.appendChild(doc.createTextNode("0.0"));
-                keyConcentration.appendChild(concentrationDefault);
-            }
-
             // Graph
             Element graphElement = doc.createElement("graph");
             graphElement.setAttribute("id", "BioGraph");
@@ -90,7 +70,7 @@ public class GraphMLExportService {
             rootElement.appendChild(graphElement);
 
             // Nodes
-            for (AutomatonNode node : graph.getNodes()) {
+            for (RegularNode node : graph.getNodes()) {
                 Element nodeElement = doc.createElement("node");
                 nodeElement.setAttribute("id", String.valueOf(node.getIdentifier()));
                 graphElement.appendChild(nodeElement);
@@ -102,18 +82,10 @@ public class GraphMLExportService {
                 nodeY.setAttribute("key", "y");
                 nodeY.appendChild(doc.createTextNode(String.valueOf(node.getPosition().getY())));
                 nodeElement.appendChild(nodeY);
-
-                for (ChemicalEntity entity : entityMap.values()) {
-                    Element nodeData = doc.createElement("data");
-                    nodeData.setAttribute("key", entity.getIdentifier().toString());
-                    nodeData.appendChild(doc
-                            .createTextNode(String.valueOf(node.getConcentration(entity).getValue().doubleValue())));
-                    nodeElement.appendChild(nodeData);
-                }
             }
 
             // Edges
-            for (AutomatonEdge edge : graph.getEdges()) {
+            for (UndirectedEdge edge : graph.getEdges()) {
                 Element edgeElement = doc.createElement("edge");
                 edgeElement.setAttribute("id", String.valueOf(edge.getIdentifier()));
                 edgeElement.setAttribute("source", String.valueOf(edge.getSource().getIdentifier()));

@@ -5,9 +5,6 @@ package de.bioforscher.singa.simulation.exceptions;
  */
 public class NumericalInstabilityException extends  RuntimeException {
 
-    public NumericalInstabilityException() {
-    }
-
     public NumericalInstabilityException(String message) {
         super(message);
     }
