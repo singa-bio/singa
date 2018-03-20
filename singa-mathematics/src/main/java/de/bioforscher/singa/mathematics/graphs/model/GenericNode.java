@@ -64,4 +64,9 @@ public class GenericNode<ContentType> extends AbstractNode<GenericNode<ContentTy
     public GenericNode<ContentType> getCopy() {
         return new GenericNode<>(this);
     }
+
+    @Override
+    public String toString() {
+        return "Node (" + getContent() + ")";
+    }
 }

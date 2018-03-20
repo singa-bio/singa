@@ -48,4 +48,5 @@ public class MoleculeAtom extends AbstractNode<MoleculeAtom, Vector2D, Integer> 
     public MoleculeAtom getCopy() {
         return new MoleculeAtom(this);
     }
+
 }
