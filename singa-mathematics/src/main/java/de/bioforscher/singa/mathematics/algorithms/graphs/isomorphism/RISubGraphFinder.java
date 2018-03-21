@@ -22,22 +22,35 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     private final GraphType targetGraph;
     private final Function<NodeType, NodeConditionType> nodeConditionExtractor;
     private final Function<EdgeType, EdgeConditionType> edgeConditionExtractor;
+    private final int minimalPartialMatchSize;
+    private final List<List<NodeType>> fullMatches;
+    private final Map<Integer, List<List<NodeType>>> partialMatches;
     private DirectedGraph<GenericNode<NodeType>> parentGraph;
     private DirectedGraph<GenericNode<NodeType>> searchSpace;
-    private List<List<NodeType>> fullMatches;
 
     public RISubGraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
                             Function<EdgeType, EdgeConditionType> edgeConditionExtractor) {
+        this(patternGraph, targetGraph, nodeConditionExtractor, edgeConditionExtractor, patternGraph.getNodes().size());
+    }
+
+    public RISubGraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
+                            Function<EdgeType, EdgeConditionType> edgeConditionExtractor, int minimalPartialMatchSize) {
         this.patternGraph = patternGraph;
         this.targetGraph = targetGraph;
         this.nodeConditionExtractor = nodeConditionExtractor;
         this.edgeConditionExtractor = edgeConditionExtractor;
+        this.minimalPartialMatchSize = minimalPartialMatchSize;
         mu = new ArrayList<>();
         ptmu = new ArrayList<>();
         fullMatches = new ArrayList<>();
+        partialMatches = new TreeMap<>();
         calculateMu();
         buildParentGraph();
         matchTargetGraph();
+        logger.info("found {} full and {} partial (minimum size: {}) matches in target graph", fullMatches.size(), partialMatches.size(), minimalPartialMatchSize);
+        if (!fullMatches.isEmpty()) {
+            logger.info("full matches are: {}", fullMatches);
+        }
     }
 
     public List<List<NodeType>> getFullMatches() {
@@ -71,7 +84,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         for (NodeType x : targetGraph.getNodes()) {
             growSearchSpace(mu.size() - 1, searchSpace, root, x);
         }
-        System.out.println();
+        logger.info("constructed search space graph is: {}", searchSpace);
     }
 
     private void growSearchSpace(int remainingPatternNodes, DirectedGraph<GenericNode<NodeType>> targetSpace, GenericNode<NodeType> targetSpaceParent, NodeType candidateTargetNode) {
@@ -118,7 +131,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
             }
 
             NodeType patternNode = mu.get(currentPatternDepth);
-            logger.info("pairing pattern node {} and target node {} in depth {}", patternNode, candidateTargetNode, currentPatternDepth);
+            logger.debug("pairing pattern node {} and target node {} in depth {}", patternNode, candidateTargetNode, currentPatternDepth);
             // second condition (1b):
             // the target node matched to the pattern parent node of the current pattern node is a neighbour of the
             // current target node
@@ -149,7 +162,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 
                         if (noParent || (parentToCandidateEdgeMatches && candidateToParentEdgeMatches)) {
                             // all conditions passed
-                            logger.info("all conditions passed");
+                            logger.debug("all conditions passed");
                             // create node for target space
                             GenericNode<NodeType> validTargetSpaceNode = new GenericNode<>(targetSpace.nextNodeIdentifier(), candidateTargetNode);
                             // add node to target space
@@ -158,6 +171,22 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
                             targetSpace.addEdgeBetween(targetSpace.nextEdgeIdentifier(), validTargetSpaceNode, targetSpaceParent);
                             // if there are nodes left in the pattern graph, that are unpaired
                             if (remainingPatternNodes > 0) {
+                                // consider partial matches if depth is sufficient
+                                if (currentPatternDepth >= minimalPartialMatchSize - 1) {
+                                    List<NodeType> partialMatch = new ArrayList<>(targetSpacePath);
+                                    partialMatch.remove(partialMatch.size() - 1);
+                                    partialMatch.add(0, validTargetSpaceNode.getContent());
+                                    List<List<NodeType>> currentPartialMatches;
+                                    if (partialMatches.containsKey(currentPatternDepth)) {
+                                        currentPartialMatches = partialMatches.get(currentPatternDepth);
+                                        currentPartialMatches.add(partialMatch);
+                                    } else {
+                                        currentPartialMatches = new ArrayList<>();
+                                        currentPartialMatches.add(partialMatch);
+                                        partialMatches.put(currentPatternDepth + 1, currentPartialMatches);
+                                    }
+                                }
+
                                 // for all nodes of the target graph
                                 for (NodeType targetNode : targetGraph.getNodes()) {
                                     // try to enlarge search space
@@ -185,17 +214,17 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 //                                }
                             }
                         } else {
-                            logger.info("(4) ... ");
+                            logger.debug("(4) Edge Condition failed");
                         }
 
                     } else {
-                        logger.info("(3) ... ");
+                        logger.debug("(3) Connectivity Condition: pattern node neighbors {} are less than target node neighbors {}", patternNode.getNeighbours(), candidateTargetNode.getNeighbours());
                     }
                 } else {
-                    logger.info("(2) Label Condition: pattern label {} and target label {} did not match", nodeConditionExtractor.apply(patternNode), nodeConditionExtractor.apply(candidateTargetNode));
+                    logger.debug("(2) Label Condition: pattern label {} and target label {} did not match", nodeConditionExtractor.apply(patternNode), nodeConditionExtractor.apply(candidateTargetNode));
                 }
             } else {
-                logger.info("(1) Parent Condition: pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
+                logger.debug("(1) Parent Condition: pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
             }
         }
     }
@@ -219,7 +248,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         v.sort(Comparator.comparing(Node::getDegree));
         NodeType u0 = v.get(v.size() - 1);
 
-        logger.info("u0 is {}", u0);
+        logger.info("highest degree node is {} with degree {}", u0, u0.getDegree());
 
         // initially remove highest degree node
         v.remove(u0);
@@ -250,21 +279,21 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
                     maxVuvis = vuvis;
                     maxVmneig = vmneig;
                     maxVmunv = vmunv;
-                    System.out.println("changed winner " + um);
+                    logger.debug("changed winner is: {}", um);
                 } else if (vuvis == maxVuvis && vmneig > maxVmneig) {
                     um = ui;
                     maxVuvis = vuvis;
                     maxVmneig = vmneig;
                     maxVmunv = vmunv;
-                    System.out.println("changed winner " + um);
+                    logger.debug("changed winner is: {}", um);
                 } else if (vuvis == maxVuvis && vmneig == maxVmneig && vmunv > maxVmunv) {
                     um = ui;
                     maxVuvis = vuvis;
                     maxVmneig = vmneig;
                     maxVmunv = vmunv;
-                    System.out.println("changed winner " + um);
+                    logger.debug("changed winner is: {}", um);
                 }
-                System.out.println(ui + " - " + vuvis + " " + vmneig + " " + vmunv);
+                logger.debug("{} has score: {}-{}-{}", ui, vuvis, vmneig, vmunv);
             }
 
             mu.add(um);
@@ -275,9 +304,8 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
                     break;
                 }
             }
-
-            logger.info("mu is {}", mu);
-            logger.info("ptmu is {}", ptmu);
+            logger.debug("mu is {}", mu);
+            logger.debug("ptmu is {}", ptmu);
             neighboursOfMu.remove(um);
             v.remove(um);
         }
@@ -311,4 +339,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         return searchSpace;
     }
 
+    public Map<Integer, List<List<NodeType>>> getPartialMatches() {
+        return partialMatches;
+    }
 }
