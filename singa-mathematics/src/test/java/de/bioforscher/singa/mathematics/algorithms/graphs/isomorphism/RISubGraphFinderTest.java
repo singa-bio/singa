@@ -4,12 +4,10 @@ import de.bioforscher.singa.mathematics.graphs.model.DirectedEdge;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedGraph;
 import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -144,7 +142,7 @@ public class RISubGraphFinderTest {
     }
 
     @Test
-    public void shouldFindSubgraph() {
+    public void shouldFindFullSubgraph() {
         RISubGraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
                 = new RISubGraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true);
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(7), targetGraph.getNode(4),
@@ -156,7 +154,7 @@ public class RISubGraphFinderTest {
     }
 
     @Test
-    public void shouldNotFindSubgraph() {
+    public void shouldFindPartialSubgraph() {
         targetGraph.removeNode(7);
         RISubGraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
                 = new RISubGraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true, 4);
