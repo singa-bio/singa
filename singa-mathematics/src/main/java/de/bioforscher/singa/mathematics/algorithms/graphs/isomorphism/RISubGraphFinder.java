@@ -9,6 +9,15 @@ import java.util.*;
 import java.util.function.Function;
 
 /**
+ * An implementation of the algorithm described in:
+ * <pre>
+ *     Bonnici, V, Giugno, R, Pulvirenti, A, Shasha, D, Ferro, A (2013).
+ *     A subgraph isomorphism algorithm and its application to biochemical data.
+ *     BMC Bioinformatics, 14 Suppl 7:S13.
+ * </pre>
+ * This subgraph detection algorithm can be applied on any {@link Graph} and allows the flexible definition of isomorphism
+ * conditions via {@link Function}s.
+ *
  * @author fk
  */
 public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
@@ -53,10 +62,104 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         }
     }
 
-    public List<List<NodeType>> getFullMatches() {
-        return fullMatches;
+    /**
+     * Calculates the ordering of pattern nodes according to the GreatestConstraintFirst algorithm.
+     */
+    private void calculateMu() {
+        // determine node with highest degree and use as starting node
+        List<NodeType> v = new ArrayList<>(patternGraph.getNodes());
+        if (v.isEmpty()) {
+            throw new IllegalArgumentException("The pattern graph does not contain any nodes.");
+        }
+        v.sort(Comparator.comparing(Node::getDegree));
+        NodeType u0 = v.get(v.size() - 1);
+
+        logger.info("highest degree node is {} with degree {}", u0, u0.getDegree());
+
+        // initially remove highest degree node
+        v.remove(u0);
+
+        // add highest degree node as start
+        mu.add(u0);
+        ptmu.add(null);
+
+        Set<NodeType> neighboursOfMu = new HashSet<>();
+
+        NodeType um = u0;
+        while (!v.isEmpty()) {
+
+            int maxVuvis = Integer.MIN_VALUE;
+            int maxVmneig = Integer.MIN_VALUE;
+            int maxVmunv = Integer.MIN_VALUE;
+
+            // neighbors of nodes in mu
+            neighboursOfMu.addAll(um.getNeighbours());
+
+            for (NodeType ui : v) {
+                int vuvis = calculateVuvis(ui);
+                int vmneig = calculateVmneig(ui, neighboursOfMu);
+                int vmunv = calculateVmunv(ui, neighboursOfMu);
+
+                if (vuvis > maxVuvis) {
+                    um = ui;
+                    maxVuvis = vuvis;
+                    maxVmneig = vmneig;
+                    maxVmunv = vmunv;
+                    logger.debug("changed winner is: {}", um);
+                } else if (vuvis == maxVuvis && vmneig > maxVmneig) {
+                    um = ui;
+                    maxVuvis = vuvis;
+                    maxVmneig = vmneig;
+                    maxVmunv = vmunv;
+                    logger.debug("changed winner is: {}", um);
+                } else if (vuvis == maxVuvis && vmneig == maxVmneig && vmunv > maxVmunv) {
+                    um = ui;
+                    maxVuvis = vuvis;
+                    maxVmneig = vmneig;
+                    maxVmunv = vmunv;
+                    logger.debug("changed winner is: {}", um);
+                }
+                logger.debug("{} has score: {}-{}-{}", ui, vuvis, vmneig, vmunv);
+            }
+
+            mu.add(um);
+
+            for (NodeType currentMu : mu) {
+                if (patternGraph.getEdgeBetween(um, currentMu).isPresent()) {
+                    ptmu.add(currentMu);
+                    break;
+                }
+            }
+            logger.debug("mu is {}", mu);
+            logger.debug("ptmu is {}", ptmu);
+            neighboursOfMu.remove(um);
+            v.remove(um);
+        }
     }
 
+    private int calculateVuvis(NodeType ui) {
+        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        neighboursOfUi.retainAll(mu);
+        return neighboursOfUi.size();
+    }
+
+    private int calculateVmunv(NodeType ui, Set<NodeType> neighboursOfMu) {
+        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        neighboursOfUi.removeAll(mu);
+        neighboursOfUi.removeAll(neighboursOfMu);
+        return neighboursOfUi.size();
+    }
+
+    private int calculateVmneig(NodeType ui, Set<NodeType> neighboursOfMu) {
+        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
+        neighboursOfUi.removeAll(mu);
+        neighboursOfUi.retainAll(neighboursOfMu);
+        return neighboursOfUi.size();
+    }
+
+    /**
+     * Builds the parent graph of the pattern graph.
+     */
     private void buildParentGraph() {
         parentGraph = new DirectedGraph<>();
         for (NodeType patternNode : mu) {
@@ -77,6 +180,9 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         }
     }
 
+    /**
+     * Recursively grows the search space and prunes away unfeasible branches in the search tree.
+     */
     private void matchTargetGraph() {
         searchSpace = new DirectedGraph<>();
         GenericNode<NodeType> root = new GenericNode<>(searchSpace.nextNodeIdentifier(), null);
@@ -87,6 +193,14 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         logger.info("constructed search space graph is: {}", searchSpace);
     }
 
+    /**
+     * Recursively called method that grows the search space.
+     *
+     * @param remainingPatternNodes The number of remaining pattern nodes to process.
+     * @param targetSpace The current search space.
+     * @param targetSpaceParent The parent of the search space.
+     * @param candidateTargetNode The next node that should be considered for insertion in the search space.
+     */
     private void growSearchSpace(int remainingPatternNodes, DirectedGraph<GenericNode<NodeType>> targetSpace, GenericNode<NodeType> targetSpaceParent, NodeType candidateTargetNode) {
         // prepare path to the current node in the target space
         List<NodeType> targetSpacePath = new ArrayList<>();
@@ -229,6 +343,13 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         }
     }
 
+    /**
+     * Checks the edge condition.
+     *
+     * @param targetSpaceEdgeCandidateToParent First edge to check.
+     * @param patternEdgeCandidateToParent Second edge to check.
+     * @return True if conditions are met.
+     */
     private boolean checkEdgeCondition(Optional<EdgeType> targetSpaceEdgeCandidateToParent, Optional<EdgeType> patternEdgeCandidateToParent) {
         if (targetSpaceEdgeCandidateToParent.isPresent() && patternEdgeCandidateToParent.isPresent()) {
             EdgeType matchEdgeCP = targetSpaceEdgeCandidateToParent.get();
@@ -239,98 +360,6 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         }
     }
 
-    private void calculateMu() {
-        // determine node with highest degree and use as starting node
-        List<NodeType> v = new ArrayList<>(patternGraph.getNodes());
-        if (v.isEmpty()) {
-            throw new IllegalArgumentException("The pattern graph does not contain any nodes.");
-        }
-        v.sort(Comparator.comparing(Node::getDegree));
-        NodeType u0 = v.get(v.size() - 1);
-
-        logger.info("highest degree node is {} with degree {}", u0, u0.getDegree());
-
-        // initially remove highest degree node
-        v.remove(u0);
-
-        // add highest degree node as start
-        mu.add(u0);
-        ptmu.add(null);
-
-        Set<NodeType> neighboursOfMu = new HashSet<>();
-
-        NodeType um = u0;
-        while (!v.isEmpty()) {
-
-            int maxVuvis = Integer.MIN_VALUE;
-            int maxVmneig = Integer.MIN_VALUE;
-            int maxVmunv = Integer.MIN_VALUE;
-
-            // neighbors of nodes in mu
-            neighboursOfMu.addAll(um.getNeighbours());
-
-            for (NodeType ui : v) {
-                int vuvis = calculateVuvis(ui);
-                int vmneig = calculateVmneig(ui, neighboursOfMu);
-                int vmunv = calculateVmunv(ui, neighboursOfMu);
-
-                if (vuvis > maxVuvis) {
-                    um = ui;
-                    maxVuvis = vuvis;
-                    maxVmneig = vmneig;
-                    maxVmunv = vmunv;
-                    logger.debug("changed winner is: {}", um);
-                } else if (vuvis == maxVuvis && vmneig > maxVmneig) {
-                    um = ui;
-                    maxVuvis = vuvis;
-                    maxVmneig = vmneig;
-                    maxVmunv = vmunv;
-                    logger.debug("changed winner is: {}", um);
-                } else if (vuvis == maxVuvis && vmneig == maxVmneig && vmunv > maxVmunv) {
-                    um = ui;
-                    maxVuvis = vuvis;
-                    maxVmneig = vmneig;
-                    maxVmunv = vmunv;
-                    logger.debug("changed winner is: {}", um);
-                }
-                logger.debug("{} has score: {}-{}-{}", ui, vuvis, vmneig, vmunv);
-            }
-
-            mu.add(um);
-
-            for (NodeType currentMu : mu) {
-                if (patternGraph.getEdgeBetween(um, currentMu).isPresent()) {
-                    ptmu.add(currentMu);
-                    break;
-                }
-            }
-            logger.debug("mu is {}", mu);
-            logger.debug("ptmu is {}", ptmu);
-            neighboursOfMu.remove(um);
-            v.remove(um);
-        }
-    }
-
-    private int calculateVuvis(NodeType ui) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
-        neighboursOfUi.retainAll(mu);
-        return neighboursOfUi.size();
-    }
-
-    private int calculateVmunv(NodeType ui, Set<NodeType> neighboursOfMu) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
-        neighboursOfUi.removeAll(mu);
-        neighboursOfUi.removeAll(neighboursOfMu);
-        return neighboursOfUi.size();
-    }
-
-    private int calculateVmneig(NodeType ui, Set<NodeType> neighboursOfMu) {
-        Set<NodeType> neighboursOfUi = new HashSet<>(ui.getNeighbours());
-        neighboursOfUi.removeAll(mu);
-        neighboursOfUi.retainAll(neighboursOfMu);
-        return neighboursOfUi.size();
-    }
-
     public DirectedGraph<GenericNode<NodeType>> getParentGraph() {
         return parentGraph;
     }
@@ -338,6 +367,11 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     public DirectedGraph<GenericNode<NodeType>> getSearchSpace() {
         return searchSpace;
     }
+
+    public List<List<NodeType>> getFullMatches() {
+        return fullMatches;
+    }
+
 
     public Map<Integer, List<List<NodeType>>> getPartialMatches() {
         return partialMatches;

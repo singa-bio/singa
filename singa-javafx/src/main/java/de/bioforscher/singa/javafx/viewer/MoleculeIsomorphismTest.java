@@ -30,14 +30,14 @@ public class MoleculeIsomorphismTest {
         MoleculeGraph patternGraph= SmilesParser.parse(alanine.getFeature(Smiles.class).getFeatureContent());
 
         RISubGraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph, Element, MoleculeBondType> finder
-                = new RISubGraphFinder<>(patternGraph, targetGraph, MoleculeAtom::getElement, MoleculeBond::getType, 4);
+                = new RISubGraphFinder<>(patternGraph, targetGraph, MoleculeAtom::getElement, MoleculeBond::getType);
 
         GraphDisplayApplication.renderer = new MoleculeGraphRenderer();
-        GraphDisplayApplication.graph = targetGraph;
+        GraphDisplayApplication.graph = patternGraph;
 
         GraphDisplayApplication.renderer.setRenderAfter(graph -> {
             for (MoleculeAtom moleculeAtom : targetGraph.getNodes()) {
-                if (finder.getPartialMatches().get(4).get(1).contains(moleculeAtom)) {
+                if (finder.getFullMatches().get(0).contains(moleculeAtom)) {
                     GraphDisplayApplication.renderer.getGraphicsContext().setStroke(Color.DARKRED);
                     GraphDisplayApplication.renderer.circlePoint(moleculeAtom.getPosition(), 35);
                 }
