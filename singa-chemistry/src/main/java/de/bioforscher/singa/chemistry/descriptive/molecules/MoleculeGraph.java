@@ -1,17 +1,12 @@
 package de.bioforscher.singa.chemistry.descriptive.molecules;
 
-import de.bioforscher.singa.chemistry.descriptive.estimations.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractMapGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.elements.ElementProvider;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
+import de.bioforscher.singa.structure.model.oak.BondType;
 
 /**
  * @author cl
@@ -19,14 +14,6 @@ import java.util.function.Predicate;
 public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, Vector2D, Integer> {
 
     // TODO add a reference of this to Species
-
-    public static Predicate<MoleculeAtom> isElement(Element element) {
-        return atom -> atom.getElement().getProtonNumber() == element.getProtonNumber();
-    }
-
-    public static Predicate<MoleculeAtom> isOneOfElements(final Set<Element> elements) {
-        return atom -> elements.contains(atom.getElement());
-    }
 
     public int addNextAtom(char elementSymbol) {
         return addNextAtom(String.valueOf(elementSymbol));
@@ -69,6 +56,26 @@ public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, 
         return addEdgeBetween(bond, source, target);
     }
 
+    int addEdgeBetween(int edgeIdentifier, int sourceIdentifier, int targetIdentifier, BondType bondType) {
+        final MoleculeBond bond = new MoleculeBond(edgeIdentifier);
+        switch (bondType) {
+            case SINGLE_BOND:
+            default:
+                bond.setType(MoleculeBondType.SINGLE_BOND);
+                break;
+            case DOUBLE_BOND:
+                bond.setType(MoleculeBondType.DOUBLE_BOND);
+                break;
+            case TRIPLE_BOND:
+                bond.setType(MoleculeBondType.TRIPLE_BOND);
+                break;
+        }
+        MoleculeAtom source = getNode(sourceIdentifier);
+        MoleculeAtom target = getNode(targetIdentifier);
+        addEdgeBetween(bond, source, target);
+        return edgeIdentifier;
+    }
+
     @Override
     public Integer nextNodeIdentifier() {
         if (getNodes().isEmpty()) {
@@ -77,33 +84,6 @@ public class MoleculeGraph extends AbstractMapGraph<MoleculeAtom, MoleculeBond, 
         return getNodes().size();
     }
 
-    public int countAtomsOfElement(Element element) {
-        return (int) getNodes().stream()
-                .filter(isElement(element))
-                .count();
-    }
 
-    public List<LinkedList<MoleculeAtom>> findPathOfElements(LinkedList<Element> path) {
-        return MoleculePathFinder.findPathInMolecule(this, path);
-    }
-
-    public List<LinkedList<MoleculeAtom>> findMultiPathOfElements(LinkedList<Set<Element>> path) {
-        return MoleculePathFinder.findMultiPathInMolecule(this, path);
-    }
-
-    public void replaceAromaticsWithDoubleBonds() {
-        // get all aromatic paths in the molecule
-        List<LinkedList<MoleculeBond>> aromaticPaths = MoleculePathFinder.findAromaticPath(this);
-        // replace every second bond with a double bond
-        for (List<MoleculeBond> path : aromaticPaths) {
-            for (int i = 0; i < path.size(); i++) {
-                if (i % 2 == 0) {
-                    path.get(i).setType(MoleculeBondType.DOUBLE_BOND);
-                } else {
-                    path.get(i).setType(MoleculeBondType.SINGLE_BOND);
-                }
-            }
-        }
-    }
 
 }

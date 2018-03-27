@@ -1,10 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.estimations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBond;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.singa.chemistry.descriptive.molecules.*;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.elements.ElementProvider;
 import org.slf4j.Logger;
@@ -79,7 +76,7 @@ public class OctanolWaterPartition {
         String oxazepam = "OC1N=C(C2=CC=CC=C2)C2=C(NC1=O)C=CC(Cl)=C2";
 
         MoleculeGraph molecule = SmilesParser.parse(oxazepam);
-        molecule.replaceAromaticsWithDoubleBonds();
+        MoleculeGraphs.replaceAromaticsWithDoubleBonds(molecule);
 
         OctanolWaterPartition.calculateOctanolWaterPartitionCoefficient(molecule, Method.NC_NHET);
 
@@ -105,7 +102,7 @@ public class OctanolWaterPartition {
     }
 
     private double calculateNumberOfCarbonAtoms() {
-        final double carbonAtoms = moleculeGraph.countAtomsOfElement(CARBON);
+        final double carbonAtoms = MoleculeGraphs.countAtomsOfElement(moleculeGraph, CARBON);
         logger.debug("number of carbon atoms is: {}", carbonAtoms);
         return carbonAtoms;
     }
@@ -119,11 +116,11 @@ public class OctanolWaterPartition {
      */
     private double calculateCX() {
         double cx = 0;
-        cx += moleculeGraph.countAtomsOfElement(CARBON);
-        cx += moleculeGraph.countAtomsOfElement(FLUORINE) * 0.5;
-        cx += moleculeGraph.countAtomsOfElement(CHLORINE);
-        cx += moleculeGraph.countAtomsOfElement(BROMINE) * 1.5;
-        cx += moleculeGraph.countAtomsOfElement(IODINE) * 2.0;
+        cx += MoleculeGraphs.countAtomsOfElement(moleculeGraph,CARBON);
+        cx += MoleculeGraphs.countAtomsOfElement(moleculeGraph,FLUORINE) * 0.5;
+        cx += MoleculeGraphs.countAtomsOfElement(moleculeGraph,CHLORINE);
+        cx += MoleculeGraphs.countAtomsOfElement(moleculeGraph,BROMINE) * 1.5;
+        cx += MoleculeGraphs.countAtomsOfElement(moleculeGraph,IODINE) * 2.0;
         logger.debug("CX parameter scored: {}", cx);
         return cx;
     }
@@ -164,8 +161,8 @@ public class OctanolWaterPartition {
      */
     private double calcualteNO() {
         double no = 0;
-        no += moleculeGraph.countAtomsOfElement(OXYGEN);
-        no += moleculeGraph.countAtomsOfElement(NITROGEN);
+        no += MoleculeGraphs.countAtomsOfElement(moleculeGraph,OXYGEN);
+        no += MoleculeGraphs.countAtomsOfElement(moleculeGraph,NITROGEN);
         logger.debug("NO parameter scored: {}", no);
         return no;
     }
@@ -179,10 +176,10 @@ public class OctanolWaterPartition {
     private double calculatePRX() {
         double prx = 0;
         // score for N/O; X-Y: 1.0
-        final List<LinkedList<MoleculeAtom>> xy = moleculeGraph.findMultiPathOfElements(xyPath);
+        final List<LinkedList<MoleculeAtom>> xy = MoleculeGraphs.findMultiPathOfElements(moleculeGraph, xyPath);
         prx += xy.size();
         // score for X-A-Y: 2.0 (X, Y: N/O, A: C,S, or P)
-        final List<LinkedList<MoleculeAtom>> xay = moleculeGraph.findMultiPathOfElements(xayPath);
+        final List<LinkedList<MoleculeAtom>> xay = MoleculeGraphs.findMultiPathOfElements(moleculeGraph, xayPath);
         for (LinkedList<MoleculeAtom> path : xay) {
             boolean isReduced = false;
             final MoleculeAtom firstAtom = path.get(0);

@@ -199,10 +199,14 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     public int addBondBetween(OakAtom source, OakAtom target) {
+        return addBondBetween(source, target, BondType.SINGLE_BOND);
+    }
+
+    public int addBondBetween(OakAtom source, OakAtom target, BondType bondType) {
         if (source == null || target == null) {
             return -1;
         }
-        OakBond bond = new OakBond(nextEdgeIdentifier++);
+        OakBond bond = new OakBond(nextEdgeIdentifier++, bondType);
         bond.setSource(source);
         bond.setTarget(target);
         bonds.put(bond.getIdentifier(), bond);

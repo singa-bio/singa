@@ -89,4 +89,8 @@ public class OakBond {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return identifier+": "+source.getAtomName()+"-"+source.getAtomIdentifier()+" -- "+target.getAtomName()+"-"+target.getAtomIdentifier();
+    }
 }

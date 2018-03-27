@@ -9,6 +9,8 @@ import de.bioforscher.singa.structure.parser.pdb.structures.StructureParserOptio
 
 import java.util.Map;
 
+import static de.bioforscher.singa.structure.model.oak.BondType.DOUBLE_BOND;
+
 /**
  * The residue factory is used to create residues from a set of AtomFilter with their AtomNames. This also connects the
  * atoms in the residues, where possible. No distance criterion is used but the knowledge of the residues and the
@@ -56,6 +58,7 @@ public class LeafSubstructureFactory {
                     nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
                     connectPyrimidin(nucleotide, atoms);
                     nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), DOUBLE_BOND);
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
                 }
@@ -68,33 +71,38 @@ public class LeafSubstructureFactory {
                 case DESOXYCYTIDINE: {
                     connectPyrimidin(nucleotide, atoms);
                     nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N4"));
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"), DOUBLE_BOND);
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
                 }
                 case DESOXYGUANOSINE: {
                     connectPurine(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"));
+                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
+                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), DOUBLE_BOND);
                     nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
                     break;
                 }
                 case DESOXYTHYMIDINE: {
                     connectPyrimidin(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"));
+                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), DOUBLE_BOND);
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
                     nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
                 }
                 case DESOXYURIDINE: {
                     connectPyrimidin(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"));
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), DOUBLE_BOND);
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
                 }
                 case GUANOSINE: {
                     nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
                     connectPurine(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"));
+                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
+                    nucleotide.addBondBetween(atoms.get("C6"), atoms.get("O6"), DOUBLE_BOND);
                     nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N2"));
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N9"));
                     break;
@@ -102,7 +110,8 @@ public class LeafSubstructureFactory {
                 case THYMIDINE: {
                     nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
                     connectPyrimidin(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"));
+                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), DOUBLE_BOND);
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
                     nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C7"));
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
@@ -110,7 +119,8 @@ public class LeafSubstructureFactory {
                 case URIDINE: {
                     nucleotide.addBondBetween(atoms.get("C2'"), atoms.get("O2'"));
                     connectPyrimidin(nucleotide, atoms);
-                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"));
+                    nucleotide.addBondBetween(atoms.get("C4"), atoms.get("O4"), DOUBLE_BOND);
+                    nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
                     nucleotide.addBondBetween(atoms.get("C1'"), atoms.get("N1"));
                     break;
                 }
@@ -128,19 +138,30 @@ public class LeafSubstructureFactory {
     }
 
     private static void connectPhosphateGroup(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
-        nucleotide.addBondBetween(atoms.get("P"), atoms.get("OP1"));
+        nucleotide.addBondBetween(atoms.get("P"), atoms.get("OP1"), DOUBLE_BOND);
         nucleotide.addBondBetween(atoms.get("P"), atoms.get("OP2"));
         nucleotide.addBondBetween(atoms.get("P"), atoms.get("OP3"));
     }
 
     private static void connectPyrimidin(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
-        connectInOrder(nucleotide, atoms, "N1", "C2", "N3", "C4", "C5", "C6", "N1");
-        nucleotide.addBondBetween(atoms.get("C2"), atoms.get("O2"));
+        nucleotide.addBondBetween(atoms.get("N1"), atoms.get("C2"));
+        nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N3"));
+        nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"));
+        nucleotide.addBondBetween(atoms.get("C2"), atoms.get("O2"), DOUBLE_BOND);
+        nucleotide.addBondBetween(atoms.get("C5"), atoms.get("O6"), DOUBLE_BOND);
+        nucleotide.addBondBetween(atoms.get("C6"), atoms.get("N1"));
     }
 
     private static void connectPurine(OakNucleotide nucleotide, Map<String, OakAtom> atoms) {
-        connectInOrder(nucleotide, atoms, "N1", "C2", "N3", "C4", "N9", "C8", "N7", "C5", "C6", "N1");
-        nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"));
+        nucleotide.addBondBetween(atoms.get("N1"), atoms.get("C2"));
+        nucleotide.addBondBetween(atoms.get("C2"), atoms.get("N3"),DOUBLE_BOND);
+        nucleotide.addBondBetween(atoms.get("N3"), atoms.get("C4"));
+        nucleotide.addBondBetween(atoms.get("C4"), atoms.get("N9"));
+        nucleotide.addBondBetween(atoms.get("N9"), atoms.get("C8"));
+        nucleotide.addBondBetween(atoms.get("C8"), atoms.get("N7"), DOUBLE_BOND);
+        nucleotide.addBondBetween(atoms.get("N7"), atoms.get("C5"));
+        nucleotide.addBondBetween(atoms.get("C5"), atoms.get("C6"));
+        nucleotide.addBondBetween(atoms.get("C4"), atoms.get("C5"), DOUBLE_BOND);
     }
 
     public static OakAminoAcid createAminoAcidFromAtoms(LeafIdentifier leafIdentifier, AminoAcidFamily aminoAcidFamily, Map<String, OakAtom> atoms, StructureParserOptions options) {
@@ -168,38 +189,32 @@ public class LeafSubstructureFactory {
                     break;
                 }
                 case ARGININE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "NE", "CZ", "NH1");
-                    aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("NH2"));
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE", "CZ", "NH1");
+                    aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("NH2"), DOUBLE_BOND);
                     break;
                 }
                 case ASPARAGINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "OD1");
-                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("ND2"));
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "ND2");
+                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), DOUBLE_BOND);
                     break;
                 }
                 case ASPARTIC_ACID: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "OD1");
-                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD2"));
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "OD2");
+                    aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("OD1"), DOUBLE_BOND);
                     break;
                 }
                 case CYSTEINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "SG");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "SG");
                     break;
                 }
                 case GLUTAMINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "OE1");
-                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("NE2"));
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "NE2");
+                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), DOUBLE_BOND);
                     break;
                 }
                 case GLUTAMIC_ACID: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "OE1");
-                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE2"));
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "OE2");
+                    aminoAcid.addBondBetween(atoms.get("CD"), atoms.get("OE1"), DOUBLE_BOND);
                     break;
                 }
                 case GLYCINE: {
@@ -207,68 +222,55 @@ public class LeafSubstructureFactory {
                     break;
                 }
                 case HISTIDINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD2", "NE2", "CE1", "ND1", "CG");
+                    connectHistidine(aminoAcid, atoms);
                     break;
                 }
                 case ISOLEUCINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG1", "CD1");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1", "CD1");
                     aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
                     break;
                 }
                 case LEUCINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD1");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD1");
                     aminoAcid.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
                     break;
                 }
                 case LYSINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "CE", "NZ");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "CE", "NZ");
                     break;
                 }
                 case METHIONINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "SD", "CE");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "SD", "CE");
                     break;
                 }
                 case PHENYLALANINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD2", "CE2", "CZ", "CE1", "CD1", "CG");
+                    connectPhenylalanine(aminoAcid, atoms);
                     break;
                 }
                 case PROLINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "N", "CA");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG", "CD", "N", "CA");
                     break;
                 }
                 case SERINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "OG");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "OG");
                     break;
                 }
                 case THREONINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "OG1");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "OG1");
                     aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
                     break;
                 }
                 case TRYPTOPHAN: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD", "CD1", "CE2", "CZ2", "CH2", "CZ2", "CE3", "CD2", "CG");
-                    aminoAcid.addBondBetween(atoms.get("CD2"), atoms.get("CE2"));
+                    connectTryptophan(aminoAcid, atoms);
                     break;
                 }
                 case TYROSINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG", "CD1", "CE1", "CZ", "CE2", "CD2", "CG");
+                    connectPhenylalanine(aminoAcid, atoms);
                     aminoAcid.addBondBetween(atoms.get("CZ"), atoms.get("OH"));
                     break;
                 }
                 case VALINE: {
-                    connectInOrder(aminoAcid, atoms,
-                            "CA", "CB", "CG1");
+                    connectInOrder(aminoAcid, atoms, "CA", "CB", "CG1");
                     aminoAcid.addBondBetween(atoms.get("CB"), atoms.get("CG2"));
                     break;
                 }
@@ -297,6 +299,43 @@ public class LeafSubstructureFactory {
         }
     }
 
+    private static void connectPhenylalanine(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+        substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
+        substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
+        substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
+        substructure.addBondBetween(atoms.get("CD2"), atoms.get("CE2"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CE2"), atoms.get("CZ"));
+        substructure.addBondBetween(atoms.get("CZ"), atoms.get("CE1"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CE1"), atoms.get("CD1"));
+        substructure.addBondBetween(atoms.get("CD1"), atoms.get("CG"), DOUBLE_BOND);
+
+    }
+
+    private static void connectTryptophan(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+        substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
+        substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
+        substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"));
+        substructure.addBondBetween(atoms.get("CD2"), atoms.get("CE3"));
+        substructure.addBondBetween(atoms.get("CE3"), atoms.get("CZ3"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CZ3"), atoms.get("CH2"));
+        substructure.addBondBetween(atoms.get("CH2"), atoms.get("CZ2"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CZ2"), atoms.get("CE2"));
+        substructure.addBondBetween(atoms.get("CE2"), atoms.get("CD2"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CE2"), atoms.get("NE1"));
+        substructure.addBondBetween(atoms.get("NE1"), atoms.get("CD1"));
+        substructure.addBondBetween(atoms.get("CD1"), atoms.get("CG"), DOUBLE_BOND);
+    }
+
+    private static void connectHistidine(OakLeafSubstructure<?> substructure, Map<String, OakAtom> atoms) {
+        substructure.addBondBetween(atoms.get("CA"), atoms.get("CB"));
+        substructure.addBondBetween(atoms.get("CB"), atoms.get("CG"));
+        substructure.addBondBetween(atoms.get("CG"), atoms.get("CD2"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("CD2"), atoms.get("NE2"));
+        substructure.addBondBetween(atoms.get("NE2"), atoms.get("CE1"));
+        substructure.addBondBetween(atoms.get("CE1"), atoms.get("ND1"), DOUBLE_BOND);
+        substructure.addBondBetween(atoms.get("ND1"), atoms.get("CG"));
+    }
+
     /**
      * Connects the backbone atoms N-to-CA-to-C-to-O.
      *
@@ -306,7 +345,7 @@ public class LeafSubstructureFactory {
     private static void connectBackboneAtoms(OakAminoAcid aminoAcid, Map<String, OakAtom> atoms) {
         aminoAcid.addBondBetween(atoms.get("N"), atoms.get("CA"));
         aminoAcid.addBondBetween(atoms.get("CA"), atoms.get("C"));
-        aminoAcid.addBondBetween(atoms.get("C"), atoms.get("O"));
+        aminoAcid.addBondBetween(atoms.get("C"), atoms.get("O"), DOUBLE_BOND);
     }
 
     /**

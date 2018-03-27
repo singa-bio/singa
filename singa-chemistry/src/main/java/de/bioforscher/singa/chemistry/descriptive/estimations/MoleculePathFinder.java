@@ -9,8 +9,9 @@ import de.bioforscher.singa.structure.elements.Element;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph.isElement;
-import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph.isOneOfElements;
+import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraphs.isElement;
+import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraphs.isOneOfElements;
+
 
 /**
  * @author cl
