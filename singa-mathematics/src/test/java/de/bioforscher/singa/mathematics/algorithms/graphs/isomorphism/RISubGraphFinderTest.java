@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs.isomorphism;
 
+import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedEdge;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedGraph;
 import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
@@ -151,6 +152,9 @@ public class RISubGraphFinderTest {
         List<List<GenericNode<String>>> matches = finder.getFullMatches();
         assertEquals(1, matches.size());
         assertEquals(solution, matches.get(0));
+        for (Pair<GenericNode<String>> pairedMatch : finder.getFullMatchPairs().get(0)) {
+            assertEquals(pairedMatch.getFirst().getContent(), pairedMatch.getSecond().getContent());
+        }
     }
 
     @Test
