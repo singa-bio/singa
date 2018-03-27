@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.graphs.isomorphism;
 
+import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.graphs.model.*;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     private final Map<Integer, List<List<NodeType>>> partialMatches;
     private DirectedGraph<GenericNode<NodeType>> parentGraph;
     private DirectedGraph<GenericNode<NodeType>> searchSpace;
+    private List<List<Pair<NodeType>>> fullMatchPairs;
 
     public RISubGraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
                             Function<EdgeType, EdgeConditionType> edgeConditionExtractor) {
@@ -328,14 +330,13 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 //                                }
                             }
                         } else {
-                            logger.debug("(4) Edge Condition failed");
+                            logger.debug("(4) Edge Condition failed: edge condition for pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
                         }
-
                     } else {
                         logger.debug("(3) Connectivity Condition: pattern node neighbors {} are less than target node neighbors {}", patternNode.getNeighbours(), candidateTargetNode.getNeighbours());
                     }
                 } else {
-                    logger.debug("(2) Label Condition: pattern label {} and target label {} did not match", nodeConditionExtractor.apply(patternNode), nodeConditionExtractor.apply(candidateTargetNode));
+                    logger.debug("(2) Node Condition: pattern node condition {} and target node condition {} did not match", nodeConditionExtractor.apply(patternNode), nodeConditionExtractor.apply(candidateTargetNode));
                 }
             } else {
                 logger.debug("(1) Parent Condition: pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
@@ -370,6 +371,27 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 
     public List<List<NodeType>> getFullMatches() {
         return fullMatches;
+    }
+
+    /**
+     * Returns the full matches as {@link Pair}s between the pattern nodes and the target nodes.
+     *
+     * @return The full matches as {@link Pair}s.
+     */
+    public List<List<Pair<NodeType>>> getFullMatchPairs() {
+        if (fullMatchPairs != null) {
+            return fullMatchPairs;
+        }
+        fullMatchPairs = new ArrayList<>();
+        for (List<NodeType> fullMatch : fullMatches) {
+            List<Pair<NodeType>> fullMatchPair = new ArrayList<>();
+            for (int i = 0; i < fullMatch.size(); i++) {
+                NodeType targetNode = fullMatch.get(fullMatch.size() - i - 1);
+                fullMatchPair.add(new Pair<>(mu.get(i), targetNode));
+            }
+            fullMatchPairs.add(fullMatchPair);
+        }
+        return fullMatchPairs;
     }
 
 
