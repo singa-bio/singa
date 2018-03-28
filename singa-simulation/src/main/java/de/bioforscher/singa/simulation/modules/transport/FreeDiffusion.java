@@ -26,9 +26,9 @@ import java.util.Set;
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
-    private Set<ChemicalEntity<?>> chemicalEntities;
+    private Set<ChemicalEntity> chemicalEntities;
 
-    public FreeDiffusion(Simulation simulation, Set<ChemicalEntity<?>> chemicalEntities) {
+    public FreeDiffusion(Simulation simulation, Set<ChemicalEntity> chemicalEntities) {
         super(simulation);
         // apply everywhere
         this.chemicalEntities = chemicalEntities;

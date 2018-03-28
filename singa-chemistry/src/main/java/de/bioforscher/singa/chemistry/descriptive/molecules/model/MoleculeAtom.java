@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.descriptive.molecules;
+package de.bioforscher.singa.chemistry.descriptive.molecules.model;
 
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;

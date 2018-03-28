@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureConta
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
+import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
 import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
@@ -23,13 +24,11 @@ import java.util.*;
  * level. Each chemical entity should be identifiable by an
  * {@link Identifier}. Chemical entities can be annotated, posses a {@link MolarMass} and a name.
  *
- * @param <IdentifierType> The Type of the {@link Identifier}, that identifies this entity.
  * @author cl
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public abstract class ChemicalEntity<IdentifierType extends Identifier> implements Identifiable<IdentifierType>,
-        Nameable, Annotatable, Featureable {
+public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentifier>, Nameable, Annotatable, Featureable {
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -44,7 +43,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    protected final IdentifierType identifier;
+    protected final SimpleStringIdentifier identifier;
 
     /**
      * The name by which this entity is referenced.
@@ -63,14 +62,14 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
      *
      * @param identifier The pdbIdentifier.
      */
-    protected ChemicalEntity(IdentifierType identifier) {
+    protected ChemicalEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
     }
 
     @Override
-    public IdentifierType getIdentifier() {
+    public SimpleStringIdentifier getIdentifier() {
         return identifier;
     }
 
@@ -194,7 +193,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ChemicalEntity<?> that = (ChemicalEntity<?>) o;
+        ChemicalEntity that = (ChemicalEntity) o;
 
         return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
@@ -204,17 +203,21 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return identifier != null ? identifier.hashCode() : 0;
     }
 
-    public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {
+    public static abstract class Builder<TopLevelType extends ChemicalEntity, BuilderType extends Builder> {
 
         final TopLevelType topLevelObject;
         final BuilderType builderObject;
 
-        public Builder(IdentifierType identifier) {
+        public Builder(SimpleStringIdentifier identifier) {
             topLevelObject = createObject(identifier);
             builderObject = getBuilder();
         }
+        public Builder(String identifier) {
+            topLevelObject = createObject(new SimpleStringIdentifier(identifier));
+            builderObject = getBuilder();
+        }
 
-        protected abstract TopLevelType createObject(IdentifierType primaryIdentifer);
+        protected abstract TopLevelType createObject(SimpleStringIdentifier primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
 
@@ -251,6 +254,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         public TopLevelType build() {
             return topLevelObject;
         }
+
     }
 
 }

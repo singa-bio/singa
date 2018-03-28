@@ -1,6 +1,6 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraphs;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraphs;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;

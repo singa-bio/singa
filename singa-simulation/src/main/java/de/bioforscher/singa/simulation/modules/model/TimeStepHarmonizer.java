@@ -109,7 +109,7 @@ public class TimeStepHarmonizer {
     }
 
     public void rescaleParameters() {
-        for (ChemicalEntity<?> entity : simulation.getChemicalEntities()) {
+        for (ChemicalEntity entity : simulation.getChemicalEntities()) {
             entity.scaleScalableFeatures();
         }
         for (Module module : simulation.getModules()) {

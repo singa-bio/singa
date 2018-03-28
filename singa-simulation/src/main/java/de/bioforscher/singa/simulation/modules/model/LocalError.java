@@ -27,7 +27,7 @@ public class LocalError {
     /**
      * The chemical entity where the error occurred.
      */
-    private final ChemicalEntity<?> entity;
+    private final ChemicalEntity entity;
 
     /**
      * The actual value of the error.
@@ -41,7 +41,7 @@ public class LocalError {
      * @param entity The chemical entity where the error occurred.
      * @param value The actual value of the error.
      */
-    LocalError(AutomatonNode node, ChemicalEntity<?> entity, double value) {
+    LocalError(AutomatonNode node, ChemicalEntity entity, double value) {
         this.node = node;
         this.entity = entity;
         this.value = value;
@@ -61,7 +61,7 @@ public class LocalError {
      *
      * @return The chemical entity where the error occurred.
      */
-    public ChemicalEntity<?> getChemicalEntity() {
+    public ChemicalEntity getChemicalEntity() {
         return entity;
     }
 

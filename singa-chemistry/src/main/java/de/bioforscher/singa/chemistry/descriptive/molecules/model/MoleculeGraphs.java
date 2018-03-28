@@ -1,6 +1,6 @@
-package de.bioforscher.singa.chemistry.descriptive.molecules;
+package de.bioforscher.singa.chemistry.descriptive.molecules.model;
 
-import de.bioforscher.singa.chemistry.descriptive.estimations.MoleculePathFinder;
+import de.bioforscher.singa.chemistry.descriptive.molecules.algorithms.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.structure.elements.Element;
@@ -66,7 +66,7 @@ public class MoleculeGraphs {
         }
     }
 
-    public static Predicate<MoleculeAtom> isElement(Element element) {
+    public static Predicate<MoleculeAtom> isElement(final Element element) {
         return atom -> atom.getElement().getProtonNumber() == element.getProtonNumber();
     }
 

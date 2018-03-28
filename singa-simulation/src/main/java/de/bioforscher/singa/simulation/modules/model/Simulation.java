@@ -92,7 +92,7 @@ public class Simulation {
     /**
      * The chemical entities referenced in the graph.
      */
-    private Set<ChemicalEntity<?>> chemicalEntities;
+    private Set<ChemicalEntity> chemicalEntities;
 
     /**
      * The globally applied parameters.
@@ -222,7 +222,7 @@ public class Simulation {
      *
      * @return The chemical entities.
      */
-    public Set<ChemicalEntity<?>> getChemicalEntities() {
+    public Set<ChemicalEntity> getChemicalEntities() {
         return chemicalEntities;
     }
 
@@ -231,7 +231,7 @@ public class Simulation {
      *
      * @param chemicalEntities The chemical entities.
      */
-    public void setChemicalEntities(Set<ChemicalEntity<?>> chemicalEntities) {
+    public void setChemicalEntities(Set<ChemicalEntity> chemicalEntities) {
         this.chemicalEntities = chemicalEntities;
     }
 

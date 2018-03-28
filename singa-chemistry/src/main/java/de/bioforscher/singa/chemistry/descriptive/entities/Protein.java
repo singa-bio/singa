@@ -15,7 +15,7 @@ import static de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationT
 /**
  * @author cl
  */
-public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
+public class Protein extends ChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -107,7 +107,7 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Protein, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

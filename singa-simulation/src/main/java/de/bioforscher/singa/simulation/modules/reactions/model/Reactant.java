@@ -9,10 +9,10 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
  */
 public abstract class Reactant {
 
-    private ChemicalEntity<?> entity;
+    private ChemicalEntity entity;
     private ReactantRole role;
 
-    public Reactant(ChemicalEntity<?> entity, ReactantRole role) {
+    public Reactant(ChemicalEntity entity, ReactantRole role) {
         this.entity = entity;
         this.role = role;
     }
@@ -22,7 +22,7 @@ public abstract class Reactant {
      *
      * @return The entity representing this reactant.
      */
-    public ChemicalEntity<?> getEntity() {
+    public ChemicalEntity getEntity() {
         return entity;
     }
 
@@ -31,7 +31,7 @@ public abstract class Reactant {
      *
      * @param entity The entity representing this reactant.
      */
-    public void setEntity(ChemicalEntity<?> entity) {
+    public void setEntity(ChemicalEntity entity) {
         this.entity = entity;
     }
 

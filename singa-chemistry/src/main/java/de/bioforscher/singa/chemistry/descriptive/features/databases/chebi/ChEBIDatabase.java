@@ -21,7 +21,9 @@ public class ChEBIDatabase {
             "ChEBI Database",
             "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
                     "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");
+
     private static final Logger logger = LoggerFactory.getLogger(ChEBIDatabase.class);
+
     /**
      * The instance.
      */
@@ -31,17 +33,17 @@ public class ChEBIDatabase {
         return instance;
     }
 
-    public static <FeaturableType extends Featureable> MolarMass fetchMolarMass(Featureable featureable) {
+    public static MolarMass fetchMolarMass(Featureable featureable) {
         // try to get Chebi identifier
-        ChemicalEntity<?> species = (ChemicalEntity) featureable;
+        ChemicalEntity species = (ChemicalEntity) featureable;
         Optional<Identifier> identifierOptional = ChEBIIdentifier.find(species.getAllIdentifiers());
         // try to get weight from ChEBI Database
         return identifierOptional.map(identifier -> ChEBIParserService.parse(identifier.toString()).getFeature(MolarMass.class)).orElse(null);
     }
 
-    public static <FeaturableType extends Featureable> Smiles fetchSmiles(Featureable featureable) {
+    public static Smiles fetchSmiles(Featureable featureable) {
         // try to get Chebi identifier
-        ChemicalEntity<?> species = (ChemicalEntity) featureable;
+        ChemicalEntity species = (ChemicalEntity) featureable;
         Optional<Identifier> identifierOptional = ChEBIIdentifier.find(species.getAllIdentifiers());
         // try to get weight from ChEBI Database
         return identifierOptional.map(identifier -> ChEBIParserService.parse(identifier.toString()).getFeature(Smiles.class)).orElse(null);

@@ -25,7 +25,7 @@ public final class AssignmentRules {
     public static List<AssignmentRule> sortAssignmentRulesByPriority(List<AssignmentRule> assignmentRules) {
         // assignments have to be done in a certain order, if they depend on other assignment rules
         // initialize assignment rules and their requirements
-        Map<AssignmentRule, Set<ChemicalEntity<?>>> assignmentRequirements = new HashMap<>();
+        Map<AssignmentRule, Set<ChemicalEntity>> assignmentRequirements = new HashMap<>();
         // and the priority of the rule
         Map<AssignmentRule, Integer> priorityMap = new HashMap<>();
         for (AssignmentRule rule : assignmentRules) {
@@ -36,7 +36,7 @@ public final class AssignmentRules {
         // collect requirements
         for (AssignmentRule targetRule : assignmentRules) {
             // rule provides
-            ChemicalEntity<?> targetEntity = targetRule.getTargetEntity();
+            ChemicalEntity targetEntity = targetRule.getTargetEntity();
             // check if it is required elsewhere
             for (AssignmentRule sourceRule : assignmentRules) {
                 if (sourceRule != targetRule) {
@@ -49,8 +49,8 @@ public final class AssignmentRules {
 
         // sort rules without requirements to the top
         List<AssignmentRule> handledRules = new ArrayList<>();
-        List<ChemicalEntity<?>> suppliedEntities = new ArrayList<>();
-        for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
+        List<ChemicalEntity> suppliedEntities = new ArrayList<>();
+        for (Map.Entry<AssignmentRule, Set<ChemicalEntity>> entry : assignmentRequirements.entrySet()) {
             if (entry.getValue().isEmpty()) {
                 // if no requirements are needed assign priority 0
                 priorityMap.put(entry.getKey(), 0);
@@ -65,7 +65,7 @@ public final class AssignmentRules {
         while (!allAssigned) {
             allAssigned = true;
             level++;
-            for (Map.Entry<AssignmentRule, Set<ChemicalEntity<?>>> entry : assignmentRequirements.entrySet()) {
+            for (Map.Entry<AssignmentRule, Set<ChemicalEntity>> entry : assignmentRequirements.entrySet()) {
                 if (!handledRules.contains(entry.getKey())) {
                     if (suppliedEntities.containsAll(entry.getValue())) {
                         priorityMap.put(entry.getKey(), level);

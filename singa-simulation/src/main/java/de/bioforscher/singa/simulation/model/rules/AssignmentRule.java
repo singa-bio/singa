@@ -21,20 +21,20 @@ public class AssignmentRule {
 
     private final AppliedExpression expression;
 
-    private ChemicalEntity<?> targetEntity;
+    private ChemicalEntity targetEntity;
     private Map<ChemicalEntity, String> entityReference;
 
-    public AssignmentRule(ChemicalEntity<?> targetEntity, AppliedExpression expression) {
+    public AssignmentRule(ChemicalEntity targetEntity, AppliedExpression expression) {
         this.targetEntity = targetEntity;
         this.expression = expression;
         entityReference = new HashMap<>();
     }
 
-    public ChemicalEntity<?> getTargetEntity() {
+    public ChemicalEntity getTargetEntity() {
         return targetEntity;
     }
 
-    public void setTargetEntity(ChemicalEntity<?> targetEntity) {
+    public void setTargetEntity(ChemicalEntity targetEntity) {
         this.targetEntity = targetEntity;
     }
 

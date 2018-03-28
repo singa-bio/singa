@@ -40,7 +40,7 @@ public class Transporter extends Protein {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Transporter, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Transporter, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

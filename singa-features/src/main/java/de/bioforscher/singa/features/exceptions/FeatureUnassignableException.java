@@ -5,10 +5,6 @@ package de.bioforscher.singa.features.exceptions;
  */
 public class FeatureUnassignableException extends RuntimeException {
 
-    public FeatureUnassignableException() {
-
-    }
-
     public FeatureUnassignableException(String message) {
         super(message);
     }

@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.descriptive.molecules;
+package de.bioforscher.singa.chemistry.descriptive.molecules.model;
 
 import java.util.stream.Stream;
 

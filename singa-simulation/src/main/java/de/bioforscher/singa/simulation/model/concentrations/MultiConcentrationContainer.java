@@ -14,8 +14,8 @@ import java.util.*;
  */
 public class MultiConcentrationContainer implements ConcentrationContainer {
 
-    private final Set<ChemicalEntity<?>> referencedEntities;
-    private final Map<CellSection, Map<ChemicalEntity<?>, Quantity<MolarConcentration>>> concentrations;
+    private final Set<ChemicalEntity> referencedEntities;
+    private final Map<CellSection, Map<ChemicalEntity, Quantity<MolarConcentration>>> concentrations;
 
     public MultiConcentrationContainer(Set<CellSection> cellSections) {
         referencedEntities = new HashSet<>();
@@ -49,7 +49,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (concentrations.containsKey(cellSection)) {
             return concentrations.get(cellSection);
         }
@@ -76,7 +76,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
+    public Set<ChemicalEntity> getAllReferencedEntities() {
         return referencedEntities;
     }
 
@@ -86,9 +86,9 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
-        Map<ChemicalEntity<?>, Quantity<MolarConcentration>> result = new HashMap<>();
-        for (ChemicalEntity<?> chemicalEntity : referencedEntities) {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
+        Map<ChemicalEntity, Quantity<MolarConcentration>> result = new HashMap<>();
+        for (ChemicalEntity chemicalEntity : referencedEntities) {
             result.put(chemicalEntity, getConcentration(chemicalEntity));
         }
         return result;

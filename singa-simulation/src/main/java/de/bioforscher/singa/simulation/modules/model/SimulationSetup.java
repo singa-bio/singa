@@ -16,7 +16,7 @@ public abstract class SimulationSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(SimulationManager.class);
 
-    private Set<ChemicalEntity<?>> chemicalEntities;
+    private Set<ChemicalEntity> chemicalEntities;
 
     /**
      * Initializes every initialization method in the requires order.

@@ -78,7 +78,7 @@ public class Enzyme extends Protein {
         return "Enzyme: " + getIdentifier() + " " + getName() + " weight: " + getFeature(MolarMass.class);
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

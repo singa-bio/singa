@@ -79,7 +79,7 @@ public abstract class AbstractModule implements Module {
     /**
      * The chemical entity that is currently processed.
      */
-    protected ChemicalEntity<?> currentChemicalEntity;
+    protected ChemicalEntity currentChemicalEntity;
 
     /**
      * Creates a new module.
@@ -132,7 +132,7 @@ public abstract class AbstractModule implements Module {
      * Returns the chemical entity that is currently processed.
      * @return The chemical entity that is currently processed.
      */
-    public ChemicalEntity<?> getCurrentChemicalEntity() {
+    public ChemicalEntity getCurrentChemicalEntity() {
         return currentChemicalEntity;
     }
 

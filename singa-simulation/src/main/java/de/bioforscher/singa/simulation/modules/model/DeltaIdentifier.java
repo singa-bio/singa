@@ -24,7 +24,7 @@ class DeltaIdentifier {
     /**
      * The chemical entity the delta is assigned to.
      */
-    private final ChemicalEntity<?> entity;
+    private final ChemicalEntity entity;
 
     /**
      * Creates a new DeltaIdentifier.
@@ -33,7 +33,7 @@ class DeltaIdentifier {
      * @param section The cell section the delta is assigned to.
      * @param entity The entity the delta is assigned to.
      */
-    DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity<?> entity) {
+    DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity entity) {
         this.node = node;
         this.section = section;
         this.entity = entity;
@@ -62,7 +62,7 @@ class DeltaIdentifier {
      *
      * @return The chemical entity the delta is assigned to.
      */
-    public ChemicalEntity<?> getEntity() {
+    public ChemicalEntity getEntity() {
         return entity;
     }
 

@@ -23,8 +23,7 @@ import java.util.Set;
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public class Species extends ChemicalEntity<SimpleStringIdentifier> {
-
+public class Species extends ChemicalEntity {
 
     public static final Species UNKNOWN_SPECIES = new Species.Builder("UNK")
             .name("Unknown chemical species")
@@ -62,7 +61,7 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Species, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

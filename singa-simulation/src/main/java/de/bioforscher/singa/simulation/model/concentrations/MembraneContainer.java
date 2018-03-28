@@ -23,13 +23,13 @@ public class MembraneContainer implements ConcentrationContainer {
     private final CellSection innerPhaseSection;
     private final Membrane membrane;
 
-    private Set<ChemicalEntity<?>> referencedEntities;
+    private Set<ChemicalEntity> referencedEntities;
     private Set<CellSection> refencedSections;
 
-    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerPhase;
-    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerLayer;
-    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerLayer;
-    private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> innerPhase;
+    private final Map<ChemicalEntity, Quantity<MolarConcentration>> outerPhase;
+    private final Map<ChemicalEntity, Quantity<MolarConcentration>> outerLayer;
+    private final Map<ChemicalEntity, Quantity<MolarConcentration>> innerLayer;
+    private final Map<ChemicalEntity, Quantity<MolarConcentration>> innerPhase;
 
     public MembraneContainer(CellSection outerPhaseSection, CellSection innerPhaseSection, Membrane membrane) {
         this.outerPhaseSection = outerPhaseSection;
@@ -89,14 +89,14 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         if (cellSection.equals(outerPhaseSection)) {
             return outerPhase;
         } else if (cellSection.equals(innerPhaseSection)) {
             return innerPhase;
         } else if (cellSection.equals(membrane)) {
-            Map<ChemicalEntity<?>, Quantity<MolarConcentration>> concentrations = new HashMap<>();
-            for (Map.Entry<ChemicalEntity<?>, Quantity<MolarConcentration>> entry : innerLayer.entrySet()) {
+            Map<ChemicalEntity, Quantity<MolarConcentration>> concentrations = new HashMap<>();
+            for (Map.Entry<ChemicalEntity, Quantity<MolarConcentration>> entry : innerLayer.entrySet()) {
                 concentrations.put(entry.getKey(), entry.getValue().add(outerLayer.get(entry.getKey())).divide(2.0));
             }
             return concentrations;
@@ -155,11 +155,11 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
+    public Set<ChemicalEntity> getAllReferencedEntities() {
         return referencedEntities;
     }
 
-    public void setReferencedEntities(Set<ChemicalEntity<?>> referencedEntities) {
+    public void setReferencedEntities(Set<ChemicalEntity> referencedEntities) {
         this.referencedEntities = referencedEntities;
     }
 
@@ -193,9 +193,9 @@ public class MembraneContainer implements ConcentrationContainer {
     }
 
     @Override
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
-        Map<ChemicalEntity<?>, Quantity<MolarConcentration>> result = new HashMap<>();
-        for (ChemicalEntity<?> chemicalEntity : getAllReferencedEntities()) {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
+        Map<ChemicalEntity, Quantity<MolarConcentration>> result = new HashMap<>();
+        for (ChemicalEntity chemicalEntity : getAllReferencedEntities()) {
             result.put(chemicalEntity, getConcentration(chemicalEntity));
         }
         return result;

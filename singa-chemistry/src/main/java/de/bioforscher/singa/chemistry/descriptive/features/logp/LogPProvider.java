@@ -26,9 +26,9 @@ public class LogPProvider extends FeatureProvider<LogP> {
     }
 
     @Override
-    public <FeatureableType extends Featureable> LogP provide(FeatureableType featureable) {
+    public LogP provide(Featureable featureable) {
         // try to get Pubchem
-        ChemicalEntity<?> species = (ChemicalEntity) featureable;
+        ChemicalEntity species = (ChemicalEntity) featureable;
         Optional<Identifier> pubChemIdentifier = PubChemIdentifier.find(species.getAllIdentifiers());
         if (!pubChemIdentifier.isPresent()) {
             // try to find via inChiKey

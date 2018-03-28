@@ -1,8 +1,8 @@
 package de.bioforscher.singa.javafx.renderer.molecules;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBond;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeAtom;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeBond;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraph;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;

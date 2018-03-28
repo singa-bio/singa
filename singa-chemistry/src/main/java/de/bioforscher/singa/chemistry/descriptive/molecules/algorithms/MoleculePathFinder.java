@@ -1,16 +1,16 @@
-package de.bioforscher.singa.chemistry.descriptive.estimations;
+package de.bioforscher.singa.chemistry.descriptive.molecules.algorithms;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBond;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeAtom;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeBond;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeBondType;
+import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraph;
 import de.bioforscher.singa.structure.elements.Element;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraphs.isElement;
-import static de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraphs.isOneOfElements;
+import static de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraphs.isElement;
+import static de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraphs.isOneOfElements;
 
 
 /**
