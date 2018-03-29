@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.estimations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
-import de.bioforscher.singa.chemistry.descriptive.molecules.model.*;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.elements.ElementProvider;
+import de.bioforscher.singa.structure.model.molecules.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

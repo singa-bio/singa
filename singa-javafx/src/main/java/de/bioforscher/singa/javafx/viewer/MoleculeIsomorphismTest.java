@@ -1,11 +1,11 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraphs;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
+import de.bioforscher.singa.structure.model.molecules.MoleculeGraphs;
 import de.bioforscher.singa.structure.model.oak.OakLeafSubstructure;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import javafx.application.Application;

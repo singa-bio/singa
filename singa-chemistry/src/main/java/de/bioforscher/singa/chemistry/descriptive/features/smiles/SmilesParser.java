@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeBondType;
-import de.bioforscher.singa.chemistry.descriptive.molecules.model.MoleculeGraph;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.elements.ElementProvider;
+import de.bioforscher.singa.structure.model.molecules.MoleculeBondType;
+import de.bioforscher.singa.structure.model.molecules.MoleculeGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

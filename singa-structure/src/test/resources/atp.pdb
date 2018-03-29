@@ -1,0 +1,94 @@
+HETATM    1  PA  ATP D   1     -56.544 185.004 -25.122  1.00 33.00      D    P  
+ANISOU    1  PA  ATP D   1     5213   4121   3206   -741   -327   -840  D    P  
+HETATM    2  PB  ATP D   1     -56.198 182.237 -25.692  1.00 36.12      D    P  
+ANISOU    2  PB  ATP D   1     5770   4202   3752   -860    -45  -1100  D    P  
+HETATM    3  PG  ATP D   1     -55.463 181.600 -28.345  1.00 40.09      D    P  
+ANISOU    3  PG  ATP D   1     6457   4782   3992   -916     58  -1436  D    P  
+HETATM    4  C5' ATP D   1     -54.670 186.101 -26.636  1.00 33.11      D    C  
+ANISOU    4  C5' ATP D   1     5263   4269   3050   -603   -341   -731  D    C  
+HETATM    5  O5' ATP D   1     -55.265 185.954 -25.348  1.00 32.40      D    O  
+ANISOU    5  O5' ATP D   1     5144   4088   3077   -619   -349   -704  D    O  
+HETATM    6  C4' ATP D   1     -53.500 187.073 -26.542  1.00 32.68      D    C  
+ANISOU    6  C4' ATP D   1     5181   4240   2996   -488   -375   -541  D    C  
+HETATM    7  O4' ATP D   1     -53.946 188.237 -25.844  1.00 31.40      D    O  
+ANISOU    7  O4' ATP D   1     4948   4114   2869   -472   -505   -448  D    O  
+HETATM    8  C3' ATP D   1     -52.309 186.525 -25.768  1.00 33.16      D    C  
+ANISOU    8  C3' ATP D   1     5278   4157   3165   -414   -260   -432  D    C  
+HETATM    9  O3' ATP D   1     -51.076 186.946 -26.365  1.00 33.93      D    O  
+ANISOU    9  O3' ATP D   1     5365   4302   3226   -329   -240   -295  D    O  
+HETATM   10  C2' ATP D   1     -52.412 187.152 -24.400  1.00 31.97      D    C  
+ANISOU   10  C2' ATP D   1     5083   3972   3094   -403   -341   -325  D    C  
+HETATM   11  O2' ATP D   1     -51.121 187.387 -23.842  1.00 32.36      D    O  
+ANISOU   11  O2' ATP D   1     5118   3983   3194   -336   -326   -144  D    O  
+HETATM   12  C1' ATP D   1     -53.148 188.451 -24.676  1.00 30.92      D    C  
+ANISOU   12  C1' ATP D   1     4894   3952   2903   -416   -496   -327  D    C  
+HETATM   13  N1  ATP D   1     -54.110 192.221 -21.213  1.00 28.77      D    N  
+ANISOU   13  N1  ATP D   1     4561   3601   2768   -345   -811   -235  D    N  
+HETATM   14  O1A ATP D   1     -57.330 184.977 -26.408  1.00 33.73      D    O1-
+ANISOU   14  O1A ATP D   1     5296   4353   3167   -852   -395   -980  D    O1-
+HETATM   15  O1B ATP D   1     -57.589 182.356 -26.263  1.00 36.28      D    O1-
+ANISOU   15  O1B ATP D   1     5746   4357   3683  -1013   -174  -1231  D    O1-
+HETATM   16  O1G ATP D   1     -54.111 181.503 -29.014  1.00 41.12      D    O  
+ANISOU   16  O1G ATP D   1     6668   4894   4063   -783    197  -1422  D    O  
+HETATM   17  C2  ATP D   1     -53.189 192.162 -22.193  1.00 29.01      D    C  
+ANISOU   17  C2  ATP D   1     4580   3650   2794   -344   -819   -144  D    C  
+HETATM   18  O2A ATP D   1     -57.192 185.377 -23.809  1.00 32.25      D    O  
+ANISOU   18  O2A ATP D   1     5046   4016   3189   -719   -368   -749  D    O  
+HETATM   19  O2B ATP D   1     -55.859 181.101 -24.758  1.00 37.15      D    O  
+ANISOU   19  O2B ATP D   1     5917   4099   4099   -839    113  -1049  D    O  
+HETATM   20  O2G ATP D   1     -56.387 182.622 -28.970  1.00 39.29      D    O1-
+ANISOU   20  O2G ATP D   1     6270   4960   3700   -997   -145  -1442  D    O1-
+HETATM   21  N3  ATP D   1     -53.063 191.105 -23.016  1.00 29.33      D    N  
+ANISOU   21  N3  ATP D   1     4625   3729   2791   -358   -734   -159  D    N  
+HETATM   22  O3A ATP D   1     -55.774 183.600 -24.944  1.00 34.33      D    O  
+ANISOU   22  O3A ATP D   1     5466   4087   3490   -737   -146   -884  D    O  
+HETATM   23  O3B ATP D   1     -55.122 182.215 -26.893  1.00 37.28      D    O  
+ANISOU   23  O3B ATP D   1     6008   4376   3780   -798     30  -1166  D    O  
+HETATM   24  O3G ATP D   1     -56.113 180.264 -28.048  1.00 41.66      D    O  
+ANISOU   24  O3G ATP D   1     6710   4763   4355  -1044    148  -1601  D    O  
+HETATM   25  C4  ATP D   1     -53.872 190.025 -22.892  1.00 29.39      D    C  
+ANISOU   25  C4  ATP D   1     4649   3735   2781   -396   -650   -270  D    C  
+HETATM   26  C5  ATP D   1     -54.899 190.021 -21.846  1.00 29.06      D    C  
+ANISOU   26  C5  ATP D   1     4598   3681   2762   -408   -651   -335  D    C  
+HETATM   27  C6  ATP D   1     -54.980 191.214 -20.984  1.00 28.75      D    C  
+ANISOU   27  C6  ATP D   1     4556   3626   2743   -368   -729   -314  D    C  
+HETATM   28  N6  ATP D   1     -55.900 191.283 -19.997  1.00 28.85      D    N  
+ANISOU   28  N6  ATP D   1     4562   3645   2756   -356   -711   -375  D    N  
+HETATM   29  N7  ATP D   1     -55.550 188.850 -21.947  1.00 29.49      D    N  
+ANISOU   29  N7  ATP D   1     4655   3732   2820   -458   -568   -413  D    N  
+HETATM   30  C8  ATP D   1     -54.995 188.156 -22.974  1.00 30.06      D    C  
+ANISOU   30  C8  ATP D   1     4757   3795   2869   -480   -513   -433  D    C  
+HETATM   31  N9  ATP D   1     -53.995 188.864 -23.532  1.00 30.02      D    N  
+ANISOU   31  N9  ATP D   1     4754   3815   2837   -432   -555   -343  D    N  
+CONECT    1    5   14   18   22
+CONECT    2   15   19   22   23
+CONECT    3   16   20   23   24
+CONECT    4    6    5
+CONECT    5    1    4
+CONECT    6    4    7    8
+CONECT    7    6   12
+CONECT    8    6    9   10
+CONECT    9    8
+CONECT   10    8   11   12
+CONECT   11   10
+CONECT   12    7   10   31
+CONECT   13   17   27
+CONECT   14    1
+CONECT   15    2
+CONECT   16    3
+CONECT   17   13   21
+CONECT   18    1
+CONECT   19    2
+CONECT   20    3
+CONECT   21   17   25
+CONECT   22    1    2
+CONECT   23    2    3
+CONECT   24    3
+CONECT   25   21   26   31
+CONECT   26   25   27   29
+CONECT   27   26   13   28
+CONECT   28   27
+CONECT   29   26   30
+CONECT   30   29   31
+CONECT   31   12   25   30
+END

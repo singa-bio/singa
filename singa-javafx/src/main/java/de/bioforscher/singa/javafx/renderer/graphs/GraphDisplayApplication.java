@@ -43,7 +43,7 @@ public class GraphDisplayApplication extends Application {
 
         // center part
         Canvas canvas = new GraphCanvas();
-        renderer.renderVoronoi(true);
+        renderer.renderVoronoi(false);
         root.setCenter(canvas);
 
         // show

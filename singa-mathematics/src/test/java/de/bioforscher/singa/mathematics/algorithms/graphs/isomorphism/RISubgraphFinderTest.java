@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author fk
  */
-public class RISubGraphFinderTest {
+public class RISubgraphFinderTest {
 
     private DirectedGraph<GenericNode<String>> patternGraph;
     private DirectedGraph<GenericNode<String>> targetGraph;
@@ -144,8 +144,8 @@ public class RISubGraphFinderTest {
 
     @Test
     public void shouldFindFullSubgraph() {
-        RISubGraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubGraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
+                = new RISubgraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true);
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(7), targetGraph.getNode(4),
                 targetGraph.getNode(0), targetGraph.getNode(3), targetGraph.getNode(6))
                 .collect(Collectors.toList());
@@ -160,8 +160,8 @@ public class RISubGraphFinderTest {
     @Test
     public void shouldFindPartialSubgraph() {
         targetGraph.removeNode(7);
-        RISubGraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubGraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true, 4);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
+                = new RISubgraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true, 4);
         assertEquals(0, finder.getFullMatches().size());
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(4), targetGraph.getNode(0),
                 targetGraph.getNode(3), targetGraph.getNode(6))

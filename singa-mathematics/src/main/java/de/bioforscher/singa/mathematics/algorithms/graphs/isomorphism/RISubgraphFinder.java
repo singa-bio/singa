@@ -21,13 +21,14 @@ import java.util.function.Function;
  *
  * @author fk
  */
-public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
+public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
         VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>, NodeConditionType,
         EdgeConditionType> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RISubGraphFinder.class);
+    private static final Logger logger = LoggerFactory.getLogger(RISubgraphFinder.class);
     private final List<NodeType> mu;
     private final List<NodeType> ptmu;
+
     private final GraphType patternGraph;
     private final GraphType targetGraph;
     private final Function<NodeType, NodeConditionType> nodeConditionExtractor;
@@ -39,12 +40,12 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     private DirectedGraph<GenericNode<NodeType>> searchSpace;
     private List<List<Pair<NodeType>>> fullMatchPairs;
 
-    public RISubGraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
+    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
                             Function<EdgeType, EdgeConditionType> edgeConditionExtractor) {
         this(patternGraph, targetGraph, nodeConditionExtractor, edgeConditionExtractor, patternGraph.getNodes().size());
     }
 
-    public RISubGraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
+    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
                             Function<EdgeType, EdgeConditionType> edgeConditionExtractor, int minimalPartialMatchSize) {
         this.patternGraph = patternGraph;
         this.targetGraph = targetGraph;
@@ -258,15 +259,18 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
                     // fourth condition (3):
                     // the number of edges of the candidate target node is larger than or equal to the number of edges
                     // connected to supposed pattern node
-                    if (candidateTargetNode.getNeighbours().size() >= patternNode.getNeighbours().size()) {
+                    if ((candidateTargetNode.getNeighbours().size() >= patternNode.getNeighbours().size()) &&
+                            // magic check authored by sb
+                            checkConsumedNeighbors(candidateTargetNode, targetSpacePath, currentPatternDepth)) {
 
                         // only evaluate condition (4) if ui has parent
                         boolean parentToCandidateEdgeMatches = false;
                         boolean candidateToParentEdgeMatches = false;
                         if (!noParent) {
 
-                            Optional<EdgeType> targetSpaceEdgeParentToCandidate = targetGraph.getEdgeBetween(targetSpaceParent.getContent(), candidateTargetNode);
-                            Optional<EdgeType> targetSpaceEdgeCandidateToParent = targetGraph.getEdgeBetween(candidateTargetNode, targetSpaceParent.getContent());
+
+                            Optional<EdgeType> targetSpaceEdgeParentToCandidate = targetGraph.getEdgeBetween(mptui, candidateTargetNode);
+                            Optional<EdgeType> targetSpaceEdgeCandidateToParent = targetGraph.getEdgeBetween(candidateTargetNode, mptui);
 
                             Optional<EdgeType> patternEdgeParentToCandidate = patternGraph.getEdgeBetween(ptui, patternNode);
                             Optional<EdgeType> patternEdgeCandidateToParent = patternGraph.getEdgeBetween(patternNode, ptui);
@@ -345,6 +349,26 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     }
 
     /**
+     * Magic condition which is not entirely clear.
+     *
+     * @param candidateTargetNode The target node to be added.
+     * @param targetSpacePath The current path in the search space.
+     * @param currentPatternDepth The current depth in the search space.
+     * @return True if condition is met.
+     */
+    private boolean checkConsumedNeighbors(NodeType candidateTargetNode, List<NodeType> targetSpacePath, int currentPatternDepth) {
+        NodeType patternNode = mu.get(currentPatternDepth);
+        long candidateNeighborCount = candidateTargetNode.getNeighbours().stream()
+                .filter(targetSpacePath::contains)
+                .count();
+        List<NodeType> patternPath = mu.subList(0, currentPatternDepth);
+        long patternNeighborCount = patternNode.getNeighbours().stream()
+                .filter(patternPath::contains)
+                .count();
+        return candidateNeighborCount >= patternNeighborCount;
+    }
+
+    /**
      * Checks the edge condition.
      *
      * @param targetSpaceEdgeCandidateToParent First edge to check.
@@ -397,5 +421,14 @@ public class RISubGraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 
     public Map<Integer, List<List<NodeType>>> getPartialMatches() {
         return partialMatches;
+    }
+
+
+    public GraphType getPatternGraph() {
+        return patternGraph;
+    }
+
+    public GraphType getTargetGraph() {
+        return targetGraph;
     }
 }

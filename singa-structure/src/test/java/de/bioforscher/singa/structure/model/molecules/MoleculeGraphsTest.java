@@ -1,4 +1,4 @@
-package de.bioforscher.singa.chemistry.descriptive.molecules;
+package de.bioforscher.singa.structure.model.molecules;
 
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
@@ -9,10 +9,9 @@ import org.junit.Test;
 import java.util.Optional;
 
 /**
- * @author cl
+ * @author fk
  */
 public class MoleculeGraphsTest {
-
     @Test
     public void shouldConvertStructureGraphToMoleculeGraph() {
 
@@ -25,9 +24,5 @@ public class MoleculeGraphsTest {
         Optional<LeafSubstructure<?>> arginine = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 1));
         Optional<LeafSubstructure<?>> amp = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "A", 800));
         Optional<LeafSubstructure<?>> a = structure.getLeafSubstructure(new LeafIdentifier("1C0A", 1, "B", 1));
-
-
-
-
     }
 }

@@ -1,8 +1,8 @@
-package de.bioforscher.singa.chemistry.descriptive.molecules.model;
+package de.bioforscher.singa.structure.model.molecules;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.algorithms.MoleculePathFinder;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.structure.algorithms.molecules.MoleculePathFinder;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.oak.OakBond;

@@ -2,7 +2,7 @@ package de.bioforscher.singa.javafx.viewer;
 
 import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
-import de.bioforscher.singa.mathematics.algorithms.graphs.isomorphism.RISubGraphFinder;
+import de.bioforscher.singa.mathematics.algorithms.graphs.isomorphism.RISubgraphFinder;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedEdge;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedGraph;
 import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
@@ -41,8 +41,8 @@ public class TestGraphViewer {
         patternGraph.addEdgeBetween(patternNode1, patternNode2);
         patternGraph.addEdgeBetween(patternNode2, patternNode1);
 
-        RISubGraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubGraphFinder<>(createPatternGraph(), createTargetGraph(), GenericNode::getContent, edge -> true);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
+                = new RISubgraphFinder<>(createPatternGraph(), createTargetGraph(), GenericNode::getContent, edge -> true);
         DirectedGraph<GenericNode<GenericNode<String>>> searchSpace = finder.getSearchSpace();
 
         GraphDisplayApplication.graph = searchSpace;
