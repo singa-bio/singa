@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.identifiers;
 
-import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
+import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

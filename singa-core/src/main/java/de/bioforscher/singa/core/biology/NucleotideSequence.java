@@ -1,7 +1,5 @@
 package de.bioforscher.singa.core.biology;
 
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
-import de.bioforscher.singa.core.identifier.model.Identifiable;
 
 /**
  * @author cl

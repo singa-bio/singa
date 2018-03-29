@@ -1,7 +1,7 @@
-package de.bioforscher.singa.core.identifier;
+package de.bioforscher.singa.features.identifiers;
 
-import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+
+import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
 
 import java.util.regex.Pattern;
 
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="http://www.chem.qmul.ac.uk/iubmb/enzyme/">Enzyme Nomenclature</a>
  */
-public class ECNumber extends AbstractIdentifier {
+public class ECNumber extends AbstractIdentifier<ECNumber> {
 
     /**
      * The pattern to verify the identifier.
@@ -31,16 +31,6 @@ public class ECNumber extends AbstractIdentifier {
     }
 
     /**
-     * Returns true, if the identifier is valid.
-     *
-     * @param identifier The identifier.
-     * @return True, if the identifier is valid.
-     */
-    public static boolean check(Identifier identifier) {
-        return PATTERN.matcher(identifier.toString()).matches();
-    }
-
-    /**
      * Returns the pattern used to validate the identifier.
      *
      * @return The pattern used to validate the identifier.
@@ -49,4 +39,8 @@ public class ECNumber extends AbstractIdentifier {
         return PATTERN;
     }
 
+    @Override
+    public ECNumber getFeatureContent() {
+        return this;
+    }
 }

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

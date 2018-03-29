@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;

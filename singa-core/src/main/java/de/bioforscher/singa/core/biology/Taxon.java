@@ -1,7 +1,5 @@
 package de.bioforscher.singa.core.biology;
 
-import de.bioforscher.singa.core.utility.Nameable;
-
 /**
  * A taxon is usually known by a particular name and given a particular ranking.
  * <p>
@@ -12,7 +10,7 @@ import de.bioforscher.singa.core.utility.Nameable;
  *
  * @author cl
  */
-public class Taxon implements Nameable {
+public class Taxon {
 
     /**
      * A taxonomic rank is the relative level of a group of organisms in a taxonomic hierarchy.
@@ -62,7 +60,6 @@ public class Taxon implements Nameable {
         this.rank = rank;
     }
 
-    @Override
     public String getName() {
         return name;
     }

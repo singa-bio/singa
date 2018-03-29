@@ -1,4 +1,4 @@
-package de.bioforscher.singa.core.identifier.model;
+package de.bioforscher.singa.features.identifiers.model;
 
 /**
  * The identifier is used to identify objects that have the same structure.

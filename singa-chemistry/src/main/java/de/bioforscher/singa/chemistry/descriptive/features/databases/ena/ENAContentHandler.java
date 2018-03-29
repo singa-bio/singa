@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
 
 import de.bioforscher.singa.core.biology.NucleotideSequence;
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
+import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;

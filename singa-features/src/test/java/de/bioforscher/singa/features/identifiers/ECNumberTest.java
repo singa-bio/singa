@@ -1,6 +1,6 @@
-package de.bioforscher.singa.core.identifier;
+package de.bioforscher.singa.features.identifiers;
 
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

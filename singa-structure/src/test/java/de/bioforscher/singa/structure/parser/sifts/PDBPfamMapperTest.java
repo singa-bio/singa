@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.PfamIdentifier;
+import de.bioforscher.singa.features.identifiers.PfamIdentifier;
 import org.junit.Test;
 
 import java.util.Map;

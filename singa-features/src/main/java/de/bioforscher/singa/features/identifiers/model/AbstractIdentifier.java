@@ -1,4 +1,7 @@
-package de.bioforscher.singa.core.identifier.model;
+package de.bioforscher.singa.features.identifiers.model;
+
+import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 
 import java.util.regex.Pattern;
 
@@ -8,12 +11,14 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public class AbstractIdentifier implements Identifier {
+public abstract class AbstractIdentifier<IdentifierType> implements Identifier, Feature<IdentifierType> {
 
     /**
      * The identifier in string form.
      */
     private final String identifier;
+
+    private final FeatureOrigin featureOrigin;
 
     /**
      * Creates a new identifier by validating it with the given pattern.
@@ -23,8 +28,13 @@ public class AbstractIdentifier implements Identifier {
      * @throws IllegalArgumentException If the identifier not valid.
      */
     public AbstractIdentifier(String identifier, Pattern pattern) throws IllegalArgumentException {
+        this(identifier, pattern, FeatureOrigin.MANUALLY_ANNOTATED);
+    }
+
+    public AbstractIdentifier(String identifier, Pattern pattern, FeatureOrigin featureOrigin) throws IllegalArgumentException {
         if (pattern.matcher(identifier).matches()) {
             this.identifier = identifier;
+            this.featureOrigin = featureOrigin;
         } else {
             throw new IllegalArgumentException("The identifer \"" + identifier + "\" is no valid " +
                     getClass().getSimpleName() + ".");
@@ -34,6 +44,17 @@ public class AbstractIdentifier implements Identifier {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+
+    @Override
+    public FeatureOrigin getFeatureOrigin() {
+        return featureOrigin;
+    }
+
+    @Override
+    public String getSymbol() {
+        return "I:"+getClass().getSimpleName();
     }
 
     @Override
@@ -53,4 +74,5 @@ public class AbstractIdentifier implements Identifier {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
 }

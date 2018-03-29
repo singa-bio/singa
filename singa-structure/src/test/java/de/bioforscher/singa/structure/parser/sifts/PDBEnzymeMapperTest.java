@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.ECNumber;
+import de.bioforscher.singa.features.identifiers.ECNumber;
 import org.junit.Test;
 
 import java.util.Map;

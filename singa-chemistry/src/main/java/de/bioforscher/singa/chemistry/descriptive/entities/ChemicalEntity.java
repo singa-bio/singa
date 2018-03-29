@@ -7,10 +7,10 @@ import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureConta
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifiable;
-import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifiable;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;

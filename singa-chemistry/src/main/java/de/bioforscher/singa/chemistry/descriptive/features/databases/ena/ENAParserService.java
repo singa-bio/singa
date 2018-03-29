@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
 
 import de.bioforscher.singa.core.biology.NucleotideSequence;
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
+import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

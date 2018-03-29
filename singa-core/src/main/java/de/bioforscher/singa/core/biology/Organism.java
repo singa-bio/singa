@@ -2,7 +2,6 @@ package de.bioforscher.singa.core.biology;
 
 import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
 import de.bioforscher.singa.core.identifier.model.Identifiable;
-import de.bioforscher.singa.core.utility.Nameable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
  *
  * @author cl
  */
-public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> {
+public class Organism implements Identifiable<NCBITaxonomyIdentifier> {
 
     /**
      * The identifier used by the NCBI taxonomy databse.
@@ -79,11 +78,6 @@ public class Organism implements Nameable, Identifiable<NCBITaxonomyIdentifier> 
      */
     public void setCommonName(String commonName) {
         this.commonName = commonName;
-    }
-
-    @Override
-    public String getName() {
-        return getScientificName();
     }
 
     @Override

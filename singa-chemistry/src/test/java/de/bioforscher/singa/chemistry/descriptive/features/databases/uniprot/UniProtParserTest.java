@@ -3,8 +3,8 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.core.biology.Organism;
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import org.junit.Test;
 
 import java.util.List;

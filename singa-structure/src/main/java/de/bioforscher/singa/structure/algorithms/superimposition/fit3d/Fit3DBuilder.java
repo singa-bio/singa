@@ -1,8 +1,8 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.core.identifier.ECNumber;
-import de.bioforscher.singa.core.identifier.PfamIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.ECNumber;
+import de.bioforscher.singa.features.identifiers.PfamIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimpositionException;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationSchemeFactory;

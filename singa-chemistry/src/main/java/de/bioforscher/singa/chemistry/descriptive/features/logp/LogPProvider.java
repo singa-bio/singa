@@ -5,9 +5,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemDatabase;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.unichem.UniChemParser;
-import de.bioforscher.singa.core.identifier.InChIKey;
-import de.bioforscher.singa.core.identifier.PubChemIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;
 

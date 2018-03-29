@@ -1,6 +1,6 @@
-package de.bioforscher.singa.core.identifier;
+package de.bioforscher.singa.features.identifiers;
 
-import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
+import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
 
 import java.util.regex.Pattern;
 
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author fk
  */
-public class PfamIdentifier extends AbstractIdentifier {
+public class PfamIdentifier extends AbstractIdentifier<PfamIdentifier> {
 
     /**
      * The {@link Pattern} to verify the identifier.
@@ -19,5 +19,10 @@ public class PfamIdentifier extends AbstractIdentifier {
 
     public PfamIdentifier(String identifier) {
         super(identifier, PATTERN);
+    }
+
+    @Override
+    public PfamIdentifier getFeatureContent() {
+        return this;
     }
 }

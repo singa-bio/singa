@@ -1,4 +1,4 @@
-package de.bioforscher.singa.core.identifier.model;
+package de.bioforscher.singa.features.identifiers.model;
 
 /**
  * The Identifiable interface specifies that, Objects implementing this interface can be identified by a certain

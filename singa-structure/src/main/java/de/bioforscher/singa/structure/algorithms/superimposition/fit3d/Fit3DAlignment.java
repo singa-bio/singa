@@ -1,10 +1,10 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.core.identifier.ECNumber;
-import de.bioforscher.singa.core.identifier.PfamIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
 import de.bioforscher.singa.core.utility.CommutablePair;
 import de.bioforscher.singa.core.utility.Pair;
+import de.bioforscher.singa.features.identifiers.ECNumber;
+import de.bioforscher.singa.features.identifiers.PfamIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;

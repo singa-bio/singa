@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
 
 import de.bioforscher.singa.core.biology.NucleotideSequence;
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
+import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import org.junit.Test;
 
-import static de.bioforscher.singa.core.identifier.ENAAccessionNumber.ExpressionType.GENOMIC_DNA;
+import static de.bioforscher.singa.features.identifiers.ENAAccessionNumber.ExpressionType.GENOMIC_DNA;
 import static org.junit.Assert.assertEquals;
 
 /**
