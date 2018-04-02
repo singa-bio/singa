@@ -2,6 +2,7 @@ package de.bioforscher.singa.features.identifiers.model;
 
 import de.bioforscher.singa.features.identifiers.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +69,22 @@ public class IdentifierPatternRegistry {
         for (Identifier identifier : identifiers) {
             if (check(pattern, identifier)) {
                 return Optional.of(identifierClass.cast(identifier));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<Identifier> instantiate(String identifier) {
+        for (Map.Entry<Class<? extends Identifier>, Pattern> classPatternEntry : getInstance().identifierPatternRegistry.entrySet()) {
+            if (!classPatternEntry.getKey().equals(SimpleStringIdentifier.class)) {
+                if (classPatternEntry.getValue().matcher(identifier).matches()) {
+                    try {
+                        return Optional.of(classPatternEntry.getKey().getConstructor(String.class).newInstance(identifier));
+                    } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                        e.printStackTrace();
+                        return Optional.empty();
+                    }
+                }
             }
         }
         return Optional.empty();

@@ -8,6 +8,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.unichem.Uni
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;
 
@@ -29,13 +30,13 @@ public class LogPProvider extends FeatureProvider<LogP> {
     public LogP provide(Featureable featureable) {
         // try to get Pubchem
         ChemicalEntity species = (ChemicalEntity) featureable;
-        Optional<Identifier> pubChemIdentifier = PubChemIdentifier.find(species.getAllIdentifiers());
+        Optional<PubChemIdentifier> pubChemIdentifier = IdentifierPatternRegistry.find(PubChemIdentifier.class, species.getAllIdentifiers());
         if (!pubChemIdentifier.isPresent()) {
             // try to find via inChiKey
-            Optional<Identifier> inChiKey = InChIKey.find(species.getAllIdentifiers());
+            Optional<InChIKey> inChiKey = IdentifierPatternRegistry.find(InChIKey.class, species.getAllIdentifiers());
             if (inChiKey.isPresent()) {
-                final List<Identifier> identifiers = UniChemParser.parse((InChIKey) inChiKey.get());
-                pubChemIdentifier = PubChemIdentifier.find(identifiers);
+                final List<Identifier> identifiers = UniChemParser.parse(inChiKey.get());
+                pubChemIdentifier = IdentifierPatternRegistry.find(PubChemIdentifier.class, identifiers);
             }
         }
         // fetch and parse logP

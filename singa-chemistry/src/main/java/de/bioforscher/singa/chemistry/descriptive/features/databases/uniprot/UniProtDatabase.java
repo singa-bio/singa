@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
-import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -35,7 +35,7 @@ public class UniProtDatabase {
     public static MolarMass fetchMolarMass(Featureable featureable) {
         // try to get UniProt identifier
         ChemicalEntity entity = (ChemicalEntity) featureable;
-        Optional<Identifier> identifierOptional = UniProtIdentifier.find(entity.getAllIdentifiers());
+        Optional<UniProtIdentifier> identifierOptional = IdentifierPatternRegistry.find(UniProtIdentifier.class, entity.getAllIdentifiers());
         // try to get weight from UniProt Database
         return identifierOptional.map(identifier1 -> new MolarMass(UniProtParserService.fetchMolarMass(identifier1), origin)).orElse(null);
     }

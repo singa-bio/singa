@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  *
  * @author cl
  */
-public abstract class AbstractIdentifier<IdentifierType> implements Identifier, Feature<IdentifierType> {
+public abstract class AbstractIdentifier<IdentifierType> implements Identifier<IdentifierType>, Feature<IdentifierType> {
 
     /**
      * The identifier in string form.

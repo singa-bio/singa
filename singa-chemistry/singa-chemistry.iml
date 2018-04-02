@@ -14,7 +14,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="module" module-name="singa-sequence" />
     <orderEntry type="module" module-name="singa-structure" />
     <orderEntry type="module" module-name="singa-mathematics" />
     <orderEntry type="module" module-name="singa-core" />

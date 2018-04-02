@@ -1,7 +1,8 @@
-package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
+package de.bioforscher.singa.sequence.parser.ena;
 
-import de.bioforscher.singa.core.biology.NucleotideSequence;
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
+import de.bioforscher.singa.sequence.model.NucleotideSequence;
+import de.bioforscher.singa.sequence.model.ProteinSequence;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -26,10 +27,17 @@ public class ENAContentHandler implements ContentHandler {
         sequenceBuilder = new StringBuilder();
     }
 
-    public NucleotideSequence getSequence() {
+    public NucleotideSequence getNucleotideSequence() {
         final String sequence = sequenceBuilder.toString().replaceAll("\\s", "");
+        NucleotideSequence nucleotideSequence = NucleotideSequence.of(sequence);
+        nucleotideSequence.setFeature(enaAccessionNumber);
+        return nucleotideSequence;
+    }
+
+    public ProteinSequence getTranslationSequence() {
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
-        return new NucleotideSequence(enaAccessionNumber, sequence, translationSequence, translationTable);
+        return ProteinSequence.of(translationSequence);
+
     }
 
     @Override

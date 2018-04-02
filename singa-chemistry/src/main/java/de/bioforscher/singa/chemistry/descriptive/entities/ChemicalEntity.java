@@ -11,6 +11,7 @@ import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifiable;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -66,6 +67,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
+        IdentifierPatternRegistry.instantiate(identifier.toString()).ifPresent(this::setFeature);
     }
 
     @Override
@@ -115,11 +117,18 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     }
 
     public void addAdditionalIdentifier(Identifier identifier) {
-        addAnnotation(new Annotation<>(AnnotationType.ADDITIONAL_IDENTIFIER, identifier));
+        setFeature(identifier);
     }
 
     public List<Identifier> getAdditionalIdentifiers() {
-        return getContentOfAnnotations(Identifier.class, AnnotationType.ADDITIONAL_IDENTIFIER);
+        List<Identifier> identifiers = new ArrayList<>();
+        for (Feature<?> feature : getFeatures()) {
+            if (feature.getFeatureContent() instanceof Identifier) {
+                identifiers.add((Identifier) feature);
+            }
+        }
+        identifiers.addAll(getContentOfAnnotations(Identifier.class, AnnotationType.ADDITIONAL_IDENTIFIER));
+        return identifiers;
     }
 
     @Override

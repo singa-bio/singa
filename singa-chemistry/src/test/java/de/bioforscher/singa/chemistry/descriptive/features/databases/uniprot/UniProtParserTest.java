@@ -1,10 +1,11 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
+import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Organism;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.core.biology.Organism;
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import org.junit.Test;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class UniProtParserTest {
         Organism organism = entity.getAllOrganisms().iterator().next();
 
         // organism - name
-        assertEquals("Oryctolagus cuniculus", organism.getName());
+        assertEquals("Oryctolagus cuniculus", organism.getScientificName());
         // organism - id
         assertEquals("9986", organism.getIdentifier().toString());
         // annotation
@@ -50,9 +51,9 @@ public class UniProtParserTest {
         Protein aars = UniProtParserService.parse("P21889");
 
         final List<Identifier> additionalIdentifiers = aars.getAdditionalIdentifiers();
-        final Optional<Identifier> firstIdentifier = ENAAccessionNumber.find(additionalIdentifiers);
+        final Optional<ENAAccessionNumber> firstIdentifier = IdentifierPatternRegistry.find(ENAAccessionNumber.class, additionalIdentifiers);
 
-        System.out.println(firstIdentifier);
+        assertEquals("CAA37932.1", firstIdentifier.get().toString());
 
     }
 

@@ -1,4 +1,4 @@
-package de.bioforscher.singa.core.biology;
+package de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy;
 
 /**
  * A taxon is usually known by a particular name and given a particular ranking.

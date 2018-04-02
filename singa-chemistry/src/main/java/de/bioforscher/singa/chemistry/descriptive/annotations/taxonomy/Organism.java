@@ -1,7 +1,7 @@
-package de.bioforscher.singa.core.biology;
+package de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy;
 
-import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifiable;
+import de.bioforscher.singa.features.identifiers.NCBITaxonomyIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifiable;
 
 import java.util.ArrayList;
 import java.util.List;

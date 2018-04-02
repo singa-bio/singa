@@ -1,8 +1,9 @@
-package de.bioforscher.singa.chemistry.descriptive.features.databases.ena;
+package de.bioforscher.singa.sequence.parser.ena;
 
-import de.bioforscher.singa.core.biology.NucleotideSequence;
+
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
+import de.bioforscher.singa.sequence.model.NucleotideSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -45,6 +46,6 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
     @Override
     public NucleotideSequence parse() {
         parseXML();
-        return ((ENAContentHandler) getXmlReader().getContentHandler()).getSequence();
+        return ((ENAContentHandler) getXmlReader().getContentHandler()).getNucleotideSequence();
     }
 }
