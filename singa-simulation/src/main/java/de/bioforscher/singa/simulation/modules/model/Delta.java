@@ -38,6 +38,7 @@ public class Delta {
     /**
      * Creates a new delta.
      *
+     * @param module The module.
      * @param cellSection The cell section.
      * @param chemicalEntity The chemical entity.
      * @param quantity The change in concentration.
