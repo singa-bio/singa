@@ -3,6 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
@@ -39,6 +40,10 @@ public class ChEBIDatabase {
         Optional<ChEBIIdentifier> identifierOptional = IdentifierPatternRegistry.find(ChEBIIdentifier.class, species.getAllIdentifiers());
         // try to get weight from ChEBI Database
         return identifierOptional.map(identifier -> ChEBIParserService.parse(identifier.toString()).getFeature(MolarMass.class)).orElse(null);
+    }
+
+    public static InChIKey fetchInchiKey(ChEBIIdentifier chEBIIdentifier) {
+        return ChEBIParserService.parse(chEBIIdentifier).getFeature(InChIKey.class);
     }
 
     public static Smiles fetchSmiles(Featureable featureable) {
