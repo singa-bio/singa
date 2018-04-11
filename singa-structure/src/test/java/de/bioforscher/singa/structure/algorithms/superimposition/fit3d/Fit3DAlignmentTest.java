@@ -448,5 +448,4 @@ public class Fit3DAlignmentTest {
                 .flatMap(Collection::stream)
                 .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
     }
-
 }
