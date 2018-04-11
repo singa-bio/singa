@@ -2,21 +2,18 @@ package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
 import de.bioforscher.singa.core.utility.Resources;
 import de.bioforscher.singa.mathematics.combinatorics.StreamCombinations;
-import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposer;
 import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSuperimposition;
 import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
 import de.bioforscher.singa.structure.model.families.MatcherFamily;
 import de.bioforscher.singa.structure.model.families.NucleotideFamily;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
-import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
 import de.bioforscher.singa.structure.model.oak.OakStructure;
 import de.bioforscher.singa.structure.model.oak.StructuralEntityFilter;
 import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser.MultiParser;
-import de.bioforscher.singa.structure.parser.pdb.structures.StructureWriter;
 import de.bioforscher.singa.structure.parser.plip.InteractionContainer;
 import de.bioforscher.singa.structure.parser.plip.PlipParser;
 import org.junit.Before;
@@ -451,33 +448,4 @@ public class Fit3DAlignmentTest {
                 .flatMap(Collection::stream)
                 .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
     }
-
-
-    @Test
-    public void shouldCreateAlignmentForFigure() throws IOException {
-
-
-        Structure alars = StructureParser.pdb()
-                .pdbIdentifier("3wqy")
-                .chainIdentifier("A")
-                .parse();
-        StructuralMotif alaRSMotif = StructuralMotif.fromLeafIdentifiers(alars, LeafIdentifiers.of("A-128", "A-249"));
-
-
-        Structure hisrs = StructureParser.pdb()
-                .pdbIdentifier("5e3i")
-                .chainIdentifier("B")
-                .parse();
-        StructuralMotif hisRSMotif = StructuralMotif.fromLeafIdentifiers(hisrs, LeafIdentifiers.of("B-115", "B-316"));
-
-
-        SubstructureSuperimposition superimposition = SubstructureSuperimposer.calculateSubstructureSuperimposition(alaRSMotif.getAllLeafSubstructures(), hisRSMotif.getAllLeafSubstructures(), AtomFilter.isArbitrary());
-
-        List<LeafSubstructure<?>> superimposedStructure = superimposition.applyTo(hisrs.getAllLeafSubstructures());
-
-        StructureWriter.writeLeafSubstructures(superimposedStructure, Paths.get("/tmp/aligned.pdb"));
-
-        System.out.println();
-    }
-
 }
