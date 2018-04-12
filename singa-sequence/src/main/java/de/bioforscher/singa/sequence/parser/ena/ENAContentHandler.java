@@ -16,7 +16,7 @@ public class ENAContentHandler implements ContentHandler {
     private boolean isInTranslation;
     private boolean isInTranslationTable;
     private StringBuilder translationSequenceBuilder;
-    private StringBuilder sequenceBuilder;
+    private StringBuilder geneSequenceBuilder;
     private int translationTable;
 
     private ENAAccessionNumber enaAccessionNumber;
@@ -24,11 +24,11 @@ public class ENAContentHandler implements ContentHandler {
     public ENAContentHandler(ENAAccessionNumber enaAccessionNumber) {
         this.enaAccessionNumber = enaAccessionNumber;
         translationSequenceBuilder = new StringBuilder();
-        sequenceBuilder = new StringBuilder();
+        geneSequenceBuilder = new StringBuilder();
     }
 
     public NucleotideSequence getNucleotideSequence() {
-        final String sequence = sequenceBuilder.toString().replaceAll("\\s", "");
+        final String sequence = geneSequenceBuilder.toString().replaceAll("\\s", "");
         NucleotideSequence nucleotideSequence = NucleotideSequence.of(sequence);
         nucleotideSequence.setFeature(enaAccessionNumber);
         return nucleotideSequence;
@@ -37,7 +37,6 @@ public class ENAContentHandler implements ContentHandler {
     public ProteinSequence getTranslationSequence() {
         final String translationSequence = translationSequenceBuilder.toString().replaceAll("\\s", "");
         return ProteinSequence.of(translationSequence);
-
     }
 
     @Override
@@ -118,7 +117,7 @@ public class ENAContentHandler implements ContentHandler {
                 break;
             }
             case "sequence": {
-                sequenceBuilder.append(new String(ch, start, length));
+                geneSequenceBuilder.append(new String(ch, start, length));
             }
         }
     }

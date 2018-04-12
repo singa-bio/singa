@@ -2,6 +2,8 @@ package de.bioforscher.singa.sequence.parser.ena;
 
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import de.bioforscher.singa.sequence.model.NucleotideSequence;
+import de.bioforscher.singa.sequence.model.ProteinSequence;
+import de.bioforscher.singa.sequence.model.SequenceContainer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,10 +12,40 @@ public class ENAParserServiceTest {
 
     @Test
     public void shouldParseNucleotideSequence() {
-        final NucleotideSequence sequence = ENAParserService.parse(new ENAAccessionNumber("CAA37856.1"));
-        assertEquals("atgcgtacagaatattgtggacagctccgtttgtcccacgtggggcagcaggtgactctgtgtggttgggtcaaccgtcgtcgtgatcttggtagcctgatcttcatcgatatgcgcgaccgcgaaggtatcgtgcaggtatttttcgatccggatcgtgcggacgcgttaaagctggcctctgaactgcgtaatgagttctgcattcaggtcacgggcaccgtacgtgcgcgtgacgaaaaaaatattaaccgcgatatggcgaccggcgaaatcgaagtgctggcgtcctcgctgactatcatcaaccgcgcagatgttctgccgcttgactctaaccacgtcaacaccgaagaagcgcgtctgaaataccgctacctcgacctgcgtcgtccggaaatggctcagcgcctgaaaacccgcgctaaaatcaccagcctggtgcgccgttttatggatgaccacggcttcctcgacatcgaaactccgatgctgaccaaagccacgccggaaggcgcgcgtgactacctggtgccttctcgtgtgcacaaaggtaaattctacgcactgccgcaatccccgcagttgttcaaacagctgctgatgatgtccggttttgaccgttactatcagatcgttaaatgcttccgtgacgaagacctgcgtgctgaccgtcagcctgaatttactcagatcgatgtggaaacttctttcatgaccgcgccgcaagtgcgtgaagtgatggaagcgctggtgcgtcatctgtggctggaagtgaagggtgtggatctgggcgatttcccggtaatgacctttgcggaagcagaacgccgttatggttctgataaaccggatctgcgtaacccgatggaactgactgacgttgctgatctgctgaaatctgttgagtttgctgtatttgcaggtccggcgaacgatccgaaaggtcgcgtagcggctctgcgcgttccgggcggcgcatcgctgacccgtaagcagatcgacgaatacggtaacttcgttaaaatctacggcgcgaaaggtctggcttacatcaaagttaacgaacgcgcgaaaggtctggaaggtatcaacagcccggtagcgaagttccttaatgcagaaatcatcgaagacatcctggatcgtactgccgcgcaagatggcgatatgattttcttcggtgccgacaacaagaaaattgttgccgacgcgatgggtgcactgcgcctgaaagtgggtaaagaccttggtctgaccgacgaaagcaaatgggcaccgctgtgggttatcgacttcccgatgtttgaagacgacggtgaaggcggcctgacggcaatgcaccatccgttcacctcaccgaaagatatgacggctgcagaactgaaagctgcaccggaaaatgcggtggcgaacgcttacgatatggtcatcaatggttacgaagtgggcggtggttcagtacgtatccataatggtgatatgcagcagacggtgtttggtattctgggtatcaacgaagaggaacagcgcgagaaattcggcttcctgctcgacgctctgaaatacggtactccgccgcacgcaggtctggcattcggtcttgaccgtctgaccatgctgctgaccggcaccgacaatatccgtgacgttatcgccttcccgaaaaccacggcggcagcgtgtctgatgactgaagcaccgagctttgctaacccgactgcactggctgagctgagcattcaggttgtgaagaaggctgagaataactga",sequence.getSequenceAsString().toLowerCase());
-        // assertEquals("MRTEYCGQLRLSHVGQQVTLCGWVNRRRDLGSLIFIDMRDREGIVQVFFDPDRADALKLASELRNEFCIQVTGTVRARDEKNINRDMATGEIEVLASSLTIINRADVLPLDSNHVNTEEARLKYRYLDLRRPEMAQRLKTRAKITSLVRRFMDDHGFLDIETPMLTKATPEGARDYLVPSRVHKGKFYALPQSPQLFKQLLMMSGFDRYYQIVKCFRDEDLRADRQPEFTQIDVETSFMTAPQVREVMEALVRHLWLEVKGVDLGDFPVMTFAEAERRYGSDKPDLRNPMELTDVADLLKSVEFAVFAGPANDPKGRVAALRVPGGASLTRKQIDEYGNFVKIYGAKGLAYIKVNERAKGLEGINSPVAKFLNAEIIEDILDRTAAQDGDMIFFGADNKKIVADAMGALRLKVGKDLGLTDESKWAPLWVIDFPMFEDDGEGGLTAMHHPFTSPKDMTAAELKAAPENAVANAYDMVINGYEVGGGSVRIHNGDMQQTVFGILGINEEEQREKFGFLLDALKYGTPPHAGLAFGLDRLTMLLTGTDNIRDVIAFPKTTAAACLMTEAPSFANPTALAELSIQVVKKAENN",sequence.getTranslationSequence());
-        // assertEquals(11,sequence.getTranslationTable(),0);
+        // parse sequence
+        SequenceContainer sequenceContainer = ENAParserService.parseGeneTranslationPair(new ENAAccessionNumber("CAA37856.1"));
+        NucleotideSequence gene = sequenceContainer.getGene();
+        ProteinSequence translation = sequenceContainer.getTranslation();
+
+        // compare gene
+        assertEquals("ATGCGTACAGAATATTGTGGACAGCTCCGTTTGTCCCACGTGGGGCAGCAGGTGACTCTGTGTGGTTGGGTCAACCGTCGTCGTGAT" +
+                "CTTGGTAGCCTGATCTTCATCGATATGCGCGACCGCGAAGGTATCGTGCAGGTATTTTTCGATCCGGATCGTGCGGACGCGTTAAAGCTGGCCTCTGAAC" +
+                "TGCGTAATGAGTTCTGCATTCAGGTCACGGGCACCGTACGTGCGCGTGACGAAAAAAATATTAACCGCGATATGGCGACCGGCGAAATCGAAGTGCTGGC" +
+                "GTCCTCGCTGACTATCATCAACCGCGCAGATGTTCTGCCGCTTGACTCTAACCACGTCAACACCGAAGAAGCGCGTCTGAAATACCGCTACCTCGACCTG" +
+                "CGTCGTCCGGAAATGGCTCAGCGCCTGAAAACCCGCGCTAAAATCACCAGCCTGGTGCGCCGTTTTATGGATGACCACGGCTTCCTCGACATCGAAACTC" +
+                "CGATGCTGACCAAAGCCACGCCGGAAGGCGCGCGTGACTACCTGGTGCCTTCTCGTGTGCACAAAGGTAAATTCTACGCACTGCCGCAATCCCCGCAGTT" +
+                "GTTCAAACAGCTGCTGATGATGTCCGGTTTTGACCGTTACTATCAGATCGTTAAATGCTTCCGTGACGAAGACCTGCGTGCTGACCGTCAGCCTGAATTT" +
+                "ACTCAGATCGATGTGGAAACTTCTTTCATGACCGCGCCGCAAGTGCGTGAAGTGATGGAAGCGCTGGTGCGTCATCTGTGGCTGGAAGTGAAGGGTGTGG" +
+                "ATCTGGGCGATTTCCCGGTAATGACCTTTGCGGAAGCAGAACGCCGTTATGGTTCTGATAAACCGGATCTGCGTAACCCGATGGAACTGACTGACGTTGC" +
+                "TGATCTGCTGAAATCTGTTGAGTTTGCTGTATTTGCAGGTCCGGCGAACGATCCGAAAGGTCGCGTAGCGGCTCTGCGCGTTCCGGGCGGCGCATCGCTG" +
+                "ACCCGTAAGCAGATCGACGAATACGGTAACTTCGTTAAAATCTACGGCGCGAAAGGTCTGGCTTACATCAAAGTTAACGAACGCGCGAAAGGTCTGGAAG" +
+                "GTATCAACAGCCCGGTAGCGAAGTTCCTTAATGCAGAAATCATCGAAGACATCCTGGATCGTACTGCCGCGCAAGATGGCGATATGATTTTCTTCGGTGC" +
+                "CGACAACAAGAAAATTGTTGCCGACGCGATGGGTGCACTGCGCCTGAAAGTGGGTAAAGACCTTGGTCTGACCGACGAAAGCAAATGGGCACCGCTGTGG" +
+                "GTTATCGACTTCCCGATGTTTGAAGACGACGGTGAAGGCGGCCTGACGGCAATGCACCATCCGTTCACCTCACCGAAAGATATGACGGCTGCAGAACTGA" +
+                "AAGCTGCACCGGAAAATGCGGTGGCGAACGCTTACGATATGGTCATCAATGGTTACGAAGTGGGCGGTGGTTCAGTACGTATCCATAATGGTGATATGCA" +
+                "GCAGACGGTGTTTGGTATTCTGGGTATCAACGAAGAGGAACAGCGCGAGAAATTCGGCTTCCTGCTCGACGCTCTGAAATACGGTACTCCGCCGCACGCA" +
+                "GGTCTGGCATTCGGTCTTGACCGTCTGACCATGCTGCTGACCGGCACCGACAATATCCGTGACGTTATCGCCTTCCCGAAAACCACGGCGGCAGCGTGTC" +
+                "TGATGACTGAAGCACCGAGCTTTGCTAACCCGACTGCACTGGCTGAGCTGAGCATTCAGGTTGTGAAGAAGGCTGAGAATAACTGA", gene.getSequenceAsString());
+
+        // compare translation
+        assertEquals("MRTEYCGQLRLSHVGQQVTLCGWVNRRRDLGSLIFIDMRDREGIVQVFFDPDRADALKLASELRNEFCIQVTGTVRARDEKNINRDM" +
+                "ATGEIEVLASSLTIINRADVLPLDSNHVNTEEARLKYRYLDLRRPEMAQRLKTRAKITSLVRRFMDDHGFLDIETPMLTKATPEGARDYLVPSRVHKGKF" +
+                "YALPQSPQLFKQLLMMSGFDRYYQIVKCFRDEDLRADRQPEFTQIDVETSFMTAPQVREVMEALVRHLWLEVKGVDLGDFPVMTFAEAERRYGSDKPDLR" +
+                "NPMELTDVADLLKSVEFAVFAGPANDPKGRVAALRVPGGASLTRKQIDEYGNFVKIYGAKGLAYIKVNERAKGLEGINSPVAKFLNAEIIEDILDRTAAQ" +
+                "DGDMIFFGADNKKIVADAMGALRLKVGKDLGLTDESKWAPLWVIDFPMFEDDGEGGLTAMHHPFTSPKDMTAAELKAAPENAVANAYDMVINGYEVGGGS" +
+                "VRIHNGDMQQTVFGILGINEEEQREKFGFLLDALKYGTPPHAGLAFGLDRLTMLLTGTDNIRDVIAFPKTTAAACLMTEAPSFANPTALAELSIQVVKKA" +
+                "ENN", translation.getSequenceAsString());
     }
+
 
 }

@@ -4,6 +4,7 @@ package de.bioforscher.singa.sequence.parser.ena;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import de.bioforscher.singa.sequence.model.NucleotideSequence;
+import de.bioforscher.singa.sequence.model.SequenceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -25,11 +26,31 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
         setResource(String.format(ENA_FETCH_URL, enaAccessionNumber.getIdentifier()));
     }
 
+    public static NucleotideSequence parse(String enaAccessionNumber) {
+        return parse(new ENAAccessionNumber(enaAccessionNumber));
+    }
+
     public static NucleotideSequence parse(ENAAccessionNumber enaAccessionNumber) {
         logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getIdentifier());
         ENAParserService parser = new ENAParserService(enaAccessionNumber);
         return parser.parse();
     }
+
+    public static SequenceContainer parseGeneTranslationPair(String enaAccessionNumber) {
+        return parseGeneTranslationPair(new ENAAccessionNumber(enaAccessionNumber));
+    }
+
+    public static SequenceContainer parseGeneTranslationPair(ENAAccessionNumber enaAccessionNumber) {
+        logger.info("Parsing sequence with identifier {} from ENA.", enaAccessionNumber.getIdentifier());
+        ENAParserService parser = new ENAParserService(enaAccessionNumber);
+        parser.parseXML();
+        ENAContentHandler contentHandler = (ENAContentHandler) parser.getXmlReader().getContentHandler();
+        SequenceContainer container = new SequenceContainer();
+        container.addSequence(SequenceContainer.GENE, contentHandler.getNucleotideSequence());
+        container.addSequence(SequenceContainer.TRANSLATION, contentHandler.getTranslationSequence());
+        return container;
+    }
+
 
     private void parseXML() {
         fetchResource();
@@ -48,4 +69,7 @@ public class ENAParserService extends AbstractXMLParser<NucleotideSequence> {
         parseXML();
         return ((ENAContentHandler) getXmlReader().getContentHandler()).getNucleotideSequence();
     }
+
+
+
 }
