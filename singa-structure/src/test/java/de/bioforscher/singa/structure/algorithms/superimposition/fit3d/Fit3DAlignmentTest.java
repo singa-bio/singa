@@ -140,7 +140,7 @@ public class Fit3DAlignmentTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
-         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test

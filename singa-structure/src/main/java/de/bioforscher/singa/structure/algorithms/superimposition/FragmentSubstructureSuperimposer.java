@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * A special version of the {@link SubstructureSuperimposer} that uses subgraph isomorphism to align a candidate
@@ -27,12 +27,12 @@ import java.util.function.Function;
 public class FragmentSubstructureSuperimposer extends SubstructureSuperimposer {
 
     private static final Logger logger = LoggerFactory.getLogger(FragmentSubstructureSuperimposer.class);
-    private static final Function<MoleculeAtom, ?> DEFAULT_ATOM_CONDITION = MoleculeAtom::getElement;
-    private static final Function<MoleculeBond, ?> DEFAULT_BOND_CONDITION = MoleculeBond::getType;
-    private final Function<MoleculeAtom, ?> atomCondition;
-    private final Function<MoleculeBond, ?> bondCondition;
+    private static final BiFunction<MoleculeAtom, MoleculeAtom, Boolean> DEFAULT_ATOM_CONDITION = (a, b) -> a.getElement().equals(b.getElement());
+    private static final BiFunction<MoleculeBond, MoleculeBond, Boolean> DEFAULT_BOND_CONDITION = (a, b) -> a.getType() == b.getType();
+    private final BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition;
+    private final BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition;
 
-    private FragmentSubstructureSuperimposer(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate, Function<MoleculeAtom, ?> atomCondition, Function<MoleculeBond, ?> bondCondition) {
+    private FragmentSubstructureSuperimposer(List<LeafSubstructure<?>> reference, List<LeafSubstructure<?>> candidate, BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition, BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) {
         super(reference, candidate);
         this.atomCondition = atomCondition;
         this.bondCondition = bondCondition;
@@ -45,8 +45,8 @@ public class FragmentSubstructureSuperimposer extends SubstructureSuperimposer {
 
     public static SubstructureSuperimposition calculateSubstructureSuperimposition(List<LeafSubstructure<?>> reference,
                                                                                    List<LeafSubstructure<?>> candidate,
-                                                                                   Function<MoleculeAtom, ?> atomCondition,
-                                                                                   Function<MoleculeBond, ?> bondCondition) throws SubstructureSuperimpositionException {
+                                                                                   BiFunction<MoleculeAtom, MoleculeAtom, Boolean> atomCondition,
+                                                                                   BiFunction<MoleculeBond, MoleculeBond, Boolean> bondCondition) throws SubstructureSuperimpositionException {
         return new FragmentSubstructureSuperimposer(reference, candidate, atomCondition, bondCondition).calculateSuperimposition();
     }
 
@@ -64,8 +64,7 @@ public class FragmentSubstructureSuperimposer extends SubstructureSuperimposer {
                 MoleculeGraph referenceGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) referenceLeafSubstructure);
                 MoleculeGraph candidateGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) candidateLeafSubstructure);
 
-                RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph, ?, ?>
-                        subGraphFinder;
+                RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> subGraphFinder;
 
                 // decide which substructure to use as pattern graph
                 if (referenceGraph.getNodes().size() <= candidateGraph.getNodes().size()) {

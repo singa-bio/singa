@@ -41,8 +41,8 @@ public class TestGraphViewer {
         patternGraph.addEdgeBetween(patternNode1, patternNode2);
         patternGraph.addEdgeBetween(patternNode2, patternNode1);
 
-        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubgraphFinder<>(createPatternGraph(), createTargetGraph(), GenericNode::getContent, edge -> true);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(createPatternGraph(), createTargetGraph(), (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true);
         DirectedGraph<GenericNode<GenericNode<String>>> searchSpace = finder.getSearchSpace();
 
         GraphDisplayApplication.graph = searchSpace;

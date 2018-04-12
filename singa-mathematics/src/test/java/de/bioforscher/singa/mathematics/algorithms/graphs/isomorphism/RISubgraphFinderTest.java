@@ -144,8 +144,8 @@ public class RISubgraphFinderTest {
 
     @Test
     public void shouldFindFullSubgraph() {
-        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubgraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true);
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(7), targetGraph.getNode(4),
                 targetGraph.getNode(0), targetGraph.getNode(3), targetGraph.getNode(6))
                 .collect(Collectors.toList());
@@ -160,8 +160,8 @@ public class RISubgraphFinderTest {
     @Test
     public void shouldFindPartialSubgraph() {
         targetGraph.removeNode(7);
-        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>, String, Boolean> finder
-                = new RISubgraphFinder<>(patternGraph, targetGraph, GenericNode::getContent, edge -> true, 4);
+        RISubgraphFinder<GenericNode<String>, DirectedEdge<GenericNode<String>>, Vector2D, Integer, DirectedGraph<GenericNode<String>>> finder
+                = new RISubgraphFinder<>(patternGraph, targetGraph, (a, b) -> a.getContent().equals(b.getContent()), (a, b) -> true, 4);
         assertEquals(0, finder.getFullMatches().size());
         List<GenericNode<String>> solution = Stream.of(targetGraph.getNode(4), targetGraph.getNode(0),
                 targetGraph.getNode(3), targetGraph.getNode(6))

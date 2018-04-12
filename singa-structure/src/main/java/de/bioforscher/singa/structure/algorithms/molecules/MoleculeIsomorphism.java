@@ -7,8 +7,8 @@ import de.bioforscher.singa.structure.model.molecules.MoleculeAtom;
 import de.bioforscher.singa.structure.model.molecules.MoleculeBond;
 import de.bioforscher.singa.structure.model.molecules.MoleculeGraph;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
  */
 public class MoleculeIsomorphism {
 
-    private final RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph, ?, ?> finder;
+    private final RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> finder;
     private List<MoleculeGraph> fullMatches;
 
-    public MoleculeIsomorphism(RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph, ?, ?> finder) {
+    public MoleculeIsomorphism(RISubgraphFinder<MoleculeAtom, MoleculeBond, Vector2D, Integer, MoleculeGraph> finder) {
         this.finder = finder;
         fullMatches = new ArrayList<>();
         determineMatches();
@@ -52,5 +52,17 @@ public class MoleculeIsomorphism {
             throw new IllegalArgumentException("Pairs can only be retrieved for graphs that are full matches of the this isomorphism.");
         }
         return finder.getFullMatchPairs().get(fullMatches.indexOf(fullMatch));
+    }
+
+    /**
+     * This method reduces the found matches to matches were different atoms were hit, i.e. matches that match the
+     * identical set of atoms are considered to be equivalent.
+     * <b>WARNING: Use only if pairing of atoms in pattern and target graph is irrelevant.</b>
+     */
+    public void reduceMatches() {
+        Function<MoleculeGraph, Set<MoleculeAtom>> keyFunction = a -> new HashSet<>(a.getNodes());
+        HashMap<Set<MoleculeAtom>, MoleculeGraph> uniqueMatches = fullMatches.stream()
+                .collect(Collectors.toMap(keyFunction, p -> p, (p, q) -> p, HashMap::new));
+        fullMatches = new ArrayList<>(uniqueMatches.values());
     }
 }
