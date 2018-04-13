@@ -2,6 +2,7 @@ package de.bioforscher.singa.structure.algorithms.molecules;
 
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.core.utility.Resources;
+import de.bioforscher.singa.structure.algorithms.molecules.MoleculeIsomorphismFinder.AtomConditions;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.molecules.MoleculeAtom;
 import de.bioforscher.singa.structure.model.molecules.MoleculeGraph;
@@ -103,7 +104,7 @@ public class MoleculeIsomorphismFinderTest {
 
         MoleculeGraph patternGraph = MoleculeGraphs.createMoleculeGraphFromStructure((OakLeafSubstructure<?>) patternLeafSubstructure.get(0));
 
-        MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph, MoleculeAtom::getElement, edge -> true);
+        MoleculeIsomorphism moleculeIsomorphism = MoleculeIsomorphismFinder.of(patternGraph, targetGraph, AtomConditions.isSameElement(), (a, b) -> true);
 
         assertEquals(2, moleculeIsomorphism.getFullMatches().size());
 

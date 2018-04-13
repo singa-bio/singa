@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -22,8 +23,7 @@ import java.util.function.Function;
  * @author fk
  */
 public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, IdentifierType>, EdgeType extends Edge<NodeType>,
-        VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>, NodeConditionType,
-        EdgeConditionType> {
+        VectorType extends Vector, IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> {
 
     private static final Logger logger = LoggerFactory.getLogger(RISubgraphFinder.class);
     private final List<NodeType> mu;
@@ -31,8 +31,8 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 
     private final GraphType patternGraph;
     private final GraphType targetGraph;
-    private final Function<NodeType, NodeConditionType> nodeConditionExtractor;
-    private final Function<EdgeType, EdgeConditionType> edgeConditionExtractor;
+    private final BiFunction<NodeType, NodeType, Boolean> nodeConditionExtractor;
+    private final BiFunction<EdgeType, EdgeType, Boolean> edgeConditionExtractor;
     private final int minimalPartialMatchSize;
     private final List<List<NodeType>> fullMatches;
     private final Map<Integer, List<List<NodeType>>> partialMatches;
@@ -40,13 +40,13 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
     private DirectedGraph<GenericNode<NodeType>> searchSpace;
     private List<List<Pair<NodeType>>> fullMatchPairs;
 
-    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
-                            Function<EdgeType, EdgeConditionType> edgeConditionExtractor) {
+    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, BiFunction<NodeType, NodeType, Boolean> nodeConditionExtractor,
+                            BiFunction<EdgeType, EdgeType, Boolean> edgeConditionExtractor) {
         this(patternGraph, targetGraph, nodeConditionExtractor, edgeConditionExtractor, patternGraph.getNodes().size());
     }
 
-    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, Function<NodeType, NodeConditionType> nodeConditionExtractor,
-                            Function<EdgeType, EdgeConditionType> edgeConditionExtractor, int minimalPartialMatchSize) {
+    public RISubgraphFinder(GraphType patternGraph, GraphType targetGraph, BiFunction<NodeType, NodeType, Boolean> nodeConditionExtractor,
+                            BiFunction<EdgeType, EdgeType, Boolean> edgeConditionExtractor, int minimalPartialMatchSize) {
         this.patternGraph = patternGraph;
         this.targetGraph = targetGraph;
         this.nodeConditionExtractor = nodeConditionExtractor;
@@ -255,7 +255,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
             if (noParent || mptui.getNeighbours().contains(candidateTargetNode)) {
                 // third condition (2)
                 // the labels of the node in the pattern graph is equal to the label of the node in the target graph
-                if (nodeConditionExtractor.apply(patternNode).equals(nodeConditionExtractor.apply(candidateTargetNode))) {
+                if (nodeConditionExtractor.apply(patternNode, candidateTargetNode)) {
                     // fourth condition (3):
                     // the number of edges of the candidate target node is larger than or equal to the number of edges
                     // connected to supposed pattern node
@@ -334,13 +334,13 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
 //                                }
                             }
                         } else {
-                            logger.debug("(4) Edge Condition failed: edge condition for pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
+                            logger.debug("(4) Edge Condition failed: edge condition for pattern node {} and target node {} did not match", edgeConditionExtractor, patternNode, candidateTargetNode);
                         }
                     } else {
                         logger.debug("(3) Connectivity Condition: pattern node neighbors {} are less than target node neighbors {}", patternNode.getNeighbours(), candidateTargetNode.getNeighbours());
                     }
                 } else {
-                    logger.debug("(2) Node Condition: pattern node condition {} and target node condition {} did not match", nodeConditionExtractor.apply(patternNode), nodeConditionExtractor.apply(candidateTargetNode));
+                    logger.debug("(2) Node Condition: node condition {} does not match for pattern node {} and target node {}", nodeConditionExtractor, patternNode, candidateTargetNode);
                 }
             } else {
                 logger.debug("(1) Parent Condition: pattern node {} and target node {} did not match", patternNode, candidateTargetNode);
@@ -379,7 +379,7 @@ public class RISubgraphFinder<NodeType extends Node<NodeType, VectorType, Identi
         if (targetSpaceEdgeCandidateToParent.isPresent() && patternEdgeCandidateToParent.isPresent()) {
             EdgeType matchEdgeCP = targetSpaceEdgeCandidateToParent.get();
             EdgeType patternEdgeCP = patternEdgeCandidateToParent.get();
-            return edgeConditionExtractor.apply(matchEdgeCP).equals(edgeConditionExtractor.apply(patternEdgeCP));
+            return edgeConditionExtractor.apply(patternEdgeCP, matchEdgeCP);
         } else {
             return true;
         }
