@@ -5,6 +5,7 @@ import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.structure.algorithms.molecules.MoleculePathFinder;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
+import de.bioforscher.singa.structure.model.oak.OakAtom;
 import de.bioforscher.singa.structure.model.oak.OakBond;
 import de.bioforscher.singa.structure.model.oak.OakLeafSubstructure;
 
@@ -30,8 +31,10 @@ public class MoleculeGraphs {
         // then add bonds
         for (OakBond bond : leafSubstructure.getBonds()) {
             // only use bonds connecting the leaf internally
-            if (graph.getNode(bond.getSource().getAtomIdentifier()) != null && graph.getNode(bond.getTarget().getAtomIdentifier()) != null) {
-                graph.addEdgeBetween(bond.getIdentifier(), bond.getSource().getAtomIdentifier(), bond.getTarget().getAtomIdentifier(), bond.getBondType());
+            OakAtom source = bond.getSource();
+            OakAtom target = bond.getTarget();
+            if (graph.getNode(source.getAtomIdentifier()) != null && graph.getNode(target.getAtomIdentifier()) != null) {
+                graph.addEdgeBetween(bond.getIdentifier(), source.getAtomIdentifier(), target.getAtomIdentifier(), bond.getBondType());
             }
         }
         return graph;

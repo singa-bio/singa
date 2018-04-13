@@ -40,11 +40,6 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private final Set<FamilyType> exchangeableFamilies;
 
     /**
-     * A iterating variable to add a new node.
-     */
-    private int nextNodeIdentifier;
-
-    /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier = 0;
@@ -250,5 +245,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         return flatToString();
     }
 
+
+    public int getNextEdgeIdentifier() {
+        return nextEdgeIdentifier++;
+    }
 
 }

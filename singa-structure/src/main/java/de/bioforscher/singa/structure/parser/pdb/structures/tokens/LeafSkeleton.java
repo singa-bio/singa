@@ -77,11 +77,9 @@ public class LeafSkeleton {
             }
         }
         atoms.values().forEach(substructure::addAtom);
-        int bondCounter = 0;
         for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
-            substructure.addBondBetween(new OakBond(bondCounter, bond.getValue()), atoms.get(bond.getKey().getFirst()),
-                    atoms.get(bond.getKey().getSecond()));
-            bondCounter++;
+            substructure.addBondBetween(atoms.get(bond.getKey().getFirst()),
+                    atoms.get(bond.getKey().getSecond()),bond.getValue());
         }
         return substructure;
     }
