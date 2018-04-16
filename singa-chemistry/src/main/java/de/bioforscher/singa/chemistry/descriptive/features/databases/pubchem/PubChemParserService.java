@@ -1,7 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ import java.io.UncheckedIOException;
 
 public class PubChemParserService extends AbstractXMLParser<Species> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniProtParserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PubChemParserService.class);
     private static final String PUBCHEM_FETCH_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/%s/XML/";
 
     public PubChemParserService(PubChemIdentifier identifier) {

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.features.identifiers;
 
 import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +29,10 @@ public class ChEBIIdentifier extends AbstractIdentifier<ChEBIIdentifier> {
      */
     public ChEBIIdentifier(String identifier) throws IllegalArgumentException {
         super(identifier, PATTERN);
+    }
+
+    public ChEBIIdentifier(String identifier, FeatureOrigin origin) throws IllegalArgumentException {
+        super(identifier, PATTERN, origin);
     }
 
     /**

@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.identifiers;
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIDatabase;
+import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemDatabase;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
@@ -23,7 +24,8 @@ public class InChIKeyProvider extends FeatureProvider<InChIKey> {
                 return ChEBIDatabase.fetchInchiKey(chEBIIdentifier);
             }
             case 100: {
-
+                PubChemIdentifier pubChemIdentifier = featureable.getFeature(PubChemIdentifier.class);
+                return PubChemDatabase.fetchInchiKey(pubChemIdentifier);
             }
         }
         return null;

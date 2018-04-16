@@ -3,6 +3,8 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 
@@ -24,6 +26,18 @@ public class PubChemParserServiceTest {
         assertEquals("O", species.getFeature(Smiles.class).getFeatureContent());
         // logP
         assertEquals(-1.38, species.getFeature(LogP.class).getFeatureContent(), 0.0);
+        // ChEBI identifier
+        assertEquals("CHEBI:25805", species.getFeature(ChEBIIdentifier.class).getIdentifier());
+        // InChIKey
+        assertEquals("TUJKJAMUKRIRHC-UHFFFAOYSA-N", species.getFeature(InChIKey.class).getIdentifier());
+        System.out.println(species.getStringForProtocol());
+    }
+
+    @Test
+    public void shouldResolveInChIKey() {
+        Species species = new Species.Builder("CID:5957").name("ATP").build();
+        InChIKey feature = species.getFeature(InChIKey.class);
+        assertEquals("ZKHQWZAMYRWXGA-KQYNXXCUSA-N", feature.getIdentifier());
     }
 
 

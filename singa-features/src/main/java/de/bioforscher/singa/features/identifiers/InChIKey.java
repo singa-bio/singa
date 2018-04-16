@@ -1,6 +1,7 @@
 package de.bioforscher.singa.features.identifiers;
 
 import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 
 import java.util.regex.Pattern;
 
@@ -29,6 +30,10 @@ public class InChIKey extends AbstractIdentifier<InChIKey> {
      */
     public InChIKey(String identifier) throws IllegalArgumentException {
         super(identifier, PATTERN);
+    }
+
+    public InChIKey(String identifier, FeatureOrigin origin) throws IllegalArgumentException {
+        super(identifier, PATTERN, origin);
     }
 
     @Override

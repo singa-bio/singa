@@ -63,7 +63,7 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
     }
 
     private void parseXML() {
-        fetchResource(identifier.toString() + ".xml");
+        fetchResource(identifier.getIdentifier() + ".xml");
         // parse xml
         try {
             getXmlReader().parse(new InputSource(getFetchResult()));

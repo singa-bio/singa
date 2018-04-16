@@ -8,8 +8,6 @@ import de.bioforscher.singa.features.model.Featureable;
 
 public class ChEBIToInChIKey extends FeatureProvider<InChIKey> {
 
-    private final ChEBIDatabase chEBIDatabase = ChEBIDatabase.getInstance();
-
     public ChEBIToInChIKey() {
         setProvidedFeature(InChIKey.class);
         addRequirement(ChEBIIdentifier.class);

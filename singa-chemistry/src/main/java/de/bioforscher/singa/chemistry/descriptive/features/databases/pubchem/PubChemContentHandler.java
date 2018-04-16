@@ -4,18 +4,21 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
-import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class PubChemContentHandler implements ContentHandler {
 
     // species attributes
-    private SimpleStringIdentifier chebiIdentifier;
-    private String pubChemIdentifier;
+    private PubChemIdentifier pubChemIdentifier;
     private String name;
     private String smilesRepresentation;
     private double molarMass;
@@ -36,7 +39,8 @@ class PubChemContentHandler implements ContentHandler {
     private boolean inComputedProperties;
     private boolean inMolecularWeightInformation;
 
-    // reading chebi identifier
+    // reading additional identifiers
+    private List<Identifier> identifiers;
     private boolean inSynonyms;
     private boolean inSynonymsInformation;
 
@@ -44,18 +48,21 @@ class PubChemContentHandler implements ContentHandler {
     private boolean inLogP;
     private boolean inLogPInformation;
 
-    PubChemContentHandler() {
+    public PubChemContentHandler() {
         currentTag = "";
+        identifiers = new ArrayList<>();
     }
 
     public Species getSpecies() {
-        return new Species.Builder(chebiIdentifier)
+        Species species = new Species.Builder(pubChemIdentifier.getIdentifier())
                 .name(name)
                 .assignFeature(new MolarMass(molarMass, PubChemDatabase.origin))
                 .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.origin))
                 .assignFeature(new LogP(logP, PubChemDatabase.origin))
-                .additionalIdentifier(new PubChemIdentifier("CID:" + pubChemIdentifier))
                 .build();
+        identifiers.forEach(species::addAdditionalIdentifier);
+        return species;
+
     }
 
     @Override
@@ -64,7 +71,7 @@ class PubChemContentHandler implements ContentHandler {
         switch (currentTag) {
             case "RecordNumber": {
                 // set pubchem identifier
-                pubChemIdentifier = new String(ch, start, length);
+                pubChemIdentifier = new PubChemIdentifier("CID:"+new String(ch, start, length));
                 break;
             }
             case "TOCHeading": {
@@ -124,12 +131,12 @@ class PubChemContentHandler implements ContentHandler {
             }
             case "StringValueList": {
                 if (inSynonyms && inSynonymsInformation) {
-                    String potentialChebiIdentifier = new String(ch, start, length);
-                    if (ChEBIIdentifier.PATTERN.matcher(potentialChebiIdentifier).matches()) {
-                        // set chebi identifier
-                        chebiIdentifier = new SimpleStringIdentifier(potentialChebiIdentifier);
-                        inSynonyms = false;
-                        inSynonymsInformation = false;
+                    String potentialIdentifier = new String(ch, start, length);
+                    if (ChEBIIdentifier.PATTERN.matcher(potentialIdentifier).matches()) {
+                        identifiers.add(new ChEBIIdentifier(potentialIdentifier, PubChemDatabase.origin));
+                    }
+                    if (InChIKey.PATTERN.matcher(potentialIdentifier).matches()) {
+                        identifiers.add(new InChIKey(potentialIdentifier, PubChemDatabase.origin));
                     }
                 }
                 break;
@@ -166,9 +173,22 @@ class PubChemContentHandler implements ContentHandler {
             case "TOCHeading":
             case "StringValue":
             case "NumValue":
-            case "StringValueList":
+            case "StringValueList": {
                 currentTag = "";
                 break;
+            }
+            case "Information": {
+                if (inSynonymsInformation) {
+                    inSynonymsInformation = false;
+                }
+            }
+            case "Section": {
+                inRecordTitle = false;
+                inCanonicalSMILES = false;
+                inComputedProperties = false;
+                inSynonyms = false;
+                inLogP = false;
+            }
         }
 
     }

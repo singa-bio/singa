@@ -1,6 +1,8 @@
 package de.bioforscher.singa.features.model;
 
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,6 +13,8 @@ import java.util.TreeMap;
  * @author cl
  */
 public abstract class FeatureProvider<FeatureType extends Feature> {
+
+    private static final Logger logger = LoggerFactory.getLogger(FeatureProvider.class);
 
     private final Set<Class<? extends Feature>> requirements;
     private final TreeMap<Integer, Set<Class<? extends Feature>>> fallbacks;
@@ -60,6 +64,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
      * @param featureable The {@link Featureable} entity to be annotated.
      */
     private boolean resolveRequirements(Featureable featureable, Integer priorityGroupIndex) {
+
         Set<Class<? extends Feature>> requirements = null;
         if (priorityGroupIndex == 0) {
             requirements = this.requirements;
@@ -68,6 +73,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
         }
         if (requirements != null) {
             for (Class<? extends Feature> requirement : requirements) {
+                logger.debug("Resolving requirement {} for {}.", requirement.getSimpleName(), providedFeature.getSimpleName());
                 // if feature is not present
                 if (!featureable.hasFeature(requirement)) {
                     // assign it
@@ -86,6 +92,7 @@ public abstract class FeatureProvider<FeatureType extends Feature> {
     }
 
     public <FeatureableType extends Featureable> void assign(FeatureableType featureable) {
+        logger.debug("Assigning {} to {}.", providedFeature.getSimpleName(), featureable);
         if (!featureable.hasFeature(providedFeature)) {
             if (featureable.canBeFeaturedWith(providedFeature)) {
                 resolveRequirements(featureable);

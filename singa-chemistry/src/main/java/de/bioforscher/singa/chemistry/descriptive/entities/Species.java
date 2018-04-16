@@ -73,7 +73,7 @@ public class Species extends ChemicalEntity {
 
         @Override
         protected Species createObject(SimpleStringIdentifier primaryIdentifer) {
-            return new Species(primaryIdentifer);
+            return new Species(primaryIdentifer.getIdentifier());
         }
 
         @Override

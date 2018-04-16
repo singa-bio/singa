@@ -8,6 +8,9 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
 import de.bioforscher.singa.core.utility.Nameable;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifiable;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
@@ -34,6 +37,9 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
+        availableFeatures.add(InChIKey.class);
+        availableFeatures.add(ChEBIIdentifier.class);
+        availableFeatures.add(PubChemIdentifier.class);
         availableFeatures.add(Diffusivity.class);
         availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
@@ -67,7 +73,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
-        IdentifierPatternRegistry.instantiate(identifier.toString()).ifPresent(this::setFeature);
+        IdentifierPatternRegistry.instantiate(identifier.getIdentifier()).ifPresent(this::setFeature);
     }
 
     @Override
@@ -173,7 +179,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     @Override
     public String toString() {
         return "ChemicalEntity{" +
-                "identifier=" + identifier +
+                "identifier=" + identifier.getIdentifier() +
                 ", name='" + name + '\'' +
                 '}';
     }
@@ -181,7 +187,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     public String getStringForProtocol() {
         StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" summary:").append(System.lineSeparator())
-                .append("  ").append("identifier: ").append(getIdentifier()).append(System.lineSeparator())
+                .append("  ").append("primary identifier: ").append(getIdentifier().getIdentifier()).append(System.lineSeparator())
                 .append("  ").append("name: ").append(getName()).append(System.lineSeparator())
                 .append("  ").append("features: ").append(System.lineSeparator());
         Iterator<Feature<?>> iterator = features.getAllFeatures().iterator();
