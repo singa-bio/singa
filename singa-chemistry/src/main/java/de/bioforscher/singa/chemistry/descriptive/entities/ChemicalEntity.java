@@ -59,7 +59,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     protected FeatureContainer features;
 
     /**
-     * Creates a new Chemical Entity with the given pdbIdentifier.
+     * Creates a new Chemical Entity with the given identifier.
      *
      * @param identifier The pdbIdentifier.
      */

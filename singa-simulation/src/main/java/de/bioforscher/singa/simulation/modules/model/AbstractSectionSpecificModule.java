@@ -44,6 +44,7 @@ public abstract class AbstractSectionSpecificModule extends AbstractModule {
         // determine deltas
         for (AutomatonNode node : graph.getNodes()) {
             if (conditionalApplication.test(node)) {
+                logger.trace("Determining delta for node {}.", node.getIdentifier());
                 determineDeltasForNode(node);
             }
         }
@@ -87,6 +88,7 @@ public abstract class AbstractSectionSpecificModule extends AbstractModule {
                     currentChemicalEntity = fullDelta.getChemicalEntity();
                     if (deltaIsValid(fullDelta)) {
                         setHalfStepConcentration(fullDelta);
+                        logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                         currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
                         unchangedEntities.remove(fullDelta.getChemicalEntity());
                     }

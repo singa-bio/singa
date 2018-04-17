@@ -31,10 +31,6 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     public Reaction(Simulation simulation) {
         super(simulation);
-        initialize();
-    }
-
-    private void initialize() {
         stoichiometricReactants = new ArrayList<>();
         features = new ChemistryFeatureContainer();
     }

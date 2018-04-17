@@ -24,7 +24,7 @@ public class MembraneContainer implements ConcentrationContainer {
     private final Membrane membrane;
 
     private Set<ChemicalEntity<?>> referencedEntities;
-    private Set<CellSection> refencedSections;
+    private Set<CellSection> referencedSections;
 
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerPhase;
     private final Map<ChemicalEntity<?>, Quantity<MolarConcentration>> outerLayer;
@@ -42,7 +42,7 @@ public class MembraneContainer implements ConcentrationContainer {
         innerPhase = new HashMap<>();
 
         referencedEntities = new HashSet<>();
-        refencedSections = new HashSet<>();
+        referencedSections = new HashSet<>();
     }
 
     public MembraneContainer(MembraneContainer container) {
@@ -165,11 +165,11 @@ public class MembraneContainer implements ConcentrationContainer {
 
     @Override
     public Set<CellSection> getAllReferencedSections() {
-        return refencedSections;
+        return referencedSections;
     }
 
-    public void setRefencedSections(Set<CellSection> refencedSections) {
-        this.refencedSections = refencedSections;
+    public void setReferencedSections(Set<CellSection> referencedSections) {
+        this.referencedSections = referencedSections;
     }
 
     public Membrane getMembrane() {

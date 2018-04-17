@@ -3,7 +3,10 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +15,8 @@ import java.util.Set;
  * @author cl
  */
 public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifier> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ComplexedChemicalEntity.class);
 
     private static final FeatureOrigin computedMassOrigin = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION,
             "Computed by the Sum of parts",
@@ -44,11 +49,19 @@ public class ComplexedChemicalEntity extends ChemicalEntity<SimpleStringIdentifi
     }
 
     private void computeMolarMass() {
-        double sum = associatedParts.keySet().stream()
-                .mapToDouble(entity -> entity.getFeature(MolarMass.class).getFeatureContent()
+        double sum = 0.0;
+        for (ChemicalEntity<?> entity : associatedParts.keySet()) {
+            Quantity<MolarMass> featureContent = entity.getFeature(MolarMass.class);
+            if (featureContent != null) {
+                double v = featureContent
                         .multiply(associatedParts.get(entity))
-                        .getValue().doubleValue())
-                .sum();
+                        .getValue().doubleValue();
+                sum += v;
+            } else {
+                logger.warn("Could not calculate mass of {}, since not all complexed parts have an associated molar mass.", this);
+                return;
+            }
+        }
         setFeature(new MolarMass(sum, computedMassOrigin));
     }
 

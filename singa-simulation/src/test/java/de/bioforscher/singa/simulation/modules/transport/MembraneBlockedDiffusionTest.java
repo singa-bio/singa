@@ -70,7 +70,7 @@ public class MembraneBlockedDiffusionTest {
         sections.add(membrane.getOuterLayer());
         sections.add(membrane.getInnerLayer());
         sections.add(right);
-        concentrationContainer.setRefencedSections(sections);
+        concentrationContainer.setReferencedSections(sections);
 
         membraneNode.setConcentrationContainer(concentrationContainer);
 

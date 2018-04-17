@@ -130,6 +130,22 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         deltaWriters = new HashMap<>();
     }
 
+    public QuantityFormatter<Time> getTimeFormatter() {
+        return timeFormatter;
+    }
+
+    public void setTimeFormatter(QuantityFormatter<Time> timeFormatter) {
+        this.timeFormatter = timeFormatter;
+    }
+
+    public QuantityFormatter<MolarConcentration> getConcentrationFormatter() {
+        return concentrationFormatter;
+    }
+
+    public void setConcentrationFormatter(QuantityFormatter<MolarConcentration> concentrationFormatter) {
+        this.concentrationFormatter = concentrationFormatter;
+    }
+
     /**
      * Takes care that the ordering of entities is the same across all files by converting the set to a list.
      *
