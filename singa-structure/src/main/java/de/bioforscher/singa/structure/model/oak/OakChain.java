@@ -166,7 +166,7 @@ public class OakChain implements Chain {
         return consecutivePart;
     }
 
-    LeafIdentifier getNextLeafIdentifier() {
+    public LeafIdentifier getNextLeafIdentifier() {
         LeafIdentifier lastLeafIdentifier = leafSubstructures.lastEntry().getKey();
         return new LeafIdentifier(lastLeafIdentifier.getPdbIdentifier(), lastLeafIdentifier.getModelIdentifier(),
                 lastLeafIdentifier.getChainIdentifier(), lastLeafIdentifier.getSerial() + 1);
