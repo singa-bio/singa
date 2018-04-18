@@ -53,7 +53,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
             value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;
@@ -78,7 +78,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double permeability = getFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
+            final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
             value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;

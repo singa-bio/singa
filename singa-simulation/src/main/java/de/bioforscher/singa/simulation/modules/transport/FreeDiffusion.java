@@ -61,9 +61,9 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
             }
         }
         // entering amount
-        final double enteringConcentration = concentration * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
+        final double enteringConcentration = concentration * getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
         // calculate leaving amount
-        final double leavingConcentration = numberOfNeighbors * getFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue() * currentConcentration;
+        final double leavingConcentration = numberOfNeighbors * getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue() * currentConcentration;
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta

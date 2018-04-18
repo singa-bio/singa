@@ -16,6 +16,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
+ * Neighbourhood independent modules compute updates during simulations. The computations performed are not dependent on
+ * the surrounding nodes. The updates for each subsection is computed individually.
+ *
  * @author cl
  */
 public abstract class AbstractNeighbourIndependentModule extends AbstractModule {
@@ -25,18 +28,38 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
      */
     private static final Logger logger = LoggerFactory.getLogger(AbstractNeighbourIndependentModule.class);
 
+    /**
+     * The functions that are applied with each epoch and for each node.
+     */
     private final Map<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> deltaFunctions;
+
+    /**
+     * The concentrations for the half time steps, for explicit calculation.
+     */
     private ConcentrationContainer currentHalfConcentrations;
 
+    /**
+     * Creates a new neighbourhood independent module for the given simulation.
+     *
+     * @param simulation The simulation.
+     */
     public AbstractNeighbourIndependentModule(Simulation simulation) {
         super(simulation);
         deltaFunctions = new HashMap<>();
     }
 
+    /**
+     * Adds a delta function and the corresponding predicate. The predicate determines whether the update will be
+     * calculated under the current conditions, e.g. for the current chemical entity or cellular compartment.
+     *
+     * @param deltaFunction The delta function.
+     * @param predicate The predicate for the conditional application.
+     */
     public void addDeltaFunction(Function<ConcentrationContainer, Delta> deltaFunction, Predicate<ConcentrationContainer> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
     }
 
+    @Override
     public void determineAllDeltas() {
         AutomatonGraph graph = simulation.getGraph();
         // determine deltas
@@ -48,6 +71,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         }
     }
 
+    @Override
     public LocalError determineDeltasForNode(AutomatonNode node) {
         currentNode = node;
         ConcentrationContainer fullConcentrations = node.getConcentrationContainer();
@@ -55,23 +79,31 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         return determineDeltas(fullConcentrations);
     }
 
-    public LocalError determineDeltas(ConcentrationContainer concentrationContainer) {
+    /**
+     * The deltas for all delta functions, cell sections and chemical entities are computed. In neighborhood-independent
+     * modules all full deltas are calculated first before calculating all half step deltas. Afterwards the local errors
+     * are calculated and the largest error is determined.
+     *
+     * @param concentrationContainer The container to calculate deltas for.
+     * @return The largest local error for the calculation.
+     */
+    private LocalError determineDeltas(ConcentrationContainer concentrationContainer) {
+        // calculate full time step deltas
         halfTime = false;
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
-                determineFullDeltas(concentrationContainer);
+                determineFullStepDeltas(concentrationContainer);
             }
         }
-
+        // calculate half time step deltas
         halfTime = true;
         for (CellSection cellSection : currentNode.getAllReferencedSections()) {
             currentCellSection = cellSection;
             for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
-                determineHalfDeltas(concentrationContainer);
-
+                determineHalfStepDeltas(concentrationContainer);
             }
         }
         // examine local errors
@@ -83,7 +115,12 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         return largestLocalError;
     }
 
-    private void determineFullDeltas(ConcentrationContainer concentrationContainer) {
+    /**
+     * Determines the full step deltas for a current chemical entity, and current cell section.
+     *
+     * @param concentrationContainer The container to calculate deltas for.
+     */
+    private void determineFullStepDeltas(ConcentrationContainer concentrationContainer) {
         // determine full step deltas and half step concentrations
         for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
@@ -97,18 +134,28 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
         }
     }
 
+    /**
+     * Determines the concentrations if half of the full delta would be applied to the current node.
+     *
+     * @param fullDelta The full step delta.
+     */
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentNode.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
         currentHalfConcentrations.setAvailableConcentration(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
 
-    private void determineHalfDeltas(ConcentrationContainer concentrationContainer) {
+    /**
+     * Determines the half delta that would be applied for half of the time step.
+     *
+     * @param concentrationContainer The container to calculate half deltas for.
+     */
+    private void determineHalfStepDeltas(ConcentrationContainer concentrationContainer) {
         // determine half step deltas
         for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
                 Delta halfDelta = entry.getKey().apply(currentHalfConcentrations);
-                applyHalfDelta(halfDelta);
+                applyHalfStepDelta(halfDelta);
             }
         }
     }

@@ -12,7 +12,7 @@ public class CogParTest {
     @Test
     public void shoudparsAndEvaulateExpression() {
         String exprstr = "2*(1+sin(pi/2))^2";
-        Parser parser = new Parser();
+        ExpressionParser parser = new ExpressionParser();
         try {
             ExpressionNode expr = parser.parse(exprstr);
             expr.accept(new SetVariable("pi", Math.PI));

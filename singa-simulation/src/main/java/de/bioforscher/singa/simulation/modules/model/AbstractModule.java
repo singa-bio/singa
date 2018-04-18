@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
+ * The most basic implementation of
+ *
  * @author cl
  */
 public abstract class AbstractModule implements Module {
@@ -26,7 +28,7 @@ public abstract class AbstractModule implements Module {
     /**
      * The default value where deltas validated to be effectively zero.
      */
-    public static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
+    private static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
 
     /**
      * The simulation that the module is applied to.
@@ -59,7 +61,6 @@ public abstract class AbstractModule implements Module {
      * The largest error that occurred while calculating the deltas for this module.
      */
     protected LocalError largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
-    ;
 
     /**
      * If this flag is true, half time steps are calculated.
@@ -164,14 +165,16 @@ public abstract class AbstractModule implements Module {
     }
 
     /**
-     * Returns the feature for the entity if possible.
-     * @param entity
-     * @param featureClass
-     * @param <FeatureContent>
-     * @return
+     * Returns the feature for the entity. The feature is scaled according to the time step size and considering half
+     * steps.
+     *
+     * @param entity The entity to get the feature from.
+     * @param featureClass The feature to get.
+     * @param <FeatureContentType> The type of the feature.
+     * @return The requested feature for the corresponding entity.
      */
-    protected <FeatureContent> FeatureContent getFeature(Featureable entity, Class<? extends ScalableFeature<FeatureContent>> featureClass) {
-        ScalableFeature<FeatureContent> feature = entity.getFeature(featureClass);
+    protected <FeatureContentType> FeatureContentType getScaledFeature(Featureable entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+        ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
         if (halfTime) {
             return feature.getHalfScaledQuantity();
         }
@@ -188,7 +191,12 @@ public abstract class AbstractModule implements Module {
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
-    void applyHalfDelta(Delta halfDelta) {
+    /**
+     * Applies the doubled half delta as potential update to the corresponding node.
+     *
+     * @param halfDelta The calculated half delta.
+     */
+    void applyHalfStepDelta(Delta halfDelta) {
         if (deltaIsValid(halfDelta)) {
             halfDelta = halfDelta.multiply(2.0);
             logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getName(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
@@ -197,18 +205,44 @@ public abstract class AbstractModule implements Module {
         }
     }
 
+    /**
+     * Returns true if the delta is valid, i.e. it is not zero and nor below the numerical threshold.
+     * @param delta The delta to be evaluated.
+     * @return true if the delta is valid, i.e. it is not zero and nor below the numerical threshold.
+     */
     boolean deltaIsValid(Delta delta) {
         return deltaIsNotZero(delta) && deltaIsAboveNumericCutoff(delta);
     }
 
+    /**
+     * Returns true if the delta is not zero.
+     * @param delta The delta to be evaluated.
+     * @return true if the delta is not zero.
+     */
     private boolean deltaIsNotZero(Delta delta) {
         return delta.getQuantity().getValue().doubleValue() != 0.0;
     }
 
+    /**
+     * Returns true if the delta is above the numerical cutoff (not effectivley zero).
+     * @param delta The delta to be evaluated.
+     * @return true if the delta is above the numerical cutoff (not effectivley zero).
+     */
     private boolean deltaIsAboveNumericCutoff(Delta delta) {
         return Math.abs(delta.getQuantity().getValue().doubleValue()) > numericalCutoff;
     }
 
+    /**
+     * The local error is calculated and the largest local error of the current epoch resulting from the executing
+     * module is returned. The local error is calculated according to the midpoint method
+     * E = abs(1 - (fullDelta / 2.0 * halfDelta)). Intuitively, applying the the delta for the current time step once
+     * results in the same result as if the delta for half the time step would be applied twice. This method calculates
+     * the difference between the full delta and twice the half delta. If the difference is large the error is large and
+     * vice versa.
+     *
+     * @return The calculated local error.
+     * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical instability.
+     */
     LocalError determineLargestLocalError() {
         // no deltas mean this module did not change anything in the course of this simulation step
         if (currentFullDeltas.isEmpty()) {
@@ -222,7 +256,6 @@ public abstract class AbstractModule implements Module {
             if (halfDelta == 0.0) {
                 continue;
             }
-
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // check for numerical instabilities
@@ -239,7 +272,6 @@ public abstract class AbstractModule implements Module {
         if (largestIdentifier == null) {
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
-        // Objects.requireNonNull(largestIdentifier);
         // set local error and return local error
         return new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
 

@@ -18,17 +18,38 @@ import java.util.stream.Collectors;
 
 /**
  * A chemical reaction is a process that leads to the transformation of one set of chemical substances to another.
- * The {@link ChemicalEntity ChemicalEntity}s used in a Reaction are
- * encapsulated to {@link Reactant}s to define stoichiometry and {@link ReactantRole}. The implementations of
- * Reaction have to specify how to calculate the actual acceleration of a reaction.
+ * The {@link ChemicalEntity ChemicalEntity}s used in a Reaction are encapsulated to {@link Reactant}s to define
+ * stoichiometry and {@link ReactantRole}. The implementations of Reaction have to specify how to calculate the actual
+ * acceleration of a reaction.
+ *
+ * @author cl
  */
 public abstract class Reaction extends AbstractSectionSpecificModule implements Featureable {
 
+    /**
+     * The features available for automatic annotation and assignment.
+     */
     protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+
+    /**
+     * The stoichiometric reactants.
+     */
     private List<StoichiometricReactant> stoichiometricReactants;
+
+    /**
+     * True if this reaction is an elementary reaction.
+     */
     private boolean elementary;
+
+    /**
+     * The features of the reaction.
+     */
     private FeatureContainer features;
 
+    /**
+     * Creates a new reaction for a simulation.
+     * @param simulation The simulations
+     */
     public Reaction(Simulation simulation) {
         super(simulation);
         stoichiometricReactants = new ArrayList<>();
@@ -53,6 +74,10 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         this.stoichiometricReactants = stoichiometricReactants;
     }
 
+    /**
+     * Returns all substrates of this reaction.
+     * @return All substrates of this reaction.
+     */
     public List<ChemicalEntity> getSubstrates() {
         return stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
@@ -60,6 +85,10 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns all products of this reaction.
+     * @return All products of this reaction.
+     */
     public List<ChemicalEntity> getProducts() {
         return stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isProduct)
@@ -75,7 +104,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      * ReactantRole#DECREASING} for Substrates).
      * @return The total concentration.
      */
-    protected double determineConcentration(ConcentrationContainer concentrationContainer, ReactantRole role) {
+    protected double determineEffectiveConcentration(ConcentrationContainer concentrationContainer, ReactantRole role) {
         double product = 1.0;
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
@@ -90,8 +119,12 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         return product;
     }
 
-
-    public List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
+    /**
+     * Calculates all deltas for all reactants for the reaction.
+     * @param concentrationContainer The concentration container to calculate the deltas for.
+     * @return The calculated deltas.
+     */
+    protected List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
@@ -107,6 +140,11 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         return deltas;
     }
 
+    /**
+     * Calculates the reaction velocity, depending on the kinetic law.
+     * @param concentrationContainer The concentration container to calculate the deltas for.
+     * @return The reaction velocity.
+     */
     public abstract double calculateVelocity(ConcentrationContainer concentrationContainer);
 
     /**
@@ -127,6 +165,10 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         this.elementary = elementary;
     }
 
+    /**
+     * Returns a nicely formatted string representation of the reaction.
+     * @return A nicely formatted string representation of the reaction.
+     */
     public String getDisplayString() {
         String substrates = stoichiometricReactants.stream()
                 .filter(StoichiometricReactant::isSubstrate)
@@ -151,8 +193,16 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         return features.getFeature(featureTypeClass);
     }
 
-    protected <FeatureContent> FeatureContent getScaledFeature(Class<? extends ScalableFeature<FeatureContent>> featureClass) {
-        ScalableFeature<FeatureContent> feature = getFeature(featureClass);
+    /**
+     * Returns the feature for the entity. The feature is scaled according to the time step size and considering half
+     * steps.
+     *
+     * @param featureClass The feature to get.
+     * @param <FeatureContentType> The type of the feature.
+     * @return The requested feature for the corresponding entity.
+     */
+    protected <FeatureContentType> FeatureContentType getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+        ScalableFeature<FeatureContentType> feature = getFeature(featureClass);
         if (halfTime) {
             return feature.getHalfScaledQuantity();
         }

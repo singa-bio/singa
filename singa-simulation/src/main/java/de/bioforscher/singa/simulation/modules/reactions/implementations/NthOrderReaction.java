@@ -28,7 +28,7 @@ public class NthOrderReaction extends Reaction {
         // reaction rate for this reaction
         final Quantity<Frequency> reactionRate = getScaledFeature(RateConstant.class);
         // concentrations of substrates that influence the reaction
-        double concentration = determineConcentration(concentrationContainer, ReactantRole.DECREASING);
+        double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
         // calculate acceleration
         return concentration * reactionRate.getValue().doubleValue();
     }

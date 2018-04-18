@@ -43,7 +43,7 @@ import java.util.LinkedList;
  * representation of the expression.
  * Parsing is implemented in the form of a recursive descent parser.
  */
-public class Parser {
+public class ExpressionParser {
 
     /**
      * the tokens to parse

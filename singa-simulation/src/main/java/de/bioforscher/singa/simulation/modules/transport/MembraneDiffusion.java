@@ -31,7 +31,7 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double permeability = getFeature(cargo, MembranePermeability.class).getValue().doubleValue();
+            final double permeability = getScaledFeature(cargo, MembranePermeability.class).getValue().doubleValue();
             value = getCargoDelta(membraneContainer) * permeability;
         } else {
             value = 0.0;
@@ -44,7 +44,7 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
-            final double permeability = getFeature(cargo, MembranePermeability.class).getValue().doubleValue();
+            final double permeability = getScaledFeature(cargo, MembranePermeability.class).getValue().doubleValue();
             value = getCargoDelta(membraneContainer) * permeability;
         } else {
             value = 0.0;

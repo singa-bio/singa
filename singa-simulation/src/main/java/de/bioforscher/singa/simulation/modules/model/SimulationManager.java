@@ -27,18 +27,51 @@ import java.util.function.Predicate;
  */
 public class SimulationManager extends Task<Simulation> {
 
+    /**
+     * The logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(SimulationManager.class);
 
+    /**
+     * The simulation.
+     */
     private final Simulation simulation;
+
+    /**
+     * The condition determining when the simulation should be terminated.
+     */
     private Predicate<Simulation> terminationCondition;
+
+    /**
+     * The condition determining when events should be emitted.
+     */
     private Predicate<Simulation> emitCondition;
 
+    /**
+     * The emitter for node events.
+     */
     private NodeEventEmitter nodeEventEmitter;
+
+    /**
+     * The emitter for graph events.
+     */
     private GraphEventEmitter graphEventEmitter;
 
+    /**
+     * The time for the next update to be issued. (For FPS based emission).
+     */
     private long nextTick = System.currentTimeMillis();
+
+    /**
+     * The time for the next update to be issued (in simulation time).
+     */
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
 
+    /**
+     * Creates a new simulation manager for the given simulation.
+     *
+     * @param simulation The simulation.
+     */
     public SimulationManager(Simulation simulation) {
         logger.debug("Initializing simulation manager ...");
         this.simulation = simulation;
@@ -48,36 +81,72 @@ public class SimulationManager extends Task<Simulation> {
         emitCondition = s -> true;
     }
 
+    /**
+     * Adds a new listener for node based events.
+     *
+     * @param listener The listener.
+     */
     public void addNodeUpdateListener(UpdateEventListener<NodeUpdatedEvent> listener) {
         logger.info("Added {} to node update listeners.", listener.getClass().getSimpleName());
         nodeEventEmitter.addEventListener(listener);
     }
 
+    /**
+     * Returns all currently registered node event listeners.
+     *
+     * @return All currently registered node event listeners.
+     */
     public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getNodeListeners() {
         return nodeEventEmitter.getListeners();
     }
 
+    /**
+     * Adds a new listener for graph based events.
+     *
+     * @param listener The listener.
+     */
     public void addGraphUpdateListener(UpdateEventListener<GraphUpdatedEvent> listener) {
         logger.info("Added {} to graph update listeners.", listener.getClass().getSimpleName());
         graphEventEmitter.addEventListener(listener);
     }
 
+    /**
+     * Sets a condition determining when the simulation should be terminated.
+     * @param terminationCondition The termination condition.
+     */
     public void setTerminationCondition(Predicate<Simulation> terminationCondition) {
         this.terminationCondition = terminationCondition;
     }
 
+    /**
+     * Schedules the termination of the simulation after the given time (simulation time) has passed.
+     * @param time The time.
+     */
     public void setSimulationTerminationToTime(Quantity<Time> time) {
         setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
     }
 
-    public void setSimulationTerminationToEpochs(long epochs) {
-        setTerminationCondition(s -> s.getEpoch() < epochs);
+    /**
+     * Schedules the termination of the simulation after the given number of epochs have passed.
+     * @param numberOfEpochs The number of epochs.
+     */
+    public void setSimulationTerminationToEpochs(long numberOfEpochs) {
+        setTerminationCondition(s -> s.getEpoch() < numberOfEpochs);
     }
 
+    /**
+     * Sets a condition determining when events should be emitted.
+     * @param emitCondition The emission condition.
+     */
     public void setUpdateEmissionCondition(Predicate<Simulation> emitCondition) {
         this.emitCondition = emitCondition;
     }
 
+    /**
+     * Sets the emission of updates for a rending engine. If more epochs are processed than can be displayed the epochs
+     * in between are not emitted. If epoch calculation is slower each epoch is emitted.
+     * @param fps The frames (emits) per (real time) second.
+     */
     public void setUpdateEmissionToFPS(int fps) {
         int skipTicks = 1000 / fps;
         emitCondition = s -> {
@@ -90,6 +159,10 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    /**
+     * Schedules the emission of events after the given time (simulation time) has passed.
+     * @param timePassed The (simulation) time passed.
+     */
     public void setUpdateEmissionToTimePassed(Quantity<Time> timePassed) {
         emitCondition = s -> {
             ComparableQuantity<Time> currentTime = s.getElapsedTime();
@@ -101,6 +174,10 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    /**
+     * Returns the simulation.
+     * @return The simulation.
+     */
     public Simulation getSimulation() {
         return simulation;
     }
@@ -131,8 +208,7 @@ public class SimulationManager extends Task<Simulation> {
                 }
             }
             // will exit jfx when simulation finishes
-            // FIXME implement possibility to use this with GUI
-            // maybe add toogle
+            // FIXME implement possibility to keep the GUI after simulation finishes - maybe add toogle
             Platform.exit();
             if (!isCancelled()) {
                 get();

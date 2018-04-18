@@ -91,7 +91,7 @@ public class Delta {
      * @param multiplicand The scalar that the delta is multiplied with.
      * @return This multiplied delta.
      */
-    public Delta multiply(double multiplicand) {
+    Delta multiply(double multiplicand) {
         quantity = quantity.multiply(multiplicand);
         return this;
     }

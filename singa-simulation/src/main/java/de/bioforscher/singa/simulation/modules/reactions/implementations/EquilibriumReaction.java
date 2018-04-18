@@ -32,8 +32,8 @@ public class EquilibriumReaction extends Reaction {
         final Quantity<Frequency> forwardsRateConstant = getScaledFeature(ForwardsRateConstant.class);
         final Quantity<Frequency> backwardsRateConstant = getScaledFeature(BackwardsRateConstant.class);
         // concentrations of substrates that influence the reaction
-        double substrateConcentration = determineConcentration(concentrationContainer, ReactantRole.DECREASING);
-        double productConcentration = determineConcentration(concentrationContainer, ReactantRole.INCREASING);
+        double substrateConcentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
+        double productConcentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.INCREASING);
         // calculate acceleration
         return substrateConcentration * forwardsRateConstant.getValue().doubleValue() -
                 productConcentration * backwardsRateConstant.getValue().doubleValue();

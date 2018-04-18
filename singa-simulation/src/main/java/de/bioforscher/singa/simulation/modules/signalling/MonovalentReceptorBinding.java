@@ -49,8 +49,8 @@ public class MonovalentReceptorBinding extends AbstractSectionSpecificModule {
 
     private double calculateVelocity(MembraneContainer membraneContainer, ChemicalEntity ligand) {
         // get rates
-        final double forwardsRateConstant = getFeature(ligand, ForwardsRateConstant.class).getValue().doubleValue();
-        final double backwardsRateConstant = getFeature(ligand, BackwardsRateConstant.class).getValue().doubleValue();
+        final double forwardsRateConstant = getScaledFeature(ligand, ForwardsRateConstant.class).getValue().doubleValue();
+        final double backwardsRateConstant = getScaledFeature(ligand, BackwardsRateConstant.class).getValue().doubleValue();
         // get concentrations
         final double freeLigandConcentration = membraneContainer.getAvailableConcentration(getCurrentCellSection(), ligand).getValue().doubleValue();
         final double freeReceptorConcentration = membraneContainer.getAvailableConcentration(membraneContainer.getOuterLayerSection(), receptor).getValue().doubleValue();
