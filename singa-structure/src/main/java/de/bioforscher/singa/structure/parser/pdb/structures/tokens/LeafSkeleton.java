@@ -76,6 +76,7 @@ public class LeafSkeleton {
                 break;
             }
         }
+        substructure.setAnnotatedAsHetAtom(true);
         atoms.values().forEach(substructure::addAtom);
         for (Map.Entry<Pair<String>, BondType> bond : bonds.entrySet()) {
             substructure.addBondBetween(atoms.get(bond.getKey().getFirst()),
