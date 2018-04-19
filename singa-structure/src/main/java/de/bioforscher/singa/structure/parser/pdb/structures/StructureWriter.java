@@ -76,6 +76,7 @@ public class StructureWriter {
     }
 
     private static OakStructure prepareForConsecutiveRewrite(OakStructure structure) {
+        logger.debug("Renumbering structure consecutively.");
         OakStructure renumberedStructure = new OakStructure();
         renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
         int identifier = 1;
@@ -89,15 +90,15 @@ public class StructureWriter {
                 renumberedModel.addChain(renumberedChain);
                 for (LeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
                     OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
-                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
-                        System.out.println(atom+" -> "+renumberedAtom);
+                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
                         identifier++;
                     }
                 }
-                System.out.println("terminator -> "+identifier);
+                logger.trace("Keeping identifier {} for terminator token.", identifier);
                 identifier++;
             }
             // nonconsecutive parts
@@ -110,17 +111,14 @@ public class StructureWriter {
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
                         renumberedLeafSubstructure.addAtom(renumberedAtom);
-                        System.out.println(atom+" -> "+renumberedAtom);
+                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
                         identifier++;
                     }
                 }
             }
         }
 
-
-
-
-        return structure;
+        return renumberedStructure;
     }
 
     public static void writeToXYZ(AtomContainer atomContainer, Path outputPath) throws IOException {
