@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The interaction container takes all interactions in a PLIP xml-file that was generated using the inter-chain
@@ -86,7 +87,7 @@ public class InteractionContainer {
      * @return A list of interactions between both leaves.
      */
     public List<Interaction> getInteractionsBetween(LeafIdentifier first, LeafIdentifier second) {
-        return interactions.stream()
+        return Stream.concat(interactions.stream(), ligandInteractions.stream())
                 .filter(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second))
                 .collect(Collectors.toList());
     }
@@ -99,7 +100,7 @@ public class InteractionContainer {
      * @return True, if any interaction between the two leaves is annotated.
      */
     public boolean hasInteractions(LeafIdentifier first, LeafIdentifier second) {
-        return interactions.stream()
+        return Stream.concat(interactions.stream(), ligandInteractions.stream())
                 .anyMatch(interaction -> interactionPairEquals(interaction.getSource(), interaction.getTarget(), first, second));
     }
 
@@ -111,10 +112,11 @@ public class InteractionContainer {
      * @param structure The structure to assign the interaction to.
      */
     public void mapToPseudoAtoms(OakStructure structure) {
-        for (Interaction interaction : interactions) {
-            Vector3D centroid = new Vector3D(interaction.getLigandCoordinate()).add(new Vector3D(interaction.getProteinCoordinate())).multiply(0.5);
-            structure.addAtom(interaction.getSource().getChainIdentifier(), InteractionType.getThreeLetterCode(interaction.getClass()), centroid);
-        }
+        Stream.concat(interactions.stream(), ligandInteractions.stream())
+                .forEach(interaction -> {
+                    Vector3D centroid = new Vector3D(interaction.getLigandCoordinate()).add(new Vector3D(interaction.getProteinCoordinate())).multiply(0.5);
+                    structure.addAtom(interaction.getSource().getChainIdentifier(), InteractionType.getThreeLetterCode(interaction.getClass()), centroid);
+                });
     }
 
     /**
@@ -322,9 +324,7 @@ public class InteractionContainer {
                 ligandInteractions.add(interaction);
                 interactionListIterator.remove();
             }
-
         }
-
     }
 
     private void fixBrokenSourceIdentifier(Interaction interaction, OakStructure structure) {
