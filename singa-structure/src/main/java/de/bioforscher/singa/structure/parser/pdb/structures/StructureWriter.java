@@ -107,6 +107,7 @@ public class StructureWriter {
                 OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).get();
                 for (LeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
                     OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
                     renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
                     for (Atom atom : leafSubstructure.getAllAtoms()) {
                         OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
