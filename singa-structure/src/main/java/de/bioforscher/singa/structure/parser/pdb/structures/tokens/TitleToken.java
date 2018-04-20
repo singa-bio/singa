@@ -29,14 +29,21 @@ public enum TitleToken implements PDBToken {
             titleLines.add("TITLE     " + title);
         } else {
             int continuation = 1;
-            while (title.length() > 70) {
+            while (title.length() >= 70) {
                 // get last space before 70 char cutoff
                 if (continuation == 1) {
                     String substring = title.substring(0, title.substring(0, 70).lastIndexOf(' '));
                     titleLines.add("TITLE     " + substring);
                     title = title.substring(substring.length());
                 } else {
-                    String substring = title.substring(0, title.substring(0, 69).lastIndexOf(' '));
+
+                    int lastIndex = title.substring(0, 69).lastIndexOf(' ');
+                    String substring;
+                    if (lastIndex <= 0) {
+                        substring = title.substring(0, 69);
+                    } else {
+                        substring = title.substring(0, lastIndex);
+                    }
                     titleLines.add("TITLE    " + continuation + substring);
                     title = title.substring(substring.length());
                 }
