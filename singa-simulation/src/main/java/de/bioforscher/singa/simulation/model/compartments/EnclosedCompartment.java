@@ -1,8 +1,6 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 
@@ -12,8 +10,6 @@ import java.util.LinkedList;
  * @author cl
  */
 public class EnclosedCompartment extends CellSection {
-
-    private static final Logger logger = LoggerFactory.getLogger(EnclosedCompartment.class);
 
     /**
      * The enclosing membrane.

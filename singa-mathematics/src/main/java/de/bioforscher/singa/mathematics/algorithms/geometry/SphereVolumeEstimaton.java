@@ -17,9 +17,9 @@ import java.util.List;
  *
  * @author cl
  */
-public class OttVolumePrediction {
+public class SphereVolumeEstimaton {
 
-    private static final Logger logger = LoggerFactory.getLogger(OttVolumePrediction.class);
+    private static final Logger logger = LoggerFactory.getLogger(SphereVolumeEstimaton.class);
 
     private static final int DEFAULT_CUBE_SIDE_LENGTH = 200;
 
@@ -53,7 +53,7 @@ public class OttVolumePrediction {
     private int numberOfSpheres;
     private double scale;
 
-    public OttVolumePrediction() {
+    public SphereVolumeEstimaton() {
         slices = new ArrayList<>();
     }
 
@@ -124,7 +124,7 @@ public class OttVolumePrediction {
     }
 
     public static double predict(List<Sphere> spheres) {
-        OttVolumePrediction abacus = new OttVolumePrediction();
+        SphereVolumeEstimaton abacus = new SphereVolumeEstimaton();
         abacus.spheres = spheres;
         return abacus.calculate();
     }

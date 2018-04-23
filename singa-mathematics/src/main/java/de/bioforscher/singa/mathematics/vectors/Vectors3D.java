@@ -3,7 +3,7 @@ package de.bioforscher.singa.mathematics.vectors;
 import java.util.Collection;
 
 /**
- * Created by Christoph on 14/06/2017.
+ * @author cl
  */
 public class Vectors3D {
 

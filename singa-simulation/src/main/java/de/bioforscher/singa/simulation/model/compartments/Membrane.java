@@ -8,15 +8,34 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * A membrane is a cell section dividing the two cellular compartments. The cell section defines an inner compartment
+ * and is composed of an outer membrane layer (exposed to the outer compartment) and an inner membrane layer (exposed
+ * to the inner compartment).
  * @author cl
  */
 public class Membrane extends CellSection {
 
+    /**
+     * The inner compartment.
+     */
     private final EnclosedCompartment innerCompartment;
 
+    /**
+     * The inner layer of the cell section.
+     */
     private final CellSection innerLayer;
+
+    /**
+     * The outer layer of the cell section.
+     */
     private final CellSection outerLayer;
 
+    /**
+     * Creates a new membrane.
+     * @param identifier The identifier.
+     * @param name A name for the compartment
+     * @param innerCompartment The compartment considered as inner compartment.
+     */
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
         this.innerCompartment = innerCompartment;
@@ -26,10 +45,19 @@ public class Membrane extends CellSection {
         innerLayer.setSubsection(true);
     }
 
+    /**
+     * Initializes a new Membrane for an compartment.
+     * @param enclosedCompartment The compartment enclosed by the membrane.
+     * @return An initialized membrane.
+     */
     public static Membrane forCompartment(EnclosedCompartment enclosedCompartment) {
         return new Membrane(enclosedCompartment.getIdentifier() + "-M", enclosedCompartment.getName() + " Membrane", enclosedCompartment);
     }
 
+    /**
+     * Returns the inner compartment.
+     * @return The inner compartment.
+     */
     public EnclosedCompartment getInnerCompartment() {
         return innerCompartment;
     }

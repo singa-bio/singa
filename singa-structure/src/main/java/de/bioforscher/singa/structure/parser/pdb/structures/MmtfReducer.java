@@ -15,7 +15,7 @@ public class MmtfReducer {
         reduceChains(structure, selector);
     }
 
-    static void reduceModels(MmtfStructure structure, StructureParser.Reducer selector) {
+    private static void reduceModels(MmtfStructure structure, StructureParser.Reducer selector) {
         if (!selector.allModels) {
             for (Integer modelIdentifier : structure.getAllModelIdentifiers()) {
                if (modelIdentifier != selector.modelIdentifier) {
@@ -25,7 +25,7 @@ public class MmtfReducer {
         }
     }
 
-    static void reduceChains(MmtfStructure structure, StructureParser.Reducer selector) {
+    private static void reduceChains(MmtfStructure structure, StructureParser.Reducer selector) {
         if (!selector.allChains) {
             for (Integer modelIdentifier : structure.getAllModelIdentifiers()) {
                 Optional<Model> optionalModel = structure.getModel(modelIdentifier);

@@ -30,6 +30,13 @@ public class Receptor extends Protein {
         boundReceptorStates = new HashMap<>();
     }
 
+    public Receptor(Protein protein) {
+        this(protein.getIdentifier());
+        name = protein.name;
+        annotations = protein.annotations;
+        features = protein.features;
+    }
+
     public void addLigand(ChemicalEntity chemicalEntity, ForwardsRateConstant forwardsRateConstant, BackwardsRateConstant backwardsRateConstant) {
         chemicalEntity.setFeature(forwardsRateConstant);
         chemicalEntity.setFeature(backwardsRateConstant);

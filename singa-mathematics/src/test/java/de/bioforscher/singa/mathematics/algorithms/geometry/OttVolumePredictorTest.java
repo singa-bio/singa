@@ -20,7 +20,7 @@ public class OttVolumePredictorTest {
         final Sphere sphere = new Sphere(new Vector3D(0.0, 0.0, 0.0), 1.0);
         spheres.add(sphere);
         final double actualVolume = sphere.getVolume();
-        final double predictedVolume = OttVolumePrediction.predict(spheres);
+        final double predictedVolume = SphereVolumeEstimaton.predict(spheres);
         assertEquals(actualVolume, predictedVolume, 1e-1);
     }
 
