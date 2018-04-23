@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.compartments;
 
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
 import de.bioforscher.singa.core.utility.Nameable;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import java.util.HashSet;

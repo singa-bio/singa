@@ -4,9 +4,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Species;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.MolStructureParser;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.InChIKey;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import de.bioforscher.singa.structure.model.interfaces.Ligand;
 import org.xml.sax.Attributes;
@@ -56,7 +55,6 @@ public class ChEBIContentHandler implements ContentHandler {
         Species species = new Species.Builder(primaryIdentifier)
                 .name(name)
                 .assignFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin))
-                .additionalIdentifier(new ChEBIIdentifier(identifier.toString()))
                 .additionalIdentifier(inChIKey)
                 .build();
 

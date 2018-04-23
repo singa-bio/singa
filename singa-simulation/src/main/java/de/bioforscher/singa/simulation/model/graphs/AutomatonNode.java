@@ -124,7 +124,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @return All concentrations of all chemical entities.
      */
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrations() {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
         return concentrationContainer.getAllConcentrations();
     }
 
@@ -134,7 +134,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param cellSection The cell section.
      * @return All concentrations of all chemical entities.
      */
-    public Map<ChemicalEntity<?>, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
+    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
         return concentrationContainer.getAllConcentrationsForSection(cellSection);
     }
 
@@ -251,7 +251,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @return All chemical entities referenced in this node.
      */
-    public Set<ChemicalEntity<?>> getAllReferencedEntities() {
+    public Set<ChemicalEntity> getAllReferencedEntities() {
         return concentrationContainer.getAllReferencedEntities();
     }
 

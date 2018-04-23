@@ -1,8 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
-import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.Featureable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +27,12 @@ public class PubChemDatabase {
         return instance;
     }
 
-    public static <FeaturableType extends Featureable> LogP fetchLogP(Featureable featureable) {
-
-
-        return null;
+    public static InChIKey fetchInchiKey(PubChemIdentifier pubChemIdentifier) {
+        return PubChemParserService.parse(pubChemIdentifier).getFeature(InChIKey.class);
     }
 
+    public static ChEBIIdentifier fetchChEBIIdentifier(PubChemIdentifier pubChemIdentifier) {
+        return PubChemParserService.parse(pubChemIdentifier).getFeature(ChEBIIdentifier.class);
+    }
 
 }

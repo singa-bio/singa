@@ -3,8 +3,8 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -23,8 +23,7 @@ import java.util.Set;
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public class Species extends ChemicalEntity<SimpleStringIdentifier> {
-
+public class Species extends ChemicalEntity {
 
     public static final Species UNKNOWN_SPECIES = new Species.Builder("UNK")
             .name("Unknown chemical species")
@@ -62,7 +61,7 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Species, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Species, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
@@ -74,7 +73,7 @@ public class Species extends ChemicalEntity<SimpleStringIdentifier> {
 
         @Override
         protected Species createObject(SimpleStringIdentifier primaryIdentifer) {
-            return new Species(primaryIdentifer);
+            return new Species(primaryIdentifer.getIdentifier());
         }
 
         @Override

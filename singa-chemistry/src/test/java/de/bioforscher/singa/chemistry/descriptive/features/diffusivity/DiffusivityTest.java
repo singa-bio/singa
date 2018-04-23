@@ -1,6 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
@@ -20,7 +21,8 @@ public class DiffusivityTest {
 
     @Test
     public void shouldResolveRequiredFeature() {
-        Species testSpecies = new Species.Builder("CHEBI:29802")
+        Species testSpecies = new Species.Builder("dnp")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
                 .build();
         Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
         // this also needs to resolve the molar mass feature

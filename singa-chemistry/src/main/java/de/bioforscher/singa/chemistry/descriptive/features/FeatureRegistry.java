@@ -1,8 +1,12 @@
 package de.bioforscher.singa.chemistry.descriptive.features;
 
+import de.bioforscher.singa.chemistry.descriptive.features.identifiers.InChIKeyProvider;
+import de.bioforscher.singa.chemistry.descriptive.features.identifiers.PubChemToChEBI;
 import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMassProvider;
 import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolumePredictor;
 import de.bioforscher.singa.features.exceptions.IllegalFeatureRequestException;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.quantities.MolarVolume;
@@ -20,6 +24,9 @@ public class FeatureRegistry {
     private static FeatureRegistry instance = new FeatureRegistry();
 
     static {
+        // identifiers
+        addProviderForFeature(InChIKey.class, InChIKeyProvider.class);
+        addProviderForFeature(ChEBIIdentifier.class, PubChemToChEBI.class);
         addProviderForFeature(MolarMass.class, MolarMassProvider.class);
         addProviderForFeature(MolarVolume.class, MolarVolumePredictor.class);
     }

@@ -22,15 +22,14 @@ public abstract class AbstractMapGraph<NodeType extends Node<NodeType, VectorTyp
         implements Graph<NodeType, EdgeType, IdentifierType> {
 
     /**
+     * The edges of the graph.
+     */
+    protected final Map<Integer, EdgeType> edges;
+
+    /**
      * The nodes of the graph.
      */
     private final Map<IdentifierType, NodeType> nodes;
-
-    /**
-     * The edges of the graph.
-     */
-    private final Map<Integer, EdgeType> edges;
-
     /**
      * A iterating variable to add a new edge.
      */

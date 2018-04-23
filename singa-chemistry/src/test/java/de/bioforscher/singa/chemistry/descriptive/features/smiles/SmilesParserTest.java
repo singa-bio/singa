@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeAtom;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeBondType;
-import de.bioforscher.singa.chemistry.descriptive.molecules.MoleculeGraph;
+import de.bioforscher.singa.structure.model.molecules.MoleculeAtom;
+import de.bioforscher.singa.structure.model.molecules.MoleculeBondType;
+import de.bioforscher.singa.structure.model.molecules.MoleculeGraph;
 import org.junit.Test;
 
 import java.util.List;

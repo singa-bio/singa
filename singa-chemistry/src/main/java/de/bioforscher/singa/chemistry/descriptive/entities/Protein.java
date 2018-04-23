@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
-import de.bioforscher.singa.core.biology.Organism;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Organism;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import static de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationT
 /**
  * @author cl
  */
-public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
+public class Protein extends ChemicalEntity {
 
     private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -111,7 +111,7 @@ public class Protein extends ChemicalEntity<SimpleStringIdentifier> {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Protein, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Protein, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

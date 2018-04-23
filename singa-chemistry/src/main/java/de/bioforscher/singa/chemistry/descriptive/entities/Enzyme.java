@@ -4,8 +4,8 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 
@@ -78,7 +78,7 @@ public class Enzyme extends Protein {
         return "Enzyme: " + getIdentifier() + " " + getName() + " weight: " + getFeature(MolarMass.class);
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Enzyme, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

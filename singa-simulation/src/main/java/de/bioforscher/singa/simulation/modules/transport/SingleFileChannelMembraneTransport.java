@@ -20,10 +20,10 @@ import java.util.Set;
 public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndependentModule {
 
     private Transporter transporter;
-    private ChemicalEntity<?> cargo;
-    private Set<ChemicalEntity<?>> solutes;
+    private ChemicalEntity cargo;
+    private Set<ChemicalEntity> solutes;
 
-    public SingleFileChannelMembraneTransport(Simulation simulation, Transporter transporter, ChemicalEntity cargo, Set<ChemicalEntity<?>> solutes) {
+    public SingleFileChannelMembraneTransport(Simulation simulation, Transporter transporter, ChemicalEntity cargo, Set<ChemicalEntity> solutes) {
         super(simulation);
         this.transporter = transporter;
         this.cargo = cargo;
@@ -49,7 +49,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     }
 
     private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
@@ -74,7 +74,7 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     }
 
     private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
@@ -89,12 +89,12 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     private double getSoluteDelta(MembraneContainer container) {
         // sum outer solutes
         double outerConcentration = 0.0;
-        for (ChemicalEntity<?> solute : solutes) {
+        for (ChemicalEntity solute : solutes) {
             outerConcentration += container.getOuterPhaseConcentration(solute).getValue().doubleValue();
         }
         // sum inner solutes
         double innerConcentration = 0.0;
-        for (ChemicalEntity<?> solute : solutes) {
+        for (ChemicalEntity solute : solutes) {
             innerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
         }
         // return delta

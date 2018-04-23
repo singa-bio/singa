@@ -2,7 +2,7 @@ package de.bioforscher.singa.structure.parser.pdb.structures;
 
 
 import de.bioforscher.singa.structure.model.interfaces.*;
-import de.bioforscher.singa.structure.model.oak.OakStructure;
+import de.bioforscher.singa.structure.model.oak.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +67,59 @@ public class StructureWriter {
         logger.info("Writing structure {} to {}.", structure, outputPath);
         Files.createDirectories(outputPath.getParent());
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(structure).getBytes());
+    }
+
+
+    public static void writeWithConsecutiveNumbering(OakStructure structure, Path outputPath) throws IOException {
+        OakStructure renumberedStructure = prepareForConsecutiveRewrite(structure);
+        writeStructure(renumberedStructure, outputPath);
+    }
+
+    private static OakStructure prepareForConsecutiveRewrite(OakStructure structure) {
+        logger.debug("Renumbering structure consecutively.");
+        OakStructure renumberedStructure = new OakStructure();
+        renumberedStructure.setPdbIdentifier(structure.getPdbIdentifier());
+        int identifier = 1;
+        for (Model model : structure.getAllModels()) {
+            OakModel renumberedModel = new OakModel(model.getModelIdentifier());
+            renumberedStructure.addModel(renumberedModel);
+            // consecutive parts
+            for (Chain chain : model.getAllChains()) {
+                OakChain oakChain = (OakChain) chain;
+                OakChain renumberedChain = new OakChain(chain.getChainIdentifier());
+                renumberedModel.addChain(renumberedChain);
+                for (LeafSubstructure leafSubstructure : oakChain.getConsecutivePart()) {
+                    OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure, true);
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
+                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
+                        renumberedLeafSubstructure.addAtom(renumberedAtom);
+                        identifier++;
+                    }
+                }
+                logger.trace("Keeping identifier {} for terminator token.", identifier);
+                identifier++;
+            }
+            // nonconsecutive parts
+            for (Chain chain : model.getAllChains()) {
+                OakChain oakChain = (OakChain) chain;
+                OakChain renumberedChain = (OakChain) renumberedModel.getChain(chain.getChainIdentifier()).get();
+                for (LeafSubstructure leafSubstructure : oakChain.getNonConsecutivePart()) {
+                    OakLeafSubstructure renumberedLeafSubstructure = LeafSubstructureFactory.createLeafSubstructure(leafSubstructure.getIdentifier(), leafSubstructure.getFamily());
+                    renumberedLeafSubstructure.setAnnotatedAsHetAtom(true);
+                    renumberedChain.addLeafSubstructure(renumberedLeafSubstructure);
+                    for (Atom atom : leafSubstructure.getAllAtoms()) {
+                        OakAtom renumberedAtom = new OakAtom(identifier, atom.getElement(), atom.getAtomName(), atom.getPosition());
+                        renumberedLeafSubstructure.addAtom(renumberedAtom);
+                        logger.trace("Renumbering atom {} to {}.", atom.getAtomIdentifier(), renumberedAtom.getAtomIdentifier());
+                        identifier++;
+                    }
+                }
+            }
+        }
+
+        return renumberedStructure;
     }
 
     public static void writeToXYZ(AtomContainer atomContainer, Path outputPath) throws IOException {

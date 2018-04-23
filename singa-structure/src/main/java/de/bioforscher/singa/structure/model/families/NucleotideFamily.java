@@ -34,6 +34,17 @@ public enum NucleotideFamily implements StructuralFamily<NucleotideFamily> {
                 .findAny();
     }
 
+    public static Optional<NucleotideFamily> getNucleotide(char nucleotide) {
+        switch (nucleotide) {
+            case 'A': case 'a': return Optional.of(ADENOSINE);
+            case 'C': case 'c': return Optional.of(CYTIDINE);
+            case 'G': case 'g': return Optional.of(GUANOSINE);
+            case 'T': case 't': return Optional.of(THYMIDINE);
+            case 'U': case 'u': return Optional.of(DESOXYURIDINE);
+            default: return Optional.empty();
+        }
+    }
+
     @Override
     public String getOneLetterCode() {
         return oneLetterCode;

@@ -3,6 +3,7 @@ package de.bioforscher.singa.mathematics.graphs.model;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -140,4 +141,28 @@ public interface Graph<NodeType extends Node<NodeType, ? extends Vector, Identif
         return getEdges().size() + 1;
     }
 
+    // TODO write tests that ensure proper copying of graphs
+    default Graph<NodeType, EdgeType, IdentifierType> getCopy() {
+        Graph<NodeType, EdgeType, IdentifierType> copy;
+        try {
+            copy = getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to create a new graph.");
+        }
+        // copy and add nodes
+        Objects.requireNonNull(copy);
+        Collection<NodeType> nodes = getNodes();
+        for (NodeType node : nodes) {
+            NodeType nodeCopy = node.getCopy();
+            copy.addNode(nodeCopy);
+        }
+        // create and add edges for the nodes (preserving edge identifier)
+        Collection<EdgeType> edges = getEdges();
+        for (EdgeType edge : edges) {
+            NodeType source = copy.getNode(edge.getSource().getIdentifier());
+            NodeType target = copy.getNode(edge.getTarget().getIdentifier());
+            copy.addEdgeBetween(edge.getIdentifier(), source, target);
+        }
+        return copy;
+    }
 }

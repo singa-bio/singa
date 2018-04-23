@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.parser.pfam;
 
-import de.bioforscher.singa.core.identifier.PfamIdentifier;
+import de.bioforscher.singa.features.identifiers.PfamIdentifier;
 import de.bioforscher.singa.structure.model.interfaces.AminoAcid;
 import de.bioforscher.singa.structure.model.interfaces.Chain;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;

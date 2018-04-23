@@ -1,7 +1,7 @@
 package de.bioforscher.singa.structure.parser.sifts;
 
-import de.bioforscher.singa.core.identifier.PfamIdentifier;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
+import de.bioforscher.singa.features.identifiers.PfamIdentifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;

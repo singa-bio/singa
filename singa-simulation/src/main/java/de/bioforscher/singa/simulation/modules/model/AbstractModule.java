@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * The most basic implementation of
- *
  * @author cl
  */
 public abstract class AbstractModule implements Module {
@@ -39,7 +37,6 @@ public abstract class AbstractModule implements Module {
      * The deltas for applying full time steps.
      */
     protected final Map<DeltaIdentifier, Delta> currentFullDeltas;
-
     /**
      * The strut deltas for the half time steps.
      */
@@ -80,7 +77,7 @@ public abstract class AbstractModule implements Module {
     /**
      * The chemical entity that is currently processed.
      */
-    protected ChemicalEntity<?> currentChemicalEntity;
+    protected ChemicalEntity currentChemicalEntity;
 
     /**
      * Creates a new module.
@@ -123,6 +120,7 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Returns the cell section that is currently processed.
+     *
      * @return The cell section that is currently processed.
      */
     public CellSection getCurrentCellSection() {
@@ -131,15 +129,17 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Returns the chemical entity that is currently processed.
+     *
      * @return The chemical entity that is currently processed.
      */
-    public ChemicalEntity<?> getCurrentChemicalEntity() {
+    public ChemicalEntity getCurrentChemicalEntity() {
         return currentChemicalEntity;
     }
 
     /**
      * The passed predicate is evaluated before applying the module to a node. If the predicate returns true the module
      * is evaluated for the node.
+     *
      * @param predicate The predicate to be evaluated.
      */
     public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
@@ -149,6 +149,7 @@ public abstract class AbstractModule implements Module {
     /**
      * Return the numerical cutoff that is applied before adding any delta to the system. If the absolute delta value is
      * smaller than the cutoff value its influence is assumed to be void (effectively zero).
+     *
      * @return The numerical cutoff.
      */
     public double getNumericalCutoff() {
@@ -158,6 +159,7 @@ public abstract class AbstractModule implements Module {
     /**
      * Sets the numerical cutoff that is applied before adding any delta to the system. If the absolute delta value is
      * smaller than the cutoff value its influence is assumed to be void (effectively zero).
+     *
      * @param numericalCutoff The numerical cutoff.
      */
     public void setNumericalCutoff(double numericalCutoff) {
@@ -256,6 +258,7 @@ public abstract class AbstractModule implements Module {
             if (halfDelta == 0.0) {
                 continue;
             }
+
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
             // check for numerical instabilities
@@ -272,6 +275,7 @@ public abstract class AbstractModule implements Module {
         if (largestIdentifier == null) {
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
+        // Objects.requireNonNull(largestIdentifier);
         // set local error and return local error
         return new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
 

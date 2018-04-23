@@ -7,9 +7,14 @@ import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureConta
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
-import de.bioforscher.singa.core.identifier.model.Identifiable;
-import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifiable;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -23,17 +28,18 @@ import java.util.*;
  * level. Each chemical entity should be identifiable by an
  * {@link Identifier}. Chemical entities can be annotated, posses a {@link MolarMass} and a name.
  *
- * @param <IdentifierType> The Type of the {@link Identifier}, that identifies this entity.
  * @author cl
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia:
  * SMILES</a>
  */
-public abstract class ChemicalEntity<IdentifierType extends Identifier> implements Identifiable<IdentifierType>,
-        Nameable, Annotatable, Featureable {
+public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentifier>, Nameable, Annotatable, Featureable {
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
+        availableFeatures.add(InChIKey.class);
+        availableFeatures.add(ChEBIIdentifier.class);
+        availableFeatures.add(PubChemIdentifier.class);
         availableFeatures.add(Diffusivity.class);
         availableFeatures.add(MembranePermeability.class);
         availableFeatures.add(MolarMass.class);
@@ -44,7 +50,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     /**
      * The distinct {@link Identifier} by which this entity is identified.
      */
-    protected final IdentifierType identifier;
+    protected final SimpleStringIdentifier identifier;
 
     /**
      * The name by which this entity is referenced.
@@ -63,14 +69,15 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
      *
      * @param identifier The pdbIdentifier.
      */
-    protected ChemicalEntity(IdentifierType identifier) {
+    protected ChemicalEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
+        IdentifierPatternRegistry.instantiate(identifier.getIdentifier()).ifPresent(this::setFeature);
     }
 
     @Override
-    public IdentifierType getIdentifier() {
+    public SimpleStringIdentifier getIdentifier() {
         return identifier;
     }
 
@@ -116,11 +123,18 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     }
 
     public void addAdditionalIdentifier(Identifier identifier) {
-        addAnnotation(new Annotation<>(AnnotationType.ADDITIONAL_IDENTIFIER, identifier));
+        setFeature(identifier);
     }
 
     public List<Identifier> getAdditionalIdentifiers() {
-        return getContentOfAnnotations(Identifier.class, AnnotationType.ADDITIONAL_IDENTIFIER);
+        List<Identifier> identifiers = new ArrayList<>();
+        for (Feature<?> feature : getFeatures()) {
+            if (feature.getFeatureContent() instanceof Identifier) {
+                identifiers.add((Identifier) feature);
+            }
+        }
+        identifiers.addAll(getContentOfAnnotations(Identifier.class, AnnotationType.ADDITIONAL_IDENTIFIER));
+        return identifiers;
     }
 
     @Override
@@ -165,7 +179,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     @Override
     public String toString() {
         return "ChemicalEntity{" +
-                "identifier=" + identifier +
+                "identifier=" + identifier.getIdentifier() +
                 ", name='" + name + '\'' +
                 '}';
     }
@@ -173,7 +187,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
     public String getStringForProtocol() {
         StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" summary:").append(System.lineSeparator())
-                .append("  ").append("identifier: ").append(getIdentifier()).append(System.lineSeparator())
+                .append("  ").append("primary identifier: ").append(getIdentifier().getIdentifier()).append(System.lineSeparator())
                 .append("  ").append("name: ").append(getName()).append(System.lineSeparator())
                 .append("  ").append("features: ").append(System.lineSeparator());
         Iterator<Feature<?>> iterator = features.getAllFeatures().iterator();
@@ -194,7 +208,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ChemicalEntity<?> that = (ChemicalEntity<?>) o;
+        ChemicalEntity that = (ChemicalEntity) o;
 
         return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
     }
@@ -204,17 +218,21 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         return identifier != null ? identifier.hashCode() : 0;
     }
 
-    public static abstract class Builder<TopLevelType extends ChemicalEntity<?>, BuilderType extends Builder, IdentifierType extends Identifier> {
+    public static abstract class Builder<TopLevelType extends ChemicalEntity, BuilderType extends Builder> {
 
         final TopLevelType topLevelObject;
         final BuilderType builderObject;
 
-        public Builder(IdentifierType identifier) {
+        public Builder(SimpleStringIdentifier identifier) {
             topLevelObject = createObject(identifier);
             builderObject = getBuilder();
         }
+        public Builder(String identifier) {
+            topLevelObject = createObject(new SimpleStringIdentifier(identifier));
+            builderObject = getBuilder();
+        }
 
-        protected abstract TopLevelType createObject(IdentifierType primaryIdentifer);
+        protected abstract TopLevelType createObject(SimpleStringIdentifier primaryIdentifer);
 
         protected abstract BuilderType getBuilder();
 
@@ -251,6 +269,7 @@ public abstract class ChemicalEntity<IdentifierType extends Identifier> implemen
         public TopLevelType build() {
             return topLevelObject;
         }
+
     }
 
 }

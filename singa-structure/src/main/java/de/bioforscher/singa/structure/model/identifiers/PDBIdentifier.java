@@ -1,6 +1,6 @@
 package de.bioforscher.singa.structure.model.identifiers;
 
-import de.bioforscher.singa.core.identifier.model.AbstractIdentifier;
+import de.bioforscher.singa.features.identifiers.model.AbstractIdentifier;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author cl
  * @see <a href="http://www.rcsb.org/pdb/staticHelp.do?p=help/advancedsearch/pdbIDs.html">PDB identifier</a>
  */
-public class PDBIdentifier extends AbstractIdentifier {
+public class PDBIdentifier extends AbstractIdentifier<PDBIdentifier> {
 
     /**
      * The pattern to verify the identifier.
@@ -44,4 +44,8 @@ public class PDBIdentifier extends AbstractIdentifier {
         return null;
     }
 
+    @Override
+    public PDBIdentifier getFeatureContent() {
+        return this;
+    }
 }

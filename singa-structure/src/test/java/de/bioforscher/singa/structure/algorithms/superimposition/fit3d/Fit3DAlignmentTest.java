@@ -140,7 +140,7 @@ public class Fit3DAlignmentTest {
                 .atomFilter(AtomFilter.isArbitrary())
                 .run();
         List<Fit3DMatch> matches = fit3d.getMatches();
-         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
+        assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }
 
     @Test
@@ -448,5 +448,4 @@ public class Fit3DAlignmentTest {
                 .flatMap(Collection::stream)
                 .anyMatch(ecNumber -> ecNumber.getIdentifier().equals("3.4.21.5")));
     }
-
 }

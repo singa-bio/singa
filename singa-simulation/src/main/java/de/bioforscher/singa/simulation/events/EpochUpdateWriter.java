@@ -81,7 +81,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     /**
      * The entities that should be observed.
      */
-    private final List<ChemicalEntity<?>> observedEntities;
+    private final List<ChemicalEntity> observedEntities;
 
     /**
      * The modules deltas should be recorded for.
@@ -106,7 +106,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param entitiesToObserve The entities to observe.
      * @param modulesToObserve The modules to record deltas from.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, Set<Module> modulesToObserve) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve) {
         this(workspacePath, folder, entitiesToObserve, modulesToObserve, true);
     }
 
@@ -119,7 +119,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param modulesToObserve The modules to record deltas from.
      * @param printHeader True, if an extended header should be printed.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity<?>> entitiesToObserve, Set<Module> modulesToObserve, boolean printHeader) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve, boolean printHeader) {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();

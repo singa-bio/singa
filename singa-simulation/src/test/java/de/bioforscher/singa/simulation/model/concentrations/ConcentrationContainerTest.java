@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ConcentrationContainerTest {
 
-    private final ChemicalEntity<?> entity = new Species.Builder("A").build();
+    private final ChemicalEntity entity = new Species.Builder("A").build();
 
     private final EnclosedCompartment innerSection = new EnclosedCompartment("Right", "Right Compartment");
     private final EnclosedCompartment outerSection = new EnclosedCompartment("Left", "Left Compartment");

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
     }
 
     private void parseXML() {
-        fetchResource(identifier.toString() + ".xml");
+        fetchResource(identifier.getIdentifier() + ".xml");
         // parse xml
         try {
             getXmlReader().parse(new InputSource(getFetchResult()));

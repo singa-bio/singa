@@ -72,6 +72,15 @@ public class StructuralEntityFilter {
     }
 
     /**
+     * Filters for {@link Chain}s.
+     */
+    public static final class ChainFilter {
+        public static Predicate<Chain> isInChain(String chainIdentifier) {
+            return chain -> chainIdentifier.equals(chain.getChainIdentifier());
+        }
+    }
+
+    /**
      * Filters for {@link LeafSubstructure}s.
      */
     public static final class LeafFilter {

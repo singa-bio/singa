@@ -5,7 +5,6 @@ import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
-import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DException;
 import de.bioforscher.singa.structure.model.interfaces.*;
 
 import java.util.ArrayList;

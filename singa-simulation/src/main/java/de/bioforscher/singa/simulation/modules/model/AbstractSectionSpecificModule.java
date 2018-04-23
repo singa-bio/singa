@@ -123,7 +123,7 @@ public abstract class AbstractSectionSpecificModule extends AbstractModule {
         for (Map.Entry<Function<ConcentrationContainer, List<Delta>>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
                 List<Delta> fullDeltas = entry.getKey().apply(concentrationContainer);
-                ArrayList<ChemicalEntity<?>> unchangedEntities = new ArrayList<>(concentrationContainer.getAllReferencedEntities());
+                ArrayList<ChemicalEntity> unchangedEntities = new ArrayList<>(concentrationContainer.getAllReferencedEntities());
                 for (Delta fullDelta : fullDeltas) {
                     currentChemicalEntity = fullDelta.getChemicalEntity();
                     if (deltaIsValid(fullDelta)) {
@@ -133,7 +133,7 @@ public abstract class AbstractSectionSpecificModule extends AbstractModule {
                         unchangedEntities.remove(fullDelta.getChemicalEntity());
                     }
                 }
-                for (ChemicalEntity<?> unchangedEntity : unchangedEntities) {
+                for (ChemicalEntity unchangedEntity : unchangedEntities) {
                     currentHalfConcentrations.setAvailableConcentration(currentCellSection, unchangedEntity,
                             currentNode.getAvailableConcentration(unchangedEntity, currentCellSection));
                 }

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Species;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.parser.AbstractXMLParser;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -18,12 +18,12 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
 
     public ChEBIParserService(ChEBIIdentifier identifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler());
-        setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));
+        setResource(String.format(CHEBI_FETCH_URL, identifier.getIdentifier()));
     }
 
     public ChEBIParserService(ChEBIIdentifier identifier, String primaryIdentifier) {
         getXmlReader().setContentHandler(new ChEBIContentHandler(primaryIdentifier));
-        setResource(String.format(CHEBI_FETCH_URL, identifier.toString()));
+        setResource(String.format(CHEBI_FETCH_URL, identifier.getIdentifier()));
     }
 
     public static Species parse(String chEBIIdentifier) {
@@ -38,7 +38,7 @@ public class ChEBIParserService extends AbstractXMLParser<Species> {
 
 
     public static Species parse(ChEBIIdentifier identifier) {
-        logger.info("Parsing chemical entity with identifier " + identifier + " from " + ChEBIDatabase.origin.getName());
+        logger.info("Parsing chemical entity with identifier " + identifier.getIdentifier() + " from " + ChEBIDatabase.origin.getName());
         ChEBIParserService parser = new ChEBIParserService(identifier);
         return parser.parse();
     }

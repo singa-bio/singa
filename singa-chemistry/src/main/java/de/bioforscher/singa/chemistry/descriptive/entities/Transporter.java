@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 
 import java.util.HashSet;
@@ -40,7 +40,7 @@ public class Transporter extends Protein {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Transporter, Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Transporter, Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

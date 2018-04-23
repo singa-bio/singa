@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -20,7 +20,9 @@ public class UniProtDatabase {
             "UniProt Database",
             "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
                     "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");
+
     private static final Logger logger = LoggerFactory.getLogger(UniProtDatabase.class);
+
     /**
      * The instance.
      */
@@ -30,10 +32,10 @@ public class UniProtDatabase {
         return instance;
     }
 
-    public static <FeaturableType extends Featureable> MolarMass fetchMolarMass(Featureable featureable) {
+    public static MolarMass fetchMolarMass(Featureable featureable) {
         // try to get UniProt identifier
-        ChemicalEntity<?> entity = (ChemicalEntity) featureable;
-        Optional<Identifier> identifierOptional = UniProtIdentifier.find(entity.getAllIdentifiers());
+        ChemicalEntity entity = (ChemicalEntity) featureable;
+        Optional<UniProtIdentifier> identifierOptional = IdentifierPatternRegistry.find(UniProtIdentifier.class, entity.getAllIdentifiers());
         // try to get weight from UniProt Database
         return identifierOptional.map(identifier1 -> new MolarMass(UniProtParserService.fetchMolarMass(identifier1), origin)).orElse(null);
     }

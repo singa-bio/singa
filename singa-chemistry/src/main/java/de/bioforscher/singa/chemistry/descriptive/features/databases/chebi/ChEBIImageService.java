@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 
 import java.io.File;
 import java.io.IOException;

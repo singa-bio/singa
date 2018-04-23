@@ -23,7 +23,7 @@ public class UniProtResidueMapParser extends AbstractXMLParser<Map<LeafIdentifie
 
     public UniProtResidueMapParser(PDBIdentifier identifier) {
         getXmlReader().setContentHandler(new ResidueMapContentHandler(identifier.toString()));
-        setResource(String.format(RESIDUE_MAP_FETCH_URL, identifier));
+        setResource(String.format(RESIDUE_MAP_FETCH_URL, identifier.getIdentifier()));
     }
 
     public static Map<LeafIdentifier, Integer> parse(String pdbIdentifier) {

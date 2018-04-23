@@ -42,7 +42,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
         // resolve required parameters
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         // (outer phase) outer phase = -kIn * outer phase + kOut * outer layer
@@ -59,7 +59,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     private Delta calculateOuterLayerDelta(ConcentrationContainer concentrationContainer) {
         // resolve required parameters
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         final Quantity<Frequency> kFlip = getScaledFeature(entity, MembraneFlipFlop.class);
@@ -78,7 +78,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     private Delta calculateInnerLayerDelta(ConcentrationContainer concentrationContainer) {
         // resolve required parameters
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         final Quantity<Frequency> kFlip = getScaledFeature(entity, MembraneFlipFlop.class);
@@ -97,7 +97,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
         // resolve required parameters
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         // (inner phase) inner phase = -kIn * inner phase + kOut * inner layer

@@ -2,10 +2,10 @@ package de.bioforscher.singa.simulation.model.parameters;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifiable;
-import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.utility.Nameable;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifiable;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;

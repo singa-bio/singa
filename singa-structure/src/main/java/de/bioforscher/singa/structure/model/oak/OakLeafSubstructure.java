@@ -40,11 +40,6 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     private final Set<FamilyType> exchangeableFamilies;
 
     /**
-     * A iterating variable to add a new node.
-     */
-    private int nextNodeIdentifier;
-
-    /**
      * A iterating variable to add a new edge.
      */
     private int nextEdgeIdentifier = 0;
@@ -199,10 +194,14 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
     }
 
     public int addBondBetween(OakAtom source, OakAtom target) {
+        return addBondBetween(source, target, BondType.SINGLE_BOND);
+    }
+
+    public int addBondBetween(OakAtom source, OakAtom target, BondType bondType) {
         if (source == null || target == null) {
             return -1;
         }
-        OakBond bond = new OakBond(nextEdgeIdentifier++);
+        OakBond bond = new OakBond(nextEdgeIdentifier++, bondType);
         bond.setSource(source);
         bond.setTarget(target);
         bonds.put(bond.getIdentifier(), bond);
@@ -246,5 +245,9 @@ public abstract class OakLeafSubstructure<FamilyType extends StructuralFamily> i
         return flatToString();
     }
 
+
+    public int getNextEdgeIdentifier() {
+        return nextEdgeIdentifier++;
+    }
 
 }

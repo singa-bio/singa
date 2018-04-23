@@ -1,11 +1,11 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.unichem;
 
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.InChIKey;
-import de.bioforscher.singa.core.identifier.PubChemIdentifier;
-import de.bioforscher.singa.core.identifier.model.Identifier;
 import de.bioforscher.singa.core.parser.AbstractHTMLParser;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.InChIKey;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
+import de.bioforscher.singa.features.identifiers.model.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
     private static final String UNICHEM_FETCH_URL = "https://www.ebi.ac.uk/unichem/rest/verbose_inchikey/%s";
 
     public UniChemParser(InChIKey inChIKey) {
-        setResource(String.format(UNICHEM_FETCH_URL, inChIKey.toString()));
+        setResource(String.format(UNICHEM_FETCH_URL, inChIKey.getIdentifier()));
     }
 
     public static List<Identifier> parse(InChIKey inChIKey) {

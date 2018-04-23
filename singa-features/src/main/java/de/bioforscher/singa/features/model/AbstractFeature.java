@@ -25,7 +25,7 @@ public abstract class AbstractFeature<FeatureContent> implements Feature<Feature
 
     @Override
     public String toString() {
-        return getSymbol() +"("+featureOrigin.getName()+") = " + featureContent;
+        return getSymbol() + " = " + featureContent;
     }
 
 }

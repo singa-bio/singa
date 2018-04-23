@@ -13,9 +13,9 @@ import tec.uom.se.quantity.Quantities;
 
 public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
 
-    private ChemicalEntity<?> cargo;
+    private ChemicalEntity cargo;
 
-    public MembraneDiffusion(Simulation simulation, ChemicalEntity<?> cargo) {
+    public MembraneDiffusion(Simulation simulation, ChemicalEntity cargo) {
         super(simulation);
         this.cargo = cargo;
         // apply this module only to membranes
@@ -27,7 +27,7 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
     }
 
     private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
@@ -40,7 +40,7 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
     }
 
     private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
-        final ChemicalEntity<?> entity = getCurrentChemicalEntity();
+        final ChemicalEntity entity = getCurrentChemicalEntity();
         final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {

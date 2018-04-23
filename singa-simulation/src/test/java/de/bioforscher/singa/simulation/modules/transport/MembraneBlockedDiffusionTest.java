@@ -61,7 +61,7 @@ public class MembraneBlockedDiffusionTest {
         membraneNode.setState(NodeState.MEMBRANE);
         MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
         concentrationContainer.setAvailableConcentration(left, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-        Set<ChemicalEntity<?>> entities = new HashSet<>();
+        Set<ChemicalEntity> entities = new HashSet<>();
         entities.add(ammonia);
         concentrationContainer.setReferencedEntities(entities);
 

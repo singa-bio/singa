@@ -182,6 +182,8 @@ public class OakStructure implements Structure {
         return Optional.empty();
     }
 
+
+
     /**
      * Adds an {@link Atom} to the {@link Structure}
      * FIXME: atom serial overflow may happen (if exceeds 9999)

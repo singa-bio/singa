@@ -2,14 +2,14 @@ package de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
+import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Organism;
+import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Taxon;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.core.biology.Organism;
-import de.bioforscher.singa.core.biology.Taxon;
-import de.bioforscher.singa.core.identifier.ECNumber;
-import de.bioforscher.singa.core.identifier.ENAAccessionNumber;
-import de.bioforscher.singa.core.identifier.NCBITaxonomyIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.ECNumber;
+import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
+import de.bioforscher.singa.features.identifiers.NCBITaxonomyIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -253,10 +253,8 @@ public class UniProtContentHandler implements ContentHandler {
             }
             case "dbReference": {
                 if (inEMBLReference && moleculeType != null && !moleculeType.isEmpty() && proteinSequenceID != null) {
-                    if (moleculeType.equals("Genomic_DNA")) {
-                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID, ENAAccessionNumber.ExpressionType.GENOMIC_DNA));
-                    } else if (moleculeType.equals("mRNA")) {
-                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID, ENAAccessionNumber.ExpressionType.MRNA));
+                    if (moleculeType.equals("Genomic_DNA") || moleculeType.equals("mRNA") ) {
+                        genomicSequenceIdentifiers.add(new ENAAccessionNumber(proteinSequenceID));
                     }
                     moleculeType = null;
                     proteinSequenceID = null;

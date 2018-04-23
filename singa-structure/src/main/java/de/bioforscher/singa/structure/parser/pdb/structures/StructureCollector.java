@@ -238,11 +238,13 @@ public class StructureCollector {
                     reducedList.add(currentLine);
                 }
             } else if (ModelToken.RECORD_PATTERN.matcher(currentLine).matches()) {
-                // keel lines that indicate models
+                // keep lines that indicate models
                 reducedList.add(currentLine);
             } else if (ChainTerminatorToken.RECORD_PATTERN.matcher(currentLine).matches()) {
-                // keel lines that indicate models
-                reducedList.add(currentLine);
+                if (ChainTerminatorToken.CHAIN_IDENTIFIER.extract(currentLine).equals(chainIdentifier)) {
+                    // keep lines that indicate models
+                    reducedList.add(currentLine);
+                }
             }
         }
         pdbLines = reducedList;

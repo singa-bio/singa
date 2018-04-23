@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
 import de.bioforscher.singa.chemistry.descriptive.annotations.AnnotationType;
-import de.bioforscher.singa.core.identifier.PubChemIdentifier;
+import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import org.junit.Test;
 
 import java.util.List;
