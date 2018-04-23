@@ -136,8 +136,9 @@ public class Fit3DAlignmentBatch implements Fit3D {
             // FIXME here we are dealing only with the first model
             Fit3D fit3d;
             if (multiParser.hasNext()) {
+                Structure structure = null;
                 try {
-                    Structure structure = multiParser.next();
+                    structure = multiParser.next();
                     if (skipAlphaCarbonTargets && Structures.isAlphaCarbonStructure(structure)) {
                         logger.info("ignored alpha carbon only structure {}", structure);
                         return null;
@@ -179,18 +180,24 @@ public class Fit3DAlignmentBatch implements Fit3D {
                     if (mapEcNumbers) {
                         parameterStep.mapECNumbers();
                     }
-                    if(filterEnvironments){
+                    if (filterEnvironments) {
                         parameterStep.filterEnvironments();
                     }
                     fit3d = parameterStep.run();
 
                     List<Fit3DMatch> matches = fit3d.getMatches();
-                    matches.forEach(match -> match.setStructureTitle(structure.getTitle()));
+                    for (Fit3DMatch match : matches) {
+                        match.setStructureTitle(structure.getTitle());
+                    }
 
                     return matches;
 //                } catch (Fit3DException | StructureParserException | SubstructureSuperimpositionException | UncheckedIOException e) {
                 } catch (Exception e) {
-                    logger.warn("failed to run Fit3D", e);
+                    if (structure != null) {
+                        logger.warn("failed to run Fit3D against structure {}", structure, e);
+                    } else {
+                        logger.warn("failed to run Fit3D", e);
+                    }
                 }
             }
             return null;
