@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.molarmass;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class MolarMassTest {
 
     @Test
     public void shouldUseChEBIToFetchMolarMass() {
-        Species testSpecies = new Species.Builder("CHEBI:29802").build();
+        SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
         // get feature
         MolarMass feature = testSpecies.getFeature(MolarMass.class);
         // assert attributes and values

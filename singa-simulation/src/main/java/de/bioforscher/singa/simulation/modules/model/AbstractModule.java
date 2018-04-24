@@ -9,8 +9,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -32,6 +31,8 @@ public abstract class AbstractModule implements Module {
      * The simulation that the module is applied to.
      */
     protected Simulation simulation;
+
+    private Set<ChemicalEntity> referencedChemicalEntities;
 
     /**
      * The deltas for applying full time steps.
@@ -89,6 +90,7 @@ public abstract class AbstractModule implements Module {
         // initialize maps
         currentFullDeltas = new HashMap<>();
         currentHalfDeltas = new HashMap<>();
+        referencedChemicalEntities = new HashSet<>();
     }
 
     /**
@@ -107,6 +109,25 @@ public abstract class AbstractModule implements Module {
      */
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
+    }
+
+    public Set<ChemicalEntity> getReferencedEntities() {
+        return referencedChemicalEntities;
+    }
+
+    public void addReferencedEntity(ChemicalEntity chemicalEntity) {
+        referencedChemicalEntities.add(chemicalEntity);
+    }
+
+    public void addReferencedEntities(Collection<ChemicalEntity> chemicalEntities) {
+        referencedChemicalEntities.addAll(chemicalEntities);
+    }
+
+    public void addModuleToSimulation() {
+        simulation.getModules().add(this);
+        for (ChemicalEntity chemicalEntity : referencedChemicalEntities) {
+            simulation.addReferencedEntity(chemicalEntity);
+        }
     }
 
     /**
@@ -209,6 +230,7 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Returns true if the delta is valid, i.e. it is not zero and nor below the numerical threshold.
+     *
      * @param delta The delta to be evaluated.
      * @return true if the delta is valid, i.e. it is not zero and nor below the numerical threshold.
      */
@@ -218,6 +240,7 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Returns true if the delta is not zero.
+     *
      * @param delta The delta to be evaluated.
      * @return true if the delta is not zero.
      */
@@ -227,6 +250,7 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Returns true if the delta is above the numerical cutoff (not effectivley zero).
+     *
      * @param delta The delta to be evaluated.
      * @return true if the delta is above the numerical cutoff (not effectivley zero).
      */

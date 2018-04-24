@@ -192,6 +192,26 @@ public class MembraneContainer implements ConcentrationContainer {
         return innerPhaseSection;
     }
 
+    public boolean isInnerPhase(CellSection section) {
+        return innerPhaseSection.equals(section);
+    }
+
+    public boolean isOuterPhase(CellSection section) {
+        return outerPhaseSection.equals(section);
+    }
+
+    public boolean isInnerLayer(CellSection section) {
+        return membrane.getInnerLayer().equals(section);
+    }
+
+    public boolean isOuterLayer(CellSection section) {
+        return membrane.getOuterLayer().equals(section);
+    }
+
+    public boolean isInMembrane(CellSection section) {
+        return isInnerLayer(section) || isOuterLayer(section) || section.equals(membrane);
+    }
+
     @Override
     public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
         Map<ChemicalEntity, Quantity<MolarConcentration>> result = new HashMap<>();

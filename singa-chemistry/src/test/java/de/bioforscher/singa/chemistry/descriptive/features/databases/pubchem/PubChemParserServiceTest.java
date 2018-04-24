@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
@@ -17,7 +17,7 @@ public class PubChemParserServiceTest {
 
     @Test
     public void shouldParseSpecies() {
-        Species species = PubChemParserService.parse("CID:962");
+        SmallMolecule species = PubChemParserService.parse("CID:962");
         // name
         assertEquals("water", species.getName().toLowerCase());
         // molar mass
@@ -35,7 +35,7 @@ public class PubChemParserServiceTest {
 
     @Test
     public void shouldResolveInChIKey() {
-        Species species = new Species.Builder("CID:5957").name("ATP").build();
+        SmallMolecule species = new SmallMolecule.Builder("CID:5957").name("ATP").build();
         InChIKey feature = species.getFeature(InChIKey.class);
         assertEquals("ZKHQWZAMYRWXGA-KQYNXXCUSA-N", feature.getIdentifier());
     }

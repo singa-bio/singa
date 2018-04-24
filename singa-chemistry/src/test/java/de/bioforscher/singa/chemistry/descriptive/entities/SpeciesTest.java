@@ -13,13 +13,13 @@ public class SpeciesTest {
 
     @Test
     public void shouldCreateSpeciesWithStringIdentifier() {
-        Species methanol = new Species.Builder("CHEBI:123").build();
+        SmallMolecule methanol = new SmallMolecule.Builder("CHEBI:123").build();
         assertEquals(methanol.getIdentifier().getIdentifier(), "CHEBI:123");
     }
 
     @Test
     public void shouldCreateSpeciesWithIdentifier() {
-        Species methanol = new Species.Builder(new SimpleStringIdentifier("CHEBI:123")).build();
+        SmallMolecule methanol = new SmallMolecule.Builder(new SimpleStringIdentifier("CHEBI:123")).build();
         assertEquals(methanol.getIdentifier().getIdentifier(), "CHEBI:123");
     }
 

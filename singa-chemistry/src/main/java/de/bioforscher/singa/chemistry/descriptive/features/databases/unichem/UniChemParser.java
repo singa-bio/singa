@@ -6,6 +6,7 @@ import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
+import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,10 @@ public class UniChemParser extends AbstractHTMLParser<List<Identifier>> {
             }
         }
         return identifiers;
+    }
+
+    public static PubChemIdentifier fetchPubChemIdentifier(InChIKey inChIKey) {
+        return IdentifierPatternRegistry.find(PubChemIdentifier.class, UniChemParser.parse(inChIKey)).orElse(null);
     }
 
 }

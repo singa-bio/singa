@@ -7,9 +7,9 @@ import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Delta;
@@ -19,11 +19,11 @@ import javax.measure.Quantity;
 import java.util.*;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
-import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
+import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.AQUEOUS;
+import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
 
 /**
- * A node of the {@link AutomatonGraph}. Contains the {@link NodeState}, the concentrations of {@link ChemicalEntity}s
+ * A node of the {@link AutomatonGraph}. Contains the {@link CellSectionState}, the concentrations of {@link ChemicalEntity}s
  * in a {@link ConcentrationContainer}, the {@link CellSection}, and amongst other attributes. Each node holds
  * references to its neighbour nodes.
  *
@@ -44,7 +44,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     /**
      * The state.
      */
-    private NodeState state;
+    private CellSectionState state;
 
     /**
      * A reference to the containing cell section.
@@ -67,7 +67,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private boolean concentrationFixed;
 
     /**
-     * Creates a new plain automaton node. Initialized as {@link NodeState#AQUEOUS} in a "default" compartment with a
+     * Creates a new plain automaton node. Initialized as {@link CellSectionState#AQUEOUS} in a "default" compartment with a
      * {@link SimpleConcentrationContainer}.
      *
      * @param identifier The identifier of the node.
@@ -260,7 +260,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @return The node state.
      */
-    public NodeState getState() {
+    public CellSectionState getState() {
         return state;
     }
 
@@ -269,7 +269,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @param state The node state.
      */
-    public void setState(NodeState state) {
+    public void setState(CellSectionState state) {
         this.state = state;
     }
 

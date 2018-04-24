@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
@@ -53,9 +53,9 @@ public class ReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        Species fp = ChEBIParserService.parse("CHEBI:18105");
-        Species gp = ChEBIParserService.parse("CHEBI:16108");
-        Species ga = ChEBIParserService.parse("CHEBI:17378");
+        SmallMolecule fp = ChEBIParserService.parse("CHEBI:18105");
+        SmallMolecule gp = ChEBIParserService.parse("CHEBI:16108");
+        SmallMolecule ga = ChEBIParserService.parse("CHEBI:17378");
 
         // prepare enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
@@ -123,9 +123,9 @@ public class ReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        Species speciesA = new Species.Builder("Species A")
+        SmallMolecule speciesA = new SmallMolecule.Builder("Species A")
                 .build();
-        Species speciesB = new Species.Builder("Species B")
+        SmallMolecule speciesB = new SmallMolecule.Builder("Species B")
                 .build();
 
         // set concentrations
@@ -183,9 +183,9 @@ public class ReactionTest {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         // prepare species
-        Species dpo = ChEBIParserService.parse("CHEBI:29802");
-        Species ndo = ChEBIParserService.parse("CHEBI:33101");
-        Species oxygen = ChEBIParserService.parse("CHEBI:15379");
+        SmallMolecule dpo = ChEBIParserService.parse("CHEBI:29802");
+        SmallMolecule ndo = ChEBIParserService.parse("CHEBI:33101");
+        SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (AutomatonNode node : graph.getNodes()) {
             node.setConcentration(dpo, Quantities.getQuantity(0.020, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
@@ -240,7 +240,7 @@ public class ReactionTest {
         logger.info("Testing Dynamic Reaction Module.");
         Simulation simulation = SimulationExamples.createSimulationFromSBML();
 
-        Species x = new Species.Builder("X").build();
+        SmallMolecule x = new SmallMolecule.Builder("X").build();
         AutomatonNode node = simulation.getGraph().getNodes().iterator().next();
         logger.info("Starting simulation ...");
         Quantity<Time> currentTime;

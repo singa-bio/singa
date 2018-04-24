@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.molarvolume;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.features.quantities.MolarVolume;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class MolarVolumeTest {
     public void shouldUseChEBIToCalculateVolume() {
         // values from http://pubs.acs.org/doi/pdf/10.1021/ja00354a007
 
-        Species ammonia = ChEBIParserService.parse("CHEBI:16134");
+        SmallMolecule ammonia = ChEBIParserService.parse("CHEBI:16134");
         // Species propane = ChEBIParserService.parse("CHEBI:32879");
         // Species benzene = ChEBIParserService.parse("CHEBI:16716");
         // Species biphenyl = ChEBIParserService.parse("CHEBI:17097");

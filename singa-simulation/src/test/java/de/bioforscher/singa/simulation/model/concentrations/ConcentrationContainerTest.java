@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ConcentrationContainerTest {
 
-    private final ChemicalEntity entity = new Species.Builder("A").build();
+    private final ChemicalEntity entity = new SmallMolecule.Builder("A").build();
 
     private final EnclosedCompartment innerSection = new EnclosedCompartment("Right", "Right Compartment");
     private final EnclosedCompartment outerSection = new EnclosedCompartment("Left", "Left Compartment");

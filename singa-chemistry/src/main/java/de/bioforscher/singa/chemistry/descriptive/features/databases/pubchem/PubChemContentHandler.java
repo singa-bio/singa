@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
@@ -53,8 +53,8 @@ class PubChemContentHandler implements ContentHandler {
         identifiers = new ArrayList<>();
     }
 
-    public Species getSpecies() {
-        Species species = new Species.Builder(pubChemIdentifier.getIdentifier())
+    public SmallMolecule getSpecies() {
+        SmallMolecule species = new SmallMolecule.Builder(pubChemIdentifier.getIdentifier())
                 .name(name)
                 .assignFeature(new MolarMass(molarMass, PubChemDatabase.origin))
                 .assignFeature(new Smiles(smilesRepresentation, PubChemDatabase.origin))

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
@@ -45,23 +45,23 @@ public class FreeDiffusionTest {
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
     // required species
-    private static final Species hydrogen = new Species.Builder("h2")
+    private static final SmallMolecule hydrogen = new SmallMolecule.Builder("h2")
             .name("dihydrogen")
             .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    private static final Species ammonia = new Species.Builder("ammonia")
+    private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
             .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
-    private static final Species benzene = new Species.Builder("benzene")
+    private static final SmallMolecule benzene = new SmallMolecule.Builder("benzene")
             .name("benzene")
             .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
     @Parameter(0)
-    public Species species;
+    public SmallMolecule species;
     @Parameter(1)
     public int numberOfNodes;
     @Parameter(2)
@@ -92,7 +92,7 @@ public class FreeDiffusionTest {
         EnvironmentalParameters.reset();
     }
 
-    private Simulation setUpSimulation(int numberOfNodes, Species species) {
+    private Simulation setUpSimulation(int numberOfNodes, SmallMolecule species) {
         // setup node distance to diameter
         EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup rectangular graph with number of nodes
@@ -107,16 +107,17 @@ public class FreeDiffusionTest {
         }
         // setup simulation
         Simulation simulation = new Simulation();
-        simulation.getChemicalEntities().add(species);
         // add graph
         simulation.setGraph(graph);
         // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+        FreeDiffusion.inSimulation(simulation)
+                .onlyFor(species)
+                .build();
         // return complete simulation
         return simulation;
     }
 
-    private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, Species species) {
+    private Quantity<Time> runSimulation(Simulation simulation, int numberOfNodes, SmallMolecule species) {
         // returns the node in the middle on the right
         RectangularCoordinate coordinate = new RectangularCoordinate(numberOfNodes - 1, (numberOfNodes / 2) - 1);
         simulation.getGraph().getNode(coordinate).setObserved(true);

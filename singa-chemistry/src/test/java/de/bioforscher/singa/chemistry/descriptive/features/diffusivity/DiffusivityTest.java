@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -21,7 +21,7 @@ public class DiffusivityTest {
 
     @Test
     public void shouldResolveRequiredFeature() {
-        Species testSpecies = new Species.Builder("dnp")
+        SmallMolecule testSpecies = new SmallMolecule.Builder("dnp")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:29802"))
                 .build();
         Diffusivity diffusivity = testSpecies.getFeature(Diffusivity.class);
@@ -33,7 +33,7 @@ public class DiffusivityTest {
 
     @Test
     public void shouldUseWilkeToCalculateDiffusifity() {
-        Species testSpecies = new Species.Builder("light entity")
+        SmallMolecule testSpecies = new SmallMolecule.Builder("light entity")
                 .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
         // get feature
@@ -46,7 +46,7 @@ public class DiffusivityTest {
 
     @Test
     public void shouldUseYoungToCalculateDiffusifity() {
-        Species testSpecies = new Species.Builder("heavy entity")
+        SmallMolecule testSpecies = new SmallMolecule.Builder("heavy entity")
                 .assignFeature(new MolarMass(10000, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
         // get feature

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import org.junit.Test;
@@ -27,21 +27,21 @@ public class AutomatonGraphsTest {
         CellSection right = rectangularAutomatonGraph.getCellSection("Right");
         assertEquals(55, right.getContent().size());
         for (AutomatonNode bioNode : right.getContent()) {
-            assertEquals(bioNode.getState(), NodeState.AQUEOUS);
+            assertEquals(bioNode.getState(), CellSectionState.AQUEOUS);
             assertTrue(bioNode.getConcentrationContainer() instanceof SimpleConcentrationContainer);
         }
         // left part
         CellSection left = rectangularAutomatonGraph.getCellSection("Left");
         assertEquals(55, left.getContent().size());
         for (AutomatonNode bioNode : left.getContent()) {
-            assertEquals(bioNode.getState(), NodeState.AQUEOUS);
+            assertEquals(bioNode.getState(), CellSectionState.AQUEOUS);
             assertTrue(bioNode.getConcentrationContainer() instanceof SimpleConcentrationContainer);
         }
         // left part
         CellSection membrane = rectangularAutomatonGraph.getCellSection("Right-M");
         assertEquals(11, membrane.getContent().size());
         for (AutomatonNode bioNode : membrane.getContent()) {
-            assertEquals(bioNode.getState(), NodeState.MEMBRANE);
+            assertEquals(bioNode.getState(), CellSectionState.MEMBRANE);
             assertTrue(bioNode.getConcentrationContainer() instanceof MembraneContainer);
         }
 

@@ -20,6 +20,15 @@ public interface Featureable {
 
     Set<Class<? extends Feature>> getAvailableFeatures();
 
+    default boolean meetsAllRequirements(Set<Class<? extends Feature>> featureTypeClass) {
+        for (Class<? extends Feature> typeClass : featureTypeClass) {
+            if (!hasFeature(typeClass)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     default <FeatureType extends Feature> boolean canBeFeaturedWith(Class<FeatureType> featureTypeClass) {
         return getAvailableFeatures().contains(featureTypeClass);
     }

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.smiles;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,7 +12,7 @@ public class SmilesTest {
 
     @Test
     public void shouldUseChEBIToFetchMolarMass() {
-        Species testSpecies = new Species.Builder("CHEBI:29802").build();
+        SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(Smiles.class);
         // get feature

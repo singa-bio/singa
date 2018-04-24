@@ -18,7 +18,7 @@ public class InChIKeyProvider extends FeatureProvider<InChIKey> {
 
     @Override
     public <FeatureableType extends Featureable> InChIKey provide(FeatureableType featureable) {
-        switch (getResolvedGroupIndex()) {
+        switch (getPreferredStrategyIndex()) {
             case 0: {
                 ChEBIIdentifier chEBIIdentifier = featureable.getFeature(ChEBIIdentifier.class);
                 return ChEBIDatabase.fetchInchiKey(chEBIIdentifier);

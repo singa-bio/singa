@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.logp;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class LogPTest {
 
     @Test
     public void shouldUsePubChemToFetchLogP() {
-        Species testSpecies = new Species.Builder("CID:5957").build();
+        SmallMolecule testSpecies = new SmallMolecule.Builder("CID:5957").build();
         // get feature
         LogP feature = testSpecies.getFeature(LogP.class);
         // assert attributes and values
@@ -23,7 +23,7 @@ public class LogPTest {
 
     @Test
     public void shouldBeAbleToFetchLogPWithChEBISpecies() {
-        Species testSpecies = ChEBIParserService.parse("CHEBI:8772");
+        SmallMolecule testSpecies = ChEBIParserService.parse("CHEBI:8772");
         // get feature
         LogP feature = testSpecies.getFeature(LogP.class);
         // assert attributes and values

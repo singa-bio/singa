@@ -5,7 +5,7 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
@@ -15,16 +15,21 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
+import java.util.Collection;
 
 /**
  * @author cl
  */
 public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModule {
 
+    public static SelectionStep inSimulation(Simulation simulation) {
+        return new FlipFlopMembraneTransportBuilder(simulation);
+    }
+
     public FlipFlopMembraneTransport(Simulation simulation) {
         super(simulation);
         // apply this module only to membranes
-        onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
+        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
         // change of outer layer
@@ -35,9 +40,12 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
     }
 
+    private void initialize() {
+        addModuleToSimulation();
+    }
+
     private boolean onlyOuterPhase(ConcentrationContainer concentrationContainer) {
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        return getCurrentCellSection().equals(membraneContainer.getOuterPhaseSection());
+        return ((MembraneContainer) concentrationContainer).isOuterPhase(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
     private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
@@ -53,8 +61,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        return getCurrentCellSection().equals(membraneContainer.getOuterLayerSection());
+        return ((MembraneContainer) concentrationContainer).isOuterLayer(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
     private Delta calculateOuterLayerDelta(ConcentrationContainer concentrationContainer) {
@@ -72,8 +79,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        return getCurrentCellSection().equals(membraneContainer.getInnerLayerSection());
+        return ((MembraneContainer) concentrationContainer).isInnerLayer(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
     private Delta calculateInnerLayerDelta(ConcentrationContainer concentrationContainer) {
@@ -91,8 +97,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        return getCurrentCellSection().equals(membraneContainer.getInnerPhaseSection());
+        return ((MembraneContainer) concentrationContainer).isInnerPhase(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
     private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
@@ -105,6 +110,67 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = -kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(getCurrentChemicalEntity()).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(getCurrentChemicalEntity()).getValue().doubleValue();
         return new Delta(this, membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, EnvironmentalParameters.getTransformedMolarConcentration()));
+    }
+
+    /**
+     * Only apply, if current chemical entity is assigned in the referenced chemical entities.
+     *
+     * @return True, if current chemical entity is assigned in the referenced chemical entities.
+     */
+    private boolean onlyForReferencedEntities() {
+        return getReferencedEntities().contains(getCurrentChemicalEntity());
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
+    public interface SelectionStep {
+        BuildStep onlyFor(ChemicalEntity chemicalEntity);
+
+        BuildStep forAll(ChemicalEntity ... chemicalEntities );
+
+        BuildStep forAll(Collection<ChemicalEntity> chemicalEntities);
+
+    }
+
+    public interface BuildStep {
+        FlipFlopMembraneTransport build();
+    }
+
+    public static class FlipFlopMembraneTransportBuilder implements SelectionStep, BuildStep {
+
+        FlipFlopMembraneTransport module;
+
+        public FlipFlopMembraneTransportBuilder(Simulation simulation) {
+            module = new FlipFlopMembraneTransport(simulation);
+        }
+
+        public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
+            module.addReferencedEntity(chemicalEntity);
+            return this;
+        }
+
+        public BuildStep forAll(ChemicalEntity ... chemicalEntities ) {
+            for (ChemicalEntity chemicalEntity : chemicalEntities) {
+                module.addReferencedEntity(chemicalEntity);
+            }
+            return this;
+        }
+
+        public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
+            for (ChemicalEntity chemicalEntity : chemicalEntities) {
+                module.addReferencedEntity(chemicalEntity);
+            }
+            return this;
+        }
+
+        public FlipFlopMembraneTransport build() {
+            module.initialize();
+            return module;
+        }
+
     }
 
 }

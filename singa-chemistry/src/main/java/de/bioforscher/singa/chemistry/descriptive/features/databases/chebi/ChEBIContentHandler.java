@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.databases.chebi;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.MolStructureParser;
 import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
@@ -47,17 +47,18 @@ public class ChEBIContentHandler implements ContentHandler {
         this.primaryIdentifier = primaryIdentifier;
     }
 
-    public Species getSpecies() {
+    public SmallMolecule getSpecies() {
         if (primaryIdentifier == null) {
             primaryIdentifier = identifier.toString();
         }
 
-        Species species = new Species.Builder(primaryIdentifier)
+        SmallMolecule species = new SmallMolecule.Builder(primaryIdentifier)
                 .name(name)
-                .assignFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin))
                 .additionalIdentifier(inChIKey)
                 .build();
-
+        if (! smilesBuilder.toString().isEmpty()) {
+            species.setFeature(new Smiles(smilesBuilder.toString(), ChEBIDatabase.origin));
+        }
         if (molarMass != null) {
             species.setFeature(molarMass);
         }

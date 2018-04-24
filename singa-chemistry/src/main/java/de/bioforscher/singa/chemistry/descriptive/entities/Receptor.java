@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.entities;
 
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
-import de.bioforscher.singa.core.identifier.SimpleStringIdentifier;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 
 import java.util.*;
@@ -70,7 +70,7 @@ public class Receptor extends Protein {
         return availableFeatures;
     }
 
-    public static class Builder extends ChemicalEntity.Builder<Receptor, Receptor.Builder, SimpleStringIdentifier> {
+    public static class Builder extends ChemicalEntity.Builder<Receptor, Receptor.Builder> {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);

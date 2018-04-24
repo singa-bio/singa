@@ -1,8 +1,11 @@
 package de.bioforscher.singa.simulation.modules.signalling;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.*;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
+import de.bioforscher.singa.simulation.modules.model.Module;
+import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +22,15 @@ public class GPCRCarrouselModelTest {
 
     private Set<ChemicalEntity> chemicalEntities;
 
+    private Set<Module> modules;
+
     @Test
     public void testCarrouselModel() {
 
+
+        Simulation simulation = new Simulation();
         chemicalEntities = new HashSet<>();
+        modules = new HashSet<>();
 
         // basal entities
         // vasopressin v2 receptor
@@ -48,25 +56,25 @@ public class GPCRCarrouselModelTest {
         chemicalEntities.add(gProteinGamma);
 
         // g-protein substrates
-        ChemicalEntity gdp = new Species.Builder("GDP")
+        ChemicalEntity gdp = new SmallMolecule.Builder("GDP")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:17552"))
                 .build();
         chemicalEntities.add(gdp);
 
-        ChemicalEntity gtp = new Species.Builder("GTP")
+        ChemicalEntity gtp = new SmallMolecule.Builder("GTP")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:17552"))
                 .build();
         chemicalEntities.add(gtp);
 
         // vasopressin
-        ChemicalEntity vasopressin = new Species.Builder("AVP")
-                .additionalIdentifier(new ChEBIIdentifier("CHEBI:9937"))
+        ChemicalEntity vasopressin = new SmallMolecule.Builder("AVP")
+                .additionalIdentifier(new ChEBIIdentifier("CHEBI:34543"))
                 .build();
         chemicalEntities.add(vasopressin);
 
         // complexed entities
         // g-protein complexes
-        // free - alpha beta complex
+        // free - beta gamma complex
         ComplexedChemicalEntity gProteinBetaGamma = new ComplexedChemicalEntity.Builder("G(BG)")
                 .addAssociatedPart(gProteinBeta)
                 .addAssociatedPart(gProteinGamma)
@@ -102,55 +110,63 @@ public class GPCRCarrouselModelTest {
         chemicalEntities.add(gtpGProteinAlpha);
 
         // receptor complexes
-        // receptor + gdp bound - alpha complex
-        ComplexedChemicalEntity alphaGDPReceptor = new ComplexedChemicalEntity.Builder("V2R-G(A)GDP")
-                .addAssociatedPart(vasopressinReceptor)
-                .addAssociatedPart(gdpGProteinAlpha)
-                .build();
-        chemicalEntities.add(alphaGDPReceptor);
 
-        // receptor + gtp bound - alpha complex
-        ComplexedChemicalEntity alphaGTPReceptor = new ComplexedChemicalEntity.Builder("V2R-G(A)GTP")
-                .addAssociatedPart(vasopressinReceptor)
-                .addAssociatedPart(gtpGProteinAlpha)
-                .build();
-        chemicalEntities.add(alphaGTPReceptor);
+        // modules
+        // gdp bound - alpha g-protein + receptor
+        SectionChangingBinding binding01 = SectionChangingBinding.inSimulation(simulation)
+                .of(gdpGProteinAlpha)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(vasopressinReceptor)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaGDPReceptor = binding01.getComplex();
 
-        // receptor + gdp bound - alpha beta gamma complex
-        ComplexedChemicalEntity alphaBetaGammaGDPReceptor = new ComplexedChemicalEntity.Builder("V2R-G(ABG)GDP")
-                .addAssociatedPart(vasopressinReceptor)
-                .addAssociatedPart(gdpGProteinAlphaBetaGamma)
-                .build();
-        chemicalEntities.add(alphaBetaGammaGDPReceptor);
+        // gtp bound - alpha g-protein + receptor
+        SectionChangingBinding binding02 = SectionChangingBinding.inSimulation(simulation)
+                .of(gtpGProteinAlpha)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(vasopressinReceptor)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaGTPReceptor = binding02.getComplex();
 
-        // vasopressin receptor complex
-        ComplexedChemicalEntity receptorLigand = new ComplexedChemicalEntity.Builder("V2R-AVP")
-                .addAssociatedPart(vasopressinReceptor)
-                .addAssociatedPart(vasopressin)
-                .build();
-        chemicalEntities.add(receptorLigand);
+        // gdp bound - alpha beta gamma g-protein + receptor
+        SectionChangingBinding binding03 = SectionChangingBinding.inSimulation(simulation)
+                .of(gdpGProteinAlphaBetaGamma)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(vasopressinReceptor)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaBetaGammaGDPReceptor = binding03.getComplex();
 
-        // vasopressin receptor complex + gdp bound - alpha complex
-        ComplexedChemicalEntity alphaGDPReceptorLigand = new ComplexedChemicalEntity.Builder("V2R-AVP-G(A)GDP")
-                .addAssociatedPart(receptorLigand)
-                .addAssociatedPart(gdpGProteinAlpha)
-                .build();
-        chemicalEntities.add(alphaGDPReceptorLigand);
+        // vasopressin + receptor
+        SectionChangingBinding binding04 = SectionChangingBinding.inSimulation(simulation)
+                .of(vasopressin)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(vasopressinReceptor)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity receptorLigand = binding04.getComplex();
 
-        // vasopressin receptor complex + gtp bound - alpha complex
-        ComplexedChemicalEntity alphaGTPReceptorLigand = new ComplexedChemicalEntity.Builder("V2R-AVP-G(A)GTP")
-                .addAssociatedPart(receptorLigand)
-                .addAssociatedPart(gtpGProteinAlpha)
-                .build();
-        chemicalEntities.add(alphaGTPReceptorLigand);
+        //  gdp bound - alpha gprotein + vasopressin receptor complex
+        SectionChangingBinding binding05 = SectionChangingBinding.inSimulation(simulation)
+                .of(gdpGProteinAlpha)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(receptorLigand)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaGDPReceptorLigand = binding05.getComplex();
+
+        // gtp bound - alpha complex + vasopressin receptor complex
+        SectionChangingBinding binding06 = SectionChangingBinding.inSimulation(simulation)
+                .of(gtpGProteinAlpha)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(receptorLigand)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaGTPReceptorLigand = binding06.getComplex();
 
         // vasopressin receptor complex + gdp bound - alpha beta gamma complex
-        ComplexedChemicalEntity alphaBetaGammaGDPReceptorLigand = new ComplexedChemicalEntity.Builder("V2R-G(ABG)GDP")
-                .addAssociatedPart(receptorLigand)
-                .addAssociatedPart(gdpGProteinAlphaBetaGamma)
-                .build();
-        chemicalEntities.add(alphaBetaGammaGDPReceptorLigand);
-
+        SectionChangingBinding binding07 = SectionChangingBinding.inSimulation(simulation)
+                .of(gdpGProteinAlphaBetaGamma)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(receptorLigand)
+                .to(CellSectionState.MEMBRANE);
+        ComplexedChemicalEntity alphaBetaGammaGDPReceptorLigand = binding07.getComplex();
 
         for (ChemicalEntity chemicalEntity : chemicalEntities) {
             System.out.println(chemicalEntity.getStringForProtocol());

@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Receptor;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractSectionSpecificModule;
@@ -22,14 +22,23 @@ import java.util.Set;
  */
 public class MonovalentReceptorBinding extends AbstractSectionSpecificModule {
 
+    public static ReceptorStep inSimulation(Simulation simulation) {
+        return new MonovalentReceptorBindingBuilder(simulation);
+    }
+
     private Receptor receptor;
 
-    public MonovalentReceptorBinding(Simulation simulation, Receptor receptor) {
+    private MonovalentReceptorBinding(Simulation simulation) {
         super(simulation);
-        this.receptor = receptor;
-        onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
+        // only in membranes
+        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
         // change of outer phase
         addDeltaFunction(this::calculateDeltas, this::onlyOuterPhase);
+    }
+
+    private void initialize() {
+        // reference module in simulation
+        addModuleToSimulation();
     }
 
     private List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
@@ -89,6 +98,35 @@ public class MonovalentReceptorBinding extends AbstractSectionSpecificModule {
     @Override
     public String toString() {
         return getClass().getSimpleName()+" ("+receptor.getName()+")";
+    }
+
+    public interface ReceptorStep {
+        BuildStep receptor(Receptor receptor);
+    }
+
+    public interface BuildStep {
+        MonovalentReceptorBinding build();
+    }
+
+    public static class MonovalentReceptorBindingBuilder implements ReceptorStep, BuildStep {
+
+        private MonovalentReceptorBinding module;
+
+        public MonovalentReceptorBindingBuilder(Simulation simulation) {
+            module = new MonovalentReceptorBinding(simulation);
+        }
+
+        @Override
+        public BuildStep receptor(Receptor receptor) {
+            module.receptor = receptor;
+            return this;
+        }
+
+        @Override
+        public MonovalentReceptorBinding build() {
+            module.initialize();
+            return module;
+        }
     }
 
 

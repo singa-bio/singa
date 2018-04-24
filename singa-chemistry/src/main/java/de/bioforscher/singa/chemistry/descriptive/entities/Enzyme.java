@@ -39,7 +39,7 @@ public class Enzyme extends Protein {
     /**
      * A list of possible substrate.
      */
-    private List<Species> substrates;
+    private List<SmallMolecule> substrates;
 
     /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.
@@ -55,7 +55,7 @@ public class Enzyme extends Protein {
      *
      * @return The possible substrates
      */
-    public List<Species> getSubstrates() {
+    public List<SmallMolecule> getSubstrates() {
         return substrates;
     }
 
@@ -64,7 +64,7 @@ public class Enzyme extends Protein {
      *
      * @param substrates The possible substrates
      */
-    public void setSubstrates(List<Species> substrates) {
+    public void setSubstrates(List<SmallMolecule> substrates) {
         this.substrates = substrates;
     }
 
@@ -99,12 +99,12 @@ public class Enzyme extends Protein {
             return this;
         }
 
-        public Builder substrates(List<Species> substrates) {
+        public Builder substrates(List<SmallMolecule> substrates) {
             topLevelObject.setSubstrates(substrates);
             return this;
         }
 
-        public Builder addSubstrate(Species substrate) {
+        public Builder addSubstrate(SmallMolecule substrate) {
             topLevelObject.getSubstrates().add(substrate);
             return this;
         }

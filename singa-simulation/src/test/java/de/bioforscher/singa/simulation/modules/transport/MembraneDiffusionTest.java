@@ -1,13 +1,13 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -35,7 +35,7 @@ public class MembraneDiffusionTest {
 
         Simulation simulation = new Simulation();
 
-        Species water = new Species.Builder("water")
+        SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
                 .assignFeature(new MembranePermeability(Quantities.getQuantity(35E-04, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
@@ -48,14 +48,16 @@ public class MembraneDiffusionTest {
         Membrane membrane = Membrane.forCompartment(right);
 
         AutomatonNode membraneNode = automatonGraph.getNode(0,0);
-        membraneNode.setState(NodeState.MEMBRANE);
+        membraneNode.setState(CellSectionState.MEMBRANE);
         membraneNode.setConcentrationContainer(new MembraneContainer(left, right, membrane));
         membraneNode.setAvailableConcentration(water, left, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
         membraneNode.setAvailableConcentration(water, right, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
         automatonGraph.addNode(membraneNode);
 
-        simulation.getModules().add(new MembraneDiffusion(simulation, water));
-        simulation.getChemicalEntities().add(water);
+        MembraneDiffusion.inSimulation(simulation)
+                .cargo(water)
+                .build();
+
         System.out.println(water.getStringForProtocol());
 
         simulation.nextEpoch();

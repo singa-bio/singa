@@ -1,15 +1,15 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -35,7 +35,7 @@ public class MembraneBlockedDiffusionTest {
     @Test
     public void shouldSimulateBlockedDiffusion() {
 
-        Species ammonia = new Species.Builder("ammonia")
+        SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
                 .name("ammonia")
                 .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
@@ -49,16 +49,16 @@ public class MembraneBlockedDiffusionTest {
         Membrane membrane = Membrane.forCompartment(right);
 
         AutomatonNode leftNode = automatonGraph.getNode(0,0);
-        leftNode.setState(NodeState.AQUEOUS);
+        leftNode.setState(CellSectionState.AQUEOUS);
         leftNode.setCellSection(left);
         leftNode.setConcentration(ammonia, 1.0);
 
         AutomatonNode rightNode = automatonGraph.getNode(2,0);
-        rightNode.setState(NodeState.CYTOSOL);
+        rightNode.setState(CellSectionState.CYTOSOL);
         rightNode.setCellSection(right);
 
         AutomatonNode membraneNode = automatonGraph.getNode(1,0);
-        membraneNode.setState(NodeState.MEMBRANE);
+        membraneNode.setState(CellSectionState.MEMBRANE);
         MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
         concentrationContainer.setAvailableConcentration(left, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
         Set<ChemicalEntity> entities = new HashSet<>();
@@ -75,10 +75,10 @@ public class MembraneBlockedDiffusionTest {
         membraneNode.setConcentrationContainer(concentrationContainer);
 
         simulation.setGraph(automatonGraph);
-        simulation.getChemicalEntities().add(ammonia);
 
-
-        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+        FreeDiffusion.inSimulation(simulation)
+                .onlyFor(ammonia)
+                .build();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
@@ -100,13 +100,12 @@ public class MembraneBlockedDiffusionTest {
     @Test
     public void shouldSimulateLargeScaleBlockedDiffusion() {
 
-        Species ammonia = new Species.Builder("ammonia")
+        SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
                 .name("ammonia")
                 .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
         Simulation simulation = new Simulation();
-        simulation.getChemicalEntities().add(ammonia);
 
         // setup node distance to diameter);
         EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
@@ -132,7 +131,10 @@ public class MembraneBlockedDiffusionTest {
         }
 
         simulation.setGraph(graph);
-        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+
+        FreeDiffusion.inSimulation(simulation)
+                .onlyFor(ammonia)
+                .build();
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();

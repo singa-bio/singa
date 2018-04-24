@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.parser.sbml;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
@@ -264,7 +264,7 @@ public class SBMLParser {
     }
 
     private ChemicalEntity createReferenceEntity(org.sbml.jsbml.Species species) {
-        return new Species.Builder(species.getId())
+        return new SmallMolecule.Builder(species.getId())
                 .name(species.getName())
                 .assignFeature(new MolarMass(10, defaultOrigin))
                 .build();
@@ -313,7 +313,7 @@ public class SBMLParser {
 
     /**
      * Checks certain things that can occur. If a complex has only one part only this part is added to the map of
-     * entities. If a complex has no associated parts it is replaced by {@link Species#UNKNOWN_SPECIES}. Else it is
+     * entities. If a complex has no associated parts it is replaced by {@link SmallMolecule#UNKNOWN_SPECIES}. Else it is
      * just added to the map of entities.
      *
      * @param identifier The identifier as referenced in the model.
@@ -325,7 +325,7 @@ public class SBMLParser {
             logger.debug("Parsed Chemical Entity as {}", parsedPart);
             entities.put(identifier, parsedPart);
         } else if (complex.getAssociatedChemicalEntities().isEmpty()) {
-            Species species = new Species.Builder(identifier)
+            SmallMolecule species = new SmallMolecule.Builder(identifier)
                     .assignFeature(new MolarMass(10, defaultOrigin))
                     .build();
             logger.debug("Parsed Chemical Entity as {}", species);
@@ -351,7 +351,7 @@ public class SBMLParser {
                 logger.debug("Already parsed Chemical Entity for {}", primaryIdentifier);
                 return Optional.of(entities.get(primaryIdentifier));
             } else {
-                Species species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
+                SmallMolecule species = ChEBIParserService.parse(identifier.toString(), primaryIdentifier);
                 entities.put(primaryIdentifier, species);
                 entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
@@ -384,7 +384,7 @@ public class SBMLParser {
                 logger.debug("Already parsed Chemical Entity for {}", identifier);
                 return Optional.of(entitiesByDatabaseId.get(identifier));
             } else {
-                Species species = ChEBIParserService.parse(identifier.toString());
+                SmallMolecule species = ChEBIParserService.parse(identifier.toString());
                 entitiesByDatabaseId.put(identifier, species);
                 return Optional.of(species);
             }

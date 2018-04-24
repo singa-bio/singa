@@ -1,7 +1,8 @@
 package de.bioforscher.singa.simulation.modules.model;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
@@ -71,9 +72,9 @@ public class SimulationExamples {
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
-        Species dinitrogenPentaoxide = ChEBIParserService.parse("CHEBI:29802");
-        Species nitrogenDioxide = ChEBIParserService.parse("CHEBI:33101");
-        Species oxygen = ChEBIParserService.parse("CHEBI:15379");
+        SmallMolecule dinitrogenPentaoxide = ChEBIParserService.parse("CHEBI:29802");
+        SmallMolecule nitrogenDioxide = ChEBIParserService.parse("CHEBI:33101");
+        SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
@@ -111,8 +112,8 @@ public class SimulationExamples {
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
-        Species butadiene = ChEBIParserService.parse("CHEBI:39478");
-        Species octatriene = ChEBIParserService.parse("CHEBI:77504");
+        SmallMolecule butadiene = ChEBIParserService.parse("CHEBI:39478");
+        SmallMolecule octatriene = ChEBIParserService.parse("CHEBI:77504");
 
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
@@ -150,11 +151,11 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
 
         // set up arbitrary species
-        Species speciesA = new Species.Builder("CHEBI:00001")
+        SmallMolecule speciesA = new SmallMolecule.Builder("CHEBI:00001")
                 .name("A")
                 .build();
 
-        Species speciesB = new Species.Builder("CHEBI:00002")
+        SmallMolecule speciesB = new SmallMolecule.Builder("CHEBI:00002")
                 .name("B")
                 .build();
 
@@ -196,9 +197,9 @@ public class SimulationExamples {
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
-        Species fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
-        Species glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
-        Species glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
+        SmallMolecule fructosePhosphate = ChEBIParserService.parse("CHEBI:18105");
+        SmallMolecule glyceronePhosphate = ChEBIParserService.parse("CHEBI:16108");
+        SmallMolecule glyceraldehyde = ChEBIParserService.parse("CHEBI:17378");
 
         // setup enzyme
         Enzyme aldolase = new Enzyme.Builder("P07752")
@@ -249,13 +250,13 @@ public class SimulationExamples {
         EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // get required species
-        Species methanol = ChEBIParserService.parse("CHEBI:17790");
+        SmallMolecule methanol = ChEBIParserService.parse("CHEBI:17790");
         methanol.setFeature(Diffusivity.class);
-        Species ethyleneGlycol = ChEBIParserService.parse("CHEBI:30742");
+        SmallMolecule ethyleneGlycol = ChEBIParserService.parse("CHEBI:30742");
         ethyleneGlycol.setFeature(Diffusivity.class);
-        Species valine = ChEBIParserService.parse("CHEBI:27266");
+        SmallMolecule valine = ChEBIParserService.parse("CHEBI:27266");
         valine.setFeature(Diffusivity.class);
-        Species sucrose = ChEBIParserService.parse("CHEBI:17992");
+        SmallMolecule sucrose = ChEBIParserService.parse("CHEBI:17992");
         sucrose.setFeature(Diffusivity.class);
 
         // setup rectangular graph with number of nodes
@@ -280,10 +281,10 @@ public class SimulationExamples {
         Simulation simulation = new Simulation();
         // add graph
         simulation.setGraph(graph);
-        // add desired species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(Arrays.asList(methanol, ethyleneGlycol, valine, sucrose));
-        // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+
+        FreeDiffusion.inSimulation(simulation)
+                .forAll(methanol, ethyleneGlycol, valine, sucrose)
+                .build();
 
         return simulation;
     }
@@ -306,21 +307,21 @@ public class SimulationExamples {
         // get required species
         logger.debug("Importing species ...");
         // Hydron (H+)
-        Species hydron = ChEBIParserService.parse("CHEBI:15378");
+        SmallMolecule hydron = ChEBIParserService.parse("CHEBI:15378");
         // Iodide (I-)
-        Species iodide = ChEBIParserService.parse("CHEBI:16382");
+        SmallMolecule iodide = ChEBIParserService.parse("CHEBI:16382");
         // Diiodine (I2)
-        Species diiodine = ChEBIParserService.parse("CHEBI:17606");
+        SmallMolecule diiodine = ChEBIParserService.parse("CHEBI:17606");
         // Water (H2O)
-        Species water = ChEBIParserService.parse("CHEBI:15377");
+        SmallMolecule water = ChEBIParserService.parse("CHEBI:15377");
         // Hypoiodous acid (HOI)
-        Species hia = ChEBIParserService.parse("CHEBI:29231");
+        SmallMolecule hia = ChEBIParserService.parse("CHEBI:29231");
         // Iodous acid (HIO2)
-        Species ia = ChEBIParserService.parse("CHEBI:29229");
+        SmallMolecule ia = ChEBIParserService.parse("CHEBI:29229");
         // Iodine dioxide (IO2)
-        Species iodineDioxid = ChEBIParserService.parse("CHEBI:29901");
+        SmallMolecule iodineDioxid = ChEBIParserService.parse("CHEBI:29901");
         // Iodate (IO3-)
-        Species iodate = ChEBIParserService.parse("CHEBI:29226");
+        SmallMolecule iodate = ChEBIParserService.parse("CHEBI:29226");
 
         logger.debug("Setting up example graph ...");
         // setup graph with a single node
@@ -442,31 +443,31 @@ public class SimulationExamples {
         logger.debug("Adjusting spatial step size ... ");
         EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
         // all species
-        Set<Species> allSpecies = new HashSet<>();
+        Set<ChemicalEntity> chemicalEntities = new HashSet<>();
         // Domperidone
-        Species domperidone = PubChemParserService.parse("CID:3151");
+        SmallMolecule domperidone = PubChemParserService.parse("CID:3151");
         domperidone.setFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED));
         domperidone.setFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED));
         domperidone.setFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED));
-        allSpecies.add(domperidone);
+        chemicalEntities.add(domperidone);
         // Loperamide
-        Species loperamide = PubChemParserService.parse("CID:3955");
+        SmallMolecule loperamide = PubChemParserService.parse("CID:3955");
         loperamide.setFeature(new MembraneEntry(8.59e8, MANUALLY_ANNOTATED));
         loperamide.setFeature(new MembraneExit(1.81e3, MANUALLY_ANNOTATED));
         loperamide.setFeature(new MembraneFlipFlop(6.71e5, MANUALLY_ANNOTATED));
-        allSpecies.add(loperamide);
+        chemicalEntities.add(loperamide);
         // Propranolol
-        Species propranolol = PubChemParserService.parse("CID:4946");
+        SmallMolecule propranolol = PubChemParserService.parse("CID:4946");
         propranolol.setFeature(new MembraneEntry(1.27e9, MANUALLY_ANNOTATED));
         propranolol.setFeature(new MembraneExit(3.09e4, MANUALLY_ANNOTATED));
         propranolol.setFeature(new MembraneFlipFlop(4.75e6, MANUALLY_ANNOTATED));
-        allSpecies.add(propranolol);
+        chemicalEntities.add(propranolol);
         // Desipramine
-        Species desipramine = PubChemParserService.parse("CID:2995");
+        SmallMolecule desipramine = PubChemParserService.parse("CID:2995");
         desipramine.setFeature(new MembraneEntry(2.13e9, MANUALLY_ANNOTATED));
         desipramine.setFeature(new MembraneExit(4.86e4, MANUALLY_ANNOTATED));
         desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
-        allSpecies.add(desipramine);
+        chemicalEntities.add(desipramine);
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
@@ -479,11 +480,11 @@ public class SimulationExamples {
         // only 5 left most nodes
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                for (Species species : allSpecies) {
+                for (ChemicalEntity species : chemicalEntities) {
                     node.setConcentration(species, 1.0);
                 }
             } else {
-                for (Species species : allSpecies) {
+                for (ChemicalEntity species : chemicalEntities) {
                     node.setConcentration(species, 0.0);
                 }
             }
@@ -496,16 +497,16 @@ public class SimulationExamples {
         simulation.setGraph(graph);
         // add transmembrane transport
         simulation.getModules().add(new FlipFlopMembraneTransport(simulation));
-        // add desired species to the simulation for easy access
-        simulation.getChemicalEntities().addAll(allSpecies);
-        // add diffusion module
-        simulation.getModules().add(new FreeDiffusion(simulation, simulation.getChemicalEntities()));
+
+        FreeDiffusion.inSimulation(simulation)
+                .forAll(chemicalEntities)
+                .build();
 
         return simulation;
     }
 
     public static Simulation createDiffusionAndMembraneTransportExample() {
-        Species domperidone = new Species.Builder("CHEBI:31515")
+        SmallMolecule domperidone = new SmallMolecule.Builder("CHEBI:31515")
                 .name("domperidone")
                 .assignFeature(Diffusivity.class)
                 .assignFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED))
@@ -543,10 +544,11 @@ public class SimulationExamples {
 
         simulation.setGraph(graph);
 
-        FreeDiffusion diffusion = new FreeDiffusion(simulation, simulation.getChemicalEntities());
-        FlipFlopMembraneTransport membraneTransport = new FlipFlopMembraneTransport(simulation);
+        FreeDiffusion.inSimulation(simulation)
+                .onlyFor(domperidone)
+                .build();
 
-        simulation.getModules().add(diffusion);
+        FlipFlopMembraneTransport membraneTransport = new FlipFlopMembraneTransport(simulation);
         simulation.getModules().add(membraneTransport);
 
         return simulation;

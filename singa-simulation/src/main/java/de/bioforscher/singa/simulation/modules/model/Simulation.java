@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -15,9 +16,7 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Time;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
@@ -92,7 +91,7 @@ public class Simulation {
     /**
      * The chemical entities referenced in the graph.
      */
-    private Set<ChemicalEntity> chemicalEntities;
+    private HashMap<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
 
     /**
      * The globally applied parameters.
@@ -114,7 +113,7 @@ public class Simulation {
      */
     public Simulation() {
         modules = new HashSet<>();
-        chemicalEntities = new HashSet<>();
+        chemicalEntities = new HashMap<>();
         observedNodes = new HashSet<>();
         elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
         epoch = 0;
@@ -222,17 +221,18 @@ public class Simulation {
      *
      * @return The chemical entities.
      */
-    public Set<ChemicalEntity> getChemicalEntities() {
-        return chemicalEntities;
+    public Collection<ChemicalEntity> getChemicalEntities() {
+        return chemicalEntities.values();
     }
 
-    /**
-     * Sets all chemical entities at once.
-     *
-     * @param chemicalEntities The chemical entities.
-     */
-    public void setChemicalEntities(Set<ChemicalEntity> chemicalEntities) {
-        this.chemicalEntities = chemicalEntities;
+    public void addReferencedEntities(Collection<? extends ChemicalEntity> entities) {
+        for (ChemicalEntity entity : entities) {
+            addReferencedEntity(entity);
+        }
+    }
+
+    public void addReferencedEntity(ChemicalEntity chemicalEntity) {
+        chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
     }
 
     public void setEpochUpdateWriter(EpochUpdateWriter epochUpdateWriter) {

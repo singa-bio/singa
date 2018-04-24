@@ -50,7 +50,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
 
     private void computeMolarMass() {
         double sum = 0.0;
-        for (ChemicalEntity<?> entity : associatedParts.keySet()) {
+        for (ChemicalEntity entity : associatedParts.keySet()) {
             Quantity<MolarMass> featureContent = entity.getFeature(MolarMass.class);
             if (featureContent != null) {
                 double v = featureContent

@@ -3,15 +3,15 @@ package de.bioforscher.singa.simulation.modules.signalling;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Receptor;
-import de.bioforscher.singa.chemistry.descriptive.entities.Species;
+import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
-import de.bioforscher.singa.core.identifier.ChEBIIdentifier;
-import de.bioforscher.singa.core.identifier.UniProtIdentifier;
+import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -44,7 +44,7 @@ public class MonovalentReceptorBindingTest {
 
         // see Receptors (Lauffenburger) p. 30
         // prazosin, CHEBI:8364
-        ChemicalEntity ligand = new Species.Builder("ligand")
+        ChemicalEntity ligand = new SmallMolecule.Builder("ligand")
                 .name("prazosin")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
                 .build();
@@ -70,7 +70,7 @@ public class MonovalentReceptorBindingTest {
         Membrane membrane = Membrane.forCompartment(right);
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
-        membraneNode.setState(NodeState.MEMBRANE);
+        membraneNode.setState(CellSectionState.MEMBRANE);
         MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
         membraneNode.setConcentrationContainer(concentrationContainer);
         membraneNode.setAvailableConcentration(ligand, left, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
@@ -79,9 +79,9 @@ public class MonovalentReceptorBindingTest {
             membraneNode.setAvailableConcentration(boundReceptor, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
         }
         // define chemical entities
-        simulation.getChemicalEntities().add(ligand);
-        simulation.getChemicalEntities().add(receptor);
-        simulation.getChemicalEntities().addAll(receptor.getBoundReceptorStates());
+        simulation.addReferencedEntity(ligand);
+        simulation.addReferencedEntity(receptor);
+        simulation.addReferencedEntities(receptor.getBoundReceptorStates());
         // define sections
         Set<CellSection> sections = new HashSet<>();
         sections.add(left);
@@ -89,9 +89,11 @@ public class MonovalentReceptorBindingTest {
         sections.add(membrane.getInnerLayer());
         sections.add(right);
         concentrationContainer.setReferencedSections(sections);
+
         // create and add module
-        MonovalentReceptorBinding monovalentReceptorBinding = new MonovalentReceptorBinding(simulation, receptor);
-        simulation.getModules().add(monovalentReceptorBinding);
+        MonovalentReceptorBinding.inSimulation(simulation)
+                .receptor(receptor)
+                .build();
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();

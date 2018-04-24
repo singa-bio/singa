@@ -7,7 +7,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
  *
  * @author cl
  */
-public enum NodeState {
+public enum CellSectionState {
 
     /**
      * Aqueous (mostly extracellular) environments.
@@ -22,7 +22,12 @@ public enum NodeState {
     /**
      * Membrane environments.
      */
-    MEMBRANE
+    MEMBRANE,
+
+    /**
+     * General non membrane environments. (encapsulates aqueous and cytosol)
+     */
+    NON_MEMBRANE;
 
 
 }

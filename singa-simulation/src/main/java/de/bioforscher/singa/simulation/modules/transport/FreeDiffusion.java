@@ -14,7 +14,7 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
@@ -26,13 +26,18 @@ import java.util.Set;
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
-    private Set<ChemicalEntity> chemicalEntities;
+    public static SelectionStep inSimulation(Simulation simulation) {
+        return new DiffusionBuilder(simulation);
+    }
 
-    public FreeDiffusion(Simulation simulation, Set<ChemicalEntity> chemicalEntities) {
+    private FreeDiffusion(Simulation simulation) {
         super(simulation);
         // apply everywhere
-        this.chemicalEntities = chemicalEntities;
         addDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
+    }
+
+    private void initialize() {
+        addModuleToSimulation();
     }
 
     /**
@@ -42,7 +47,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
      * @return
      */
     private boolean onlyForReferencedEntities(ConcentrationContainer concentrationContainer) {
-        return chemicalEntities.contains(currentChemicalEntity);
+        return getReferencedEntities().contains(currentChemicalEntity);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
@@ -74,6 +79,53 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     @Override
     public String toString() {
         return getClass().getSimpleName();
+    }
+
+    public interface SelectionStep {
+        BuildStep onlyFor(ChemicalEntity chemicalEntity);
+
+        BuildStep forAll(ChemicalEntity ... chemicalEntities );
+
+        BuildStep forAll(Collection<ChemicalEntity> chemicalEntities);
+
+    }
+
+    public interface BuildStep {
+        FreeDiffusion build();
+    }
+
+    public static class DiffusionBuilder implements SelectionStep, BuildStep {
+
+        FreeDiffusion module;
+
+        public DiffusionBuilder(Simulation simulation) {
+            module = new FreeDiffusion(simulation);
+        }
+
+        public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
+            module.addReferencedEntity(chemicalEntity);
+            return this;
+        }
+
+        public BuildStep forAll(ChemicalEntity ... chemicalEntities ) {
+            for (ChemicalEntity chemicalEntity : chemicalEntities) {
+                module.addReferencedEntity(chemicalEntity);
+            }
+            return this;
+        }
+
+        public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
+            for (ChemicalEntity chemicalEntity : chemicalEntities) {
+                module.addReferencedEntity(chemicalEntity);
+            }
+            return this;
+        }
+
+        public FreeDiffusion build() {
+            module.initialize();
+            return module;
+        }
+
     }
 
 }

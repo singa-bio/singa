@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
@@ -13,17 +13,25 @@ import tec.uom.se.quantity.Quantities;
 
 public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
 
+    public static CargoStep inSimulation(Simulation simulation) {
+        return new MembraneDiffusionBuilder(simulation);
+    }
+
     private ChemicalEntity cargo;
 
-    public MembraneDiffusion(Simulation simulation, ChemicalEntity cargo) {
+    public MembraneDiffusion(Simulation simulation) {
         super(simulation);
-        this.cargo = cargo;
         // apply this module only to membranes
-        onlyApplyIf(node -> node.getState().equals(NodeState.MEMBRANE));
+        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
         // change of inner phase
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
+    }
+
+    public void initialize() {
+        // reference module in simulation
+        addModuleToSimulation();
     }
 
     private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
@@ -101,5 +109,35 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
     public String toString() {
         return getClass().getSimpleName()+" ("+cargo.getName()+")";
     }
+
+    public interface CargoStep {
+        BuildStep cargo(ChemicalEntity cargo);
+    }
+
+    public interface BuildStep {
+        MembraneDiffusion build();
+    }
+
+    public static class MembraneDiffusionBuilder implements CargoStep, BuildStep {
+
+        private MembraneDiffusion module;
+
+        public MembraneDiffusionBuilder(Simulation simulation) {
+            module = new MembraneDiffusion(simulation);
+        }
+
+        @Override
+        public BuildStep cargo(ChemicalEntity cargo) {
+            module.cargo = cargo;
+            return this;
+        }
+
+        @Override
+        public MembraneDiffusion build() {
+            module.initialize();
+            return module;
+        }
+    }
+
 
 }
