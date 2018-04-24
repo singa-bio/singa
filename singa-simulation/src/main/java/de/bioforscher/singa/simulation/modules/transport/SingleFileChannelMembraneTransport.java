@@ -146,11 +146,11 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
     }
 
     public interface SolutesStep {
-        SolutesStep forSolutes(ChemicalEntity chemicalEntity);
+        BuildStep forSolute(ChemicalEntity chemicalEntity);
 
-        SolutesStep forSolutes(ChemicalEntity ... chemicalEntities );
+        BuildStep forSolutes(ChemicalEntity ... chemicalEntities );
 
-        SolutesStep forSolutes(Collection<ChemicalEntity> chemicalEntities);
+        BuildStep forSolutes(Collection<ChemicalEntity> chemicalEntities);
     }
 
     public interface BuildStep {
@@ -178,19 +178,19 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         }
 
         @Override
-        public SolutesStep forSolutes(ChemicalEntity solute) {
+        public BuildStep forSolute(ChemicalEntity solute) {
             module.solutes.add(solute);
             return this;
         }
 
         @Override
-        public SolutesStep forSolutes(ChemicalEntity... solutes) {
+        public BuildStep forSolutes(ChemicalEntity... solutes) {
             module.solutes.addAll(Arrays.asList(solutes));
             return this;
         }
 
         @Override
-        public SolutesStep forSolutes(Collection<ChemicalEntity> solutes) {
+        public BuildStep forSolutes(Collection<ChemicalEntity> solutes) {
             module.solutes.addAll(solutes);
             return this;
         }

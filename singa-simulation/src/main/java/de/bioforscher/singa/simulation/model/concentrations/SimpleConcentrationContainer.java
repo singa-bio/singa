@@ -26,6 +26,10 @@ public class SimpleConcentrationContainer implements ConcentrationContainer {
         cellSections = Collections.singleton(cellSection);
     }
 
+    public CellSection getCellSection() {
+        return cellSection;
+    }
+
     @Override
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity chemicalEntity) {
         if (concentrations.containsKey(chemicalEntity)) {

@@ -1,13 +1,12 @@
 package de.bioforscher.singa.simulation.modules.signalling;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Receptor;
+import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
-import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
-import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
+import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -17,11 +16,13 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,37 +30,44 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author cl
  */
-public class MonovalentReceptorBindingTest {
+public class ComplexBuildingReactionTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MonovalentReceptorBindingTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
 
     @Test
-    public void shouldInitializeCorrectly() {
+    public void testMembraneAbsorption() {
 
-        logger.info("Testing Monovalent Receptor Binding.");
+        logger.info("Testing Section Changing Binding (Membrane Absorption).");
+        // the rate constants
+        ForwardsRateConstant forwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
+        BackwardsRateConstant backwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
 
-        // see Receptors (Lauffenburger) p. 30
-        // prazosin, CHEBI:8364
-        ChemicalEntity ligand = new SmallMolecule.Builder("ligand")
-                .name("prazosin")
-                .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
+        // the ligand
+        ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
+                .name("bindee")
+                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
-        // the corresponding rate constants
-        ForwardsRateConstant forwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(2.4e8, PER_MINUTE), MANUALLY_ANNOTATED);
-        BackwardsRateConstant backwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.018, PER_MINUTE), MANUALLY_ANNOTATED);
-        // alpha-1 adrenergic receptor, P35348
-        Receptor receptor = new Receptor.Builder("receptor")
-                .name("alpha-1 adrenergic receptor")
-                .additionalIdentifier(new UniProtIdentifier("P35348"))
-                .addLigand(ligand, forwardsRateConstant, backwardsRateConstant)
+
+        // the receptor
+        Protein binder = new Protein.Builder("binder")
+                .name("binder")
+                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
         // create simulation
         Simulation simulation = new Simulation();
+
+        // create and add module
+        ComplexBuildingReaction binding = ComplexBuildingReaction.inSimulation(simulation)
+                .of(bindee, forwardsRateConstant)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(binder, backwardsRateConstant)
+                .to(CellSectionState.MEMBRANE);
 
         // setup graph
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
@@ -73,11 +81,9 @@ public class MonovalentReceptorBindingTest {
         membraneNode.setState(CellSectionState.MEMBRANE);
         MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
         membraneNode.setConcentrationContainer(concentrationContainer);
-        membraneNode.setAvailableConcentration(ligand, left, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        membraneNode.setAvailableConcentration(receptor, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        for (ComplexedChemicalEntity boundReceptor : receptor.getBoundReceptorStates()) {
-            membraneNode.setAvailableConcentration(boundReceptor, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        }
+        membraneNode.setAvailableConcentration(bindee, left, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(binder, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(binding.getComplex(), membrane.getOuterLayer(), Quantities.getQuantity(0.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
 
         // define sections
         Set<CellSection> sections = new HashSet<>();
@@ -87,17 +93,25 @@ public class MonovalentReceptorBindingTest {
         sections.add(right);
         concentrationContainer.setReferencedSections(sections);
 
-        // create and add module
-        ComplexBuildingReaction.inSimulation(simulation)
-                .of(ligand, forwardsRateConstant)
-                .in(CellSectionState.NON_MEMBRANE)
-                .by(receptor, backwardsRateConstant)
-                .to(CellSectionState.MEMBRANE);
-
+        Quantity<MolarConcentration> previousConcentration = null;
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
+            Quantity<MolarConcentration> currentConcentration = membraneNode.getAvailableConcentration(binding.getComplex(), membrane.getOuterLayer());
+            if (previousConcentration != null) {
+                assertTrue(currentConcentration.getValue().doubleValue() > previousConcentration.getValue().doubleValue());
+            }
+            previousConcentration = currentConcentration;
         }
 
     }
+
+    public void testMembraneLeeching() {
+
+    }
+
+    public void testFreeBinding() {
+
+    }
+
 
 }

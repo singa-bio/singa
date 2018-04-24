@@ -27,7 +27,6 @@ public class GPCRCarrouselModelTest {
     @Test
     public void testCarrouselModel() {
 
-
         Simulation simulation = new Simulation();
         chemicalEntities = new HashSet<>();
         modules = new HashSet<>();
@@ -113,7 +112,7 @@ public class GPCRCarrouselModelTest {
 
         // modules
         // gdp bound - alpha g-protein + receptor
-        SectionChangingBinding binding01 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding01 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gdpGProteinAlpha)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(vasopressinReceptor)
@@ -121,7 +120,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity alphaGDPReceptor = binding01.getComplex();
 
         // gtp bound - alpha g-protein + receptor
-        SectionChangingBinding binding02 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding02 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gtpGProteinAlpha)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(vasopressinReceptor)
@@ -129,7 +128,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity alphaGTPReceptor = binding02.getComplex();
 
         // gdp bound - alpha beta gamma g-protein + receptor
-        SectionChangingBinding binding03 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding03 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gdpGProteinAlphaBetaGamma)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(vasopressinReceptor)
@@ -137,7 +136,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity alphaBetaGammaGDPReceptor = binding03.getComplex();
 
         // vasopressin + receptor
-        SectionChangingBinding binding04 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding04 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(vasopressin)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(vasopressinReceptor)
@@ -145,7 +144,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity receptorLigand = binding04.getComplex();
 
         //  gdp bound - alpha gprotein + vasopressin receptor complex
-        SectionChangingBinding binding05 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding05 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gdpGProteinAlpha)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(receptorLigand)
@@ -153,7 +152,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity alphaGDPReceptorLigand = binding05.getComplex();
 
         // gtp bound - alpha complex + vasopressin receptor complex
-        SectionChangingBinding binding06 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding06 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gtpGProteinAlpha)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(receptorLigand)
@@ -161,7 +160,7 @@ public class GPCRCarrouselModelTest {
         ComplexedChemicalEntity alphaGTPReceptorLigand = binding06.getComplex();
 
         // vasopressin receptor complex + gdp bound - alpha beta gamma complex
-        SectionChangingBinding binding07 = SectionChangingBinding.inSimulation(simulation)
+        ComplexBuildingReaction binding07 = ComplexBuildingReaction.inSimulation(simulation)
                 .of(gdpGProteinAlphaBetaGamma)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(receptorLigand)

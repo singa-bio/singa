@@ -119,7 +119,7 @@ public abstract class AbstractModule implements Module {
         referencedChemicalEntities.add(chemicalEntity);
     }
 
-    public void addReferencedEntities(Collection<ChemicalEntity> chemicalEntities) {
+    public void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
         referencedChemicalEntities.addAll(chemicalEntities);
     }
 
@@ -222,8 +222,8 @@ public abstract class AbstractModule implements Module {
     void applyHalfStepDelta(Delta halfDelta) {
         if (deltaIsValid(halfDelta)) {
             halfDelta = halfDelta.multiply(2.0);
-            logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getName(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
-            currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
+            logger.trace("Calculated half delta for {} in {}: {}", halfDelta.getChemicalEntity().getIdentifier(), halfDelta.getCellSection().getIdentifier(), halfDelta.getQuantity());
+            currentHalfDeltas.put(new DeltaIdentifier(getCurrentNode(), halfDelta.getCellSection(), halfDelta.getChemicalEntity()), halfDelta);
             currentNode.addPotentialDelta(halfDelta);
         }
     }
