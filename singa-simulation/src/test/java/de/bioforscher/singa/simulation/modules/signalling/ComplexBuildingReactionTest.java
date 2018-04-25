@@ -67,7 +67,8 @@ public class ComplexBuildingReactionTest {
                 .of(bindee, forwardsRateConstant)
                 .in(CellSectionState.NON_MEMBRANE)
                 .by(binder, backwardsRateConstant)
-                .to(CellSectionState.MEMBRANE);
+                .to(CellSectionState.MEMBRANE)
+                .build();
 
         // setup graph
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();

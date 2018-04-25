@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.reactions.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -41,6 +42,8 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      */
     private boolean elementary;
 
+    private SimpleStringIdentifier identifier;
+
     /**
      * The features of the reaction.
      */
@@ -48,12 +51,21 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     /**
      * Creates a new reaction for a simulation.
+     *
      * @param simulation The simulations
      */
-    public Reaction(Simulation simulation) {
+    protected Reaction(Simulation simulation) {
         super(simulation);
         stoichiometricReactants = new ArrayList<>();
         features = new ChemistryFeatureContainer();
+    }
+
+    public SimpleStringIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(SimpleStringIdentifier identifier) {
+        this.identifier = identifier;
     }
 
     /**
@@ -74,8 +86,13 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         this.stoichiometricReactants = stoichiometricReactants;
     }
 
+    public void addStochiometricReactant(StoichiometricReactant stoichiometricReactant) {
+        stoichiometricReactants.add(stoichiometricReactant);
+    }
+
     /**
      * Returns all substrates of this reaction.
+     *
      * @return All substrates of this reaction.
      */
     public List<ChemicalEntity> getSubstrates() {
@@ -87,6 +104,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     /**
      * Returns all products of this reaction.
+     *
      * @return All products of this reaction.
      */
     public List<ChemicalEntity> getProducts() {
@@ -121,6 +139,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     /**
      * Calculates all deltas for all reactants for the reaction.
+     *
      * @param concentrationContainer The concentration container to calculate the deltas for.
      * @return The calculated deltas.
      */
@@ -142,6 +161,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     /**
      * Calculates the reaction velocity, depending on the kinetic law.
+     *
      * @param concentrationContainer The concentration container to calculate the deltas for.
      * @return The reaction velocity.
      */
@@ -167,6 +187,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
 
     /**
      * Returns a nicely formatted string representation of the reaction.
+     *
      * @return A nicely formatted string representation of the reaction.
      */
     public String getDisplayString() {
@@ -180,7 +201,15 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
                 .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
                         + product.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
+        if (Character.isWhitespace(substrates.charAt(0))) {
+            substrates = substrates.substring(1);
+        }
         return substrates + " \u27f6" + products;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " (" + getDisplayString() + ")";
     }
 
     @Override
@@ -228,5 +257,75 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;
     }
+
+    public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> {
+
+        protected final TopLevelType topLevelObject;
+        protected final BuilderType builderObject;
+
+        public Builder(Simulation simulation) {
+            topLevelObject = createObject(simulation);
+            builderObject = getBuilder();
+        }
+
+        protected abstract TopLevelType createObject(Simulation primaryIdentifer);
+
+        protected abstract BuilderType getBuilder();
+
+        public BuilderType identifier(SimpleStringIdentifier identifier) {
+            topLevelObject.setIdentifier(identifier);
+            return builderObject;
+        }
+
+        public BuilderType identifier(String identifier) {
+            topLevelObject.setIdentifier(new SimpleStringIdentifier(identifier));
+            return builderObject;
+        }
+
+        public BuilderType addSubstrate(ChemicalEntity chemicalEntity) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, ReactantRole.DECREASING));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, ReactantRole.DECREASING, stoichiometricNumber));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber, double reactionOrder) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, ReactantRole.DECREASING, stoichiometricNumber, reactionOrder));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addProduct(ChemicalEntity chemicalEntity) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, ReactantRole.INCREASING));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addProduct(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, ReactantRole.INCREASING, stoichiometricNumber));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType setNonElementary() {
+            topLevelObject.setElementary(false);
+            return builderObject;
+        }
+
+        public TopLevelType build() {
+            if (!topLevelObject.isElementary()) {
+                topLevelObject.setElementary(true);
+            }
+            topLevelObject.addModuleToSimulation();
+            return topLevelObject;
+        }
+
+    }
+
 
 }

@@ -6,8 +6,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.*;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
@@ -84,19 +84,15 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(nitrogenDioxide, 0.0);
         graph.initializeSpeciesWithConcentration(oxygen, 0.0);
 
-        // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
-        reaction.setElementary(true);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(dinitrogenPentaoxide, ReactantRole.DECREASING, 2),
-                new StoichiometricReactant(nitrogenDioxide, ReactantRole.INCREASING, 4),
-                new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
-        ));
+        NthOrderReaction.inSimulation(simulation)
+                .addSubstrate(dinitrogenPentaoxide, 2)
+                .addProduct(nitrogenDioxide, 4)
+                .addProduct(oxygen)
+                .rateConstant(new RateConstant(Quantities.getQuantity(0.07, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction
-        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -123,7 +119,13 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(octatriene, 0.0);
 
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.614, PER_SECOND));
+        NthOrderReaction.inSimulation(simulation)
+                .addSubstrate(butadiene, 2, 2)
+                .addProduct(octatriene)
+                .rateConstant(new RateConstant(Quantities.getQuantity(0.614, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
+
+        NthOrderReaction reaction = new NthOrderReaction(simulation, );
         reaction.setElementary(false);
         reaction.getStoichiometricReactants().addAll(Arrays.asList(
                 new StoichiometricReactant(butadiene, ReactantRole.DECREASING, 2, 2),
@@ -167,18 +169,15 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(speciesB, 0.0);
 
         // create reaction
-        EquilibriumReaction reaction = new EquilibriumReaction(simulation, Quantities.getQuantity(10, PER_SECOND),
-                Quantities.getQuantity(10, PER_SECOND));
-        reaction.setElementary(true);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(speciesA, ReactantRole.DECREASING),
-                new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
-        ));
+        EquilibriumReaction.inSimulation(simulation)
+                .addSubstrate(speciesA)
+                .addProduct(speciesB)
+                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(10, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(10, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction module
-        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -355,23 +354,21 @@ public class SimulationExamples {
         ));
 
         // create second reaction
-        EquilibriumReaction thirdReaction = new EquilibriumReaction(simulation, Quantities.getQuantity(3.1e4, PER_SECOND),
-                Quantities.getQuantity(2.2, PER_SECOND));
-        thirdReaction.setElementary(true);
-        thirdReaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(hia, ReactantRole.DECREASING),
-                new StoichiometricReactant(iodide, ReactantRole.DECREASING),
-                new StoichiometricReactant(hydron, ReactantRole.DECREASING),
-                new StoichiometricReactant(diiodine, ReactantRole.INCREASING),
-                new StoichiometricReactant(water, ReactantRole.INCREASING)
-        ));
+        EquilibriumReaction.inSimulation(simulation)
+                .addSubstrate(hia)
+                .addSubstrate(iodide)
+                .addSubstrate(hydron)
+                .addProduct(diiodine)
+                .addProduct(water)
+                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(3.1e4, PER_SECOND), MANUALLY_ANNOTATED))
+                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(2.2, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
 
         // add reactions
-        simulation.getModules().addAll(Arrays.asList(firstReaction, secondReaction, thirdReaction));
+        simulation.getModules().addAll(Arrays.asList(firstReaction, secondReaction));
 
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
 
         return simulation;
     }

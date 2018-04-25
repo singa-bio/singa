@@ -3,8 +3,11 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -134,21 +137,27 @@ public class ReactionTest {
             node.setConcentration(speciesB, 0.0);
         }
 
-        EquilibriumReaction reaction = new EquilibriumReaction(simulation,
-                Quantities.getQuantity(5.0, PER_SECOND),
-                Quantities.getQuantity(10.0, PER_SECOND));
-        // set reactants
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(speciesA, ReactantRole.DECREASING),
-                new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
-        ));
-        // set as elementary (no complex reaction)
-        reaction.setElementary(true);
+//        EquilibriumReaction reaction = new EquilibriumReaction(simulation,
+//                Quantities.getQuantity(5.0, PER_SECOND),
+//                Quantities.getQuantity(10.0, PER_SECOND));
+//        // set reactants
+//        reaction.getStoichiometricReactants().addAll(Arrays.asList(
+//                new StoichiometricReactant(speciesA, ReactantRole.DECREASING),
+//                new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
+//        ));
+//        // set as elementary (no complex reaction)
+//        reaction.setElementary(true);
+
+        // setup reaction
+        EquilibriumReaction.inSimulation(simulation)
+                .addSubstrate(speciesA)
+                .addProduct(speciesB)
+                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(5.0, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(10.0, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction module
-        simulation.getModules().add(reaction);
 
         AutomatonNode node = graph.getNode(0,0);
         Quantity<Time> currentTime;

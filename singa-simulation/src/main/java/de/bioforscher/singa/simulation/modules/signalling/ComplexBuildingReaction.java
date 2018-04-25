@@ -72,10 +72,13 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     }
 
     private void initialize() {
-        complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getIdentifier() + "-" + bindee.getIdentifier().getIdentifier())
-                .addAssociatedPart(binder)
-                .addAssociatedPart(bindee)
-                .build();
+        // in no complex has been set create it
+        if (complex == null) {
+            complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getIdentifier() + ":" + bindee.getIdentifier().getIdentifier())
+                    .addAssociatedPart(binder)
+                    .addAssociatedPart(bindee)
+                    .build();
+        }
         // reference entities for this module
         addReferencedEntity(bindee);
         addReferencedEntity(binder);
@@ -182,6 +185,12 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         return complex;
     }
 
+    public String getDisplayString() {
+        String substrates = binder.getIdentifier() +" + " + bindee.getIdentifier();
+        String products = complex.getIdentifier().toString();
+        return substrates + " \u21CB " + products;
+    }
+
     @Override
     public Collection<Feature<?>> getFeatures() {
         return features.getAllFeatures();
@@ -243,15 +252,20 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     }
 
     public interface BinderSectionSelection {
-        ComplexBuildingReaction to(CellSectionState binderSection);
+        BuilderStep to(CellSectionState binderSection);
+    }
+
+    public interface BuilderStep {
+        BuilderStep formingComplex(ComplexedChemicalEntity complex);
+        ComplexBuildingReaction build();
     }
 
     @Override
     public String toString() {
-        return "ComplexBuildingReaction ("+binder.getIdentifier()+" binds "+bindee.getIdentifier()+")";
+        return getClass().getSimpleName()+" ("+getDisplayString()+")";
     }
 
-    public static class BindingBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection {
+    public static class BindingBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection, BuilderStep {
 
         private ComplexBuildingReaction module;
 
@@ -290,12 +304,22 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         }
 
         @Override
-        public ComplexBuildingReaction to(CellSectionState bindeeSection) {
+        public BuilderStep to(CellSectionState bindeeSection) {
             module.binderCellSectionState = bindeeSection;
+            return this;
+        }
+
+        @Override
+        public BuilderStep formingComplex(ComplexedChemicalEntity complex) {
+            module.complex = complex;
+            return this;
+        }
+
+        @Override
+        public ComplexBuildingReaction build() {
             module.initialize();
             return module;
         }
-
     }
 
 }

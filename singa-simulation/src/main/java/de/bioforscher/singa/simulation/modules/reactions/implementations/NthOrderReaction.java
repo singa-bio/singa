@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
-import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
@@ -15,12 +14,12 @@ import javax.measure.quantity.Frequency;
  */
 public class NthOrderReaction extends Reaction {
 
-    public NthOrderReaction(Simulation simulation, Quantity<Frequency> rateConstant) {
+    public static Builder inSimulation(Simulation simulation) {
+        return new Builder(simulation);
+    }
+
+    private NthOrderReaction(Simulation simulation) {
         super(simulation);
-        // feature
-        availableFeatures.add(RateConstant.class);
-        setFeature(new RateConstant(rateConstant, FeatureOrigin.MANUALLY_ANNOTATED));
-        // deltas
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
@@ -31,6 +30,29 @@ public class NthOrderReaction extends Reaction {
         double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
         // calculate acceleration
         return concentration * reactionRate.getValue().doubleValue();
+    }
+
+    public static class Builder extends Reaction.Builder<NthOrderReaction, Builder> {
+
+        public Builder(Simulation identifier) {
+            super(identifier);
+        }
+
+        @Override
+        protected NthOrderReaction createObject(Simulation simulation) {
+            return new NthOrderReaction(simulation);
+        }
+
+        public Builder rateConstant(RateConstant rateConstant) {
+            topLevelObject.setFeature(rateConstant);
+            return this;
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
     }
 
 }
