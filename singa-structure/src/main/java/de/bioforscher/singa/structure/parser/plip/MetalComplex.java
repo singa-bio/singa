@@ -93,17 +93,22 @@ public class MetalComplex extends Interaction {
         this.complexnum = complexnum;
     }
 
+    /**
+     * For {@link MetalComplex}es the first source atom is the atom identifier of the metal ion.
+     */
     @Override
     public int getFirstSourceAtom() {
-        return atom2;
-    }
-    // take care here source is the metal ion
-
-    @Override
-    public int getFirstTargetAtom() {
         return atom1;
     }
-    // and target is the partner
+
+    /**
+     * For {@link MetalComplex}es the first target atom is the atom identifier of the interaction partner (possibly
+     * ligand or residue).
+     */
+    @Override
+    public int getFirstTargetAtom() {
+        return atom2;
+    }
 
     @Override
     public String toString() {
