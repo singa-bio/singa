@@ -96,7 +96,7 @@ public class PDBSequenceCluster extends PDBRestEndpoint {
     public String[] getRepresentative() {
         if (!clusterMembers.isEmpty()) {
             PDBSequenceClusterMember representativeMember = clusterMembers.get(0);
-            return new String[]{representativeMember.getPdbIdentifier().getIdentifier(), chainIdentifier};
+            return new String[]{representativeMember.getPdbIdentifier().getIdentifier(), representativeMember.getChainIdentifier()};
         }
         throw new UnsupportedOperationException("Cannot retrieve representative member if no members are defined.");
     }

@@ -18,4 +18,17 @@ public class PDBSequenceClusterTest {
         assertEquals("3hr7", sequenceCluster.getClusterMembers().get(1).getPdbIdentifier().getIdentifier());
         assertEquals("A", sequenceCluster.getClusterMembers().get(1).getChainIdentifier());
     }
+
+    @Test
+    public void shouldDiscardHomomericStructures() {
+        PDBSequenceCluster sequenceCluster1 = PDBSequenceCluster.of("1f6d", "A",
+                PDBSequenceCluster.PDBSequenceClusterIdentity.IDENTITY_95);
+        assertEquals("1f6d", sequenceCluster1.getRepresentative()[0]);
+        assertEquals("A", sequenceCluster1.getRepresentative()[1]);
+
+        PDBSequenceCluster sequenceCluster2 = PDBSequenceCluster.of("1f6d", "B",
+                PDBSequenceCluster.PDBSequenceClusterIdentity.IDENTITY_95);
+        assertEquals("1f6d", sequenceCluster2.getRepresentative()[0]);
+        assertEquals("A", sequenceCluster2.getRepresentative()[1]);
+    }
 }
