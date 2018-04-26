@@ -1,5 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 /**
@@ -8,6 +9,10 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
  * @author cl
  */
 public interface Module {
+
+    SimpleStringIdentifier getIdentifier();
+
+    String getStringForProtocol();
 
     /**
      * Calculates all potential updates to the system. The updates are referenced in each node and not applied until

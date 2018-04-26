@@ -185,22 +185,11 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     }
 
     public String getStringForProtocol() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName()).append(" summary:").append(System.lineSeparator())
-                .append("  ").append("primary identifier: ").append(getIdentifier().getIdentifier()).append(System.lineSeparator())
-                .append("  ").append("name: ").append(getName()).append(System.lineSeparator())
-                .append("  ").append("features: ").append(System.lineSeparator());
-        Iterator<Feature<?>> iterator = features.getAllFeatures().iterator();
-        while (iterator.hasNext()) {
-            Feature<?> feature = iterator.next();
-            if (iterator.hasNext()) {
-                builder.append("    ").append(feature).append(System.lineSeparator());
-            } else {
-                builder.append("    ").append(feature);
-        }
-
-        }
-        return builder.toString();
+        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier().getIdentifier() + System.lineSeparator() +
+                "  " + "name: " + getName() + System.lineSeparator() +
+                "  " + "features: " + System.lineSeparator() +
+                features.listFeatures("    ");
     }
 
     @Override

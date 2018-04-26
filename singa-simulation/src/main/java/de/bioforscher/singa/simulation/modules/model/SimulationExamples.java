@@ -24,8 +24,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.singa.simulation.modules.transport.FlipFlopMembraneTransport;
 import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
@@ -38,7 +36,6 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -123,20 +120,11 @@ public class SimulationExamples {
                 .addSubstrate(butadiene, 2, 2)
                 .addProduct(octatriene)
                 .rateConstant(new RateConstant(Quantities.getQuantity(0.614, PER_SECOND), MANUALLY_ANNOTATED))
+                .setNonElementary()
                 .build();
-
-        NthOrderReaction reaction = new NthOrderReaction(simulation, );
-        reaction.setElementary(false);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(butadiene, ReactantRole.DECREASING, 2, 2),
-                new StoichiometricReactant(octatriene, ReactantRole.INCREASING)
-        ));
-
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction module
-        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -219,17 +207,15 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(glyceraldehyde, 0.0);
 
         // create reaction using the properties of the enzyme
-        MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(fructosePhosphate, ReactantRole.DECREASING),
-                new StoichiometricReactant(glyceronePhosphate, ReactantRole.INCREASING),
-                new StoichiometricReactant(glyceraldehyde, ReactantRole.INCREASING)
-        ));
+        MichaelisMentenReaction.inSimulation(simulation)
+                .enzyme(aldolase)
+                .addSubstrate(fructosePhosphate)
+                .addProduct(glyceraldehyde)
+                .addProduct(glyceronePhosphate)
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reactions module
-        simulation.getModules().add(reaction);
 
         return simulation;
     }
@@ -327,33 +313,31 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0,0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
+        graph.getNode(0, 0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
 
 
         logger.debug("Composing simulation ... ");
 
-        // create first reaction
-        NthOrderReaction firstReaction = new NthOrderReaction(simulation, Quantities.getQuantity(1.43e3, PER_SECOND));
-        firstReaction.setElementary(true);
-        firstReaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(hydron, ReactantRole.DECREASING, 2),
-                new StoichiometricReactant(iodide, ReactantRole.DECREASING),
-                new StoichiometricReactant(iodate, ReactantRole.DECREASING),
-                new StoichiometricReactant(hia, ReactantRole.INCREASING),
-                new StoichiometricReactant(ia, ReactantRole.INCREASING)
-        ));
+        // first reaction
+        NthOrderReaction.inSimulation(simulation)
+                .addSubstrate(hydron, 2)
+                .addSubstrate(iodide)
+                .addSubstrate(iodate)
+                .addProduct(hia)
+                .addProduct(ia)
+                .rateConstant(new RateConstant(Quantities.getQuantity(1.43e3, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
 
-        // create second reaction
-        NthOrderReaction secondReaction = new NthOrderReaction(simulation, Quantities.getQuantity(2.0e4, PER_SECOND));
-        secondReaction.setElementary(true);
-        secondReaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(hydron, ReactantRole.DECREASING),
-                new StoichiometricReactant(ia, ReactantRole.DECREASING),
-                new StoichiometricReactant(iodide, ReactantRole.DECREASING),
-                new StoichiometricReactant(hia, ReactantRole.INCREASING)
-        ));
+        // second reaction
+        NthOrderReaction.inSimulation(simulation)
+                .addSubstrate(hydron)
+                .addSubstrate(ia)
+                .addSubstrate(iodide)
+                .addProduct(hia)
+                .rateConstant(new RateConstant(Quantities.getQuantity(2.0e4, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
 
-        // create second reaction
+        // third reaction
         EquilibriumReaction.inSimulation(simulation)
                 .addSubstrate(hia)
                 .addSubstrate(iodide)
@@ -363,9 +347,6 @@ public class SimulationExamples {
                 .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(3.1e4, PER_SECOND), MANUALLY_ANNOTATED))
                 .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(2.2, PER_SECOND), MANUALLY_ANNOTATED))
                 .build();
-
-        // add reactions
-        simulation.getModules().addAll(Arrays.asList(firstReaction, secondReaction));
 
         // add graph
         simulation.setGraph(graph);

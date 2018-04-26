@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
@@ -31,6 +32,20 @@ public abstract class AbstractModule implements Module {
      * The simulation that the module is applied to.
      */
     protected Simulation simulation;
+
+    private SimpleStringIdentifier identifier;
+
+    public SimpleStringIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(SimpleStringIdentifier identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getStringForProtocol() {
+        return toString();
+    }
 
     private Set<ChemicalEntity> referencedChemicalEntities;
 

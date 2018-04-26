@@ -42,8 +42,6 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      */
     private boolean elementary;
 
-    private SimpleStringIdentifier identifier;
-
     /**
      * The features of the reaction.
      */
@@ -58,14 +56,6 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         super(simulation);
         stoichiometricReactants = new ArrayList<>();
         features = new ChemistryFeatureContainer();
-    }
-
-    public SimpleStringIdentifier getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(SimpleStringIdentifier identifier) {
-        this.identifier = identifier;
     }
 
     /**
@@ -190,26 +180,42 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      *
      * @return A nicely formatted string representation of the reaction.
      */
-    public String getDisplayString() {
-        String substrates = stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isSubstrate)
-                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        + substrate.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
-        String products = stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isProduct)
-                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
-                        + product.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
+    public String getReactionString() {
+        String substrates = collectSubstrateString();
+        String products = collectProductsString();
         if (Character.isWhitespace(substrates.charAt(0))) {
             substrates = substrates.substring(1);
         }
         return substrates + " \u27f6" + products;
     }
 
+    protected String collectSubstrateString() {
+        return stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isSubstrate)
+                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
+                        + substrate.getEntity().getIdentifier())
+                .collect(Collectors.joining(" +"));
+    }
+
+    protected String collectProductsString() {
+        return stoichiometricReactants.stream()
+                .filter(StoichiometricReactant::isProduct)
+                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
+                        + product.getEntity().getIdentifier())
+                .collect(Collectors.joining(" +"));
+    }
+
+    public String getStringForProtocol() {
+        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier().getIdentifier() + System.lineSeparator() +
+                "  " + "reaction: " + getReactionString() + System.lineSeparator() +
+                "  " + "features: " + System.lineSeparator() +
+                features.listFeatures("    ");
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " (" + getDisplayString() + ")";
+        return getClass().getSimpleName() + ": " + getIdentifier() + " (" + getReactionString() + ")";
     }
 
     @Override

@@ -36,6 +36,16 @@ public class EquilibriumReaction extends Reaction {
                 productConcentration * backwardsRateConstant.getValue().doubleValue();
     }
 
+    @Override
+    public String getReactionString() {
+        String substrates = collectSubstrateString();
+        String products = collectProductsString();
+        if (Character.isWhitespace(substrates.charAt(0))) {
+            substrates = substrates.substring(1);
+        }
+        return substrates + " \u21CB" + products;
+    }
+
     public static class Builder extends Reaction.Builder<EquilibriumReaction, Builder> {
 
         public Builder(Simulation identifier) {
@@ -63,6 +73,5 @@ public class EquilibriumReaction extends Reaction {
         }
 
     }
-
 
 }

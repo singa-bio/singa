@@ -16,17 +16,14 @@ import javax.measure.quantity.Frequency;
  */
 public class MichaelisMentenReaction extends Reaction {
 
-    private final Enzyme enzyme;
+    public static Builder inSimulation(Simulation simulation) {
+        return new Builder(simulation);
+    }
 
-    public MichaelisMentenReaction(Simulation simulation, Enzyme enzyme) {
+    private Enzyme enzyme;
+
+    private MichaelisMentenReaction(Simulation simulation) {
         super(simulation);
-        this.enzyme = enzyme;
-        // features
-        availableFeatures.add(TurnoverNumber.class);
-        availableFeatures.add(MichaelisConstant.class);
-        setFeature(enzyme.getFeature(TurnoverNumber.class));
-        setFeature(enzyme.getFeature(MichaelisConstant.class));
-        // deltas
         addDeltaFunction(this::calculateDeltas, bioNode -> true);
     }
 
@@ -39,6 +36,32 @@ public class MichaelisMentenReaction extends Reaction {
         double substrate = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
         double enzyme = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), this.enzyme).getValue().doubleValue();
         return (kCat.getValue().doubleValue() * enzyme * substrate) / (km.getValue().doubleValue() + substrate);
+    }
+
+    public static class Builder extends Reaction.Builder<MichaelisMentenReaction, Builder> {
+
+        public Builder(Simulation identifier) {
+            super(identifier);
+        }
+
+        @Override
+        protected MichaelisMentenReaction createObject(Simulation simulation) {
+            return new MichaelisMentenReaction(simulation);
+        }
+
+        public Builder enzyme(Enzyme enzyme) {
+            topLevelObject.enzyme = enzyme;
+            topLevelObject.addReferencedEntity(enzyme);
+            topLevelObject.setFeature(enzyme.getFeature(TurnoverNumber.class));
+            topLevelObject.setFeature(enzyme.getFeature(MichaelisConstant.class));
+            return this;
+        }
+
+        @Override
+        protected Builder getBuilder() {
+            return this;
+        }
+
     }
 
 }

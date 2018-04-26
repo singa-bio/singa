@@ -3,10 +3,7 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.*;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -14,8 +11,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationExamples;
-import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -24,7 +19,6 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.util.Arrays;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
@@ -78,19 +72,17 @@ public class ReactionTest {
         }
 
         // setup reaction
-        MichaelisMentenReaction reaction = new MichaelisMentenReaction(simulation, aldolase);
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(fp, ReactantRole.DECREASING),
-                new StoichiometricReactant(ga, ReactantRole.INCREASING),
-                new StoichiometricReactant(gp, ReactantRole.INCREASING)
-        ));
+        MichaelisMentenReaction.inSimulation(simulation)
+                .enzyme(aldolase)
+                .addSubstrate(fp)
+                .addProduct(ga)
+                .addProduct(gp)
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction module
-        simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0,0);
+        AutomatonNode node = graph.getNode(0, 0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(200.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -137,17 +129,6 @@ public class ReactionTest {
             node.setConcentration(speciesB, 0.0);
         }
 
-//        EquilibriumReaction reaction = new EquilibriumReaction(simulation,
-//                Quantities.getQuantity(5.0, PER_SECOND),
-//                Quantities.getQuantity(10.0, PER_SECOND));
-//        // set reactants
-//        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-//                new StoichiometricReactant(speciesA, ReactantRole.DECREASING),
-//                new StoichiometricReactant(speciesB, ReactantRole.INCREASING)
-//        ));
-//        // set as elementary (no complex reaction)
-//        reaction.setElementary(true);
-
         // setup reaction
         EquilibriumReaction.inSimulation(simulation)
                 .addSubstrate(speciesA)
@@ -159,7 +140,7 @@ public class ReactionTest {
         // add graph
         simulation.setGraph(graph);
 
-        AutomatonNode node = graph.getNode(0,0);
+        AutomatonNode node = graph.getNode(0, 0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(25.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;
@@ -203,22 +184,17 @@ public class ReactionTest {
         }
 
         // create reaction
-        NthOrderReaction reaction = new NthOrderReaction(simulation, Quantities.getQuantity(0.07, PER_SECOND));
-        // set reactants
-        reaction.getStoichiometricReactants().addAll(Arrays.asList(
-                new StoichiometricReactant(dpo, ReactantRole.DECREASING, 2),
-                new StoichiometricReactant(ndo, ReactantRole.INCREASING, 4),
-                new StoichiometricReactant(oxygen, ReactantRole.INCREASING)
-        ));
-        // set as elementary (no complex reaction)
-        reaction.setElementary(true);
+        NthOrderReaction.inSimulation(simulation)
+                .addSubstrate(dpo, 2)
+                .addProduct(ndo, 4)
+                .addProduct(oxygen)
+                .rateConstant(new RateConstant(Quantities.getQuantity(0.07, PER_SECOND), MANUALLY_ANNOTATED))
+                .build();
 
         // add graph
         simulation.setGraph(graph);
-        // add the reaction
-        simulation.getModules().add(reaction);
 
-        AutomatonNode node = graph.getNode(0,0);
+        AutomatonNode node = graph.getNode(0, 0);
         Quantity<Time> currentTime;
         Quantity<Time> firstCheckpoint = Quantities.getQuantity(500.0, MILLI(SECOND));
         boolean firstCheckpointPassed = false;

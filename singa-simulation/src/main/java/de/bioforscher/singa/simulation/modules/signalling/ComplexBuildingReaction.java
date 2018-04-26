@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEnti
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -185,10 +186,20 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         return complex;
     }
 
-    public String getDisplayString() {
+    public String getReactionString() {
         String substrates = binder.getIdentifier() +" + " + bindee.getIdentifier();
         String products = complex.getIdentifier().toString();
         return substrates + " \u21CB " + products;
+    }
+
+    @Override
+    public String getStringForProtocol() {
+        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier().getIdentifier() + System.lineSeparator() +
+                "  " + "reaction: " + getReactionString() + System.lineSeparator() +
+                "  " + "binding: " + bindee.getIdentifier() + " is bound to " + binder.getIdentifier() + System.lineSeparator() +
+                "  " + "features: " + System.lineSeparator() +
+                features.listFeatures("    ");
     }
 
     @Override
@@ -237,7 +248,14 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         return availableFeatures;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+": "+ getIdentifier()+ " ("+ getReactionString()+")";
+    }
+
     public interface BindeeSelection {
+        BindeeSelection identifier(String identifier);
+        BindeeSelection identifier(SimpleStringIdentifier identifier);
         BindeeSectionSelection of(ChemicalEntity bindee);
         BindeeSectionSelection of(ChemicalEntity bindee, ForwardsRateConstant forwardsRateConstant);
     }
@@ -260,17 +278,23 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         ComplexBuildingReaction build();
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+" ("+getDisplayString()+")";
-    }
-
     public static class BindingBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection, BuilderStep {
 
         private ComplexBuildingReaction module;
 
         public BindingBuilder(Simulation simulation) {
             module = new ComplexBuildingReaction(simulation);
+        }
+
+        @Override
+        public BindeeSelection identifier(String identifier) {
+            return identifier(new SimpleStringIdentifier(identifier));
+        }
+
+        @Override
+        public BindeeSelection identifier(SimpleStringIdentifier identifier) {
+            module.setIdentifier(identifier);
+            return this;
         }
 
         @Override
