@@ -3,6 +3,7 @@ package de.bioforscher.singa.mathematics.topology.grids.rectangular;
 import de.bioforscher.singa.mathematics.topology.model.DiscreteGrid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,6 +53,24 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Recta
                     results.add(value);
                 }
             }
+        }
+        return results;
+    }
+
+    public List<ValueType> getColumn(int columnIndex) {
+        if (columnIndex > width - 1) {
+            throw new IndexOutOfBoundsException("The row " + columnIndex + " is out of bounds.");
+        }
+        return Arrays.asList(values[columnIndex]);
+    }
+
+    public List<ValueType> getRow(int rowIndex) {
+        if (rowIndex > height - 1) {
+            throw new IndexOutOfBoundsException("The row " + rowIndex + " is out of bounds.");
+        }
+        List<ValueType> results = new ArrayList<>();
+        for (int columnIndex = 0; columnIndex < width; columnIndex++) {
+            results.add(values[columnIndex][rowIndex]);
         }
         return results;
     }

@@ -2,8 +2,11 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
@@ -91,7 +94,7 @@ public class Simulation {
     /**
      * The chemical entities referenced in the graph.
      */
-    private HashMap<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
+    private Map<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
 
     /**
      * The globally applied parameters.
@@ -108,6 +111,8 @@ public class Simulation {
      */
     private ComparableQuantity<Time> elapsedTime;
 
+    private boolean modulesInitialized;
+
     /**
      * Creates a new plain simulation.
      */
@@ -116,6 +121,7 @@ public class Simulation {
         chemicalEntities = new HashMap<>();
         observedNodes = new HashSet<>();
         elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
+        modulesInitialized = false;
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
     }
@@ -125,6 +131,11 @@ public class Simulation {
      */
     public void nextEpoch() {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
+        if (!modulesInitialized) {
+            initializeModules();
+            initializeGraph();
+            modulesInitialized = true;
+        }
         // clear observed nodes if necessary
         if (!observedNodes.isEmpty()) {
             for (AutomatonNode observedNode : observedNodes) {
@@ -146,6 +157,31 @@ public class Simulation {
             if (harmonizer.getEpsilon() - harmonizer.getLargestLocalError().getValue() > 0.1 * harmonizer.getEpsilon()) {
                 // try larger time step next time
                 harmonizer.increaseTimeStep();
+            }
+        }
+    }
+
+    private void initializeModules() {
+        logger.info("Initializing features required for each module.");
+        for (Module module : modules) {
+            for (Class<? extends Feature> featureClass : module.getRequiredFeatures()) {
+                logger.debug("Checking {} required for {}.", featureClass.getSimpleName(), module);
+                for (ChemicalEntity chemicalEntity : module.getReferencedEntities()) {
+                    if (!chemicalEntity.hasFeature(featureClass)) {
+                        chemicalEntity.setFeature(featureClass);
+                    }
+                }
+            }
+        }
+    }
+
+    private void initializeGraph() {
+        logger.info("Initializing chemical entities.");
+        // reference all entities
+        for (AutomatonNode automatonNode : graph.getNodes()) {
+            ConcentrationContainer concentrationContainer = automatonNode.getConcentrationContainer();
+            if (concentrationContainer instanceof MembraneContainer) {
+                ((MembraneContainer) concentrationContainer).setReferencedEntities(new HashSet<>(chemicalEntities.values()));
             }
         }
     }
@@ -223,6 +259,10 @@ public class Simulation {
      */
     public Collection<ChemicalEntity> getChemicalEntities() {
         return chemicalEntities.values();
+    }
+
+    public Map<SimpleStringIdentifier, ChemicalEntity> getChemicalEntityMap() {
+        return chemicalEntities;
     }
 
     public void addReferencedEntities(Collection<? extends ChemicalEntity> entities) {

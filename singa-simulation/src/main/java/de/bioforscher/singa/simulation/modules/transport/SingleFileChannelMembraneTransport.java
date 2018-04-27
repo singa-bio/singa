@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -21,6 +22,12 @@ import java.util.Set;
  * @author cl
  */
 public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndependentModule {
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(OsmoticPermeability.class);
+    }
+
 
     public static TransporterStep inSimulation(Simulation simulation) {
         return new SingleFileChannelMembraneTransportBuilder(simulation);
@@ -129,6 +136,11 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
 
     private boolean isInnerPhase(MembraneContainer container) {
         return getCurrentCellSection().equals(container.getInnerPhaseSection());
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     @Override

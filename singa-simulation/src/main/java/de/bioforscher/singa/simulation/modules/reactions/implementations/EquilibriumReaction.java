@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
@@ -9,11 +10,20 @@ import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author cl
  */
 public class EquilibriumReaction extends Reaction {
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(ForwardsRateConstant.class);
+        requiredFeatures.add(BackwardsRateConstant.class);
+    }
+
 
     public static Builder inSimulation(Simulation simulation) {
         return new Builder(simulation);
@@ -44,6 +54,11 @@ public class EquilibriumReaction extends Reaction {
             substrates = substrates.substring(1);
         }
         return substrates + " \u21CB" + products;
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     public static class Builder extends Reaction.Builder<EquilibriumReaction, Builder> {

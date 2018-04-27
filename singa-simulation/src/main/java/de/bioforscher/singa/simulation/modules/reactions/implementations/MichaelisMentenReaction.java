@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -10,6 +11,8 @@ import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author cl
@@ -18,6 +21,12 @@ public class MichaelisMentenReaction extends Reaction {
 
     public static Builder inSimulation(Simulation simulation) {
         return new Builder(simulation);
+    }
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(TurnoverNumber.class);
+        requiredFeatures.add(MichaelisConstant.class);
     }
 
     private Enzyme enzyme;
@@ -36,6 +45,11 @@ public class MichaelisMentenReaction extends Reaction {
         double substrate = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
         double enzyme = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), this.enzyme).getValue().doubleValue();
         return (kCat.getValue().doubleValue() * enzyme * substrate) / (km.getValue().doubleValue() + substrate);
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     public static class Builder extends Reaction.Builder<MichaelisMentenReaction, Builder> {

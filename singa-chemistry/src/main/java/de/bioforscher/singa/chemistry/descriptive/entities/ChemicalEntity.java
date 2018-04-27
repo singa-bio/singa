@@ -64,6 +64,8 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
 
     protected FeatureContainer features;
 
+    private boolean membraneAnchored;
+
     /**
      * Creates a new Chemical Entity with the given identifier.
      *
@@ -71,6 +73,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
      */
     protected ChemicalEntity(SimpleStringIdentifier identifier) {
         this.identifier = identifier;
+        membraneAnchored = false;
         annotations = new ArrayList<>();
         features = new ChemistryFeatureContainer();
         IdentifierPatternRegistry.instantiate(identifier.getIdentifier()).ifPresent(this::setFeature);
@@ -93,6 +96,14 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isMembraneAnchored() {
+        return membraneAnchored;
+    }
+
+    public void setMembraneAnchored(boolean membraneAnchored) {
+        this.membraneAnchored = membraneAnchored;
     }
 
     @Override
@@ -227,6 +238,11 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
 
         public BuilderType name(String name) {
             topLevelObject.setName(name);
+            return builderObject;
+        }
+
+        public BuilderType setMembraneAnchored(boolean membraneAnchored) {
+            topLevelObject.setMembraneAnchored(membraneAnchored);
             return builderObject;
         }
 

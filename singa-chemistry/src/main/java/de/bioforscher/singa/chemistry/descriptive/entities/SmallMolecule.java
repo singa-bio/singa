@@ -1,5 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
+import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.logp.LogP;
 import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
@@ -21,6 +22,14 @@ import java.util.Set;
  * @see <a href="https://de.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_Specification">Wikipedia: SMILES</a>
  */
 public class SmallMolecule extends ChemicalEntity {
+
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
 
     public static final SmallMolecule UNKNOWN_SPECIES = new SmallMolecule.Builder("UNK")
             .name("Unknown chemical species")

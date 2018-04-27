@@ -80,8 +80,6 @@ public class AutomatonGraphs {
         return automatonGraph;
     }
 
-
-
     public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, EnclosedCompartment innerSection, CellSection outerSection) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(), outerSection.getName());
         // create Membrane for enclosed compartment

@@ -31,6 +31,13 @@ import static de.bioforscher.singa.simulation.model.compartments.CellSectionStat
  */
 public class ComplexBuildingReaction extends AbstractNodeSpecificModule implements Featureable {
 
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(ForwardsRateConstant.class);
+        requiredFeatures.add(BackwardsRateConstant.class);
+    }
+
+
     public static BindeeSelection inSimulation(Simulation simulation) {
         return new BindingBuilder(simulation);
     }
@@ -200,6 +207,11 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
                 "  " + "binding: " + bindee.getIdentifier() + " is bound to " + binder.getIdentifier() + System.lineSeparator() +
                 "  " + "features: " + System.lineSeparator() +
                 features.listFeatures("    ");
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     @Override

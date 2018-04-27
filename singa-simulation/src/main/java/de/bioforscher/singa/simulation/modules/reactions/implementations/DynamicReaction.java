@@ -1,5 +1,6 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.features.scale.AppliedScale;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -7,7 +8,9 @@ import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The velocity of dynamic reactions is determined by {@link DynamicKineticLaw}s that can be defined by arbitrary
@@ -73,6 +76,11 @@ public class DynamicReaction extends Reaction {
      */
     public void setCatalyticReactants(List<CatalyticReactant> catalyticReactants) {
         this.catalyticReactants = catalyticReactants;
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return new HashSet<>();
     }
 
     @Override

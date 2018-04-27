@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -11,10 +12,18 @@ import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
 
     public static CargoStep inSimulation(Simulation simulation) {
         return new MembraneDiffusionBuilder(simulation);
+    }
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(MembranePermeability.class);
     }
 
     private ChemicalEntity cargo;
@@ -103,6 +112,11 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
 
     private boolean isCargo() {
         return getCurrentChemicalEntity().equals(cargo);
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     @Override

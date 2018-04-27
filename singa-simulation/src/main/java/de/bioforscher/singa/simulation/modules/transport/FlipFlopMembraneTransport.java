@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
@@ -16,6 +17,8 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author cl
@@ -24,6 +27,13 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     public static SelectionStep inSimulation(Simulation simulation) {
         return new FlipFlopMembraneTransportBuilder(simulation);
+    }
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(MembraneEntry.class);
+        requiredFeatures.add(MembraneExit.class);
+        requiredFeatures.add(MembraneFlipFlop.class);
     }
 
     public FlipFlopMembraneTransport(Simulation simulation) {
@@ -119,6 +129,11 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
      */
     private boolean onlyForReferencedEntities() {
         return getReferencedEntities().contains(getCurrentChemicalEntity());
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     @Override

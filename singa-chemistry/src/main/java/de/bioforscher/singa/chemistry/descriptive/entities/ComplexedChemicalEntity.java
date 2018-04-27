@@ -22,6 +22,14 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
             "Computed by the Sum of parts",
             "none");
 
+    public static Builder create(String identifier) {
+        return new Builder(identifier);
+    }
+
+    public static Builder create(SimpleStringIdentifier identifier) {
+        return new Builder(identifier);
+    }
+
     private final Map<ChemicalEntity, Integer> associatedParts;
 
     /**

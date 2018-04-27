@@ -2,9 +2,11 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -15,6 +17,8 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Diffusion is the net movement of molecules or atoms from a region of high concentration to a region of low
@@ -25,6 +29,11 @@ import java.util.Collection;
  * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
+
+    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    static {
+        requiredFeatures.add(Diffusivity.class);
+    }
 
     public static SelectionStep inSimulation(Simulation simulation) {
         return new DiffusionBuilder(simulation);
@@ -54,26 +63,44 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         ChemicalEntity currentChemicalEntity = getCurrentChemicalEntity();
         CellSection currentCellSection = getCurrentCellSection();
         final double currentConcentration = concentrationContainer.getAvailableConcentration(currentCellSection, currentChemicalEntity).getValue().doubleValue();
+        final double diffusivity = getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
         // calculate entering term
         int numberOfNeighbors = 0;
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-            final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
-            if (availableConcentration != null) {
-                concentration += availableConcentration.getValue().doubleValue();
-                numberOfNeighbors++;
+            if (!currentChemicalEntity.isMembraneAnchored() || getCurrentNode().getState() != CellSectionState.MEMBRANE) {
+                // classical diffusion for non membrane anchored or non membrane nodes
+                final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+                if (availableConcentration != null) {
+                    concentration += availableConcentration.getValue().doubleValue();
+                    numberOfNeighbors++;
+                }
+            } else {
+                // membrane anchored chemical entities only exchange with other membrane nodes
+                if (neighbour.getState() == CellSectionState.MEMBRANE) {
+                    final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+                    if (availableConcentration != null) {
+                        concentration += availableConcentration.getValue().doubleValue();
+                        numberOfNeighbors++;
+                    }
+                }
             }
         }
+
         // entering amount
-        final double enteringConcentration = concentration * getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
+        final double enteringConcentration = concentration * diffusivity;
         // calculate leaving amount
-        final double leavingConcentration = numberOfNeighbors * getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue() * currentConcentration;
+        final double leavingConcentration = numberOfNeighbors * diffusivity * currentConcentration;
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
         return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
+    }
 
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
     }
 
     @Override
@@ -84,7 +111,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     public interface SelectionStep {
         BuildStep onlyFor(ChemicalEntity chemicalEntity);
 
-        BuildStep forAll(ChemicalEntity ... chemicalEntities );
+        BuildStep forAll(ChemicalEntity... chemicalEntities);
 
         BuildStep forAll(Collection<ChemicalEntity> chemicalEntities);
 
@@ -98,7 +125,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
         FreeDiffusion module;
 
-        public DiffusionBuilder(Simulation simulation) {
+        DiffusionBuilder(Simulation simulation) {
             module = new FreeDiffusion(simulation);
         }
 
@@ -107,7 +134,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
             return this;
         }
 
-        public BuildStep forAll(ChemicalEntity ... chemicalEntities ) {
+        public BuildStep forAll(ChemicalEntity... chemicalEntities) {
             for (ChemicalEntity chemicalEntity : chemicalEntities) {
                 module.addReferencedEntity(chemicalEntity);
             }

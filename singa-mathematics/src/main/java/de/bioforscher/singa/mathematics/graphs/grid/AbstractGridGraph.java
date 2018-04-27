@@ -41,6 +41,13 @@ public abstract class AbstractGridGraph<NodeType extends Node<NodeType, VectorTy
         return grid.getHeight();
     }
 
+    public Collection<NodeType> getNodesOfColumn(int columnIndex) {
+        return grid.getColumn(columnIndex);
+    }
+
+    public Collection<NodeType> getNodesOfRow(int rowIndex) {
+        return grid.getRow(rowIndex);
+    }
 
     @Override
     public Collection<NodeType> getNodes() {

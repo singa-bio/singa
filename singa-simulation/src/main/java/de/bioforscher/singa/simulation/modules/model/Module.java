@@ -1,7 +1,11 @@
 package de.bioforscher.singa.simulation.modules.model;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
+import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+
+import java.util.Set;
 
 /**
  * A Module encapsulates each model element that applies updates to the simulation.
@@ -13,6 +17,10 @@ public interface Module {
     SimpleStringIdentifier getIdentifier();
 
     String getStringForProtocol();
+
+    Set<Class<? extends Feature>> getRequiredFeatures();
+
+    Set<ChemicalEntity>  getReferencedEntities();
 
     /**
      * Calculates all potential updates to the system. The updates are referenced in each node and not applied until

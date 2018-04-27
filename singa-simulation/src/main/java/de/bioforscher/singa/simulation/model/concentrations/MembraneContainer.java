@@ -35,14 +35,16 @@ public class MembraneContainer implements ConcentrationContainer {
         this.outerPhaseSection = outerPhaseSection;
         this.innerPhaseSection = innerPhaseSection;
         this.membrane = membrane;
-
         outerPhase = new HashMap<>();
         outerLayer = new HashMap<>();
         innerLayer = new HashMap<>();
         innerPhase = new HashMap<>();
-
         referencedEntities = new HashSet<>();
         referencedSections = new HashSet<>();
+        referencedSections.add(outerPhaseSection);
+        referencedSections.add(innerPhaseSection);
+        referencedSections.add(membrane.getOuterLayer());
+        referencedSections.add(membrane.getInnerLayer());
     }
 
     public MembraneContainer(MembraneContainer container) {
@@ -53,6 +55,10 @@ public class MembraneContainer implements ConcentrationContainer {
         outerLayer = new HashMap<>(container.outerLayer);
         innerLayer = new HashMap<>(container.innerLayer);
         innerPhase = new HashMap<>(container.innerPhase);
+        referencedEntities = new HashSet<>();
+        referencedSections = new HashSet<>();
+        referencedSections.addAll(container.getAllReferencedSections());
+        referencedEntities.addAll(container.getAllReferencedEntities());
     }
 
     @Override

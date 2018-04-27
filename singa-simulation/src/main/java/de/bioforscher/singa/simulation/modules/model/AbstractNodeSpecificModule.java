@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * @author cl
  */
-public class AbstractNodeSpecificModule extends AbstractModule {
+public abstract class AbstractNodeSpecificModule extends AbstractModule {
 
     /**
      * The logger.

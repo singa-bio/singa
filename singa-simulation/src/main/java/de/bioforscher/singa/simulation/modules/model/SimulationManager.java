@@ -112,6 +112,7 @@ public class SimulationManager extends Task<Simulation> {
 
     /**
      * Sets a condition determining when the simulation should be terminated.
+     *
      * @param terminationCondition The termination condition.
      */
     public void setTerminationCondition(Predicate<Simulation> terminationCondition) {
@@ -120,6 +121,7 @@ public class SimulationManager extends Task<Simulation> {
 
     /**
      * Schedules the termination of the simulation after the given time (simulation time) has passed.
+     *
      * @param time The time.
      */
     public void setSimulationTerminationToTime(Quantity<Time> time) {
@@ -128,6 +130,7 @@ public class SimulationManager extends Task<Simulation> {
 
     /**
      * Schedules the termination of the simulation after the given number of epochs have passed.
+     *
      * @param numberOfEpochs The number of epochs.
      */
     public void setSimulationTerminationToEpochs(long numberOfEpochs) {
@@ -136,6 +139,7 @@ public class SimulationManager extends Task<Simulation> {
 
     /**
      * Sets a condition determining when events should be emitted.
+     *
      * @param emitCondition The emission condition.
      */
     public void setUpdateEmissionCondition(Predicate<Simulation> emitCondition) {
@@ -145,9 +149,10 @@ public class SimulationManager extends Task<Simulation> {
     /**
      * Sets the emission of updates for a rending engine. If more epochs are processed than can be displayed the epochs
      * in between are not emitted. If epoch calculation is slower each epoch is emitted.
+     *
      * @param fps The frames (emits) per (real time) second.
      */
-    public void setUpdateEmissionToFPS(int fps) {
+    public void tieUpdateEmissionToFPS(int fps) {
         int skipTicks = 1000 / fps;
         emitCondition = s -> {
             long currentMillis = System.currentTimeMillis();
@@ -161,6 +166,7 @@ public class SimulationManager extends Task<Simulation> {
 
     /**
      * Schedules the emission of events after the given time (simulation time) has passed.
+     *
      * @param timePassed The (simulation) time passed.
      */
     public void setUpdateEmissionToTimePassed(Quantity<Time> timePassed) {
@@ -174,8 +180,17 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    public void emitGraphEvent(Simulation simulation) {
+        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph()));
+    }
+    public void emitNodeEvent(Simulation simulation, AutomatonNode automatonNode) {
+        nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
+    }
+
+
     /**
      * Returns the simulation.
+     *
      * @return The simulation.
      */
     public Simulation getSimulation() {
@@ -187,9 +202,9 @@ public class SimulationManager extends Task<Simulation> {
         while (!isCancelled() && terminationCondition.test(simulation)) {
             if (emitCondition.test(simulation)) {
                 logger.info("Emitting event after {} (epoch {}).", simulation.getElapsedTime(), simulation.getEpoch());
-                graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph()));
+                emitGraphEvent(simulation);
                 for (AutomatonNode automatonNode : simulation.getObservedNodes()) {
-                    nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
+                    emitNodeEvent(simulation, automatonNode);
                     logger.debug("Emitted next epoch event for node {}.", automatonNode.getIdentifier());
                 }
             }
