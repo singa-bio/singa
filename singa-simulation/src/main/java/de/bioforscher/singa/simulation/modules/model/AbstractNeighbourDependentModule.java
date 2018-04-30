@@ -113,7 +113,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
                     if (entry.getValue().test(concentrationContainer)) {
                         Delta fullDelta = entry.getKey().apply(concentrationContainer);
                         if (deltaIsValid(fullDelta)) {
-                            logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
+                            logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getIdentifier(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
                             currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
                         }
                     }
@@ -147,7 +147,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     @Override
     void applyHalfStepDelta(Delta halfDelta) {
         halfDelta = halfDelta.multiply(2.0);
-        logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getName(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+        logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getIdentifier(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
         currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
         currentNode.addPotentialDelta(halfDelta);
     }

@@ -8,6 +8,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
@@ -21,6 +22,7 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +36,7 @@ import static tec.uom.se.unit.Units.METRE;
 /**
  * @author cl
  */
-public class MembraneBlockedDiffusionTest {
+public class MembraneRelevantDiffusionTest {
 
     @Test
     public void shouldSimulateBlockedDiffusion() {
@@ -46,22 +48,22 @@ public class MembraneBlockedDiffusionTest {
 
         Simulation simulation = new Simulation();
 
-        final AutomatonGraph automatonGraph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(3,1));
+        final AutomatonGraph automatonGraph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(3, 1));
 
         EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
         EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
         Membrane membrane = Membrane.forCompartment(right);
 
-        AutomatonNode leftNode = automatonGraph.getNode(0,0);
+        AutomatonNode leftNode = automatonGraph.getNode(0, 0);
         leftNode.setState(CellSectionState.AQUEOUS);
         leftNode.setCellSection(left);
         leftNode.setConcentration(ammonia, 1.0);
 
-        AutomatonNode rightNode = automatonGraph.getNode(2,0);
+        AutomatonNode rightNode = automatonGraph.getNode(2, 0);
         rightNode.setState(CellSectionState.CYTOSOL);
         rightNode.setCellSection(right);
 
-        AutomatonNode membraneNode = automatonGraph.getNode(1,0);
+        AutomatonNode membraneNode = automatonGraph.getNode(1, 0);
         membraneNode.setState(CellSectionState.MEMBRANE);
         MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
         concentrationContainer.setAvailableConcentration(left, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
@@ -150,9 +152,8 @@ public class MembraneBlockedDiffusionTest {
         EnvironmentalParameters.reset();
     }
 
-
-    @Test
-    public void shouldSimulateMembraneAnchoredDiffusion() {
+    private Simulation setupAnchorSimulation() {
+        EnvironmentalParameters.reset();
         // simulation
         Simulation simulation = new Simulation();
         // g-protein subunits
@@ -172,7 +173,7 @@ public class MembraneBlockedDiffusionTest {
                 .setMembraneAnchored(true)
                 .build();
         // create graph
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(3, 2);
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(1, 2);
         simulation.setGraph(graph);
         // sections
         EnclosedCompartment outerSection = new EnclosedCompartment("Ext", "Extracellular region");
@@ -188,25 +189,133 @@ public class MembraneBlockedDiffusionTest {
         graph.addCellSection(outerSection);
         graph.addCellSection(innerSection);
         graph.addCellSection(membrane);
-        // add some protein in cytoplasm
-        AutomatonNode node1 = graph.getNode(2, 1);
-        node1.setConcentration(gProteinBetaGamma, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
-        AutomatonNode node2 = graph.getNode(0, 0);
-        node2.setAvailableConcentration(gProteinBetaGamma, innerSection, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
         // add diffusion
         FreeDiffusion.inSimulation(simulation)
-                .onlyFor(gProteinBetaGamma)
+                .forAll(gProteinBetaGamma, gProteinBeta)
                 .build();
-        // simulate
-        for (int i = 0; i < 100; i++) {
+
+        return simulation;
+    }
+
+    @Test
+    public void shouldAnchorInMembrane() {
+        Simulation simulation = setupAnchorSimulation();
+
+        // get entities
+        ChemicalEntity gProteinBeta = simulation.getChemicalEntity("G(B)");
+        ChemicalEntity gProteinBetaGamma = simulation.getChemicalEntity("G(BG)");
+        // get cell sections
+        CellSection cytoplasm = simulation.getCellSection("Cyt");
+
+        // add some protein in cytoplasm
+        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
+        AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
+        // bond
+        node1.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
+                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+        // unbound
+        node1.setAvailableConcentration(gProteinBeta, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
+                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+
+        for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
+            // concentration of bound chemical entity should stay zero in non-membrane node
+            Quantity<MolarConcentration> betaGammaConcentration = node2.getConcentration(gProteinBetaGamma);
+            assertEquals(0.0, betaGammaConcentration.getValue().doubleValue(), 0.0);
+            // concentration of unbound chemical entity should increase in non-membrane node
+            Quantity<MolarConcentration> betaConcentration = node2.getConcentration(gProteinBeta);
+            assertTrue(betaConcentration.getValue().doubleValue() > 0.0);
+            // concentration of bound chemical entity should stay equal in non-membrane node
+            Quantity<MolarConcentration> remainingConcentration = node1.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            assertEquals(0.1, remainingConcentration.getValue().doubleValue(), 0.0);
         }
-        // Expectations: 0,0 should not leak and 0,2 should absorb
 
     }
 
+    @Test
+    public void shouldAbsorbFromCytoplasm() {
+        Simulation simulation = setupAnchorSimulation();
+
+        // get entities
+        ChemicalEntity gProteinBetaGamma = simulation.getChemicalEntity("G(BG)");
+        // get cell sections
+        CellSection cytoplasm = simulation.getCellSection("Cyt");
+
+        // add some protein in cytoplasm
+        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
+        AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
+        // bond
+        node2.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
+                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+
+        for (int i = 0; i < 10; i++) {
+            simulation.nextEpoch();
+            // concentration of bound chemical entity should increase in membrane node
+            Quantity<MolarConcentration> availableConcentration = node1.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
+            // and decrease in the other node
+            Quantity<MolarConcentration> remainingConcentration = node2.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            assertTrue(remainingConcentration.getValue().doubleValue() < 0.1);
+        }
+    }
+
+    @Test
+    public void shouldRecieveFromNeighbourMembrane() {
+        EnvironmentalParameters.reset();
+        // simulation
+        Simulation simulation = new Simulation();
+        // g-protein subunits
+        Protein gProteinBeta = new Protein.Builder("G(B)")
+                .name("G protein subunit beta")
+                .additionalIdentifier(new UniProtIdentifier("P62873"))
+                .build();
+        Protein gProteinGamma = new Protein.Builder("G(G)")
+                .name("G protein subunit gamma")
+                .additionalIdentifier(new UniProtIdentifier("P63211"))
+                .build();
+        // complexed entity
+        ComplexedChemicalEntity gProteinBetaGamma = ComplexedChemicalEntity.create("G(BG)")
+                .name("G protein beta gamma complex")
+                .addAssociatedPart(gProteinBeta)
+                .addAssociatedPart(gProteinGamma)
+                .setMembraneAnchored(true)
+                .build();
+        // create graph
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(2, 1);
+        simulation.setGraph(graph);
+        // sections
+        EnclosedCompartment outerSection = new EnclosedCompartment("Ext", "Extracellular region");
+        EnclosedCompartment innerSection = new EnclosedCompartment("Cyt", "Cytoplasm");
+        Membrane membrane = Membrane.forCompartment(innerSection);
+        // distribute nodes to sections
+        graph.getNodesOfRow(0).forEach(node -> {
+            node.setCellSection(membrane);
+            node.setConcentrationContainer(new MembraneContainer(outerSection, innerSection, membrane));
+        });
+        // graph.getNodesOfRow(1).forEach(node -> node.setCellSection(innerSection));
+        // reference sections in graph
+        graph.addCellSection(outerSection);
+        graph.addCellSection(innerSection);
+        graph.addCellSection(membrane);
+        // add diffusion
+        FreeDiffusion.inSimulation(simulation)
+                .forAll(gProteinBetaGamma, gProteinBeta)
+                .build();
+
+        // add some protein in cytoplasm
+        AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
+        AutomatonNode node2 = simulation.getGraph().getNode(1, 0);
+        // bond
+        node1.setAvailableConcentration(gProteinBetaGamma, innerSection, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
+                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+
+        for (int i = 0; i < 10; i++) {
+            simulation.nextEpoch();
+            // concentration of bound chemical entity should increase in neighboring membrane node
+            Quantity<MolarConcentration> availableConcentration = node2.getAvailableConcentration(gProteinBetaGamma, innerSection);
+            assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
+        }
+    }
 
 
 }

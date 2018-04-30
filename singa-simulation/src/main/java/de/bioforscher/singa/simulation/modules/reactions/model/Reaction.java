@@ -183,7 +183,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     public String getReactionString() {
         String substrates = collectSubstrateString();
         String products = collectProductsString();
-        if (Character.isWhitespace(substrates.charAt(0))) {
+        if (substrates.length() > 1 && Character.isWhitespace(substrates.charAt(0))) {
             substrates = substrates.substring(1);
         }
         return substrates + " \u27f6" + products;

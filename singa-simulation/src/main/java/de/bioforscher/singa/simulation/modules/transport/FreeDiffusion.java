@@ -31,6 +31,7 @@ import java.util.Set;
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
     private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+
     static {
         requiredFeatures.add(Diffusivity.class);
     }
@@ -69,23 +70,33 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         double concentration = 0;
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
-            if (!currentChemicalEntity.isMembraneAnchored() || getCurrentNode().getState() != CellSectionState.MEMBRANE) {
-                // classical diffusion for non membrane anchored or non membrane nodes
+
+            if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(neighbour) || bothAreMembrane(neighbour)) {
+                // if entity is not anchored in membrane
+                // if current is membrane and neighbour is membrane
+                // if current is non-membrane and neighbour is non-membrane
+                // classical diffusion
                 final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
                 if (availableConcentration != null) {
                     concentration += availableConcentration.getValue().doubleValue();
                     numberOfNeighbors++;
                 }
             } else {
-                // membrane anchored chemical entities only exchange with other membrane nodes
-                if (neighbour.getState() == CellSectionState.MEMBRANE) {
+                // if current is non-membrane and neighbour is membrane
+                if (neigbourIsPotentialSource(neighbour)) {
+                    // leaving amount stays unchanged, but entering concentration is relevant
                     final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
                     if (availableConcentration != null) {
                         concentration += availableConcentration.getValue().doubleValue();
-                        numberOfNeighbors++;
                     }
                 }
+                // if current is membrane and neighbour is non-membrane
+                if (neigbourIsPotentialTarget(neighbour)) {
+                    // assert effect on leaving concentration but entering concentration stays unchanged
+                    numberOfNeighbors++;
+                }
             }
+
         }
 
         // entering amount
@@ -97,6 +108,27 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         // return delta
         return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
     }
+
+    private boolean chemicalEntityIsNotMembraneAnchored() {
+        return !getCurrentChemicalEntity().isMembraneAnchored();
+    }
+
+    private boolean bothAreNonMembrane(AutomatonNode neighbour) {
+        return getCurrentNode().getState() != CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+    }
+
+    private boolean bothAreMembrane(AutomatonNode neighbour) {
+        return getCurrentNode().getState() == CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+    }
+
+    private boolean neigbourIsPotentialTarget(AutomatonNode neighbour) {
+        return getCurrentNode().getState() != CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+    }
+
+    private boolean neigbourIsPotentialSource(AutomatonNode neighbour) {
+        return getCurrentNode().getState() == CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+    }
+
 
     @Override
     public Set<Class<? extends Feature>> getRequiredFeatures() {

@@ -76,6 +76,6 @@ public class LocalError {
 
     @Override
     public String toString() {
-        return "E("+node.getIdentifier()+","+entity.getIdentifier()+") = "+value;
+        return equals(MINIMAL_EMPTY_ERROR)?"Minimal":"E("+node.getIdentifier()+","+entity.getIdentifier()+") = "+value;
     }
 }

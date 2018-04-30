@@ -44,10 +44,15 @@ public class ColorScale {
      * @return The resulting color.
      */
     public Color getColor(double value) {
-        if (value < minimalValue || value > maximalValue) {
-            throw new IllegalArgumentException(
-                    "The requested value " + value + " is not contained in the initialized range [" + minimalValue
-                            + "," + maximalValue + "].");
+        // cap colors
+//            throw new IllegalArgumentException(
+//                    "The requested value " + value + " is not contained in the initialized range [" + minimalValue
+//                            + "," + maximalValue + "].");
+        if (value < minimalValue ) {
+            value = minimalValue;
+        }
+        if (value > maximalValue) {
+            value = maximalValue;
         }
         final double requestedHue = (value - minimalValue) * scalingFactor + minimalHue;
         return Color.hsb(requestedHue, saturation, brightness);

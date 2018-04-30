@@ -106,13 +106,6 @@ public class ComplexBuildingReactionTest {
 
     }
 
-    public void testMembraneLeeching() {
-
-    }
-
-    public void testFreeBinding() {
-
-    }
 
 
 }

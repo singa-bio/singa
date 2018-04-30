@@ -32,6 +32,8 @@ public abstract class CellSection implements Nameable {
      */
     private Set<AutomatonNode> content;
 
+    private boolean isMembrane;
+
     /**
      * Creates a new CellSection with the given identifier and name.
      *
@@ -101,6 +103,14 @@ public abstract class CellSection implements Nameable {
      */
     public void setSubsection(boolean subsection) {
         isSubsection = subsection;
+    }
+
+    public boolean isMembrane() {
+        return isMembrane;
+    }
+
+    public void setMembrane(boolean membrane) {
+        isMembrane = membrane;
     }
 
     @Override

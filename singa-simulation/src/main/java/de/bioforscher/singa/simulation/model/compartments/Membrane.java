@@ -38,11 +38,14 @@ public class Membrane extends CellSection {
      */
     public Membrane(String identifier, String name, EnclosedCompartment innerCompartment) {
         super(identifier, name);
+        setMembrane(true);
         this.innerCompartment = innerCompartment;
         innerLayer = new EnclosedCompartment(identifier + "I", name + " Inner Layer");
         innerLayer.setSubsection(true);
+        innerLayer.setMembrane(true);
         outerLayer = new EnclosedCompartment(identifier + "O", name + " Outer Layer");
-        innerLayer.setSubsection(true);
+        outerLayer.setSubsection(true);
+        outerLayer.setMembrane(true);
     }
 
     /**

@@ -3,8 +3,10 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -166,9 +168,16 @@ public class Simulation {
         for (Module module : modules) {
             for (Class<? extends Feature> featureClass : module.getRequiredFeatures()) {
                 logger.debug("Checking {} required for {}.", featureClass.getSimpleName(), module);
-                for (ChemicalEntity chemicalEntity : module.getReferencedEntities()) {
-                    if (!chemicalEntity.hasFeature(featureClass)) {
-                        chemicalEntity.setFeature(featureClass);
+                if (module instanceof Featureable) {
+                    Featureable featureable = (Featureable) module;
+                    if (!featureable.hasFeature(featureClass)) {
+                        featureable.setFeature(featureClass);
+                    }
+                } else {
+                    for (ChemicalEntity chemicalEntity : module.getReferencedEntities()) {
+                        if (!chemicalEntity.hasFeature(featureClass)) {
+                            chemicalEntity.setFeature(featureClass);
+                        }
                     }
                 }
             }
@@ -265,10 +274,18 @@ public class Simulation {
         return chemicalEntities;
     }
 
+    public ChemicalEntity getChemicalEntity(String primaryIdentifier) {
+        return chemicalEntities.get(new SimpleStringIdentifier(primaryIdentifier));
+    }
+
     public void addReferencedEntities(Collection<? extends ChemicalEntity> entities) {
         for (ChemicalEntity entity : entities) {
             addReferencedEntity(entity);
         }
+    }
+
+    public CellSection getCellSection(String identifier) {
+        return graph.getCellSection(identifier);
     }
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {
