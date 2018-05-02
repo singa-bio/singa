@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/cleberecht/singa.svg?branch=master)](https://travis-ci.org/cleberecht/singa)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 [![MMTF support](https://img.shields.io/badge/MMTF-supported-blue.svg)](https://mmtf.rcsb.org/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1239726.svg)](https://doi.org/10.5281/zenodo.1239726)
 
 SiNGA (**Si**mulation of **N**atural Systems using **G**raph **A**utomata) is an open-source library containing tools especially for structural bioinformatics and systems biology.
 
@@ -16,7 +17,7 @@ SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/ar
     <dependency>
         <groupId>de.bioforscher.singa</groupId>
         <artifactId>singa-[module]</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.3</version>
     </dependency>
     <!-- more dependencies -->
 </dependencies>
