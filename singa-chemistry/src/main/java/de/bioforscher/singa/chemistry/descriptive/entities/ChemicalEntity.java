@@ -86,7 +86,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
 
     @Override
     public String getName() {
-        return name;
+        return name.equals("Unnamed chemical entity") ? identifier.getIdentifier() : name;
     }
 
     /**
@@ -227,6 +227,7 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
             topLevelObject = createObject(identifier);
             builderObject = getBuilder();
         }
+
         public Builder(String identifier) {
             topLevelObject = createObject(new SimpleStringIdentifier(identifier));
             builderObject = getBuilder();

@@ -107,5 +107,100 @@ public class ComplexBuildingReactionTest {
     }
 
 
+    @Test
+    public void shouldReactInsideAndOutside() {
+
+        logger.info("Testing Section Changing Binding (Membrane Absorption).");
+        // the rate constants
+        ForwardsRateConstant innerForwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
+        BackwardsRateConstant innerBackwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
+
+        ForwardsRateConstant outerForwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
+        BackwardsRateConstant outerBackwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
+
+        // the inner ligand
+        ChemicalEntity innerBindee = new SmallMolecule.Builder("inner bindee")
+                .name("inner bindee")
+                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
+
+        // the outer ligand
+        ChemicalEntity outerBindee = new SmallMolecule.Builder("outer bindee")
+                .name("outer bindee")
+                .assignFeature(new MolarMass(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
+
+        // the receptor
+        Protein binder = new Protein.Builder("binder")
+                .name("binder")
+                .assignFeature(new MolarMass(100, FeatureOrigin.MANUALLY_ANNOTATED))
+                .build();
+
+        // create simulation
+        Simulation simulation = new Simulation();
+
+        // create and add inner module
+        ComplexBuildingReaction innerBinding = ComplexBuildingReaction.inSimulation(simulation)
+                .of(innerBindee, innerForwardsRateConstant)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(binder, innerBackwardsRateConstant)
+                .to(CellSectionState.MEMBRANE)
+                .build();
+
+        // create and add outer module
+        ComplexBuildingReaction outerBinding = ComplexBuildingReaction.inSimulation(simulation)
+                .of(outerBindee, outerForwardsRateConstant)
+                .in(CellSectionState.NON_MEMBRANE)
+                .by(binder, innerBackwardsRateConstant)
+                .to(CellSectionState.MEMBRANE)
+                .build();
+
+        // setup graph
+        final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(automatonGraph);
+        // compartments
+        EnclosedCompartment outer = new EnclosedCompartment("Outer", "Outer");
+        EnclosedCompartment inner = new EnclosedCompartment("Inner", "Inner");
+        Membrane membrane = Membrane.forCompartment(inner);
+        // concentrations
+        AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
+        membraneNode.setState(CellSectionState.MEMBRANE);
+        MembraneContainer concentrationContainer = new MembraneContainer(outer, inner, membrane);
+        membraneNode.setConcentrationContainer(concentrationContainer);
+        membraneNode.setAvailableConcentration(outerBindee, outer, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(innerBindee, inner, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(binder, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(innerBinding.getComplex(), membrane.getOuterLayer(), Quantities.getQuantity(0.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.setAvailableConcentration(outerBinding.getComplex(), membrane.getOuterLayer(), Quantities.getQuantity(0.0, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+
+        // define sections
+        Set<CellSection> sections = new HashSet<>();
+        sections.add(outer);
+        sections.add(membrane.getOuterLayer());
+        sections.add(membrane.getInnerLayer());
+        sections.add(inner);
+        concentrationContainer.setReferencedSections(sections);
+
+        Quantity<MolarConcentration> previousInnerConcentration = null;
+        Quantity<MolarConcentration> previousOuterConcentration = null;
+        for (int i = 0; i < 10; i++) {
+            simulation.nextEpoch();
+            // inner assertions
+            Quantity<MolarConcentration> currentInnerConcentration = membraneNode.getAvailableConcentration(innerBinding.getComplex(), membrane.getOuterLayer());
+            if (previousInnerConcentration != null) {
+                assertTrue(currentInnerConcentration.getValue().doubleValue() > previousInnerConcentration.getValue().doubleValue());
+            }
+            previousInnerConcentration = currentInnerConcentration;
+            // outer assertions
+            Quantity<MolarConcentration> currentOuterConcentration = membraneNode.getAvailableConcentration(outerBinding.getComplex(), membrane.getOuterLayer());
+            if (previousOuterConcentration != null) {
+                assertTrue(currentOuterConcentration.getValue().doubleValue() > previousOuterConcentration.getValue().doubleValue());
+            }
+            previousOuterConcentration = currentOuterConcentration;
+        }
+
+    }
+
+
 
 }

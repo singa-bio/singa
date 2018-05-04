@@ -390,14 +390,16 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         AutomatonNode node = event.getNode();
         StringBuilder sb = new StringBuilder();
         for (Delta delta : node.getPotentialDeltas()) {
-            if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
-                sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
-                        .append(EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getModule()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getCellSection().getIdentifier()).append(SEPARATOR_CHARACTER)
-                        .append(EnvironmentalParameters.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
-                        .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
+            if (delta.getQuantity().getValue().doubleValue() > 0.0) {
+                if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
+                    sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
+                            .append(EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getModule()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getCellSection().getIdentifier()).append(SEPARATOR_CHARACTER)
+                            .append(EnvironmentalParameters.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
+                            .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
+                }
             }
         }
         try {

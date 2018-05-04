@@ -147,7 +147,9 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     @Override
     void applyHalfStepDelta(Delta halfDelta) {
         halfDelta = halfDelta.multiply(2.0);
-        logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getIdentifier(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+        if (halfDelta.getQuantity().getValue().doubleValue() > 0.0) {
+            logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getIdentifier(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+        }
         currentHalfDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), halfDelta);
         currentNode.addPotentialDelta(halfDelta);
     }

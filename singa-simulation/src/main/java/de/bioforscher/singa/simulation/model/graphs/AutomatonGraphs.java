@@ -75,12 +75,12 @@ public class AutomatonGraphs {
 
     public static AutomatonGraph singularGraph() {
         AutomatonGraph automatonGraph = new AutomatonGraph(1, 1);
-        AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0,0));
+        AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0, 0));
         automatonGraph.addNode(node);
         return automatonGraph;
     }
 
-    public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, EnclosedCompartment innerSection, CellSection outerSection) {
+    public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, EnclosedCompartment innerSection, CellSection outerSection, boolean switchSides) {
         logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(), outerSection.getName());
         // create Membrane for enclosed compartment
         Membrane membrane = Membrane.forCompartment(innerSection);
@@ -89,13 +89,21 @@ public class AutomatonGraphs {
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (numberOfColumns / 2)) {
                 // left half is outer
-                node.setCellSection(outerSection);
+                if (switchSides) {
+                    node.setCellSection(innerSection);
+                } else {
+                    node.setCellSection(outerSection);
+                }
             } else if (node.getIdentifier().getColumn() == (numberOfColumns / 2)) {
                 // middle is membrane
                 node.setCellSection(membrane);
             } else {
                 // right half is inner
-                node.setCellSection(innerSection);
+                if (switchSides) {
+                    node.setCellSection(outerSection);
+                } else {
+                    node.setCellSection(innerSection);
+                }
             }
         }
         // reference sections in graph

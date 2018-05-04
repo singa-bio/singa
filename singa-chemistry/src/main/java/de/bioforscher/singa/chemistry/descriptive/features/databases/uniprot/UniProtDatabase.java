@@ -37,7 +37,7 @@ public class UniProtDatabase {
         ChemicalEntity entity = (ChemicalEntity) featureable;
         Optional<UniProtIdentifier> identifierOptional = IdentifierPatternRegistry.find(UniProtIdentifier.class, entity.getAllIdentifiers());
         // try to get weight from UniProt Database
-        return identifierOptional.map(identifier1 -> new MolarMass(UniProtParserService.fetchMolarMass(identifier1), origin)).orElse(null);
+        return identifierOptional.map(identifier -> new MolarMass(UniProtParserService.fetchMolarMass(identifier), origin)).orElse(null);
     }
 
 }

@@ -121,7 +121,7 @@ public class MembraneRelevantDiffusionTest {
         // Membrane membrane = Membrane.forCompartment(right);
 
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, down, up);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, down, up, false);
 
         // set concentrations
         // only 5 left most nodes

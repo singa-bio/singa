@@ -14,9 +14,14 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.text.DecimalFormat;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
+
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * Changes in simulations can be observed by tagging {@link AutomatonNode}s of the {@link AutomatonGraph}. As a standard
@@ -62,10 +67,18 @@ public class SimulationManager extends Task<Simulation> {
      */
     private long nextTick = System.currentTimeMillis();
 
+    private long startingTime = System.currentTimeMillis();
+
+    private long previousTimeMillis = 0;
+    private Quantity<Time> previousTimeSimulation;
+
     /**
      * The time for the next update to be issued (in simulation time).
      */
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
+
+    private Quantity<Time> terminationTime;
+    private DecimalFormat df = new DecimalFormat("#.00");
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -125,6 +138,7 @@ public class SimulationManager extends Task<Simulation> {
      * @param time The time.
      */
     public void setSimulationTerminationToTime(Quantity<Time> time) {
+        terminationTime = time.to(MICRO(SECOND));
         setTerminationCondition(s -> s.getElapsedTime().isLessThan(time));
     }
 
@@ -183,6 +197,7 @@ public class SimulationManager extends Task<Simulation> {
     public void emitGraphEvent(Simulation simulation) {
         graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph()));
     }
+
     public void emitNodeEvent(Simulation simulation, AutomatonNode automatonNode) {
         nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
     }
@@ -207,6 +222,20 @@ public class SimulationManager extends Task<Simulation> {
                     emitNodeEvent(simulation, automatonNode);
                     logger.debug("Emitted next epoch event for node {}.", automatonNode.getIdentifier());
                 }
+                long currentTimeMillis = System.currentTimeMillis();
+                ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
+                double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
+                long timeRequired = System.currentTimeMillis() - startingTime;
+                long estimatedTimeRemaining = (long) (timeRequired / fractionDone) - timeRequired;
+
+                if (previousTimeMillis > 0) {
+                    ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
+                    double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+                    logger.info("estimated time remaining: " + formatMillis(estimatedTimeRemaining) + ", current simulation speed: " + df.format(speed)  +" µs(Simulation Time)/s(Real Time)");
+                }
+                previousTimeMillis = currentTimeMillis;
+                previousTimeSimulation = currentTimeSimulation;
+
             }
             simulation.nextEpoch();
         }
@@ -238,5 +267,42 @@ public class SimulationManager extends Task<Simulation> {
         }
     }
 
+
+    private static String formatMillis(long val) {
+        StringBuilder buf = new StringBuilder(20);
+        String sgn = "";
+
+        if (val < 0) {
+            sgn = "-";
+            val = Math.abs(val);
+        }
+
+        append(buf, sgn, 0, (val / 3600000));
+        val %= 3600000;
+        buf.append(" h ");
+        append(buf, "", 2, (val / 60000));
+        val %= 60000;
+        buf.append(" min");
+        // append(buf,":",2,(val/   1000)); val%=   1000;
+        // append(buf,".",3,(val        ));
+        return buf.toString();
+    }
+
+    /**
+     * Append a right-aligned and zero-padded numeric value to a `StringBuilder`.
+     */
+    private static void append(StringBuilder tgt, String pfx, int dgt, long val) {
+        tgt.append(pfx);
+        if (dgt > 1) {
+            int pad = (dgt - 1);
+            for (long xa = val; xa > 9 && pad > 0; xa /= 10) {
+                pad--;
+            }
+            for (int xa = 0; xa < pad; xa++) {
+                tgt.append('0');
+            }
+        }
+        tgt.append(val);
+    }
 
 }

@@ -452,7 +452,7 @@ public class SimulationExamples {
 
         logger.debug("Setting up example graph ...");
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, right, left);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, right, left, false);
 
         // set concentrations
         // only 5 left most nodes

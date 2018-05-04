@@ -21,7 +21,7 @@ public class AutomatonGraphsTest {
         AutomatonGraph rectangularAutomatonGraph = AutomatonGraphs.createRectangularAutomatonGraph(numberOfNodes, numberOfNodes);
         EnclosedCompartment innerSection = new EnclosedCompartment("Right", "Right Compartment");
         EnclosedCompartment outerSection = new EnclosedCompartment("Left", "Left Compartment");
-        AutomatonGraphs.splitRectangularGraphWithMembrane(rectangularAutomatonGraph, innerSection, outerSection);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(rectangularAutomatonGraph, innerSection, outerSection, false);
         // check correct assignment
         // right part
         CellSection right = rectangularAutomatonGraph.getCellSection("Right");

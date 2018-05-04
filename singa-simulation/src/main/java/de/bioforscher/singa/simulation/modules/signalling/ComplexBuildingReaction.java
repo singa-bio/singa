@@ -10,7 +10,6 @@ import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -23,8 +22,9 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 
-import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
-import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.NON_MEMBRANE;
+import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static tec.uom.se.unit.MetricPrefix.NANO;
 
 /**
  * @author cl
@@ -32,6 +32,7 @@ import static de.bioforscher.singa.simulation.model.compartments.CellSectionStat
 public class ComplexBuildingReaction extends AbstractNodeSpecificModule implements Featureable {
 
     private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+
     static {
         requiredFeatures.add(ForwardsRateConstant.class);
         requiredFeatures.add(BackwardsRateConstant.class);
@@ -57,9 +58,6 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     private ChemicalEntity binder;
     private CellSectionState binderCellSectionState;
     private CellSection binderRelevantCellSection;
-
-    private boolean outerLayerIsRelevant;
-    private boolean innerLayerIsRelevant;
 
     private ChemicalEntity bindee;
     private CellSectionState bindeeCellSectionState;
@@ -97,46 +95,62 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     private List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         List<Delta> deltas = new ArrayList<>();
-        determineRelevantSectionStates(concentrationContainer);
-        if (!innerLayerIsRelevant && !outerLayerIsRelevant) {
-            // membrane irrelevant binding
+
+        if (nonMembraneBinding(concentrationContainer)) {
+            // membrane is not relevant
             if (concentrationContainer instanceof SimpleConcentrationContainer) {
+                // non-membrane to non-membrane in non-membrane node
                 SimpleConcentrationContainer simpleContainer = (SimpleConcentrationContainer) concentrationContainer;
                 bindeeRelevantCellSection = simpleContainer.getCellSection();
                 binderRelevantCellSection = simpleContainer.getCellSection();
                 deltas.addAll(determineDeltasForSections(concentrationContainer));
             } else {
-                MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-                bindeeRelevantCellSection = membraneContainer.getOuterPhaseSection();
-                binderRelevantCellSection = membraneContainer.getOuterPhaseSection();
-                deltas.addAll(determineDeltasForSections(concentrationContainer));
-                bindeeRelevantCellSection = membraneContainer.getInnerPhaseSection();
-                binderRelevantCellSection = membraneContainer.getInnerPhaseSection();
-                deltas.addAll(determineDeltasForSections(concentrationContainer));
+                throw new IllegalStateException("The current node " + getCurrentNode() + " seems to be annotated as " +
+                        "membrane but is not initialized with a membrane concentration container.");
             }
-        } else if (innerLayerIsRelevant) {
-            // inner layer and phase
+        } else if (noSectionChanges()) {
+            // sections are not relevant
             MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
+            // membrane to membrane binding
+            // if membrane, always user outer layer
+            bindeeRelevantCellSection = membraneContainer.getOuterLayerSection();
+            binderRelevantCellSection = membraneContainer.getOuterLayerSection();
+            deltas.addAll(determineDeltasForSections(concentrationContainer));
+            // non-membrane to non-membrane but in membrane node
+            // inner phase
+            bindeeRelevantCellSection = membraneContainer.getInnerPhaseSection();
+            binderRelevantCellSection = membraneContainer.getInnerPhaseSection();
+            deltas.addAll(determineDeltasForSections(concentrationContainer));
+            // outer phase
+            bindeeRelevantCellSection = membraneContainer.getOuterPhaseSection();
+            binderRelevantCellSection = membraneContainer.getOuterPhaseSection();
+            deltas.addAll(determineDeltasForSections(concentrationContainer));
+        } else {
+            // sections are relevant since they are different
+            MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
+            // deltas for inner phase
             if (bindeeCellSectionState == CellSectionState.MEMBRANE) {
-                bindeeRelevantCellSection = membraneContainer.getInnerLayerSection();
+                // if membrane, always user outer layer
+                bindeeRelevantCellSection = membraneContainer.getOuterLayerSection();
             } else {
                 bindeeRelevantCellSection = membraneContainer.getInnerPhaseSection();
             }
             if (binderCellSectionState == CellSectionState.MEMBRANE) {
-                binderRelevantCellSection = membraneContainer.getInnerLayerSection();
+                // if membrane, always user outer layer
+                binderRelevantCellSection = membraneContainer.getOuterLayerSection();
             } else {
                 binderRelevantCellSection = membraneContainer.getInnerPhaseSection();
             }
             deltas.addAll(determineDeltasForSections(concentrationContainer));
-        } else {
-            // outer layer and phase
-            MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
+            // deltas for outer phase
             if (bindeeCellSectionState == CellSectionState.MEMBRANE) {
+                // if membrane, always user outer layer
                 bindeeRelevantCellSection = membraneContainer.getOuterLayerSection();
             } else {
                 bindeeRelevantCellSection = membraneContainer.getOuterPhaseSection();
             }
             if (binderCellSectionState == CellSectionState.MEMBRANE) {
+                // if membrane, always user outer layer
                 binderRelevantCellSection = membraneContainer.getOuterLayerSection();
             } else {
                 binderRelevantCellSection = membraneContainer.getOuterPhaseSection();
@@ -146,33 +160,23 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         return deltas;
     }
 
-    private void determineRelevantSectionStates(ConcentrationContainer concentrationContainer) {
-        if (bindeeCellSectionState == NON_MEMBRANE && binderCellSectionState == MEMBRANE ||
-                bindeeCellSectionState == MEMBRANE && binderCellSectionState == NON_MEMBRANE) {
-            // absorb to entity in membrane
-            MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-            // determine relevant side(s)
-            // a side is relevant if it contains either binder or complex molecules
-            if (membraneContainer.getAvailableConcentration(membraneContainer.getMembrane().getOuterLayer(), binder).getValue().doubleValue() > 0.0 ||
-                    membraneContainer.getAvailableConcentration(membraneContainer.getMembrane().getOuterLayer(), complex).getValue().doubleValue() > 0.0) {
-                outerLayerIsRelevant = true;
-            }
-            if (membraneContainer.getAvailableConcentration(membraneContainer.getMembrane().getInnerLayer(), binder).getValue().doubleValue() > 0.0 ||
-                    membraneContainer.getAvailableConcentration(membraneContainer.getMembrane().getInnerLayer(), complex).getValue().doubleValue() > 0.0) {
-                innerLayerIsRelevant = true;
-            }
-        }
+    private boolean nonMembraneBinding(ConcentrationContainer concentrationContainer) {
+        return !(concentrationContainer instanceof MembraneContainer);
+    }
+
+    private boolean noSectionChanges() {
+        return bindeeCellSectionState == binderCellSectionState;
     }
 
     private List<Delta> determineDeltasForSections(ConcentrationContainer concentrationContainer) {
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
         // change ligand concentration
-        deltas.add(new Delta(this, bindeeRelevantCellSection, bindee, Quantities.getQuantity(-velocity, EnvironmentalParameters.getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, bindeeRelevantCellSection, bindee, Quantities.getQuantity(-velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
         // change unbound receptor concentration
-        deltas.add(new Delta(this, binderRelevantCellSection, binder, Quantities.getQuantity(-velocity, EnvironmentalParameters.getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, binderRelevantCellSection, binder, Quantities.getQuantity(-velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
         // change bound receptor concentration
-        deltas.add(new Delta(this, binderRelevantCellSection, complex, Quantities.getQuantity(velocity, EnvironmentalParameters.getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, binderRelevantCellSection, complex, Quantities.getQuantity(velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
         return deltas;
     }
 
@@ -181,9 +185,9 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         final double forwardsRateConstant = getScaledFeature(ForwardsRateConstant.class).getValue().doubleValue();
         final double backwardsRateConstant = getScaledFeature(BackwardsRateConstant.class).getValue().doubleValue();
         // get concentrations
-        final double bindeeConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, bindee).getValue().doubleValue();
-        final double binderConcentration = concentrationContainer.getAvailableConcentration(binderRelevantCellSection, binder).getValue().doubleValue();
-        final double complexConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, complex).getValue().doubleValue();
+        final double bindeeConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, bindee).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
+        final double binderConcentration = concentrationContainer.getAvailableConcentration(binderRelevantCellSection, binder).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
+        final double complexConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, complex).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
@@ -194,7 +198,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     }
 
     public String getReactionString() {
-        String substrates = binder.getIdentifier() +" + " + bindee.getIdentifier();
+        String substrates = binder.getIdentifier() + " + " + bindee.getIdentifier();
         String products = complex.getIdentifier().toString();
         return substrates + " \u21CB " + products;
     }
@@ -262,13 +266,16 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+": "+ getIdentifier()+ " ("+ getReactionString()+")";
+        return getClass().getSimpleName() + ": " + getIdentifier() + " (" + getReactionString() + ")";
     }
 
     public interface BindeeSelection {
         BindeeSelection identifier(String identifier);
+
         BindeeSelection identifier(SimpleStringIdentifier identifier);
+
         BindeeSectionSelection of(ChemicalEntity bindee);
+
         BindeeSectionSelection of(ChemicalEntity bindee, ForwardsRateConstant forwardsRateConstant);
     }
 
@@ -278,6 +285,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     public interface BinderSelection {
         BinderSectionSelection by(ChemicalEntity binder);
+
         BinderSectionSelection by(ChemicalEntity binder, BackwardsRateConstant forwardsRateConstant);
     }
 
@@ -287,6 +295,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     public interface BuilderStep {
         BuilderStep formingComplex(ComplexedChemicalEntity complex);
+
         ComplexBuildingReaction build();
     }
 

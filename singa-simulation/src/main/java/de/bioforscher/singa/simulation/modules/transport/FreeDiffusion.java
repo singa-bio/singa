@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -141,6 +142,8 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     }
 
     public interface SelectionStep {
+        SelectionStep identifier(String identifier);
+
         BuildStep onlyFor(ChemicalEntity chemicalEntity);
 
         BuildStep forAll(ChemicalEntity... chemicalEntities);
@@ -159,6 +162,11 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
 
         DiffusionBuilder(Simulation simulation) {
             module = new FreeDiffusion(simulation);
+        }
+
+        public DiffusionBuilder identifier(String identifier) {
+            module.setIdentifier(new SimpleStringIdentifier(identifier));
+            return this;
         }
 
         public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
