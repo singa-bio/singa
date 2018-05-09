@@ -2,8 +2,6 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
-import de.bioforscher.singa.features.model.Feature;
-import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -166,26 +164,15 @@ public class Simulation {
     private void initializeModules() {
         logger.info("Initializing features required for each module.");
         for (Module module : modules) {
-            for (Class<? extends Feature> featureClass : module.getRequiredFeatures()) {
-                logger.debug("Checking {} required for {}.", featureClass.getSimpleName(), module);
-                if (module instanceof Featureable) {
-                    Featureable featureable = (Featureable) module;
-                    if (!featureable.hasFeature(featureClass)) {
-                        featureable.setFeature(featureClass);
-                    }
-                } else {
-                    for (ChemicalEntity chemicalEntity : module.getReferencedEntities()) {
-                        if (!chemicalEntity.hasFeature(featureClass)) {
-                            chemicalEntity.setFeature(featureClass);
-                        }
-                    }
-                }
-            }
+            module.checkFeatures();
         }
     }
 
     private void initializeGraph() {
         logger.info("Initializing chemical entities.");
+        if (graph == null) {
+            throw new IllegalStateException("No graph has been assigned to the simulation.");
+        }
         // reference all entities
         for (AutomatonNode automatonNode : graph.getNodes()) {
             ConcentrationContainer concentrationContainer = automatonNode.getConcentrationContainer();

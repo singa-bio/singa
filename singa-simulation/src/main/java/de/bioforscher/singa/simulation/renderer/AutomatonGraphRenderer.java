@@ -32,11 +32,33 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         setRenderingOptions(options);
         bioRenderingOptions = new BioGraphRenderOptions();
         this.graph = graph;
-        renderVoronoi(true);
+        // renderVoronoi(true);
+    }
+
+    public AutomatonGraphRenderer() {
+        this(null);
     }
 
     public BioGraphRenderOptions getBioRenderingOptions() {
         return bioRenderingOptions;
+    }
+
+    @Override
+    public void render(AutomatonGraph graph) {
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (AutomatonNode node : graph.getNodes()) {
+            double concentration = node.getConcentration(bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
+            if (concentration > max) {
+                max = concentration;
+            } else if (concentration < min) {
+                min = concentration;
+            }
+        }
+        ColorScale nodeColorScale = bioRenderingOptions.getNodeColorScale();
+        nodeColorScale.setMaximalValue(max);
+        nodeColorScale.setMinimalValue(min);
+        super.render(graph);
     }
 
     @Override
@@ -104,23 +126,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
                 ChemicalEntity highlightEntity = bioRenderingOptions.getNodeHighlightEntity();
                 if (highlightEntity != null) {
 
-                    double min = Double.MAX_VALUE;
-                    double max = -Double.MAX_VALUE;
 
-                    for (AutomatonNode nodeType : graph.getNodes()) {
-                        nodeMap.put(identifier, nodeType);
-                        identifier++;
-                        double concentration = nodeType.getConcentration(highlightEntity).getValue().doubleValue();
-                        if (concentration > max) {
-                            max = concentration;
-                        } else if (concentration < min) {
-                            min = concentration;
-                        }
-                    }
-
-                    ColorScale nodeColorScale = bioRenderingOptions.getNodeColorScale();
-                    nodeColorScale.setMaximalValue(max);
-                    nodeColorScale.setMinimalValue(min);
 
                     final VoronoiDiagram diagram = VoronoiGenerator.generateVoronoiDiagram(nodeMap, new Rectangle(getDrawingWidth(), getDrawingHeight()));
                     for (VoronoiCell voronoiCell : diagram.getCells()) {

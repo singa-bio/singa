@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 import java.util.Set;
@@ -47,4 +48,22 @@ public interface Module {
      * Resets the largest local error in between epochs.
      */
     void resetLargestLocalError();
+
+    default void checkFeatures() {
+        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
+            // logger.debug("Checking {} required for {}.", featureClass.getSimpleName(), this);
+            if (this instanceof Featureable) {
+                Featureable featureable = (Featureable) this;
+                if (!featureable.hasFeature(featureClass)) {
+                    featureable.setFeature(featureClass);
+                }
+            } else {
+                for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
+                    if (!chemicalEntity.hasFeature(featureClass)) {
+                        chemicalEntity.setFeature(featureClass);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -98,7 +98,7 @@ public class GPCRCarrouselModelTest {
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:34543"))
                 .build();
 
-        // g-protein subunits (
+        // g-protein subunits
         Protein gProteinAlpha = new Protein.Builder("G(A)")
                 .additionalIdentifier(new UniProtIdentifier("P63092"))
                 .build();

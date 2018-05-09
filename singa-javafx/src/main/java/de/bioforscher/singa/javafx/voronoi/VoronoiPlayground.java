@@ -7,7 +7,6 @@ import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -20,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,6 +59,9 @@ public class VoronoiPlayground extends Application implements Renderer {
         //        vectors.add( new Vector2D( 336.79197335017653, 116.77048208672436));
         //        vectors.add( new Vector2D( 211.2341697614347, 241.23831556336904));
         //        vectors.add( new Vector2D( 148.00687851502775, 42.19159635139591));
+
+
+
 
         // setup root
         BorderPane root = new BorderPane();
@@ -118,7 +121,12 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void generatePoints(ActionEvent event) {
         diagram = null;
-        points = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
+        // points = Vectors.generateMultipleRandom2DVectors(50, new Rectangle(getDrawingWidth(), getDrawingHeight()));
+        points = new ArrayList<>();
+        points.add(new Vector2D(50, 50));
+        points.add(new Vector2D(100, 50));
+        points.add(new Vector2D(150, 50));
+        points.add(new Vector2D(200, 50));
         clearCanvas();
         drawPoints();
     }
@@ -152,7 +160,7 @@ public class VoronoiPlayground extends Application implements Renderer {
         getGraphicsContext().setLineWidth(4);
         diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
         getGraphicsContext().setLineWidth(6);
-        getGraphicsContext().setFill(Color.DARKRED);
+        getGraphicsContext().setFill(Color.GREEN);
         diagram.getVertices().forEach(this::drawPoint);
     }
 

@@ -57,6 +57,13 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         addModuleToSimulation();
     }
 
+    @Override
+    public void checkFeatures() {
+        if (!transporter.hasFeature(OsmoticPermeability.class)) {
+            transporter.setFeature(OsmoticPermeability.class);
+        }
+    }
+
     /**
      * Only apply, if this is the outer phase, the outer phase contains the cargo and the inner layer contains the
      * transporter.

@@ -72,7 +72,7 @@ public class VoronoiGenerator {
         // initialize beach line with bounding box
         beachLine = new BeachLine(boundingBox);
         // sort the original vectors from top to bottom
-        TreeSet<Vector2D> sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY).reversed());
+        TreeSet<Vector2D> sortedCopy = new TreeSet<>(Comparator.comparingDouble(Vector2D::getY).thenComparing(Vector2D::getX).reversed());
         sortedCopy.addAll(sites);
         // add them as site events to the deque
         siteEvents = new ArrayDeque<>();

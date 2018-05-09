@@ -123,6 +123,10 @@ public class SimulationManager extends Task<Simulation> {
         graphEventEmitter.addEventListener(listener);
     }
 
+    public CopyOnWriteArrayList<UpdateEventListener<GraphUpdatedEvent>> getGraphListeners() {
+        return graphEventEmitter.getListeners();
+    }
+
     /**
      * Sets a condition determining when the simulation should be terminated.
      *
@@ -195,7 +199,7 @@ public class SimulationManager extends Task<Simulation> {
     }
 
     public void emitGraphEvent(Simulation simulation) {
-        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph()));
+        graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), simulation.getElapsedTime()));
     }
 
     public void emitNodeEvent(Simulation simulation, AutomatonNode automatonNode) {
@@ -246,9 +250,16 @@ public class SimulationManager extends Task<Simulation> {
     protected void done() {
         try {
             logger.info("Simulation finished.");
-            for (UpdateEventListener<NodeUpdatedEvent> nodeUpdatedEventUpdateEventListener : getNodeListeners()) {
-                if (nodeUpdatedEventUpdateEventListener instanceof EpochUpdateWriter) {
-                    ((EpochUpdateWriter) nodeUpdatedEventUpdateEventListener).closeWriters();
+            for (UpdateEventListener<NodeUpdatedEvent> nodeEventListener : getNodeListeners()) {
+                if (nodeEventListener instanceof EpochUpdateWriter) {
+                    ((EpochUpdateWriter) nodeEventListener).closeWriters();
+                }
+            }
+            for (UpdateEventListener<GraphUpdatedEvent> graphEventListener : getGraphListeners()) {
+                if (graphEventListener instanceof GraphImageWriter) {
+                    GraphImageWriter graphImageWriter = (GraphImageWriter) graphEventListener;
+                    graphImageWriter.shutDown();
+                    graphImageWriter.combineToGif();
                 }
             }
             // will exit jfx when simulation finishes

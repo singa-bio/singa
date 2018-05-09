@@ -16,12 +16,12 @@ public class BioGraphRenderOptions {
 
     public BioGraphRenderOptions() {
         // todo render depending on maximal value in any node
-        this.nodeColorScale = new ColorScale.Builder(0, 1).build();
-        this.renderingMode = RenderingMode.STATE_BASED;
+        nodeColorScale = new ColorScale.Builder(0, 1).build();
+        renderingMode = RenderingMode.STATE_BASED;
     }
 
     public RenderingMode getRenderingMode() {
-        return this.renderingMode;
+        return renderingMode;
     }
 
     public void setRenderingMode(RenderingMode renderingMode) {
@@ -29,7 +29,7 @@ public class BioGraphRenderOptions {
     }
 
     public ColorScale getNodeColorScale() {
-        return this.nodeColorScale;
+        return nodeColorScale;
     }
 
     public void setNodeColorScale(ColorScale nodeColorScale) {
@@ -37,15 +37,15 @@ public class BioGraphRenderOptions {
     }
 
     public ChemicalEntity getNodeHighlightEntity() {
-        return this.nodeHighlightEntity;
+        return nodeHighlightEntity;
     }
 
     public void setNodeHighlightEntity(ChemicalEntity species) {
-        this.nodeHighlightEntity = species;
+        nodeHighlightEntity = species;
     }
 
     public ChemicalEntity getEdgeHighlightEntity() {
-        return this.edgeHighlightEntity;
+        return edgeHighlightEntity;
     }
 
     public void setEdgeHighlightEntity(ChemicalEntity edgeHighlightEntity) {
@@ -53,9 +53,9 @@ public class BioGraphRenderOptions {
     }
 
     public Color getNodeColor(AutomatonNode node) {
-        if (this.nodeHighlightEntity != null) {
-            double concentration = node.getConcentration(this.nodeHighlightEntity).getValue().doubleValue();
-            return this.nodeColorScale.getColor(concentration);
+        if (nodeHighlightEntity != null) {
+            double concentration = node.getConcentration(nodeHighlightEntity).getValue().doubleValue();
+            return nodeColorScale.getColor(concentration);
         } else {
             return Color.GRAY;
         }
