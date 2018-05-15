@@ -968,5 +968,13 @@ public class StructureParser {
             }
             return middleIdentifierPath.resolve(pdbIdentifier + ".mmtf.gz");
         }
+
+        @Override
+        public String toString() {
+            return "LocalPDB{" +
+                    "sourceLocation=" + sourceLocation +
+                    ", localPdbPath=" + localPdbPath +
+                    '}';
+        }
     }
 }
