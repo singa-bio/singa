@@ -3,8 +3,9 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.*;
-import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -21,7 +22,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
@@ -129,12 +129,15 @@ public class ReactionTest {
             node.setConcentration(speciesB, 0.0);
         }
 
+        RateConstant forwardsRate = RateConstant.create(5).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant backwardsRate = RateConstant.create(10).backward().firstOrder().timeUnit(SECOND).build();
+
         // setup reaction
         EquilibriumReaction.inSimulation(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
-                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(5.0, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(10.0, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .forwardsRateConstant(forwardsRate)
+                .backwardsRateConstant(backwardsRate)
                 .build();
 
         // add graph
@@ -183,12 +186,14 @@ public class ReactionTest {
             node.setConcentration(oxygen, 0.0);
         }
 
+        RateConstant rateConstant = RateConstant.create(0.07).forward().firstOrder().timeUnit(SECOND).build();
+
         // create reaction
         NthOrderReaction.inSimulation(simulation)
                 .addSubstrate(dpo, 2)
                 .addProduct(ndo, 4)
                 .addProduct(oxygen)
-                .rateConstant(new RateConstant(Quantities.getQuantity(0.07, PER_SECOND), MANUALLY_ANNOTATED))
+                .rateConstant(rateConstant)
                 .build();
 
         // add graph

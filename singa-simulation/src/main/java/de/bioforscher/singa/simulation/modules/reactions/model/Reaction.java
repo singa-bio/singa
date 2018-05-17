@@ -14,6 +14,7 @@ import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
     /**
      * The features available for automatic annotation and assignment.
      */
-    protected final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     /**
      * The stoichiometric reactants.
@@ -236,7 +237,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
      * @param <FeatureContentType> The type of the feature.
      * @return The requested feature for the corresponding entity.
      */
-    protected <FeatureContentType> FeatureContentType getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         ScalableFeature<FeatureContentType> feature = getFeature(featureClass);
         if (halfTime) {
             return feature.getHalfScaledQuantity();
@@ -332,6 +333,5 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         }
 
     }
-
 
 }

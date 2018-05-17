@@ -1,8 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.permeability;
 
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import tec.uom.se.unit.ProductUnit;
 
@@ -14,15 +13,12 @@ import javax.measure.quantity.Time;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
-public class MembranePermeability extends AbstractFeature<Quantity<MembranePermeability>> implements Quantity<MembranePermeability>, ScalableFeature<Quantity<MembranePermeability>> {
+public class MembranePermeability extends ScalableQuantityFeature<MembranePermeability> implements Quantity<MembranePermeability> {
 
     // theoretically it is volume / time * area - volume and area cancel out
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).divide(SECOND));
 
     public static final String SYMBOL = "P_d";
-
-    private Quantity<MembranePermeability> scaledQuantity;
-    private Quantity<MembranePermeability> halfScaledQuantity;
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
         super(membranePermeabilityQuantity.to(new ProductUnit<>(EnvironmentalParameters.getTransformedLength().divide(SECOND))), featureOrigin);
@@ -36,16 +32,6 @@ public class MembranePermeability extends AbstractFeature<Quantity<MembranePerme
         scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
         // and half
         halfScaledQuantity = transformedQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
-    }
-
-    @Override
-    public Quantity<MembranePermeability> getScaledQuantity() {
-        return scaledQuantity;
-    }
-
-    @Override
-    public Quantity<MembranePermeability> getHalfScaledQuantity() {
-        return halfScaledQuantity;
     }
 
     @Override

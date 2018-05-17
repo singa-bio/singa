@@ -1,11 +1,9 @@
 package de.bioforscher.singa.simulation.modules.signalling;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Receptor;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -25,10 +23,9 @@ import tec.uom.se.quantity.Quantities;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
-import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static tec.uom.se.unit.Units.MINUTE;
 
 /**
  * @author cl
@@ -48,14 +45,15 @@ public class MonovalentReceptorBindingTest {
                 .name("prazosin")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
                 .build();
+
         // the corresponding rate constants
-        ForwardsRateConstant forwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(2.4e8, PER_MINUTE), MANUALLY_ANNOTATED);
-        BackwardsRateConstant backwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.018, PER_MINUTE), MANUALLY_ANNOTATED);
+        RateConstant forwardsRate = RateConstant.create(2.4e8).forward().firstOrder().timeUnit(MINUTE).build();
+        RateConstant backwardsRate = RateConstant.create(0.018).backward().firstOrder().timeUnit(MINUTE).build();
+
         // alpha-1 adrenergic receptor, P35348
         Receptor receptor = new Receptor.Builder("receptor")
                 .name("alpha-1 adrenergic receptor")
                 .additionalIdentifier(new UniProtIdentifier("P35348"))
-                .addLigand(ligand, forwardsRateConstant, backwardsRateConstant)
                 .build();
 
         // create simulation
@@ -75,9 +73,6 @@ public class MonovalentReceptorBindingTest {
         membraneNode.setConcentrationContainer(concentrationContainer);
         membraneNode.setAvailableConcentration(ligand, left, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
         membraneNode.setAvailableConcentration(receptor, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        for (ComplexedChemicalEntity boundReceptor : receptor.getBoundReceptorStates()) {
-            membraneNode.setAvailableConcentration(boundReceptor, membrane.getOuterLayer(), Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        }
 
         // define sections
         Set<CellSection> sections = new HashSet<>();
@@ -89,9 +84,9 @@ public class MonovalentReceptorBindingTest {
 
         // create and add module
         ComplexBuildingReaction.inSimulation(simulation)
-                .of(ligand, forwardsRateConstant)
+                .of(ligand, forwardsRate)
                 .in(CellSectionState.NON_MEMBRANE)
-                .by(receptor, backwardsRateConstant)
+                .by(receptor, backwardsRate)
                 .to(CellSectionState.MEMBRANE);
 
         for (int i = 0; i < 10; i++) {

@@ -6,8 +6,9 @@ import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.*;
-import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
@@ -40,7 +41,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -81,11 +81,13 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(nitrogenDioxide, 0.0);
         graph.initializeSpeciesWithConcentration(oxygen, 0.0);
 
+        RateConstant rateConstant = RateConstant.create(0.07).forward().firstOrder().timeUnit(SECOND).build();
+
         NthOrderReaction.inSimulation(simulation)
                 .addSubstrate(dinitrogenPentaoxide, 2)
                 .addProduct(nitrogenDioxide, 4)
                 .addProduct(oxygen)
-                .rateConstant(new RateConstant(Quantities.getQuantity(0.07, PER_SECOND), MANUALLY_ANNOTATED))
+                .rateConstant(rateConstant)
                 .build();
 
         // add graph
@@ -115,11 +117,13 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(butadiene, 0.02);
         graph.initializeSpeciesWithConcentration(octatriene, 0.0);
 
+        RateConstant rateConstant = RateConstant.create(0.614).forward().firstOrder().timeUnit(SECOND).build();
+
         // create reaction
         NthOrderReaction.inSimulation(simulation)
                 .addSubstrate(butadiene, 2, 2)
                 .addProduct(octatriene)
-                .rateConstant(new RateConstant(Quantities.getQuantity(0.614, PER_SECOND), MANUALLY_ANNOTATED))
+                .rateConstant(rateConstant)
                 .setNonElementary()
                 .build();
 
@@ -156,12 +160,15 @@ public class SimulationExamples {
         graph.initializeSpeciesWithConcentration(speciesA, 1.0);
         graph.initializeSpeciesWithConcentration(speciesB, 0.0);
 
+        RateConstant forwardsRate = RateConstant.create(10).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant backwardsRate = RateConstant.create(10).backward().firstOrder().timeUnit(SECOND).build();
+
         // create reaction
         EquilibriumReaction.inSimulation(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
-                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(10, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(10, PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .forwardsRateConstant(forwardsRate)
+                .backwardsRateConstant(backwardsRate)
                 .build();
 
         // add graph
@@ -318,6 +325,8 @@ public class SimulationExamples {
 
         logger.debug("Composing simulation ... ");
 
+        RateConstant firstRate = RateConstant.create(1.43e3).forward().firstOrder().timeUnit(SECOND).build();
+
         // first reaction
         NthOrderReaction.inSimulation(simulation)
                 .addSubstrate(hydron, 2)
@@ -325,8 +334,10 @@ public class SimulationExamples {
                 .addSubstrate(iodate)
                 .addProduct(hia)
                 .addProduct(ia)
-                .rateConstant(new RateConstant(Quantities.getQuantity(1.43e3, PER_SECOND), MANUALLY_ANNOTATED))
+                .rateConstant(firstRate)
                 .build();
+
+        RateConstant secondRate = RateConstant.create(2.0e4).forward().firstOrder().timeUnit(SECOND).build();
 
         // second reaction
         NthOrderReaction.inSimulation(simulation)
@@ -334,8 +345,11 @@ public class SimulationExamples {
                 .addSubstrate(ia)
                 .addSubstrate(iodide)
                 .addProduct(hia)
-                .rateConstant(new RateConstant(Quantities.getQuantity(2.0e4, PER_SECOND), MANUALLY_ANNOTATED))
+                .rateConstant(secondRate)
                 .build();
+
+        RateConstant thirdForwardRate = RateConstant.create(3.1e4).forward().firstOrder().timeUnit(SECOND).build();
+        RateConstant thirdBackwardRate = RateConstant.create(2.2).backward().firstOrder().timeUnit(SECOND).build();
 
         // third reaction
         EquilibriumReaction.inSimulation(simulation)
@@ -344,8 +358,8 @@ public class SimulationExamples {
                 .addSubstrate(hydron)
                 .addProduct(diiodine)
                 .addProduct(water)
-                .forwardsRateConstant(new ForwardsRateConstant(Quantities.getQuantity(3.1e4, PER_SECOND), MANUALLY_ANNOTATED))
-                .backwardsRateConstant(new BackwardsRateConstant(Quantities.getQuantity(2.2, PER_SECOND), MANUALLY_ANNOTATED))
+                .forwardsRateConstant(thirdForwardRate)
+                .backwardsRateConstant(thirdBackwardRate)
                 .build();
 
         // add graph

@@ -3,8 +3,7 @@ package de.bioforscher.singa.simulation.modules.signalling;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -26,11 +25,10 @@ import javax.measure.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
-import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertTrue;
+import static tec.uom.se.unit.Units.MINUTE;
 
 /**
  * @author cl
@@ -44,8 +42,8 @@ public class ComplexBuildingReactionTest {
 
         logger.info("Testing Section Changing Binding (Membrane Absorption).");
         // the rate constants
-        ForwardsRateConstant forwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
-        BackwardsRateConstant backwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
+        RateConstant forwardRate = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant backwardRate = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
         // the ligand
         ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
@@ -64,9 +62,9 @@ public class ComplexBuildingReactionTest {
 
         // create and add module
         ComplexBuildingReaction binding = ComplexBuildingReaction.inSimulation(simulation)
-                .of(bindee, forwardsRateConstant)
+                .of(bindee, forwardRate)
                 .in(CellSectionState.NON_MEMBRANE)
-                .by(binder, backwardsRateConstant)
+                .by(binder, backwardRate)
                 .to(CellSectionState.MEMBRANE)
                 .build();
 
@@ -112,11 +110,13 @@ public class ComplexBuildingReactionTest {
 
         logger.info("Testing Section Changing Binding (Membrane Absorption).");
         // the rate constants
-        ForwardsRateConstant innerForwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
-        BackwardsRateConstant innerBackwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
+        // the rate constants
+        RateConstant innerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant innerBackwardsRateConstant = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
-        ForwardsRateConstant outerForwardsRateConstant = new ForwardsRateConstant(Quantities.getQuantity(1.0e6, PER_MINUTE), MANUALLY_ANNOTATED);
-        BackwardsRateConstant outerBackwardsRateConstant = new BackwardsRateConstant(Quantities.getQuantity(0.01, PER_MINUTE), MANUALLY_ANNOTATED);
+        // the rate constants
+        RateConstant outerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant outerBackwardsRateConstant = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
         // the inner ligand
         ChemicalEntity innerBindee = new SmallMolecule.Builder("inner bindee")
@@ -151,7 +151,7 @@ public class ComplexBuildingReactionTest {
         ComplexBuildingReaction outerBinding = ComplexBuildingReaction.inSimulation(simulation)
                 .of(outerBindee, outerForwardsRateConstant)
                 .in(CellSectionState.NON_MEMBRANE)
-                .by(binder, innerBackwardsRateConstant)
+                .by(binder, outerBackwardsRateConstant)
                 .to(CellSectionState.MEMBRANE)
                 .build();
 

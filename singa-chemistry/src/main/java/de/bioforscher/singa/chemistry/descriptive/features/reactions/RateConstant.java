@@ -1,60 +1,167 @@
 package de.bioforscher.singa.chemistry.descriptive.features.reactions;
 
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Length;
+import javax.measure.Unit;
 import javax.measure.quantity.Time;
 
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Direction.BACKWARDS;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Direction.FORWARDS;
+import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Order.*;
 import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.Units.HERTZ;
 
 /**
  * @author cl
  */
-public class RateConstant extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
+public abstract class RateConstant<ReactionRateType extends ReactionRate<ReactionRateType>> extends ScalableQuantityFeature<ReactionRateType> {
 
-    public static final String SYMBOL = "k";
-
-    private Quantity<Frequency> scaledQuantity;
-    private Quantity<Frequency> halfScaledQuantity;
-
-    public RateConstant(Quantity<Frequency> frequencyQuantity, FeatureOrigin featureOrigin) {
-        super(frequencyQuantity, featureOrigin);
+    public static DirectionStep create(double value) {
+        return new RateBuilder(value);
     }
 
-    public RateConstant(double frequency, FeatureOrigin featureOrigin) {
-        super(Quantities.getQuantity(frequency, HERTZ), featureOrigin);
+    public enum Direction {
+        FORWARDS, BACKWARDS
     }
+
+    public enum Order {
+        ZERO, FIRST, SECOND
+    }
+
+    protected RateConstant(Quantity<ReactionRateType> quantityTypeQuantity, FeatureOrigin featureOrigin) {
+        super(quantityTypeQuantity, featureOrigin);
+    }
+
 
     @Override
-    public void scale(Quantity<Time> time, Quantity<Length> space) {
-        // transform to specified unit
-        Quantity<Frequency> scaledQuantity = getFeatureContent()
-                .to(new ProductUnit<>(ONE.divide(time.getUnit())));
-        // transform to specified amount
-        this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
-        // and half
-        halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
+    public String toString() {
+        return getSymbol() + " = " + getFeatureContent();
     }
 
-    @Override
-    public Quantity<Frequency> getScaledQuantity() {
-        return scaledQuantity;
+    public interface DirectionStep {
+        OrderStep forward();
+
+        OrderStep backward();
     }
 
-    @Override
-    public Quantity<Frequency> getHalfScaledQuantity() {
-        return halfScaledQuantity;
+    public interface OrderStep {
+        ConcentrationStep zeroOrder();
+
+        TimeStep firstOrder();
+
+        ConcentrationStep secondOder();
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
+    public interface ConcentrationStep {
+        TimeStep concentrationUnit(Unit<MolarConcentration> concentrationUnit);
     }
+
+    public interface TimeStep {
+        OriginStep timeUnit(Unit<Time> timeUnit);
+    }
+
+    public interface OriginStep {
+        BuilderStep origin(FeatureOrigin origin);
+
+        RateConstant build();
+    }
+
+    public interface BuilderStep {
+        RateConstant build();
+    }
+
+    public static class RateBuilder implements DirectionStep, OrderStep, ConcentrationStep, TimeStep, OriginStep, BuilderStep {
+
+        private Direction direction;
+        private Order order;
+        private double value;
+        private FeatureOrigin origin;
+        private Unit<Time> timeUnit;
+        private Unit<MolarConcentration> concentrationUnit;
+
+        public RateBuilder(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public OrderStep forward() {
+            direction = FORWARDS;
+            return this;
+        }
+
+        @Override
+        public OrderStep backward() {
+            direction = Direction.BACKWARDS;
+            return this;
+        }
+
+        @Override
+        public ConcentrationStep zeroOrder() {
+            order = ZERO;
+            return this;
+        }
+
+        @Override
+        public TimeStep firstOrder() {
+            order = FIRST;
+            return this;
+        }
+
+        @Override
+        public ConcentrationStep secondOder() {
+            order = SECOND;
+            return this;
+        }
+
+        @Override
+        public TimeStep concentrationUnit(Unit<MolarConcentration> concentrationUnit) {
+            this.concentrationUnit = concentrationUnit;
+            return this;
+        }
+
+        @Override
+        public OriginStep timeUnit(Unit<Time> timeUnit) {
+            this.timeUnit = timeUnit;
+            return this;
+        }
+
+        @Override
+        public BuilderStep origin(FeatureOrigin origin) {
+            this.origin = origin;
+            return this;
+        }
+
+        @Override
+        public RateConstant build() {
+            if (origin == null) {
+                origin = FeatureOrigin.MANUALLY_ANNOTATED;
+            }
+
+            if (direction == FORWARDS && order == ZERO) {
+                return new ZeroOrderForwardsRateConstant(value, new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+            }
+            if (direction == FORWARDS && order == FIRST) {
+                return new FirstOrderForwardsRateConstant(value, new ProductUnit<>(ONE.divide(timeUnit)), origin);
+            }
+            if (direction == FORWARDS && order == SECOND) {
+                return new SecondOrderForwardsRateConstant(value, new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+            }
+
+            if (direction == BACKWARDS && order == ZERO) {
+                return new ZeroOrderBackwardsRateConstant(value, new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+            }
+            if (direction == BACKWARDS && order == FIRST) {
+                return new FirstOrderBackwardsRateConstant(value, new ProductUnit<>(ONE.divide(timeUnit)), origin);
+            }
+            if (direction == BACKWARDS && order == SECOND) {
+                return new SecondOrderBackwardsRateConstant(value, new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+            }
+
+            throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
+        }
+    }
+
 }

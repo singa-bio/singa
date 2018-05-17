@@ -1,9 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.permeability;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
@@ -21,7 +20,7 @@ import static tec.uom.se.unit.Units.SECOND;
  *
  * @author cl
  */
-public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeability>> implements Quantity<OsmoticPermeability>, ScalableFeature<Quantity<OsmoticPermeability>> {
+public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeability> implements Quantity<OsmoticPermeability> {
 
     /**
      * Unit most commonly used to describe osmotic permeability.
@@ -34,9 +33,6 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
     public static final Unit<OsmoticPermeability> LITRE_PER_SECOND = new ProductUnit<>(METRE.divide(10).pow(3).divide(SECOND));
 
     public static final String SYMBOL = "p_f";
-
-    private Quantity<OsmoticPermeability> scaledQuantity;
-    private Quantity<OsmoticPermeability> halfScaledQuantity;
 
     /**
      * Creates a new Instance of the {@link OsmoticPermeability} Feature. Internally osmotic permeability is saved as
@@ -124,16 +120,6 @@ public class OsmoticPermeability extends AbstractFeature<Quantity<OsmoticPermeab
         scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
         // and half
         halfScaledQuantity = transformedQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
-    }
-
-    @Override
-    public Quantity<OsmoticPermeability> getScaledQuantity() {
-        return scaledQuantity;
-    }
-
-    @Override
-    public Quantity<OsmoticPermeability> getHalfScaledQuantity() {
-        return halfScaledQuantity;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package de.bioforscher.singa.simulation.modules.signalling;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.*;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
@@ -14,6 +12,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.Comparator;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_SECOND;
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
@@ -30,6 +29,7 @@ import static de.bioforscher.singa.simulation.model.compartments.CellSectionStat
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -49,44 +49,48 @@ public class GPCRCarrouselModelTest {
         // biomodels yeast carrousel https://www.ebi.ac.uk/biomodels-main/BIOMD0000000637
 
         // parameters
-        ForwardsRateConstant kOnR_G = new ForwardsRateConstant(Quantities.getQuantity(4.6111e-3, PER_SECOND), BUSH2016);
-        ForwardsRateConstant kOnLR_G, kOnR_Gt, kOnLR_Gt, kOnR_Gd, kOnLR_Gd;
+
+        RateConstant kOnR_G = RateConstant.create(4.6111e-3).forward().secondOder().concentrationUnit(NANO(MOLE_PER_LITRE)).timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kOnLR_G, kOnR_Gt, kOnLR_Gt, kOnR_Gd, kOnLR_Gd;
         kOnLR_G = kOnR_Gt = kOnLR_Gt = kOnR_Gd = kOnLR_Gd = kOnR_G;
 
-        BackwardsRateConstant kOffR_G = new BackwardsRateConstant(Quantities.getQuantity(0.1, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kOffLR_G, kOffR_Gt, kOffLR_Gt, kOffR_Gd, kOffLR_Gd;
+        RateConstant kOffR_G = RateConstant.create(0.1).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kOffLR_G, kOffR_Gt, kOffLR_Gt, kOffR_Gd, kOffLR_Gd;
         kOffLR_G = kOffR_Gt = kOffLR_Gt = kOffR_Gd = kOffLR_Gd = kOffR_G;
 
-        ForwardsRateConstant kEf_Gd = new ForwardsRateConstant(Quantities.getQuantity(6.2e-4, PER_SECOND), BUSH2016);
-        ForwardsRateConstant kEf_RGt = kEf_Gd;
-        BackwardsRateConstant kHf_Gt = new BackwardsRateConstant(Quantities.getQuantity(2.0e-3, PER_SECOND), BUSH2016);
-        RateConstant kEf_G = new RateConstant(Quantities.getQuantity(6.2e-4, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kEf_RG = new BackwardsRateConstant(Quantities.getQuantity(6.2e-4, PER_SECOND), BUSH2016);
+        RateConstant kEf_Gd = RateConstant.create(6.2e-4).forward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kEf_RGt, kEf_G;
+        kEf_RGt = kEf_G = kEf_Gd;
 
-        ForwardsRateConstant kAf_Gd = new ForwardsRateConstant(Quantities.getQuantity(0.2158, PER_SECOND), BUSH2016);
-        ForwardsRateConstant kAf_LRGd, kAf_RGd;
+        RateConstant kHf_Gt = RateConstant.create(2.0e-3).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kEf_RG = RateConstant.create(6.2e-4).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+
+        RateConstant kAf_Gd = RateConstant.create(0.2158).forward().secondOder().concentrationUnit(NANO(MOLE_PER_LITRE)).timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kAf_LRGd, kAf_RGd;
         kAf_LRGd = kAf_RGd = kAf_Gd;
-        BackwardsRateConstant kAr_Gd = new BackwardsRateConstant(Quantities.getQuantity(1.3e-3, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kAr_LRGd, kAr_RGd;
+
+        RateConstant kAr_Gd = RateConstant.create(1.3e-3).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kAr_LRGd, kAr_RGd;
         kAr_LRGd = kAr_RGd = kAr_Gd;
 
-        ForwardsRateConstant kEf_LRGd = new ForwardsRateConstant(Quantities.getQuantity(1.5, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kEf_LRG = new BackwardsRateConstant(Quantities.getQuantity(1.5, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kHf_LRGt = new BackwardsRateConstant(Quantities.getQuantity(0.11, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kHf_RGt = kHf_LRGt;
+        RateConstant kEf_LRGd = RateConstant.create(1.5).forward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kEf_LRG = RateConstant.create(1.5).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+
+        RateConstant kHf_LRGt = RateConstant.create(0.11).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kHf_RGt = kHf_LRGt;
 
         // backwards rate constant is effectively zero
-        ForwardsRateConstant kEf_zero = new ForwardsRateConstant(Quantities.getQuantity(0.0, PER_SECOND), BUSH2016);
-
-        ForwardsRateConstant kOn_LR = new ForwardsRateConstant(Quantities.getQuantity(1.7857e-4, PER_SECOND), BUSH2016);
-        ForwardsRateConstant kOn_LRGd, kOn_LRG, kOn_LRGt;
+        RateConstant kEf_zero = RateConstant.create(0.0).forward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        // transformed
+        RateConstant kOn_LR = RateConstant.create(1.7857e-4).forward().secondOder().concentrationUnit(NANO(MOLE_PER_LITRE)).timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kOn_LRGd, kOn_LRG, kOn_LRGt;
         kOn_LRGd = kOn_LRG = kOn_LRGt = kOn_LR;
 
-        BackwardsRateConstant kOff_LR = new BackwardsRateConstant(Quantities.getQuantity(0.001, PER_SECOND), BUSH2016);
-        BackwardsRateConstant kOff_LRG, kOff_LRGt, kOff_LRGd;
+        RateConstant kOff_LR = RateConstant.create(0.001).backward().firstOrder().timeUnit(SECOND).origin(BUSH2016).build();
+        RateConstant kOff_LRG, kOff_LRGt, kOff_LRGd;
         kOff_LRG = kOff_LRGt = kOff_LRGd = kOff_LR;
 
-
+        // entities
         // entities
         // vasopressin v2 receptor
         Receptor vasopressinReceptor = new Receptor.Builder("V2R")
@@ -165,34 +169,34 @@ public class GPCRCarrouselModelTest {
 
         // modules
         // binding R.Gd
-//        ComplexBuildingReaction binding01 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 01")
-//                .of(gdpGProteinAlpha, kOnR_Gd)
-//                .in(NON_MEMBRANE)
-//                .by(vasopressinReceptor, kOffR_Gd)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaGDPReceptor = binding01.getComplex();
-//
-//        // binding R.Gt
-//        ComplexBuildingReaction binding02 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 02")
-//                .of(gtpGProteinAlpha, kOnR_Gt)
-//                .in(NON_MEMBRANE)
-//                .by(vasopressinReceptor, kOffR_Gt)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaGTPReceptor = binding02.getComplex();
-//
-//        // binding R.G
-//        ComplexBuildingReaction binding03 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 03")
-//                .of(gdpGProteinAlphaBetaGamma, kOnR_G)
-//                .in(NON_MEMBRANE)
-//                .by(vasopressinReceptor, kOffR_G)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaBetaGammaGDPReceptor = binding03.getComplex();
+        ComplexBuildingReaction binding01 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 01")
+                .of(gdpGProteinAlpha, kOnR_Gd)
+                .in(NON_MEMBRANE)
+                .by(vasopressinReceptor, kOffR_Gd)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaGDPReceptor = binding01.getComplex();
+
+        // binding R.Gt
+        ComplexBuildingReaction binding02 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 02")
+                .of(gtpGProteinAlpha, kOnR_Gt)
+                .in(NON_MEMBRANE)
+                .by(vasopressinReceptor, kOffR_Gt)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaGTPReceptor = binding02.getComplex();
+
+        // binding R.G
+        ComplexBuildingReaction binding03 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 03")
+                .of(gdpGProteinAlphaBetaGamma, kOnR_G)
+                .in(NON_MEMBRANE)
+                .by(vasopressinReceptor, kOffR_G)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaBetaGammaGDPReceptor = binding03.getComplex();
 
         // binding L.R
         ComplexBuildingReaction binding04 = ComplexBuildingReaction.inSimulation(simulation)
@@ -205,150 +209,150 @@ public class GPCRCarrouselModelTest {
                 .build();
 
         // binding LR.Gd
-//        ComplexBuildingReaction binding05 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 05")
-//                .of(gdpGProteinAlpha, kOnLR_Gd)
-//                .in(NON_MEMBRANE)
-//                .by(receptorLigandComplex, kOffLR_Gd)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaGDPReceptorLigandComplex = binding05.getComplex();
-//
-//        // binding LR.Gt
-//        ComplexBuildingReaction binding06 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 06")
-//                .of(gtpGProteinAlpha, kOnLR_Gt)
-//                .in(NON_MEMBRANE)
-//                .by(receptorLigandComplex, kOffLR_Gt)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaGTPReceptorLigandComplex = binding06.getComplex();
-//
-//        // binding LR.G
-//        ComplexBuildingReaction binding07 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 07")
-//                .of(gdpGProteinAlphaBetaGamma, kOnLR_G)
-//                .in(NON_MEMBRANE)
-//                .by(receptorLigandComplex, kOffLR_G)
-//                .to(MEMBRANE)
-//                .build();
-//        ComplexedChemicalEntity alphaBetaGammaGDPReceptorLigandComplex = binding07.getComplex();
-//
-//        // exchange G
-//        NthOrderReaction reaction08 = NthOrderReaction.inSimulation(simulation)
-//                .identifier("reaction 08")
-//                .addSubstrate(gdpGProteinAlphaBetaGamma)
-//                .addProduct(gtpGProteinAlpha)
-//                .addProduct(gProteinBetaGamma)
-//                .rateConstant(kEf_G)
-//                .build();
-//
-//        // exchange Gd, hydrolysis Gt
-//        EquilibriumReaction reaction09 = EquilibriumReaction.inSimulation(simulation)
-//                .identifier("reaction 09")
-//                .addSubstrate(gtpGProteinAlpha)
-//                .addProduct(gdpGProteinAlpha)
-//                .forwardsRateConstant(kEf_Gd)
-//                .backwardsRateConstant(kHf_Gt)
-//                .build();
-//
-//        // association Gd
-//        ComplexBuildingReaction binding10 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 10")
-//                .of(gdpGProteinAlpha, kAf_Gd)
-//                .in(NON_MEMBRANE)
-//                .by(gProteinBetaGamma, kAr_Gd)
-//                .to(NON_MEMBRANE)
-//                .formingComplex(gdpGProteinAlphaBetaGamma)
-//                .build();
-//
-//        // hydrolysis LR.Gt, exchange LR.Gd
-//        EquilibriumReaction reaction11 = EquilibriumReaction.inSimulation(simulation)
-//                .identifier("reaction 11")
-//                .addSubstrate(alphaGDPReceptorLigandComplex)
-//                .addProduct(alphaGTPReceptorLigandComplex)
-//                .forwardsRateConstant(kEf_LRGd)
-//                .backwardsRateConstant(kHf_LRGt)
-//                .build();
-//
-//        // exchange LRG
-//        ComplexBuildingReaction binding12 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 12")
-//                .of(gProteinBetaGamma, kEf_zero)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGDPReceptorLigandComplex, kEf_LRG)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
-//                .build();
-//
-//        // association LRGd
-//        ComplexBuildingReaction binding13 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 13")
-//                .of(gProteinBetaGamma, kAf_LRGd)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGDPReceptorLigandComplex, kAr_LRGd)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
-//                .build();
-//
-//        // hydrolysis R.Gt, exchange R.Gd
-//        EquilibriumReaction reaction14 = EquilibriumReaction.inSimulation(simulation)
-//                .identifier("reaction 14")
-//                .addSubstrate(alphaGDPReceptor)
-//                .addProduct(alphaGTPReceptor)
-//                .forwardsRateConstant(kEf_RGt)
-//                .backwardsRateConstant(kHf_RGt)
-//                .build();
-//
-//        // exchange RG
-//        ComplexBuildingReaction binding15 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 15")
-//                .of(gProteinBetaGamma, kEf_zero)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGTPReceptor, kEf_RG)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaBetaGammaGDPReceptor)
-//                .build();
-//
-//        // association RGd
-//        ComplexBuildingReaction binding16 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 16")
-//                .of(gProteinBetaGamma, kAf_RGd)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGDPReceptor, kAr_RGd)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaBetaGammaGDPReceptor)
-//                .build();
-//
-//        // binding L.RGd
-//        ComplexBuildingReaction binding17 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 17")
-//                .of(vasopressin, kOn_LRGd)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGDPReceptor, kOff_LRGd)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaGDPReceptorLigandComplex)
-//                .build();
-//
-//        // binding L.RG
-//        ComplexBuildingReaction binding18 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 18")
-//                .of(vasopressin, kOn_LRG)
-//                .in(NON_MEMBRANE)
-//                .by(alphaBetaGammaGDPReceptor, kOff_LRG)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
-//                .build();
-//
-//        // binding L.RGt
-//        ComplexBuildingReaction binding19 = ComplexBuildingReaction.inSimulation(simulation)
-//                .identifier("reaction 19")
-//                .of(vasopressin, kOn_LRGt)
-//                .in(NON_MEMBRANE)
-//                .by(alphaGTPReceptor, kOff_LRGt)
-//                .to(MEMBRANE)
-//                .formingComplex(alphaGTPReceptorLigandComplex)
-//                .build();
+        ComplexBuildingReaction binding05 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 05")
+                .of(gdpGProteinAlpha, kOnLR_Gd)
+                .in(NON_MEMBRANE)
+                .by(receptorLigandComplex, kOffLR_Gd)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaGDPReceptorLigandComplex = binding05.getComplex();
+
+        // binding LR.Gt
+        ComplexBuildingReaction binding06 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 06")
+                .of(gtpGProteinAlpha, kOnLR_Gt)
+                .in(NON_MEMBRANE)
+                .by(receptorLigandComplex, kOffLR_Gt)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaGTPReceptorLigandComplex = binding06.getComplex();
+
+        // binding LR.G
+        ComplexBuildingReaction binding07 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 07")
+                .of(gdpGProteinAlphaBetaGamma, kOnLR_G)
+                .in(NON_MEMBRANE)
+                .by(receptorLigandComplex, kOffLR_G)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity alphaBetaGammaGDPReceptorLigandComplex = binding07.getComplex();
+
+        // exchange G
+        NthOrderReaction reaction08 = NthOrderReaction.inSimulation(simulation)
+                .identifier("reaction 08")
+                .addSubstrate(gdpGProteinAlphaBetaGamma)
+                .addProduct(gtpGProteinAlpha)
+                .addProduct(gProteinBetaGamma)
+                .rateConstant(kEf_G)
+                .build();
+
+        // exchange Gd, hydrolysis Gt
+        EquilibriumReaction reaction09 = EquilibriumReaction.inSimulation(simulation)
+                .identifier("reaction 09")
+                .addSubstrate(gtpGProteinAlpha)
+                .addProduct(gdpGProteinAlpha)
+                .forwardsRateConstant(kEf_Gd)
+                .backwardsRateConstant(kHf_Gt)
+                .build();
+
+        // association Gd
+        ComplexBuildingReaction binding10 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 10")
+                .of(gdpGProteinAlpha, kAf_Gd)
+                .in(NON_MEMBRANE)
+                .by(gProteinBetaGamma, kAr_Gd)
+                .to(NON_MEMBRANE)
+                .formingComplex(gdpGProteinAlphaBetaGamma)
+                .build();
+
+        // hydrolysis LR.Gt, exchange LR.Gd
+        EquilibriumReaction reaction11 = EquilibriumReaction.inSimulation(simulation)
+                .identifier("reaction 11")
+                .addSubstrate(alphaGDPReceptorLigandComplex)
+                .addProduct(alphaGTPReceptorLigandComplex)
+                .forwardsRateConstant(kEf_LRGd)
+                .backwardsRateConstant(kHf_LRGt)
+                .build();
+
+        // exchange LRG
+        ComplexBuildingReaction binding12 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 12")
+                .of(gProteinBetaGamma, kEf_zero)
+                .in(NON_MEMBRANE)
+                .by(alphaGDPReceptorLigandComplex, kEf_LRG)
+                .to(MEMBRANE)
+                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
+                .build();
+
+        // association LRGd
+        ComplexBuildingReaction binding13 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 13")
+                .of(gProteinBetaGamma, kAf_LRGd)
+                .in(NON_MEMBRANE)
+                .by(alphaGDPReceptorLigandComplex, kAr_LRGd)
+                .to(MEMBRANE)
+                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
+                .build();
+
+        // hydrolysis R.Gt, exchange R.Gd
+        EquilibriumReaction reaction14 = EquilibriumReaction.inSimulation(simulation)
+                .identifier("reaction 14")
+                .addSubstrate(alphaGDPReceptor)
+                .addProduct(alphaGTPReceptor)
+                .forwardsRateConstant(kEf_RGt)
+                .backwardsRateConstant(kHf_RGt)
+                .build();
+
+        // exchange RG
+        ComplexBuildingReaction binding15 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 15")
+                .of(gProteinBetaGamma, kEf_zero)
+                .in(NON_MEMBRANE)
+                .by(alphaGTPReceptor, kEf_RG)
+                .to(MEMBRANE)
+                .formingComplex(alphaBetaGammaGDPReceptor)
+                .build();
+
+        // association RGd
+        ComplexBuildingReaction binding16 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 16")
+                .of(gProteinBetaGamma, kAf_RGd)
+                .in(NON_MEMBRANE)
+                .by(alphaGDPReceptor, kAr_RGd)
+                .to(MEMBRANE)
+                .formingComplex(alphaBetaGammaGDPReceptor)
+                .build();
+
+        // binding L.RGd
+        ComplexBuildingReaction binding17 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 17")
+                .of(vasopressin, kOn_LRGd)
+                .in(NON_MEMBRANE)
+                .by(alphaGDPReceptor, kOff_LRGd)
+                .to(MEMBRANE)
+                .formingComplex(alphaGDPReceptorLigandComplex)
+                .build();
+
+        // binding L.RG
+        ComplexBuildingReaction binding18 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 18")
+                .of(vasopressin, kOn_LRG)
+                .in(NON_MEMBRANE)
+                .by(alphaBetaGammaGDPReceptor, kOff_LRG)
+                .to(MEMBRANE)
+                .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
+                .build();
+
+        // binding L.RGt
+        ComplexBuildingReaction binding19 = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("reaction 19")
+                .of(vasopressin, kOn_LRGt)
+                .in(NON_MEMBRANE)
+                .by(alphaGTPReceptor, kOff_LRGt)
+                .to(MEMBRANE)
+                .formingComplex(alphaGTPReceptorLigandComplex)
+                .build();
 
         // add diffusion
         FreeDiffusion.inSimulation(simulation)

@@ -1,9 +1,8 @@
 package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 
 import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -22,13 +21,10 @@ import static tec.uom.se.unit.Units.SECOND;
  *
  * @author cl
  */
-public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implements Quantity<Diffusivity>, ScalableFeature<Quantity<Diffusivity>> {
+public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements Quantity<Diffusivity> {
 
     public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
     public static final String SYMBOL = "D";
-
-    private Quantity<Diffusivity> scaledQuantity;
-    private Quantity<Diffusivity> halfScaledQuantity;
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
         super(diffusivityQuantity, origin);
@@ -59,13 +55,9 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         halfScaledQuantity = denominator.multiply(targetTimeScale.multiply(0.5).getValue());
     }
 
-    public Quantity<Diffusivity> getScaledQuantity() {
-        return scaledQuantity;
-    }
-
     @Override
-    public Quantity<Diffusivity> getHalfScaledQuantity() {
-        return halfScaledQuantity;
+    public String getSymbol() {
+        return SYMBOL;
     }
 
     @Override
@@ -123,8 +115,4 @@ public class Diffusivity extends AbstractFeature<Quantity<Diffusivity>> implemen
         return getFeatureContent().getUnit();
     }
 
-    @Override
-    public String getSymbol() {
-        return SYMBOL;
-    }
 }

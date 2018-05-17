@@ -2,7 +2,6 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
-import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -10,6 +9,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.measure.Quantity;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -211,7 +211,7 @@ public abstract class AbstractModule implements Module {
      * @param <FeatureContentType> The type of the feature.
      * @return The requested feature for the corresponding entity.
      */
-    protected <FeatureContentType> FeatureContentType getScaledFeature(Featureable entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
         if (halfTime) {
             return feature.getHalfScaledQuantity();

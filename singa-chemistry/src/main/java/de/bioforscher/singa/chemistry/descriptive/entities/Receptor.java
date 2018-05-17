@@ -1,7 +1,5 @@
 package de.bioforscher.singa.chemistry.descriptive.entities;
 
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 
@@ -35,12 +33,6 @@ public class Receptor extends Protein {
         name = protein.name;
         annotations = protein.annotations;
         features = protein.features;
-    }
-
-    public void addLigand(ChemicalEntity chemicalEntity, ForwardsRateConstant forwardsRateConstant, BackwardsRateConstant backwardsRateConstant) {
-        chemicalEntity.setFeature(forwardsRateConstant);
-        chemicalEntity.setFeature(backwardsRateConstant);
-        generateReceptorState(chemicalEntity);
     }
 
     private void generateReceptorState(ChemicalEntity chemicalEntity) {
@@ -78,11 +70,6 @@ public class Receptor extends Protein {
 
         public Builder(String identifier) {
             this(new SimpleStringIdentifier(identifier));
-        }
-
-        public Builder addLigand(ChemicalEntity chemicalEntity, ForwardsRateConstant forwardsRateConstant, BackwardsRateConstant backwardsRateConstant) {
-            topLevelObject.addLigand(chemicalEntity, forwardsRateConstant, backwardsRateConstant);
-            return this;
         }
 
         @Override

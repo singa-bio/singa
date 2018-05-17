@@ -86,7 +86,7 @@ public class DynamicReaction extends Reaction {
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         kineticLaw.setCurrentCellSection(getCurrentCellSection());
-        kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class));
+        kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class).getValue().doubleValue());
         return kineticLaw.calculateVelocity(concentrationContainer);
     }
 

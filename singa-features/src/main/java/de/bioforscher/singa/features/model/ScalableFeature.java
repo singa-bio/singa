@@ -10,16 +10,20 @@ import javax.measure.quantity.Time;
 /**
  * @author cl
  */
-public interface ScalableFeature<FeatureContent> extends Feature<FeatureContent> {
+public interface ScalableFeature<FeatureContent extends Quantity<FeatureContent>> extends Feature<Quantity<FeatureContent>> {
 
     void scale(Quantity<Time> time, Quantity<Length> space);
+
+    default void scale(Quantity<Time> time) {
+        scale(time, EnvironmentalParameters.getNodeDistance());
+    }
 
     default void scale() {
         scale(EnvironmentalParameters.getTimeStep(), EnvironmentalParameters.getNodeDistance());
     }
 
-    FeatureContent getScaledQuantity();
+    Quantity<FeatureContent> getScaledQuantity();
 
-    FeatureContent getHalfScaledQuantity();
+    Quantity<FeatureContent> getHalfScaledQuantity();
 
 }

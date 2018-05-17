@@ -5,6 +5,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEnti
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
@@ -20,6 +22,7 @@ import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
 import java.util.*;
 
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
@@ -38,22 +41,18 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         requiredFeatures.add(BackwardsRateConstant.class);
     }
 
+    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     public static BindeeSelection inSimulation(Simulation simulation) {
         return new BindingBuilder(simulation);
-    }
-
-    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
-
-    static {
-        availableFeatures.add(ForwardsRateConstant.class);
-        availableFeatures.add(BackwardsRateConstant.class);
     }
 
     /**
      * The features of the reaction.
      */
     private FeatureContainer features;
+    private RateConstant forwardsReactionRate;
+    private RateConstant backwardsReactionRate;
 
     private ChemicalEntity binder;
     private CellSectionState binderCellSectionState;
@@ -182,12 +181,12 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     private double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // get rates
-        final double forwardsRateConstant = getScaledFeature(ForwardsRateConstant.class).getValue().doubleValue();
-        final double backwardsRateConstant = getScaledFeature(BackwardsRateConstant.class).getValue().doubleValue();
+        final double forwardsRateConstant = getScaledForwardsReactionRate().getValue().doubleValue();
+        final double backwardsRateConstant = getScaledBackwardsReactionRate().getValue().doubleValue();
         // get concentrations
-        final double bindeeConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, bindee).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
-        final double binderConcentration = concentrationContainer.getAvailableConcentration(binderRelevantCellSection, binder).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
-        final double complexConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, complex).to(NANO(MOLE_PER_LITRE)).getValue().doubleValue();
+        final double bindeeConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, bindee).getValue().doubleValue();
+        final double binderConcentration = concentrationContainer.getAvailableConcentration(binderRelevantCellSection, binder).getValue().doubleValue();
+        final double complexConcentration = concentrationContainer.getAvailableConcentration(bindeeRelevantCellSection, complex).getValue().doubleValue();
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
@@ -236,7 +235,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
      * @param <FeatureContentType> The type of the feature.
      * @return The requested feature for the corresponding entity.
      */
-    protected <FeatureContentType> FeatureContentType getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         ScalableFeature<FeatureContentType> feature = getFeature(featureClass);
         if (halfTime) {
             return feature.getHalfScaledQuantity();
@@ -260,6 +259,58 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     }
 
     @Override
+    public void checkFeatures() {
+        boolean forwardsRateFound = false;
+        boolean backwardsRateFound = false;
+        for (Feature<?> feature : getFeatures()) {
+            // any forwards rate constant
+            if (feature instanceof ForwardsRateConstant) {
+                forwardsRateFound = true;
+            }
+            // any backwards rate constant
+            if (feature instanceof BackwardsRateConstant) {
+                backwardsRateFound = true;
+            }
+        }
+        if (!forwardsRateFound || !backwardsRateFound) {
+            throw new FeatureUnassignableException("Required reaction rates unavailable.");
+        }
+    }
+
+    private Quantity getScaledForwardsReactionRate() {
+        if (forwardsReactionRate == null) {
+            for (Feature<?> feature : getFeatures()) {
+                // any forwards rate constant
+                if (feature instanceof ForwardsRateConstant) {
+                    forwardsReactionRate = (RateConstant) feature;
+                    break;
+                }
+            }
+        }
+        if (halfTime) {
+            return forwardsReactionRate.getHalfScaledQuantity();
+        }
+        return forwardsReactionRate.getScaledQuantity();
+
+    }
+
+    private Quantity getScaledBackwardsReactionRate() {
+        if (backwardsReactionRate == null) {
+            for (Feature<?> feature : getFeatures()) {
+                // any forwards rate constant
+                if (feature instanceof BackwardsRateConstant) {
+                    backwardsReactionRate = (RateConstant) feature;
+                    break;
+                }
+            }
+        }
+        if (halfTime) {
+            return backwardsReactionRate.getHalfScaledQuantity();
+        }
+        return backwardsReactionRate.getScaledQuantity();
+    }
+
+    @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;
     }
@@ -276,7 +327,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
         BindeeSectionSelection of(ChemicalEntity bindee);
 
-        BindeeSectionSelection of(ChemicalEntity bindee, ForwardsRateConstant forwardsRateConstant);
+        BindeeSectionSelection of(ChemicalEntity bindee, RateConstant forwardsRateConstant);
     }
 
     public interface BindeeSectionSelection {
@@ -286,7 +337,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
     public interface BinderSelection {
         BinderSectionSelection by(ChemicalEntity binder);
 
-        BinderSectionSelection by(ChemicalEntity binder, BackwardsRateConstant forwardsRateConstant);
+        BinderSectionSelection by(ChemicalEntity binder, RateConstant forwardsRateConstant);
     }
 
     public interface BinderSectionSelection {
@@ -325,7 +376,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         }
 
         @Override
-        public BindeeSectionSelection of(ChemicalEntity binder, ForwardsRateConstant forwardsRateConstant) {
+        public BindeeSectionSelection of(ChemicalEntity binder, RateConstant forwardsRateConstant) {
             module.setFeature(forwardsRateConstant);
             return of(binder);
         }
@@ -343,7 +394,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         }
 
         @Override
-        public BinderSectionSelection by(ChemicalEntity binder, BackwardsRateConstant backwardsRateConstant) {
+        public BinderSectionSelection by(ChemicalEntity binder, RateConstant backwardsRateConstant) {
             module.setFeature(backwardsRateConstant);
             return by(binder);
         }

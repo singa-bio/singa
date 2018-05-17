@@ -1,8 +1,7 @@
 package de.bioforscher.singa.simulation.features.permeability;
 
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -17,12 +16,9 @@ import static tec.uom.se.unit.Units.HERTZ;
 /**
  * @author cl
  */
-public class MembraneExit extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
+public class MembraneExit extends ScalableQuantityFeature<Frequency> {
 
     public static final String SYMBOL = "k_out";
-
-    private Quantity<Frequency> scaledQuantity;
-    private Quantity<Frequency> halfScaledQuantity;
 
     public MembraneExit(Quantity<Frequency> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity, featureOrigin);
@@ -35,22 +31,11 @@ public class MembraneExit extends AbstractFeature<Quantity<Frequency>> implement
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<Frequency> scaledQuantity = getFeatureContent()
-                .to(new ProductUnit<>(ONE.divide(time.getUnit())));
+        Quantity<Frequency> scaledQuantity = getFeatureContent().to(new ProductUnit<>(ONE.divide(time.getUnit())));
         // transform to specified amount
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half
         halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
-    }
-
-    @Override
-    public Quantity<Frequency> getScaledQuantity() {
-        return scaledQuantity;
-    }
-
-    @Override
-    public Quantity<Frequency> getHalfScaledQuantity() {
-        return halfScaledQuantity;
     }
 
     @Override
