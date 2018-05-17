@@ -26,8 +26,6 @@ import javax.measure.Quantity;
 import java.util.*;
 
 import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static tec.uom.se.unit.MetricPrefix.NANO;
 
 /**
  * @author cl
@@ -171,11 +169,11 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
         // change ligand concentration
-        deltas.add(new Delta(this, bindeeRelevantCellSection, bindee, Quantities.getQuantity(-velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, bindeeRelevantCellSection, bindee, Quantities.getQuantity(-velocity, getTransformedMolarConcentration())));
         // change unbound receptor concentration
-        deltas.add(new Delta(this, binderRelevantCellSection, binder, Quantities.getQuantity(-velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, binderRelevantCellSection, binder, Quantities.getQuantity(-velocity, getTransformedMolarConcentration())));
         // change bound receptor concentration
-        deltas.add(new Delta(this, binderRelevantCellSection, complex, Quantities.getQuantity(velocity, /* getTransformedMolarConcentration() */ NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, binderRelevantCellSection, complex, Quantities.getQuantity(velocity, getTransformedMolarConcentration())));
         return deltas;
     }
 
