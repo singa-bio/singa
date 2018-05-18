@@ -7,7 +7,7 @@ import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -41,7 +41,7 @@ public class DiffusivityTest {
         // assert attributes and values
         assertEquals("Wilke Correlation", feature.getFeatureOrigin().getName());
         assertEquals(8.217150338823197E-6, feature.getValue().doubleValue(), 0.0);
-        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getUnit());
+        assertEquals(SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DiffusivityTest {
         // assert attributes and values
         assertEquals("Young Correlation", feature.getFeatureOrigin().getName());
         assertEquals(1.134227930559286E-6, feature.getValue().doubleValue(), 0.0);
-        assertEquals(SQUARE_CENTIMETER_PER_SECOND, feature.getUnit());
+        assertEquals(SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
     }
 
     @Test

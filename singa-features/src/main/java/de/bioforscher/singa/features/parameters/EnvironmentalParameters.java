@@ -57,6 +57,14 @@ public class EnvironmentalParameters extends Observable {
 
     private static EnvironmentalParameters instance;
 
+    private Quantity<Length> systemLength;
+    private Quantity<Length> systemHeight;
+    private Quantity<Length> systemScale;
+
+    private double simulationLength;
+    private double simulationHeight;
+    private double simulationScale;
+
     private Quantity<Length> nodeDistance;
     private Quantity<Time> timeStep;
     private Quantity<Temperature> systemTemperature;
@@ -180,15 +188,62 @@ public class EnvironmentalParameters extends Observable {
     }
 
     public static void setTimeStep(Quantity<Time> timeStep) {
-        logger.trace("Setting time step size to {}.", timeStep);
         getInstance().timeStep = timeStep;
-        // getInstance().setChanged();
-        // getInstance().notifyObservers();
     }
 
     public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
         setNodeDistance(diameter.divide(spanningNodes - 1));
+    }
+
+    public static Quantity<Length> getSystemLength() {
+        return getInstance().systemLength;
+    }
+
+    public static void setSystemLength(Quantity<Length> systemLength) {
+        getInstance().systemLength = systemLength;
+    }
+
+    public static Quantity<Length> getSystemHeight() {
+        return getInstance().systemHeight;
+    }
+
+    public static void setSystemHeight(Quantity<Length> systemHeight) {
+        getInstance().systemHeight = systemHeight;
+    }
+
+    public static double getSimulationLength() {
+        return getInstance().simulationLength;
+    }
+
+    public static void setSimulationLength(double simulationLength) {
+        getInstance().simulationLength = simulationLength;
+    }
+
+    public static double getSimulationHeight() {
+        return getInstance().simulationHeight;
+    }
+
+    public static void setSimulationHeight(double simulationHeight) {
+        getInstance().simulationHeight = simulationHeight;
+    }
+
+    public static Quantity<Length> getSystemScale() {
+        return getInstance().systemScale;
+    }
+
+    public static double getSimulationScale() {
+        return getInstance().simulationScale;
+    }
+
+    public static Quantity<Length> convertSimulationToSystemScale(double simulationDistance) {
+        getInstance().systemScale = getInstance().systemLength.divide(getInstance().simulationLength);
+        return getInstance().systemScale.multiply(simulationDistance);
+    }
+
+    public static double convertSystemToSimulationScale(Quantity<Length> realDistance) {
+        getInstance().simulationScale = getInstance().simulationLength / getInstance().systemLength.getValue().doubleValue();
+        return realDistance.to(getInstance().systemLength.getUnit()).getValue().doubleValue() * getInstance().simulationScale;
     }
 
     public static void attachObserver(Observer observer) {

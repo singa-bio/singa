@@ -62,7 +62,7 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
         final double divisor = EnvironmentalParameters.getViscosity().getValue().doubleValue()
                 * Math.pow(estimateMolarVolume(molarMass), 0.6);
         // D = a / b
-        final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETER_PER_SECOND);
+        final Quantity<Diffusivity> quantity = Quantities.getQuantity(dividend / divisor, Diffusivity.SQUARE_CENTIMETRE_PER_SECOND);
         return new Diffusivity(quantity, origin);
     }
 }

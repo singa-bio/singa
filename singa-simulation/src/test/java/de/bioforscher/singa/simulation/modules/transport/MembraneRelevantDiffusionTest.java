@@ -26,7 +26,7 @@ import javax.measure.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -43,7 +43,7 @@ public class MembraneRelevantDiffusionTest {
 
         SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
                 .name("ammonia")
-                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
         Simulation simulation = new Simulation();
@@ -108,7 +108,7 @@ public class MembraneRelevantDiffusionTest {
 
         SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
                 .name("ammonia")
-                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
         Simulation simulation = new Simulation();

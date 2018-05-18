@@ -24,7 +24,7 @@ import javax.measure.quantity.Time;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
@@ -47,17 +47,17 @@ public class FreeDiffusionTest {
     // required species
     private static final SmallMolecule hydrogen = new SmallMolecule.Builder("h2")
             .name("dihydrogen")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(4.40E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
     private static final SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
             .name("ammonia")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
     private static final SmallMolecule benzene = new SmallMolecule.Builder("benzene")
             .name("benzene")
-            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETER_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(Quantities.getQuantity(1.09E-05, SQUARE_CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
             .build();
 
     @Parameter(0)

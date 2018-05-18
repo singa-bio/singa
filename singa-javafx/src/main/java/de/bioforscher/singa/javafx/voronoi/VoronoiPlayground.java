@@ -67,9 +67,9 @@ public class VoronoiPlayground extends Application implements Renderer {
         BorderPane root = new BorderPane();
 
         // setup canvas
-        this.canvas = new Canvas(700, 700);
-        this.canvas.setOnMouseClicked(this::handleCanvasClick);
-        root.setCenter(this.canvas);
+        canvas = new Canvas(700, 700);
+        canvas.setOnMouseClicked(this::handleCanvasClick);
+        root.setCenter(canvas);
 
         // setup button bar
         HBox buttonBar = new HBox();
@@ -95,17 +95,17 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     @Override
     public GraphicsContext getGraphicsContext() {
-        return this.canvas.getGraphicsContext2D();
+        return canvas.getGraphicsContext2D();
     }
 
     @Override
     public double getDrawingWidth() {
-        return this.canvas.getWidth();
+        return canvas.getWidth();
     }
 
     @Override
     public double getDrawingHeight() {
-        return this.canvas.getHeight();
+        return canvas.getHeight();
     }
 
     private void handleCanvasClick(MouseEvent event) {
@@ -133,7 +133,7 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void generateVoronoi(ActionEvent event) {
         if (points != null) {
-            diagram = VoronoiGenerator.generateVoronoiDiagram(points, new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
+            diagram = VoronoiGenerator.generateVoronoiDiagram(points, new Rectangle(getDrawingWidth(), getDrawingHeight()));
             clearCanvas();
             drawDiagram();
             drawPoints();
@@ -142,7 +142,7 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void relaxSites(ActionEvent event) {
         if (points != null && diagram != null) {
-            diagram = VoronoiGenerator.generateVoronoiDiagram(VoronoiRelaxation.relax(diagram), new Rectangle(this.getDrawingWidth(), getDrawingHeight()));
+            diagram = VoronoiGenerator.generateVoronoiDiagram(VoronoiRelaxation.relax(diagram), new Rectangle(getDrawingWidth(), getDrawingHeight()));
             points = diagram.getSites();
             clearCanvas();
             drawPoints();

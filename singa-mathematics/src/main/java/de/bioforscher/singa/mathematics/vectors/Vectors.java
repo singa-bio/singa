@@ -59,6 +59,12 @@ public class Vectors {
         return new Vector2D(x, y);
     }
 
+    public static Vector2D generateStandardGaussian2DVector() {
+        double x = ThreadLocalRandom.current().nextGaussian();
+        double y = ThreadLocalRandom.current().nextGaussian();
+        return new Vector2D(x,y);
+    }
+
 
     public static Vector3D generateRandomVector3D() {
         double x = ThreadLocalRandom.current().nextDouble();

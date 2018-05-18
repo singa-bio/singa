@@ -23,7 +23,8 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements Quantity<Diffusivity> {
 
-    public static final Unit<Diffusivity> SQUARE_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
+    public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
+    public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
     public static final String SYMBOL = "D";
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
@@ -31,7 +32,7 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
     }
 
     public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
-        super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETER_PER_SECOND), origin);
+        super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
     }
 
     /**
@@ -45,8 +46,7 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
     @Override
     public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
         // transform to specified unit
-        Quantity<Diffusivity> scaledQuantity = getFeatureContent()
-                .to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
+        Quantity<Diffusivity> scaledQuantity = getFeatureContent().to(new ProductUnit<>(targetLengthScale.getUnit().pow(2).divide(targetTimeScale.getUnit())));
         // denominator
         Quantity<Diffusivity> denominator = scaledQuantity.divide(targetLengthScale.getValue()).divide(targetLengthScale.getValue());
         // transform to specified amount
@@ -115,4 +115,8 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         return getFeatureContent().getUnit();
     }
 
+    @Override
+    public String toString() {
+        return SYMBOL+ " = "+getScaledQuantity();
+    }
 }

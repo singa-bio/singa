@@ -10,7 +10,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETER_PER_SECOND;
+import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static tec.uom.se.AbstractUnit.ONE;
 
 /**
@@ -42,7 +42,7 @@ public class YoungCorrelation implements Correlation<Diffusivity> {
         final double diffusivity = YOUNG_COEFFICIENT.getValue().doubleValue()
                 * (EnvironmentalParameters.getTemperature().getValue().doubleValue()
                 / (EnvironmentalParameters.getViscosity().getValue().doubleValue() * Math.cbrt(molarMass)));
-        final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, SQUARE_CENTIMETER_PER_SECOND);
+        final Quantity<Diffusivity> quantity = Quantities.getQuantity(diffusivity, SQUARE_CENTIMETRE_PER_SECOND);
         return new Diffusivity(quantity, origin);
     }
 
