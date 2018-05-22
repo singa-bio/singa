@@ -1,11 +1,16 @@
 package de.bioforscher.singa.simulation.model.layer;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.NaturalConstants;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -21,6 +26,7 @@ import static tec.uom.se.unit.Units.METRE;
 public class Vesicle {
 
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560." );
+
 
     /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
@@ -51,16 +57,27 @@ public class Vesicle {
         return radius.multiply(radius).multiply(radius).multiply(Math.PI).multiply(4.0 / 3.0).asType(Volume.class);
     }
 
+    private String identifier;
     private Quantity<Length> radius;
     private Quantity<Volume> volume;
     private Diffusivity diffusivity;
+    private MembraneContainer concentrations;
+    private EnclosedCompartment inside;
 
     private Vector2D position;
     private Vector2D potentialUpdate;
 
-    public Vesicle(Vector2D position, Quantity<Length> radius) {
+    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, EnclosedCompartment outsideCompartment) {
+        this.identifier = identifier;
         this.position = position;
         setRadius(radius);
+        inside = new EnclosedCompartment("c-"+identifier, "compartment of vesicle "+identifier);
+        Membrane membrane = Membrane.forCompartment(inside);
+        concentrations = new MembraneContainer(outsideCompartment, inside, membrane);
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public Vector2D getPosition() {
@@ -75,14 +92,18 @@ public class Vesicle {
         return radius;
     }
 
+    public Quantity<Volume> getVolume() {
+        return volume;
+    }
+
     public Vector2D getPotentialUpdate() {
         return potentialUpdate;
     }
 
     public void setRadius(Quantity<Length> radius) {
+        this.radius = radius;
         volume = calculateVolume(radius);
         diffusivity = calculateDiffusivity(radius);
-        this.radius = radius;
     }
 
     public void calculateDisplacement(Quantity<Time> timeStep) {
@@ -91,6 +112,14 @@ public class Vesicle {
                 EnvironmentalParameters.getSystemScale().getUnit()));
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         potentialUpdate = position.add(gaussian.multiply(scaling));
+    }
+
+    public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+        concentrations.setAvailableConcentration(inside, entity, EnvironmentalParameters.transformToVolume(concentration, volume));
+    }
+
+    public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
+        return concentrations.getAvailableConcentration(inside, entity);
     }
 
     public void permitDisplacement() {

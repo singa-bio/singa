@@ -130,6 +130,17 @@ public class EnvironmentalParameters extends Observable {
         return getInstance().transformedMolarConcentration;
     }
 
+    public static Quantity<MolarConcentration> transformToVolume(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
+
+        final Unit<Volume> volumeUnit = volume.getUnit();
+        final Unit<MolarConcentration> transformedUnit = MOLE.divide(volumeUnit).asType(MolarConcentration.class);
+        if (volume.getValue().doubleValue() == 1.0) {
+            return concentration.to(transformedUnit);
+        } else {
+            return concentration.to(new TransformedUnit<>(transformedUnit, new MultiplyConverter(volume.getValue().doubleValue())));
+        }
+    }
+
     public void transformSpaceScales() {
         // base length unit
         final Unit<Length> lengthUnit = nodeDistance.getUnit();

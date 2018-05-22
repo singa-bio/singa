@@ -87,7 +87,7 @@ public class MolarConcentrationTest {
     public void toMolesOfSubstance() {
         MolarConcentration molePerLitre = new MolarConcentration(1.0, MOLE_PER_LITRE);
         Quantity<Volume> volume = Quantities.getQuantity(2, CUBIC_METRE);
-        Quantity<AmountOfSubstance> actualResult = molePerLitre.toMolesOfSubstance(volume);
+        Quantity<AmountOfSubstance> actualResult = MolarConcentration.toMolesOfSubstance(molePerLitre,volume);
         Quantity<AmountOfSubstance> expectedResult = Quantities.getQuantity(2000.0, MOLE);
         assertEquals(expectedResult, actualResult);
     }
@@ -97,7 +97,7 @@ public class MolarConcentrationTest {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
         EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
         Quantity<Volume> volume = Quantities.getQuantity(1.0, EnvironmentalParameters.getTransformedVolume());
-        Quantity<Dimensionless> actualResult = molePerLitre.toMoleculesOfSubstance(volume);
+        Quantity<Dimensionless> actualResult = MolarConcentration.toMoleculesOfSubstance(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, MOLECULES);
         assertEquals(expectedResult, actualResult);
     }

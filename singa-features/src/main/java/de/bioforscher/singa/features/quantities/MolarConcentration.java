@@ -120,15 +120,15 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return false;
     }
 
-    public Quantity<AmountOfSubstance> toMolesOfSubstance(Quantity<Volume> volume) {
+    public static Quantity<AmountOfSubstance> toMolesOfSubstance(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
         Quantity<Volume> transformedVolume = volume.to(CUBIC_METRE);
-        ComparableQuantity<MolarConcentration> transformedConcentration = to(new ProductUnit<>(MOLE.divide(CUBIC_METRE)));
-        ComparableQuantity<?> multiply = transformedConcentration.multiply(transformedVolume);
+        Quantity<MolarConcentration> transformedConcentration = concentration.to(new ProductUnit<>(MOLE.divide(CUBIC_METRE)));
+        Quantity<?> multiply = transformedConcentration.multiply(transformedVolume);
         return multiply.asType(AmountOfSubstance.class);
     }
 
-    public Quantity<Dimensionless> toMoleculesOfSubstance(Quantity<Volume> volume) {
-        return toMolesOfSubstance(volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class).to(MOLECULES);
+    public static Quantity<Dimensionless> toMoleculesOfSubstance(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
+        return toMolesOfSubstance(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class).to(MOLECULES);
     }
 
 }

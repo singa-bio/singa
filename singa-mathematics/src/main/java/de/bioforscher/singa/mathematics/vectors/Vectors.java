@@ -54,8 +54,8 @@ public class Vectors {
     public static Vector2D generateRandom2DVector(Rectangle rectangle) {
         double x = ThreadLocalRandom.current().nextDouble(rectangle.getLeftMostXPosition(),
                 rectangle.getRightMostXPosition());
-        double y = ThreadLocalRandom.current().nextDouble(rectangle.getBottomMostYPosition(),
-                rectangle.getTopMostYPosition());
+        double y = ThreadLocalRandom.current().nextDouble(rectangle.getTopMostYPosition(),
+                rectangle.getBottomMostYPosition());
         return new Vector2D(x, y);
     }
 

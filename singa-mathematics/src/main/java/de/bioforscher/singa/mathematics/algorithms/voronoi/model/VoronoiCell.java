@@ -40,8 +40,8 @@ public class VoronoiCell implements Polygon {
      */
     VoronoiCell(SiteEvent site) {
         this.site = site;
-        this.halfEdges = new ArrayList<>();
-        this.closed = true;
+        halfEdges = new ArrayList<>();
+        closed = true;
     }
 
     /**
@@ -59,9 +59,9 @@ public class VoronoiCell implements Polygon {
             }
         }
         // sort them by angle
-        this.halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle).reversed());
+        halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle).reversed());
         // return the number of remaining edges
-        return this.halfEdges.size();
+        return halfEdges.size();
     }
 
     /**
@@ -74,9 +74,9 @@ public class VoronoiCell implements Polygon {
         // get references from the neighbouring cells.
         for (VoronoiHalfEdge halfEdge : halfEdges) {
             VoronoiEdge edge = halfEdge.getEdge();
-            if (edge.getLeftSite() != null && edge.getLeftSite().getIdentifier() != this.site.getIdentifier()) {
+            if (edge.getLeftSite() != null && edge.getLeftSite().getIdentifier() != site.getIdentifier()) {
                 neighbours.add(edge.getLeftSite().getIdentifier());
-            } else if (edge.getRightSite() != null && edge.getRightSite().getIdentifier() != this.site.getIdentifier()) {
+            } else if (edge.getRightSite() != null && edge.getRightSite().getIdentifier() != site.getIdentifier()) {
                 neighbours.add(edge.getRightSite().getIdentifier());
             }
         }
@@ -158,7 +158,7 @@ public class VoronoiCell implements Polygon {
      * @return The original site of this cell.
      */
     public SiteEvent getSite() {
-        return this.site;
+        return site;
     }
 
     /**
@@ -167,7 +167,7 @@ public class VoronoiCell implements Polygon {
      * @return All half edges enclosing this cell.
      */
     public List<VoronoiHalfEdge> getHalfEdges() {
-        return this.halfEdges;
+        return halfEdges;
     }
 
     /**
@@ -176,11 +176,11 @@ public class VoronoiCell implements Polygon {
      * @return true, if this cell is closed and false otherwise.
      */
     public boolean isClosed() {
-        return this.closed;
+        return closed;
     }
 
     public boolean isOpen() {
-        return !this.closed;
+        return !closed;
     }
 
     /**
@@ -219,7 +219,7 @@ public class VoronoiCell implements Polygon {
 
     @Override
     public Vector2D[] getVertices() {
-        Vector2D[] vertices = new Vector2D[this.halfEdges.size()];
+        Vector2D[] vertices = new Vector2D[halfEdges.size()];
         for (int index = 0; index < halfEdges.size(); index++) {
             vertices[index] = halfEdges.get(index).getStartPoint();
         }
