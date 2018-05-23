@@ -4,7 +4,7 @@ import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Edge;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
@@ -129,7 +129,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         getGraphicsContext().setLineWidth(renderingOptions.getEdgeThickness());
         getGraphicsContext().setStroke(renderingOptions.getEdgeColor());
         // draw
-        drawLineSegment(new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
+        drawLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
     }
 
     public void renderVoronoi(boolean flag) {

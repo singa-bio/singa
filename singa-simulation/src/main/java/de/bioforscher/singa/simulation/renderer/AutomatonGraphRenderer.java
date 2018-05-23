@@ -8,7 +8,7 @@ import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiCell;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.simulation.events.GraphUpdatedEvent;
@@ -98,7 +98,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
     protected void drawEdge(AutomatonEdge edge) {
         // set width
         getGraphicsContext().setLineWidth(getRenderingOptions().getEdgeThickness());
-        LineSegment connectingSegment = new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
+        SimpleLineSegment connectingSegment = new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
         // decide on style
         if (edge.getSource().getState() != MEMBRANE || edge.getTarget().getState() != MEMBRANE) {
             // connection not between membrane nodes
@@ -108,10 +108,10 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
             // connection between membrane nodes
             getGraphicsContext().setStroke(Color.BURLYWOOD);
             // draw upper parallel
-            LineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
+            SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
             drawLineSegment(upperParallelSegment);
             // draw lower parallel
-            LineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
+            SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
             drawLineSegment(lowerParallelSegment);
         }
     }

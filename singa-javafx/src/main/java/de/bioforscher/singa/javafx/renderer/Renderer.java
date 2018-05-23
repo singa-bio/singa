@@ -3,6 +3,8 @@ package de.bioforscher.singa.javafx.renderer;
 import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.Parabola;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -78,6 +80,10 @@ public interface Renderer {
                 diameter);
     }
 
+    default void drawCircle(Circle circle) {
+        circlePoint(circle.getMidpoint(), circle.getRadius() * 2.0);
+    }
+
     /**
      * Connects the points given in the List in order of their appearance with a line.<br>
      * <ul>
@@ -132,10 +138,11 @@ public interface Renderer {
      * {@link GraphicsContext#setLineWidth(double)}).</li>
      * <li> The color is determined by the StrokeColor (set by {@link GraphicsContext#setStroke(Paint)}).</li>
      * </ul>
+     *
      * @param dashes An array of finite non negative dash length.
      * @param lineSegment The line segment.
      */
-    default void dashLineSegment(LineSegment lineSegment, double... dashes) {
+    default void dashLineSegment(SimpleLineSegment lineSegment, double... dashes) {
         getGraphicsContext().setLineDashes(dashes);
         drawStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
         getGraphicsContext().setLineDashes(null);
@@ -279,6 +286,10 @@ public interface Renderer {
         getGraphicsContext().fillRect(topLeftCorner.getX(), topLeftCorner.getY(), rectangle.getHeight(), rectangle.getWidth());
     }
 
+    default void strokeRectangle(Rectangle rectangle) {
+        getGraphicsContext().strokeRect(rectangle.getTopLeftVertex().getX(), rectangle.getTopLeftVertex().getY(), rectangle.getHeight(), rectangle.getWidth());
+    }
+
     /**
      * Draws a dragged rectangle evaluating and rearranging the corners, such that there is always a valid rectangle
      * that can be filled. <ul> <li> The color is determined by the FillColor (set by {@link
@@ -306,6 +317,7 @@ public interface Renderer {
     /**
      * Fills the polygon. <ul> <li> The color is determined by the FillColor (set by {@link
      * GraphicsContext#setFill(Paint)}).</li> </ul>
+     *
      * @param polygon The polygon to draw.
      */
     default void fillPolygon(Polygon polygon) {
@@ -319,6 +331,19 @@ public interface Renderer {
             yPositions[index] = vertex.getY();
         }
         getGraphicsContext().fillPolygon(xPositions, yPositions, numberOfVertices);
+    }
+
+    default void drawPolygon(Polygon polygon) {
+        int numberOfVertices = polygon.getNumberOfVertices();
+        double[] xPositions = new double[polygon.getNumberOfVertices()];
+        double[] yPositions = new double[polygon.getNumberOfVertices()];
+        Vector2D[] vertices = polygon.getVertices();
+        for (int index = 0; index < vertices.length; index++) {
+            Vector2D vertex = vertices[index];
+            xPositions[index] = vertex.getX();
+            yPositions[index] = vertex.getY();
+        }
+        getGraphicsContext().strokePolygon(xPositions, yPositions, numberOfVertices);
     }
 
 }

@@ -7,6 +7,7 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -31,7 +32,12 @@ public class MembraneDiffusion extends AbstractNeighbourIndependentModule {
     public MembraneDiffusion(Simulation simulation) {
         super(simulation);
         // apply this module only to membranes
-        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
+        onlyApplyIf(node -> {
+            if (node instanceof AutomatonNode) {
+                return ((AutomatonNode) node).getState().equals(CellSectionState.MEMBRANE);
+            }
+            return true;
+        });
         // change of inner phase
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
         // change of outer phase

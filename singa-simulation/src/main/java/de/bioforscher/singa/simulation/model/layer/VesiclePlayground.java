@@ -91,7 +91,7 @@ public class VesiclePlayground extends Application implements Renderer {
 
         // define scales
         // todo should be initialized automatically
-        EnvironmentalParameters.setSystemLength(Quantities.getQuantity(20, MICRO(METRE)));
+        EnvironmentalParameters.setSystemLength(Quantities.getQuantity(5, MICRO(METRE)));
         EnvironmentalParameters.setSimulationLength(500);
         EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
         System.out.println(EnvironmentalParameters.convertSystemToSimulationScale(Quantities.getQuantity(1, MICRO(METRE))));

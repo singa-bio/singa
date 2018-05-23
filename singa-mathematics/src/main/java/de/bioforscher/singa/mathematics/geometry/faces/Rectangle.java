@@ -10,7 +10,7 @@ public class Rectangle extends SimplePolygon {
     private static final int bottomRightVertexIndex = 1;
 
     public Rectangle(Vector2D topLeftVertex, Vector2D bottomRightVertex) {
-        super(topLeftVertex, bottomRightVertex);
+        super(topLeftVertex, new Vector2D(bottomRightVertex.getX(), topLeftVertex.getY()), bottomRightVertex, new Vector2D(topLeftVertex.getX(), bottomRightVertex.getY()));
     }
 
     public Rectangle(double width, double height) {
@@ -26,11 +26,11 @@ public class Rectangle extends SimplePolygon {
     }
 
     public Vector2D getTopRightVertex() {
-        return new Vector2D(getTopLeftVertex().getX(), getBottomRightVertex().getY());
+        return getVertex(bottomRightVertexIndex);
     }
 
     public Vector2D getBottomLeftVertex() {
-        return new Vector2D(getBottomRightVertex().getX(), getTopLeftVertex().getY());
+        return getVertex(bottomRightVertexIndex);
     }
 
     public Vector2D getVertex(HorizontalPosition horizontalPosition, VerticalPosition verticalPosition) {

@@ -5,7 +5,6 @@ import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,7 @@ public abstract class AbstractModule implements Module {
      * The predicate is evaluated before applying the module to a node. If the predicate returns true the module is
      * evaluated for the node.
      */
-    protected Predicate<AutomatonNode> conditionalApplication = automatonNode -> true;
+    protected Predicate<Updatable> conditionalApplication = updatable -> true;
 
     /**
      * The numerical cutoff is applied before adding any delta to the system. If the absolute delta value is smaller
@@ -81,9 +80,9 @@ public abstract class AbstractModule implements Module {
     protected boolean halfTime;
 
     /**
-     * The automaton node that is currently processed.
+     * The updatable element that is currently processed.
      */
-    protected AutomatonNode currentNode;
+    protected Updatable currentUpdatable;
 
     /**
      * The cell section that is currently processed.
@@ -150,8 +149,8 @@ public abstract class AbstractModule implements Module {
      *
      * @return The automaton node that is currently processed.
      */
-    public AutomatonNode getCurrentNode() {
-        return currentNode;
+    public Updatable getCurrentUpdatable() {
+        return currentUpdatable;
     }
 
     /**
@@ -178,7 +177,7 @@ public abstract class AbstractModule implements Module {
      *
      * @param predicate The predicate to be evaluated.
      */
-    public void onlyApplyIf(Predicate<AutomatonNode> predicate) {
+    public void onlyApplyIf(Predicate<Updatable> predicate) {
         conditionalApplication = predicate;
     }
 
@@ -238,8 +237,8 @@ public abstract class AbstractModule implements Module {
         if (deltaIsValid(halfDelta)) {
             halfDelta = halfDelta.multiply(2.0);
             logger.trace("Calculated half delta for {} in {}: {}", halfDelta.getChemicalEntity().getIdentifier(), halfDelta.getCellSection().getIdentifier(), halfDelta.getQuantity());
-            currentHalfDeltas.put(new DeltaIdentifier(getCurrentNode(), halfDelta.getCellSection(), halfDelta.getChemicalEntity()), halfDelta);
-            currentNode.addPotentialDelta(halfDelta);
+            currentHalfDeltas.put(new DeltaIdentifier(getCurrentUpdatable(), halfDelta.getCellSection(), halfDelta.getChemicalEntity()), halfDelta);
+            currentUpdatable.addPotentialDelta(halfDelta);
         }
     }
 
@@ -316,7 +315,7 @@ public abstract class AbstractModule implements Module {
         }
         // Objects.requireNonNull(largestIdentifier);
         // set local error and return local error
-        return new LocalError(largestIdentifier.getNode(), largestIdentifier.getEntity(), largestLocalError);
+        return new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
 
     }
 

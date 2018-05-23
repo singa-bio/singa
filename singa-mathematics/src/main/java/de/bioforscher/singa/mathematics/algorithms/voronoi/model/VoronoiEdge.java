@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
@@ -16,7 +17,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * vertical: left.y == right.y
  * </pre>
  */
-public class VoronoiEdge {
+public class VoronoiEdge implements LineSegment {
 
     /**
      * The site to the left of this line.
@@ -81,7 +82,7 @@ public class VoronoiEdge {
      *
      * @param startingPoint The point where the line starts.
      */
-    void setStartingPoint(Vector2D startingPoint) {
+    public void setStartingPoint(Vector2D startingPoint) {
         this.startingPoint = startingPoint;
     }
 
@@ -116,7 +117,7 @@ public class VoronoiEdge {
      * Sets the point where the line ends.
      * @param endingPoint The point where the line ends.
      */
-    void setEndingPoint(Vector2D endingPoint) {
+    public void setEndingPoint(Vector2D endingPoint) {
         this.endingPoint = endingPoint;
     }
 

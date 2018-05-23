@@ -1,178 +1,93 @@
 package de.bioforscher.singa.mathematics.geometry.edges;
 
-import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * A line segment is a part of a line that is bounded by two distinct points and
- * "contains" every point on the line between and including its end points.
- *
  * @author cl
  */
-public class LineSegment extends Line {
-
-    private final Vector2D startingPoint;
-    private final Vector2D endingPoint;
-
-    /**
-     * Creates a new LineSegment between the starting point p1 = (x1, y1) and ending point p2 = (x2, y2).
-     *
-     * @param x1 The x-value of the first point.
-     * @param y1 The y-value of the first point.
-     * @param x2 The x-value of the second point.
-     * @param y2 The y-value of the second point.
-     */
-    public LineSegment(double x1, double y1, double x2, double y2) {
-        this(new Vector2D(x1, y1), new Vector2D(x2, y2));
-    }
-
-    /**
-     * Creates a new LineSegment between the start and ending point.
-     *
-     * @param start The starting point.
-     * @param end The ending point.
-     */
-    public LineSegment(Vector2D start, Vector2D end) {
-        super(start, end);
-        startingPoint = start;
-        endingPoint = end;
-    }
+public interface LineSegment {
 
     /**
      * Returns the starting point.
      *
      * @return The starting point.
      */
-    public Vector2D getStartingPoint() {
-        return startingPoint;
-    }
+    Vector2D getStartingPoint();
 
     /**
      * Returns the ending point.
      *
      * @return The ending point.
      */
-    public Vector2D getEndingPoint() {
-        return endingPoint;
-    }
+    Vector2D getEndingPoint();
 
     /**
-     * Gets the x-value in respect to a given y-value. If the line segment does
-     * not contain a point with this y-value this method returns {@link Double#NaN}.
+     * Sets the point where the line starts.
      *
-     * @param y The y-value.
-     * @return The x-value.
+     * @param startingPoint The point where the line starts.
      */
-    @Override
-    public double getXValue(double y) {
-        if (y > getStartingPoint().getY() && y < getEndingPoint().getY()
-                || y > getEndingPoint().getY() && y < getStartingPoint().getY()) {
-            return super.getXValue(y);
-        } else {
-            return Double.NaN;
+    void setStartingPoint(Vector2D startingPoint);
+
+    /**
+     * Sets the point where the line ends.
+     *
+     * @param endingPoint The point where the line ends.
+     */
+    void setEndingPoint(Vector2D endingPoint);
+
+    default double getLength() {
+        return getStartingPoint().distanceTo(getEndingPoint());
+    }
+
+    default boolean isOnLine(Vector2D vector) {
+        return Math.min(getStartingPoint().getX(), getEndingPoint().getX()) <= vector.getX()
+                && Math.max(getStartingPoint().getX(), getEndingPoint().getX()) >= vector.getX()
+                && Math.min(getStartingPoint().getY(), getEndingPoint().getY()) <= vector.getY()
+                && Math.max(getStartingPoint().getY(), getEndingPoint().getY()) >= vector.getY();
+
+    }
+
+    default Set<Vector2D> intersectionsWith(Circle circle) {
+        Set<Vector2D> intersections = new HashSet<>();
+        // see http://mathworld.wolfram.com/Circle-LineIntersection.html
+        // transform line points, such that circle is at origin to origin
+        Vector2D end = getEndingPoint().subtract(circle.getMidpoint());
+        Vector2D start = getStartingPoint().subtract(circle.getMidpoint());
+        double dx = end.getX() - start.getX();
+        double dy = end.getY() - start.getY();
+        double drSquared = Math.pow(dx, 2) + Math.pow(dy, 2);
+        double d = start.getX() * end.getY() - end.getX() * start.getY();
+        double discriminant = Math.pow(circle.getRadius(), 2) * drSquared - Math.pow(d, 2);
+        if (discriminant >= 0) {
+            double discriminantRt = Math.sqrt(discriminant);
+            // two intersections
+            // x positions
+            double termX1 = d * dy;
+            double termX2 = Math.copySign(1.0, dy) * dx * discriminantRt;
+            double xPlus = (termX1 + termX2) / drSquared;
+            double xMinus = (termX1 - termX2) / drSquared;
+            // y positions
+            double termY1 = -d * dx;
+            double termY2 = Math.abs(dy) * discriminantRt;
+            double yPlus = (termY1 + termY2) / drSquared;
+            double yMinus = (termY1 - termY2) / drSquared;
+            // add to intersections
+            Vector2D first = new Vector2D(xPlus, yPlus).add(circle.getMidpoint());
+            Vector2D second = new Vector2D(xMinus, yMinus).add(circle.getMidpoint());
+
+            if (isOnLine(first)) {
+                intersections.add(first);
+            }
+            if (isOnLine(second)) {
+                intersections.add(second);
+            }
         }
+        return intersections;
     }
 
-    /**
-     * Gets the y-intercept of the line segment. If the line segment does not
-     * intercept the x-axis this method returns {@link Double#NaN}.
-     *
-     * @return The y-intercept of the line segment.
-     */
-    @Override
-    public double getXIntercept() {
-        if (getStartingPoint().getX() < 0 ^ getEndingPoint().getX() < 0) {
-            return super.getXIntercept();
-        } else {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Gets the y-value in respect to a given x-value. If the line segment does
-     * not contain a point with this x-value this method returns {@link Double#NaN}.
-     *
-     * @param x The x-value.
-     * @return The y-value.
-     */
-    @Override
-    public double getYValue(double x) {
-        if (x > getStartingPoint().getX() && x < getEndingPoint().getX()
-                || x > getEndingPoint().getX() && x < getStartingPoint().getX()) {
-            return super.getYValue(x);
-        } else {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Gets the x-intercept of the line segment. If the line segment does not
-     * intercept the y-axis this method returns {@link Double#NaN}.
-     *
-     * @return The x-intercept of the line segment.
-     */
-    @Override
-    public double getYIntercept() {
-        if (getStartingPoint().getY() < 0 ^ getEndingPoint().getY() < 0) {
-            return super.getYIntercept();
-        } else {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Returns a new LineSegment parallel to this one, separated by the given
-     * ({@link VectorMetricProvider#EUCLIDEAN_METRIC Euclidean}-)distance.
-     * Negative distances return lines below, respectively left of this line and positive distances vice versa.
-     *
-     * @param distance The offset distance of the new parallel line.
-     * @return A new line parallel to this one.
-     */
-    public LineSegment getParallelSegment(double distance) {
-        if (isHorizontal()) {
-            return new LineSegment(startingPoint.getX(), startingPoint.getY() + distance,
-                    endingPoint.getX(), endingPoint.getY() + distance);
-        } else if (isVertical()) {
-            return new LineSegment(startingPoint.getX() + distance, startingPoint.getY(),
-                    endingPoint.getX() + distance, endingPoint.getY());
-        } else {
-            Line parallel = getParallel(distance);
-            Line perpendicularStart = new Line(startingPoint, parallel.getPerpendicularSlope());
-            Line perpendicularEnd = new Line(endingPoint, parallel.getPerpendicularSlope());
-            return new LineSegment(parallel.getInterceptWithLine(perpendicularStart),
-                    parallel.getInterceptWithLine(perpendicularEnd));
-        }
-    }
-
-    /**
-     * Creates a new line using the attributes of this line segment.
-     *
-     * @return A new line using the attributes of this line segment.
-     */
-    public Line getLineRepresentation() {
-        return new Line(super.getYIntercept(), getSlope());
-    }
-
-    /**
-     * Returns a new Line that passes through the middle of this segment with a perpendicular slope.
-     *
-     * @return A new perpendicular bisecting Line.
-     * @see <a href="https://en.wikipedia.org/wiki/Bisection#Line_segment_bisector">Wikipedia: Bisection</a>
-     */
-    public Line calculatePerpendicularBisector() {
-        Vector2D midAB = getStartingPoint().getMidpointTo(getEndingPoint());
-        double slope = getPerpendicularSlope();
-        double yIntercept = midAB.getY() - slope * midAB.getX();
-        return new Line(midAB, new Vector2D(0, yIntercept));
-    }
-
-    /**
-     * Returns the length of this segment (i.e. the euclidean distance between start and endpoint).
-     *
-     * @return The length.
-     */
-    public double getLength() {
-        return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(startingPoint, endingPoint);
-    }
 
 }

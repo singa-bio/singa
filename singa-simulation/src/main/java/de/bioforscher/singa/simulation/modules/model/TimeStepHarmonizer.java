@@ -3,12 +3,12 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
+import java.util.List;
 
 /**
  * @author cl
@@ -23,6 +23,7 @@ public class TimeStepHarmonizer {
     private Module criticalModule;
     private LocalError largestLocalError;
     private boolean timeStepChanged;
+    private List<Updatable> updatables;
 
     public TimeStepHarmonizer(Simulation simulation) {
         EnvironmentalParameters.setTimeStep(EnvironmentalParameters.getTimeStep());
@@ -33,6 +34,7 @@ public class TimeStepHarmonizer {
 
     public boolean step() {
         // set initial step
+        updatables = simulation.collectUpdatables();
         currentTimeStep = EnvironmentalParameters.getTimeStep();
         if (timeStepChanged) {
             rescaleParameters();
@@ -46,8 +48,8 @@ public class TimeStepHarmonizer {
             // if time step changed
             if (timeStepChanged) {
                 // clear previously assigned deltas
-                for (AutomatonNode bioNode : simulation.getGraph().getNodes()) {
-                    bioNode.clearPotentialDeltas();
+                for (Updatable updatable : updatables) {
+                    updatable.clearPotentialDeltas();
                 }
                 // update deltas
                 executeAllModules();
@@ -66,7 +68,7 @@ public class TimeStepHarmonizer {
         for (Module module : simulation.getModules()) {
             logger.trace("Calculating deltas for Module {}", module.toString());
             // determine deltas and corresponding local errors
-            module.determineAllDeltas();
+            module.determineAllDeltas(updatables);
             // determine critical node and module and chemical entity and local error
             LocalError largestLocalError = module.getLargestLocalError();
             module.resetLargestLocalError();
@@ -75,8 +77,8 @@ public class TimeStepHarmonizer {
     }
 
     private void finalizeDeltas() {
-        for (AutomatonNode node : simulation.getGraph().getNodes()) {
-            node.shiftDeltas();
+        for (Updatable updatable : updatables) {
+            updatable.shiftDeltas();
         }
     }
 
@@ -95,7 +97,7 @@ public class TimeStepHarmonizer {
             // set full time step
             currentTimeStep = EnvironmentalParameters.getTimeStep();
             // determine biggest local error
-            localError = criticalModule.determineDeltasForNode(largestLocalError.getNode()).getValue();
+            localError = criticalModule.determineDeltasForNode(largestLocalError.getUpdatable()).getValue();
             // logger.info("Current local error is {}",localError);
             criticalModule.resetLargestLocalError();
             // evaluate error by increasing or decreasing time step

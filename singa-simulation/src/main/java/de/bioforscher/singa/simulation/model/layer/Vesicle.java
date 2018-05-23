@@ -8,25 +8,31 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.NaturalConstants;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.modules.model.Delta;
+import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Volume;
+import java.util.List;
+import java.util.Set;
 
 import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
  */
-public class Vesicle {
+public class Vesicle implements Updatable {
 
-    private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560." );
-
+    private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
     /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
@@ -61,23 +67,23 @@ public class Vesicle {
     private Quantity<Length> radius;
     private Quantity<Volume> volume;
     private Diffusivity diffusivity;
+
     private MembraneContainer concentrations;
+    private SimpleUpdateManager updateManager;
     private EnclosedCompartment inside;
 
     private Vector2D position;
     private Vector2D potentialUpdate;
 
+
     public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, EnclosedCompartment outsideCompartment) {
         this.identifier = identifier;
         this.position = position;
         setRadius(radius);
-        inside = new EnclosedCompartment("c-"+identifier, "compartment of vesicle "+identifier);
+        inside = new EnclosedCompartment("c-" + identifier, "compartment of vesicle " + identifier);
         Membrane membrane = Membrane.forCompartment(inside);
         concentrations = new MembraneContainer(outsideCompartment, inside, membrane);
-    }
-
-    public String getIdentifier() {
-        return identifier;
+        updateManager = new SimpleUpdateManager(concentrations);
     }
 
     public Vector2D getPosition() {
@@ -108,7 +114,7 @@ public class Vesicle {
 
     public void calculateDisplacement(Quantity<Time> timeStep) {
         double scaling = EnvironmentalParameters.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 *
-                diffusivity.getScaledQuantity().getValue().doubleValue() * timeStep.getValue().doubleValue()),
+                        diffusivity.getScaledQuantity().getValue().doubleValue() * timeStep.getValue().doubleValue()),
                 EnvironmentalParameters.getSystemScale().getUnit()));
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         potentialUpdate = position.add(gaussian.multiply(scaling));
@@ -128,6 +134,57 @@ public class Vesicle {
 
     public void move() {
         position = potentialUpdate;
+    }
+
+
+    @Override
+    public String getStringIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public ConcentrationContainer getConcentrationContainer() {
+        return concentrations;
+    }
+
+    @Override
+    public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity chemicalEntity, CellSection cellSection) {
+        return concentrations.getAvailableConcentration(cellSection, chemicalEntity);
+    }
+
+    @Override
+    public Set<CellSection> getAllReferencedSections() {
+        return concentrations.getAllReferencedSections();
+    }
+
+    @Override
+    public Set<ChemicalEntity> getAllReferencedEntities() {
+        return concentrations.getAllReferencedEntities();
+    }
+
+    @Override
+    public List<Delta> getPotentialDeltas() {
+        return updateManager.getPotentialDeltas();
+    }
+
+    @Override
+    public void addPotentialDelta(Delta delta) {
+        updateManager.addPotentialDelta(delta);
+    }
+
+    @Override
+    public void clearPotentialDeltas() {
+        updateManager.clearPotentialDeltas();
+    }
+
+    @Override
+    public void shiftDeltas() {
+        updateManager.shiftDeltas();
+    }
+
+    @Override
+    public void applyDeltas() {
+        updateManager.applyDeltas();
     }
 
     @Override

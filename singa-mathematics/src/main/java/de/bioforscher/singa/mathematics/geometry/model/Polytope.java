@@ -13,12 +13,14 @@ public interface Polytope<VectorType extends Vector> {
 
     /**
      * Returns the vertices of the polytope.
+     *
      * @return The vertices of the polytype.
      */
     VectorType[] getVertices();
 
     /**
      * Returns the vertex with the given vertex identifier.
+     *
      * @param vertexIdentifier The vertex identifier.
      * @return The vertex with the given vertex identifier.
      */
@@ -26,10 +28,13 @@ public interface Polytope<VectorType extends Vector> {
 
     /**
      * Returns the number of vertices.
+     *
      * @return The number of vertices.
      */
     default int getNumberOfVertices() {
         return getVertices().length;
     }
+
+
 
 }

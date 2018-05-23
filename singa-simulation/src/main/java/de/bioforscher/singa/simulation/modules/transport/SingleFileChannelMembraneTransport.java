@@ -8,6 +8,7 @@ import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -28,7 +29,6 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         requiredFeatures.add(OsmoticPermeability.class);
     }
 
-
     public static TransporterStep inSimulation(Simulation simulation) {
         return new SingleFileChannelMembraneTransportBuilder(simulation);
     }
@@ -41,7 +41,12 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         super(simulation);
         solutes = new HashSet<>();
         // apply this module only to membranes
-        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
+        onlyApplyIf(node -> {
+            if (node instanceof AutomatonNode) {
+                return ((AutomatonNode) node).getState().equals(CellSectionState.MEMBRANE);
+            }
+            return true;
+        });
         // change of inner phase
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
         // change of outer phase

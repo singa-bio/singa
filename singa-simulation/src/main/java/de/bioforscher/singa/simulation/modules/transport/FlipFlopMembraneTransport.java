@@ -9,6 +9,7 @@ import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -38,8 +39,13 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
 
     public FlipFlopMembraneTransport(Simulation simulation) {
         super(simulation);
-        // apply this module only to membranes
-        onlyApplyIf(node -> node.getState().equals(CellSectionState.MEMBRANE));
+        // apply this module to membranes and vesicles
+        onlyApplyIf(node -> {
+            if (node instanceof AutomatonNode) {
+                return ((AutomatonNode) node).getState().equals(CellSectionState.MEMBRANE);
+            }
+            return true;
+        });
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
         // change of outer layer

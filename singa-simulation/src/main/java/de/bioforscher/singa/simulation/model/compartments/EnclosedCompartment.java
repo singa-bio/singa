@@ -81,7 +81,7 @@ public class EnclosedCompartment extends CellSection {
 //            // try to traverse bridge
 //            if (!foundNeighbour) {
 //                 nextBest = ShortestPathFinder.trackBasedOnPredicates(step,
-//                        currentNode -> isNewBorder(nodes, currentNode), this::isInThisCompartment);
+//                        currentUpdatable -> isNewBorder(nodes, currentUpdatable), this::isInThisCompartment);
 //                if (nextBest != null) {
 //                    for (AutomatonNode node : nextBest) {
 //                        if (!nodes.contains(node)) {

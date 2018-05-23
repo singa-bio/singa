@@ -2,7 +2,6 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 /**
  * Used to identify changes to concentrations ({@link Delta}s) in maps.
@@ -12,9 +11,9 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 class DeltaIdentifier {
 
     /**
-     * The node the delta is assigned to.
+     * The object the delta is assigned to.
      */
-    private final AutomatonNode node;
+    private final Updatable updatable;
 
     /**
      * The cell section the delta is assigned to.
@@ -29,23 +28,23 @@ class DeltaIdentifier {
     /**
      * Creates a new DeltaIdentifier.
      *
-     * @param node The node the delta is assigned to.
+     * @param updatable The object the delta is assigned to.
      * @param section The cell section the delta is assigned to.
      * @param entity The entity the delta is assigned to.
      */
-    DeltaIdentifier(AutomatonNode node, CellSection section, ChemicalEntity entity) {
-        this.node = node;
+    DeltaIdentifier(Updatable updatable, CellSection section, ChemicalEntity entity) {
+        this.updatable = updatable;
         this.section = section;
         this.entity = entity;
     }
 
     /**
-     * Returns the node the delta is assigned to.
+     * Returns the object the delta is assigned to.
      *
-     * @return The node the delta is assigned to.
+     * @return The object the delta is assigned to.
      */
-    public AutomatonNode getNode() {
-        return node;
+    public Updatable getUpdatable() {
+        return updatable;
     }
 
     /**
@@ -73,14 +72,14 @@ class DeltaIdentifier {
 
         DeltaIdentifier that = (DeltaIdentifier) o;
 
-        if (node != null ? !node.equals(that.node) : that.node != null) return false;
+        if (updatable != null ? !updatable.equals(that.updatable) : that.updatable != null) return false;
         if (section != null ? !section.equals(that.section) : that.section != null) return false;
         return entity != null ? entity.equals(that.entity) : that.entity == null;
     }
 
     @Override
     public int hashCode() {
-        int result = node != null ? node.hashCode() : 0;
+        int result = updatable != null ? updatable.hashCode() : 0;
         result = 31 * result + (section != null ? section.hashCode() : 0);
         result = 31 * result + (entity != null ? entity.hashCode() : 0);
         return result;
@@ -88,7 +87,7 @@ class DeltaIdentifier {
 
     @Override
     public String toString() {
-        return node.getIdentifier() + "-" + section.getIdentifier() + "-" + entity.getIdentifier();
+        return updatable.getStringIdentifier() + "-" + section.getIdentifier() + "-" + entity.getIdentifier();
     }
 
 }

@@ -10,6 +10,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.SimulationManager;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
@@ -71,12 +72,12 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     /**
      * The writers for concentration files.
      */
-    private final Map<AutomatonNode, BufferedWriter> concentrationWriters;
+    private final Map<Updatable, BufferedWriter> concentrationWriters;
 
     /**
      * The writers for deltas or changes.
      */
-    private final Map<AutomatonNode, BufferedWriter> deltaWriters;
+    private final Map<Updatable, BufferedWriter> deltaWriters;
 
     /**
      * The entities that should be observed.
@@ -311,7 +312,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param content The content to be written.
      * @throws IOException The the file could not be written.
      */
-    private void appendConcentrationContent(AutomatonNode node, String content) throws IOException {
+    private void appendConcentrationContent(Updatable node, String content) throws IOException {
         concentrationWriters.get(node).write(content);
     }
 
@@ -321,7 +322,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param content The content to be written.
      * @throws IOException The the file could not be written.
      */
-    private void appendDeltaContent(AutomatonNode node, String content) throws IOException {
+    private void appendDeltaContent(Updatable node, String content) throws IOException {
         deltaWriters.get(node).write(content);
     }
 
@@ -357,7 +358,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param event The event.
      */
     private void appendConcentrationContent(NodeUpdatedEvent event) {
-        AutomatonNode node = event.getNode();
+        Updatable node = event.getNode();
         Set<CellSection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
@@ -387,7 +388,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param event The event.
      */
     private void appendDeltaContent(NodeUpdatedEvent event) {
-        AutomatonNode node = event.getNode();
+        Updatable node = event.getNode();
         StringBuilder sb = new StringBuilder();
         for (Delta delta : node.getPotentialDeltas()) {
             if (delta.getQuantity().getValue().doubleValue() > 0.0) {

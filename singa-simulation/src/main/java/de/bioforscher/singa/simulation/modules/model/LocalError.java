@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
 /**
  * The LocalError object stores the error as an result of the currently applied time step. Additionally it stores in
@@ -22,7 +21,7 @@ public class LocalError {
     /**
      * The node where the error occurred.
      */
-    private final AutomatonNode node;
+    private final Updatable updatable;
 
     /**
      * The chemical entity where the error occurred.
@@ -37,12 +36,12 @@ public class LocalError {
     /**
      * Creates a new LocalError.
      *
-     * @param node The node where the error occurred.
+     * @param updatable The node where the error occurred.
      * @param entity The chemical entity where the error occurred.
      * @param value The actual value of the error.
      */
-    LocalError(AutomatonNode node, ChemicalEntity entity, double value) {
-        this.node = node;
+    LocalError(Updatable updatable, ChemicalEntity entity, double value) {
+        this.updatable = updatable;
         this.entity = entity;
         this.value = value;
     }
@@ -52,8 +51,8 @@ public class LocalError {
      *
      * @return The node where the error occurred.
      */
-    public AutomatonNode getNode() {
-        return node;
+    public Updatable getUpdatable() {
+        return updatable;
     }
 
     /**
@@ -76,6 +75,6 @@ public class LocalError {
 
     @Override
     public String toString() {
-        return equals(MINIMAL_EMPTY_ERROR)?"Minimal":"E("+node.getIdentifier()+","+entity.getIdentifier()+") = "+value;
+        return equals(MINIMAL_EMPTY_ERROR)?"Minimal":"E("+updatable.getStringIdentifier()+","+entity.getIdentifier()+") = "+value;
     }
 }

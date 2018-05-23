@@ -41,6 +41,8 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         return new DiffusionBuilder(simulation);
     }
 
+    private AutomatonNode currentNode;
+
     private FreeDiffusion(Simulation simulation) {
         super(simulation);
         // apply everywhere
@@ -62,6 +64,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
+        AutomatonNode currentNode = (AutomatonNode) getCurrentUpdatable();
         ChemicalEntity currentChemicalEntity = getCurrentChemicalEntity();
         CellSection currentCellSection = getCurrentCellSection();
         final double currentConcentration = concentrationContainer.getAvailableConcentration(currentCellSection, currentChemicalEntity).getValue().doubleValue();
@@ -70,9 +73,9 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         int numberOfNeighbors = 0;
         double concentration = 0;
         // traverse each neighbouring cells
-        for (AutomatonNode neighbour : getCurrentNode().getNeighbours()) {
+        for (AutomatonNode neighbour : currentNode.getNeighbours()) {
 
-            if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(neighbour) || bothAreMembrane(neighbour)) {
+            if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(currentNode, neighbour) || bothAreMembrane(currentNode, neighbour)) {
                 // if entity is not anchored in membrane
                 // if current is membrane and neighbour is membrane
                 // if current is non-membrane and neighbour is non-membrane
@@ -84,7 +87,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
                 }
             } else {
                 // if current is non-membrane and neighbour is membrane
-                if (neigbourIsPotentialSource(neighbour)) {
+                if (neigbourIsPotentialSource(currentNode, neighbour)) {
                     // leaving amount stays unchanged, but entering concentration is relevant
                     final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
                     if (availableConcentration != null) {
@@ -92,7 +95,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
                     }
                 }
                 // if current is membrane and neighbour is non-membrane
-                if (neigbourIsPotentialTarget(neighbour)) {
+                if (neigbourIsPotentialTarget(currentNode, neighbour)) {
                     // assert effect on leaving concentration but entering concentration stays unchanged
                     numberOfNeighbors++;
                 }
@@ -114,20 +117,20 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         return !getCurrentChemicalEntity().isMembraneAnchored();
     }
 
-    private boolean bothAreNonMembrane(AutomatonNode neighbour) {
-        return getCurrentNode().getState() != CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+    private boolean bothAreNonMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
+        return currentNode.getState() != CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
     }
 
-    private boolean bothAreMembrane(AutomatonNode neighbour) {
-        return getCurrentNode().getState() == CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+    private boolean bothAreMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
+        return currentNode.getState() == CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
     }
 
-    private boolean neigbourIsPotentialTarget(AutomatonNode neighbour) {
-        return getCurrentNode().getState() != CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+    private boolean neigbourIsPotentialTarget(AutomatonNode currentNode, AutomatonNode neighbour) {
+        return currentNode.getState() != CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
     }
 
-    private boolean neigbourIsPotentialSource(AutomatonNode neighbour) {
-        return getCurrentNode().getState() == CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+    private boolean neigbourIsPotentialSource(AutomatonNode currentNode, AutomatonNode neighbour) {
+        return currentNode.getState() == CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
     }
 
 

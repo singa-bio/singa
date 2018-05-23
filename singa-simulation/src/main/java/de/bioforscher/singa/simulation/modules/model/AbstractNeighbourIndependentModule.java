@@ -4,13 +4,12 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -60,21 +59,20 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     }
 
     @Override
-    public void determineAllDeltas() {
-        AutomatonGraph graph = simulation.getGraph();
+    public void determineAllDeltas(List<Updatable> updatables) {
         // determine deltas
-        for (AutomatonNode node : graph.getNodes()) {
+        for (Updatable node : updatables) {
             if (conditionalApplication.test(node)) {
-                logger.trace("Determining delta for node {}.", node.getIdentifier());
+                logger.trace("Determining delta for {}.", node.getStringIdentifier());
                 determineDeltasForNode(node);
             }
         }
     }
 
     @Override
-    public LocalError determineDeltasForNode(AutomatonNode node) {
-        currentNode = node;
-        ConcentrationContainer fullConcentrations = node.getConcentrationContainer();
+    public LocalError determineDeltasForNode(Updatable updatable) {
+        currentUpdatable = updatable;
+        ConcentrationContainer fullConcentrations = updatable.getConcentrationContainer();
         currentHalfConcentrations = fullConcentrations.getCopy();
         return determineDeltas(fullConcentrations);
     }
@@ -90,18 +88,18 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     private LocalError determineDeltas(ConcentrationContainer concentrationContainer) {
         // calculate full time step deltas
         halfTime = false;
-        for (CellSection cellSection : currentNode.getAllReferencedSections()) {
+        for (CellSection cellSection : currentUpdatable.getAllReferencedSections()) {
             currentCellSection = cellSection;
-            for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
+            for (ChemicalEntity chemicalEntity : currentUpdatable.getAllReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
                 determineFullStepDeltas(concentrationContainer);
             }
         }
         // calculate half time step deltas
         halfTime = true;
-        for (CellSection cellSection : currentNode.getAllReferencedSections()) {
+        for (CellSection cellSection : currentUpdatable.getAllReferencedSections()) {
             currentCellSection = cellSection;
-            for (ChemicalEntity chemicalEntity : currentNode.getAllReferencedEntities()) {
+            for (ChemicalEntity chemicalEntity : currentUpdatable.getAllReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
                 determineHalfStepDeltas(concentrationContainer);
             }
@@ -128,7 +126,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
                 if (deltaIsValid(fullDelta)) {
                     setHalfStepConcentration(fullDelta);
                     logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
-                    currentFullDeltas.put(new DeltaIdentifier(currentNode, currentCellSection, currentChemicalEntity), fullDelta);
+                    currentFullDeltas.put(new DeltaIdentifier(currentUpdatable, currentCellSection, currentChemicalEntity), fullDelta);
                 }
             }
         }
@@ -140,7 +138,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
      * @param fullDelta The full step delta.
      */
     private void setHalfStepConcentration(Delta fullDelta) {
-        final double fullConcentration = currentNode.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
+        final double fullConcentration = currentUpdatable.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
         currentHalfConcentrations.setAvailableConcentration(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, EnvironmentalParameters.getTransformedMolarConcentration()));
     }

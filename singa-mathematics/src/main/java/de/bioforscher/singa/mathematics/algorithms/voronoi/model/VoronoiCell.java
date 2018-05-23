@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  * A cell of the voronoi diagram. Containing its bounding half edges and the corresponding site.
@@ -229,6 +231,11 @@ public class VoronoiCell implements Polygon {
     @Override
     public Vector2D getVertex(int vertexIdentifier) {
         return halfEdges.get(vertexIdentifier).getStartPoint();
+    }
+
+    @Override
+    public List<LineSegment> getEdges() {
+        return halfEdges.stream().map(VoronoiHalfEdge::getEdge).collect(Collectors.toList());
     }
 
     @Override

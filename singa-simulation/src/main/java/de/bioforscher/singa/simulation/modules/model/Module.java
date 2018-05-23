@@ -4,8 +4,8 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.Featureable;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,7 +27,7 @@ public interface Module {
      * Calculates all potential updates to the system. The updates are referenced in each node and not applied until
      * their local error has been verified.
      */
-    void determineAllDeltas();
+    void determineAllDeltas(List<Updatable> updatables);
 
     /**
      * Determines the updates for a specific node and returns the {@link LocalError} of the calculation.
@@ -35,7 +35,7 @@ public interface Module {
      * @param node The node to calculate the update for.
      * @return The error of the calculation.
      */
-    LocalError determineDeltasForNode(AutomatonNode node);
+    LocalError determineDeltasForNode(Updatable node);
 
     /**
      * Returns the largest local error that has been calculated after calling {@link #determineAllDeltas()}. If the

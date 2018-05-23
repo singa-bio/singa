@@ -13,10 +13,15 @@ import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Delta;
+import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.AQUEOUS;
@@ -29,17 +34,7 @@ import static de.bioforscher.singa.simulation.model.compartments.CellSectionStat
  *
  * @author cl
  */
-public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> {
-
-    /**
-     * Deltas that are to be applied to the node.
-     */
-    private final List<Delta> finalDeltas;
-
-    /**
-     * A list of potential deltas.
-     */
-    private final List<Delta> potentialDeltas;
+public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> implements Updatable {
 
     /**
      * The state.
@@ -56,15 +51,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      */
     private ConcentrationContainer concentrationContainer;
 
-    /**
-     * A flag signifying if this node is observed.
-     */
-    private boolean observed;
-
-    /**
-     * A flag signifying if this node has a fixed concentration.
-     */
-    private boolean concentrationFixed;
+    private SimpleUpdateManager updateManager;
 
     /**
      * Creates a new plain automaton node. Initialized as {@link CellSectionState#AQUEOUS} in a "default" compartment with a
@@ -77,10 +64,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         state = AQUEOUS;
         cellSection = new EnclosedCompartment("default", "Default Compartment");
         concentrationContainer = new SimpleConcentrationContainer(cellSection);
-        finalDeltas = new ArrayList<>();
-        potentialDeltas = new ArrayList<>();
-        observed = false;
-        concentrationFixed = false;
+        updateManager = new SimpleUpdateManager(concentrationContainer);
     }
 
     public AutomatonNode(int column, int row) {
@@ -170,26 +154,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         return concentrationContainer.getAvailableConcentration(cellSection, entity);
     }
 
-    /**
-     * Returns all deltas that are going to be applied to this node.
-     *
-     * @return All deltas that are going to be applied to this node.
-     */
-    public List<Delta> getFinalDeltas() {
-        return finalDeltas;
-    }
-
-    /**
+      /**
      * Adds a list of potential deltas to this node.
      *
      * @param potentialDeltas The potential deltas.
      */
     public void addPotentialDeltas(Collection<Delta> potentialDeltas) {
-        this.potentialDeltas.addAll(potentialDeltas);
-    }
-
-    public List<Delta> getPotentialDeltas() {
-        return potentialDeltas;
+        updateManager.addPotentialDeltas(potentialDeltas);
     }
 
     /**
@@ -198,7 +169,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param potentialDelta The potential delta.
      */
     public void addPotentialDelta(Delta potentialDelta) {
-        potentialDeltas.add(potentialDelta);
+        updateManager.addPotentialDelta(potentialDelta);
     }
 
     /**
@@ -206,35 +177,26 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * time step.
      */
     public void clearPotentialDeltas() {
-        potentialDeltas.clear();
+        updateManager.clearPotentialDeltas();
     }
 
     /**
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
-        finalDeltas.addAll(potentialDeltas);
-        if (!observed) {
-            potentialDeltas.clear();
-        }
+        updateManager.shiftDeltas();
     }
 
     /**
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        if (!concentrationFixed) {
-            for (Delta delta : finalDeltas) {
-                Quantity<MolarConcentration> updatedConcentration = getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity());
-                if (updatedConcentration.getValue().doubleValue() < 0.0) {
-                    // FIXME updated concentration should probably not be capped
-                    // FIXME the the delta that resulted in the decrease probably had a corresponding increase
-                    updatedConcentration = EnvironmentalParameters.emptyConcentration();
-                }
-                setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(), updatedConcentration);
-            }
-        }
-        finalDeltas.clear();
+        updateManager.applyDeltas();
+    }
+
+    @Override
+    public List<Delta> getPotentialDeltas() {
+        return updateManager.getPotentialDeltas();
     }
 
     /**
@@ -279,7 +241,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return observed;
+        return updateManager.isObserved();
     }
 
     /**
@@ -288,15 +250,15 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
-        observed = isObserved;
+        updateManager.setObserved(isObserved);
     }
 
     public boolean isConcentrationFixed() {
-        return concentrationFixed;
+        return updateManager.isConcentrationFixed();
     }
 
     public void setConcentrationFixed(boolean concentrationFixed) {
-        this.concentrationFixed = concentrationFixed;
+        updateManager.setConcentrationFixed(concentrationFixed);
     }
 
     /**
@@ -320,7 +282,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         }
         this.cellSection = cellSection;
         concentrationContainer = new SimpleConcentrationContainer(cellSection);
+        updateManager.setConcentrations(concentrationContainer);
         this.cellSection.addNode(this);
+    }
+
+    @Override
+    public String getStringIdentifier() {
+        return getIdentifier().toString();
     }
 
     /**
@@ -339,6 +307,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      */
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
         this.concentrationContainer = concentrationContainer;
+        updateManager.setConcentrations(concentrationContainer);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -18,16 +18,16 @@ public class NodeUpdatedEvent {
     private final Quantity<Time> time;
 
     /**
-     * The encapsulated node.
+     * The encapsulated updatable.
      */
-    private final AutomatonNode node;
+    private final Updatable node;
 
     /**
      * Creates a new NodeUpdatedEvent.
      * @param time The time the event was emitted.
      * @param node The encapsulated node.
      */
-    public NodeUpdatedEvent(Quantity<Time> time, AutomatonNode node) {
+    public NodeUpdatedEvent(Quantity<Time> time, Updatable node) {
         this.time = time;
         this.node = node;
     }
@@ -41,10 +41,10 @@ public class NodeUpdatedEvent {
     }
 
     /**
-     * Returns the encapsulated node
-     * @return The encapsulated node
+     * Returns the updatable
+     * @return The updatable
      */
-    public AutomatonNode getNode() {
+    public Updatable getNode() {
         return node;
     }
 

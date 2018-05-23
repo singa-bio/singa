@@ -9,6 +9,7 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
@@ -65,6 +66,8 @@ public class Simulation {
      * The updating modules.
      */
     private final Set<Module> modules;
+
+    private VesicleLayer vesicleLayer;
 
     /**
      * The manager of time steps sizes.
@@ -149,6 +152,10 @@ public class Simulation {
         for (AutomatonNode node : getGraph().getNodes()) {
             node.applyDeltas();
         }
+        // move vesicles
+        if (vesicleLayer != null) {
+            vesicleLayer.nextEpoch();
+        }
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change
@@ -182,6 +189,10 @@ public class Simulation {
         }
     }
 
+    private void initializeVesicleLayer(VesicleLayer vesicleLayer) {
+        this.vesicleLayer = vesicleLayer;
+    }
+
     /**
      * Update the epoch counter and elapsed time.
      */
@@ -199,6 +210,14 @@ public class Simulation {
                 rule.applyRule(bioNode);
             }
         }
+    }
+
+    public List<Updatable> collectUpdatables() {
+        List<Updatable> updatables = new ArrayList<>(graph.getNodes());
+        if (vesicleLayer != null) {
+            updatables.addAll(vesicleLayer.getVesicles());
+        }
+        return updatables;
     }
 
     /**

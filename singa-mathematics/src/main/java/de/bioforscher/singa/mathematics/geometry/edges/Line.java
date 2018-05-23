@@ -13,8 +13,8 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  */
 public class Line {
 
-    private final double yIntercept;
-    private final double slope;
+    protected final double yIntercept;
+    protected final double slope;
 
     /**
      * Creates a new line from it's y-intercept and slope.

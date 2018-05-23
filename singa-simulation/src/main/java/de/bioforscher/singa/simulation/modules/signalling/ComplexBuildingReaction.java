@@ -102,7 +102,7 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
                 binderRelevantCellSection = simpleContainer.getCellSection();
                 deltas.addAll(determineDeltasForSections(concentrationContainer));
             } else {
-                throw new IllegalStateException("The current node " + getCurrentNode() + " seems to be annotated as " +
+                throw new IllegalStateException("The current node " + getCurrentUpdatable() + " seems to be annotated as " +
                         "membrane but is not initialized with a membrane concentration container.");
             }
         } else if (noSectionChanges()) {
