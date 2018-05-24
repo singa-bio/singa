@@ -19,6 +19,7 @@ import de.bioforscher.singa.simulation.modules.model.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Volume;
@@ -63,8 +64,20 @@ public class Vesicle implements Updatable {
         return radius.multiply(radius).multiply(radius).multiply(Math.PI).multiply(4.0 / 3.0).asType(Volume.class);
     }
 
+    /**
+     * The volume of a sphere is calculated by
+     * V = 4/3 * pi * radius * radius * radius
+     *
+     * @param radius the radius of the vesicle
+     * @return The volume.
+     */
+    private static Quantity<Area> calculateArea(Quantity<Length> radius) {
+        return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
+    }
+
     private String identifier;
     private Quantity<Length> radius;
+    private Quantity<Area> area;
     private Quantity<Volume> volume;
     private Diffusivity diffusivity;
 
@@ -98,6 +111,10 @@ public class Vesicle implements Updatable {
         return radius;
     }
 
+    public Quantity<Area> getArea() {
+        return area;
+    }
+
     public Quantity<Volume> getVolume() {
         return volume;
     }
@@ -108,6 +125,7 @@ public class Vesicle implements Updatable {
 
     public void setRadius(Quantity<Length> radius) {
         this.radius = radius;
+        area = calculateArea(radius);
         volume = calculateVolume(radius);
         diffusivity = calculateDiffusivity(radius);
     }

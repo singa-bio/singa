@@ -2,6 +2,7 @@ package de.bioforscher.singa.mathematics.geometry.faces;
 
 import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
+import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 public class Circle {
@@ -51,11 +52,23 @@ public class Circle {
         this.radius = radius;
     }
 
-    public double arcLengthBetweenPoints(Vector2D first, Vector2D second) {
-        final double rsq = 2.0 * radius * radius;
-        // double angle = Math.acos((rsq - Math.pow(first.getX() - second.getX(), 2) + Math.pow(first.getY() - second.getY(), 2)) / rsq);
-        double angle = first.angleTo(second);
-        return angle*Math.PI*radius;
+    /**
+     * Returns the angle between two vectors that are projected on the circle circumference.
+     *
+     * @param first The first vector.
+     * @param second The second vector.
+     * @return The angle in radians.
+     */
+    public double getCentralAngleBetween(Vector2D first, Vector2D second) {
+        // https://math.stackexchange.com/questions/185829/how-do-you-find-an-angle-between-two-points-on-the-edge-of-a-circle
+        double rSq = radius * radius * 2.0;
+        double c = VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(first, second);
+        // in rad for angle multiply by (180/Math.PI)
+        return Math.acos((rSq - c * c)/rSq);
+    }
+
+    public double getArcLengthBetween(Vector2D first, Vector2D second) {
+        return Math.abs(getCentralAngleBetween(first, second) * radius);
     }
 
     public double getCircumference() {

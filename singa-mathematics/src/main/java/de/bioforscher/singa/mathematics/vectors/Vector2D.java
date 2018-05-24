@@ -182,13 +182,24 @@ public class Vector2D extends RegularVector {
     }
 
     /**
-     * Returns the angle between this vector and the given vector in radians.
+     * Returns the angle between this vector and the given vector, in relation to the origin (0,0) in radians.
      *
      * @param vector Another 2D vector.
      * @return The angle in radians.
      */
     public double angleTo(Vector2D vector) {
         return Math.acos(dotProduct(vector) / (getMagnitude() * vector.getMagnitude()));
+    }
+
+    /**
+     * Returns the angle between this vector and the given target vector, in relation to the given origin in radians.
+     *
+     * @param origin The origin.
+     * @param target The target vector.
+     * @return The angle in radians.
+     */
+    public double angleTo(Vector2D origin, Vector2D target) {
+        return Math.atan2(target.getY() - origin.getY(), target.getX() - origin.getX()) - Math.atan2(getY() - origin.getY(), getX() - origin.getY());
     }
 
     /**

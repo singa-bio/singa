@@ -16,10 +16,6 @@ import java.util.stream.Collectors;
  */
 public class VoronoiCell implements Polygon {
 
-    public static int OUTSIDE = -1;
-    public static int ON_LINE = 0;
-    public static int INSIDE = 1;
-
     /**
      * The original site of this cell.
      */
@@ -117,44 +113,6 @@ public class VoronoiCell implements Polygon {
     }
 
     /**
-     * Returns an integer, describing whether a point is inside, on, or outside of the cell:
-     * <pre>
-     * -1: point is outside the perimeter of the cell
-     *  0: point is on the perimeter of the cell
-     *  1: point is inside the perimeter of the cell
-     * </pre>
-     *
-     * @param point The point to check.
-     * @return -1 if the point is outside of the perimeter of the cell, 0 if point is on the perimeter of the cell and 1
-     * if the point is inside of the cell
-     */
-    public int evaluatePointPosition(Vector2D point) {
-        // Since all polygons of a Voronoi diagram are convex, the following solution applies:
-        // http://paulbourke.net/geometry/polygonmesh/
-        // Solution 3 (2D):
-        //   "If the polygon is convex then one can consider the polygon
-        //   "as a 'path' from the first vertex. A point is on the interior
-        //   "of this polygons if it is always on the same side of all the
-        //   "line segments making up the path. ...
-        //   "(y - y0) (x1 - x0) - (x - x0) (y1 - y0)
-        //   "if it is less than 0 then P is to the right of the line segment,
-        //   "if greater than 0 it is to the left, if equal to 0 then it lies
-        //   "on the line segment"
-        for (VoronoiHalfEdge halfEdge : halfEdges) {
-            Vector2D p0 = halfEdge.getStartPoint();
-            Vector2D p1 = halfEdge.getEndPoint();
-            double r = (point.getY() - p0.getY()) * (p1.getX() - p0.getX()) - (point.getX() - p0.getX()) * (p1.getY() - p0.getY());
-            if (r == 0) {
-                return ON_LINE;
-            }
-            if (r > 0) {
-                return OUTSIDE;
-            }
-        }
-        return INSIDE;
-    }
-
-    /**
      * Returns the original site of this cell.
      *
      * @return The original site of this cell.
@@ -192,6 +150,34 @@ public class VoronoiCell implements Polygon {
      */
     void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public int evaluatePointPosition(Vector2D point) {
+        // Since all polygons of a Voronoi diagram are convex, the following solution applies:
+        // http://paulbourke.net/geometry/polygonmesh/
+        // Solution 3 (2D):
+        //   "If the polygon is convex then one can consider the polygon
+        //   "as a 'path' from the first vertex. A point is on the interior
+        //   "of this polygons if it is always on the same side of all the
+        //   "line segments making up the path. ...
+        //   "(y - y0) (x1 - x0) - (x - x0) (y1 - y0)
+        //   "if it is less than 0 then P is to the right of the line segment,
+        //   "if greater than 0 it is to the left, if equal to 0 then it lies
+        //   "on the line segment"
+        for (VoronoiHalfEdge lineSegment : getHalfEdges()) {
+            // FIXME this relies on the ordering of the line segments
+            // voronoi segemnts are ordered in reverse
+            Vector2D p0 = lineSegment.getStartPoint();
+            Vector2D p1 = lineSegment.getEndPoint();
+            double r = (point.getY() - p0.getY()) * (p1.getX() - p0.getX()) - (point.getX() - p0.getX()) * (p1.getY() - p0.getY());
+            if (r == 0) {
+                return ON_LINE;
+            }
+            if (r > 0) {
+                return OUTSIDE;
+            }
+        }
+        return INSIDE;
     }
 
     public Vector2D getCentroid() {

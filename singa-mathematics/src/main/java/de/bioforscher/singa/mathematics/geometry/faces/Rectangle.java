@@ -7,7 +7,9 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 public class Rectangle extends SimplePolygon {
 
     private static final int topLeftVertexIndex = 0;
-    private static final int bottomRightVertexIndex = 1;
+    private static final int topRightVertexIndex = 1;
+    private static final int bottomRightVertexIndex = 2;
+    private static final int bottomLeftVertexIndex = 3;
 
     public Rectangle(Vector2D topLeftVertex, Vector2D bottomRightVertex) {
         super(topLeftVertex, new Vector2D(bottomRightVertex.getX(), topLeftVertex.getY()), bottomRightVertex, new Vector2D(topLeftVertex.getX(), bottomRightVertex.getY()));
@@ -26,11 +28,11 @@ public class Rectangle extends SimplePolygon {
     }
 
     public Vector2D getTopRightVertex() {
-        return getVertex(bottomRightVertexIndex);
+        return getVertex(topRightVertexIndex);
     }
 
     public Vector2D getBottomLeftVertex() {
-        return getVertex(bottomRightVertexIndex);
+        return getVertex(bottomLeftVertexIndex);
     }
 
     public Vector2D getVertex(HorizontalPosition horizontalPosition, VerticalPosition verticalPosition) {

@@ -1,6 +1,8 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.grid.GridEdge;
 import de.bioforscher.singa.mathematics.graphs.grid.GridGraph;
 import de.bioforscher.singa.mathematics.graphs.grid.GridNode;
@@ -46,7 +48,8 @@ public class AutomatonGraphs {
     }
 
     public static AutomatonGraph createRectangularAutomatonGraph(int numberOfColumns, int numberOfRows) {
-        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows));
+        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows,
+                new Rectangle(EnvironmentalParameters.getSimulationExtend(), EnvironmentalParameters.getSimulationExtend())));
     }
 
     /**

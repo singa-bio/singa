@@ -32,11 +32,9 @@ public class VesicleTransportTest {
     @Test
     public void shouldTransformConcentration() {
 
-        EnvironmentalParameters.setSystemLength(Quantities.getQuantity(20, MICRO(METRE)));
-        EnvironmentalParameters.setSimulationLength(500);
+        EnvironmentalParameters.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
+        EnvironmentalParameters.setSimulationExtend(500);
         EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
-        EnvironmentalParameters.convertSystemToSimulationScale(Quantities.getQuantity(1, MICRO(METRE)));
-        EnvironmentalParameters.convertSimulationToSystemScale(1);
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(50, 50),

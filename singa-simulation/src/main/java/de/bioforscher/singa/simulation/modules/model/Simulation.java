@@ -3,6 +3,8 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -18,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.Quantity;
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import java.io.IOException;
 import java.util.*;
@@ -127,6 +131,7 @@ public class Simulation {
         modulesInitialized = false;
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
+
     }
 
     /**
@@ -137,6 +142,7 @@ public class Simulation {
         if (!modulesInitialized) {
             initializeModules();
             initializeGraph();
+            initializeSpatialRepresentations();
             modulesInitialized = true;
         }
         // clear observed nodes if necessary
@@ -187,6 +193,21 @@ public class Simulation {
                 ((MembraneContainer) concentrationContainer).setReferencedEntities(new HashSet<>(chemicalEntities.values()));
             }
         }
+    }
+
+    public void initializeSpatialRepresentations() {
+        // initialize via voronoi diagrams
+
+        // or rectangles
+        for (AutomatonNode node : graph.getNodes()) {
+            Vector2D position = node.getPosition();
+            Quantity<Length> nodeDistance = EnvironmentalParameters.getNodeDistance();
+            double offset = EnvironmentalParameters.convertSystemToSimulationScale(nodeDistance)*0.5;
+            Vector2D topLeft = new Vector2D(position.getX()-offset, position.getY()-offset);
+            Vector2D bottomRight = new Vector2D(position.getX()+offset, position.getY()+offset);
+            node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
+        }
+
     }
 
     private void initializeVesicleLayer(VesicleLayer vesicleLayer) {

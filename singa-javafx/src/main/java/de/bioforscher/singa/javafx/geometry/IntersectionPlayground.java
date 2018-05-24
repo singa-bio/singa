@@ -35,14 +35,13 @@ public class IntersectionPlayground extends Application implements Renderer {
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
 
-        Rectangle rectangle = new Rectangle(new Vector2D(100, 200), new Vector2D(200,100));
+        Rectangle rectangle = new Rectangle(new Vector2D(100, 100), new Vector2D(200,200));
         drawPolygon(rectangle);
 
-        Circle circle = new Circle(new Vector2D(120, 120), 25);
+        Circle circle = new Circle(new Vector2D(200, 200), 25);
         drawCircle(circle);
 
         Set<Vector2D> intersections = rectangle.getIntersections(circle);
-        intersections.forEach(System.out::println);
         getGraphicsContext().setLineWidth(6);
         getGraphicsContext().setFill(Color.GREEN);
         intersections.forEach(this::drawPoint);
@@ -50,9 +49,7 @@ public class IntersectionPlayground extends Application implements Renderer {
         Vector2D first = iterator.next();
         Vector2D second = iterator.next();
 
-        System.out.println(circle.getCircumference());
-        System.out.println(circle.arcLengthBetweenPoints(first, second));
-
+        double v = circle.getArcLengthBetween(first, second);
         // show
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

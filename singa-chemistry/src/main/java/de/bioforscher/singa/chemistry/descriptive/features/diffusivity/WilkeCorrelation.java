@@ -10,7 +10,6 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.MOLAR_MASS_OF_WATER;
 import static tec.uom.se.AbstractUnit.ONE;
 
 /**
@@ -32,6 +31,11 @@ public class WilkeCorrelation implements Correlation<Diffusivity> {
      * Association parameter to define the effective molecular weight of the solvent.
      */
     private static final Quantity<Dimensionless> WILKE_ASSOCIATION_WATER = Quantities.getQuantity(2.26, ONE);
+
+    /**
+     * The molar mass of water.
+     */
+    private static final double MOLAR_MASS_OF_WATER = 18.0153;
 
     /**
      * Estimate molar volume from weight.

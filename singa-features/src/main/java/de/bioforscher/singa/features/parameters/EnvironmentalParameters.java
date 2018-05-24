@@ -51,18 +51,21 @@ public class EnvironmentalParameters extends Observable {
     public static final Quantity<DynamicViscosity> DEFAULT_VISCOSITY = Quantities.getQuantity(1.0, MILLI(PASCAL_SECOND));
 
     /**
-     * The molar mass of water.
+     * Standard system extend [length] (5 um)
      */
-    public static final double MOLAR_MASS_OF_WATER = 18.0153;
+    public static final Quantity<Length> DEFAULT_SYSTEM_EXTEND = Quantities.getQuantity(5.0, MICRO(METRE));
+
+    /**
+     * Standard simulation extend [pseudo length] 500
+     */
+    public static final double DEFAULT_SIMULATION_EXTEND = 500;
 
     private static EnvironmentalParameters instance;
 
-    private Quantity<Length> systemLength;
-    private Quantity<Length> systemHeight;
+    private Quantity<Length> systemExtend;
     private Quantity<Length> systemScale;
 
-    private double simulationLength;
-    private double simulationHeight;
+    private double simulationExtend;
     private double simulationScale;
 
     private Quantity<Length> nodeDistance;
@@ -83,6 +86,9 @@ public class EnvironmentalParameters extends Observable {
         timeStep = DEFAULT_TIME_STEP;
         systemTemperature = DEFAULT_TEMPERATURE;
         systemViscosity = DEFAULT_VISCOSITY;
+        systemExtend = DEFAULT_SYSTEM_EXTEND;
+        simulationExtend = DEFAULT_SIMULATION_EXTEND;
+        setSystemAnsSimulationScales();
     }
 
     private static EnvironmentalParameters getInstance() {
@@ -204,39 +210,25 @@ public class EnvironmentalParameters extends Observable {
 
     public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
         logger.debug("Setting system diameter to {} using {} spanning nodes.", diameter, spanningNodes);
-        setNodeDistance(diameter.divide(spanningNodes - 1));
+        setNodeDistance(diameter.divide(spanningNodes));
     }
 
-    public static Quantity<Length> getSystemLength() {
-        return getInstance().systemLength;
+    public static Quantity<Length> getSystemExtend() {
+        return getInstance().systemExtend;
     }
 
-    public static void setSystemLength(Quantity<Length> systemLength) {
-        getInstance().systemLength = systemLength;
+    public static void setSystemExtend(Quantity<Length> systemExtend) {
+        getInstance().systemExtend = systemExtend;
+        getInstance().setSystemAnsSimulationScales();
     }
 
-    public static Quantity<Length> getSystemHeight() {
-        return getInstance().systemHeight;
+    public static double getSimulationExtend() {
+        return getInstance().simulationExtend;
     }
 
-    public static void setSystemHeight(Quantity<Length> systemHeight) {
-        getInstance().systemHeight = systemHeight;
-    }
-
-    public static double getSimulationLength() {
-        return getInstance().simulationLength;
-    }
-
-    public static void setSimulationLength(double simulationLength) {
-        getInstance().simulationLength = simulationLength;
-    }
-
-    public static double getSimulationHeight() {
-        return getInstance().simulationHeight;
-    }
-
-    public static void setSimulationHeight(double simulationHeight) {
-        getInstance().simulationHeight = simulationHeight;
+    public static void setSimulationExtend(double simulationExtend) {
+        getInstance().simulationExtend = simulationExtend;
+        getInstance().setSystemAnsSimulationScales();
     }
 
     public static Quantity<Length> getSystemScale() {
@@ -247,14 +239,17 @@ public class EnvironmentalParameters extends Observable {
         return getInstance().simulationScale;
     }
 
+    private void setSystemAnsSimulationScales() {
+        simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
+        systemScale = systemExtend.divide(simulationExtend);
+    }
+
     public static Quantity<Length> convertSimulationToSystemScale(double simulationDistance) {
-        getInstance().systemScale = getInstance().systemLength.divide(getInstance().simulationLength);
         return getInstance().systemScale.multiply(simulationDistance);
     }
 
     public static double convertSystemToSimulationScale(Quantity<Length> realDistance) {
-        getInstance().simulationScale = getInstance().simulationLength / getInstance().systemLength.getValue().doubleValue();
-        return realDistance.to(getInstance().systemLength.getUnit()).getValue().doubleValue() * getInstance().simulationScale;
+        return realDistance.to(getInstance().systemExtend.getUnit()).getValue().doubleValue() * getInstance().simulationScale;
     }
 
     public static void attachObserver(Observer observer) {

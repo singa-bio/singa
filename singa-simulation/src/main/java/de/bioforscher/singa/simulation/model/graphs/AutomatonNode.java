@@ -3,6 +3,7 @@ package de.bioforscher.singa.simulation.model.graphs;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -12,16 +13,15 @@ import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
+import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.measure.quantity.Area;
+import java.util.*;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.AQUEOUS;
@@ -53,6 +53,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private SimpleUpdateManager updateManager;
 
+    private Polygon spatialRepresentation;
+
+    private Map<Vesicle, Quantity<Area>> associatedVesicles;
+
     /**
      * Creates a new plain automaton node. Initialized as {@link CellSectionState#AQUEOUS} in a "default" compartment with a
      * {@link SimpleConcentrationContainer}.
@@ -65,6 +69,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         cellSection = new EnclosedCompartment("default", "Default Compartment");
         concentrationContainer = new SimpleConcentrationContainer(cellSection);
         updateManager = new SimpleUpdateManager(concentrationContainer);
+        associatedVesicles = new HashMap<>();
     }
 
     public AutomatonNode(int column, int row) {
@@ -308,6 +313,18 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
         this.concentrationContainer = concentrationContainer;
         updateManager.setConcentrations(concentrationContainer);
+    }
+
+    public Polygon getSpatialRepresentation() {
+        return spatialRepresentation;
+    }
+
+    public void setSpatialRepresentation(Polygon spatialRepresentation) {
+        this.spatialRepresentation = spatialRepresentation;
+    }
+
+    public void associateVesicle(Vesicle vesicle, Quantity<Area> associatedArea) {
+        associatedVesicles.put(vesicle, associatedArea);
     }
 
     @Override
