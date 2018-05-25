@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstan
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -22,7 +22,7 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.Comparator;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
 import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.NON_MEMBRANE;
@@ -42,7 +42,7 @@ public class GPCRCarrouselModelTest {
 
     @Test
     public void testCarrouselModelSetUp() {
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
+        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
         Simulation simulation = new Simulation();
 
         // reactome https://reactome.org/PathwayBrowser/#/R-HSA-432040&SEL=R-HSA-432197&FLG=O14610)

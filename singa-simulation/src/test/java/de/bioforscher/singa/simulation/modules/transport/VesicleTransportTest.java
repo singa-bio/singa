@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -32,9 +32,9 @@ public class VesicleTransportTest {
     @Test
     public void shouldTransformConcentration() {
 
-        EnvironmentalParameters.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
-        EnvironmentalParameters.setSimulationExtend(500);
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
+        Environment.setSimulationExtend(500);
+        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(50, 50),
@@ -47,7 +47,12 @@ public class VesicleTransportTest {
         Quantity<MolarConcentration> transformedQuantity = concentration.to(MOLE_PER_LITRE);
         assertEquals(originalQuantity.getValue().doubleValue(), transformedQuantity.getValue().doubleValue(), 1e-8);
 
-        EnvironmentalParameters.reset();
+        Environment.reset();
+    }
+
+    @Test
+    public void testSetup() {
+
     }
 
 

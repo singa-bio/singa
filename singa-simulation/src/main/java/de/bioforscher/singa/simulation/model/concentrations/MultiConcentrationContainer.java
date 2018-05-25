@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import tec.uom.se.quantity.Quantities;
@@ -42,9 +42,9 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
 
 
         if (count > 0) {
-            return Quantities.getQuantity(sum / count, EnvironmentalParameters.getTransformedMolarConcentration());
+            return Quantities.getQuantity(sum / count, Environment.getTransformedMolarConcentration());
         } else {
-            return EnvironmentalParameters.emptyConcentration();
+            return Environment.emptyConcentration();
         }
     }
 
@@ -59,7 +59,7 @@ public class MultiConcentrationContainer implements ConcentrationContainer {
     @Override
     public Quantity<MolarConcentration> getAvailableConcentration(CellSection cellSection, ChemicalEntity chemicalEntity) {
         if (!concentrations.containsKey(cellSection)) {
-            return EnvironmentalParameters.emptyConcentration();
+            return Environment.emptyConcentration();
         }
         return concentrations.get(cellSection).get(chemicalEntity);
     }

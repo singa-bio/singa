@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.concentrations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -131,7 +131,7 @@ public class MembraneContainer implements ConcentrationContainer {
             concentration = getOuterMembraneLayerConcentration(chemicalEntity);
         }
         if (concentration == null) {
-            return EnvironmentalParameters.emptyConcentration();
+            return Environment.emptyConcentration();
         }
         return concentration;
     }

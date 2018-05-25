@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.core.events.UpdateEventListener;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.events.*;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -75,7 +75,7 @@ public class SimulationManager extends Task<Simulation> {
     /**
      * The time for the next update to be issued (in simulation time).
      */
-    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
+    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
 
     private Quantity<Time> terminationTime;
     private DecimalFormat df = new DecimalFormat("#.00");

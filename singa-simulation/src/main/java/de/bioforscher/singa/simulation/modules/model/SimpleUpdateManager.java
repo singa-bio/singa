@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -128,7 +128,7 @@ public class SimpleUpdateManager {
                 if (updatedConcentration.getValue().doubleValue() < 0.0) {
                     // FIXME updated concentration should probably not be capped
                     // FIXME the the delta that resulted in the decrease probably had a corresponding increase
-                    updatedConcentration = EnvironmentalParameters.emptyConcentration();
+                    updatedConcentration = Environment.emptyConcentration();
                 }
                 concentrations.setAvailableConcentration(delta.getCellSection(), delta.getChemicalEntity(), updatedConcentration);
             }

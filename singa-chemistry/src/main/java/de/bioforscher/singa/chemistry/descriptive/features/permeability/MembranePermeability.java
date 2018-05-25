@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.permeability;
 
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableQuantityFeature;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -21,13 +21,13 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
     public static final String SYMBOL = "P_d";
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(membranePermeabilityQuantity.to(new ProductUnit<>(EnvironmentalParameters.getTransformedLength().divide(SECOND))), featureOrigin);
+        super(membranePermeabilityQuantity.to(new ProductUnit<>(Environment.getTransformedLength().divide(SECOND))), featureOrigin);
     }
 
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<MembranePermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(EnvironmentalParameters.getTransformedLength().divide(time.getUnit())));
+        Quantity<MembranePermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedLength().divide(time.getUnit())));
         // transform to specified amount
         scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
         // and half

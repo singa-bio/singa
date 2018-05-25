@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -89,12 +89,12 @@ public class FreeDiffusionTest {
         Quantity<Time> actualHalfLifeTime = runSimulation(simulation, numberOfNodes, species);
         // test results
         assertEquals(expectedOutcome.getValue().doubleValue(), actualHalfLifeTime.getValue().doubleValue(), 1);
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
     private Simulation setUpSimulation(int numberOfNodes, SmallMolecule species) {
         // setup node distance to diameter
-        EnvironmentalParameters.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
+        Environment.setNodeSpacingToDiameter(systemDiameter, numberOfNodes);
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfNodes, numberOfNodes));
         // initialize species in graph with desired concentration leaving the right "half" empty

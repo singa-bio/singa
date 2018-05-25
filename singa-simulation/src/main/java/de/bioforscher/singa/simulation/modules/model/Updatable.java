@@ -21,7 +21,7 @@ public interface Updatable {
 
     Set<CellSection> getAllReferencedSections();
     Set<ChemicalEntity> getAllReferencedEntities();
-    List<Delta> getPotentialDeltas();
+    List<Delta> getPotentialSpatialDeltas();
 
     void addPotentialDelta(Delta delta);
     void clearPotentialDeltas();

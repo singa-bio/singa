@@ -34,18 +34,6 @@ public abstract class AbstractModule implements Module {
 
     private SimpleStringIdentifier identifier;
 
-    public SimpleStringIdentifier getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(SimpleStringIdentifier identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getStringForProtocol() {
-        return toString();
-    }
-
     private Set<ChemicalEntity> referencedChemicalEntities;
 
     /**
@@ -127,6 +115,18 @@ public abstract class AbstractModule implements Module {
 
     public Set<ChemicalEntity> getReferencedEntities() {
         return referencedChemicalEntities;
+    }
+
+    public SimpleStringIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(SimpleStringIdentifier identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getStringForProtocol() {
+        return toString();
     }
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {

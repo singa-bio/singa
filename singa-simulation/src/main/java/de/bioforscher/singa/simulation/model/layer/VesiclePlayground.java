@@ -1,11 +1,9 @@
 package de.bioforscher.singa.simulation.model.layer;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
-import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
-import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -14,9 +12,9 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import javafx.animation.AnimationTimer;
+import de.bioforscher.singa.simulation.modules.model.SimulationManager;
+import de.bioforscher.singa.simulation.modules.transport.VesicleDiffusion;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
@@ -24,17 +22,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tec.uom.se.quantity.Quantities;
 
-import javax.measure.Quantity;
-import javax.measure.quantity.Area;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
@@ -43,8 +33,8 @@ public class VesiclePlayground extends Application implements Renderer {
 
     private Canvas canvas;
     private VesicleLayer layer;
-    private AutomatonGraph graph;
     private Rectangle rectangle;
+    private Simulation simulation;
 
     public static void main(String[] args) {
         launch();
@@ -59,19 +49,24 @@ public class VesiclePlayground extends Application implements Renderer {
         root.setCenter(canvas);
 
         rectangle = new Rectangle(simulationExtend, simulationExtend);
-        Rectangle vesicleRegion = new Rectangle(new Vector2D(100, 100), new Vector2D(700, 700));
-        layer = new VesicleLayer(rectangle);
-
-        Simulation simulation = new Simulation();
 
         // define scales
-        EnvironmentalParameters.setSystemExtend(Quantities.getQuantity(10, MICRO(METRE)));
-        EnvironmentalParameters.setSimulationExtend(simulationExtend);
-        EnvironmentalParameters.setNodeSpacingToDiameter(EnvironmentalParameters.getSystemExtend(), 10);
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        Environment.setSystemExtend(Quantities.getQuantity(20, MICRO(METRE)));
+        Environment.setSimulationExtend(simulationExtend);
+        Environment.setNodeSpacingToDiameter(Environment.getSystemExtend(), 10);
+        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+
+        // create simulation
+        simulation = new Simulation();
+
+        // add vesicle transport layer
+        layer = new VesicleLayer();
+        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion(simulation);
+        layer.addVesicleModule(vesicleDiffusion);
+        simulation.setVesicleLayer(layer);
 
         // define graphs
-        graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 10);
+        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(10, 10);
         simulation.setGraph(graph);
         simulation.initializeSpatialRepresentations();
 
@@ -82,7 +77,7 @@ public class VesiclePlayground extends Application implements Renderer {
         // instantiate some vesicles
         for (int i = 0; i < 1; i++) {
             Vesicle vesicle = new Vesicle(String.valueOf(i),
-                    new Vector2D(480, 400),
+                    new Vector2D(80, 80),
                     Quantities.getQuantity(150, NANO(METRE)),
                     cytoplasm);
             layer.addVesicle(vesicle);
@@ -94,87 +89,36 @@ public class VesiclePlayground extends Application implements Renderer {
         renderer.getRenderingOptions().setDisplayingNodes(false);
         renderer.setGraphicsContext(canvas.getGraphicsContext2D());
 
-        renderer.setRenderAfter(graph -> {
-            moveVesicles();
-            return null;
-        });
-
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                renderer.render(graph);
-            }
-        };
-        timer.start();
-
         // show
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+//        Scene scene = new Scene(root);
+//        primaryStage.setScene(scene);
+//        primaryStage.show();
 
-    }
+        // create manager
+        SimulationManager simulationManager = new SimulationManager(simulation);
+        // set termination condition
+        simulationManager.setSimulationTerminationToTime(Quantities.getQuantity(10, MINUTE));
+        simulationManager.setUpdateEmissionToTimePassed(Quantities.getQuantity(1, SECOND));
 
-    public void moveVesicles() {
-        layer.nextEpoch();
-        renderVesicles();
+        Thread thread = new Thread(simulationManager);
+        thread.setDaemon(true);
+        thread.start();
+
     }
 
     public void renderVesicles() {
+        getGraphicsContext().setFill(Color.WHITE);
         fillPolygon(rectangle);
-        graph.getNodes().stream().map(AutomatonNode::getSpatialRepresentation).forEach(this::drawPolygon);
-        for (Vesicle vesicle : layer.getVesicles()) {
-            getGraphicsContext().setLineWidth(1);
-            double radius = EnvironmentalParameters.convertSystemToSimulationScale(vesicle.getRadius());
-            getGraphicsContext().setFill(Color.BLACK);
-            circlePoint(vesicle.getPosition(), radius * 2);
-            AutomatonNode representativeNode = null;
-            Map<AutomatonNode, Set<Vector2D>> associatedNodes = new HashMap<>();
-            Circle vesicleCircle = new Circle(vesicle.getPosition(), radius);
-            for (AutomatonNode node : graph.getNodes()) {
-                Polygon polygon = node.getSpatialRepresentation();
-                getGraphicsContext().setLineWidth(2);
-                // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-                if (representativeNode == null && polygon.evaluatePointPosition(vesicle.getPosition()) == Polygon.INSIDE) {
-                    drawStraight(node.getPosition(), vesicle.getPosition());
-                    representativeNode = node;
-                }
-                // associate partial containment to other nodes
-                getGraphicsContext().setLineWidth(1);
-                Set<Vector2D> intersections = polygon.getIntersections(vesicleCircle);
-                if (!intersections.isEmpty()) {
-                    drawStraight(node.getPosition(), vesicle.getPosition());
-                    intersections.forEach(intersection -> circlePoint(intersection, 3));
-                    associatedNodes.put(node, intersections);
-                }
+        getGraphicsContext().setFill(Color.BLACK);
+        simulation.getGraph().getNodes().stream().map(AutomatonNode::getSpatialRepresentation).forEach(this::drawPolygon);
+        simulation.getVesicleLayer().getVesicles().stream().map(Vesicle::getCircleRepresentation).forEach(this::drawCircle);
+        for (AutomatonNode node : simulation.getGraph().getNodes()) {
+            Vector2D nodePosition = node.getPosition();
+            for (Vesicle vesicle : node.getAssociatedVesicles().keySet()) {
+                drawStraight(nodePosition, vesicle.getPosition());
             }
-            associatedNodes.remove(representativeNode);
-            // the surface of the implicit sphere
-            final double totalSurface = 4.0 * Math.PI * radius * radius;
-            double reducedSurface = totalSurface;
-            System.out.println("Surface area: " + totalSurface);
-            for (Map.Entry<AutomatonNode, Set<Vector2D>> entry : associatedNodes.entrySet()) {
-                Set<Vector2D> intersections = entry.getValue();
-                if (intersections.size() == 2) {
-                    Iterator<Vector2D> iterator = intersections.iterator();
-                    Vector2D first = iterator.next();
-                    Vector2D second = iterator.next();
-                    double theta = vesicleCircle.getCentralAngleBetween(first, second);
-                    // the spherical lune of the implicit sphere associated to the automaton node
-                    // http://mathworld.wolfram.com/SphericalLune.html
-                    double associatedSurface = 2 * radius * radius * theta;
-                    double fraction = associatedSurface / totalSurface;
-                    reducedSurface -= associatedSurface;
-                    Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
-                    entry.getKey().associateVesicle(vesicle, nodeSurface);
-                }
-            }
-            double fraction = reducedSurface / totalSurface;
-            Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
-            assert representativeNode != null;
-            representativeNode.associateVesicle(vesicle, nodeSurface);
         }
     }
-
 
     @Override
     public GraphicsContext getGraphicsContext() {
@@ -190,4 +134,5 @@ public class VesiclePlayground extends Application implements Renderer {
     public double getDrawingHeight() {
         return canvas.getHeight();
     }
+
 }

@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import org.slf4j.Logger;
@@ -140,7 +140,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentUpdatable.getAvailableConcentration(currentChemicalEntity, currentCellSection).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
-        currentHalfConcentrations.setAvailableConcentration(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, EnvironmentalParameters.getTransformedMolarConcentration()));
+        currentHalfConcentrations.setAvailableConcentration(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, Environment.getTransformedMolarConcentration()));
     }
 
     /**

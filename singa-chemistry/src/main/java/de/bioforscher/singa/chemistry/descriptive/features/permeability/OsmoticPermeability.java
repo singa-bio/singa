@@ -3,7 +3,7 @@ package de.bioforscher.singa.chemistry.descriptive.features.permeability;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableQuantityFeature;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -42,7 +42,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(osmoticPermeabilityQuantity.to(new ProductUnit<>(EnvironmentalParameters.getTransformedVolume().divide(SECOND))), featureOrigin);
+        super(osmoticPermeabilityQuantity.to(new ProductUnit<>(Environment.getTransformedVolume().divide(SECOND))), featureOrigin);
     }
 
     /**
@@ -115,7 +115,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(EnvironmentalParameters.getTransformedVolume().divide(time.getUnit())));
+        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedVolume().divide(time.getUnit())));
         // transform to specified amount
         scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
         // and half

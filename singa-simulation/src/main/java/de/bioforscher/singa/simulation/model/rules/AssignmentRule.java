@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.rules;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
@@ -41,7 +41,7 @@ public class AssignmentRule {
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         entityReference.put(entity, parameterIdentifier);
         // FIXME this is not done correctly
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, EnvironmentalParameters.emptyConcentration()));
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Environment.emptyConcentration()));
     }
 
     public Map<ChemicalEntity, String> getEntityReference() {

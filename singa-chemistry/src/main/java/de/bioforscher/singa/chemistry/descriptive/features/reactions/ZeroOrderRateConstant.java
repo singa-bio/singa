@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.reactions;
 
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -26,7 +26,7 @@ public abstract class ZeroOrderRateConstant extends RateConstant<ZeroOrderRate> 
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<ZeroOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(EnvironmentalParameters.getTransformedMolarConcentration().divide(time.getUnit())));
+        Quantity<ZeroOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedMolarConcentration().divide(time.getUnit())));
         // transform to specified amount
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half

@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
@@ -110,7 +110,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, EnvironmentalParameters.getTransformedMolarConcentration()));
+        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, Environment.getTransformedMolarConcentration()));
     }
 
     private boolean chemicalEntityIsNotMembraneAnchored() {

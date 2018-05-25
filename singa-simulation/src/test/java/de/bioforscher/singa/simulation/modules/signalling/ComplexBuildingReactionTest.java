@@ -25,7 +25,7 @@ import javax.measure.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertTrue;
 import static tec.uom.se.unit.Units.MINUTE;

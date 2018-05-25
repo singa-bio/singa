@@ -6,7 +6,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBI
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -105,7 +105,7 @@ public class ReactionTest {
         assertEquals(0.1, node.getConcentration(ga).getValue().doubleValue(), 1e-3);
         assertEquals(0.2, node.getConcentration(aldolase).getValue().doubleValue(), 0);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
     @Test
@@ -163,7 +163,7 @@ public class ReactionTest {
         assertEquals(0.66666, node.getConcentration(speciesA).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         assertEquals(0.33333, node.getConcentration(speciesB).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-5);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
     @Test
@@ -181,7 +181,7 @@ public class ReactionTest {
         SmallMolecule oxygen = ChEBIParserService.parse("CHEBI:15379");
 
         for (AutomatonNode node : graph.getNodes()) {
-            node.setConcentration(dpo, Quantities.getQuantity(0.020, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+            node.setConcentration(dpo, Quantities.getQuantity(0.020, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
             node.setConcentration(ndo, 0.0);
             node.setConcentration(oxygen, 0.0);
         }
@@ -221,7 +221,7 @@ public class ReactionTest {
         assertEquals(0.025, node.getConcentration(ndo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(0.007, node.getConcentration(dpo).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
 
@@ -250,7 +250,7 @@ public class ReactionTest {
         // check final values
         assertEquals(0.2975, node.getConcentration(x).getValue().doubleValue(), 1e-4);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
 }

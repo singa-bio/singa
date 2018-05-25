@@ -25,7 +25,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.*;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
 
 /**
  * @author cl

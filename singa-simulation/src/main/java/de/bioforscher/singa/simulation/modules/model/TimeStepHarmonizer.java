@@ -2,7 +2,8 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Featureable;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,34 +18,45 @@ public class TimeStepHarmonizer {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeStepHarmonizer.class);
     private final Simulation simulation;
-    private double epsilon = 0.01;
+    private double concentrationEpsilon = 0.01;
+    private boolean displacementTooLarge;
     private Quantity<Time> currentTimeStep;
 
     private Module criticalModule;
     private LocalError largestLocalError;
     private boolean timeStepChanged;
     private List<Updatable> updatables;
+    private VesicleLayer vesicleLayer;
 
     public TimeStepHarmonizer(Simulation simulation) {
-        EnvironmentalParameters.setTimeStep(EnvironmentalParameters.getTimeStep());
+        Environment.setTimeStep(Environment.getTimeStep());
         this.simulation = simulation;
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         timeStepChanged = true;
+        displacementTooLarge = false;
     }
 
     public boolean step() {
         // set initial step
         updatables = simulation.collectUpdatables();
-        currentTimeStep = EnvironmentalParameters.getTimeStep();
+        vesicleLayer = simulation.getVesicleLayer();
+        currentTimeStep = Environment.getTimeStep();
         if (timeStepChanged) {
             rescaleParameters();
         }
-        // request local error for each module
-        executeAllModules();
+
+        // optimize spatial layer updates
+        do {
+            executeAllSpatialModules();
+            evaluateSpatialDisplacements();
+        } while (displacementTooLarge);
+
+        // optimize concentration based updates
+        executeAllConcentrationModules();
         // optimize simulation for the largest local error
         // System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
         do {
-            optimizeTimeStep();
+            optimizeConcentrationTimeStep();
             // if time step changed
             if (timeStepChanged) {
                 // clear previously assigned deltas
@@ -52,17 +64,18 @@ public class TimeStepHarmonizer {
                     updatable.clearPotentialDeltas();
                 }
                 // update deltas
-                executeAllModules();
+                executeAllConcentrationModules();
             }
             // System.out.println(largestLocalError+" for "+criticalModule.getClass().getSimpleName()+" at "+this.simulation.getElapsedTime()+" for ts of "+this.currentTimeStep);
-        } while (largestLocalError.getValue() > epsilon);
+        } while (largestLocalError.getValue() > concentrationEpsilon);
+
         // shift potential deltas to true deltas
         finalizeDeltas();
 
         return timeStepChanged;
     }
 
-    private void executeAllModules() {
+    private void executeAllConcentrationModules() {
         logger.debug("Calculating deltas and errors for all modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
@@ -76,10 +89,18 @@ public class TimeStepHarmonizer {
         }
     }
 
+    private void executeAllSpatialModules() {
+        for (VesicleModule vesicleModule : vesicleLayer.getVesicleModules()) {
+            logger.trace("Calculating deltas for Module {}", vesicleModule.toString());
+            vesicleModule.determineAllDeltas(vesicleLayer.getVesicles());
+        }
+    }
+
     private void finalizeDeltas() {
         for (Updatable updatable : updatables) {
             updatable.shiftDeltas();
         }
+        // potential updates for vesicles are already set during displacement evaluation
     }
 
     private void examineLocalError(Module module, LocalError localError) {
@@ -89,13 +110,13 @@ public class TimeStepHarmonizer {
         }
     }
 
-    private void optimizeTimeStep() {
+    private void optimizeConcentrationTimeStep() {
         double localError = largestLocalError.getValue();
         timeStepChanged = false;
         boolean errorIsTooLarge = tryToDecreaseTimeStep(largestLocalError.getValue());
         while (errorIsTooLarge) {
             // set full time step
-            currentTimeStep = EnvironmentalParameters.getTimeStep();
+            currentTimeStep = Environment.getTimeStep();
             // determine biggest local error
             localError = criticalModule.determineDeltasForNode(largestLocalError.getUpdatable()).getValue();
             // logger.info("Current local error is {}",localError);
@@ -103,7 +124,17 @@ public class TimeStepHarmonizer {
             // evaluate error by increasing or decreasing time step
             errorIsTooLarge = tryToDecreaseTimeStep(localError);
         }
-        logger.debug("Optimized local error for {} was {} with time step of {}.", criticalModule, localError, EnvironmentalParameters.getTimeStep());
+        logger.debug("Optimized local error for {} was {} with time step of {}.", criticalModule, localError, Environment.getTimeStep());
+    }
+
+    private void evaluateSpatialDisplacements() {
+        if (!vesicleLayer.deltasAreBelowDisplacementCutoff()) {
+            displacementTooLarge = true;
+            decreaseTimeStep();
+            vesicleLayer.clearUpdates();
+        } else {
+            displacementTooLarge = false;
+        }
     }
 
     public LocalError getLargestLocalError() {
@@ -119,36 +150,37 @@ public class TimeStepHarmonizer {
                 ((Featureable) module).scaleScalableFeatures();
             }
         }
+        vesicleLayer.rescaleDiffusifity();
     }
 
     public void increaseTimeStep() {
-        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(1.2));
-        logger.debug("Increasing time step to {}.", EnvironmentalParameters.getTimeStep());
+        Environment.setTimeStep(currentTimeStep.multiply(1.2));
+        logger.debug("Increasing time step to {}.", Environment.getTimeStep());
         rescaleParameters();
         timeStepChanged = true;
     }
 
     public void decreaseTimeStep() {
-        EnvironmentalParameters.setTimeStep(currentTimeStep.multiply(0.8));
-        logger.debug("Decreasing time step to {}.", EnvironmentalParameters.getTimeStep());
+        Environment.setTimeStep(currentTimeStep.multiply(0.8));
+        logger.debug("Decreasing time step to {}.", Environment.getTimeStep());
         rescaleParameters();
         timeStepChanged = true;
     }
 
     private boolean tryToDecreaseTimeStep(double localError) {
         // determine whether to increase or reduce time step size
-        if (localError > epsilon) {
+        if (localError > concentrationEpsilon) {
             decreaseTimeStep();
             return true;
         }
         return false;
     }
 
-    public double getEpsilon() {
-        return epsilon;
+    public double getConcentrationEpsilon() {
+        return concentrationEpsilon;
     }
 
-    public void setEpsilon(double epsilon) {
-        this.epsilon = epsilon;
+    public void setConcentrationEpsilon(double concentrationEpsilon) {
+        this.concentrationEpsilon = concentrationEpsilon;
     }
 }

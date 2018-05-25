@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
@@ -95,7 +95,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param concentration The concentration in mol/l.
      */
     public void setConcentration(ChemicalEntity entity, double concentration) {
-        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
     }
 
     /**
@@ -200,7 +200,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     }
 
     @Override
-    public List<Delta> getPotentialDeltas() {
+    public List<Delta> getPotentialSpatialDeltas() {
         return updateManager.getPotentialDeltas();
     }
 
@@ -323,8 +323,16 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         this.spatialRepresentation = spatialRepresentation;
     }
 
+    public Map<Vesicle, Quantity<Area>> getAssociatedVesicles() {
+        return associatedVesicles;
+    }
+
     public void associateVesicle(Vesicle vesicle, Quantity<Area> associatedArea) {
         associatedVesicles.put(vesicle, associatedArea);
+    }
+
+    public void clearAssociatedVesicles() {
+        associatedVesicles.clear();
     }
 
     @Override

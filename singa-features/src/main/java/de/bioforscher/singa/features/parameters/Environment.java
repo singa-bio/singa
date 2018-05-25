@@ -21,9 +21,9 @@ import static de.bioforscher.singa.features.units.UnitProvider.PASCAL_SECOND;
 import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
 
-public class EnvironmentalParameters extends Observable {
+public class Environment extends Observable {
 
-    private static final Logger logger = LoggerFactory.getLogger(EnvironmentalParameters.class);
+    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
 
     public static final QuantityFormatter<Time> TIME_FORMATTER = new QuantityFormatter<>(SECOND, true);
 
@@ -60,7 +60,7 @@ public class EnvironmentalParameters extends Observable {
      */
     public static final double DEFAULT_SIMULATION_EXTEND = 500;
 
-    private static EnvironmentalParameters instance;
+    private static Environment instance;
 
     private Quantity<Length> systemExtend;
     private Quantity<Length> systemScale;
@@ -81,7 +81,7 @@ public class EnvironmentalParameters extends Observable {
     private Unit<Length> transformedLength = METRE;
 
 
-    private EnvironmentalParameters() {
+    private Environment() {
         nodeDistance = DEFAULT_NODE_DISTANCE;
         timeStep = DEFAULT_TIME_STEP;
         systemTemperature = DEFAULT_TEMPERATURE;
@@ -91,17 +91,17 @@ public class EnvironmentalParameters extends Observable {
         setSystemAnsSimulationScales();
     }
 
-    private static EnvironmentalParameters getInstance() {
+    private static Environment getInstance() {
         if (instance == null) {
-            synchronized (EnvironmentalParameters.class) {
-                instance = new EnvironmentalParameters();
+            synchronized (Environment.class) {
+                instance = new Environment();
             }
         }
         return instance;
     }
 
     public static void reset() {
-        instance = new EnvironmentalParameters();
+        instance = new Environment();
     }
 
     public static Quantity<Length> getNodeDistance() {

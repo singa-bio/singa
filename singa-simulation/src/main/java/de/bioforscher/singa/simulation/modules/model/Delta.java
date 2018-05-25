@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 
@@ -99,6 +99,6 @@ public class Delta {
 
     @Override
     public String toString() {
-        return module + " : " + cellSection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+EnvironmentalParameters.DELTA_FORMATTER.format(quantity);
+        return module + " : " + cellSection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+Environment.DELTA_FORMATTER.format(quantity);
     }
 }

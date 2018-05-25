@@ -21,12 +21,12 @@ public class EnvironmentalParametersTest {
     public void getTransformedMolarConcentration() {
         final ComparableQuantity<MolarConcentration> molePerLitre = Quantities.getQuantity(1, MOLE_PER_LITRE);
         final ComparableQuantity<MolarConcentration> molePerCubicMicroMetre = molePerLitre.to(new ProductUnit<>(MOLE.divide(MICRO(METRE).multiply(MICRO(METRE).multiply(MICRO(METRE))))));
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        assertEquals(molePerCubicMicroMetre, molePerLitre.to(EnvironmentalParameters.getTransformedMolarConcentration()));
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
-        assertEquals(1.25E-16 , molePerLitre.to(EnvironmentalParameters.getTransformedMolarConcentration()).getValue());
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(0.5, MICRO(METRE)));
-        assertEquals(8.0E-15, molePerLitre.to(EnvironmentalParameters.getTransformedMolarConcentration()).getValue());
+        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
+        assertEquals(molePerCubicMicroMetre, molePerLitre.to(Environment.getTransformedMolarConcentration()));
+        Environment.setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
+        assertEquals(1.25E-16 , molePerLitre.to(Environment.getTransformedMolarConcentration()).getValue());
+        Environment.setNodeDistance(Quantities.getQuantity(0.5, MICRO(METRE)));
+        assertEquals(8.0E-15, molePerLitre.to(Environment.getTransformedMolarConcentration()).getValue());
 
     }
 }

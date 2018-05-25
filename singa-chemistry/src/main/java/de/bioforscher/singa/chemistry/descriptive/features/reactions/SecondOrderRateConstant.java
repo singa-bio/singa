@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.descriptive.features.reactions;
 
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
@@ -22,7 +22,7 @@ public abstract class SecondOrderRateConstant extends RateConstant<SecondOrderRa
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<SecondOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(ONE.divide(EnvironmentalParameters.getTransformedMolarConcentration().multiply(time.getUnit()))));
+        Quantity<SecondOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(ONE.divide(Environment.getTransformedMolarConcentration().multiply(time.getUnit()))));
         // transform to specified amount
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half

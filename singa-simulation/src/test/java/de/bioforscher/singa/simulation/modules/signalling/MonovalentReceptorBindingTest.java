@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -26,7 +26,7 @@ import javax.measure.quantity.Time;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -40,7 +40,7 @@ public class MonovalentReceptorBindingTest {
     private static final Logger logger = LoggerFactory.getLogger(MonovalentReceptorBindingTest.class);
 
     public static void main(String[] args) {
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
+        Environment.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
         logger.info("Testing Monovalent Receptor Binding.");
 
         // see Receptors (Lauffenburger) p. 30
@@ -118,7 +118,7 @@ public class MonovalentReceptorBindingTest {
         assertEquals(0.0001, membraneNode.getConcentration(ligand).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         assertEquals(0.0243, membraneNode.getConcentration(complex).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
 }

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.features.quantities;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import org.junit.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -95,8 +95,8 @@ public class MolarConcentrationTest {
     @Test
     public void toMoleculesOfSubstance() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, EnvironmentalParameters.getTransformedVolume());
+        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
+        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getTransformedVolume());
         Quantity<Dimensionless> actualResult = MolarConcentration.toMoleculesOfSubstance(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, MOLECULES);
         assertEquals(expectedResult, actualResult);

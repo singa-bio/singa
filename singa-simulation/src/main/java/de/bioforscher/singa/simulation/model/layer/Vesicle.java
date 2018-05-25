@@ -3,11 +3,11 @@ package de.bioforscher.singa.simulation.model.layer;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.NaturalConstants;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.compartments.Membrane;
@@ -21,8 +21,8 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
 import javax.measure.quantity.Volume;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -46,10 +46,10 @@ public class Vesicle implements Updatable {
      * @return The diffusivity.
      */
     private static Diffusivity calculateDiffusivity(Quantity<Length> radius) {
-        final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * EnvironmentalParameters.getTemperature().getValue().doubleValue();
-        final double lower = 6 * Math.PI * EnvironmentalParameters.getViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
+        final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * Environment.getTemperature().getValue().doubleValue();
+        final double lower = 6 * Math.PI * Environment.getViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
         Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
-        diffusivity.scale(EnvironmentalParameters.getTimeStep(), EnvironmentalParameters.getSystemScale());
+        diffusivity.scale(Environment.getTimeStep(), Environment.getSystemScale());
         return diffusivity;
     }
 
@@ -86,12 +86,14 @@ public class Vesicle implements Updatable {
     private EnclosedCompartment inside;
 
     private Vector2D position;
+    private List<SpatialDelta> potentialSpatialDeltas;
     private Vector2D potentialUpdate;
 
 
     public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, EnclosedCompartment outsideCompartment) {
         this.identifier = identifier;
         this.position = position;
+        potentialSpatialDeltas = new ArrayList<>();
         setRadius(radius);
         inside = new EnclosedCompartment("c-" + identifier, "compartment of vesicle " + identifier);
         Membrane membrane = Membrane.forCompartment(inside);
@@ -101,10 +103,6 @@ public class Vesicle implements Updatable {
 
     public Vector2D getPosition() {
         return position;
-    }
-
-    public void setPosition(Vector2D position) {
-        this.position = position;
     }
 
     public Quantity<Length> getRadius() {
@@ -123,6 +121,10 @@ public class Vesicle implements Updatable {
         return potentialUpdate;
     }
 
+    public void addPotentialSpatialDelta(SpatialDelta spatialDelta) {
+        potentialSpatialDeltas.add(spatialDelta);
+    }
+
     public void setRadius(Quantity<Length> radius) {
         this.radius = radius;
         area = calculateArea(radius);
@@ -130,20 +132,29 @@ public class Vesicle implements Updatable {
         diffusivity = calculateDiffusivity(radius);
     }
 
-    public void calculateDisplacement(Quantity<Time> timeStep) {
-        double scaling = EnvironmentalParameters.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 *
-                        diffusivity.getScaledQuantity().getValue().doubleValue() * timeStep.getValue().doubleValue()),
-                EnvironmentalParameters.getSystemScale().getUnit()));
-        Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
-        potentialUpdate = position.add(gaussian.multiply(scaling));
+    public Diffusivity getDiffusivity() {
+        return diffusivity;
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.setAvailableConcentration(inside, entity, EnvironmentalParameters.transformToVolume(concentration, volume));
+        concentrations.setAvailableConcentration(inside, entity, Environment.transformToVolume(concentration, volume));
     }
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
         return concentrations.getAvailableConcentration(inside, entity);
+    }
+
+    public Vector2D calculateTotalDisplacement() {
+        Vector2D sum = new Vector2D(0.0,0.0);
+        for (SpatialDelta potentialSpatialDelta : potentialSpatialDeltas) {
+            sum = sum.add(potentialSpatialDelta.getDeltaVector());
+        }
+        potentialUpdate = position.add(sum);
+        return sum;
+    }
+
+    public void clearPotentialSpatialDeltas() {
+        potentialSpatialDeltas.clear();
     }
 
     public void permitDisplacement() {
@@ -151,9 +162,9 @@ public class Vesicle implements Updatable {
     }
 
     public void move() {
+        System.out.println(potentialUpdate);
         position = potentialUpdate;
     }
-
 
     @Override
     public String getStringIdentifier() {
@@ -181,7 +192,7 @@ public class Vesicle implements Updatable {
     }
 
     @Override
-    public List<Delta> getPotentialDeltas() {
+    public List<Delta> getPotentialSpatialDeltas() {
         return updateManager.getPotentialDeltas();
     }
 
@@ -203,6 +214,14 @@ public class Vesicle implements Updatable {
     @Override
     public void applyDeltas() {
         updateManager.applyDeltas();
+    }
+
+    public Circle getCircleRepresentation() {
+        return new Circle(position,Environment.convertSystemToSimulationScale(radius));
+    }
+
+    public void rescaleDiffusivity() {
+        diffusivity.scale();
     }
 
     @Override

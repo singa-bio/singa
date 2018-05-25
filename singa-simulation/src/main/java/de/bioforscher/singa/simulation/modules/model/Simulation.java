@@ -2,8 +2,10 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -11,6 +13,7 @@ import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContain
 import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
@@ -21,10 +24,12 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Length;
+import javax.measure.quantity.Area;
 import javax.measure.quantity.Time;
 import java.io.IOException;
 import java.util.*;
+
+import static de.bioforscher.singa.mathematics.geometry.model.Polygon.ON_LINE;
 
 /**
  * The simulation class encapsulates everything that is needed to perform a Simulation based on cellular graph automata.
@@ -52,7 +57,7 @@ import java.util.*;
  * </pre>
  * Afterwards the simulation can be performed stepwise by calling the {@link Simulation#nextEpoch} method. For each
  * epoch the size of the time step will be adjusted with the {@link TimeStepHarmonizer}, to ensure numerical stability
- * up to a given epsilon. The method ({@link TimeStepHarmonizer#setEpsilon(double)}) sets the epsilon and the error
+ * up to a given epsilon. The method ({@link TimeStepHarmonizer#setConcentrationEpsilon(double)}) sets the epsilon and the error
  * between two time steps will be kept below that threshold. Epsilons approaching 0 naturally result in very small time
  * steps and therefore long simulation times, at default epsilon is at 0.01. The time step will be optimized for each
  * epoch, resulting in many epochs for critical simulation regimes and large ones for stable regimes. <p>
@@ -71,6 +76,9 @@ public class Simulation {
      */
     private final Set<Module> modules;
 
+    /**
+     * The layer for the vesicles.
+     */
     private VesicleLayer vesicleLayer;
 
     /**
@@ -118,7 +126,10 @@ public class Simulation {
      */
     private ComparableQuantity<Time> elapsedTime;
 
-    private boolean modulesInitialized;
+    /**
+     * A flag indicating the initialization state of the simulation
+     */
+    private boolean initializationDone;
 
     /**
      * Creates a new plain simulation.
@@ -127,8 +138,8 @@ public class Simulation {
         modules = new HashSet<>();
         chemicalEntities = new HashMap<>();
         observedNodes = new HashSet<>();
-        elapsedTime = Quantities.getQuantity(0.0, EnvironmentalParameters.getTimeStep().getUnit());
-        modulesInitialized = false;
+        elapsedTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
+        initializationDone = false;
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
 
@@ -139,11 +150,12 @@ public class Simulation {
      */
     public void nextEpoch() {
         logger.debug("Starting epoch {} ({}).", epoch, elapsedTime);
-        if (!modulesInitialized) {
+        if (!initializationDone) {
             initializeModules();
             initializeGraph();
             initializeSpatialRepresentations();
-            modulesInitialized = true;
+            initializeVesicleLayer();
+            initializationDone = true;
         }
         // clear observed nodes if necessary
         if (!observedNodes.isEmpty()) {
@@ -160,14 +172,15 @@ public class Simulation {
         }
         // move vesicles
         if (vesicleLayer != null) {
-            vesicleLayer.nextEpoch();
+            vesicleLayer.step();
+            associateVesicles();
         }
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change
         if (!timeStepChanged) {
             // if error was below tolerance threshold (10 percent of epsilon)
-            if (harmonizer.getEpsilon() - harmonizer.getLargestLocalError().getValue() > 0.1 * harmonizer.getEpsilon()) {
+            if (harmonizer.getConcentrationEpsilon() - harmonizer.getLargestLocalError().getValue() > 0.1 * harmonizer.getConcentrationEpsilon()) {
                 // try larger time step next time
                 harmonizer.increaseTimeStep();
             }
@@ -196,13 +209,13 @@ public class Simulation {
     }
 
     public void initializeSpatialRepresentations() {
-        // initialize via voronoi diagrams
-
+        logger.info("Initializing spatial representations of automaton nodes.");
+        // TODO initialize via voronoi diagrams
         // or rectangles
         for (AutomatonNode node : graph.getNodes()) {
+            // create rectangles centered on the nodes with side length of node distance
             Vector2D position = node.getPosition();
-            Quantity<Length> nodeDistance = EnvironmentalParameters.getNodeDistance();
-            double offset = EnvironmentalParameters.convertSystemToSimulationScale(nodeDistance)*0.5;
+            double offset = Environment.convertSystemToSimulationScale(Environment.getNodeDistance())*0.5;
             Vector2D topLeft = new Vector2D(position.getX()-offset, position.getY()-offset);
             Vector2D bottomRight = new Vector2D(position.getX()+offset, position.getY()+offset);
             node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
@@ -210,7 +223,81 @@ public class Simulation {
 
     }
 
-    private void initializeVesicleLayer(VesicleLayer vesicleLayer) {
+    private void initializeVesicleLayer() {
+        if (vesicleLayer == null) {
+            return;
+        }
+        logger.info("Initializing vesicle layer and individual vesicles.");
+        // initialize simulation space
+        vesicleLayer.setSimulationArea(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
+        associateVesicles();
+    }
+
+    private void associateVesicles() {
+        // clear previous vesicle associations
+        graph.getNodes().forEach(AutomatonNode::clearAssociatedVesicles);
+        // associate vesicles to nodes
+        for (Vesicle vesicle : vesicleLayer.getVesicles()) {
+            // convert vesicle from system to simulation scale
+            Circle vesicleCircle = vesicle.getCircleRepresentation();
+            double radius = vesicleCircle.getRadius();
+            // determine representative and associated nodes
+            AutomatonNode representativeNode = null;
+            Map<AutomatonNode, Set<Vector2D>> associatedNodes = new HashMap<>();
+            // FIXME this can potentially be improved by reducing the number of nodes to check (eg using a quadtree)
+            for (AutomatonNode node : graph.getNodes()) {
+                // get representative region of the node
+                Polygon polygon = node.getSpatialRepresentation();
+                // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
+                if (representativeNode == null && polygon.evaluatePointPosition(vesicle.getPosition()) >= ON_LINE) {
+                    representativeNode = node;
+                }
+                // associate partial containment to other nodes
+                Set<Vector2D> intersections = polygon.getIntersections(vesicleCircle);
+                if (!intersections.isEmpty()) {
+                    associatedNodes.put(node, intersections);
+                }
+            }
+            // remove potentially doubly assigned representative node
+            associatedNodes.remove(representativeNode);
+            // calculate the total surface of the implicit sphere
+            final double totalSurface = 4.0 * Math.PI * radius * radius;
+            double reducedSurface = totalSurface;
+            // distribute the sphere according to the intersections with different representative regions
+            for (Map.Entry<AutomatonNode, Set<Vector2D>> entry : associatedNodes.entrySet()) {
+                Set<Vector2D> intersections = entry.getValue();
+                // if there is an actual region to intersect
+                // FIXME handle cases where more than two intersection points are present
+                if (intersections.size() == 2) {
+                    Iterator<Vector2D> iterator = intersections.iterator();
+                    Vector2D first = iterator.next();
+                    Vector2D second = iterator.next();
+                    // calculate angle associated to the node
+                    double theta = vesicleCircle.getCentralAngleBetween(first, second);
+                    // and the spherical lune of the implicit sphere associated to the automaton node
+                    double associatedSurface = 2 * radius * radius * theta;
+                    // use fraction to get actual system area
+                    double fraction = associatedSurface / totalSurface;
+                    // reduce area of representative node
+                    reducedSurface -= associatedSurface;
+                    // associate vesicle and its corresponding area to the node
+                    Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
+                    entry.getKey().associateVesicle(vesicle, nodeSurface);
+                }
+            }
+            // set area for representative
+            double fraction = reducedSurface / totalSurface;
+            Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
+            assert representativeNode != null;
+            representativeNode.associateVesicle(vesicle, nodeSurface);
+        }
+    }
+
+    public VesicleLayer getVesicleLayer() {
+        return vesicleLayer;
+    }
+
+    public void setVesicleLayer(VesicleLayer vesicleLayer) {
         this.vesicleLayer = vesicleLayer;
     }
 
@@ -219,7 +306,7 @@ public class Simulation {
      */
     private void updateEpoch() {
         epoch++;
-        elapsedTime = elapsedTime.add(EnvironmentalParameters.getTimeStep());
+        elapsedTime = elapsedTime.add(Environment.getTimeStep());
     }
 
     /**
@@ -358,7 +445,7 @@ public class Simulation {
     }
 
     public void setEpsilon(double epsilon) {
-        harmonizer.setEpsilon(epsilon);
+        harmonizer.setConcentrationEpsilon(epsilon);
     }
 
 }

@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.modules.transport;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
 import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
@@ -18,7 +18,7 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
-import static de.bioforscher.singa.features.parameters.EnvironmentalParameters.*;
+import static de.bioforscher.singa.features.parameters.Environment.*;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -67,7 +67,7 @@ public class MembraneDiffusionTest {
         assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getAvailableConcentration(water, left).getValue().doubleValue(), 1e-5);
         assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getAvailableConcentration(water, right).getValue().doubleValue(), 1e-5);
 
-        EnvironmentalParameters.reset();
+        Environment.reset();
 
     }
 

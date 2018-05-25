@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public abstract class SimulationSetup {
 
     /**
      * Should be called first.
-     * Initializes {@link EnvironmentalParameters} such as node distance.
+     * Initializes {@link Environment} such as node distance.
      */
     public void initializeEnvironmentalParameters() {
         logger.info("Initializing environmental parameters ...");

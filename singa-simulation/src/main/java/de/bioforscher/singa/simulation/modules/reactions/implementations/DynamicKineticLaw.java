@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
@@ -65,7 +65,7 @@ public class DynamicKineticLaw implements KineticLaw {
      */
     public void referenceChemicalEntityToParameter(String parameterIdentifier, ChemicalEntity entity) {
         entityReference.put(entity, parameterIdentifier);
-        expression.setParameter(new SimulationParameter<>(parameterIdentifier, EnvironmentalParameters.emptyConcentration()));
+        expression.setParameter(new SimulationParameter<>(parameterIdentifier, Environment.emptyConcentration()));
     }
 
     /**

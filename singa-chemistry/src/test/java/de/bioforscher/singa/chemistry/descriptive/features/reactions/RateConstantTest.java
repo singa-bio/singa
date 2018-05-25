@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.descriptive.features.reactions;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
@@ -25,7 +25,7 @@ public class RateConstantTest {
 
     @BeforeClass
     public static void createRates() {
-        EnvironmentalParameters.reset();
+        Environment.reset();
 
         zeroOrder = RateConstant.create(1.0)
                 .forward()

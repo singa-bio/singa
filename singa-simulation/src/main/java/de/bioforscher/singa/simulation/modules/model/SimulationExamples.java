@@ -9,7 +9,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivi
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -65,7 +65,7 @@ public class SimulationExamples {
      */
     public static Simulation createDecompositionReactionExample() {
         // setup time step size
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -103,7 +103,7 @@ public class SimulationExamples {
      */
     public static Simulation createSynthesisReactionExample() {
         // setup time step size
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        Environment.setTimeStep(Quantities.getQuantity(1.0, SECOND));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -140,7 +140,7 @@ public class SimulationExamples {
      */
     public static Simulation createEquilibriumReactionExample() {
         // setup time step size
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
 
@@ -187,7 +187,7 @@ public class SimulationExamples {
      */
     public static Simulation createMichaelisMentenReactionExample() {
         // setup time step size
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -200,7 +200,7 @@ public class SimulationExamples {
                 .name("Fructose-bisphosphate aldolase")
                 .addSubstrate(fructosePhosphate)
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()), MANUALLY_ANNOTATED))
                 .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
@@ -237,9 +237,9 @@ public class SimulationExamples {
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
 
         // setup time step size as given
-        EnvironmentalParameters.setTimeStep(timeStep);
+        Environment.setTimeStep(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
-        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
+        Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
         // get required species
         SmallMolecule methanol = ChEBIParserService.parse("CHEBI:17790");
@@ -290,7 +290,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -372,7 +372,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        Environment.setTimeStep(Quantities.getQuantity(1.0, SECOND));
 
         // setup simulation
         Simulation simulation = new Simulation();
@@ -394,7 +394,7 @@ public class SimulationExamples {
         AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-            bioNode.setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+            bioNode.setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
         });
 
         // add graph
@@ -430,10 +430,10 @@ public class SimulationExamples {
         logger.debug("Importing species ...");
         // setup time step size as given
         logger.debug("Adjusting time step size ... ");
-        EnvironmentalParameters.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
+        Environment.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
         // setup node distance to diameter
         logger.debug("Adjusting spatial step size ... ");
-        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
+        Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
         // all species
         Set<ChemicalEntity> chemicalEntities = new HashSet<>();
         // Domperidone
@@ -524,7 +524,7 @@ public class SimulationExamples {
                 // setup membrane
                 node.setCellSection(membrane);
                 node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
-                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
             } else if (coordinate.getColumn() > 2 && coordinate.getRow() > 2 && coordinate.getColumn() < 27 && coordinate.getRow() < 17) {
                 node.setCellSection(inner);
                 node.setConcentration(domperidone, 0.0);

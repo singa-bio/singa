@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.events;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.model.QuantityFormatter;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -390,16 +390,16 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     private void appendDeltaContent(NodeUpdatedEvent event) {
         Updatable node = event.getNode();
         StringBuilder sb = new StringBuilder();
-        for (Delta delta : node.getPotentialDeltas()) {
+        for (Delta delta : node.getPotentialSpatialDeltas()) {
             if (delta.getQuantity().getValue().doubleValue() > 0.0) {
                 if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
                     sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
-                            .append(EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
+                            .append(Environment.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
                             .append(delta.getModule()).append(SEPARATOR_CHARACTER)
                             .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
                             .append(delta.getCellSection().getIdentifier()).append(SEPARATOR_CHARACTER)
-                            .append(EnvironmentalParameters.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
-                            .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
+                            .append(Environment.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
+                            .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / Environment.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
                 }
             }
         }

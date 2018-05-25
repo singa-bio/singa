@@ -1,7 +1,7 @@
 package de.bioforscher.singa.features.model;
 
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -15,11 +15,11 @@ public interface ScalableFeature<FeatureContent extends Quantity<FeatureContent>
     void scale(Quantity<Time> time, Quantity<Length> space);
 
     default void scale(Quantity<Time> time) {
-        scale(time, EnvironmentalParameters.getNodeDistance());
+        scale(time, Environment.getNodeDistance());
     }
 
     default void scale() {
-        scale(EnvironmentalParameters.getTimeStep(), EnvironmentalParameters.getNodeDistance());
+        scale(Environment.getTimeStep(), Environment.getNodeDistance());
     }
 
     Quantity<FeatureContent> getScaledQuantity();

@@ -7,7 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.compartments.CellSection;
@@ -99,7 +99,7 @@ public class MembraneRelevantDiffusionTest {
         assertEquals(0.0, membraneNode.getAvailableConcentration(ammonia, right).getValue().doubleValue(), 0.0);
         assertEquals(0.0, rightNode.getAvailableConcentration(ammonia, right).getValue().doubleValue(), 0.0);
 
-        EnvironmentalParameters.reset();
+        Environment.reset();
 
     }
 
@@ -114,7 +114,7 @@ public class MembraneRelevantDiffusionTest {
         Simulation simulation = new Simulation();
 
         // setup node distance to diameter);
-        EnvironmentalParameters.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
+        Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
 
         EnclosedCompartment up = new EnclosedCompartment("Up", "Up");
         EnclosedCompartment down = new EnclosedCompartment("Down", "Down");
@@ -132,7 +132,7 @@ public class MembraneRelevantDiffusionTest {
                 node.setConcentration(ammonia, 0.0);
             }
             if (node.getConcentrationContainer() instanceof MembraneContainer) {
-                node.setAvailableConcentration(ammonia, up, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                node.setAvailableConcentration(ammonia, up, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
             }
         }
 
@@ -149,11 +149,11 @@ public class MembraneRelevantDiffusionTest {
         // nothing should permeate to the lower part
         assertEquals(0.0, graph.getNode(6, 0).getAvailableConcentration(ammonia, down).getValue().doubleValue(), 0.0);
 
-        EnvironmentalParameters.reset();
+        Environment.reset();
     }
 
     private Simulation setupAnchorSimulation() {
-        EnvironmentalParameters.reset();
+        Environment.reset();
         // simulation
         Simulation simulation = new Simulation();
         // g-protein subunits
@@ -212,10 +212,10 @@ public class MembraneRelevantDiffusionTest {
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
         // bond
         node1.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                .to(Environment.getTransformedMolarConcentration()));
         // unbound
         node1.setAvailableConcentration(gProteinBeta, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                .to(Environment.getTransformedMolarConcentration()));
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
@@ -246,7 +246,7 @@ public class MembraneRelevantDiffusionTest {
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
         // bond
         node2.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                .to(Environment.getTransformedMolarConcentration()));
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
@@ -261,7 +261,7 @@ public class MembraneRelevantDiffusionTest {
 
     @Test
     public void shouldRecieveFromNeighbourMembrane() {
-        EnvironmentalParameters.reset();
+        Environment.reset();
         // simulation
         Simulation simulation = new Simulation();
         // g-protein subunits
@@ -307,7 +307,7 @@ public class MembraneRelevantDiffusionTest {
         AutomatonNode node2 = simulation.getGraph().getNode(1, 0);
         // bond
         node1.setAvailableConcentration(gProteinBetaGamma, innerSection, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(EnvironmentalParameters.getTransformedMolarConcentration()));
+                .to(Environment.getTransformedMolarConcentration()));
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
