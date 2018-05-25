@@ -153,8 +153,10 @@ public class Simulation {
         if (!initializationDone) {
             initializeModules();
             initializeGraph();
-            initializeSpatialRepresentations();
-            initializeVesicleLayer();
+            if (vesicleLayer != null) {
+                initializeSpatialRepresentations();
+                initializeVesicleLayer();
+            }
             initializationDone = true;
         }
         // clear observed nodes if necessary
@@ -212,21 +214,19 @@ public class Simulation {
         logger.info("Initializing spatial representations of automaton nodes.");
         // TODO initialize via voronoi diagrams
         // or rectangles
-        for (AutomatonNode node : graph.getNodes()) {
-            // create rectangles centered on the nodes with side length of node distance
-            Vector2D position = node.getPosition();
-            double offset = Environment.convertSystemToSimulationScale(Environment.getNodeDistance())*0.5;
-            Vector2D topLeft = new Vector2D(position.getX()-offset, position.getY()-offset);
-            Vector2D bottomRight = new Vector2D(position.getX()+offset, position.getY()+offset);
-            node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
-        }
+            for (AutomatonNode node : graph.getNodes()) {
+                // create rectangles centered on the nodes with side length of node distance
+                Vector2D position = node.getPosition();
+                double offset = Environment.convertSystemToSimulationScale(Environment.getNodeDistance()) * 0.5;
+                Vector2D topLeft = new Vector2D(position.getX() - offset, position.getY() - offset);
+                Vector2D bottomRight = new Vector2D(position.getX() + offset, position.getY() + offset);
+                node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
+            }
+
 
     }
 
     private void initializeVesicleLayer() {
-        if (vesicleLayer == null) {
-            return;
-        }
         logger.info("Initializing vesicle layer and individual vesicles.");
         // initialize simulation space
         vesicleLayer.setSimulationArea(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));

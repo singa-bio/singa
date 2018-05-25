@@ -72,12 +72,12 @@ public class FreeDiffusionTest {
         return Arrays.asList(new Object[][]{
                 /* species, number of nodes (node distance), expected result */
                 /* test different numbers of nodes (10, 20, 30)*/
-                /* 0 */ {hydrogen, 10, Quantities.getQuantity(152, MICRO(SECOND))},
-                /* 1 */ {hydrogen, 20, Quantities.getQuantity(146, MICRO(SECOND))},
-                /* 2 */ {hydrogen, 30, Quantities.getQuantity(143, MICRO(SECOND))},
+                /* 0 */ {hydrogen, 10, Quantities.getQuantity(123, MICRO(SECOND))},
+                /* 1 */ {hydrogen, 20, Quantities.getQuantity(131, MICRO(SECOND))},
+                /* 2 */ {hydrogen, 30, Quantities.getQuantity(133, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 3 */ {ammonia, 30, Quantities.getQuantity(276, MICRO(SECOND))},
-                /* 4 */ {benzene, 30, Quantities.getQuantity(578, MICRO(SECOND))}
+                /* 3 */ {ammonia, 30, Quantities.getQuantity(258, MICRO(SECOND))},
+                /* 4 */ {benzene, 30, Quantities.getQuantity(540, MICRO(SECOND))}
         });
     }
 

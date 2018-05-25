@@ -46,10 +46,12 @@ public class TimeStepHarmonizer {
         }
 
         // optimize spatial layer updates
-        do {
-            executeAllSpatialModules();
-            evaluateSpatialDisplacements();
-        } while (displacementTooLarge);
+        if (vesicleLayer != null) {
+            do {
+                executeAllSpatialModules();
+                evaluateSpatialDisplacements();
+            } while (displacementTooLarge);
+        }
 
         // optimize concentration based updates
         executeAllConcentrationModules();
@@ -150,7 +152,9 @@ public class TimeStepHarmonizer {
                 ((Featureable) module).scaleScalableFeatures();
             }
         }
-        vesicleLayer.rescaleDiffusifity();
+        if (vesicleLayer != null) {
+            vesicleLayer.rescaleDiffusifity();
+        }
     }
 
     public void increaseTimeStep() {
