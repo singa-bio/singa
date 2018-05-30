@@ -35,7 +35,7 @@ public interface Module {
      * @param node The node to calculate the update for.
      * @return The error of the calculation.
      */
-    LocalError determineDeltasForNode(Updatable node);
+    LocalError determineDeltas(Updatable node);
 
     /**
      * Returns the largest local error that has been calculated after calling {@link #determineAllDeltas()}. If the

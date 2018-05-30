@@ -9,9 +9,7 @@ import de.bioforscher.singa.mathematics.graphs.grid.GridNode;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.simulation.model.newsections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +37,11 @@ public class AutomatonGraphs {
     public static Map<String, ChemicalEntity> generateMapOfEntities(AutomatonGraph graph) {
         Map<String, ChemicalEntity> results = new HashMap<>();
         for (AutomatonNode node : graph.getNodes()) {
-            for (ChemicalEntity entity : node.getAllReferencedEntities()) {
-                // TODO check entity equals
-                results.put(entity.getIdentifier().toString(), entity);
+            ConcentrationContainer concentrationContainer = node.getConcentrationContainer();
+            for (ConcentrationPool pool : concentrationContainer.getPoolsOfConcentration()) {
+                for (ChemicalEntity entity : pool.getReferencedEntities()) {
+                    results.put(entity.getIdentifier().toString(), entity);
+                }
             }
         }
         return results;
@@ -83,39 +83,43 @@ public class AutomatonGraphs {
         return automatonGraph;
     }
 
-    public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, EnclosedCompartment innerSection, CellSection outerSection, boolean switchSides) {
-        logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(), outerSection.getName());
-        // create Membrane for enclosed compartment
-        Membrane membrane = Membrane.forCompartment(innerSection);
+    public static CellRegion splitRectangularGraphWithMembrane(AutomatonGraph graph, CellSubsection innerSection, CellSubsection outerSection, boolean switchSides) {
+        logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getIdentifier(), outerSection.getIdentifier());
         // distribute nodes to sections
+        CellRegion outer = new CellRegion("Outer");
+        outer.addSubSection(CellTopology.INNER, outerSection);
+        CellRegion inner = new CellRegion("Inner");
+        outer.addSubSection(CellTopology.INNER, innerSection);
+        CellRegion membrane = new CellRegion("Membrane");
+        outer.addSubSection(CellTopology.INNER, innerSection);
+        outer.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
+        outer.addSubSection(CellTopology.OUTER, outerSection);
+
         int numberOfColumns = graph.getNumberOfColumns();
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (numberOfColumns / 2)) {
                 // left half is outer
                 if (switchSides) {
-                    node.setCellSection(innerSection);
+                    node.setCellRegion(inner);
                 } else {
-                    node.setCellSection(outerSection);
+                    node.setCellRegion(outer);
                 }
             } else if (node.getIdentifier().getColumn() == (numberOfColumns / 2)) {
                 // middle is membrane
-                node.setCellSection(membrane);
+                node.setCellRegion(membrane);
             } else {
                 // right half is inner
                 if (switchSides) {
-                    node.setCellSection(outerSection);
+                    node.setCellRegion(outer);
                 } else {
-                    node.setCellSection(innerSection);
+                    node.setCellRegion(inner);
                 }
             }
         }
         // reference sections in graph
-        graph.addCellSection(outerSection);
-        graph.addCellSection(innerSection);
-        graph.addCellSection(membrane);
-        // membrane has to be initialized after every node knows its section
-        membrane.initializeNodes(graph);
-
+        graph.addCellRegion(outer);
+        graph.addCellRegion(inner);
+        graph.addCellRegion(membrane);
         return membrane;
     }
 

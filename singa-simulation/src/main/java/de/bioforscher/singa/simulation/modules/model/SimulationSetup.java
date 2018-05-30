@@ -2,8 +2,8 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public abstract class SimulationSetup {
 
     /**
      * Should be called third.
-     * Initializes {@link CellSection}s.
+     * Initializes {@link CellSubsection}s.
      */
     public void initializeCompartments() {
         logger.info("Initializing environmental parameters ...");

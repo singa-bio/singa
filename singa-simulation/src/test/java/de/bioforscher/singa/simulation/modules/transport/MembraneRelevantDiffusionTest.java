@@ -10,24 +10,18 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.HashSet;
-import java.util.Set;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -50,35 +44,16 @@ public class MembraneRelevantDiffusionTest {
 
         final AutomatonGraph automatonGraph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(3, 1));
 
-        EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
-        EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
-        Membrane membrane = Membrane.forCompartment(right);
-
         AutomatonNode leftNode = automatonGraph.getNode(0, 0);
-        leftNode.setState(CellSectionState.AQUEOUS);
-        leftNode.setCellSection(left);
-        leftNode.setConcentration(ammonia, 1.0);
+        leftNode.setCellRegion(CellRegion.CYTOSOL_A);
+        leftNode.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getInnerSubsection(), ammonia, 1.0);
 
         AutomatonNode rightNode = automatonGraph.getNode(2, 0);
-        rightNode.setState(CellSectionState.CYTOSOL);
-        rightNode.setCellSection(right);
+        rightNode.setCellRegion(CellRegion.CYTOSOL_B);
 
         AutomatonNode membraneNode = automatonGraph.getNode(1, 0);
-        membraneNode.setState(CellSectionState.MEMBRANE);
-        MembraneContainer concentrationContainer = new MembraneContainer(left, right, membrane);
-        concentrationContainer.setAvailableConcentration(left, ammonia, Quantities.getQuantity(1.0, MOLE_PER_LITRE));
-        Set<ChemicalEntity> entities = new HashSet<>();
-        entities.add(ammonia);
-        concentrationContainer.setReferencedEntities(entities);
-
-        Set<CellSection> sections = new HashSet<>();
-        sections.add(left);
-        sections.add(membrane.getOuterLayer());
-        sections.add(membrane.getInnerLayer());
-        sections.add(right);
-        concentrationContainer.setReferencedSections(sections);
-
-        membraneNode.setConcentrationContainer(concentrationContainer);
+        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
 
         simulation.setGraph(automatonGraph);
 
@@ -91,13 +66,12 @@ public class MembraneRelevantDiffusionTest {
         }
 
         // left part should fill with ammonia
-        assertTrue(leftNode.getAvailableConcentration(ammonia, left).getValue().doubleValue() > 0.0);
-        assertTrue(membraneNode.getAvailableConcentration(ammonia, left).getValue().doubleValue() > 0.0);
+        assertTrue(leftNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue() > 0.0);
+        assertTrue(membraneNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue() > 0.0);
         // right part and membrane should not
-        assertEquals(0.0, membraneNode.getAvailableConcentration(ammonia, membrane.getOuterLayer()).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, membraneNode.getAvailableConcentration(ammonia, membrane.getInnerLayer()).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, membraneNode.getAvailableConcentration(ammonia, right).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, rightNode.getAvailableConcentration(ammonia, right).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, rightNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue(), 0.0);
 
         Environment.reset();
 
@@ -116,23 +90,18 @@ public class MembraneRelevantDiffusionTest {
         // setup node distance to diameter);
         Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
 
-        EnclosedCompartment up = new EnclosedCompartment("Up", "Up");
-        EnclosedCompartment down = new EnclosedCompartment("Down", "Down");
-        // Membrane membrane = Membrane.forCompartment(right);
-
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, down, up, false);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, false);
 
         // set concentrations
         // only 5 left most nodes
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.setConcentration(ammonia, 1.0);
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
+            } else if (node.getIdentifier().getColumn() > (graph.getNumberOfColumns() / 2)) {
+                node.getConcentrationContainer().set(CellSubsection.SECTION_B, ammonia, 0.0);
             } else {
-                node.setConcentration(ammonia, 0.0);
-            }
-            if (node.getConcentrationContainer() instanceof MembraneContainer) {
-                node.setAvailableConcentration(ammonia, up, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
             }
         }
 
@@ -147,7 +116,7 @@ public class MembraneRelevantDiffusionTest {
         }
 
         // nothing should permeate to the lower part
-        assertEquals(0.0, graph.getNode(6, 0).getAvailableConcentration(ammonia, down).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, graph.getNode(6, 0).getConcentrationContainer().get(CellSubsection.SECTION_B, ammonia).getValue().doubleValue(), 0.0);
 
         Environment.reset();
     }
@@ -175,20 +144,11 @@ public class MembraneRelevantDiffusionTest {
         // create graph
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(1, 2);
         simulation.setGraph(graph);
-        // sections
-        EnclosedCompartment outerSection = new EnclosedCompartment("Ext", "Extracellular region");
-        EnclosedCompartment innerSection = new EnclosedCompartment("Cyt", "Cytoplasm");
-        Membrane membrane = Membrane.forCompartment(innerSection);
+
         // distribute nodes to sections
-        graph.getNodesOfRow(0).forEach(node -> {
-            node.setCellSection(membrane);
-            node.setConcentrationContainer(new MembraneContainer(outerSection, innerSection, membrane));
-        });
-        graph.getNodesOfRow(1).forEach(node -> node.setCellSection(innerSection));
-        // reference sections in graph
-        graph.addCellSection(outerSection);
-        graph.addCellSection(innerSection);
-        graph.addCellSection(membrane);
+        graph.getNodesOfRow(0).forEach(node -> node.setCellRegion(CellRegion.MEMBRANE));
+        graph.getNodesOfRow(1).forEach(node -> node.setCellRegion(CellRegion.CYTOSOL_A));
+
         // add diffusion
         FreeDiffusion.inSimulation(simulation)
                 .forAll(gProteinBetaGamma, gProteinBeta)
@@ -200,33 +160,27 @@ public class MembraneRelevantDiffusionTest {
     @Test
     public void shouldAnchorInMembrane() {
         Simulation simulation = setupAnchorSimulation();
-
         // get entities
         ChemicalEntity gProteinBeta = simulation.getChemicalEntity("G(B)");
         ChemicalEntity gProteinBetaGamma = simulation.getChemicalEntity("G(BG)");
-        // get cell sections
-        CellSection cytoplasm = simulation.getCellSection("Cyt");
-
         // add some protein in cytoplasm
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
-        // bond
-        node1.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(Environment.getTransformedMolarConcentration()));
+        // bound
+        node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 1.0);
         // unbound
-        node1.setAvailableConcentration(gProteinBeta, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(Environment.getTransformedMolarConcentration()));
-
+        node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBeta, 1.0);
+        // observe over 10 epochs
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // concentration of bound chemical entity should stay zero in non-membrane node
-            Quantity<MolarConcentration> betaGammaConcentration = node2.getConcentration(gProteinBetaGamma);
+            Quantity<MolarConcentration> betaGammaConcentration = node2.getConcentration(CellSubsection.SECTION_A, gProteinBetaGamma);
             assertEquals(0.0, betaGammaConcentration.getValue().doubleValue(), 0.0);
             // concentration of unbound chemical entity should increase in non-membrane node
-            Quantity<MolarConcentration> betaConcentration = node2.getConcentration(gProteinBeta);
+            Quantity<MolarConcentration> betaConcentration = node2.getConcentration(CellSubsection.SECTION_A, gProteinBeta);
             assertTrue(betaConcentration.getValue().doubleValue() > 0.0);
             // concentration of bound chemical entity should stay equal in non-membrane node
-            Quantity<MolarConcentration> remainingConcentration = node1.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            Quantity<MolarConcentration> remainingConcentration = node1.getConcentration(CellSubsection.SECTION_A, gProteinBetaGamma);
             assertEquals(0.1, remainingConcentration.getValue().doubleValue(), 0.0);
         }
 
@@ -235,32 +189,27 @@ public class MembraneRelevantDiffusionTest {
     @Test
     public void shouldAbsorbFromCytoplasm() {
         Simulation simulation = setupAnchorSimulation();
-
         // get entities
         ChemicalEntity gProteinBetaGamma = simulation.getChemicalEntity("G(BG)");
-        // get cell sections
-        CellSection cytoplasm = simulation.getCellSection("Cyt");
-
         // add some protein in cytoplasm
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
-        // bond
-        node2.setAvailableConcentration(gProteinBetaGamma, cytoplasm, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(Environment.getTransformedMolarConcentration()));
-
+        // bound
+        node2.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 1.0);
+        // observe over 10 epochs
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // concentration of bound chemical entity should increase in membrane node
-            Quantity<MolarConcentration> availableConcentration = node1.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            Quantity<MolarConcentration> availableConcentration = node1.getConcentration(CellSubsection.SECTION_A, gProteinBetaGamma);
             assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
             // and decrease in the other node
-            Quantity<MolarConcentration> remainingConcentration = node2.getAvailableConcentration(gProteinBetaGamma, cytoplasm);
+            Quantity<MolarConcentration> remainingConcentration = node2.getConcentration(CellSubsection.SECTION_A, gProteinBetaGamma);
             assertTrue(remainingConcentration.getValue().doubleValue() < 0.1);
         }
     }
 
     @Test
-    public void shouldRecieveFromNeighbourMembrane() {
+    public void shouldReceiveFromNeighbourMembrane() {
         Environment.reset();
         // simulation
         Simulation simulation = new Simulation();
@@ -283,20 +232,9 @@ public class MembraneRelevantDiffusionTest {
         // create graph
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(2, 1);
         simulation.setGraph(graph);
-        // sections
-        EnclosedCompartment outerSection = new EnclosedCompartment("Ext", "Extracellular region");
-        EnclosedCompartment innerSection = new EnclosedCompartment("Cyt", "Cytoplasm");
-        Membrane membrane = Membrane.forCompartment(innerSection);
         // distribute nodes to sections
-        graph.getNodesOfRow(0).forEach(node -> {
-            node.setCellSection(membrane);
-            node.setConcentrationContainer(new MembraneContainer(outerSection, innerSection, membrane));
-        });
+        graph.getNodesOfRow(0).forEach(node -> node.setCellRegion(CellRegion.MEMBRANE));
         // graph.getNodesOfRow(1).forEach(node -> node.setCellSection(innerSection));
-        // reference sections in graph
-        graph.addCellSection(outerSection);
-        graph.addCellSection(innerSection);
-        graph.addCellSection(membrane);
         // add diffusion
         FreeDiffusion.inSimulation(simulation)
                 .forAll(gProteinBetaGamma, gProteinBeta)
@@ -305,14 +243,13 @@ public class MembraneRelevantDiffusionTest {
         // add some protein in cytoplasm
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
         AutomatonNode node2 = simulation.getGraph().getNode(1, 0);
-        // bond
-        node1.setAvailableConcentration(gProteinBetaGamma, innerSection, Quantities.getQuantity(0.1, MOLE_PER_LITRE)
-                .to(Environment.getTransformedMolarConcentration()));
-
+        // bound
+        node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 1.0);
+        // observe over 10 epochs
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
             // concentration of bound chemical entity should increase in neighboring membrane node
-            Quantity<MolarConcentration> availableConcentration = node2.getAvailableConcentration(gProteinBetaGamma, innerSection);
+            Quantity<MolarConcentration> availableConcentration = node2.getConcentration(CellSubsection.SECTION_A, gProteinBetaGamma);
             assertTrue(availableConcentration.getValue().doubleValue() > 0.0);
         }
     }

@@ -5,10 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -18,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.*;
 
 /**
  * @author cl
@@ -41,12 +40,6 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         super(simulation);
         solutes = new HashSet<>();
         // apply this module only to membranes
-        onlyApplyIf(node -> {
-            if (node instanceof AutomatonNode) {
-                return ((AutomatonNode) node).getState().equals(CellSectionState.MEMBRANE);
-            }
-            return true;
-        });
         // change of inner phase
         addDeltaFunction(this::calculateInnerPhaseDelta, this::onlyInnerPhase);
         // change of outer phase
@@ -73,62 +66,58 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
      * Only apply, if this is the outer phase, the outer phase contains the cargo and the inner layer contains the
      * transporter.
      *
-     * @param concentrationContainer
+     * @param container
      * @return
      */
-    private boolean onlyOuterPhase(ConcentrationContainer concentrationContainer) {
-        MembraneContainer container = (MembraneContainer) concentrationContainer;
+    private boolean onlyOuterPhase(ConcentrationContainer container) {
         return isOuterPhase(container) && isCargo() && transporterInMembrane(container);
     }
 
-    private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateOuterPhaseDelta(ConcentrationContainer container) {
         final ChemicalEntity entity = getCurrentChemicalEntity();
-        final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
             final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
+            value = getSoluteDelta(container) * permeability * container.get(MEMBRANE, transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;
         }
-        return new Delta(this, membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
     /**
      * Only apply, if this is the inner phase, the outer phase contains the cargo and the inner layer contains the
      * transporter.
      *
-     * @param concentrationContainer
+     * @param container
      * @return
      */
-    private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
-        MembraneContainer container = (MembraneContainer) concentrationContainer;
+    private boolean onlyInnerPhase(ConcentrationContainer container) {
         return isInnerPhase(container) && isCargo() && transporterInMembrane(container);
     }
 
-    private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateInnerPhaseDelta(ConcentrationContainer container) {
         final ChemicalEntity entity = getCurrentChemicalEntity();
-        final MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
         double value;
         if (entity.equals(cargo)) {
             final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
-            value = getSoluteDelta(membraneContainer) * permeability * membraneContainer.getInnerMembraneLayerConcentration(transporter).getValue().doubleValue() * 10000;
+            value = getSoluteDelta(container) * permeability * container.get(MEMBRANE, transporter).getValue().doubleValue() * 10000;
         } else {
             value = 0.0;
         }
-        return new Delta(this, membraneContainer.getInnerPhaseSection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
-    private double getSoluteDelta(MembraneContainer container) {
+    private double getSoluteDelta(ConcentrationContainer container) {
         // sum outer solutes
         double outerConcentration = 0.0;
         for (ChemicalEntity solute : solutes) {
-            outerConcentration += container.getOuterPhaseConcentration(solute).getValue().doubleValue();
+            outerConcentration += container.get(OUTER, solute).getValue().doubleValue();
         }
         // sum inner solutes
         double innerConcentration = 0.0;
         for (ChemicalEntity solute : solutes) {
-            innerConcentration += container.getInnerPhaseConcentration(solute).getValue().doubleValue();
+            innerConcentration += container.get(INNER, solute).getValue().doubleValue();
         }
         // return delta
         return isInnerPhase(container) ?  innerConcentration - outerConcentration : outerConcentration - innerConcentration;
@@ -138,16 +127,16 @@ public class SingleFileChannelMembraneTransport extends AbstractNeighbourIndepen
         return getCurrentChemicalEntity().equals(cargo);
     }
 
-    private boolean transporterInMembrane(MembraneContainer container) {
-        return container.getAvailableConcentration(container.getInnerLayerSection(), transporter).getValue().doubleValue() != 0.0;
+    private boolean transporterInMembrane(ConcentrationContainer container) {
+        return container.get(container.getMembraneSubsection(), transporter).getValue().doubleValue() != 0.0;
     }
 
-    private boolean isOuterPhase(MembraneContainer container) {
-        return getCurrentCellSection().equals(container.getOuterPhaseSection());
+    private boolean isOuterPhase(ConcentrationContainer container) {
+        return getCurrentCellSection().equals(container.getOuterSubsection());
     }
 
-    private boolean isInnerPhase(MembraneContainer container) {
-        return getCurrentCellSection().equals(container.getInnerPhaseSection());
+    private boolean isInnerPhase(ConcentrationContainer container) {
+        return getCurrentCellSection().equals(container.getInnerSubsection());
     }
 
     @Override

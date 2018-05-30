@@ -15,11 +15,10 @@ import de.bioforscher.singa.simulation.events.GraphUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
-
-import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
 
 public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, AutomatonEdge, RectangularCoordinate, AutomatonGraph>
         implements UpdateEventListener<GraphUpdatedEvent> {
@@ -48,7 +47,9 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
         for (AutomatonNode node : graph.getNodes()) {
-            double concentration = node.getConcentration(bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
+            // FIXME current workaround for rendering multiple concentrations of one node
+            CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
+            double concentration = node.getConcentration(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
             if (concentration > max) {
                 max = concentration;
             } else if (concentration < min) {
@@ -70,20 +71,21 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
                 break;
             }
             case STATE_BASED: {
-                switch (node.getState()) {
-                    case AQUEOUS: {
-                        getGraphicsContext().setFill(Color.CADETBLUE);
-                        break;
-                    }
-                    case CYTOSOL: {
-                        getGraphicsContext().setFill(Color.CORAL);
-                        break;
-                    }
-                    case MEMBRANE: {
-                        getGraphicsContext().setFill(Color.BURLYWOOD);
-                        break;
-                    }
-                }
+                // FIXME currently not working
+//                switch (node.getState()) {
+//                    case AQUEOUS: {
+//                        getGraphicsContext().setFill(Color.CADETBLUE);
+//                        break;
+//                    }
+//                    case CYTOSOL: {
+//                        getGraphicsContext().setFill(Color.CORAL);
+//                        break;
+//                    }
+//                    case MEMBRANE: {
+//                        getGraphicsContext().setFill(Color.BURLYWOOD);
+//                        break;
+//                    }
+//                }
             }
         }
         drawPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
@@ -100,20 +102,21 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         getGraphicsContext().setLineWidth(getRenderingOptions().getEdgeThickness());
         SimpleLineSegment connectingSegment = new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition());
         // decide on style
-        if (edge.getSource().getState() != MEMBRANE || edge.getTarget().getState() != MEMBRANE) {
+        // FIXME currently not working
+//         if (edge.getSource().getState() != MEMBRANE || edge.getTarget().getState() != MEMBRANE) {
             // connection not between membrane nodes
             getGraphicsContext().setStroke(bioRenderingOptions.getEdgeColor(edge));
             drawLineSegment(connectingSegment);
-        } else {
-            // connection between membrane nodes
-            getGraphicsContext().setStroke(Color.BURLYWOOD);
-            // draw upper parallel
-            SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
-            drawLineSegment(upperParallelSegment);
-            // draw lower parallel
-            SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
-            drawLineSegment(lowerParallelSegment);
-        }
+//        } else {
+//            // connection between membrane nodes
+//            getGraphicsContext().setStroke(Color.BURLYWOOD);
+//            // draw upper parallel
+//            SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
+//            drawLineSegment(upperParallelSegment);
+//            // draw lower parallel
+//            SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
+//            drawLineSegment(lowerParallelSegment);
+//        }
     }
 
     public void renderVoronoi(boolean flag) {

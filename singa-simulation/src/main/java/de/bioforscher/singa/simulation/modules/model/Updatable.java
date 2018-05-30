@@ -2,8 +2,9 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -17,10 +18,10 @@ public interface Updatable {
     String getStringIdentifier();
 
     ConcentrationContainer getConcentrationContainer();
-    Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity chemicalEntity, CellSection cellSection);
+    Quantity<MolarConcentration> getConcentration(CellSubsection cellSection, ChemicalEntity chemicalEntity);
 
-    Set<CellSection> getAllReferencedSections();
-    Set<ChemicalEntity> getAllReferencedEntities();
+    CellRegion getCellRegion();
+    Set<CellSubsection> getAllReferencedSections();
     List<Delta> getPotentialSpatialDeltas();
 
     void addPotentialDelta(Delta delta);

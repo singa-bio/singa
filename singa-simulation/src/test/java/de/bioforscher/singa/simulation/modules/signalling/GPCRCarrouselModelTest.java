@@ -6,11 +6,10 @@ import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -24,8 +23,7 @@ import java.util.Comparator;
 
 import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.MEMBRANE;
-import static de.bioforscher.singa.simulation.model.compartments.CellSectionState.NON_MEMBRANE;
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.*;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -49,7 +47,6 @@ public class GPCRCarrouselModelTest {
         // biomodels yeast carrousel https://www.ebi.ac.uk/biomodels-main/BIOMD0000000637
 
         // parameters
-
         RateConstant kOnR_G = RateConstant.create(4.6111e-3).forward().secondOder().concentrationUnit(NANO(MOLE_PER_LITRE)).timeUnit(SECOND).origin(BUSH2016).build();
         RateConstant kOnLR_G, kOnR_Gt, kOnLR_Gt, kOnR_Gd, kOnLR_Gd;
         kOnLR_G = kOnR_Gt = kOnLR_Gt = kOnR_Gd = kOnLR_Gd = kOnR_G;
@@ -90,7 +87,6 @@ public class GPCRCarrouselModelTest {
         RateConstant kOff_LRG, kOff_LRGt, kOff_LRGd;
         kOff_LRG = kOff_LRGt = kOff_LRGd = kOff_LR;
 
-        // entities
         // entities
         // vasopressin v2 receptor
         Receptor vasopressinReceptor = new Receptor.Builder("V2R")
@@ -172,7 +168,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding01 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 01")
                 .of(gdpGProteinAlpha, kOnR_Gd)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(vasopressinReceptor, kOffR_Gd)
                 .to(MEMBRANE)
                 .build();
@@ -182,7 +178,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding02 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 02")
                 .of(gtpGProteinAlpha, kOnR_Gt)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(vasopressinReceptor, kOffR_Gt)
                 .to(MEMBRANE)
                 .build();
@@ -192,7 +188,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding03 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 03")
                 .of(gdpGProteinAlphaBetaGamma, kOnR_G)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(vasopressinReceptor, kOffR_G)
                 .to(MEMBRANE)
                 .build();
@@ -202,7 +198,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding04 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 04")
                 .of(vasopressin, kOn_LR)
-                .in(NON_MEMBRANE)
+                .in(OUTER)
                 .by(vasopressinReceptor, kOff_LR)
                 .to(MEMBRANE)
                 .formingComplex(receptorLigandComplex)
@@ -212,7 +208,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding05 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 05")
                 .of(gdpGProteinAlpha, kOnLR_Gd)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(receptorLigandComplex, kOffLR_Gd)
                 .to(MEMBRANE)
                 .build();
@@ -222,7 +218,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding06 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 06")
                 .of(gtpGProteinAlpha, kOnLR_Gt)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(receptorLigandComplex, kOffLR_Gt)
                 .to(MEMBRANE)
                 .build();
@@ -232,7 +228,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding07 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 07")
                 .of(gdpGProteinAlphaBetaGamma, kOnLR_G)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(receptorLigandComplex, kOffLR_G)
                 .to(MEMBRANE)
                 .build();
@@ -260,9 +256,9 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding10 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 10")
                 .of(gdpGProteinAlpha, kAf_Gd)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(gProteinBetaGamma, kAr_Gd)
-                .to(NON_MEMBRANE)
+                .to(INNER)
                 .formingComplex(gdpGProteinAlphaBetaGamma)
                 .build();
 
@@ -275,21 +271,21 @@ public class GPCRCarrouselModelTest {
                 .backwardsRateConstant(kHf_LRGt)
                 .build();
 
-        // exchange LRG
+        // exchange LR.G
         ComplexBuildingReaction binding12 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 12")
                 .of(gProteinBetaGamma, kEf_zero)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(alphaGDPReceptorLigandComplex, kEf_LRG)
                 .to(MEMBRANE)
                 .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
                 .build();
 
-        // association LRGd
+        // association LR.Gd
         ComplexBuildingReaction binding13 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 13")
                 .of(gProteinBetaGamma, kAf_LRGd)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(alphaGDPReceptorLigandComplex, kAr_LRGd)
                 .to(MEMBRANE)
                 .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
@@ -308,7 +304,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding15 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 15")
                 .of(gProteinBetaGamma, kEf_zero)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(alphaGTPReceptor, kEf_RG)
                 .to(MEMBRANE)
                 .formingComplex(alphaBetaGammaGDPReceptor)
@@ -318,7 +314,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding16 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 16")
                 .of(gProteinBetaGamma, kAf_RGd)
-                .in(NON_MEMBRANE)
+                .in(INNER)
                 .by(alphaGDPReceptor, kAr_RGd)
                 .to(MEMBRANE)
                 .formingComplex(alphaBetaGammaGDPReceptor)
@@ -328,7 +324,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding17 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 17")
                 .of(vasopressin, kOn_LRGd)
-                .in(NON_MEMBRANE)
+                .in(OUTER)
                 .by(alphaGDPReceptor, kOff_LRGd)
                 .to(MEMBRANE)
                 .formingComplex(alphaGDPReceptorLigandComplex)
@@ -338,7 +334,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding18 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 18")
                 .of(vasopressin, kOn_LRG)
-                .in(NON_MEMBRANE)
+                .in(OUTER)
                 .by(alphaBetaGammaGDPReceptor, kOff_LRG)
                 .to(MEMBRANE)
                 .formingComplex(alphaBetaGammaGDPReceptorLigandComplex)
@@ -348,7 +344,7 @@ public class GPCRCarrouselModelTest {
         ComplexBuildingReaction binding19 = ComplexBuildingReaction.inSimulation(simulation)
                 .identifier("reaction 19")
                 .of(vasopressin, kOn_LRGt)
-                .in(NON_MEMBRANE)
+                .in(OUTER)
                 .by(alphaGTPReceptor, kOff_LRGt)
                 .to(MEMBRANE)
                 .formingComplex(alphaGTPReceptorLigandComplex)
@@ -377,32 +373,27 @@ public class GPCRCarrouselModelTest {
         // create graph
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(5, 3);
         simulation.setGraph(graph);
-        // sections
-        EnclosedCompartment innerSection = new EnclosedCompartment("Cyt", "Cytoplasm");
-        EnclosedCompartment outerSection = new EnclosedCompartment("Ext", "Extracellular region");
-        // add membrane
-        Membrane membrane = AutomatonGraphs.splitRectangularGraphWithMembrane(graph, innerSection, outerSection, true);
+
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, true);
         // set concentration of vasopressin in the intersitium
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(4)) {
-            automatonNode.setConcentration(vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
         }
         // set concentration of vasopressin in the intersitium
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(3)) {
-            automatonNode.setConcentration(vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
         }
         // set concentration of receptors in membrane
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {
             // uncoupled receptor, inside of cell, 843 nm
-            automatonNode.setAvailableConcentration(vasopressin, outerSection, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
-            automatonNode.setAvailableConcentration(vasopressinReceptor, membrane.getOuterLayer(), Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, vasopressinReceptor, Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
         }
         // set concentration of g proteins
 //        for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {
 //            // heterotrimeric g protein, inside of cell, 520 nm
 //            automatonNode.setConcentration(gProteinAlphaBetaGamma, Quantities.getQuantity(520, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
 //        }
-
-
 
 
     }

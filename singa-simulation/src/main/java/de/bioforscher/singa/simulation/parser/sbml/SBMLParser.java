@@ -11,7 +11,7 @@ import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
@@ -43,7 +43,7 @@ public class SBMLParser {
     private static final FeatureOrigin defaultOrigin = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION,
             "Defaulted during SBML Parsing, due to lack of information.", "none");
     // the controlpanles mapped to their sizes
-    private final Map<EnclosedCompartment, Double> compartments;
+    private final Map<CellSubsection, Double> compartments;
     // the chemical entities
     private final Map<String, ChemicalEntity> entities;
     // their starting concentrations
@@ -89,7 +89,7 @@ public class SBMLParser {
         return entities;
     }
 
-    public Map<EnclosedCompartment, Double> getCompartments() {
+    public Map<CellSubsection, Double> getCompartments() {
         return compartments;
     }
 
@@ -123,7 +123,7 @@ public class SBMLParser {
     private void parseCompartments() {
         logger.info("Parsing Compartments ...");
         document.getModel().getListOfCompartments().forEach(compartment -> {
-            EnclosedCompartment singaCompartment = new EnclosedCompartment(compartment.getId(), compartment.getName());
+            CellSubsection singaCompartment = new CellSubsection(compartment.getId());
             compartments.put(singaCompartment, compartment.getSize());
             globalParameters.put(singaCompartment.getIdentifier(),
                     new SimulationParameter<>(singaCompartment.getIdentifier(),

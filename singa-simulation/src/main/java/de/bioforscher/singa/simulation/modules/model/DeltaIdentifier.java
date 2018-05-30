@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 
 /**
  * Used to identify changes to concentrations ({@link Delta}s) in maps.
@@ -18,7 +18,7 @@ class DeltaIdentifier {
     /**
      * The cell section the delta is assigned to.
      */
-    private final CellSection section;
+    private final CellSubsection section;
 
     /**
      * The chemical entity the delta is assigned to.
@@ -32,7 +32,7 @@ class DeltaIdentifier {
      * @param section The cell section the delta is assigned to.
      * @param entity The entity the delta is assigned to.
      */
-    DeltaIdentifier(Updatable updatable, CellSection section, ChemicalEntity entity) {
+    DeltaIdentifier(Updatable updatable, CellSubsection section, ChemicalEntity entity) {
         this.updatable = updatable;
         this.section = section;
         this.entity = entity;
@@ -52,7 +52,7 @@ class DeltaIdentifier {
      *
      * @return The cell section the delta is assigned to.
      */
-    public CellSection getSection() {
+    public CellSubsection getSection() {
         return section;
     }
 

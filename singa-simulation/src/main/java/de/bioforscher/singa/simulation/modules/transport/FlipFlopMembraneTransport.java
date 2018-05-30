@@ -6,10 +6,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
-import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -20,6 +17,8 @@ import javax.measure.quantity.Frequency;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.*;
 
 /**
  * @author cl
@@ -40,12 +39,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
     public FlipFlopMembraneTransport(Simulation simulation) {
         super(simulation);
         // apply this module to membranes and vesicles
-        onlyApplyIf(node -> {
-            if (node instanceof AutomatonNode) {
-                return ((AutomatonNode) node).getState().equals(CellSectionState.MEMBRANE);
-            }
-            return true;
-        });
+
         // change of outer phase
         addDeltaFunction(this::calculateOuterPhaseDelta, this::onlyOuterPhase);
         // change of outer layer
@@ -61,71 +55,67 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
     }
 
     private boolean onlyOuterPhase(ConcentrationContainer concentrationContainer) {
-        return ((MembraneContainer) concentrationContainer).isOuterPhase(getCurrentCellSection()) && onlyForReferencedEntities();
+        return concentrationContainer.getOuterSubsection().equals(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
-    private Delta calculateOuterPhaseDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateOuterPhaseDelta(ConcentrationContainer container) {
         // resolve required parameters
         final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         // (outer phase) outer phase = -kIn * outer phase + kOut * outer layer
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        final double value = -kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() +
-                kOut.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(this, membraneContainer.getOuterPhaseSection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        final double value = -kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() +
+                kOut.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
+        return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
-        return ((MembraneContainer) concentrationContainer).isOuterLayer(getCurrentCellSection()) && onlyForReferencedEntities();
+        return concentrationContainer.getSubsection(MEMBRANE_OUTER_LAYER).equals(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
-    private Delta calculateOuterLayerDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateOuterLayerDelta(ConcentrationContainer container) {
         // resolve required parameters
         final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         final Quantity<Frequency> kFlip = getScaledFeature(entity, MembraneFlipFlop.class);
         // (outer layer) outer layer = kIn * outer phase - (kOut + kFlip) * outer layer + kFlip * inner layer
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        final double value = kIn.getValue().doubleValue() * membraneContainer.getOuterPhaseConcentration(entity).getValue().doubleValue() -
-                (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue() +
-                kFlip.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(this, membraneContainer.getOuterLayerSection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        final double value = kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() -
+                (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue() +
+                kFlip.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
+        return new Delta(this, container.getSubsection(MEMBRANE_OUTER_LAYER), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
-        return ((MembraneContainer) concentrationContainer).isInnerLayer(getCurrentCellSection()) && onlyForReferencedEntities();
+        return concentrationContainer.getSubsection(MEMBRANE_INNER_LAYER).equals(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
-    private Delta calculateInnerLayerDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateInnerLayerDelta(ConcentrationContainer container) {
         // resolve required parameters
         final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         final Quantity<Frequency> kFlip = getScaledFeature(entity, MembraneFlipFlop.class);
         // (inner layer) inner layer = kIn * inner phase - (kOut + kFlip) * inner layer + kFlip * outer layer
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        final double value = kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(entity).getValue().doubleValue() -
-                (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * membraneContainer.getInnerMembraneLayerConcentration(entity).getValue().doubleValue() +
-                kFlip.getValue().doubleValue() * membraneContainer.getOuterMembraneLayerConcentration(entity).getValue().doubleValue();
-        return new Delta(this, membraneContainer.getInnerLayerSection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        final double value = kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() -
+                (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue() +
+                kFlip.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
+        return new Delta(this, container.getSubsection(MEMBRANE_INNER_LAYER), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
-        return ((MembraneContainer) concentrationContainer).isInnerPhase(getCurrentCellSection()) && onlyForReferencedEntities();
+        return concentrationContainer.getInnerSubsection().equals(getCurrentCellSection()) && onlyForReferencedEntities();
     }
 
-    private Delta calculateInnerPhaseDelta(ConcentrationContainer concentrationContainer) {
+    private Delta calculateInnerPhaseDelta(ConcentrationContainer container) {
         // resolve required parameters
         final ChemicalEntity entity = getCurrentChemicalEntity();
         final Quantity<Frequency> kIn = getScaledFeature(entity, MembraneEntry.class);
         final Quantity<Frequency> kOut = getScaledFeature(entity, MembraneExit.class);
         // (inner phase) inner phase = -kIn * inner phase + kOut * inner layer
-        MembraneContainer membraneContainer = (MembraneContainer) concentrationContainer;
-        final double value = -kIn.getValue().doubleValue() * membraneContainer.getInnerPhaseConcentration(getCurrentChemicalEntity()).getValue().doubleValue() +
-                kOut.getValue().doubleValue() * membraneContainer.getInnerMembraneLayerConcentration(getCurrentChemicalEntity()).getValue().doubleValue();
-        return new Delta(this, membraneContainer.getInnerPhaseSection(), getCurrentChemicalEntity(), Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        final double value = -kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() +
+                kOut.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
+        return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
     }
 
     /**

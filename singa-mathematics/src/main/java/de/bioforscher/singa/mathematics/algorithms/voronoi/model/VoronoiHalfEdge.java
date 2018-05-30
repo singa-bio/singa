@@ -31,7 +31,7 @@ public class VoronoiHalfEdge {
      * @param rSite The right site of this edge.
      */
     VoronoiHalfEdge(VoronoiEdge edge, SiteEvent lSite, SiteEvent rSite) {
-        this.site = lSite;
+        site = lSite;
         this.edge = edge;
         // 'angle' is a value to be used for properly sorting the
         // halfsegments counterclockwise. By convention, we will
@@ -41,14 +41,14 @@ public class VoronoiHalfEdge {
         // use the angle of line perpendicular to the halfsegment (the
         // edge should have both end points defined in such case.)
         if (rSite != null) {
-            this.angle = Math.atan2(rSite.getY() - lSite.getY(), rSite.getX() - lSite.getX());
+            angle = Math.atan2(rSite.getY() - lSite.getY(), rSite.getX() - lSite.getX());
         } else {
             Vector2D startingPoint = edge.getStartingPoint();
             Vector2D endingPoint = edge.getEndingPoint();
             if (edge.getLeftSite().equals(lSite)) {
-                this.angle = Math.atan2(endingPoint.getX() - startingPoint.getX(), startingPoint.getY() - endingPoint.getY());
+                angle = Math.atan2(endingPoint.getX() - startingPoint.getX(), startingPoint.getY() - endingPoint.getY());
             } else {
-                this.angle = Math.atan2(startingPoint.getX() - endingPoint.getX(), endingPoint.getY() - startingPoint.getY());
+                angle = Math.atan2(startingPoint.getX() - endingPoint.getX(), endingPoint.getY() - startingPoint.getY());
             }
         }
     }
@@ -59,10 +59,10 @@ public class VoronoiHalfEdge {
      * @return The point where this edge starts.
      */
     public Vector2D getStartPoint() {
-        if (this.edge.getLeftSite().equals(this.site)) {
-            return this.edge.getStartingPoint();
+        if (edge.getLeftSite().equals(site)) {
+            return edge.getStartingPoint();
         }
-        return this.edge.getEndingPoint();
+        return edge.getEndingPoint();
     }
 
     /**
@@ -71,10 +71,10 @@ public class VoronoiHalfEdge {
      * @return The point where this edge ends.
      */
     public Vector2D getEndPoint() {
-        if (this.edge.getLeftSite().equals(this.site)) {
-            return this.edge.getEndingPoint();
+        if (edge.getLeftSite().equals(site)) {
+            return edge.getEndingPoint();
         }
-        return this.edge.getStartingPoint();
+        return edge.getStartingPoint();
     }
 
     /**
@@ -83,7 +83,7 @@ public class VoronoiHalfEdge {
      * @return The site associated to this half edge.
      */
     public SiteEvent getSite() {
-        return this.site;
+        return site;
     }
 
     /**
@@ -92,7 +92,7 @@ public class VoronoiHalfEdge {
      * @return The full edge corresponding to this edge.
      */
     public VoronoiEdge getEdge() {
-        return this.edge;
+        return edge;
     }
 
     /**
@@ -101,7 +101,7 @@ public class VoronoiHalfEdge {
      * @return The angle in relation to the starting point of the edge.
      */
     public double getAngle() {
-        return this.angle;
+        return angle;
     }
 
 }

@@ -3,8 +3,8 @@ package de.bioforscher.singa.simulation.modules.reactions.implementations;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
 import de.bioforscher.singa.simulation.modules.reactions.model.KineticLaw;
@@ -34,7 +34,7 @@ public class DynamicKineticLaw implements KineticLaw {
     /**
      * The cell section the kinetic law is currently applied in (to determine the relevant concentrations).
      */
-    private CellSection currentCellSection;
+    private CellSubsection currentCellSection;
 
     /**
      * The scale is adjusted to account for changes in time steps.
@@ -80,7 +80,7 @@ public class DynamicKineticLaw implements KineticLaw {
      * Returns the current cell section the kinetic law is applied to.
      * @return The current cell section the kinetic law is applied to.
      */
-    public CellSection getCurrentCellSection() {
+    public CellSubsection getCurrentCellSection() {
         return currentCellSection;
     }
 
@@ -88,7 +88,7 @@ public class DynamicKineticLaw implements KineticLaw {
      * Sets the current cell section the kinetic law is applied to.
      * @param currentCellSection The current cell section the kinetic law is applied to.
      */
-    public void setCurrentCellSection(CellSection currentCellSection) {
+    public void setCurrentCellSection(CellSubsection currentCellSection) {
         this.currentCellSection = currentCellSection;
     }
 
@@ -96,7 +96,7 @@ public class DynamicKineticLaw implements KineticLaw {
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = concentrationContainer.getAvailableConcentration(currentCellSection, entry.getKey());
+            final Quantity<MolarConcentration> concentration = concentrationContainer.get(currentCellSection, entry.getKey());
             final String parameterName = entityReference.get(entry.getKey());
             expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }

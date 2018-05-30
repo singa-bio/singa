@@ -6,11 +6,11 @@ import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.model.SimulationManager;
 import de.bioforscher.singa.simulation.modules.transport.VesicleDiffusion;
@@ -71,15 +71,14 @@ public class VesiclePlayground extends Application implements Renderer {
         simulation.initializeSpatialRepresentations();
 
         // define compartments
-        EnclosedCompartment cytoplasm = new EnclosedCompartment("cytoplasm", "cytoplasm");
-        graph.getNodes().forEach(node -> node.setCellSection(cytoplasm));
+        graph.getNodes().forEach(node -> node.setCellRegion(CellRegion.CYTOSOL_A));
 
         // instantiate some vesicles
         for (int i = 0; i < 1; i++) {
             Vesicle vesicle = new Vesicle(String.valueOf(i),
                     new Vector2D(80, 80),
                     Quantities.getQuantity(150, NANO(METRE)),
-                    cytoplasm);
+                    CellRegion.CYTOSOL_A.getInnerSubsection());
             layer.addVesicle(vesicle);
         }
 

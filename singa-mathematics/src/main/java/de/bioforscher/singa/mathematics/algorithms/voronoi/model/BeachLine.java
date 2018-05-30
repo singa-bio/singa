@@ -44,10 +44,10 @@ public class BeachLine {
      * @param boundingBox The bounding box.
      */
     public BeachLine(Rectangle boundingBox) {
-        this.diagram = new VoronoiDiagram(boundingBox);
-        this.beachline = new BeachSection();
+        diagram = new VoronoiDiagram(boundingBox);
+        beachline = new BeachSection();
         // top to bottom
-        this.circleEvents = new TreeSet<>(Comparator.comparingDouble((CircleEvent circle) -> circle.getEventCoordinate().getY()));
+        circleEvents = new TreeSet<>(Comparator.comparingDouble((CircleEvent circle) -> circle.getEventCoordinate().getY()));
     }
 
     /**
@@ -62,7 +62,7 @@ public class BeachLine {
         double x = site.getX();
         double directrix = site.getY();
 
-        BeachSection node = this.beachline.getRoot();
+        BeachSection node = beachline.getRoot();
 
         BeachSection lArc = null;
         BeachSection rArc = null;
@@ -109,7 +109,7 @@ public class BeachLine {
         }
 
         BeachSection newArc = new BeachSection(site);
-        this.beachline.insertSuccessor(lArc, newArc);
+        beachline.insertSuccessor(lArc, newArc);
 
         // [null,null]
         // least likely case: new beach section is the first beach section on the beachline.
@@ -133,10 +133,10 @@ public class BeachLine {
 
             // split beach section into two separate sections
             rArc = new BeachSection(lArc.getSite());
-            this.beachline.insertSuccessor(newArc, rArc);
+            beachline.insertSuccessor(newArc, rArc);
 
             // create edge
-            VoronoiEdge edge = this.diagram.createEdge(lArc.getSite(), newArc.getSite());
+            VoronoiEdge edge = diagram.createEdge(lArc.getSite(), newArc.getSite());
             newArc.setEdge(edge);
             rArc.setEdge(edge);
 
@@ -155,7 +155,7 @@ public class BeachLine {
         //   no collapsing beach section as a result
         //   new beach section become right-most node of the RB-tree
         if (lArc != null && rArc == null) {
-            newArc.setEdge(this.diagram.createEdge(lArc.getSite(), newArc.getSite()));
+            newArc.setEdge(diagram.createEdge(lArc.getSite(), newArc.getSite()));
             return;
         }
 
@@ -197,8 +197,8 @@ public class BeachLine {
             rArc.getEdge().setStartingPoint(lSite, rSite, vertex);
 
             // two new transitions appear at the new vertex location
-            newArc.setEdge(this.diagram.createEdge(lSite, site, null, vertex));
-            rArc.setEdge(this.diagram.createEdge(site, rSite, null, vertex));
+            newArc.setEdge(diagram.createEdge(lSite, site, null, vertex));
+            rArc.setEdge(diagram.createEdge(site, rSite, null, vertex));
 
             // check whether the left and right beach sections are collapsing
             // and if so create circle events, to handle the point of collapse.
@@ -290,7 +290,7 @@ public class BeachLine {
         // on the left)
         lArc = disappearingTransitions.getFirst();
         rArc = disappearingTransitions.getLast();
-        rArc.setEdge(this.diagram.createEdge(lArc.getSite(), rArc.getSite(), null, vertex));
+        rArc.setEdge(diagram.createEdge(lArc.getSite(), rArc.getSite(), null, vertex));
 
         // create circle events if any for beach sections left in the beachline
         // adjacent to collapsed sections
@@ -368,7 +368,7 @@ public class BeachLine {
      */
     private void detachBeachSection(BeachSection beachSection) {
         detachCircleEvent(beachSection);
-        this.beachline.removeNode(beachSection);
+        beachline.removeNode(beachSection);
     }
 
     /**
@@ -379,7 +379,7 @@ public class BeachLine {
     private void detachCircleEvent(BeachSection beachSection) {
         CircleEvent circleEvent = beachSection.getCircleEvent();
         if (circleEvent != null) {
-            this.circleEvents.remove(circleEvent);
+            circleEvents.remove(circleEvent);
             beachSection.setCircleEvent(null);
         }
     }
@@ -446,7 +446,7 @@ public class BeachLine {
         beachSection.setCircleEvent(circleEvent);
 
         // add newly created circle event
-        this.circleEvents.add(circleEvent);
+        circleEvents.add(circleEvent);
     }
 
     /**
@@ -455,10 +455,10 @@ public class BeachLine {
      * @return The next circle event or null if no circle event exists.
      */
     public CircleEvent getFirstCircleEvent() {
-        if (this.circleEvents.isEmpty()) {
+        if (circleEvents.isEmpty()) {
             return null;
         } else {
-            return this.circleEvents.first();
+            return circleEvents.first();
         }
     }
 
@@ -467,7 +467,7 @@ public class BeachLine {
      * @return The Voronoi diagram.
      */
     public VoronoiDiagram getDiagram() {
-        return this.diagram;
+        return diagram;
     }
 
 }

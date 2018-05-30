@@ -120,7 +120,7 @@ public class TimeStepHarmonizer {
             // set full time step
             currentTimeStep = Environment.getTimeStep();
             // determine biggest local error
-            localError = criticalModule.determineDeltasForNode(largestLocalError.getUpdatable()).getValue();
+            localError = criticalModule.determineDeltas(largestLocalError.getUpdatable()).getValue();
             // logger.info("Current local error is {}",localError);
             criticalModule.resetLargestLocalError();
             // evaluate error by increasing or decreasing time step

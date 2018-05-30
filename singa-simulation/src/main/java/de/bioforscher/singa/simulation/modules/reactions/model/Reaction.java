@@ -8,7 +8,7 @@ import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractSectionSpecificModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -118,9 +118,9 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
                 if (isElementary()) {
-                    product *= concentrationContainer.getAvailableConcentration(getCurrentCellSection(), reactant.getEntity()).getValue().doubleValue();
+                    product *= concentrationContainer.get(getCurrentCellSection(), reactant.getEntity()).getValue().doubleValue();
                 } else {
-                    product *= Math.pow(concentrationContainer.getAvailableConcentration(getCurrentCellSection(), reactant.getEntity()).getValue().doubleValue(),
+                    product *= Math.pow(concentrationContainer.get(getCurrentCellSection(), reactant.getEntity()).getValue().doubleValue(),
                             reactant.getReactionOrder());
                 }
             }

@@ -16,7 +16,7 @@ public class Rectangle extends SimplePolygon {
     }
 
     public Rectangle(double width, double height) {
-        this(new Vector2D(0.0, height), new Vector2D(width, 0.0));
+        this(new Vector2D(0.0, 0.0), new Vector2D(width, height));
     }
 
     public Vector2D getTopLeftVertex() {
@@ -53,12 +53,12 @@ public class Rectangle extends SimplePolygon {
 
     @Override
     public double getWidth() {
-        return getTopLeftVertex().distanceTo(getTopRightVertex());
+        return getTopRightVertex().getX() - getTopLeftVertex().getX();
     }
 
     @Override
     public double getHeight() {
-        return getTopLeftVertex().distanceTo(getBottomLeftVertex());
+        return getBottomLeftVertex().getY() - getTopLeftVertex().getY();
     }
 
     @Override

@@ -2,8 +2,8 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
@@ -124,13 +124,13 @@ public class SimpleUpdateManager {
     public void applyDeltas() {
         if (!concentrationFixed) {
             for (Delta delta : finalDeltas) {
-                Quantity<MolarConcentration> updatedConcentration = concentrations.getAvailableConcentration(delta.getCellSection(), delta.getChemicalEntity()).add(delta.getQuantity());
+                Quantity<MolarConcentration> updatedConcentration = concentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()).add(delta.getQuantity());
                 if (updatedConcentration.getValue().doubleValue() < 0.0) {
                     // FIXME updated concentration should probably not be capped
                     // FIXME the the delta that resulted in the decrease probably had a corresponding increase
                     updatedConcentration = Environment.emptyConcentration();
                 }
-                concentrations.setAvailableConcentration(delta.getCellSection(), delta.getChemicalEntity(), updatedConcentration);
+                concentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
         }
         finalDeltas.clear();

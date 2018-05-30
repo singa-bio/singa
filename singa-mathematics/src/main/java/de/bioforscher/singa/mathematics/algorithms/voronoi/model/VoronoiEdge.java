@@ -56,7 +56,7 @@ public class VoronoiEdge implements LineSegment {
      * @return The site to the left of this line.
      */
     public SiteEvent getLeftSite() {
-        return this.leftSite;
+        return leftSite;
     }
 
     /**
@@ -65,7 +65,7 @@ public class VoronoiEdge implements LineSegment {
      * @return The site to the right of this line.
      */
     public SiteEvent getRightSite() {
-        return this.rightSite;
+        return rightSite;
     }
 
     /**
@@ -74,7 +74,7 @@ public class VoronoiEdge implements LineSegment {
      * @return The point where this line starts.
      */
     public Vector2D getStartingPoint() {
-        return this.startingPoint;
+        return startingPoint;
     }
 
     /**
@@ -94,12 +94,12 @@ public class VoronoiEdge implements LineSegment {
      * @param startingPoint The starting point.
      */
     void setStartingPoint(SiteEvent leftSite, SiteEvent rightSite, Vector2D startingPoint) {
-        if (this.startingPoint == null && this.endingPoint == null) {
+        if (this.startingPoint == null && endingPoint == null) {
             this.startingPoint = startingPoint;
             this.leftSite = leftSite;
             this.rightSite = rightSite;
         } else if (this.leftSite.equals(rightSite)) {
-            this.endingPoint = startingPoint;
+            endingPoint = startingPoint;
         } else {
             this.startingPoint = startingPoint;
         }
@@ -110,7 +110,7 @@ public class VoronoiEdge implements LineSegment {
      * @return The point where the line ends.
      */
     public Vector2D getEndingPoint() {
-        return this.endingPoint;
+        return endingPoint;
     }
 
     /**
@@ -135,8 +135,8 @@ public class VoronoiEdge implements LineSegment {
     @Override
     public String toString() {
         return "VoronoiEdge{" +
-                "startingPoint=" + this.startingPoint +
-                ", endingPoint=" + this.endingPoint +
+                "startingPoint=" + startingPoint +
+                ", endingPoint=" + endingPoint +
                 '}';
     }
 }

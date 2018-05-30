@@ -34,7 +34,7 @@ public class SiteEvent {
      * @param site The site.
      */
     public SiteEvent(Vector2D site) {
-        this.identifier = -1;
+        identifier = -1;
         this.site = site;
     }
 
@@ -43,7 +43,7 @@ public class SiteEvent {
      * @return The identifier.
      */
     public int getIdentifier() {
-        return this.identifier;
+        return identifier;
     }
 
     /**
@@ -59,7 +59,7 @@ public class SiteEvent {
      * @return The Site.
      */
     public Vector2D getSite() {
-        return this.site;
+        return site;
     }
 
     /**
@@ -67,7 +67,7 @@ public class SiteEvent {
      * @return The x-coordinate of the site.
      */
     public double getX() {
-        return this.site.getX();
+        return site.getX();
     }
 
     /**
@@ -75,14 +75,14 @@ public class SiteEvent {
      * @return The y-coordinate of the site.
      */
     public double getY() {
-        return this.site.getY();
+        return site.getY();
     }
 
     @Override
     public String toString() {
         return "SiteEvent{" +
-                "id=" + this.identifier +
-                ", site=" + this.site +
+                "id=" + identifier +
+                ", site=" + site +
                 '}';
     }
 }

@@ -4,7 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public abstract class AbstractModule implements Module {
     /**
      * The cell section that is currently processed.
      */
-    protected CellSection currentCellSection;
+    protected CellSubsection currentCellSection;
 
     /**
      * The chemical entity that is currently processed.
@@ -158,7 +158,7 @@ public abstract class AbstractModule implements Module {
      *
      * @return The cell section that is currently processed.
      */
-    public CellSection getCurrentCellSection() {
+    public CellSubsection getCurrentCellSection() {
         return currentCellSection;
     }
 
@@ -236,8 +236,8 @@ public abstract class AbstractModule implements Module {
     void applyHalfStepDelta(Delta halfDelta) {
         if (deltaIsValid(halfDelta)) {
             halfDelta = halfDelta.multiply(2.0);
-            logger.trace("Calculated half delta for {} in {}: {}", halfDelta.getChemicalEntity().getIdentifier(), halfDelta.getCellSection().getIdentifier(), halfDelta.getQuantity());
-            currentHalfDeltas.put(new DeltaIdentifier(getCurrentUpdatable(), halfDelta.getCellSection(), halfDelta.getChemicalEntity()), halfDelta);
+            logger.trace("Calculated half delta for {} in {}: {}", halfDelta.getChemicalEntity().getIdentifier(), halfDelta.getCellSubsection().getIdentifier(), halfDelta.getQuantity());
+            currentHalfDeltas.put(new DeltaIdentifier(getCurrentUpdatable(), halfDelta.getCellSubsection(), halfDelta.getChemicalEntity()), halfDelta);
             currentUpdatable.addPotentialDelta(halfDelta);
         }
     }

@@ -8,13 +8,11 @@ import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.events.EpochUpdateWriter;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
@@ -142,7 +140,6 @@ public class Simulation {
         initializationDone = false;
         epoch = 0;
         harmonizer = new TimeStepHarmonizer(this);
-
     }
 
     /**
@@ -202,12 +199,6 @@ public class Simulation {
             throw new IllegalStateException("No graph has been assigned to the simulation.");
         }
         // reference all entities
-        for (AutomatonNode automatonNode : graph.getNodes()) {
-            ConcentrationContainer concentrationContainer = automatonNode.getConcentrationContainer();
-            if (concentrationContainer instanceof MembraneContainer) {
-                ((MembraneContainer) concentrationContainer).setReferencedEntities(new HashSet<>(chemicalEntities.values()));
-            }
-        }
     }
 
     public void initializeSpatialRepresentations() {
@@ -222,8 +213,6 @@ public class Simulation {
                 Vector2D bottomRight = new Vector2D(position.getX() + offset, position.getY() + offset);
                 node.setSpatialRepresentation(new Rectangle(topLeft, bottomRight));
             }
-
-
     }
 
     private void initializeVesicleLayer() {
@@ -236,6 +225,7 @@ public class Simulation {
     private void associateVesicles() {
         // clear previous vesicle associations
         graph.getNodes().forEach(AutomatonNode::clearAssociatedVesicles);
+        vesicleLayer.getVesicles().forEach(Vesicle::clearAssociatedNodes);
         // associate vesicles to nodes
         for (Vesicle vesicle : vesicleLayer.getVesicles()) {
             // convert vesicle from system to simulation scale
@@ -282,7 +272,9 @@ public class Simulation {
                     reducedSurface -= associatedSurface;
                     // associate vesicle and its corresponding area to the node
                     Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
-                    entry.getKey().associateVesicle(vesicle, nodeSurface);
+                    AutomatonNode node = entry.getKey();
+                    node.associateVesicle(vesicle, nodeSurface);
+                    vesicle.addAssociatedNode(node, nodeSurface);
                 }
             }
             // set area for representative
@@ -290,6 +282,7 @@ public class Simulation {
             Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
             assert representativeNode != null;
             representativeNode.associateVesicle(vesicle, nodeSurface);
+            vesicle.addAssociatedNode(representativeNode, nodeSurface);
         }
     }
 
@@ -398,8 +391,8 @@ public class Simulation {
         }
     }
 
-    public CellSection getCellSection(String identifier) {
-        return graph.getCellSection(identifier);
+    public CellRegion getCellSection(String identifier) {
+        return graph.getCellRegion(identifier);
     }
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {

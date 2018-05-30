@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.modules.reactions.model;
 
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 
 /**
  * @author cl

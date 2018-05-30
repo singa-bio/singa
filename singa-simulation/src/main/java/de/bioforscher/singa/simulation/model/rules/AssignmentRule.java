@@ -55,13 +55,13 @@ public class AssignmentRule {
     public void applyRule(AutomatonNode node) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
-            final Quantity<MolarConcentration> concentration = node.getConcentration(entry.getKey());
+            final Quantity<MolarConcentration> concentration = node.getConcentration(node.getConcentrationContainer().getInnerSubsection(), entry.getKey());
             final String parameterName = entityReference.get(entry.getKey());
             expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
         Quantity<?> concentration = expression.evaluate();
         logger.debug("Initialized concentration of {} to {}.", targetEntity.getIdentifier(), concentration);
-        node.setConcentration(targetEntity, concentration.getValue().doubleValue());
+        node.getConcentrationContainer().set(node.getConcentrationContainer().getInnerSubsection(), targetEntity, concentration.getValue().doubleValue());
     }
 
 }

@@ -43,9 +43,9 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                 node.setRight(successor);
             }
             parent = node;
-        } else if (this.root != null) {
+        } else if (root != null) {
             // if node is undefined, the successor must be added to the left most part
-            node = getFirst(this.root);
+            node = getFirst(root);
             // again cache previous and next
             successor.setPrevious(null);
             successor.setNext(node);
@@ -56,7 +56,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
         } else {
             successor.setPrevious(null);
             successor.setNext(null);
-            this.root = successor;
+            root = successor;
             parent = null;
         }
         successor.setLeft(null);
@@ -110,7 +110,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
             }
             parent = node.getParent();
         }
-        this.root.setRed(false);
+        root.setRed(false);
     }
 
     public void removeNode(NodeType node) {
@@ -144,7 +144,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                 parent.setRight(next);
             }
         } else {
-            this.root = next;
+            root = next;
         }
 
         // force red-black rules
@@ -185,7 +185,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
         }
         NodeType sibling;
         do {
-            if (node == this.root) {
+            if (node == root) {
                 break;
             }
             if (node == parent.getLeft()) {
@@ -208,7 +208,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                     parent.setRed(false);
                     sibling.getRight().setRed(false);
                     rotateLeft(parent);
-                    node = this.root;
+                    node = root;
                     break;
                 }
             } else {
@@ -231,7 +231,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                     parent.setRed(false);
                     sibling.getLeft().setRed(false);
                     rotateRight(parent);
-                    node = this.root;
+                    node = root;
                     break;
                 }
             }
@@ -255,7 +255,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                 parent.setRight(q);
             }
         } else {
-            this.root = q;
+            root = q;
         }
 
         q.setParent(parent);
@@ -280,7 +280,7 @@ public class RedBlackNode<NodeType extends  RedBlackNode<NodeType>>  {
                 parent.setRight(q);
             }
         } else {
-            this.root = q;
+            root = q;
         }
 
         q.setParent(parent);

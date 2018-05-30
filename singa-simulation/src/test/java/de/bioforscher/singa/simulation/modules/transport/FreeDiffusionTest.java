@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.simulation.model.newsections.CellSubsection.SECTION_A;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
@@ -100,9 +101,9 @@ public class FreeDiffusionTest {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.setConcentration(species, 1.0);
+                node.getConcentrationContainer().set(SECTION_A, species, 1.0);
             } else {
-                node.setConcentration(species, 0.0);
+                node.getConcentrationContainer().set(SECTION_A, species, 0.0);
             }
         }
         // setup simulation
@@ -125,7 +126,7 @@ public class FreeDiffusionTest {
         double currentConcentration = 0.0;
         while (currentConcentration < 0.25) {
             simulation.nextEpoch();
-            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentration(species).to(MOLE_PER_LITRE);
+            final Quantity<MolarConcentration> concentration = simulation.getGraph().getNode(coordinate).getConcentration(SECTION_A, species).to(MOLE_PER_LITRE);
             currentConcentration = concentration.getValue().doubleValue();
             //System.out.println("Currently "+concentration+" at "+simulation.getElapsedTime().to(MICRO(SECOND)));
         }

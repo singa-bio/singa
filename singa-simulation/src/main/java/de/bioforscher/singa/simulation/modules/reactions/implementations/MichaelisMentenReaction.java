@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisCo
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
@@ -42,9 +42,9 @@ public class MichaelisMentenReaction extends Reaction {
         final Quantity<Frequency> kCat = getScaledFeature(TurnoverNumber.class);
         final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent();
         // (KCAT * enzyme * substrate) / KM + substrate
-        double substrate = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
-        double enzyme = concentrationContainer.getAvailableConcentration(getCurrentCellSection(), this.enzyme).getValue().doubleValue();
-        return (kCat.getValue().doubleValue() * enzyme * substrate) / (km.getValue().doubleValue() + substrate);
+        double substrateConcentration = concentrationContainer.get(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
+        double enzymeConcentration = concentrationContainer.get(getCurrentCellSection(), enzyme).getValue().doubleValue();
+        return (kCat.getValue().doubleValue() * enzymeConcentration * substrateConcentration) / (km.getValue().doubleValue() + substrateConcentration);
     }
 
     @Override

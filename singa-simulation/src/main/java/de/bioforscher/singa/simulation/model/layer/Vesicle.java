@@ -8,11 +8,10 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.features.quantities.NaturalConstants;
 import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
@@ -22,9 +21,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Volume;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static tec.uom.se.unit.Units.METRE;
 
@@ -81,24 +78,25 @@ public class Vesicle implements Updatable {
     private Quantity<Volume> volume;
     private Diffusivity diffusivity;
 
-    private MembraneContainer concentrations;
+    private ConcentrationContainer concentrations;
     private SimpleUpdateManager updateManager;
-    private EnclosedCompartment inside;
+    private final CellRegion region;
+    private Map<AutomatonNode, Quantity<Area>> associatedNodes;
 
     private Vector2D position;
     private List<SpatialDelta> potentialSpatialDeltas;
     private Vector2D potentialUpdate;
 
 
-    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, EnclosedCompartment outsideCompartment) {
+    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, CellSubsection outerCompartment) {
         this.identifier = identifier;
         this.position = position;
         potentialSpatialDeltas = new ArrayList<>();
         setRadius(radius);
-        inside = new EnclosedCompartment("c-" + identifier, "compartment of vesicle " + identifier);
-        Membrane membrane = Membrane.forCompartment(inside);
-        concentrations = new MembraneContainer(outsideCompartment, inside, membrane);
+        region = CellRegion.forVesicle(identifier, outerCompartment);
+        concentrations = region.setUpConcentrationContainer();
         updateManager = new SimpleUpdateManager(concentrations);
+        associatedNodes = new HashMap<>();
     }
 
     public Vector2D getPosition() {
@@ -137,11 +135,19 @@ public class Vesicle implements Updatable {
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.setAvailableConcentration(inside, entity, Environment.transformToVolume(concentration, volume));
+        concentrations.set(region.getInnerSubsection(), entity, Environment.transformToVolume(concentration, volume));
     }
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return concentrations.getAvailableConcentration(inside, entity);
+        return concentrations.get(region.getInnerSubsection(), entity);
+    }
+
+    public void addAssociatedNode(AutomatonNode node, Quantity<Area> associatedArea) {
+        associatedNodes.put(node, associatedArea);
+    }
+
+    public void clearAssociatedNodes() {
+        associatedNodes.clear();
     }
 
     public Vector2D calculateTotalDisplacement() {
@@ -177,18 +183,18 @@ public class Vesicle implements Updatable {
     }
 
     @Override
-    public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity chemicalEntity, CellSection cellSection) {
-        return concentrations.getAvailableConcentration(cellSection, chemicalEntity);
+    public Quantity<MolarConcentration> getConcentration(CellSubsection cellSection, ChemicalEntity chemicalEntity) {
+        return concentrations.get(cellSection, chemicalEntity);
     }
 
     @Override
-    public Set<CellSection> getAllReferencedSections() {
-        return concentrations.getAllReferencedSections();
+    public CellRegion getCellRegion() {
+        return region;
     }
 
     @Override
-    public Set<ChemicalEntity> getAllReferencedEntities() {
-        return concentrations.getAllReferencedEntities();
+    public Set<CellSubsection> getAllReferencedSections() {
+        return concentrations.getReferencedSubSections();
     }
 
     @Override

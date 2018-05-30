@@ -6,11 +6,10 @@ import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.CellSectionState;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
@@ -56,18 +55,18 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     /**
      * Only apply, if current chemical entity is assigned in the referenced chemical entities.
      *
-     * @param concentrationContainer
+     * @param container
      * @return
      */
-    private boolean onlyForReferencedEntities(ConcentrationContainer concentrationContainer) {
+    private boolean onlyForReferencedEntities(ConcentrationContainer container) {
         return getReferencedEntities().contains(currentChemicalEntity);
     }
 
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
         AutomatonNode currentNode = (AutomatonNode) getCurrentUpdatable();
         ChemicalEntity currentChemicalEntity = getCurrentChemicalEntity();
-        CellSection currentCellSection = getCurrentCellSection();
-        final double currentConcentration = concentrationContainer.getAvailableConcentration(currentCellSection, currentChemicalEntity).getValue().doubleValue();
+        CellSubsection currentCellSection = getCurrentCellSection();
+        final double currentConcentration = concentrationContainer.get(currentCellSection, currentChemicalEntity).getValue().doubleValue();
         final double diffusivity = getScaledFeature(currentChemicalEntity, Diffusivity.class).getValue().doubleValue();
         // calculate entering term
         int numberOfNeighbors = 0;
@@ -80,7 +79,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
                 // if current is membrane and neighbour is membrane
                 // if current is non-membrane and neighbour is non-membrane
                 // classical diffusion
-                final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+                final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(currentCellSection, currentChemicalEntity);
                 if (availableConcentration != null) {
                     concentration += availableConcentration.getValue().doubleValue();
                     numberOfNeighbors++;
@@ -89,7 +88,7 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
                 // if current is non-membrane and neighbour is membrane
                 if (neigbourIsPotentialSource(currentNode, neighbour)) {
                     // leaving amount stays unchanged, but entering concentration is relevant
-                    final Quantity<MolarConcentration> availableConcentration = neighbour.getAvailableConcentration(currentChemicalEntity, currentCellSection);
+                    final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(currentCellSection, currentChemicalEntity);
                     if (availableConcentration != null) {
                         concentration += availableConcentration.getValue().doubleValue();
                     }
@@ -118,19 +117,19 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
     }
 
     private boolean bothAreNonMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getState() != CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+        return !currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 
     private boolean bothAreMembrane(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getState() == CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+        return currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
     }
 
     private boolean neigbourIsPotentialTarget(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getState() != CellSectionState.MEMBRANE && neighbour.getState() == CellSectionState.MEMBRANE;
+        return !currentNode.getCellRegion().hasMembrane() && neighbour.getCellRegion().hasMembrane();
     }
 
     private boolean neigbourIsPotentialSource(AutomatonNode currentNode, AutomatonNode neighbour) {
-        return currentNode.getState() == CellSectionState.MEMBRANE && neighbour.getState() != CellSectionState.MEMBRANE;
+        return currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 
 

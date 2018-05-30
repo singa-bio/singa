@@ -5,7 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRat
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;

@@ -2,10 +2,10 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +91,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     @Override
-    public LocalError determineDeltasForNode(Updatable node) {
+    public LocalError determineDeltas(Updatable node) {
         // using neighbor dependent modules you need to calculate all changes
         determineAllDeltas(simulation.collectUpdatables());
         return largestLocalError;
@@ -105,9 +105,9 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
      */
     private void determineFullStepDeltas(ConcentrationContainer concentrationContainer) {
         logger.trace("Determining full deltas for node {}.", currentUpdatable.getStringIdentifier());
-        for (CellSection cellSection : currentUpdatable.getAllReferencedSections()) {
+        for (CellSubsection cellSection : currentUpdatable.getAllReferencedSections()) {
             currentCellSection = cellSection;
-            for (ChemicalEntity chemicalEntity : currentUpdatable.getAllReferencedEntities()) {
+            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
                 // determine full step deltas and half step concentrations
                 for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
@@ -130,9 +130,9 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
      */
     private void determineHalfStepDeltas(ConcentrationContainer concentrationContainer) {
         logger.trace("Determining half deltas for node {}.", currentUpdatable.getStringIdentifier());
-        for (CellSection cellSection : currentUpdatable.getAllReferencedSections()) {
+        for (CellSubsection cellSection : currentUpdatable.getAllReferencedSections()) {
             currentCellSection = cellSection;
-            for (ChemicalEntity chemicalEntity : currentUpdatable.getAllReferencedEntities()) {
+            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
                 currentChemicalEntity = chemicalEntity;
                 // determine half step deltas and half step concentrations
                 for (Map.Entry<Function<ConcentrationContainer, Delta>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
@@ -163,16 +163,16 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
             DeltaIdentifier key = entry.getKey();
             Delta value = entry.getValue();
             // determine half step deltas
-            Quantity<MolarConcentration> fullConcentration = key.getUpdatable().getAvailableConcentration(key.getEntity(), key.getSection());
+            Quantity<MolarConcentration> fullConcentration = key.getUpdatable().getConcentration(key.getSection(), key.getEntity());
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(0.5));
             ConcentrationContainer halfConcentration;
             if (!halfConcentrations.containsKey(key.getUpdatable())) {
-                halfConcentration = key.getUpdatable().getConcentrationContainer().getCopy();
-                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), halfStepConcentration);
+                halfConcentration = key.getUpdatable().getConcentrationContainer().emptyCopy();
+                halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
                 halfConcentrations.put(key.getUpdatable(), halfConcentration);
             } else {
                 halfConcentration = halfConcentrations.get(key.getUpdatable());
-                halfConcentration.setAvailableConcentration(key.getSection(), key.getEntity(), halfStepConcentration);
+                halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
             }
         }
     }

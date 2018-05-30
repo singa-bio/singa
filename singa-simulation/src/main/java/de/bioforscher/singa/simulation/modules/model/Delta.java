@@ -3,13 +3,13 @@ package de.bioforscher.singa.simulation.modules.model;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 
 import javax.measure.Quantity;
 
 /**
  * The delta object signifies the change that will be applied to the concentration of a specific {@link ChemicalEntity}
- * in a specific {@link CellSection}.
+ * in a specific {@link CellSubsection}.
  *
  * @author cl
  */
@@ -23,7 +23,7 @@ public class Delta {
     /**
      * The cell section.
      */
-    private final CellSection cellSection;
+    private final CellSubsection cellSubsection;
 
     /**
      * The chemical entity.
@@ -35,18 +35,11 @@ public class Delta {
      */
     private Quantity<MolarConcentration> quantity;
 
-    /**
-     * Creates a new delta.
-     *
-     * @param module The module.
-     * @param cellSection The cell section.
-     * @param chemicalEntity The chemical entity.
-     * @param quantity The change in concentration.
-     */
-    public Delta(Module module, CellSection cellSection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+
+    public Delta(Module module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
-        this.cellSection = cellSection;
+        this.cellSubsection = cellSubsection;
         this.quantity = quantity;
     }
 
@@ -59,13 +52,8 @@ public class Delta {
         return module;
     }
 
-    /**
-     * Returns the cell section.
-     *
-     * @return The cell section.
-     */
-    public CellSection getCellSection() {
-        return cellSection;
+    public CellSubsection getCellSubsection() {
+        return cellSubsection;
     }
 
     /**
@@ -99,6 +87,6 @@ public class Delta {
 
     @Override
     public String toString() {
-        return module + " : " + cellSection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+Environment.DELTA_FORMATTER.format(quantity);
+        return module + " : " + cellSubsection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+Environment.DELTA_FORMATTER.format(quantity);
     }
 }

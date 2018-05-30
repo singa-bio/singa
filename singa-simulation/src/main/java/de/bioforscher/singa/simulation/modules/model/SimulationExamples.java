@@ -16,12 +16,12 @@ import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCo
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.concentrations.MembraneContainer;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -43,6 +43,7 @@ import java.util.Set;
 import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.simulation.model.newsections.CellRegion.MEMBRANE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -257,16 +258,11 @@ public class SimulationExamples {
         // initialize species in graph with desired concentration leaving the right "half" empty
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.setConcentration(methanol, 1);
-                node.setConcentration(ethyleneGlycol, 1);
-                node.setConcentration(valine, 1);
-                node.setConcentration(sucrose, 1);
-            } /* else {
-                node.setConcentration(methanol, 0);
-                node.setConcentration(ethyleneGlycol, 0);
-                node.setConcentration(valine, 0);
-                node.setConcentration(sucrose, 0);
-            } */
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, methanol, 1.0);
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ethyleneGlycol, 1.0);
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, valine, 1.0);
+                node.getConcentrationContainer().set(CellSubsection.SECTION_A, sucrose, 1.0);
+            }
         }
 
         // setup simulation
@@ -320,7 +316,14 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
-        graph.getNode(0, 0).setConcentrations(0.05, hydron, iodide, diiodine, water, hia, ia, iodineDioxid, iodate);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hydron, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodide, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, diiodine, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, water, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, hia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, ia, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodineDioxid, 0.05);
+        graph.getNode(0, 0).getConcentrationContainer().set(CellSubsection.SECTION_A, iodate, 0.05);
 
 
         logger.debug("Composing simulation ... ");
@@ -387,14 +390,17 @@ public class SimulationExamples {
         // setup graph with a single node
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
-        model.getCompartments().keySet().forEach(graph::addCellSection);
+        CellRegion region = new CellRegion("Default");
+        model.getCompartments().keySet().forEach(subsection -> region.addSubSection(CellTopology.INNER, subsection));
+
+        // TODO continue here
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-            bioNode.setConcentration(entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+            bioNode.getConcentrationContainer().set(region.getInnerSubsection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
         });
 
         // add graph
@@ -461,23 +467,20 @@ public class SimulationExamples {
         desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
         chemicalEntities.add(desipramine);
 
-        EnclosedCompartment left = new EnclosedCompartment("LC", "Left");
-        EnclosedCompartment right = new EnclosedCompartment("RC", "Right");
-
         logger.debug("Setting up example graph ...");
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, right, left, false);
+        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, MEMBRANE.getInnerSubsection(), MEMBRANE.getOuterSubsection(), false);
 
         // set concentrations
         // only 5 left most nodes
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
                 for (ChemicalEntity species : chemicalEntities) {
-                    node.setConcentration(species, 1.0);
+                    node.getConcentrationContainer().set(MEMBRANE.getInnerSubsection(), species, 1.0);
                 }
             } else {
                 for (ChemicalEntity species : chemicalEntities) {
-                    node.setConcentration(species, 0.0);
+                    node.getConcentrationContainer().set(MEMBRANE.getOuterSubsection(), species, 0.0);
                 }
             }
         }
@@ -511,9 +514,8 @@ public class SimulationExamples {
         // setup rectangular graph with number of nodes
         AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(20, 30));
         // create compartments and membrane
-        EnclosedCompartment inner = new EnclosedCompartment("I", "Inner");
-        EnclosedCompartment outer = new EnclosedCompartment("O", "Outer");
-        Membrane membrane = Membrane.forCompartment(inner);
+
+
         // initialize species in graph with desired concentration
         for (AutomatonNode node : graph.getNodes()) {
             RectangularCoordinate coordinate = node.getIdentifier();
@@ -522,15 +524,14 @@ public class SimulationExamples {
                     (coordinate.getRow() == 2 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28) ||
                     (coordinate.getRow() == 17 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28)) {
                 // setup membrane
-                node.setCellSection(membrane);
-                node.setConcentrationContainer(new MembraneContainer(outer, inner, membrane));
-                node.setAvailableConcentration(domperidone, outer, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+                node.setCellRegion(CellRegion.MEMBRANE);
+                node.setAvailableConcentration(CellRegion.MEMBRANE.getOuterSubsection(), domperidone, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
             } else if (coordinate.getColumn() > 2 && coordinate.getRow() > 2 && coordinate.getColumn() < 27 && coordinate.getRow() < 17) {
-                node.setCellSection(inner);
-                node.setConcentration(domperidone, 0.0);
+                node.setCellRegion(CellRegion.CYTOSOL_A);
+                node.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getInnerSubsection(), domperidone, 0.0);
             } else {
-                node.setCellSection(outer);
-                node.setConcentration(domperidone, 1.0);
+                node.setCellRegion(CellRegion.CYTOSOL_A);
+                node.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getOuterSubsection(), domperidone, 1.0);
             }
         }
 
