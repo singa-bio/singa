@@ -198,7 +198,6 @@ public class Simulation {
         if (graph == null) {
             throw new IllegalStateException("No graph has been assigned to the simulation.");
         }
-        // reference all entities
     }
 
     public void initializeSpatialRepresentations() {

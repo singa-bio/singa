@@ -207,15 +207,13 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ChemicalEntity that = (ChemicalEntity) o;
-
-        return identifier != null ? identifier.equals(that.identifier) : that.identifier == null;
+        return Objects.equals(identifier, that.identifier);
     }
 
     @Override
     public int hashCode() {
-        return identifier != null ? identifier.hashCode() : 0;
+        return Objects.hash(identifier);
     }
 
     public static abstract class Builder<TopLevelType extends ChemicalEntity, BuilderType extends Builder> {

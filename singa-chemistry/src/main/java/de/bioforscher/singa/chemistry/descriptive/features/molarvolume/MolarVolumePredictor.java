@@ -8,13 +8,18 @@ import de.bioforscher.singa.features.quantities.MolarVolume;
 import de.bioforscher.singa.mathematics.algorithms.geometry.SphereVolumeEstimaton;
 import de.bioforscher.singa.mathematics.geometry.bodies.Sphere;
 import de.bioforscher.singa.structure.model.oak.Structures;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.List;
+
+import static de.bioforscher.singa.features.quantities.MolarVolume.CUBIC_ANGSTROEM_PER_MOLE;
 
 /**
  * @author cl
  */
 public class MolarVolumePredictor extends FeatureProvider<MolarVolume> {
+
+    private static FeatureOrigin OTT1992 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Ott1992", "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98.");
 
     public MolarVolumePredictor() {
         setProvidedFeature(MolarVolume.class);
@@ -26,10 +31,8 @@ public class MolarVolumePredictor extends FeatureProvider<MolarVolume> {
         final Structure3D feature = featureable.getFeature(Structure3D.class);
         List<Sphere> spheres = Structures.convertToSpheres(feature.getFeatureContent());
         final double predictedValue = SphereVolumeEstimaton.predict(spheres);
-        return new MolarVolume(predictedValue, new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Ott1992",
-                "Ott, Rolf, et al. \"A computer method for estimating volumes and surface areas of complex structures consisting of overlapping spheres.\" Mathematical and computer modelling 16.12 (1992): 83-98."));
+        return new MolarVolume(Quantities.getQuantity(predictedValue, CUBIC_ANGSTROEM_PER_MOLE), OTT1992);
     }
-
 
 
 }

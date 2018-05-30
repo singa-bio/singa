@@ -34,7 +34,7 @@ public class ComplexBuildingReactionTest {
     @Test
     public void testMembraneAbsorption() {
 
-        logger.info("Testing Section Changing Binding (Membrane Absorption).");
+        logger.info("Testing section changing binding (membrane absorption).");
         // the rate constants
         RateConstant forwardRate = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
         RateConstant backwardRate = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
@@ -68,9 +68,9 @@ public class ComplexBuildingReactionTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(CellSubsection.SECTION_A, bindee, 1.0);
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, binder, 0.1);
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, binding.getComplex(), 0.0);
+        membraneNode.getConcentrationContainer().set(OUTER, bindee, 1.0);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, binding.getComplex(), 0.0);
 
         Quantity<MolarConcentration> previousConcentration = null;
         for (int i = 0; i < 10; i++) {
@@ -81,14 +81,12 @@ public class ComplexBuildingReactionTest {
             }
             previousConcentration = currentConcentration;
         }
-
     }
-
 
     @Test
     public void shouldReactInsideAndOutside() {
 
-        logger.info("Testing Section Changing Binding (Membrane Absorption).");
+        logger.info("Testing section changing binding (inside and outside reactions).");
         // the rate constants
         // the rate constants
         RateConstant innerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
@@ -142,11 +140,11 @@ public class ComplexBuildingReactionTest {
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
 
-        membraneNode.getConcentrationContainer().set(CellSubsection.SECTION_B, outerBindee, 0.1);
-        membraneNode.getConcentrationContainer().set(CellSubsection.SECTION_A, innerBindee, 0.1);
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, binder, 0.1);
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, innerBinding.getComplex(), 0.0);
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, outerBinding.getComplex(), 0.0);
+        membraneNode.getConcentrationContainer().set(INNER, innerBindee, 0.1);
+        membraneNode.getConcentrationContainer().set(OUTER, outerBindee, 0.1);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 0.1);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, innerBinding.getComplex(), 0.0);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, outerBinding.getComplex(), 0.0);
 
         Quantity<MolarConcentration> previousInnerConcentration = null;
         Quantity<MolarConcentration> previousOuterConcentration = null;
@@ -165,9 +163,6 @@ public class ComplexBuildingReactionTest {
             }
             previousOuterConcentration = currentOuterConcentration;
         }
-
     }
-
-
 
 }

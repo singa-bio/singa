@@ -5,6 +5,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.OUTER;
@@ -21,14 +22,14 @@ public class CellRegion {
 
     public static CellRegion CYTOSOL_B = new CellRegion("Cytoplasm");
     static {
-        CYTOSOL_A.addSubSection(INNER, CellSubsection.SECTION_B);
+        CYTOSOL_B.addSubSection(INNER, CellSubsection.SECTION_B);
     }
 
     public static CellRegion MEMBRANE = new CellRegion("Membrane");
     static {
-        CYTOSOL_A.addSubSection(INNER, CellSubsection.SECTION_A);
-        CYTOSOL_A.addSubSection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
-        CYTOSOL_A.addSubSection(OUTER, CellSubsection.SECTION_B);
+        MEMBRANE.addSubSection(INNER, CellSubsection.SECTION_A);
+        MEMBRANE.addSubSection(CellTopology.MEMBRANE, CellSubsection.MEMBRANE);
+        MEMBRANE.addSubSection(OUTER, CellSubsection.SECTION_B);
     }
 
     public static CellRegion forVesicle(String identifier, CellSubsection outerCompartment) {
@@ -85,4 +86,8 @@ public class CellRegion {
         return cellSubSections.containsKey(CellTopology.MEMBRANE);
     }
 
+    @Override
+    public String toString() {
+        return "Region "+identifier+" ("+getSubsections().stream().map(CellSubsection::getIdentifier).collect(Collectors.joining(","))+")";
+    }
 }

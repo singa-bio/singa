@@ -1,26 +1,39 @@
 package de.bioforscher.singa.simulation.model.newsections;
 
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 
 import javax.measure.Unit;
 import java.util.Objects;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author cl
  */
-public class CellSubsection {
+public class CellSubsection implements Observer {
 
-    // one default membrane
+    // default subsections (scale automatically with system dimension)
+    // all other subsections are initialized with the transformed environmental concentration
     public static CellSubsection MEMBRANE = new CellSubsection("MEM");
-    public static CellSubsection SECTION_A = new CellSubsection( "S_A");
+    public static CellSubsection SECTION_A = new CellSubsection("S_A");
     public static CellSubsection SECTION_B = new CellSubsection("S_B");
 
     private String identifier;
     private Unit<MolarConcentration> preferredConcentrationUnit;
 
     public CellSubsection(String identifier) {
-        this.identifier = identifier;
+        this(identifier, true);
     }
+
+    public CellSubsection(String identifier, boolean dynamicConcentration) {
+        this.identifier = identifier;
+        preferredConcentrationUnit = Environment.getTransformedMolarConcentration();
+        if (dynamicConcentration) {
+            Environment.attachObserver(this);
+        }
+    }
+
 
     public String getIdentifier() {
         return identifier;
@@ -45,5 +58,10 @@ public class CellSubsection {
     @Override
     public int hashCode() {
         return Objects.hash(identifier);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        setPreferredConcentrationUnit(Environment.getTransformedMolarConcentration());
     }
 }

@@ -89,11 +89,11 @@ public class AutomatonGraphs {
         CellRegion outer = new CellRegion("Outer");
         outer.addSubSection(CellTopology.INNER, outerSection);
         CellRegion inner = new CellRegion("Inner");
-        outer.addSubSection(CellTopology.INNER, innerSection);
+        inner.addSubSection(CellTopology.INNER, innerSection);
         CellRegion membrane = new CellRegion("Membrane");
-        outer.addSubSection(CellTopology.INNER, innerSection);
-        outer.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
-        outer.addSubSection(CellTopology.OUTER, outerSection);
+        membrane.addSubSection(CellTopology.INNER, innerSection);
+        membrane.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
+        membrane.addSubSection(CellTopology.OUTER, outerSection);
 
         int numberOfColumns = graph.getNumberOfColumns();
         for (AutomatonNode node : graph.getNodes()) {

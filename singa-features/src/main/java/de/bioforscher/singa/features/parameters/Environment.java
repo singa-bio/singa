@@ -73,12 +73,13 @@ public class Environment extends Observable {
     private Quantity<Temperature> systemTemperature;
     private Quantity<DynamicViscosity> systemViscosity;
 
-    private Unit<MolarConcentration> transformedMolarConcentration = MOLE_PER_LITRE;
+    private Unit<MolarConcentration> transformedMolarConcentration;
     private Quantity<MolarConcentration> emptyConcentration = Quantities.getQuantity(0.0, MOLE_PER_LITRE);
 
-    private Unit<Volume> transformedVolume = CUBIC_METRE;
-    private Unit<Area> transformedArea = SQUARE_METRE;
-    private Unit<Length> transformedLength = METRE;
+    private Quantity<Volume> subsectionVolume;
+    private Unit<Volume> transformedVolume;
+    private Unit<Area> transformedArea;
+    private Unit<Length> transformedLength;
 
 
     private Environment() {
@@ -88,7 +89,14 @@ public class Environment extends Observable {
         systemViscosity = DEFAULT_VISCOSITY;
         systemExtend = DEFAULT_SYSTEM_EXTEND;
         simulationExtend = DEFAULT_SIMULATION_EXTEND;
+        transformedMolarConcentration = MOLE_PER_LITRE;
+        transformedVolume = CUBIC_METRE;
+        transformedArea = SQUARE_METRE;
+        transformedLength = METRE;
+
         setSystemAnsSimulationScales();
+        setChanged();
+        notifyObservers();
     }
 
     private static Environment getInstance() {
@@ -101,7 +109,20 @@ public class Environment extends Observable {
     }
 
     public static void reset() {
-        instance = new Environment();
+        getInstance().nodeDistance = DEFAULT_NODE_DISTANCE;
+        getInstance().timeStep = DEFAULT_TIME_STEP;
+        getInstance().systemTemperature = DEFAULT_TEMPERATURE;
+        getInstance().systemViscosity = DEFAULT_VISCOSITY;
+        getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
+        getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
+        getInstance().transformedMolarConcentration = MOLE_PER_LITRE;
+        getInstance().transformedVolume = CUBIC_METRE;
+        getInstance().transformedArea = SQUARE_METRE;
+        getInstance().transformedLength = METRE;
+
+        getInstance().setSystemAnsSimulationScales();
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
     public static Quantity<Length> getNodeDistance() {
@@ -137,7 +158,6 @@ public class Environment extends Observable {
     }
 
     public static Quantity<MolarConcentration> transformToVolume(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
-
         final Unit<Volume> volumeUnit = volume.getUnit();
         final Unit<MolarConcentration> transformedUnit = MOLE.divide(volumeUnit).asType(MolarConcentration.class);
         if (volume.getValue().doubleValue() == 1.0) {
@@ -159,11 +179,17 @@ public class Environment extends Observable {
             transformedLength = lengthUnit;
             transformedArea = areaUnit;
             transformedVolume = volumeUnit;
+            subsectionVolume = Quantities.getQuantity(1.0, volumeUnit);
         } else {
             transformedLength = new TransformedUnit<>(lengthUnit, new MultiplyConverter(nodeDistance.getValue().doubleValue()));
             transformedArea = new TransformedUnit<>(areaUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 2)));
             transformedVolume = new TransformedUnit<>(volumeUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
+            subsectionVolume = nodeDistance.multiply(nodeDistance).multiply(nodeDistance).asType(Volume.class);
         }
+    }
+
+    public static Quantity<Volume> getSubsectionVolume() {
+        return getInstance().subsectionVolume;
     }
 
     public static Unit<Area> getTransformedArea() {
@@ -185,8 +211,6 @@ public class Environment extends Observable {
     public static void setTemperature(Quantity<Temperature> temperature) {
         logger.debug("Setting environmental temperature to {}.", temperature);
         getInstance().systemTemperature = temperature.to(KELVIN);
-        getInstance().setChanged();
-        getInstance().notifyObservers();
     }
 
     public static Quantity<DynamicViscosity> getViscosity() {
@@ -196,8 +220,6 @@ public class Environment extends Observable {
     public static void setSystemViscosity(Quantity<DynamicViscosity> viscosity) {
         logger.debug("Setting environmental dynamic viscosity of to {}.", viscosity);
         getInstance().systemViscosity = viscosity.to(MILLI(PASCAL_SECOND));
-        getInstance().setChanged();
-        getInstance().notifyObservers();
     }
 
     public static Quantity<Time> getTimeStep() {

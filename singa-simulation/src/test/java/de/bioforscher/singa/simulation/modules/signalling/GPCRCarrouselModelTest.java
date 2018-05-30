@@ -9,6 +9,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
@@ -374,7 +375,7 @@ public class GPCRCarrouselModelTest {
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(5, 3);
         simulation.setGraph(graph);
 
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, true);
+        CellRegion membrane = AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, true);
         // set concentration of vasopressin in the intersitium
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(4)) {
             automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
@@ -385,9 +386,9 @@ public class GPCRCarrouselModelTest {
         }
         // set concentration of receptors in membrane
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {
+            automatonNode.getConcentrationContainer().set(membrane.getOuterSubsection(), vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
             // uncoupled receptor, inside of cell, 843 nm
-            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
-            automatonNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, vasopressinReceptor, Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(membrane.getMembraneSubsection(), vasopressinReceptor, Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
         }
         // set concentration of g proteins
 //        for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {

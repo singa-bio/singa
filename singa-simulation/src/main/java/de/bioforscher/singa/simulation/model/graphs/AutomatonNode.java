@@ -32,11 +32,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private CellRegion cellRegion;
 
-    /**
-     * The contained chemical entities with their concentrations.
-     */
-    private ConcentrationContainer concentrationContainer;
-
     private SimpleUpdateManager updateManager;
 
     private Polygon spatialRepresentation;
@@ -46,8 +41,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         cellRegion = CellRegion.CYTOSOL_A;
-        concentrationContainer = cellRegion.setUpConcentrationContainer();
-        updateManager = new SimpleUpdateManager(concentrationContainer);
+        updateManager = new SimpleUpdateManager(cellRegion.setUpConcentrationContainer());
         associatedVesicles = new HashMap<>();
     }
 
@@ -63,7 +57,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param quantity The quantity.
      */
     public void setAvailableConcentration(CellSubsection section, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        concentrationContainer.set(section, entity, quantity);
+        updateManager.getConcentrationContainer().set(section, entity, quantity);
     }
 
     /**
@@ -75,7 +69,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      */
     @Override
     public Quantity<MolarConcentration> getConcentration(CellSubsection section, ChemicalEntity entity) {
-        return concentrationContainer.get(section, entity);
+        return updateManager.getConcentrationContainer().get(section, entity);
     }
 
 
@@ -121,7 +115,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return all referenced sections in this node.
      */
     public Set<CellSubsection> getAllReferencedSections() {
-        return concentrationContainer.getReferencedSubSections();
+        return updateManager.getConcentrationContainer().getReferencedSubSections();
     }
 
     /**
@@ -157,7 +151,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public void setCellRegion(CellRegion cellRegion) {
         this.cellRegion = cellRegion;
-        concentrationContainer = cellRegion.setUpConcentrationContainer();
+        updateManager.setConcentrationContainer(cellRegion.setUpConcentrationContainer());
     }
 
     @Override
@@ -171,7 +165,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return The {@link ConcentrationContainer} used by this node.
      */
     public ConcentrationContainer getConcentrationContainer() {
-        return concentrationContainer;
+        return updateManager.getConcentrationContainer();
     }
 
     /**
@@ -180,8 +174,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param concentrationContainer The {@link ConcentrationContainer} for this node.
      */
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
-        this.concentrationContainer = concentrationContainer;
-        updateManager.setConcentrations(concentrationContainer);
+        updateManager.setConcentrationContainer(concentrationContainer);
     }
 
     public Polygon getSpatialRepresentation() {
@@ -206,7 +199,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     @Override
     public String toString() {
-        return "Node "+getIdentifier();
+        return "Node "+getIdentifier()+" ("+cellRegion+")";
     }
 
     @Override

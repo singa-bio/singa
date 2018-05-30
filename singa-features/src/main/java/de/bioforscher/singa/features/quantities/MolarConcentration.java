@@ -16,8 +16,7 @@ import java.math.MathContext;
 import java.util.Objects;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLECULES;
-import static tec.uom.se.unit.Units.CUBIC_METRE;
-import static tec.uom.se.unit.Units.MOLE;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * Molar concentration, also called molarity, amount concentration or substance
@@ -120,15 +119,21 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
         return false;
     }
 
-    public static Quantity<AmountOfSubstance> toMolesOfSubstance(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
+    public static Quantity<MolarConcentration> moleculesToConcentration(double numberOfMolecules, Quantity<Volume> targetVolume) {
+        Quantity<AmountOfSubstance> mole = Quantities.getQuantity(numberOfMolecules / NaturalConstants.AVOGADRO_CONSTANT.getValue().doubleValue(), MOLE);
+        Quantity<Volume> litre = targetVolume.to(LITRE);
+        return mole.divide(litre).asType(MolarConcentration.class);
+    }
+
+    public static Quantity<AmountOfSubstance> concentrationToMoles(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
         Quantity<Volume> transformedVolume = volume.to(CUBIC_METRE);
         Quantity<MolarConcentration> transformedConcentration = concentration.to(new ProductUnit<>(MOLE.divide(CUBIC_METRE)));
         Quantity<?> multiply = transformedConcentration.multiply(transformedVolume);
         return multiply.asType(AmountOfSubstance.class);
     }
 
-    public static Quantity<Dimensionless> toMoleculesOfSubstance(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
-        return toMolesOfSubstance(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class).to(MOLECULES);
+    public static Quantity<Dimensionless> concentrationToMolecules(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
+        return concentrationToMoles(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class).to(MOLECULES);
     }
 
 }

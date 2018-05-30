@@ -22,6 +22,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 
 import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -46,14 +47,13 @@ public class MembraneRelevantDiffusionTest {
 
         AutomatonNode leftNode = automatonGraph.getNode(0, 0);
         leftNode.setCellRegion(CellRegion.CYTOSOL_A);
-        leftNode.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getInnerSubsection(), ammonia, 1.0);
+        leftNode.getConcentrationContainer().set(INNER, ammonia, 1.0);
 
         AutomatonNode rightNode = automatonGraph.getNode(2, 0);
         rightNode.setCellRegion(CellRegion.CYTOSOL_B);
 
         AutomatonNode membraneNode = automatonGraph.getNode(1, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
 
         simulation.setGraph(automatonGraph);
 
@@ -70,8 +70,8 @@ public class MembraneRelevantDiffusionTest {
         assertTrue(membraneNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue() > 0.0);
         // right part and membrane should not
         assertEquals(0.0, membraneNode.getConcentration(CellSubsection.MEMBRANE, ammonia).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue(), 0.0);
-        assertEquals(0.0, rightNode.getConcentration(CellSubsection.SECTION_A, ammonia).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, membraneNode.getConcentration(CellSubsection.SECTION_B, ammonia).getValue().doubleValue(), 0.0);
+        assertEquals(0.0, rightNode.getConcentration(CellSubsection.SECTION_B, ammonia).getValue().doubleValue(), 0.0);
 
         Environment.reset();
 
@@ -89,18 +89,13 @@ public class MembraneRelevantDiffusionTest {
 
         // setup node distance to diameter);
         Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
-
         AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
         AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, false);
 
         // set concentrations
         // only 5 left most nodes
         for (AutomatonNode node : graph.getNodes()) {
-            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
-            } else if (node.getIdentifier().getColumn() > (graph.getNumberOfColumns() / 2)) {
-                node.getConcentrationContainer().set(CellSubsection.SECTION_B, ammonia, 0.0);
-            } else {
+            if (node.getIdentifier().getColumn() >= (graph.getNumberOfColumns() / 2)) {
                 node.getConcentrationContainer().set(CellSubsection.SECTION_A, ammonia, 1.0);
             }
         }
@@ -167,7 +162,7 @@ public class MembraneRelevantDiffusionTest {
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
         // bound
-        node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 1.0);
+        node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 0.1);
         // unbound
         node1.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBeta, 1.0);
         // observe over 10 epochs
@@ -195,7 +190,7 @@ public class MembraneRelevantDiffusionTest {
         AutomatonNode node1 = simulation.getGraph().getNode(0, 0);
         AutomatonNode node2 = simulation.getGraph().getNode(0, 1);
         // bound
-        node2.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 1.0);
+        node2.getConcentrationContainer().set(CellSubsection.SECTION_A, gProteinBetaGamma, 0.1);
         // observe over 10 epochs
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();

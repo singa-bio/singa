@@ -21,7 +21,6 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
@@ -44,6 +43,7 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.newsections.CellRegion.MEMBRANE;
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -391,16 +391,15 @@ public class SimulationExamples {
         AutomatonGraph graph = AutomatonGraphs.singularGraph();
 
         CellRegion region = new CellRegion("Default");
-        model.getCompartments().keySet().forEach(subsection -> region.addSubSection(CellTopology.INNER, subsection));
-
-        // TODO continue here
+        model.getCompartments().keySet().forEach(subsection -> region.addSubSection(INNER, subsection));
+        graph.getNodes().forEach(node -> node.setCellRegion(region));
 
         // initialize species in graph with desired concentration
         logger.debug("Initializing starting concentrations of species and node states in graph ...");
         AutomatonNode bioNode = graph.getNodes().iterator().next();
         model.getStartingConcentrations().forEach((entity, value) -> {
             logger.debug("Initialized concentration of {} to {}.", entity.getIdentifier(), value);
-            bioNode.getConcentrationContainer().set(region.getInnerSubsection(), entity, Quantities.getQuantity(value, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+            bioNode.getConcentrationContainer().set(INNER, entity, value);
         });
 
         // add graph

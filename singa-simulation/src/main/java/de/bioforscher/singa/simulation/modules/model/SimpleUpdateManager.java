@@ -45,11 +45,11 @@ public class SimpleUpdateManager {
         concentrations = concentrationContainer;
     }
 
-    public ConcentrationContainer getConcentrations() {
+    public ConcentrationContainer getConcentrationContainer() {
         return concentrations;
     }
 
-    public void setConcentrations(ConcentrationContainer concentrations) {
+    public void setConcentrationContainer(ConcentrationContainer concentrations) {
         this.concentrations = concentrations;
     }
 

@@ -23,6 +23,10 @@ public class ConcentrationPool {
         concentrations = new HashMap<>();
     }
 
+    private ConcentrationPool(ConcentrationPool concentrationPool) {
+        concentrations = new HashMap<>(concentrationPool.concentrations);
+    }
+
     public Set<ChemicalEntity> getReferencedEntities() {
         return concentrations.keySet();
     }
@@ -33,6 +37,10 @@ public class ConcentrationPool {
 
     public void set(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         concentrations.put(entity, concentration);
+    }
+
+    public ConcentrationPool fullCopy() {
+        return new ConcentrationPool(this);
     }
     
 }

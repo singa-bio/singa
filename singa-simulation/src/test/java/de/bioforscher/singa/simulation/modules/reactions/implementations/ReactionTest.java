@@ -25,6 +25,7 @@ import static de.bioforscher.singa.chemistry.descriptive.features.reactions.Turn
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.newsections.CellSubsection.SECTION_A;
+import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
@@ -243,13 +244,13 @@ public class ReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(SECOND));
-                assertEquals(0.2958, node.getConcentrationContainer().get(SECTION_A, x).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-4);
+                assertEquals(0.2958, node.getConcentrationContainer().get(INNER, x).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-4);
                 firstCheckpointPassed = true;
             }
         }
 
         // check final values
-        assertEquals(0.2975, node.getConcentrationContainer().get(SECTION_A, x).getValue().doubleValue(), 1e-4);
+        assertEquals(0.2975, node.getConcentrationContainer().get(INNER, x).getValue().doubleValue(), 1e-4);
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(SECOND));
         Environment.reset();
     }

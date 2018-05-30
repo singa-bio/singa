@@ -68,7 +68,7 @@ public abstract class AbstractNodeSpecificModule extends AbstractModule {
     public LocalError determineDeltas(Updatable updatable) {
         currentUpdatable = updatable;
         ConcentrationContainer fullConcentrations = updatable.getConcentrationContainer();
-        currentHalfConcentrations = fullConcentrations.emptyCopy();
+        currentHalfConcentrations = fullConcentrations.fullCopy();
         // calculate full time step deltas
         halfTime = false;
         determineFullStepDeltas(fullConcentrations);
@@ -98,10 +98,11 @@ public abstract class AbstractNodeSpecificModule extends AbstractModule {
                 List<Delta> fullDeltas = entry.getKey().apply(concentrationContainer);
                 for (Delta fullDelta : fullDeltas) {
                     currentChemicalEntity = fullDelta.getChemicalEntity();
+                    currentCellSection = fullDelta.getCellSubsection();
                     if (deltaIsValid(fullDelta)) {
                         setHalfStepConcentration(fullDelta);
-                        logger.trace("Calculated full delta for {} in {}: {}", fullDelta.getChemicalEntity().getIdentifier(), fullDelta.getCellSubsection().getIdentifier(), fullDelta.getQuantity());
-                        currentFullDeltas.put(new DeltaIdentifier(currentUpdatable, fullDelta.getCellSubsection(), fullDelta.getChemicalEntity()), fullDelta);
+                        logger.trace("Calculated full delta for {} in {}: {}", getCurrentChemicalEntity().getName(), getCurrentCellSection().getIdentifier(), fullDelta.getQuantity());
+                        currentFullDeltas.put(new DeltaIdentifier(currentUpdatable, currentCellSection, currentChemicalEntity), fullDelta);
                     }
                 }
             }
