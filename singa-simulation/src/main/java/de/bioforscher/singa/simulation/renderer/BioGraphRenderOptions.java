@@ -17,7 +17,7 @@ public class BioGraphRenderOptions {
 
     public BioGraphRenderOptions() {
         // todo render depending on maximal value in any node
-        nodeColorScale = new ColorScale.Builder(0, 1).build();
+        nodeColorScale = new ColorScale.Builder(5.0E-15, 10.0E-15).build();
         renderingMode = RenderingMode.STATE_BASED;
     }
 

@@ -76,7 +76,7 @@ public class VesicleLayer {
             double x = vesicle1.getPotentialUpdate().getX();
             double y = vesicle1.getPotentialUpdate().getY();
             if (x - firstRadius < simulationArea.getLeftMostXPosition() || x + firstRadius > simulationArea.getRightMostXPosition() ||
-                    y - firstRadius < simulationArea.getBottomMostYPosition() || y + firstRadius > simulationArea.getTopMostYPosition()) {
+                    y - firstRadius < simulationArea.getTopMostYPosition() || y + firstRadius > simulationArea.getBottomMostYPosition()) {
                 vesicle1.permitDisplacement();
             }
         }

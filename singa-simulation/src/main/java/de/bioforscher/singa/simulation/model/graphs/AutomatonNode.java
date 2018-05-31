@@ -6,7 +6,6 @@ import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
@@ -15,10 +14,7 @@ import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Area;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,13 +32,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private Polygon spatialRepresentation;
 
-    private Map<Vesicle, Quantity<Area>> associatedVesicles;
-
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         cellRegion = CellRegion.CYTOSOL_A;
         updateManager = new SimpleUpdateManager(cellRegion.setUpConcentrationContainer());
-        associatedVesicles = new HashMap<>();
     }
 
     public AutomatonNode(int column, int row) {
@@ -156,7 +149,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     @Override
     public String getStringIdentifier() {
-        return getIdentifier().toString();
+        return "Node "+getIdentifier().toString();
     }
 
     /**
@@ -183,18 +176,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public void setSpatialRepresentation(Polygon spatialRepresentation) {
         this.spatialRepresentation = spatialRepresentation;
-    }
-
-    public Map<Vesicle, Quantity<Area>> getAssociatedVesicles() {
-        return associatedVesicles;
-    }
-
-    public void associateVesicle(Vesicle vesicle, Quantity<Area> associatedArea) {
-        associatedVesicles.put(vesicle, associatedArea);
-    }
-
-    public void clearAssociatedVesicles() {
-        associatedVesicles.clear();
     }
 
     @Override

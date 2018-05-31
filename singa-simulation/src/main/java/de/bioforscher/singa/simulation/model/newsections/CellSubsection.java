@@ -16,8 +16,8 @@ public class CellSubsection implements Observer {
     // default subsections (scale automatically with system dimension)
     // all other subsections are initialized with the transformed environmental concentration
     public static CellSubsection MEMBRANE = new CellSubsection("MEM");
-    public static CellSubsection SECTION_A = new CellSubsection("S_A");
-    public static CellSubsection SECTION_B = new CellSubsection("S_B");
+    public static CellSubsection SECTION_A = new CellSubsection("SA");
+    public static CellSubsection SECTION_B = new CellSubsection("SB");
 
     private String identifier;
     private Unit<MolarConcentration> preferredConcentrationUnit;

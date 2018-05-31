@@ -11,10 +11,13 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -29,6 +32,8 @@ import static tec.uom.se.unit.Units.METRE;
  * @author cl
  */
 public class Vesicle implements Updatable {
+
+    private static final Logger logger = LoggerFactory.getLogger(Vesicle.class);
 
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
@@ -88,12 +93,12 @@ public class Vesicle implements Updatable {
     private Vector2D potentialUpdate;
 
 
-    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius, CellSubsection outerCompartment) {
+    public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
         this.identifier = identifier;
         this.position = position;
         potentialSpatialDeltas = new ArrayList<>();
         setRadius(radius);
-        region = CellRegion.forVesicle(identifier, outerCompartment);
+        region = CellRegion.forVesicle(identifier);
         concentrations = region.setUpConcentrationContainer();
         updateManager = new SimpleUpdateManager(concentrations);
         associatedNodes = new HashMap<>();
@@ -142,11 +147,18 @@ public class Vesicle implements Updatable {
         return concentrations.get(region.getInnerSubsection(), entity);
     }
 
+    public Map<AutomatonNode, Quantity<Area>> getAssociatedNodes() {
+        return associatedNodes;
+    }
+
     public void addAssociatedNode(AutomatonNode node, Quantity<Area> associatedArea) {
         associatedNodes.put(node, associatedArea);
+        CellSubsection subsection = node.getConcentrationContainer().getSubsection(CellTopology.INNER);
+        getConcentrationContainer().putSubsectionPool(subsection, CellTopology.OUTER, node.getConcentrationContainer().getPool(CellTopology.INNER).getValue());
     }
 
     public void clearAssociatedNodes() {
+        getConcentrationContainer().removeSubsection(CellTopology.OUTER);
         associatedNodes.clear();
     }
 
@@ -168,13 +180,13 @@ public class Vesicle implements Updatable {
     }
 
     public void move() {
-        System.out.println(potentialUpdate);
+        logger.trace("Moving vesicle from {} to {}.", position, potentialUpdate);
         position = potentialUpdate;
     }
 
     @Override
     public String getStringIdentifier() {
-        return identifier;
+        return "Vesicle "+identifier;
     }
 
     @Override

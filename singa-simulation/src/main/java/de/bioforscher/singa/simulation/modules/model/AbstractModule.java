@@ -248,7 +248,7 @@ public abstract class AbstractModule implements Module {
      * @param delta The delta to be evaluated.
      * @return true if the delta is valid, i.e. it is not zero and nor below the numerical threshold.
      */
-    boolean deltaIsValid(Delta delta) {
+    protected boolean deltaIsValid(Delta delta) {
         return deltaIsNotZero(delta) && deltaIsAboveNumericCutoff(delta);
     }
 

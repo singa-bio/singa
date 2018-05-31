@@ -184,7 +184,6 @@ public class Environment extends Observable {
             transformedLength = new TransformedUnit<>(lengthUnit, new MultiplyConverter(nodeDistance.getValue().doubleValue()));
             transformedArea = new TransformedUnit<>(areaUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 2)));
             transformedVolume = new TransformedUnit<>(volumeUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
-            subsectionVolume = nodeDistance.multiply(nodeDistance).multiply(nodeDistance).asType(Volume.class);
         }
     }
 

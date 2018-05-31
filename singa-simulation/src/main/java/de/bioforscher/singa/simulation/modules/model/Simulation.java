@@ -223,7 +223,6 @@ public class Simulation {
 
     private void associateVesicles() {
         // clear previous vesicle associations
-        graph.getNodes().forEach(AutomatonNode::clearAssociatedVesicles);
         vesicleLayer.getVesicles().forEach(Vesicle::clearAssociatedNodes);
         // associate vesicles to nodes
         for (Vesicle vesicle : vesicleLayer.getVesicles()) {
@@ -272,7 +271,6 @@ public class Simulation {
                     // associate vesicle and its corresponding area to the node
                     Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
                     AutomatonNode node = entry.getKey();
-                    node.associateVesicle(vesicle, nodeSurface);
                     vesicle.addAssociatedNode(node, nodeSurface);
                 }
             }
@@ -280,7 +278,6 @@ public class Simulation {
             double fraction = reducedSurface / totalSurface;
             Quantity<Area> nodeSurface = vesicle.getArea().multiply(fraction);
             assert representativeNode != null;
-            representativeNode.associateVesicle(vesicle, nodeSurface);
             vesicle.addAssociatedNode(representativeNode, nodeSurface);
         }
     }

@@ -10,6 +10,7 @@ import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
+import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -17,8 +18,9 @@ import static tec.uom.se.unit.Units.SECOND;
 public class MembranePermeability extends ScalableQuantityFeature<MembranePermeability> implements Quantity<MembranePermeability> {
 
     // theoretically it is volume / time * area - volume and area cancel out
-    public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).divide(SECOND));
-
+    private static Unit<Length> CENTIMETRE = CENTI(METRE);
+    public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
+    public static final Unit<MembranePermeability> CUBIC_CENITMETRE_PER_SECOND_AND_SQUARE_CENTIMETRE = new ProductUnit<>(CENTIMETRE.pow(3).divide(SECOND.multiply(CENTIMETRE.pow(2))));
 
     public static final String SYMBOL = "P_d";
 

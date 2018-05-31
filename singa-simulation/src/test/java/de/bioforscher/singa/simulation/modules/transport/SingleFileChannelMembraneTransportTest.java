@@ -29,7 +29,7 @@ import static tec.uom.se.unit.Units.METRE;
  */
 public class SingleFileChannelMembraneTransportTest {
 
-    static final FeatureOrigin BINESH2015 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Binesh 2015", "Binesh, A. R., and R. Kamali. \"Molecular dynamics insights into human aquaporin 2 water channel.\" Biophysical chemistry 207 (2015): 107-113.");
+    private static final FeatureOrigin BINESH2015 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Binesh 2015", "Binesh, A. R., and R. Kamali. \"Molecular dynamics insights into human aquaporin 2 water channel.\" Biophysical chemistry 207 (2015): 107-113.");
 
     @Test
     public void shouldSimulateChannelDiffusion() {

@@ -32,11 +32,10 @@ public class CellRegion {
         MEMBRANE.addSubSection(OUTER, CellSubsection.SECTION_B);
     }
 
-    public static CellRegion forVesicle(String identifier, CellSubsection outerCompartment) {
+    public static CellRegion forVesicle(String identifier) {
         CellRegion region = new CellRegion("Vesicle-"+identifier);
-        region.addSubSection(INNER, new CellSubsection("V"+identifier+"-Inner"));
-        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection("V"+identifier+"-Membrane"));
-        region.addSubSection(OUTER, outerCompartment);
+        region.addSubSection(INNER, new CellSubsection("V"+identifier+"I"));
+        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection("V"+identifier+"M"));
         return region;
     }
 

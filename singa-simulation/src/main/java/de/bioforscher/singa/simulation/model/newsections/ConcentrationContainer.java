@@ -36,9 +36,15 @@ public class ConcentrationContainer {
         concentrations.put(subsection, concentrationPool);
     }
 
-    public void removeSubsection(CellSubsection cellSubsection) {
-        concentrations.remove(cellSubsection);
-        subsectionTopology.remove(getTopologyFromSubsection(cellSubsection));
+    public void removeSubsection(CellSubsection subsection) {
+        concentrations.remove(subsection);
+        subsectionTopology.remove(getTopologyFromSubsection(subsection));
+    }
+
+    public void removeSubsection(CellTopology topology) {
+        CellSubsection subsection = subsectionTopology.get(topology);
+        concentrations.remove(subsection);
+        subsectionTopology.remove(getTopologyFromSubsection(subsection));
     }
 
     public Set<CellSubsection> getReferencedSubSections() {
