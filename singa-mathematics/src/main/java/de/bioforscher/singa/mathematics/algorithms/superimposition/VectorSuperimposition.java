@@ -3,8 +3,8 @@ package de.bioforscher.singa.mathematics.algorithms.superimposition;
 import de.bioforscher.singa.mathematics.matrices.Matrix;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of a {@link Superimposition} for {@link Vector}s.
@@ -12,18 +12,18 @@ import java.util.stream.Collectors;
  *
  * @author fk
  */
-public class VectorSuperimposition implements Superimposition<Vector> {
+public class VectorSuperimposition<VectorType extends Vector> implements Superimposition<VectorType> {
 
     private final double rmsd;
     private final Vector translation;
     private final Matrix rotation;
-    private final List<Vector> reference;
-    private final List<Vector> candidate;
-    private final List<Vector> mappedCandidate;
+    private final List<VectorType> reference;
+    private final List<VectorType> candidate;
+    private final List<VectorType> mappedCandidate;
 
-    public VectorSuperimposition(double rmsd, Vector translation, Matrix rotation, List<Vector> reference,
-                                 List<Vector> candidate,
-                                 List<Vector> mappedCandidate) {
+    public VectorSuperimposition(double rmsd, Vector translation, Matrix rotation, List<VectorType> reference,
+                                 List<VectorType> candidate,
+                                 List<VectorType> mappedCandidate) {
         this.rmsd = rmsd;
         this.translation = translation;
         this.rotation = rotation;
@@ -48,7 +48,7 @@ public class VectorSuperimposition implements Superimposition<Vector> {
     }
 
     @Override
-    public List<Vector> getMappedCandidate() {
+    public List<VectorType> getMappedCandidate() {
         return mappedCandidate;
     }
 
@@ -59,18 +59,22 @@ public class VectorSuperimposition implements Superimposition<Vector> {
      * @return new instances of mapped {@link Vector}s
      */
     @Override
-    public List<Vector> applyTo(List<Vector> vectors) {
-        return vectors.stream().map(vector -> rotation.transpose().multiply(vector).add(translation))
-                .collect(Collectors.toList());
+    public List<VectorType> applyTo(List<VectorType> vectors) {
+        List<VectorType> list = new ArrayList<>();
+        for (VectorType vector : vectors) {
+            Vector add = rotation.transpose().multiply(vector).add(translation);
+            list.add((VectorType) add);
+        }
+        return list;
     }
 
     @Override
-    public List<Vector> getReference() {
+    public List<VectorType> getReference() {
         return reference;
     }
 
     @Override
-    public List<Vector> getCandidate() {
+    public List<VectorType> getCandidate() {
         return candidate;
     }
 }

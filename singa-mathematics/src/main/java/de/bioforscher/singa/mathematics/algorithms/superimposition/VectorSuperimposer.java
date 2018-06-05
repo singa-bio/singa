@@ -20,29 +20,13 @@ import java.util.stream.Collectors;
  * @author fk
  * @see <a href="https://en.wikipedia.org/wiki/Kabsch_algorithm">Wikipedia: Kabsch algorithm</a>
  */
-public class VectorSuperimposer {
-
-    private final List<Vector> reference;
-    private final List<Vector> candidate;
-
-    private List<Vector> shiftedReference;
-    private List<Vector> shiftedCandidate;
-
-    private Matrix rotation;
-    private Vector referenceCentroid;
-    private Vector candidateCentroid;
-    private Vector translation;
-    private List<Vector> mappedCandidate;
-    private double rmsd;
+public class VectorSuperimposer extends AbstractSuperimposer<Vector> {
 
     private VectorSuperimposer(List<Vector> reference, List<Vector> candidate) {
-        this.reference = reference;
-        this.candidate = candidate;
-        if (this.reference.size() != this.candidate.size())
-            throw new IllegalArgumentException("Two lists of vectors cannot be superimposed if they differ in size.");
+        super(reference, candidate);
     }
 
-    public static VectorSuperimposition calculateVectorSuperimposition(List<Vector> reference, List<Vector> candidate) {
+    public static VectorSuperimposition<Vector> calculateVectorSuperimposition(List<Vector> reference, List<Vector> candidate) {
         return new VectorSuperimposer(reference, candidate).calculateSuperimposition();
     }
 
@@ -62,28 +46,30 @@ public class VectorSuperimposer {
         return new VectorSuperimposer(reference, candidate).calculateKuhnMunkresSuperimposition();
     }
 
-    private VectorSuperimposition calculateSuperimposition() {
+    @Override
+    protected void center() {
+        referenceCentroid = Vectors.getCentroid(reference);
+        shiftedReference = reference.stream()
+                .map(vector -> vector.subtract(referenceCentroid))
+                .collect(Collectors.toList());
+        candidateCentroid = Vectors.getCentroid(candidate);
+        shiftedCandidate = candidate.stream()
+                .map(vector -> vector.subtract(candidateCentroid))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    protected VectorSuperimposition<Vector> calculateSuperimposition() {
         center();
         calculateRotation();
         calculateTranslation();
         applyMapping();
         calculateRMSD();
-        return new VectorSuperimposition(rmsd, translation, rotation, reference, candidate, mappedCandidate);
+        return new VectorSuperimposition<>(rmsd, translation, rotation, reference, candidate, mappedCandidate);
     }
 
-    private void calculateRMSD() {
-        rmsd = 0.0;
-        int referenceSize = reference.size();
-        for (int i = 0; i < referenceSize; i++) {
-            Vector referenceEntity = reference.get(i);
-            Vector candidateEntity = mappedCandidate.get(i);
-            rmsd += VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC
-                    .calculateDistance(referenceEntity, candidateEntity);
-        }
-        rmsd = Math.sqrt(rmsd / referenceSize);
-    }
-
-    private void applyMapping() {
+    @Override
+    protected void applyMapping() {
         mappedCandidate = candidate.stream()
                 .map(vector -> rotation.transpose().multiply(vector).add(translation))
                 .collect(Collectors.toList());
@@ -123,17 +109,6 @@ public class VectorSuperimposer {
         }
     }
 
-    private void center() {
-        referenceCentroid = Vectors.getCentroid(reference);
-        shiftedReference = reference.stream()
-                .map(vector -> vector.subtract(referenceCentroid))
-                .collect(Collectors.toList());
-        candidateCentroid = Vectors.getCentroid(candidate);
-        shiftedCandidate = candidate.stream()
-                .map(vector -> vector.subtract(candidateCentroid))
-                .collect(Collectors.toList());
-    }
-
     /**
      * Finds the ideal superimposition (LRMSD = min(RMSD)) for a list of candidate vectors by exhaustive calculation of
      * all permutations.
@@ -141,13 +116,13 @@ public class VectorSuperimposer {
      * @return The ideal {@link VectorSuperimposition}.
      */
     private VectorSuperimposition calculateIdealSuperimposition() {
-        Optional<VectorSuperimposition> optionalSuperimposition = StreamPermutations.of(
+        Optional<VectorSuperimposition<Vector>> optionalSuperimposition = StreamPermutations.of(
                 candidate.toArray(new Vector[candidate.size()]))
                 .parallel()
                 .map(s -> s.collect(Collectors.toList()))
                 .map(permutedCandidates -> new VectorSuperimposer(reference, permutedCandidates)
                         .calculateSuperimposition())
-                .reduce((VectorSuperimposition s1, VectorSuperimposition s2) ->
+                .reduce((VectorSuperimposition<Vector> s1, VectorSuperimposition<Vector> s2) ->
                         s1.getRmsd() < s2.getRmsd() ? s1 : s2);
         return optionalSuperimposition.orElse(null);
     }

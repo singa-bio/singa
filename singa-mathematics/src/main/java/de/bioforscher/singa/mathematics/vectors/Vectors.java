@@ -262,7 +262,7 @@ public class Vectors {
      * @param vectors The vectors to calculate the centroid from.
      * @return The centroid.
      */
-    public static Vector getCentroid(Collection<Vector> vectors) {
+    public static <VectorType extends Vector> Vector getCentroid(Collection<VectorType> vectors) {
         return Addable.sum(vectors).divide(vectors.size());
     }
 

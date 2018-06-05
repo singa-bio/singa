@@ -3,7 +3,7 @@ package de.bioforscher.singa.structure.algorithms.superimposition;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.mathematics.algorithms.optimization.KuhnMunkres;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.Superimposition;
-import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorSuperimposer;
+import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorQuaternionSuperimposer;
 import de.bioforscher.singa.mathematics.algorithms.superimposition.VectorSuperimposition;
 import de.bioforscher.singa.mathematics.combinatorics.StreamPermutations;
 import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
@@ -213,7 +213,7 @@ public class SubstructureSuperimposer {
         }
 
         // calculate superimposition
-        VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(
+        VectorSuperimposition<Vector3D> vectorSuperimposition = VectorQuaternionSuperimposer.calculateVectorSuperimposition(
                 referenceAtoms.stream()
                         .map(Atom::getPosition)
                         .collect(Collectors.toList()),
@@ -227,7 +227,7 @@ public class SubstructureSuperimposer {
         double rmsd = vectorSuperimposition.getRmsd();
 
         // store mapping of atoms to vectors
-        List<Vector> mappedPositions = vectorSuperimposition.getMappedCandidate();
+        List<Vector3D> mappedPositions = vectorSuperimposition.getMappedCandidate();
         Map<Integer, Integer> positionMapping = new HashMap<>();
         for (int i = 0; i < mappedPositions.size(); i++) {
             positionMapping.put(candidateAtoms.get(i).getAtomIdentifier(), i);

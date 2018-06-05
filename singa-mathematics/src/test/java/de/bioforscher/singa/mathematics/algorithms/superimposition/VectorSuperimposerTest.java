@@ -54,7 +54,7 @@ public class VectorSuperimposerTest {
 
     @Test
     public void applySuperimposition() {
-        VectorSuperimposition vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(reference, candidate);
+        VectorSuperimposition<Vector> vectorSuperimposition = VectorSuperimposer.calculateVectorSuperimposition(reference, candidate);
         List<Vector> mappedCandidate = vectorSuperimposition.applyTo(candidate);
         assertVectorEquals(mappedCandidate.get(0), vectorSuperimposition.getMappedCandidate().get(0), 0.0);
         assertVectorEquals(mappedCandidate.get(1), vectorSuperimposition.getMappedCandidate().get(1), 0.0);

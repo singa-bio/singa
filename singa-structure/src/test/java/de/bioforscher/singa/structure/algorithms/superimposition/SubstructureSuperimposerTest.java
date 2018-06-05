@@ -52,7 +52,7 @@ public class SubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.LAST_HEAVY_SIDE_CHAIN));
-        assertEquals(0.5706912104847501, superimposition.getRmsd(), 0E-9);
+        assertEquals(0.5706912104847501, superimposition.getRmsd(), 1E-9);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SubstructureSuperimposerTest {
         SubstructureSuperimposition superimposition = SubstructureSuperimposer
                 .calculateSubstructureSuperimposition(reference, candidate,
                         RepresentationSchemeFactory.createRepresentationScheme(RepresentationSchemeType.SIDE_CHAIN_CENTROID));
-        assertEquals(0.05433403549113087, superimposition.getRmsd(), 0E-9);
+        assertEquals(0.05433403549113087, superimposition.getRmsd(), 1E-9);
     }
 
     @Test
