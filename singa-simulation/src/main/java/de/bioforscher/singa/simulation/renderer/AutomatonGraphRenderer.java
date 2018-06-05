@@ -44,21 +44,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
 
     @Override
     public void render(AutomatonGraph graph) {
-        double min = Double.MAX_VALUE;
-        double max = -Double.MAX_VALUE;
-        for (AutomatonNode node : graph.getNodes()) {
-            // FIXME current workaround for rendering multiple concentrations of one node
-            CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
-            double concentration = node.getConcentration(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
-            if (concentration > max) {
-                max = concentration;
-            } else if (concentration < min) {
-                min = concentration;
-            }
-        }
-        ColorScale nodeColorScale = bioRenderingOptions.getNodeColorScale();
-        nodeColorScale.setMaximalValue(max);
-        nodeColorScale.setMinimalValue(min);
+        rescaleColors(graph);
         super.render(graph);
     }
 
@@ -67,7 +53,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
         // decide on style
         switch (bioRenderingOptions.getRenderingMode()) {
             case ENTITY_BASED: {
-                getGraphicsContext().setFill(bioRenderingOptions.getNodeColor(node));
+                getGraphicsContext().setFill(bioRenderingOptions.getColorForUpdatable(node));
                 break;
             }
             case STATE_BASED: {
@@ -88,11 +74,11 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
 //                }
             }
         }
-        drawPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
+        fillPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
         // circle point if node is observed
         if (node.isObserved()) {
             getGraphicsContext().setStroke(Color.BLUEVIOLET);
-            circlePoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
+            strokeCircle(node.getPosition(), getRenderingOptions().getNodeDiameter());
         }
     }
 
@@ -106,16 +92,16 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
 //         if (edge.getSource().getState() != MEMBRANE || edge.getTarget().getState() != MEMBRANE) {
             // connection not between membrane nodes
             getGraphicsContext().setStroke(bioRenderingOptions.getEdgeColor(edge));
-            drawLineSegment(connectingSegment);
+            strokeLineSegment(connectingSegment);
 //        } else {
 //            // connection between membrane nodes
 //            getGraphicsContext().setStroke(Color.BURLYWOOD);
 //            // draw upper parallel
 //            SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment(getRenderingOptions().getNodeDiameter() / 2.0);
-//            drawLineSegment(upperParallelSegment);
+//            strokeLineSegment(upperParallelSegment);
 //            // draw lower parallel
 //            SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment(-getRenderingOptions().getNodeDiameter() / 2.0);
-//            drawLineSegment(lowerParallelSegment);
+//            strokeLineSegment(lowerParallelSegment);
 //        }
     }
 
@@ -135,7 +121,7 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
                     for (VoronoiCell voronoiCell : diagram.getCells()) {
                         int nodeIdentifier = voronoiCell.getSite().getIdentifier();
                         AutomatonNode automatonNode = nodeMap.get(nodeIdentifier);
-                        getGraphicsContext().setFill(bioRenderingOptions.getNodeColor(automatonNode));
+                        getGraphicsContext().setFill(bioRenderingOptions.getColorForUpdatable(automatonNode));
                         fillPolygon(voronoiCell);
                     }
                 }
@@ -148,6 +134,24 @@ public class AutomatonGraphRenderer extends GraphRenderer<AutomatonNode, Automat
     @Override
     public void onEventReceived(GraphUpdatedEvent event) {
         getGraphQueue().add(event.getGraph());
+    }
+
+    public void rescaleColors(AutomatonGraph graph) {
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (AutomatonNode node : graph.getNodes()) {
+            // FIXME current workaround for rendering multiple concentrations of one node
+            CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
+            double concentration = node.getConcentration(firstSubsection, bioRenderingOptions.getNodeHighlightEntity()).getValue().doubleValue();
+            if (concentration > max) {
+                max = concentration;
+            } else if (concentration < min) {
+                min = concentration;
+            }
+        }
+        ColorScale nodeColorScale = bioRenderingOptions.getNodeColorScale();
+        nodeColorScale.setMaximalValue(max);
+        nodeColorScale.setMinimalValue(min);
     }
 
 }

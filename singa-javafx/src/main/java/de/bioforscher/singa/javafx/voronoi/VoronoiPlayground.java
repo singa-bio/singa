@@ -152,22 +152,22 @@ public class VoronoiPlayground extends Application implements Renderer {
 
     private void clearCanvas() {
         getGraphicsContext().setFill(Color.WHITE);
-        drawRectangle(new Vector2D(0, 0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
+        fillRectangle(new Vector2D(0, 0), new Vector2D(getDrawingWidth(), getDrawingHeight()));
     }
 
     private void drawDiagram() {
         getGraphicsContext().setStroke(Color.TOMATO);
         getGraphicsContext().setLineWidth(4);
-        diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+        diagram.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
         getGraphicsContext().setLineWidth(6);
         getGraphicsContext().setFill(Color.GREEN);
-        diagram.getVertices().forEach(this::drawPoint);
+        diagram.getVertices().forEach(this::fillPoint);
     }
 
     private void drawPoints() {
         getGraphicsContext().setFill(Color.DARKRED);
         getGraphicsContext().setLineWidth(4);
-        points.forEach(this::drawPoint);
+        points.forEach(this::fillPoint);
     }
 
 }

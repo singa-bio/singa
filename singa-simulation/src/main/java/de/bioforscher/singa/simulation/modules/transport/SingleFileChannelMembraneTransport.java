@@ -65,8 +65,8 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
         List<Delta> deltas = new ArrayList<>();
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(MEMBRANE, transporter), Environment.getSubsectionVolume()).getValue().doubleValue();
-        deltas.add(new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration())));
-        deltas.add(new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+        deltas.add(new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         return deltas;
     }
 

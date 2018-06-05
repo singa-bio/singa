@@ -38,7 +38,8 @@ public class TimeStepHarmonizer {
 
     public boolean step() {
         // set initial step
-        updatables = simulation.collectUpdatables();
+        simulation.collectUpdatables();
+        updatables = simulation.getUpdatables();
         vesicleLayer = simulation.getVesicleLayer();
         currentTimeStep = Environment.getTimeStep();
         if (timeStepChanged) {

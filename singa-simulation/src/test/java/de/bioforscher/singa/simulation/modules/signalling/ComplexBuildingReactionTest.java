@@ -5,6 +5,7 @@ import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -13,6 +14,7 @@ import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
+import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,11 @@ import static tec.uom.se.unit.Units.MINUTE;
 public class ComplexBuildingReactionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
+
+    @After
+    public void cleanUp() {
+        Environment.reset();
+    }
 
     @Test
     public void testMembraneAbsorption() {

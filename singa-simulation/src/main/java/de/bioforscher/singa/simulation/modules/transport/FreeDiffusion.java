@@ -109,7 +109,8 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, Environment.getTransformedMolarConcentration()));
+        // System.out.println(delta);
+        return new Delta(this, currentCellSection, currentChemicalEntity, Quantities.getQuantity(delta, Environment.getConcentrationUnit()));
     }
 
     private boolean chemicalEntityIsNotMembraneAnchored() {

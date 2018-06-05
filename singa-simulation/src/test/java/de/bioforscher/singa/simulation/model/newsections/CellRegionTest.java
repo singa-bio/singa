@@ -3,7 +3,6 @@ package de.bioforscher.singa.simulation.model.newsections;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.features.parameters.Environment;
-import org.junit.Ignore;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -61,13 +60,5 @@ public class CellRegionTest {
         // reset environment
         Environment.reset();
     }
-
-    @Test
-    @Ignore
-    public void resembleVesicleAssociatedContainer() {
-
-    }
-
-
 
 }

@@ -145,7 +145,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
                 deltaValue = velocity * reactant.getStoichiometricNumber();
 
             }
-            deltas.add(new Delta(this, getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getTransformedMolarConcentration())));
+            deltas.add(new Delta(this, getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
         }
         return deltas;
     }

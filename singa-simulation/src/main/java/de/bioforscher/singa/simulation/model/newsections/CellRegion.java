@@ -64,7 +64,7 @@ public class CellRegion {
         ConcentrationContainer container = new ConcentrationContainer();
         for (Map.Entry<CellTopology, CellSubsection> entry : cellSubSections.entrySet()) {
             container.initializeSubsection(entry.getValue(), entry.getKey());
-            entry.getValue().setPreferredConcentrationUnit(Environment.getTransformedMolarConcentration());
+            entry.getValue().setPreferredConcentrationUnit(Environment.getConcentrationUnit());
         }
         return container;
     }

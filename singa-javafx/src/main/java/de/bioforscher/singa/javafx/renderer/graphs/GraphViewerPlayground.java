@@ -56,15 +56,15 @@ public class GraphViewerPlayground {
         renderer.setRenderBefore((currentGraph) -> {
             renderer.getGraphicsContext().setStroke(Color.DARKBLUE);
             for (GenericNode<LeafSubstructure<?>> shellNode : firstShell) {
-                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
+                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             renderer.getGraphicsContext().setStroke(Color.RED);
             for (GenericNode<LeafSubstructure<?>> shellNode : secondShell) {
-                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
+                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             renderer.getGraphicsContext().setStroke(Color.YELLOW);
             for (GenericNode<LeafSubstructure<?>> shellNode : thirdShell) {
-                renderer.circlePoint(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
+                renderer.strokeCircle(currentGraph.getNode(shellNode.getIdentifier()).getPosition(), renderer.getRenderingOptions().getNodeDiameter() + 2);
             }
             return null;
         });

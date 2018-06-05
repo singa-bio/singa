@@ -8,7 +8,7 @@ import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
  *
  * @author cl
  */
-class DeltaIdentifier {
+public class DeltaIdentifier {
 
     /**
      * The object the delta is assigned to.
@@ -32,7 +32,7 @@ class DeltaIdentifier {
      * @param section The cell section the delta is assigned to.
      * @param entity The entity the delta is assigned to.
      */
-    DeltaIdentifier(Updatable updatable, CellSubsection section, ChemicalEntity entity) {
+    public DeltaIdentifier(Updatable updatable, CellSubsection section, ChemicalEntity entity) {
         this.updatable = updatable;
         this.section = section;
         this.entity = entity;

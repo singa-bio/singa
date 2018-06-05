@@ -30,7 +30,7 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
     /**
      * The functions that are applied with each epoch and for each node.
      */
-    private final Map<Function<ConcentrationContainer, Map<Updatable, Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
+    private final Map<Function<ConcentrationContainer, Map<DeltaIdentifier, Delta>>, Predicate<ConcentrationContainer>> deltaFunctions;
 
     /**
      * Creates a new neighbourhood dependent module for the given simulation.
@@ -50,7 +50,7 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
      * @param deltaFunction The delta function.
      * @param predicate The predicate for the conditional application.
      */
-    public void addDeltaFunction(Function<ConcentrationContainer, Map<Updatable, Delta>> deltaFunction, Predicate<ConcentrationContainer> predicate) {
+    public void addDeltaFunction(Function<ConcentrationContainer, Map<DeltaIdentifier, Delta>> deltaFunction, Predicate<ConcentrationContainer> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
     }
 
@@ -92,17 +92,17 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
      */
     private void determineFullStepDeltas(ConcentrationContainer concentrationContainer) {
         // determine full step deltas and half step concentrations
-        for (Map.Entry<Function<ConcentrationContainer, Map<Updatable, Delta>>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
+        for (Map.Entry<Function<ConcentrationContainer, Map<DeltaIdentifier, Delta>>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
-                Map<Updatable, Delta> fullDeltas = entry.getKey().apply(concentrationContainer);
-                for (Map.Entry<Updatable, Delta> delta : fullDeltas.entrySet()) {
-                    Updatable updatable = delta.getKey();
+                Map<DeltaIdentifier, Delta> fullDeltas = entry.getKey().apply(concentrationContainer);
+                for (Map.Entry<DeltaIdentifier, Delta> delta : fullDeltas.entrySet()) {
                     Delta fullDelta = delta.getValue();
-                    currentChemicalEntity = fullDelta.getChemicalEntity();
-                    currentCellSection = fullDelta.getCellSubsection();
+                    DeltaIdentifier deltaIdentifier = delta.getKey();
+                    currentChemicalEntity = deltaIdentifier.getEntity();
+                    currentCellSection = deltaIdentifier.getSection();
                     if (deltaIsValid(fullDelta)) {
-                        logger.trace("Calculated full delta for {}:{} in {}: {}", updatable.getStringIdentifier(), currentCellSection.getIdentifier(), currentChemicalEntity.getName(), fullDelta.getQuantity());
-                        currentFullDeltas.put(new DeltaIdentifier(updatable, currentCellSection, currentChemicalEntity), fullDelta);
+                        logger.trace("Full delta for {} in {}:{} = {}", currentChemicalEntity.getName(), deltaIdentifier.getUpdatable().getStringIdentifier(), currentCellSection.getIdentifier(), fullDelta.getQuantity());
+                        currentFullDeltas.put(deltaIdentifier, fullDelta);
                     }
                 }
             }
@@ -141,17 +141,19 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
             return;
         }
         // determine half step deltas
-        for (Map.Entry<Function<ConcentrationContainer, Map<Updatable, Delta>>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
+        for (Map.Entry<Function<ConcentrationContainer, Map<DeltaIdentifier, Delta>>, Predicate<ConcentrationContainer>> entry : deltaFunctions.entrySet()) {
             if (entry.getValue().test(concentrationContainer)) {
-                Map<Updatable, Delta> halfDeltas = entry.getKey().apply(concentrationContainer);
-                for (Map.Entry<Updatable, Delta> deltaEntry : halfDeltas.entrySet()) {
-                    Updatable updatable = deltaEntry.getKey();
+                Map<DeltaIdentifier, Delta> halfDeltas = entry.getKey().apply(concentrationContainer);
+                for (Map.Entry<DeltaIdentifier, Delta> deltaEntry : halfDeltas.entrySet()) {
+                    DeltaIdentifier deltaIdentifier = deltaEntry.getKey();
+                    currentChemicalEntity = deltaIdentifier.getEntity();
+                    currentCellSection = deltaIdentifier.getSection();
                     Delta halfDelta = deltaEntry.getValue();
                     if (deltaIsValid(halfDelta)) {
                         halfDelta = halfDelta.multiply(2.0);
-                        logger.trace("Calculated half delta for {}:{} in {}: {}", updatable.getStringIdentifier(), halfDelta.getCellSubsection().getIdentifier(), halfDelta.getChemicalEntity().getName(), halfDelta.getQuantity());
-                        currentHalfDeltas.put(new DeltaIdentifier(updatable, halfDelta.getCellSubsection(), halfDelta.getChemicalEntity()), halfDelta);
-                        updatable.addPotentialDelta(halfDelta);
+                        logger.trace("Half delta for {} in {}:{} = {}", currentChemicalEntity.getName(), deltaIdentifier.getUpdatable().getStringIdentifier(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+                        currentHalfDeltas.put(deltaIdentifier, halfDelta);
+                        currentUpdatable.addPotentialDelta(halfDelta);
                     }
                 }
             }

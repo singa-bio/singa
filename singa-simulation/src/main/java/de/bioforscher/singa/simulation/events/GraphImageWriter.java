@@ -217,7 +217,7 @@ public class GraphImageWriter implements UpdateEventListener<GraphUpdatedEvent> 
             renderer.drawingHeightProperty().setValue(drawingHeight);
             Function<AutomatonGraph, Void> renderTimeStamp = timeStepRendering -> {
                 renderer.getGraphicsContext().setFill(Color.BLACK);
-                renderer.drawTextCenteredOnPoint(TIME_FORMATTER.format(event.getElapsedTime()), new Vector2D(renderer.getDrawingWidth() * 0.6, renderer.getDrawingHeight() * 0.85));
+                renderer.strokeTextCenteredOnPoint(TIME_FORMATTER.format(event.getElapsedTime()), new Vector2D(renderer.getDrawingWidth() * 0.6, renderer.getDrawingHeight() * 0.85));
                 return null;
             };
             renderer.setRenderAfter(renderTimeStamp);

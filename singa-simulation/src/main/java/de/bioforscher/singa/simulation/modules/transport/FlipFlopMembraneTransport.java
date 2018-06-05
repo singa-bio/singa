@@ -66,7 +66,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         // (outer phase) outer phase = -kIn * outer phase + kOut * outer layer
         final double value = -kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
@@ -83,7 +83,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getSubsection(MEMBRANE_OUTER_LAYER), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getSubsection(MEMBRANE_OUTER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
@@ -100,7 +100,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getSubsection(MEMBRANE_INNER_LAYER), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getSubsection(MEMBRANE_INNER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
@@ -115,7 +115,7 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         // (inner phase) inner phase = -kIn * inner phase + kOut * inner layer
         final double value = -kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration()));
+        return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
     }
 
     /**

@@ -129,6 +129,8 @@ public class Simulation {
      */
     private boolean initializationDone;
 
+    private ArrayList<Updatable> updatables;
+
     /**
      * Creates a new plain simulation.
      */
@@ -166,8 +168,8 @@ public class Simulation {
         boolean timeStepChanged = harmonizer.step();
         // apply generated deltas
         logger.debug("Applying deltas.");
-        for (AutomatonNode node : getGraph().getNodes()) {
-            node.applyDeltas();
+        for (Updatable updatable: updatables) {
+            updatable.applyDeltas();
         }
         // move vesicles
         if (vesicleLayer != null) {
@@ -309,11 +311,14 @@ public class Simulation {
         }
     }
 
-    public List<Updatable> collectUpdatables() {
-        List<Updatable> updatables = new ArrayList<>(graph.getNodes());
+    public void collectUpdatables() {
+        updatables = new ArrayList<>(graph.getNodes());
         if (vesicleLayer != null) {
             updatables.addAll(vesicleLayer.getVesicles());
         }
+    }
+
+    public ArrayList<Updatable> getUpdatables() {
         return updatables;
     }
 

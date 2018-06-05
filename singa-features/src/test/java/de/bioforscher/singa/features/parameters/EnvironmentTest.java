@@ -15,18 +15,16 @@ import static tec.uom.se.unit.Units.MOLE;
 /**
  * @author cl
  */
-public class EnvironmentalParametersTest {
+public class EnvironmentTest {
 
     @Test
     public void getTransformedMolarConcentration() {
         final ComparableQuantity<MolarConcentration> molePerLitre = Quantities.getQuantity(1, MOLE_PER_LITRE);
         final ComparableQuantity<MolarConcentration> molePerCubicMicroMetre = molePerLitre.to(new ProductUnit<>(MOLE.divide(MICRO(METRE).multiply(MICRO(METRE).multiply(MICRO(METRE))))));
         Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        assertEquals(molePerCubicMicroMetre, molePerLitre.to(Environment.getTransformedMolarConcentration()));
+        assertEquals(molePerCubicMicroMetre, molePerLitre.to(Environment.getConcentrationUnit()));
         Environment.setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
-        assertEquals(1.25E-16 , molePerLitre.to(Environment.getTransformedMolarConcentration()).getValue());
-        Environment.setNodeDistance(Quantities.getQuantity(0.5, MICRO(METRE)));
-        assertEquals(8.0E-15, molePerLitre.to(Environment.getTransformedMolarConcentration()).getValue());
-
+        assertEquals(1.0E-15 , molePerLitre.to(Environment.getConcentrationUnit()).getValue());
     }
+
 }

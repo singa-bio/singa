@@ -201,7 +201,7 @@ public class SimulationExamples {
                 .name("Fructose-bisphosphate aldolase")
                 .addSubstrate(fructosePhosphate)
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()), MANUALLY_ANNOTATED))
                 .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
                 .build();
 
@@ -524,7 +524,7 @@ public class SimulationExamples {
                     (coordinate.getRow() == 17 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28)) {
                 // setup membrane
                 node.setCellRegion(CellRegion.MEMBRANE);
-                node.setAvailableConcentration(CellRegion.MEMBRANE.getOuterSubsection(), domperidone, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+                node.setAvailableConcentration(CellRegion.MEMBRANE.getOuterSubsection(), domperidone, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()));
             } else if (coordinate.getColumn() > 2 && coordinate.getRow() > 2 && coordinate.getColumn() < 27 && coordinate.getRow() < 17) {
                 node.setCellRegion(CellRegion.CYTOSOL_A);
                 node.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getInnerSubsection(), domperidone, 0.0);

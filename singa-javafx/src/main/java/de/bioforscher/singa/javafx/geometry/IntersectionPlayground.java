@@ -36,15 +36,15 @@ public class IntersectionPlayground extends Application implements Renderer {
         root.setCenter(canvas);
 
         Rectangle rectangle = new Rectangle(new Vector2D(100, 100), new Vector2D(200,200));
-        drawPolygon(rectangle);
+        strokePolygon(rectangle);
 
         Circle circle = new Circle(new Vector2D(200, 200), 25);
-        drawCircle(circle);
+        fillCircle(circle);
 
         Set<Vector2D> intersections = rectangle.getIntersections(circle);
         getGraphicsContext().setLineWidth(6);
         getGraphicsContext().setFill(Color.GREEN);
-        intersections.forEach(this::drawPoint);
+        intersections.forEach(this::fillPoint);
         Iterator<Vector2D> iterator = intersections.iterator();
         Vector2D first = iterator.next();
         Vector2D second = iterator.next();

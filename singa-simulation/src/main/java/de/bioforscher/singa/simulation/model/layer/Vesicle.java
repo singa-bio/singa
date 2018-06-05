@@ -37,6 +37,20 @@ public class Vesicle implements Updatable {
 
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
+    private String identifier;
+    private Quantity<Length> radius;
+    private Quantity<Area> area;
+    private Quantity<Volume> volume;
+    private Diffusivity diffusivity;
+
+    private SimpleUpdateManager updateManager;
+    private final CellRegion region;
+    private Map<AutomatonNode, Quantity<Area>> associatedNodes;
+
+    private Vector2D position;
+    private List<SpatialDelta> potentialSpatialDeltas;
+    private Vector2D potentialUpdate;
+
     /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
      * D = (k_B * T) / (6 * pi * nu * radius)
@@ -77,20 +91,6 @@ public class Vesicle implements Updatable {
         return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
     }
 
-    private String identifier;
-    private Quantity<Length> radius;
-    private Quantity<Area> area;
-    private Quantity<Volume> volume;
-    private Diffusivity diffusivity;
-
-    private ConcentrationContainer concentrations;
-    private SimpleUpdateManager updateManager;
-    private final CellRegion region;
-    private Map<AutomatonNode, Quantity<Area>> associatedNodes;
-
-    private Vector2D position;
-    private List<SpatialDelta> potentialSpatialDeltas;
-    private Vector2D potentialUpdate;
 
 
     public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
@@ -99,8 +99,7 @@ public class Vesicle implements Updatable {
         potentialSpatialDeltas = new ArrayList<>();
         setRadius(radius);
         region = CellRegion.forVesicle(identifier);
-        concentrations = region.setUpConcentrationContainer();
-        updateManager = new SimpleUpdateManager(concentrations);
+        updateManager = new SimpleUpdateManager(region.setUpConcentrationContainer());
         associatedNodes = new HashMap<>();
     }
 
@@ -140,11 +139,11 @@ public class Vesicle implements Updatable {
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        concentrations.set(region.getInnerSubsection(), entity, Environment.transformToVolume(concentration, volume));
+        updateManager.getConcentrationContainer().set(region.getInnerSubsection(), entity, concentration);
     }
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return concentrations.get(region.getInnerSubsection(), entity);
+        return updateManager.getConcentrationContainer().get(region.getInnerSubsection(), entity);
     }
 
     public Map<AutomatonNode, Quantity<Area>> getAssociatedNodes() {
@@ -191,12 +190,12 @@ public class Vesicle implements Updatable {
 
     @Override
     public ConcentrationContainer getConcentrationContainer() {
-        return concentrations;
+        return updateManager.getConcentrationContainer();
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(CellSubsection cellSection, ChemicalEntity chemicalEntity) {
-        return concentrations.get(cellSection, chemicalEntity);
+        return updateManager.getConcentrationContainer().get(cellSection, chemicalEntity);
     }
 
     @Override
@@ -206,7 +205,7 @@ public class Vesicle implements Updatable {
 
     @Override
     public Set<CellSubsection> getAllReferencedSections() {
-        return concentrations.getReferencedSubSections();
+        return updateManager.getConcentrationContainer().getReferencedSubSections();
     }
 
     @Override

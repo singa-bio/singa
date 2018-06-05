@@ -28,7 +28,7 @@ public class CellSubsection implements Observer {
 
     public CellSubsection(String identifier, boolean dynamicConcentration) {
         this.identifier = identifier;
-        preferredConcentrationUnit = Environment.getTransformedMolarConcentration();
+        preferredConcentrationUnit = Environment.getConcentrationUnit();
         if (dynamicConcentration) {
             Environment.attachObserver(this);
         }
@@ -62,6 +62,6 @@ public class CellSubsection implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        setPreferredConcentrationUnit(Environment.getTransformedMolarConcentration());
+        setPreferredConcentrationUnit(Environment.getConcentrationUnit());
     }
 }

@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.permeability.Membrane
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -75,7 +76,7 @@ public class VesiclePlayground extends Application implements Renderer {
         simulation = new Simulation();
 
         Vesicle vesicle = new Vesicle("0",
-                new Vector2D(250, 250),
+                new Vector2D(220, 220),
                 Quantities.getQuantity(ThreadLocalRandom.current()
                         .nextDouble(100, 200), NANO(METRE))
                         .to(Environment.getNodeDistance().getUnit()));
@@ -99,7 +100,7 @@ public class VesiclePlayground extends Application implements Renderer {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
                 .assignFeature(new Diffusivity(10, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
@@ -160,13 +161,19 @@ public class VesiclePlayground extends Application implements Renderer {
         getGraphicsContext().setFill(Color.WHITE);
         fillPolygon(rectangle);
         getGraphicsContext().setFill(Color.BLACK);
+        renderer.rescaleColors(simulation.getGraph());
         for (AutomatonNode node : simulation.getGraph().getNodes()) {
-            Polygon spatialRepresentation = node.getSpatialRepresentation();
-            getGraphicsContext().setFill(renderer.getBioRenderingOptions().getNodeColor(node));
-            fillPolygon(spatialRepresentation);
-            drawPolygon(spatialRepresentation);
+            Polygon polygon = node.getSpatialRepresentation();
+            getGraphicsContext().setFill(renderer.getBioRenderingOptions().getColorForUpdatable(node));
+            fillPolygon(polygon);
+            strokePolygon(polygon);
         }
-        simulation.getVesicleLayer().getVesicles().stream().map(Vesicle::getCircleRepresentation).forEach(this::drawCircle);
+        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+            Circle circle = vesicle.getCircleRepresentation();
+            getGraphicsContext().setFill(renderer.getBioRenderingOptions().getColorForUpdatable(vesicle));
+            fillCircle(circle);
+            strokeCircle(circle);
+        }
     }
 
     @Override

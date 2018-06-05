@@ -9,8 +9,8 @@ import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentNodeSpecificModule;
 import de.bioforscher.singa.simulation.modules.model.Delta;
+import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.model.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -58,19 +58,19 @@ public class MembraneDiffusion extends AbstractNeighbourDependentNodeSpecificMod
         addModuleToSimulation();
     }
 
-    private Map<Updatable, Delta> calculateDeltas(ConcentrationContainer container) {
-        Map<Updatable, Delta> deltas = new HashMap<>();
+    private Map<DeltaIdentifier, Delta> calculateDeltas(ConcentrationContainer container) {
+        Map<DeltaIdentifier, Delta> deltas = new HashMap<>();
         if (currentUpdatable instanceof Vesicle) {
             handlePartialDistributionInVesicles(deltas, (Vesicle) currentUpdatable);
         } else {
-            double value = calculateVelocity(container, container);
-            deltas.put(currentUpdatable, new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getTransformedMolarConcentration())));
-            deltas.put(currentUpdatable, new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getTransformedMolarConcentration())));
+            double value = calculateVelocity(container, container) * Environment.getSubsectionArea().getValue().doubleValue();
+            deltas.put(new DeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo), new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+            deltas.put(new DeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo), new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         }
         return deltas;
     }
 
-    private void handlePartialDistributionInVesicles(Map<Updatable, Delta> deltas, Vesicle vesicle) {
+    private void handlePartialDistributionInVesicles(Map<DeltaIdentifier, Delta> deltas, Vesicle vesicle) {
         Map<AutomatonNode, Quantity<Area>> associatedNodes = vesicle.getAssociatedNodes();
         double vesicleUpdate = 0.0;
         ConcentrationContainer vesicleContainer = vesicle.getConcentrationContainer();
@@ -82,11 +82,12 @@ public class MembraneDiffusion extends AbstractNeighbourDependentNodeSpecificMod
             } else {
                 nodeContainer = node.getConcentrationContainer();
             }
-            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * entry.getValue().getValue().doubleValue();
+            Quantity<Area> area = entry.getValue();
+            double velocity = calculateVelocity(vesicleContainer, nodeContainer) * area.getValue().doubleValue();
             vesicleUpdate += velocity;
-            deltas.put(node, new Delta(this, nodeContainer.getInnerSubsection(), cargo, Quantities.getQuantity(-velocity, Environment.getTransformedMolarConcentration())));
+            deltas.put(new DeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo), new Delta(this, nodeContainer.getInnerSubsection(), cargo, Quantities.getQuantity(-velocity, Environment.getConcentrationUnit())));
         }
-        deltas.put(vesicle, new Delta(this, vesicleContainer.getInnerSubsection(), cargo, Quantities.getQuantity(vesicleUpdate, Environment.getTransformedMolarConcentration())));
+        deltas.put(new DeltaIdentifier(vesicle, vesicleContainer.getInnerSubsection(), cargo), new Delta(this, vesicleContainer.getInnerSubsection(), cargo, Quantities.getQuantity(vesicleUpdate, Environment.getConcentrationUnit())));
     }
 
     private double calculateVelocity(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {

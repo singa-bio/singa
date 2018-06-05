@@ -20,22 +20,24 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
     // theoretically it is volume / time * area - volume and area cancel out
     private static Unit<Length> CENTIMETRE = CENTI(METRE);
     public static final Unit<MembranePermeability> CENTIMETRE_PER_SECOND = new ProductUnit<>(CENTIMETRE.divide(SECOND));
-    public static final Unit<MembranePermeability> CUBIC_CENITMETRE_PER_SECOND_AND_SQUARE_CENTIMETRE = new ProductUnit<>(CENTIMETRE.pow(3).divide(SECOND.multiply(CENTIMETRE.pow(2))));
 
     public static final String SYMBOL = "P_d";
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(membranePermeabilityQuantity.to(new ProductUnit<>(Environment.getTransformedLength().divide(SECOND))), featureOrigin);
+        super(membranePermeabilityQuantity
+                .to(Environment.getNodeDistanceUnit().divide(SECOND).asType(MembranePermeability.class)),
+                featureOrigin);
     }
 
     @Override
-    public void scale(Quantity<Time> time, Quantity<Length> space) {
+    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
         // transform to specified unit
-        Quantity<MembranePermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedLength().divide(time.getUnit())));
-        // transform to specified amount
-        scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
+        Quantity<MembranePermeability> transformedQuantity = getFeatureContent()
+                .to(targetLengthScale.getUnit().divide(targetTimeScale.getUnit()).asType(MembranePermeability.class));
+        // transform to specified amount (scaling by time)
+        scaledQuantity = transformedQuantity.multiply(targetTimeScale.getValue().doubleValue());
         // and half
-        halfScaledQuantity = transformedQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
+        halfScaledQuantity = transformedQuantity.multiply(targetTimeScale.multiply(0.5).getValue().doubleValue());
     }
 
     @Override

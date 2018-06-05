@@ -93,7 +93,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     @Override
     public LocalError determineDeltas(Updatable node) {
         // using neighbor dependent modules you need to calculate all changes
-        determineAllDeltas(simulation.collectUpdatables());
+        determineAllDeltas(simulation.getUpdatables());
         return largestLocalError;
     }
 
@@ -147,12 +147,12 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
     @Override
     void applyHalfStepDelta(Delta halfDelta) {
-        halfDelta = halfDelta.multiply(2.0);
-        if (halfDelta.getQuantity().getValue().doubleValue() > 0.0) {
+        if (Math.abs(halfDelta.getQuantity().getValue().doubleValue()) > 0.0) {
+            halfDelta = halfDelta.multiply(2.0);
             logger.trace("Calculated half delta for {} in {}: {}", currentChemicalEntity.getIdentifier(), currentCellSection.getIdentifier(), halfDelta.getQuantity());
+            currentHalfDeltas.put(new DeltaIdentifier(currentUpdatable, currentCellSection, currentChemicalEntity), halfDelta);
+            currentUpdatable.addPotentialDelta(halfDelta);
         }
-        currentHalfDeltas.put(new DeltaIdentifier(currentUpdatable, currentCellSection, currentChemicalEntity), halfDelta);
-        currentUpdatable.addPotentialDelta(halfDelta);
     }
 
     /**

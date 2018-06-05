@@ -42,7 +42,9 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(osmoticPermeabilityQuantity.to(new ProductUnit<>(Environment.getTransformedVolume().divide(SECOND))), featureOrigin);
+        super(osmoticPermeabilityQuantity
+                .to(Environment.getVolumeUnit().divide(Environment.getTimeUnit()).asType(OsmoticPermeability.class)),
+                featureOrigin);
     }
 
     /**
@@ -113,13 +115,14 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
     }
 
     @Override
-    public void scale(Quantity<Time> time, Quantity<Length> space) {
+    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
+        Unit<Length> length = targetLengthScale.getUnit();
         // transform to specified unit
-        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedVolume().divide(time.getUnit())));
+        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(length.multiply(length).multiply(length).divide(targetTimeScale.getUnit()).asType(OsmoticPermeability.class));
         // transform to specified amount
-        scaledQuantity = transformedQuantity.multiply(time.getValue().doubleValue());
+        scaledQuantity = transformedQuantity.multiply(targetTimeScale.getValue().doubleValue());
         // and half
-        halfScaledQuantity = transformedQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
+        halfScaledQuantity = transformedQuantity.multiply(targetTimeScale.multiply(0.5).getValue().doubleValue());
     }
 
     @Override

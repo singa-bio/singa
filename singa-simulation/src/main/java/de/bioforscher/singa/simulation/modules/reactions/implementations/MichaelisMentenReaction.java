@@ -15,7 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author cl
+ * @author cl#
+ * @deprecated
  */
 public class MichaelisMentenReaction extends Reaction {
 

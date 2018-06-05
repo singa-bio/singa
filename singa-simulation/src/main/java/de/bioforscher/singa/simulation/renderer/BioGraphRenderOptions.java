@@ -3,8 +3,8 @@ package de.bioforscher.singa.simulation.renderer;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.javafx.renderer.colors.ColorScale;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
 import javafx.scene.paint.Color;
 
 public class BioGraphRenderOptions {
@@ -53,7 +53,7 @@ public class BioGraphRenderOptions {
         this.edgeHighlightEntity = edgeHighlightEntity;
     }
 
-    public Color getNodeColor(AutomatonNode node) {
+    public Color getColorForUpdatable(Updatable node) {
         CellSubsection firstSubsection = node.getCellRegion().getSubsections().iterator().next();
         if (nodeHighlightEntity != null) {
             double concentration = node.getConcentration(firstSubsection, nodeHighlightEntity).getValue().doubleValue();

@@ -21,13 +21,13 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
     protected void drawNode(MoleculeAtom atom) {
         // draw node
         getGraphicsContext().setFill(moleculeOptions.getColorForElement(atom.getElement().getSymbol()));
-        drawPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
+        fillPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw outline
         getGraphicsContext().setStroke(getRenderingOptions().getEdgeColor());
-        circlePoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
+        strokeCircle(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
-        drawTextCenteredOnPoint(atom.getElement().toString() + "." + atom.getIdentifier(), atom.getPosition());
+        strokeTextCenteredOnPoint(atom.getElement().toString() + "." + atom.getIdentifier(), atom.getPosition());
     }
 
     @Override
@@ -46,16 +46,16 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
             case DOUBLE_BOND: {
                 // draw upper parallel
                 SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(upperParallelSegment);
+                strokeLineSegment(upperParallelSegment);
                 // draw lower parallel
                 SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(lowerParallelSegment);
+                strokeLineSegment(lowerParallelSegment);
                 break;
             }
             case AROMATIC_BOND: {
                 // draw upper parallel
                 SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(upperParallelSegment);
+                strokeLineSegment(upperParallelSegment);
                 // draw lower parallel
                 SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
                 dashLineSegment(lowerParallelSegment, 2d, 4d);
@@ -63,7 +63,7 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
             }
             default:
                 // draw single bond
-                drawLineSegment(connectingSegment);
+                strokeLineSegment(connectingSegment);
                 break;
         }
 

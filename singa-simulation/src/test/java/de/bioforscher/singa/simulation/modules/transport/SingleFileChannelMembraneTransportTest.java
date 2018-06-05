@@ -14,6 +14,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import org.junit.After;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -30,6 +31,11 @@ import static tec.uom.se.unit.Units.METRE;
 public class SingleFileChannelMembraneTransportTest {
 
     private static final FeatureOrigin BINESH2015 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Binesh 2015", "Binesh, A. R., and R. Kamali. \"Molecular dynamics insights into human aquaporin 2 water channel.\" Biophysical chemistry 207 (2015): 107-113.");
+
+    @After
+    public void cleanUp() {
+        Environment.reset();
+    }
 
     @Test
     public void shouldSimulateChannelDiffusion() {
@@ -81,6 +87,7 @@ public class SingleFileChannelMembraneTransportTest {
             }
             previousOuterConcentration = currentOuterConcentration;
         }
+        Environment.reset();
     }
 
 }

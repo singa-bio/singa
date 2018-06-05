@@ -37,14 +37,14 @@ public interface Renderer {
      * </ul>
      *
      * @param point The position of the point.
-     * @param diameter The diameter of the point.
+     * @param radius The diameter of the point.
      */
-    default void drawPoint(Vector2D point, double diameter) {
+    default void fillPoint(Vector2D point, double radius) {
         getGraphicsContext().fillOval(
-                point.getX() - diameter / 2.0,
-                point.getY() - diameter / 2.0,
-                diameter,
-                diameter);
+                point.getX() - radius / 2.0,
+                point.getY() - radius / 2.0,
+                radius,
+                radius);
     }
 
     /**
@@ -57,31 +57,28 @@ public interface Renderer {
      *
      * @param point The position of the point.
      */
-    default void drawPoint(Vector2D point) {
-        drawPoint(point, getGraphicsContext().getLineWidth());
+    default void fillPoint(Vector2D point) {
+        fillPoint(point, getGraphicsContext().getLineWidth() * 2.0);
     }
 
-    /**
-     * Circles the outline of a point where the {@link Vector2D} is positioned. The point is centered
-     * on the vector
-     * .<br>
-     * <ul>
-     * <li> The color is determined by the FillColor (set by {@link GraphicsContext#setFill(Paint)}).</li>
-     * </ul>
-     *
-     * @param point The position of the point.
-     * @param diameter The diameter of the circle.
-     */
-    default void circlePoint(Vector2D point, double diameter) {
+    default void strokeCircle(Circle circle) {
         getGraphicsContext().strokeOval(
-                point.getX() - diameter / 2.0,
-                point.getY() - diameter / 2.0,
-                diameter,
-                diameter);
+                circle.getMidpoint().getX() - circle.getRadius(),
+                circle.getMidpoint().getY() - circle.getRadius(),
+                circle.getRadius(),
+                circle.getRadius());
     }
 
-    default void drawCircle(Circle circle) {
-        circlePoint(circle.getMidpoint(), circle.getRadius() * 2.0);
+    default void strokeCircle(Vector2D midpoint, double radius) {
+        getGraphicsContext().strokeOval(
+                midpoint.getX() - radius,
+                midpoint.getY() - radius,
+                radius,
+                radius);
+    }
+
+    default void fillCircle(Circle circle) {
+        fillPoint(circle.getMidpoint(), circle.getRadius());
     }
 
     /**
@@ -113,7 +110,7 @@ public interface Renderer {
      * @param start The starting point.
      * @param end The ending point.
      */
-    default void drawStraight(Vector2D start, Vector2D end) {
+    default void strokeStraight(Vector2D start, Vector2D end) {
         getGraphicsContext().strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
@@ -127,8 +124,8 @@ public interface Renderer {
      *
      * @param lineSegment The line segment.
      */
-    default void drawLineSegment(LineSegment lineSegment) {
-        drawStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
+    default void strokeLineSegment(LineSegment lineSegment) {
+        strokeStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
     }
 
     /**
@@ -144,7 +141,7 @@ public interface Renderer {
      */
     default void dashLineSegment(SimpleLineSegment lineSegment, double... dashes) {
         getGraphicsContext().setLineDashes(dashes);
-        drawStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
+        strokeStraight(lineSegment.getStartingPoint(), lineSegment.getEndingPoint());
         getGraphicsContext().setLineDashes(null);
     }
 
@@ -158,7 +155,7 @@ public interface Renderer {
      *
      * @param line The line.
      */
-    default void drawLine(Line line) {
+    default void strokeLine(Line line) {
         final double minX = 0;
         final double maxX = getDrawingWidth();
         final double minY = 0;
@@ -176,7 +173,7 @@ public interface Renderer {
             start = line.getInterceptWithLine(new Line(0, 0));
             end = line.getInterceptWithLine(new Line(maxY, 0));
         }
-        drawStraight(start, end);
+        strokeStraight(start, end);
     }
 
     /**
@@ -189,8 +186,8 @@ public interface Renderer {
      *
      * @param parabola The parabola.
      */
-    default void drawParabola(Parabola parabola) {
-        drawParabola(parabola, 20);
+    default void strokeParabola(Parabola parabola) {
+        strokeParabola(parabola, 20);
     }
 
     /**
@@ -205,7 +202,7 @@ public interface Renderer {
      * @param parabola The parabola.
      * @param samplingDepth The number of points that are connected to draw the parabola.
      */
-    default void drawParabola(Parabola parabola, int samplingDepth) {
+    default void strokeParabola(Parabola parabola, int samplingDepth) {
         final double minX = 0;
         final double maxX = getDrawingWidth();
         final double maxY = getDrawingHeight();
@@ -267,7 +264,7 @@ public interface Renderer {
      * @param text The text to draw.
      * @param center The point to center onto.
      */
-    default void drawTextCenteredOnPoint(String text, Vector2D center) {
+    default void strokeTextCenteredOnPoint(String text, Vector2D center) {
         final TextAlignment initialTextAlign = getGraphicsContext().getTextAlign();
         getGraphicsContext().setTextAlign(TextAlignment.CENTER);
         getGraphicsContext().fillText(text, center.getX(), center.getY());
@@ -281,7 +278,7 @@ public interface Renderer {
      * @param topLeftCorner The top left corner of the rectangle;
      * @param bottomRightCorner The bottom right corner of the rectangle.
      */
-    default void drawRectangle(Vector2D topLeftCorner, Vector2D bottomRightCorner) {
+    default void fillRectangle(Vector2D topLeftCorner, Vector2D bottomRightCorner) {
         Rectangle rectangle = new Rectangle(topLeftCorner, bottomRightCorner);
         getGraphicsContext().fillRect(topLeftCorner.getX(), topLeftCorner.getY(), rectangle.getHeight(), rectangle.getWidth());
     }
@@ -299,7 +296,7 @@ public interface Renderer {
      * @param secondCorner The second (dragged) corner.
      * @return The rectangle that was drawn.
      */
-    default Rectangle drawDraggedRectangle(Vector2D firstCorner, Vector2D secondCorner) {
+    default Rectangle fillDraggedRectangle(Vector2D firstCorner, Vector2D secondCorner) {
         Rectangle rectangle;
         if (firstCorner.isLeftOf(secondCorner) && firstCorner.isAbove(secondCorner)) {
             rectangle = new Rectangle(firstCorner, secondCorner);
@@ -333,7 +330,7 @@ public interface Renderer {
         getGraphicsContext().fillPolygon(xPositions, yPositions, numberOfVertices);
     }
 
-    default void drawPolygon(Polygon polygon) {
+    default void strokePolygon(Polygon polygon) {
         int numberOfVertices = polygon.getNumberOfVertices();
         double[] xPositions = new double[polygon.getNumberOfVertices()];
         double[] yPositions = new double[polygon.getNumberOfVertices()];

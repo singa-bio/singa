@@ -15,6 +15,7 @@ import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
+import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.Comparator;
 
-import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getConcentrationUnit;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.*;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -38,6 +39,11 @@ public class GPCRCarrouselModelTest {
     private static final Logger logger = LoggerFactory.getLogger(MonovalentReceptorBindingTest.class);
 
     private static final FeatureOrigin BUSH2016 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Bush 2016", "Bush, Alan, et al. \"Yeast GPCR signaling reflects the fraction of occupied receptors, not the number.\" Molecular systems biology 12.12 (2016): 898.");
+
+    @After
+    public void cleanUp() {
+        Environment.reset();
+    }
 
     @Test
     public void testCarrouselModelSetUp() {
@@ -378,22 +384,22 @@ public class GPCRCarrouselModelTest {
         CellRegion membrane = AutomatonGraphs.splitRectangularGraphWithMembrane(graph, CellSubsection.SECTION_A, CellSubsection.SECTION_B, true);
         // set concentration of vasopressin in the intersitium
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(4)) {
-            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
         }
         // set concentration of vasopressin in the intersitium
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(3)) {
-            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(CellSubsection.SECTION_B, vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
         }
         // set concentration of receptors in membrane
         for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {
-            automatonNode.getConcentrationContainer().set(membrane.getOuterSubsection(), vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(membrane.getOuterSubsection(), vasopressin, Quantities.getQuantity(10, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
             // uncoupled receptor, inside of cell, 843 nm
-            automatonNode.getConcentrationContainer().set(membrane.getMembraneSubsection(), vasopressinReceptor, Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+            automatonNode.getConcentrationContainer().set(membrane.getMembraneSubsection(), vasopressinReceptor, Quantities.getQuantity(843, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
         }
         // set concentration of g proteins
 //        for (AutomatonNode automatonNode : graph.getNodesOfColumn(2)) {
 //            // heterotrimeric g protein, inside of cell, 520 nm
-//            automatonNode.setConcentration(gProteinAlphaBetaGamma, Quantities.getQuantity(520, NANO(MOLE_PER_LITRE)).to(getTransformedMolarConcentration()));
+//            automatonNode.setConcentration(gProteinAlphaBetaGamma, Quantities.getQuantity(520, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
 //        }
 
 

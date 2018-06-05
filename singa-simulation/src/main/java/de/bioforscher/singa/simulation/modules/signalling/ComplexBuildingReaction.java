@@ -22,7 +22,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import java.util.*;
 
-import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getConcentrationUnit;
 
 /**
  * @author cl
@@ -89,11 +89,11 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
         // change ligand concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(bindeeTopology), bindee, Quantities.getQuantity(-velocity, getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, concentrationContainer.getSubsection(bindeeTopology), bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
         // change unbound receptor concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), binder, Quantities.getQuantity(-velocity, getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
         // change bound receptor concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), complex, Quantities.getQuantity(velocity, getTransformedMolarConcentration())));
+        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
         return deltas;
     }
 

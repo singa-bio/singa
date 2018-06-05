@@ -117,7 +117,7 @@ public abstract class AbstractNodeSpecificModule extends AbstractModule {
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentUpdatable.getConcentration(fullDelta.getCellSubsection(), fullDelta.getChemicalEntity()).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
-        currentHalfConcentrations.set(fullDelta.getCellSubsection(), fullDelta.getChemicalEntity(), Quantities.getQuantity(halfStepConcentration, Environment.getTransformedMolarConcentration()));
+        currentHalfConcentrations.set(fullDelta.getCellSubsection(), fullDelta.getChemicalEntity(), Quantities.getQuantity(halfStepConcentration, Environment.getConcentrationUnit()));
     }
 
     /**

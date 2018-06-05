@@ -62,7 +62,7 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      * @param concentration The concentration in mol/l.
      */
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {
-        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(Environment.getTransformedMolarConcentration()));
+        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()));
     }
 
     /**

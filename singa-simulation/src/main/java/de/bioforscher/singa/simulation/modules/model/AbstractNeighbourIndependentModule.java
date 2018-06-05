@@ -140,7 +140,7 @@ public abstract class AbstractNeighbourIndependentModule extends AbstractModule 
     private void setHalfStepConcentration(Delta fullDelta) {
         final double fullConcentration = currentUpdatable.getConcentration(currentCellSection, currentChemicalEntity).getValue().doubleValue();
         final double halfStepConcentration = fullConcentration + 0.5 * fullDelta.getQuantity().getValue().doubleValue();
-        currentHalfConcentrations.set(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, Environment.getTransformedMolarConcentration()));
+        currentHalfConcentrations.set(currentCellSection, currentChemicalEntity, Quantities.getQuantity(halfStepConcentration, Environment.getConcentrationUnit()));
     }
 
     /**

@@ -96,7 +96,7 @@ public class MolarConcentrationTest {
     public void concentrationToMolecules() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
         Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getTransformedVolume());
+        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getVolumeUnit());
         Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, MOLECULES);
         assertEquals(expectedResult, actualResult);

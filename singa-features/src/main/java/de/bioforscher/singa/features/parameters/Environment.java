@@ -5,9 +5,7 @@ import de.bioforscher.singa.features.quantities.DynamicViscosity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tec.uom.se.function.MultiplyConverter;
 import tec.uom.se.quantity.Quantities;
-import tec.uom.se.unit.TransformedUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -18,7 +16,8 @@ import java.util.Observer;
 
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.features.units.UnitProvider.PASCAL_SECOND;
-import static tec.uom.se.unit.MetricPrefix.*;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.*;
 
 public class Environment extends Observable {
@@ -33,7 +32,7 @@ public class Environment extends Observable {
     /**
      * Standard node distance [length] (100 nm)
      */
-    public static final Quantity<Length> DEFAULT_NODE_DISTANCE = Quantities.getQuantity(100.0, NANO(METRE));
+    public static final Quantity<Length> DEFAULT_NODE_DISTANCE = Quantities.getQuantity(1.0, MICRO(METRE));
 
     /**
      * Standard time step size [time] (1 us)
@@ -60,44 +59,70 @@ public class Environment extends Observable {
      */
     public static final double DEFAULT_SIMULATION_EXTEND = 500;
 
+    /**
+     * The singleton instance.
+     */
     private static Environment instance;
 
-    private Quantity<Length> systemExtend;
-    private Quantity<Length> systemScale;
-
-    private double simulationExtend;
-    private double simulationScale;
-
-    private Quantity<Length> nodeDistance;
-    private Quantity<Time> timeStep;
+    /**
+     * The global temperature of the simulation system.
+     */
     private Quantity<Temperature> systemTemperature;
+
+    /**
+     * The global viscosity of the simulation system.
+     */
     private Quantity<DynamicViscosity> systemViscosity;
 
-    private Unit<MolarConcentration> transformedMolarConcentration;
+    /**
+     * An empty concentration Quantity
+     */
     private Quantity<MolarConcentration> emptyConcentration = Quantities.getQuantity(0.0, MOLE_PER_LITRE);
 
+    /**
+     * The current time between two simulation epochs. Called time step.
+     */
+    private Quantity<Time> timeStep;
+
+    /**
+     * The distance between two nodes (the side length of a subsection)
+     */
+    private Quantity<Length> nodeDistance;
+
+    /**
+     * The area of a subsection.
+     */
+    private Quantity<Area> subsectionArea;
+
+    /**
+     * The volume of a subsection.
+     */
     private Quantity<Volume> subsectionVolume;
-    private Unit<Volume> transformedVolume;
-    private Unit<Area> transformedArea;
-    private Unit<Length> transformedLength;
 
+    /**
+     * The unit for concentrations in a subsection.
+     */
+    private Unit<MolarConcentration> subsectionConcentration;
 
-    private Environment() {
-        nodeDistance = DEFAULT_NODE_DISTANCE;
-        timeStep = DEFAULT_TIME_STEP;
-        systemTemperature = DEFAULT_TEMPERATURE;
-        systemViscosity = DEFAULT_VISCOSITY;
-        systemExtend = DEFAULT_SYSTEM_EXTEND;
-        simulationExtend = DEFAULT_SIMULATION_EXTEND;
-        transformedMolarConcentration = MOLE_PER_LITRE;
-        transformedVolume = CUBIC_METRE;
-        transformedArea = SQUARE_METRE;
-        transformedLength = METRE;
+    /**
+     * The extend of the actual system.
+     */
+    private Quantity<Length> systemExtend;
 
-        setSystemAnsSimulationScales();
-        setChanged();
-        notifyObservers();
-    }
+    /**
+     * Multiply the scale by a simulation distance to get the system distance.
+     */
+    private Quantity<Length> systemScale;
+
+    /**
+     * The extend of the simulation.
+     */
+    private double simulationExtend;
+
+    /**
+     * Multiply the scale by a system distance to get the simulation distance.
+     */
+    private double simulationScale;
 
     private static Environment getInstance() {
         if (instance == null) {
@@ -108,33 +133,34 @@ public class Environment extends Observable {
         return instance;
     }
 
+    private Environment() {
+        timeStep = DEFAULT_TIME_STEP;
+        nodeDistance = DEFAULT_NODE_DISTANCE;
+        subsectionArea = DEFAULT_NODE_DISTANCE.multiply(DEFAULT_NODE_DISTANCE).asType(Area.class);
+        subsectionVolume = subsectionArea.multiply(DEFAULT_NODE_DISTANCE).asType(Volume.class);
+        subsectionConcentration = MOLE.divide(subsectionVolume.getUnit()).asType(MolarConcentration.class);
+        systemExtend = DEFAULT_SYSTEM_EXTEND;
+        simulationExtend = DEFAULT_SIMULATION_EXTEND;
+        systemTemperature = DEFAULT_TEMPERATURE;
+        systemViscosity = DEFAULT_VISCOSITY;
+        emptyConcentration = Quantities.getQuantity(0.0, subsectionConcentration);
+        setSystemAnsSimulationScales();
+        setChanged();
+        notifyObservers();
+    }
+
     public static void reset() {
-        getInstance().nodeDistance = DEFAULT_NODE_DISTANCE;
         getInstance().timeStep = DEFAULT_TIME_STEP;
-        getInstance().systemTemperature = DEFAULT_TEMPERATURE;
-        getInstance().systemViscosity = DEFAULT_VISCOSITY;
+        getInstance().nodeDistance = DEFAULT_NODE_DISTANCE;
+        getInstance().subsectionArea = DEFAULT_NODE_DISTANCE.multiply(DEFAULT_NODE_DISTANCE).asType(Area.class);
+        getInstance().subsectionVolume = getSubsectionArea().multiply(DEFAULT_NODE_DISTANCE).asType(Volume.class);
+        getInstance().subsectionConcentration = MOLE.divide(getSubsectionVolume().getUnit()).asType(MolarConcentration.class);
         getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
         getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
-        getInstance().transformedMolarConcentration = MOLE_PER_LITRE;
-        getInstance().transformedVolume = CUBIC_METRE;
-        getInstance().transformedArea = SQUARE_METRE;
-        getInstance().transformedLength = METRE;
-
+        getInstance().systemTemperature = DEFAULT_TEMPERATURE;
+        getInstance().systemViscosity = DEFAULT_VISCOSITY;
+        getInstance().emptyConcentration = Quantities.getQuantity(0.0, getConcentrationUnit());
         getInstance().setSystemAnsSimulationScales();
-        getInstance().setChanged();
-        getInstance().notifyObservers();
-    }
-
-    public static Quantity<Length> getNodeDistance() {
-        return instance.nodeDistance;
-    }
-
-    public static void setNodeDistance(Quantity<Length> nodeDistance) {
-        logger.debug("Setting node distance to {}.", nodeDistance);
-        getInstance().nodeDistance = nodeDistance;
-        getInstance().setTransformedMolarConcentrationUnit();
-        getInstance().transformSpaceScales();
-        getInstance().emptyConcentration = Quantities.getQuantity(0.0, getTransformedMolarConcentration());
         getInstance().setChanged();
         getInstance().notifyObservers();
     }
@@ -143,64 +169,51 @@ public class Environment extends Observable {
         return getInstance().emptyConcentration;
     }
 
-    private void setTransformedMolarConcentrationUnit() {
-        final Unit<Length> nodeDistanceUnit = nodeDistance.getUnit();
-        final Unit<MolarConcentration> transformedUnit = MOLE.divide(nodeDistanceUnit.pow(3)).asType(MolarConcentration.class);
-        if (nodeDistance.getValue().doubleValue() == 1.0) {
-            transformedMolarConcentration = transformedUnit;
-        } else {
-            transformedMolarConcentration = new TransformedUnit<>(transformedUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
-        }
+    public static Quantity<Length> getNodeDistance() {
+        return getInstance().nodeDistance;
     }
 
-    public static Unit<MolarConcentration> getTransformedMolarConcentration() {
-        return getInstance().transformedMolarConcentration;
+    public static Unit<Length> getNodeDistanceUnit() {
+        return getInstance().nodeDistance.getUnit();
     }
 
-    public static Quantity<MolarConcentration> transformToVolume(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
-        final Unit<Volume> volumeUnit = volume.getUnit();
-        final Unit<MolarConcentration> transformedUnit = MOLE.divide(volumeUnit).asType(MolarConcentration.class);
-        if (volume.getValue().doubleValue() == 1.0) {
-            return concentration.to(transformedUnit);
-        } else {
-            return concentration.to(new TransformedUnit<>(transformedUnit, new MultiplyConverter(volume.getValue().doubleValue())));
-        }
+    public static void setNodeDistance(Quantity<Length> nodeDistance) {
+        logger.debug("Setting node distance to {}.", nodeDistance);
+        getInstance().nodeDistance = nodeDistance;
+        getInstance().adjustDistances();
+        getInstance().setChanged();
+        getInstance().notifyObservers();
     }
 
-    public void transformSpaceScales() {
-        // base length unit
-        final Unit<Length> lengthUnit = nodeDistance.getUnit();
-        // base area unit
-        final Unit<Area> areaUnit = lengthUnit.pow(2).asType(Area.class);
-        // base volume unit
-        final Unit<Volume> volumeUnit = lengthUnit.pow(3).asType(Volume.class);
-        // transform with multiplier if necessary
-        if (nodeDistance.getValue().doubleValue() == 1.0) {
-            transformedLength = lengthUnit;
-            transformedArea = areaUnit;
-            transformedVolume = volumeUnit;
-            subsectionVolume = Quantities.getQuantity(1.0, volumeUnit);
-        } else {
-            transformedLength = new TransformedUnit<>(lengthUnit, new MultiplyConverter(nodeDistance.getValue().doubleValue()));
-            transformedArea = new TransformedUnit<>(areaUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 2)));
-            transformedVolume = new TransformedUnit<>(volumeUnit, new MultiplyConverter(Math.pow(nodeDistance.getValue().doubleValue(), 3)));
-        }
+    private void adjustDistances() {
+        // distance, area and volume
+        Unit<Length> lengthUnit = nodeDistance.getUnit();
+        Unit<Volume> subsectionVolumeUnit = lengthUnit.pow(3).asType(Volume.class);
+        subsectionArea = nodeDistance.multiply(nodeDistance).asType(Area.class);
+        subsectionVolume = subsectionArea.multiply(nodeDistance).asType(Volume.class);
+        // concentration
+        subsectionConcentration = MOLE.divide(subsectionVolumeUnit).asType(MolarConcentration.class);
+        emptyConcentration = Quantities.getQuantity(0.0, subsectionConcentration);
+    }
+
+    public static Unit<MolarConcentration> getConcentrationUnit() {
+        return getInstance().subsectionConcentration;
     }
 
     public static Quantity<Volume> getSubsectionVolume() {
         return getInstance().subsectionVolume;
     }
 
-    public static Unit<Area> getTransformedArea() {
-        return getInstance().transformedArea;
+    public static Unit<Volume> getVolumeUnit() {
+        return getInstance().subsectionVolume.getUnit();
     }
 
-    public static Unit<Length> getTransformedLength() {
-        return getInstance().transformedLength;
+    public static Quantity<Area> getSubsectionArea() {
+        return getInstance().subsectionArea;
     }
 
-    public static Unit<Volume> getTransformedVolume() {
-        return getInstance().transformedVolume;
+    public static Unit<Area> getAreaUnit() {
+        return getInstance().subsectionArea.getUnit();
     }
 
     public static Quantity<Temperature> getTemperature() {
@@ -221,12 +234,16 @@ public class Environment extends Observable {
         getInstance().systemViscosity = viscosity.to(MILLI(PASCAL_SECOND));
     }
 
+    public static void setTimeStep(Quantity<Time> timeStep) {
+        getInstance().timeStep = timeStep;
+    }
+
     public static Quantity<Time> getTimeStep() {
         return getInstance().timeStep;
     }
 
-    public static void setTimeStep(Quantity<Time> timeStep) {
-        getInstance().timeStep = timeStep;
+    public static Unit<Time> getTimeUnit() {
+        return getInstance().timeStep.getUnit();
     }
 
     public static void setNodeSpacingToDiameter(Quantity<Length> diameter, int spanningNodes) {
@@ -275,6 +292,19 @@ public class Environment extends Observable {
 
     public static void attachObserver(Observer observer) {
         getInstance().addObserver(observer);
+    }
+
+    public static String report() {
+        return "Environment: \n" +
+                "time step = " + getInstance().timeStep + "\n" +
+                "node distance = " + getInstance().nodeDistance + "\n" +
+                "subsection area = " + getInstance().subsectionArea + "\n" +
+                "subsection volume = " + getInstance().subsectionVolume + "\n" +
+                "subsection concentration = " + getInstance().subsectionConcentration + "\n" +
+                "system extend = " + getInstance().systemExtend + "\n" +
+                "simulation extend = " + getInstance().simulationExtend + "\n" +
+                "system temperature = " + getInstance().systemTemperature + "\n" +
+                "system viscosity = " + getInstance().systemViscosity + "\n";
     }
 
 }

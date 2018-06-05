@@ -26,7 +26,7 @@ public abstract class ZeroOrderRateConstant extends RateConstant<ZeroOrderRate> 
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit
-        Quantity<ZeroOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getTransformedMolarConcentration().divide(time.getUnit())));
+        Quantity<ZeroOrderRate> scaledQuantity = getFeatureContent().to(new ProductUnit<>(Environment.getConcentrationUnit().divide(time.getUnit())));
         // transform to specified amount
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half

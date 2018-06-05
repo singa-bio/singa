@@ -21,7 +21,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
-import static de.bioforscher.singa.features.parameters.Environment.getTransformedMolarConcentration;
+import static de.bioforscher.singa.features.parameters.Environment.getConcentrationUnit;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.newsections.CellSubsection.SECTION_A;
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
@@ -67,8 +67,8 @@ public class MonovalentReceptorBindingTest {
         // concentrations
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(CellRegion.MEMBRANE);
-        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
-        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getTransformedMolarConcentration()));
+        membraneNode.getConcentrationContainer().set(SECTION_A, ligand, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().set(CellSubsection.MEMBRANE, receptor, Quantities.getQuantity(0.1, MOLE_PER_LITRE).to(getConcentrationUnit()));
 
         // create and add module
         ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)

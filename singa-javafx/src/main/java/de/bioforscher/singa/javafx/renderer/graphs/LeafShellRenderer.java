@@ -15,9 +15,9 @@ public class LeafShellRenderer extends GraphRenderer<GenericNode<LeafSubstructur
     protected void drawNode(GenericNode<LeafSubstructure<?>> node) {
         // set color and diameter
         getGraphicsContext().setFill(getRenderingOptions().getNodeColor());
-        drawPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
+        fillPoint(node.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
-        drawTextCenteredOnPoint(String.valueOf(node.getContent().getIdentifier().getSerial()), node.getPosition());
+        strokeTextCenteredOnPoint(String.valueOf(node.getContent().getIdentifier().getSerial()), node.getPosition());
     }
 }

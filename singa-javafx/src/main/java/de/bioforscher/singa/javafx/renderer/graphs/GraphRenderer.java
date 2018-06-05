@@ -113,10 +113,10 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     protected void drawNode(NodeType node) {
         // set color and diameter
         getGraphicsContext().setFill(renderingOptions.getNodeColor());
-        drawPoint(node.getPosition(), renderingOptions.getNodeDiameter());
+        fillPoint(node.getPosition(), renderingOptions.getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(renderingOptions.getIdentifierTextColor());
-        drawTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
+        strokeTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
 
     }
 
@@ -129,7 +129,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         getGraphicsContext().setLineWidth(renderingOptions.getEdgeThickness());
         getGraphicsContext().setStroke(renderingOptions.getEdgeColor());
         // draw
-        drawLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
+        strokeLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
     }
 
     public void renderVoronoi(boolean flag) {
@@ -148,10 +148,10 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     public void drawDiagram(VoronoiDiagram diagram) {
         getGraphicsContext().setStroke(Color.SEAGREEN);
         getGraphicsContext().setLineWidth(2);
-        diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+        diagram.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
 //        getGraphicsContext().setLineWidth(6);
 //        getGraphicsContext().setFill(Color.SEAGREEN.darker());
-//        diagram.getVertices().forEach(this::drawPoint);
+//        diagram.getVertices().forEach(this::fillPoint);
     }
 
     public DoubleProperty drawingWidthProperty() {
