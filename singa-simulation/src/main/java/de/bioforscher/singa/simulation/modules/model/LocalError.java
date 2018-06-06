@@ -40,7 +40,7 @@ public class LocalError {
      * @param entity The chemical entity where the error occurred.
      * @param value The actual value of the error.
      */
-    LocalError(Updatable updatable, ChemicalEntity entity, double value) {
+    public LocalError(Updatable updatable, ChemicalEntity entity, double value) {
         this.updatable = updatable;
         this.entity = entity;
         this.value = value;

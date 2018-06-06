@@ -33,9 +33,9 @@ public abstract class FeatureContainer {
         return content.values();
     }
 
-    public String listFeatures(String preceedingSpaces) {
+    public String listFeatures(String precedingSpaces) {
         if (getAllFeatures().isEmpty()) {
-            return preceedingSpaces + "none";
+            return precedingSpaces + "none";
         }
         StringBuilder builder = new StringBuilder();
         Iterator<Feature<?>> iterator = getAllFeatures().iterator();

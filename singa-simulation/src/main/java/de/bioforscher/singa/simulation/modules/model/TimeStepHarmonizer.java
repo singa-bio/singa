@@ -24,9 +24,11 @@ public class TimeStepHarmonizer {
 
     private Module criticalModule;
     private LocalError largestLocalError;
+
     private boolean timeStepChanged;
     private List<Updatable> updatables;
     private VesicleLayer vesicleLayer;
+
 
     public TimeStepHarmonizer(Simulation simulation) {
         Environment.setTimeStep(Environment.getTimeStep());
@@ -79,7 +81,7 @@ public class TimeStepHarmonizer {
     }
 
     private void executeAllConcentrationModules() {
-        logger.debug("Calculating deltas and errors for all modules.");
+        logger.debug("Calculating deltas and errors for all concentration modules.");
         largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
         for (Module module : simulation.getModules()) {
             logger.trace("Calculating deltas for Module {}", module.toString());
@@ -93,23 +95,28 @@ public class TimeStepHarmonizer {
     }
 
     private void executeAllSpatialModules() {
+        logger.debug("Calculating deltas and errors for all spatial modules.");
         for (VesicleModule vesicleModule : vesicleLayer.getVesicleModules()) {
             logger.trace("Calculating deltas for Module {}", vesicleModule.toString());
+            // determine deltas
             vesicleModule.determineAllDeltas(vesicleLayer.getVesicles());
         }
-    }
-
-    private void finalizeDeltas() {
-        for (Updatable updatable : updatables) {
-            updatable.shiftDeltas();
-        }
-        // potential updates for vesicles are already set during displacement evaluation
     }
 
     private void examineLocalError(Module module, LocalError localError) {
         if (largestLocalError.getValue() < localError.getValue()) {
             largestLocalError = localError;
             criticalModule = module;
+        }
+    }
+
+    private void evaluateSpatialDisplacements() {
+        if (!vesicleLayer.deltasAreBelowDisplacementCutoff()) {
+            displacementTooLarge = true;
+            decreaseTimeStep();
+            vesicleLayer.clearUpdates();
+        } else {
+            displacementTooLarge = false;
         }
     }
 
@@ -130,18 +137,15 @@ public class TimeStepHarmonizer {
         logger.debug("Optimized local error for {} was {} with time step of {}.", criticalModule, localError, Environment.getTimeStep());
     }
 
-    private void evaluateSpatialDisplacements() {
-        if (!vesicleLayer.deltasAreBelowDisplacementCutoff()) {
-            displacementTooLarge = true;
-            decreaseTimeStep();
-            vesicleLayer.clearUpdates();
-        } else {
-            displacementTooLarge = false;
-        }
-    }
-
     public LocalError getLargestLocalError() {
         return largestLocalError;
+    }
+
+    private void finalizeDeltas() {
+        for (Updatable updatable : updatables) {
+            updatable.shiftDeltas();
+        }
+        // potential updates for vesicles are already set during displacement evaluation
     }
 
     public void rescaleParameters() {

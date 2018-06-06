@@ -40,10 +40,9 @@ public class FreeDiffusion extends AbstractNeighbourDependentModule {
         return new DiffusionBuilder(simulation);
     }
 
-    private AutomatonNode currentNode;
-
     private FreeDiffusion(Simulation simulation) {
         super(simulation);
+        onlyApplyIf(updatable -> updatable instanceof  AutomatonNode);
         // apply everywhere
         addDeltaFunction(this::calculateDelta, this::onlyForReferencedEntities);
     }

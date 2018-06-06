@@ -2,8 +2,6 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
-import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import org.slf4j.Logger;
@@ -65,10 +63,9 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
 
     @Override
     public void determineAllDeltas(List<Updatable> updatables) {
-        AutomatonGraph graph = simulation.getGraph();
         // determine full deltas
         halfTime = false;
-        for (AutomatonNode node : graph.getNodes()) {
+        for (Updatable node : updatables) {
             if (conditionalApplication.test(node)) {
                 currentUpdatable = node;
                 determineFullStepDeltas(node.getConcentrationContainer());
@@ -91,7 +88,7 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
     }
 
     @Override
-    public LocalError determineDeltas(Updatable node) {
+    public LocalError determineDeltas(Updatable updatable) {
         // using neighbor dependent modules you need to calculate all changes
         determineAllDeltas(simulation.getUpdatables());
         return largestLocalError;
@@ -163,15 +160,16 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
             DeltaIdentifier key = entry.getKey();
             Delta value = entry.getValue();
             // determine half step deltas
-            Quantity<MolarConcentration> fullConcentration = key.getUpdatable().getConcentration(key.getSection(), key.getEntity());
+            Updatable updatable = key.getUpdatable();
+            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(key.getSection(), key.getEntity());
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(0.5));
             ConcentrationContainer halfConcentration;
-            if (!halfConcentrations.containsKey(key.getUpdatable())) {
-                halfConcentration = key.getUpdatable().getConcentrationContainer().emptyCopy();
+            if (!halfConcentrations.containsKey(updatable)) {
+                halfConcentration = updatable.getConcentrationContainer().emptyCopy();
                 halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
-                halfConcentrations.put(key.getUpdatable(), halfConcentration);
+                halfConcentrations.put(updatable, halfConcentration);
             } else {
-                halfConcentration = halfConcentrations.get(key.getUpdatable());
+                halfConcentration = halfConcentrations.get(updatable);
                 halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
             }
         }

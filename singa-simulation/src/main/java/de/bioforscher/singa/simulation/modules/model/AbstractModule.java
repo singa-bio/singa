@@ -291,6 +291,14 @@ public abstract class AbstractModule implements Module {
         double largestLocalError = -Double.MAX_VALUE;
         DeltaIdentifier largestIdentifier = null;
         for (DeltaIdentifier identifier : currentFullDeltas.keySet()) {
+            if (currentHalfDeltas.get(identifier) == null) {
+                System.out.println("Epoch: "+simulation.getEpoch());
+                System.out.println("Half Deltas");
+                currentHalfDeltas.keySet().forEach(System.out::println);
+                System.out.println("Full Deltas");
+                currentFullDeltas.keySet().forEach(System.out::println);
+                throw new IllegalStateException("For identifier " + identifier + " there is no corresponding half delta");
+            }
             double fullDelta = currentFullDeltas.get(identifier).getQuantity().getValue().doubleValue();
             double halfDelta = currentHalfDeltas.get(identifier).getQuantity().getValue().doubleValue();
             if (halfDelta == 0.0) {

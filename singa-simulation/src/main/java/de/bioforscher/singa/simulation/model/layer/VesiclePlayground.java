@@ -16,6 +16,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
 import de.bioforscher.singa.simulation.modules.transport.MembraneDiffusion;
 import de.bioforscher.singa.simulation.modules.transport.VesicleDiffusion;
 import de.bioforscher.singa.simulation.renderer.AutomatonGraphRenderer;
@@ -109,9 +110,9 @@ public class VesiclePlayground extends Application implements Renderer {
                 .cargo(water)
                 .build();
 
-//        FreeDiffusion.inSimulation(simulation)
-//                .onlyFor(water)
-//                .build();
+        FreeDiffusion.inSimulation(simulation)
+                .onlyFor(water)
+                .build();
 
         VesicleDiffusion vesicleDiffusion = new VesicleDiffusion(simulation);
         layer.addVesicleModule(vesicleDiffusion);

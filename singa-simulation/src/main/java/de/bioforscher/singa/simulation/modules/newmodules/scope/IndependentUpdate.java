@@ -1,0 +1,83 @@
+package de.bioforscher.singa.simulation.modules.newmodules.scope;
+
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
+import de.bioforscher.singa.simulation.modules.model.Delta;
+import de.bioforscher.singa.simulation.modules.model.LocalError;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
+import de.bioforscher.singa.simulation.modules.newmodules.specifity.UpdateSpecificity;
+import de.bioforscher.singa.simulation.modules.newmodules.type.ConcentrationBasedModule;
+
+import javax.measure.Quantity;
+import java.util.Collection;
+
+/**
+ * @author cl
+ */
+public class IndependentUpdate implements UpdateScope {
+
+    private ConcentrationContainer halfConcentration;
+    private ConcentrationBasedModule module;
+
+    public IndependentUpdate(ConcentrationBasedModule module) {
+        this.module = module;
+    }
+
+    private FieldSupplier supply() {
+        return module.getSupplier();
+    }
+
+    private UpdateSpecificity specify() {
+        return module.getSpecificity();
+    }
+
+    @Override
+    public void processAllUpdatables(Collection<Updatable> updatables) {
+        // for each updatable
+        for (Updatable updatable : updatables) {
+            if (module.getApplicationCondition().test(updatable)) {
+                supply().setCurrentUpdatable(updatable);
+                processUpdatable(updatable);
+            }
+        }
+    }
+
+    @Override
+    public LocalError processUpdatable(Updatable updatable) {
+        // calculate full step deltas
+        supply().setStrutCalculation(false);
+        specify().processContainer(updatable.getConcentrationContainer());
+        // explicitly calculate half step concentrations
+        determineHalfStepConcentration();
+        // calculate half step deltas
+        supply().setStrutCalculation(true);
+        specify().processContainer(getHalfStepConcentration(updatable));
+        // set largest local error
+        supply().setLargestLocalError(module.determineLargestLocalError());
+        // clear used deltas
+        supply().getCurrentFullDeltas().clear();
+        supply().getCurrentHalfDeltas().clear();
+        return supply().getLargestLocalError();
+    }
+
+    private void determineHalfStepConcentration() {
+        halfConcentration = supply().getCurrentUpdatable().getConcentrationContainer().fullCopy();
+        for (Delta delta : supply().getCurrentFullDeltas().values()) {
+            Quantity<MolarConcentration> fullConcentration = halfConcentration.get(supply().getCurrentSubsection(), supply().getCurrentEntity());
+            Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(delta.getQuantity().multiply(0.5));
+            halfConcentration.set(supply().getCurrentSubsection(), supply().getCurrentEntity(), halfStepConcentration);
+        }
+    }
+
+    @Override
+    public ConcentrationContainer getHalfStepConcentration(Updatable updatable) {
+        if (!updatable.equals(supply().getCurrentUpdatable())) {
+            throw new IllegalStateException("Modules using the independent update scope can only handle one updatable" +
+                    " being changed by a single delta function. The updatable " + updatable + " is not the currently" +
+                    " referenced updatable " + supply().getCurrentUpdatable() + ".");
+        }
+        return halfConcentration;
+    }
+
+}
