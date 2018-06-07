@@ -1,11 +1,11 @@
-package de.bioforscher.singa.simulation.modules.newmodules;
+package de.bioforscher.singa.simulation.modules.newmodules.module;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.model.LocalError;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +26,7 @@ public class FieldSupplier {
     public FieldSupplier() {
         fullDeltas = new HashMap<>();
         halfDeltas = new HashMap<>();
+        largestLocalError = LocalError.MINIMAL_EMPTY_ERROR;
     }
 
     public Updatable getCurrentUpdatable() {

@@ -8,10 +8,9 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourDependentNodeSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -64,8 +63,8 @@ public class MembraneDiffusion extends AbstractNeighbourDependentNodeSpecificMod
             handlePartialDistributionInVesicles(deltas, (Vesicle) currentUpdatable);
         } else {
             double value = calculateVelocity(container, container) * Environment.getSubsectionArea().getValue().doubleValue();
-            deltas.put(new DeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo), new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
-            deltas.put(new DeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo), new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+            // deltas.put(new DeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo), new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+            // deltas.put(new DeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo), new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         }
         return deltas;
     }
@@ -85,9 +84,9 @@ public class MembraneDiffusion extends AbstractNeighbourDependentNodeSpecificMod
             Quantity<Area> area = entry.getValue();
             double velocity = calculateVelocity(vesicleContainer, nodeContainer) * area.getValue().doubleValue();
             vesicleUpdate += velocity;
-            deltas.put(new DeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo), new Delta(this, nodeContainer.getInnerSubsection(), cargo, Quantities.getQuantity(-velocity, Environment.getConcentrationUnit())));
+            // deltas.put(new DeltaIdentifier(node, nodeContainer.getInnerSubsection(), cargo), new Delta(this, nodeContainer.getInnerSubsection(), cargo, Quantities.getQuantity(-velocity, Environment.getConcentrationUnit())));
         }
-        deltas.put(new DeltaIdentifier(vesicle, vesicleContainer.getInnerSubsection(), cargo), new Delta(this, vesicleContainer.getInnerSubsection(), cargo, Quantities.getQuantity(vesicleUpdate, Environment.getConcentrationUnit())));
+        // deltas.put(new DeltaIdentifier(vesicle, vesicleContainer.getInnerSubsection(), cargo), new Delta(this, vesicleContainer.getInnerSubsection(), cargo, Quantities.getQuantity(vesicleUpdate, Environment.getConcentrationUnit())));
     }
 
     private double calculateVelocity(ConcentrationContainer innerContainer, ConcentrationContainer outerContainer) {

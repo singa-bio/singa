@@ -2,11 +2,11 @@ package de.bioforscher.singa.simulation.modules.newmodules.specifity;
 
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import de.bioforscher.singa.simulation.modules.newmodules.functions.SectionDeltaFunction;
-import de.bioforscher.singa.simulation.modules.newmodules.type.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.FieldSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class SectionSpecific implements UpdateSpecificity {
+public class SectionSpecific implements UpdateSpecificity<SectionDeltaFunction> {
 
     private List<SectionDeltaFunction> deltaFunctions;
     private ConcentrationBasedModule module;
@@ -52,5 +52,10 @@ public class SectionSpecific implements UpdateSpecificity {
                 }
             }
         }
+    }
+
+    @Override
+    public void addDeltaFunction(SectionDeltaFunction sectionDeltaFunction) {
+        deltaFunctions.add(sectionDeltaFunction);
     }
 }

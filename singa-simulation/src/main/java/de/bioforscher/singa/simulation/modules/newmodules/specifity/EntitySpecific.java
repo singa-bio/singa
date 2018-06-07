@@ -3,11 +3,11 @@ package de.bioforscher.singa.simulation.modules.newmodules.specifity;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import de.bioforscher.singa.simulation.modules.newmodules.functions.EntityDeltaFunction;
-import de.bioforscher.singa.simulation.modules.newmodules.type.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.FieldSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * @author cl
  */
-public class EntitySpecific implements UpdateSpecificity {
+public class EntitySpecific implements UpdateSpecificity<EntityDeltaFunction> {
 
     private List<EntityDeltaFunction> deltaFunctions;
-    private ConcentrationBasedModule module;
+    private ConcentrationBasedModule<EntityDeltaFunction> module;
 
-    public EntitySpecific(ConcentrationBasedModule module) {
+    public EntitySpecific(ConcentrationBasedModule<EntityDeltaFunction> module) {
         this.module = module;
         deltaFunctions = new ArrayList<>();
     }
@@ -52,6 +52,11 @@ public class EntitySpecific implements UpdateSpecificity {
                 }
             }
         }
+    }
+
+    @Override
+    public void addDeltaFunction(EntityDeltaFunction entityDeltaFunction) {
+        deltaFunctions.add(entityDeltaFunction);
     }
 
 }

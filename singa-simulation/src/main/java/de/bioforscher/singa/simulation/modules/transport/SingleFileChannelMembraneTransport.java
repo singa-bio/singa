@@ -8,9 +8,8 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNodeSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import java.util.*;
 
@@ -65,8 +64,8 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
         List<Delta> deltas = new ArrayList<>();
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(MEMBRANE, transporter), Environment.getSubsectionVolume()).getValue().doubleValue();
-        deltas.add(new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
-        deltas.add(new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+//        deltas.add(new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+//        deltas.add(new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         return deltas;
     }
 

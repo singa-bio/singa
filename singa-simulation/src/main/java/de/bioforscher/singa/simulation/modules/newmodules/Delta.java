@@ -1,8 +1,9 @@
-package de.bioforscher.singa.simulation.modules.model;
+package de.bioforscher.singa.simulation.modules.newmodules;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
 
 import javax.measure.Quantity;
 
@@ -17,7 +18,7 @@ public class Delta {
     /**
      * The module, that calculated this delta.
      */
-    private final Module module;
+    private final ConcentrationBasedModule module;
 
     /**
      * The cell section.
@@ -35,7 +36,7 @@ public class Delta {
     private Quantity<MolarConcentration> quantity;
 
 
-    public Delta(Module module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+    public Delta(ConcentrationBasedModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
         this.cellSubsection = cellSubsection;
@@ -47,7 +48,7 @@ public class Delta {
      *
      * @return The module, that calculated this delta.
      */
-    public Module getModule() {
+    public ConcentrationBasedModule getModule() {
         return module;
     }
 

@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;

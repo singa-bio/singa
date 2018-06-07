@@ -9,9 +9,9 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.Quantity;
 import java.util.List;

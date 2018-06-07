@@ -2,13 +2,13 @@ package de.bioforscher.singa.simulation.modules.newmodules.scope;
 
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.model.LocalError;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.FieldSupplier;
 import de.bioforscher.singa.simulation.modules.newmodules.specifity.UpdateSpecificity;
-import de.bioforscher.singa.simulation.modules.newmodules.type.ConcentrationBasedModule;
 
 import javax.measure.Quantity;
 import java.util.Collection;

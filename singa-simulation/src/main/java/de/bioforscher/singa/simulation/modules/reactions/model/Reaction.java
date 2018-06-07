@@ -7,12 +7,10 @@ import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractSectionSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -145,7 +143,7 @@ public abstract class Reaction extends AbstractSectionSpecificModule implements 
                 deltaValue = velocity * reactant.getStoichiometricNumber();
 
             }
-            deltas.add(new Delta(this, getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+            // deltas.add(new Delta(this, getCurrentCellSection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
         }
         return deltas;
     }

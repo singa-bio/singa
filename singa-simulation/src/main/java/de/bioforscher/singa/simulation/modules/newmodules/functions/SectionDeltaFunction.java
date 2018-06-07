@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.modules.newmodules.functions;
 
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import java.util.List;
 import java.util.function.Function;

@@ -5,6 +5,7 @@ import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,14 +1,18 @@
-package de.bioforscher.singa.simulation.modules.newmodules.type;
+package de.bioforscher.singa.simulation.modules.newmodules.module;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.exceptions.NumericalInstabilityException;
-import de.bioforscher.singa.simulation.modules.model.*;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
-import de.bioforscher.singa.simulation.modules.newmodules.UpdateScheduler;
+import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
+import de.bioforscher.singa.simulation.modules.model.LocalError;
+import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.AbstractDeltaFunction;
 import de.bioforscher.singa.simulation.modules.newmodules.scope.UpdateScope;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.UpdateScheduler;
 import de.bioforscher.singa.simulation.modules.newmodules.specifity.UpdateSpecificity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +24,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static de.bioforscher.singa.simulation.modules.newmodules.type.ModuleState.*;
+import static de.bioforscher.singa.simulation.modules.newmodules.module.ModuleState.*;
 
 /**
  * @author cl
  */
-public class ConcentrationBasedModule implements UpdateModule {
+public abstract class ConcentrationBasedModule<DeltaFunctionType extends AbstractDeltaFunction> implements UpdateModule {
 
+    /**
+     * The logger
+     */
     private static final Logger logger = LoggerFactory.getLogger(ConcentrationBasedModule.class);
 
     /**
@@ -39,34 +46,34 @@ public class ConcentrationBasedModule implements UpdateModule {
      */
     private static final double DEFAULT_ERROR_CUTOFF = 100;
 
-    /**
-     * The default value where errors are considered too large and the time step is reduced.
-     */
-    private static final double DEFALUT_RECALCULATION_CUTOFF = 0.01;
-
     private Simulation simulation;
-    private FieldSupplier supplier;
+    protected FieldSupplier supplier;
     private UpdateScope scope;
-    private UpdateSpecificity specificity;
+    private UpdateSpecificity<DeltaFunctionType> specificity;
     private UpdateScheduler updateScheduler;
     private ModuleFeatureManager featureManager;
     private Predicate<Updatable> applicationCondition;
     private Set<ChemicalEntity> referencedChemicalEntities;
+    private String identifier;
 
     private ModuleState state;
     private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
     private double errorCutoff = DEFAULT_ERROR_CUTOFF;
-    private double recalculationCutoff = DEFALUT_RECALCULATION_CUTOFF;
 
-    ConcentrationBasedModule(Simulation simulation, FieldSupplier supplier, UpdateScope scope, UpdateSpecificity specificity, UpdateScheduler updateScheduler) {
-        this.simulation = simulation;
-        this.supplier = supplier;
-        this.scope = scope;
-        this.specificity = specificity;
-        this.updateScheduler = updateScheduler;
+    public ConcentrationBasedModule() {
+        supplier = new FieldSupplier();
+        featureManager = new ModuleFeatureManager(supplier);
         referencedChemicalEntities = new HashSet<>();
         state = PENDING;
         applicationCondition = updatable -> true;
+    }
+
+    protected void addDeltaFunction(DeltaFunctionType deltaFunction) {
+        specificity.addDeltaFunction(deltaFunction);
+    }
+
+    public void setApplicationCondition(Predicate<Updatable> applicationCondition) {
+        this.applicationCondition = applicationCondition;
     }
 
     public Set<ChemicalEntity> getReferencedEntities() {
@@ -97,14 +104,6 @@ public class ConcentrationBasedModule implements UpdateModule {
         this.errorCutoff = errorCutoff;
     }
 
-    public double getRecalculationCutoff() {
-        return recalculationCutoff;
-    }
-
-    public void setRecalculationCutoff(double recalculationCutoff) {
-        this.recalculationCutoff = recalculationCutoff;
-    }
-
     public Simulation getSimulation() {
         return simulation;
     }
@@ -113,16 +112,38 @@ public class ConcentrationBasedModule implements UpdateModule {
         return applicationCondition;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     public FieldSupplier getSupplier() {
         return supplier;
     }
 
-    public UpdateScope getScope() {
-        return scope;
+    void setScope(UpdateScope scope) {
+        this.scope = scope;
     }
 
     public UpdateSpecificity getSpecificity() {
         return specificity;
+    }
+
+    void setSpecificity(UpdateSpecificity specificity) {
+        this.specificity = specificity;
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
+        updateScheduler = simulation.getScheduler();
+    }
+
+    @Override
+    public ModuleState getState() {
+        return state;
     }
 
     public void handleDelta(DeltaIdentifier deltaIdentifier, Delta delta) {
@@ -138,7 +159,7 @@ public class ConcentrationBasedModule implements UpdateModule {
 
     private void logDelta(Delta delta) {
         logger.trace("{} delta for {} in {}:{} = {}",
-                supplier.isStrutCalculation() ? "Full" : "Half",
+                supplier.isStrutCalculation() ? "Half" : "Full",
                 supplier.getCurrentEntity().getIdentifier(),
                 supplier.getCurrentUpdatable().getStringIdentifier(),
                 supplier.getCurrentSubsection().getIdentifier(),
@@ -225,43 +246,55 @@ public class ConcentrationBasedModule implements UpdateModule {
     @Override
     public void calculateUpdates() {
         scope.processAllUpdatables(simulation.getUpdatables());
+        evaluateModuleState();
     }
 
     @Override
-    public void optimizeTimeStep() {
+    public LocalError optimizeTimeStep() {
         Updatable updatable = supplier.getLargestLocalError().getUpdatable();
-        while (state == RECALCULATION_REQUIRED) {
-            // determine new local error with decreased time step
+        while (state == REQUIRING_RECALCULATION) {
+            // reset previous error
             supplier.resetError();
+            // determine new local error with decreased time step
             updateScheduler.decreaseTimeStep();
             scope.processUpdatable(updatable);
+            // evaluate module state by error
             evaluateModuleState();
         }
         logger.debug("Optimized local error for {} was {} with time step of {}.", this, supplier.getLargestLocalError().getValue(), Environment.getTimeStep());
-        supplier.resetError();
+        return supplier.getLargestLocalError();
     }
 
     private void evaluateModuleState() {
-        if (supplier.getLargestLocalError().getValue() < recalculationCutoff) {
+        if (supplier.getLargestLocalError().getValue() < updateScheduler.getRecalculationCutoff()) {
             state = SUCCEEDED;
         } else {
-            state = RECALCULATION_REQUIRED;
+            logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
+            state = REQUIRING_RECALCULATION;
         }
     }
 
     @Override
-    public ModuleState getState() {
-        return state;
+    public void resetState() {
+        state = PENDING;
+        supplier.resetError();
+    }
+
+    public void addModuleToSimulation() {
+        simulation.getModules().add(this);
+        for (ChemicalEntity chemicalEntity : referencedChemicalEntities) {
+            simulation.addReferencedEntity(chemicalEntity);
+        }
     }
 
     @Override
-    public void setState(ModuleState state) {
-        this.state = state;
-    }
-
-    @Override
-    public void rescaleParameters() {
+    public void scaleScalableFeatures() {
         featureManager.scaleScalableFeatures();
+    }
+
+    @Override
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return featureManager.getRequiredFeatures();
     }
 
     @Override
@@ -269,9 +302,17 @@ public class ConcentrationBasedModule implements UpdateModule {
         return featureManager.getScaledFeature(featureClass);
     }
 
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        // TODO IMPLEMENT ME
-        return null;
+    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+        ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
+        if (supplier.isStrutCalculation()) {
+            return feature.getHalfScaledQuantity();
+        }
+        return feature.getScaledQuantity();
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
 }

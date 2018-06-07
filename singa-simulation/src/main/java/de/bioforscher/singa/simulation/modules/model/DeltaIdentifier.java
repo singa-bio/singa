@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.model;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 /**
  * Used to identify changes to concentrations ({@link Delta}s) in maps.

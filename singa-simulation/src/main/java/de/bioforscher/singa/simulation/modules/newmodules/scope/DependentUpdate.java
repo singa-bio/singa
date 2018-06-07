@@ -2,13 +2,13 @@ package de.bioforscher.singa.simulation.modules.newmodules.scope;
 
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.model.LocalError;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.FieldSupplier;
 import de.bioforscher.singa.simulation.modules.newmodules.specifity.UpdateSpecificity;
-import de.bioforscher.singa.simulation.modules.newmodules.type.ConcentrationBasedModule;
 
 import javax.measure.Quantity;
 import java.util.Collection;
@@ -21,9 +21,9 @@ import java.util.Map;
 public class DependentUpdate implements UpdateScope {
 
     private Map<Updatable, ConcentrationContainer> halfConcentrations;
-    private ConcentrationBasedModule module;
+    private ConcentrationBasedModule<?> module;
 
-    public DependentUpdate(ConcentrationBasedModule module) {
+    public DependentUpdate(ConcentrationBasedModule<?> module) {
         this.module = module;
         halfConcentrations = new HashMap<>();
     }
@@ -49,9 +49,9 @@ public class DependentUpdate implements UpdateScope {
         // explicitly calculate half step concentrations
         determineHalfStepConcentrations();
         supply().setStrutCalculation(true);
-        for (Updatable updatable : updatables) {
-            supply().setCurrentUpdatable(updatable);
-            specify().processContainer(getHalfStepConcentration(updatable));
+        for (DeltaIdentifier identifier : supply().getCurrentFullDeltas().keySet()) {
+            supply().setCurrentUpdatable(identifier.getUpdatable());
+            specify().processContainer(getHalfStepConcentration(identifier.getUpdatable()));
         }
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());
@@ -81,7 +81,7 @@ public class DependentUpdate implements UpdateScope {
                 halfConcentrations.put(updatable, container);
             }
             // get previous concentration
-            Quantity<MolarConcentration> fullConcentration = container.get(identifier.getSection(), identifier.getEntity());
+            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(identifier.getSection(), identifier.getEntity());
             // add half of the full delta
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));
             // update concentration

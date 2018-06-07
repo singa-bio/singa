@@ -1,11 +1,10 @@
-package de.bioforscher.singa.simulation.modules.newmodules.type;
+package de.bioforscher.singa.simulation.modules.newmodules.module;
 
 import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import de.bioforscher.singa.simulation.modules.newmodules.FieldSupplier;
 
 import javax.measure.Quantity;
 import java.util.Collection;
@@ -20,9 +19,9 @@ public class ModuleFeatureManager implements Featureable {
     /**
      * The features available for automatic annotation and assignment.
      */
-    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+    private Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
-    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
+    private Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
 
     private FieldSupplier supplier;
 
@@ -82,4 +81,7 @@ public class ModuleFeatureManager implements Featureable {
         return availableFeatures;
     }
 
+    public Set<Class<? extends Feature>> getRequiredFeatures() {
+        return requiredFeatures;
+    }
 }

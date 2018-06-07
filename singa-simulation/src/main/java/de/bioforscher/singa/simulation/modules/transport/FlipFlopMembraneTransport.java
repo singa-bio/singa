@@ -2,15 +2,13 @@ package de.bioforscher.singa.simulation.modules.transport;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Feature;
-import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
 import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
 import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNeighbourIndependentModule;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
@@ -66,7 +64,8 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         // (outer phase) outer phase = -kIn * outer phase + kOut * outer layer
         final double value = -kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        // return new Delta(this, container.getOuterSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        return null;
     }
 
     private boolean onlyOuterLayer(ConcentrationContainer concentrationContainer) {
@@ -83,7 +82,8 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * container.get(OUTER, entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getSubsection(MEMBRANE_OUTER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        // return new Delta(this, container.getSubsection(MEMBRANE_OUTER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        return null;
     }
 
     private boolean onlyInnerLayer(ConcentrationContainer concentrationContainer) {
@@ -100,7 +100,8 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         final double value = kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() -
                 (kOut.getValue().doubleValue() + kFlip.getValue().doubleValue()) * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue() +
                 kFlip.getValue().doubleValue() * container.get(MEMBRANE_OUTER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getSubsection(MEMBRANE_INNER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        // return new Delta(this, container.getSubsection(MEMBRANE_INNER_LAYER), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        return null;
     }
 
     private boolean onlyInnerPhase(ConcentrationContainer concentrationContainer) {
@@ -115,7 +116,8 @@ public class FlipFlopMembraneTransport extends AbstractNeighbourIndependentModul
         // (inner phase) inner phase = -kIn * inner phase + kOut * inner layer
         final double value = -kIn.getValue().doubleValue() * container.get(INNER, entity).getValue().doubleValue() +
                 kOut.getValue().doubleValue() * container.get(MEMBRANE_INNER_LAYER, entity).getValue().doubleValue();
-        return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        // return new Delta(this, container.getInnerSubsection(), entity, Quantities.getQuantity(value, Environment.getConcentrationUnit()));
+        return null;
     }
 
     /**

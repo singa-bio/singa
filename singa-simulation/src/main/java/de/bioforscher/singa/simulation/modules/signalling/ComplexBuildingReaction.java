@@ -15,14 +15,11 @@ import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.AbstractNodeSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.Quantity;
 import java.util.*;
-
-import static de.bioforscher.singa.features.parameters.Environment.getConcentrationUnit;
 
 /**
  * @author cl
@@ -89,11 +86,11 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         List<Delta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
         // change ligand concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(bindeeTopology), bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+        // deltas.add(new Delta(this, concentrationContainer.getSubsection(bindeeTopology), bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
         // change unbound receptor concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+        // deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
         // change bound receptor concentration
-        deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
+        // deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
         return deltas;
     }
 

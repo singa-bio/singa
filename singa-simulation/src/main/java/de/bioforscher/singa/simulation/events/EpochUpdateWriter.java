@@ -7,10 +7,10 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Delta;
 import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.SimulationManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;

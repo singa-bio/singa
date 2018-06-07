@@ -18,6 +18,8 @@ import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvide
  */
 public class VesicleLayer {
 
+    public static VesicleLayer EMPTY_LAYER = new VesicleLayer();
+
     private List<Vesicle> vesicles;
 
     private List<VesicleModule> vesicleModules;
