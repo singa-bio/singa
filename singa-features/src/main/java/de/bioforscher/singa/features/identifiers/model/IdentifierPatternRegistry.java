@@ -94,7 +94,8 @@ public class IdentifierPatternRegistry {
         Pattern pattern = getInstance().identifierPatternRegistry.get(identifierClass);
         if (pattern == null) {
             throw new IllegalStateException("The identifier " + identifierClass.getSimpleName() + " has no associated " +
-                    "pattern in the pattern registry. Use the addPattern(Class<IdentifierType>, Pattern) to add a pattern.");
+                    "pattern in the pattern registry. Use the addPattern(Class<IdentifierType>, Pattern) method to add" +
+                    " a pattern.");
         }
         return pattern;
     }

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.features.parameters;
 
-import de.bioforscher.singa.features.model.QuantityFormatter;
 import de.bioforscher.singa.features.quantities.DynamicViscosity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.features.quantities.QuantityFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.function.MultiplyConverter;

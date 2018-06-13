@@ -1,4 +1,4 @@
-package de.bioforscher.singa.features.model;
+package de.bioforscher.singa.features.quantities;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
