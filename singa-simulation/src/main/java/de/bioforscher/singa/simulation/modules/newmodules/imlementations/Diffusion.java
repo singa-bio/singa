@@ -37,16 +37,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addModuleToSimulation();
     }
 
-    /**
-     * Only apply, if current chemical entity is assigned in the referenced chemical entities.
-     *
-     * @param container
-     * @return
-     */
-    private boolean onlyForReferencedEntities(ConcentrationContainer container) {
-        return getReferencedEntities().contains(supplier.getCurrentEntity());
-    }
-
     private Delta calculateDelta(ConcentrationContainer concentrationContainer) {
         AutomatonNode node = (AutomatonNode) supplier.getCurrentUpdatable();
         ChemicalEntity entity = supplier.getCurrentEntity();
@@ -86,7 +76,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
             }
 
         }
-
         // entering amount
         final double enteringConcentration = concentration * diffusivity;
         // calculate leaving amount
@@ -96,6 +85,10 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // return delta
         // System.out.println(delta);
         return new Delta(this, subsection, entity, Quantities.getQuantity(delta, Environment.getConcentrationUnit()));
+    }
+
+    private boolean onlyForReferencedEntities(ConcentrationContainer container) {
+        return getReferencedEntities().contains(supplier.getCurrentEntity());
     }
 
     private boolean chemicalEntityIsNotMembraneAnchored() {

@@ -40,9 +40,9 @@ import static tec.uom.se.unit.Units.SECOND;
  * @author cl
  */
 @RunWith(Parameterized.class)
-public class DiffusionTest {
+public class DiffusionUnhinderedTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DiffusionTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(DiffusionUnhinderedTest.class);
 
     private static final Quantity<Length> systemDiameter = Quantities.getQuantity(2500.0, NANO(METRE));
 
