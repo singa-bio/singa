@@ -81,11 +81,11 @@ public class DependentUpdate implements UpdateScope {
                 halfConcentrations.put(updatable, container);
             }
             // get previous concentration
-            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(identifier.getSection(), identifier.getEntity());
+            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(identifier.getSubsection(), identifier.getEntity());
             // add half of the full delta
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));
             // update concentration
-            container.set(identifier.getSection(), identifier.getEntity(), halfStepConcentration);
+            container.set(identifier.getSubsection(), identifier.getEntity(), halfStepConcentration);
         }
     }
 

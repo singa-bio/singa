@@ -76,6 +76,14 @@ public class ModuleFeatureManager implements Featureable {
         return features.hasFeature(featureTypeClass);
     }
 
+    public Collection<Feature<?>> getAllFeatures() {
+        return features.getAllFeatures();
+    }
+
+    public String listFeatures(String precedingSpaces) {
+        return features.listFeatures(precedingSpaces);
+    }
+
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;

@@ -79,7 +79,7 @@ public class DiffusionUnhinderedTest {
                 /* 2 */ {hydrogen, 30, Quantities.getQuantity(133, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
                 /* 3 */ {ammonia, 30, Quantities.getQuantity(256, MICRO(SECOND))},
-                /* 4 */ {benzene, 30, Quantities.getQuantity(540, MICRO(SECOND))}
+                /* 4 */ {benzene, 30, Quantities.getQuantity(537, MICRO(SECOND))}
         });
     }
 

@@ -124,6 +124,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return supplier;
     }
 
+    public UpdateScope getScope() {
+        return scope;
+    }
+
     void setScope(UpdateScope scope) {
         this.scope = scope;
     }
@@ -132,7 +136,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return specificity;
     }
 
-    void setSpecificity(UpdateSpecificity specificity) {
+    void setSpecificity(UpdateSpecificity<DeltaFunctionType> specificity) {
         this.specificity = specificity;
     }
 
@@ -147,7 +151,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     public void handleDelta(DeltaIdentifier deltaIdentifier, Delta delta) {
-        logDelta(delta);
+        logDelta(deltaIdentifier, delta);
         if (supplier.isStrutCalculation()) {
             delta = delta.multiply(2.0);
             supplier.getCurrentHalfDeltas().put(deltaIdentifier, delta);
@@ -157,12 +161,12 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
     }
 
-    private void logDelta(Delta delta) {
+    private void logDelta(DeltaIdentifier deltaIdentifier, Delta delta) {
         logger.trace("{} delta for {} in {}:{} = {}",
                 supplier.isStrutCalculation() ? "Half" : "Full",
-                supplier.getCurrentEntity().getIdentifier(),
-                supplier.getCurrentUpdatable().getStringIdentifier(),
-                supplier.getCurrentSubsection().getIdentifier(),
+                deltaIdentifier.getEntity().getIdentifier(),
+                deltaIdentifier.getUpdatable().getStringIdentifier(),
+                deltaIdentifier.getSubsection().getIdentifier(),
                 delta.getQuantity());
     }
 
@@ -239,8 +243,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
         // safety check
         Objects.requireNonNull(largestIdentifier);
+        LocalError localError = new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
+        logger.debug("The largest error was {} for {}", localError.getValue(), localError.getUpdatable());
         // set local error and return local error
-        return new LocalError(largestIdentifier.getUpdatable(), largestIdentifier.getEntity(), largestLocalError);
+        return localError;
     }
 
     @Override
@@ -300,6 +306,18 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     @Override
     public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         return featureManager.getScaledFeature(featureClass);
+    }
+
+    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+        featureManager.setFeature(feature);
+    }
+
+    public Collection<Feature<?>> getFeatures() {
+        return featureManager.getAllFeatures();
+    }
+
+    public String listFeatures(String precedingSpaces) {
+        return featureManager.listFeatures(precedingSpaces);
     }
 
     protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {

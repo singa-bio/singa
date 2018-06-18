@@ -53,7 +53,7 @@ public class DeltaIdentifier {
      *
      * @return The cell section the delta is assigned to.
      */
-    public CellSubsection getSection() {
+    public CellSubsection getSubsection() {
         return section;
     }
 

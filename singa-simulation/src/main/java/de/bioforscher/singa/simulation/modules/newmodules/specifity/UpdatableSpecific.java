@@ -46,9 +46,9 @@ public class UpdatableSpecific implements UpdateSpecificity<UpdatableDeltaFuncti
                 for (Map.Entry<DeltaIdentifier, Delta> entry : fullDeltas.entrySet()) {
                     Delta delta = entry.getValue();
                     DeltaIdentifier identifier = entry.getKey();
-                    supply().setCurrentUpdatable(identifier.getUpdatable());
-                    supply().setCurrentSubsection(identifier.getSection());
-                    supply().setCurrentEntity(identifier.getEntity());
+//                    supply().setCurrentUpdatable(identifier.getUpdatable());
+//                    supply().setCurrentSubsection(identifier.getSubsection());
+//                    supply().setCurrentEntity(identifier.getEntity());
                     if (module.deltaIsValid(delta)) {
                         module.handleDelta(identifier, delta);
                     }

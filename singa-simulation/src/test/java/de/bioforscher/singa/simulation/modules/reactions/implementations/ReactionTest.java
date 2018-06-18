@@ -51,9 +51,8 @@ public class ReactionTest {
         // MichaelisConstant is not a scalable feature
 
         // SABIO Entry ID: 28851
-        // Kinetic properties of fructose bisphosphate aldolase from Trypanosoma
-        // brucei compared to aldolase from rabbit muscle and Staphylococcus
-        // aureus.
+        // Kinetic properties of fructose bisphosphate aldolase from Trypanosoma brucei compared to aldolase from rabbit
+        // muscle and Staphylococcus aureus.
 
         logger.info("Testing Biochemical Reaction Module.");
         // create simulation

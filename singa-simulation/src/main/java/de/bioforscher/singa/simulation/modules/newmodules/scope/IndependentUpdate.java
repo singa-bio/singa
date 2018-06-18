@@ -1,6 +1,8 @@
 package de.bioforscher.singa.simulation.modules.newmodules.scope;
 
+import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.LocalError;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
@@ -64,9 +66,11 @@ public class IndependentUpdate implements UpdateScope {
     private void determineHalfStepConcentration() {
         halfConcentration = supply().getCurrentUpdatable().getConcentrationContainer().fullCopy();
         for (Delta delta : supply().getCurrentFullDeltas().values()) {
-            Quantity<MolarConcentration> fullConcentration = halfConcentration.get(supply().getCurrentSubsection(), supply().getCurrentEntity());
+            CellSubsection currentSubsection = delta.getCellSubsection();
+            ChemicalEntity currentEntity = delta.getChemicalEntity();
+            Quantity<MolarConcentration> fullConcentration = halfConcentration.get(currentSubsection, currentEntity);
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(delta.getQuantity().multiply(0.5));
-            halfConcentration.set(supply().getCurrentSubsection(), supply().getCurrentEntity(), halfStepConcentration);
+            halfConcentration.set(currentSubsection, currentEntity, halfStepConcentration);
         }
     }
 

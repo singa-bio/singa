@@ -9,6 +9,7 @@ import de.bioforscher.singa.mathematics.graphs.grid.GridNode;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.newsections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,7 @@ public class AutomatonGraphs {
     public static AutomatonGraph singularGraph() {
         AutomatonGraph automatonGraph = new AutomatonGraph(1, 1);
         AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0, 0));
+        node.setPosition(new Vector2D(0.0,0.0));
         automatonGraph.addNode(node);
         return automatonGraph;
     }

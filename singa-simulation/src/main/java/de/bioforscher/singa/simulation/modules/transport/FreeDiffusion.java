@@ -25,6 +25,7 @@ import java.util.Set;
  *
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Fick%27s_laws_of_diffusion">Wikipedia: Fick's laws of diffusion</a>
+ * @deprecated
  */
 public class FreeDiffusion extends AbstractNeighbourDependentModule {
 

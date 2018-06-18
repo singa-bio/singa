@@ -22,7 +22,7 @@ public class UpdateScheduler {
     /**
      * The default value where errors are considered too large and the time step is reduced.
      */
-    private static final double DEFALUT_RECALCULATION_CUTOFF = 0.01;
+    private static final double DEFAULT_RECALCULATION_CUTOFF = 0.01;
 
     private Simulation simulation;
     private List<Updatable> updatables;
@@ -30,7 +30,7 @@ public class UpdateScheduler {
     private List<UpdateModule> modules;
     private ListIterator<UpdateModule> moduleIterator;
     private UpdateModule module;
-    private double recalculationCutoff = DEFALUT_RECALCULATION_CUTOFF;
+    private double recalculationCutoff = DEFAULT_RECALCULATION_CUTOFF;
 
     private boolean timestepRescaled = true;
     private LocalError largestError;
@@ -61,7 +61,7 @@ public class UpdateScheduler {
         while (processedModules < modules.size()) {
             processModuleByState(module.getState());
         }
-        logger.debug("Finished processing modules for epoch {}.",simulation.getEpoch());
+        logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
         // wrap up
         finalizeDeltas();
         modules.forEach(UpdateModule::resetState);
@@ -73,12 +73,12 @@ public class UpdateScheduler {
             case PENDING:
                 // calculate update
                 module.calculateUpdates();
-                // move courser back to check state
-                moduleIterator.previous();
                 break;
             case SUCCEEDED:
-                // calculate next module if it succeeded
-                module = moduleIterator.next();
+                // continue with next module
+                if (moduleIterator.hasNext()) {
+                    module = moduleIterator.next();
+                }
                 processedModules++;
                 break;
             case REQUIRING_RECALCULATION:

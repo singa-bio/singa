@@ -162,16 +162,16 @@ public abstract class AbstractNeighbourDependentModule extends AbstractModule {
             Delta value = entry.getValue();
             // determine half step deltas
             Updatable updatable = key.getUpdatable();
-            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(key.getSection(), key.getEntity());
+            Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(key.getSubsection(), key.getEntity());
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(0.5));
             ConcentrationContainer halfConcentration;
             if (!halfConcentrations.containsKey(updatable)) {
                 halfConcentration = updatable.getConcentrationContainer().emptyCopy();
-                halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
+                halfConcentration.set(key.getSubsection(), key.getEntity(), halfStepConcentration);
                 halfConcentrations.put(updatable, halfConcentration);
             } else {
                 halfConcentration = halfConcentrations.get(updatable);
-                halfConcentration.set(key.getSection(), key.getEntity(), halfStepConcentration);
+                halfConcentration.set(key.getSubsection(), key.getEntity(), halfStepConcentration);
             }
         }
     }

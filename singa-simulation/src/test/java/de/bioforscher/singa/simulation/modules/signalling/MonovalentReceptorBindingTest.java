@@ -32,6 +32,7 @@ import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
+ * @deprecated
  */
 public class MonovalentReceptorBindingTest {
 

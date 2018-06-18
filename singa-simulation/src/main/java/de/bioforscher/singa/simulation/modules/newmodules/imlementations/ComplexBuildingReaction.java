@@ -1,49 +1,39 @@
-package de.bioforscher.singa.simulation.modules.signalling;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
+import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
-import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
-import de.bioforscher.singa.features.model.FeatureContainer;
-import de.bioforscher.singa.features.model.Featureable;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.AbstractNodeSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.UpdatableDeltaFunction;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ModuleFactory;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static de.bioforscher.singa.features.parameters.Environment.getConcentrationUnit;
 
 /**
  * @author cl
- * @deprecated
  */
-public class ComplexBuildingReaction extends AbstractNodeSpecificModule implements Featureable {
-
-    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
-
-    static {
-        requiredFeatures.add(ForwardsRateConstant.class);
-        requiredFeatures.add(BackwardsRateConstant.class);
-    }
-
-    private static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
+public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     public static BindeeSelection inSimulation(Simulation simulation) {
         return new BindingBuilder(simulation);
     }
 
-    /**
-     * The features of the reaction.
-     */
-    private FeatureContainer features;
     private RateConstant forwardsReactionRate;
     private RateConstant backwardsReactionRate;
 
@@ -55,19 +45,14 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     private ComplexedChemicalEntity complex;
 
-    /**
-     * Creates a new section independent module for the given simulation.
-     *
-     * @param simulation The simulation.
-     */
-    private ComplexBuildingReaction(Simulation simulation) {
-        super(simulation);
-        features = new ChemistryFeatureContainer();
-        // deltas
-        addDeltaFunction(this::calculateDeltas, bioNode -> true);
-    }
-
-    private void initialize() {
+    public void initialize() {
+        // apply
+        setApplicationCondition(updatable -> true);
+        // function
+        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
+        addDeltaFunction(function);
+        // feature
+        getRequiredFeatures().add(Diffusivity.class);
         // in no complex has been set create it
         if (complex == null) {
             complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getIdentifier() + ":" + bindee.getIdentifier().getIdentifier())
@@ -83,15 +68,20 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         addModuleToSimulation();
     }
 
-    private List<Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
-        List<Delta> deltas = new ArrayList<>();
+    private Map<DeltaIdentifier, Delta> calculateDeltas(ConcentrationContainer concentrationContainer) {
+        Map<DeltaIdentifier, Delta> deltas = new HashMap<>();
         double velocity = calculateVelocity(concentrationContainer);
-        // change ligand concentration
-        // deltas.add(new Delta(this, concentrationContainer.getSubsection(bindeeTopology), bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
-        // change unbound receptor concentration
-        // deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
-        // change bound receptor concentration
-        // deltas.add(new Delta(this, concentrationContainer.getSubsection(binderTopology), complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
+        // ligand concentration
+        CellSubsection bindeeSubsection = concentrationContainer.getSubsection(bindeeTopology);
+        deltas.put(new DeltaIdentifier(supplier.getCurrentUpdatable(), bindeeSubsection, bindee),
+                new Delta(this, bindeeSubsection, bindee, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+        // unbound receptor concentration
+        CellSubsection binderSubsection = concentrationContainer.getSubsection(binderTopology);
+        deltas.put(new DeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, binder),
+                new Delta(this, binderSubsection, binder, Quantities.getQuantity(-velocity, getConcentrationUnit())));
+        // bound receptor concentration
+        deltas.put(new DeltaIdentifier(supplier.getCurrentUpdatable(), binderSubsection, complex),
+                new Delta(this, binderSubsection, complex, Quantities.getQuantity(velocity, getConcentrationUnit())));
         return deltas;
     }
 
@@ -118,60 +108,13 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         return substrates + " \u21CB " + products;
     }
 
-    @Override
     public String getStringForProtocol() {
         return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier().getIdentifier() + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
                 "  " + "reaction: " + getReactionString() + System.lineSeparator() +
                 "  " + "binding: " + bindee.getIdentifier() + " is bound to " + binder.getIdentifier() + System.lineSeparator() +
                 "  " + "features: " + System.lineSeparator() +
-                features.listFeatures("    ");
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return requiredFeatures;
-    }
-
-    @Override
-    public Collection<Feature<?>> getFeatures() {
-        return features.getAllFeatures();
-    }
-
-    @Override
-    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
-        return features.getFeature(featureTypeClass);
-    }
-
-    /**
-     * Returns the feature for the entity. The feature is scaled according to the time step size and considering half
-     * steps.
-     *
-     * @param featureClass The feature to get.
-     * @param <FeatureContentType> The type of the feature.
-     * @return The requested feature for the corresponding entity.
-     */
-    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        ScalableFeature<FeatureContentType> feature = getFeature(featureClass);
-        if (halfTime) {
-            return feature.getHalfScaledQuantity();
-        }
-        return feature.getScaledQuantity();
-    }
-
-    @Override
-    public <FeatureType extends Feature> void setFeature(Class<FeatureType> featureTypeClass) {
-        features.setFeature(featureTypeClass, this);
-    }
-
-    @Override
-    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
-        features.setFeature(feature);
-    }
-
-    @Override
-    public <FeatureType extends Feature> boolean hasFeature(Class<FeatureType> featureTypeClass) {
-        return features.hasFeature(featureTypeClass);
+                listFeatures("    ");
     }
 
     @Override
@@ -203,11 +146,10 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
                 }
             }
         }
-        if (halfTime) {
+        if (supplier.isStrutCalculation()) {
             return forwardsReactionRate.getHalfScaledQuantity();
         }
         return forwardsReactionRate.getScaledQuantity();
-
     }
 
     private Quantity getScaledBackwardsReactionRate() {
@@ -220,15 +162,10 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
                 }
             }
         }
-        if (halfTime) {
+        if (supplier.isStrutCalculation()) {
             return backwardsReactionRate.getHalfScaledQuantity();
         }
         return backwardsReactionRate.getScaledQuantity();
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getAvailableFeatures() {
-        return availableFeatures;
     }
 
     @Override
@@ -238,8 +175,6 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
 
     public interface BindeeSelection {
         BindeeSelection identifier(String identifier);
-
-        BindeeSelection identifier(SimpleStringIdentifier identifier);
 
         BindeeSectionSelection of(ChemicalEntity bindee);
 
@@ -271,16 +206,14 @@ public class ComplexBuildingReaction extends AbstractNodeSpecificModule implemen
         private ComplexBuildingReaction module;
 
         public BindingBuilder(Simulation simulation) {
-            module = new ComplexBuildingReaction(simulation);
+            module = ModuleFactory.setupModule(ComplexBuildingReaction.class,
+                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
+            module.setSimulation(simulation);
         }
 
         @Override
         public BindeeSelection identifier(String identifier) {
-            return identifier(new SimpleStringIdentifier(identifier));
-        }
-
-        @Override
-        public BindeeSelection identifier(SimpleStringIdentifier identifier) {
             module.setIdentifier(identifier);
             return this;
         }

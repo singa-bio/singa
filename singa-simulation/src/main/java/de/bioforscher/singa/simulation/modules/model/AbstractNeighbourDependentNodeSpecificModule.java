@@ -100,7 +100,7 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
                     Delta fullDelta = delta.getValue();
                     DeltaIdentifier deltaIdentifier = delta.getKey();
                     currentChemicalEntity = deltaIdentifier.getEntity();
-                    currentCellSection = deltaIdentifier.getSection();
+                    currentCellSection = deltaIdentifier.getSubsection();
                     if (deltaIsValid(fullDelta)) {
                         logger.trace("Full delta for {} in {}:{} = {}", currentChemicalEntity.getName(), deltaIdentifier.getUpdatable().getStringIdentifier(), currentCellSection.getIdentifier(), fullDelta.getQuantity());
                         currentFullDeltas.put(deltaIdentifier, fullDelta);
@@ -118,16 +118,16 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
             DeltaIdentifier identifier = entry.getKey();
             Delta value = entry.getValue();
             // determine half step deltas
-            Quantity<MolarConcentration> fullConcentration = identifier.getUpdatable().getConcentration(identifier.getSection(), identifier.getEntity());
+            Quantity<MolarConcentration> fullConcentration = identifier.getUpdatable().getConcentration(identifier.getSubsection(), identifier.getEntity());
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(value.getQuantity().multiply(0.5));
             ConcentrationContainer halfConcentration;
             if (!halfConcentrations.containsKey(identifier.getUpdatable())) {
                 halfConcentration = identifier.getUpdatable().getConcentrationContainer().emptyCopy();
-                halfConcentration.set(identifier.getSection(), identifier.getEntity(), halfStepConcentration);
+                halfConcentration.set(identifier.getSubsection(), identifier.getEntity(), halfStepConcentration);
                 halfConcentrations.put(identifier.getUpdatable(), halfConcentration);
             } else {
                 halfConcentration = halfConcentrations.get(identifier.getUpdatable());
-                halfConcentration.set(identifier.getSection(), identifier.getEntity(), halfStepConcentration);
+                halfConcentration.set(identifier.getSubsection(), identifier.getEntity(), halfStepConcentration);
             }
         }
     }
@@ -148,7 +148,7 @@ public abstract class AbstractNeighbourDependentNodeSpecificModule extends Abstr
                 for (Map.Entry<DeltaIdentifier, Delta> deltaEntry : halfDeltas.entrySet()) {
                     DeltaIdentifier deltaIdentifier = deltaEntry.getKey();
                     currentChemicalEntity = deltaIdentifier.getEntity();
-                    currentCellSection = deltaIdentifier.getSection();
+                    currentCellSection = deltaIdentifier.getSubsection();
                     Delta halfDelta = deltaEntry.getValue();
                     if (deltaIsValid(halfDelta)) {
                         halfDelta = halfDelta.multiply(2.0);

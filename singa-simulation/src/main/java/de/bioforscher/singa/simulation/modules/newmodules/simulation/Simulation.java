@@ -111,11 +111,12 @@ public class Simulation {
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {
+            logger.trace("Deltas in {}:", updatable);
             updatable.applyDeltas();
         }
         // move vesicles
         if (vesicleLayer != null) {
-            vesicleLayer.step();
+            // vesicleLayer.step();
             associateVesicles();
         }
         // update epoch and elapsed time

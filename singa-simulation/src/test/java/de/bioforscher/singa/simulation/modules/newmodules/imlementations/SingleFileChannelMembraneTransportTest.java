@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.transport;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
@@ -13,7 +13,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import org.junit.After;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
@@ -27,7 +27,6 @@ import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
- * @deprecated
  */
 public class SingleFileChannelMembraneTransportTest {
 

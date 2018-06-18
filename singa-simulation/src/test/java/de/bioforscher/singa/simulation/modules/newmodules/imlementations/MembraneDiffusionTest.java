@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.transport;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
@@ -12,7 +12,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import org.junit.After;
 import org.junit.Test;
 import tec.uom.se.ComparableQuantity;
@@ -38,7 +38,7 @@ import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
- * @deprecated
+ * @author cl
  */
 public class MembraneDiffusionTest {
 

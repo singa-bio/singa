@@ -5,6 +5,8 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.List;
  * @author cl
  */
 public class SimpleUpdateManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleUpdateManager.class);
 
     /**
      * Deltas that are to be applied to the node.
@@ -131,6 +135,7 @@ public class SimpleUpdateManager {
                     // FIXME the the delta that resulted in the decrease probably had a corresponding increase
                     updatedConcentration = Environment.emptyConcentration();
                 }
+                logger.trace("Setting c({}) in {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), updatedConcentration);
                 concentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
         }

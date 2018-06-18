@@ -1,15 +1,18 @@
-package de.bioforscher.singa.simulation.modules.transport;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
 import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
-import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.AbstractNodeSpecificModule;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.model.DeltaIdentifier;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.UpdatableDeltaFunction;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ModuleFactory;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 
@@ -17,15 +20,8 @@ import static de.bioforscher.singa.simulation.model.newsections.CellTopology.*;
 
 /**
  * @author cl
- * @deprecated
  */
-public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModule {
-
-    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
-
-    static {
-        requiredFeatures.add(OsmoticPermeability.class);
-    }
+public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     public static TransporterStep inSimulation(Simulation simulation) {
         return new SingleFileChannelMembraneTransportBuilder(simulation);
@@ -35,17 +31,14 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
     private ChemicalEntity cargo;
     private Set<ChemicalEntity> solutes;
 
-    private SingleFileChannelMembraneTransport(Simulation simulation) {
-        super(simulation);
-        solutes = new HashSet<>();
-        addDeltaFunction(this::calculateDeltas, this::hasMembrane);
-    }
-
-    private boolean hasMembrane(ConcentrationContainer concentrationContainer) {
-        return concentrationContainer.getSubsection(MEMBRANE) != null;
-    }
-
     private void initialize() {
+        // apply
+        setApplicationCondition(updatable -> true);
+        // function
+        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
+        addDeltaFunction(function);
+        // feature
+        getRequiredFeatures().add(OsmoticPermeability.class);
         // reference entities for this module
         addReferencedEntity(transporter);
         addReferencedEntity(cargo);
@@ -61,12 +54,14 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
         }
     }
 
-    private List<Delta> calculateDeltas(ConcentrationContainer container) {
-        List<Delta> deltas = new ArrayList<>();
+    private Map<DeltaIdentifier, Delta> calculateDeltas(ConcentrationContainer container) {
+        Map<DeltaIdentifier, Delta> deltas = new HashMap<>();
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(MEMBRANE, transporter), Environment.getSubsectionVolume()).getValue().doubleValue();
-//        deltas.add(new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
-//        deltas.add(new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+        deltas.put(new DeltaIdentifier(supplier.getCurrentUpdatable(), container.getOuterSubsection(), cargo),
+                new Delta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+        deltas.put(new DeltaIdentifier(supplier.getCurrentUpdatable(), container.getInnerSubsection(), cargo),
+                new Delta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         return deltas;
     }
 
@@ -86,15 +81,13 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
     }
 
     @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return requiredFeatures;
-    }
-
-    @Override
     public String toString() {
         return getClass().getSimpleName() + " (" + transporter.getName() + ")";
     }
 
+    private boolean hasMembrane(ConcentrationContainer concentrationContainer) {
+        return concentrationContainer.getSubsection(MEMBRANE) != null;
+    }
 
     public interface TransporterStep {
         CargoStep transporter(Transporter transporter);
@@ -121,7 +114,11 @@ public class SingleFileChannelMembraneTransport extends AbstractNodeSpecificModu
         SingleFileChannelMembraneTransport module;
 
         public SingleFileChannelMembraneTransportBuilder(Simulation simulation) {
-            module = new SingleFileChannelMembraneTransport(simulation);
+            module = ModuleFactory.setupModule(SingleFileChannelMembraneTransport.class,
+                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
+            module.setSimulation(simulation);
+            module.solutes = new HashSet<>();
         }
 
         @Override
