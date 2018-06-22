@@ -9,11 +9,34 @@ import java.util.List;
  */
 public class PiStacking extends Interaction {
 
+    /**
+     * The Atom IDs of the source atoms of the interaction - belong to the protein.
+     */
     private List<Integer> atoms1;
+
+    /**
+     * The Atom IDs of the target atoms of the interaction - belong to the ligand.
+     */
     private List<Integer> atoms2;
+
+    /**
+     * The distance between the interacting atoms or groups in Angstrom.
+     */
     private double distance;
+
+    /**
+     * The offset between the interacting groups.
+     */
     private double offset;
+
+    /**
+     * The angle between the ring planes.
+     */
     private double angle;
+
+    /**
+     * The stacking type (perpendicular or T-shaped).
+     */
     private String type;
 
     public PiStacking(int plipIdentifier) {
@@ -22,6 +45,10 @@ public class PiStacking extends Interaction {
         atoms2 = new ArrayList<>();
     }
 
+    /**
+     * Returns a list of the Atom IDs of the source atoms of the interaction, belonging to the protein.
+     * @return The interaction's source atom IDs.
+     */
     public List<Integer> getAtoms1() {
         return atoms1;
     }
@@ -30,6 +57,10 @@ public class PiStacking extends Interaction {
         this.atoms1 = atoms1;
     }
 
+    /**
+     * Returns a list of the Atom IDs of the target atoms of the interaction, belonging to the ligand.
+     * @return The interaction's target atom IDs.
+     */
     public List<Integer> getAtoms2() {
         return atoms2;
     }
@@ -38,6 +69,10 @@ public class PiStacking extends Interaction {
         this.atoms2 = atoms2;
     }
 
+    /**
+     * Returns the distance between the interacting atoms in Angstrom.
+     * @return The distance between the interacting atoms.
+     */
     public double getDistance() {
         return distance;
     }
@@ -46,6 +81,10 @@ public class PiStacking extends Interaction {
         this.distance = distance;
     }
 
+    /**
+     * Returns the offset between the interacting groups.
+     * @return The offset between the interacting groups.
+     */
     public double getOffset() {
         return offset;
     }
@@ -54,6 +93,10 @@ public class PiStacking extends Interaction {
         this.offset = offset;
     }
 
+    /**
+     * Returns the angle between the ring planes.
+     * @return The angle between the ring planes.
+     */
     public double getAngle() {
         return angle;
     }
@@ -62,6 +105,10 @@ public class PiStacking extends Interaction {
         this.angle = angle;
     }
 
+    /**
+     * Returns the stacking type (perpendicular or T-shaped).
+     * @return Stacking type.
+     */
     public String getType() {
         return type;
     }
@@ -70,6 +117,10 @@ public class PiStacking extends Interaction {
         this.type = type;
     }
 
+    /**
+     * Returns the Atom ID of the first atom in the list of source atoms, belonging to the protein.
+     * @return The interaction's first source atom ID.
+     */
     @Override
     public int getFirstSourceAtom() {
         if (atoms1.iterator().hasNext()) {
@@ -79,6 +130,10 @@ public class PiStacking extends Interaction {
         }
     }
 
+    /**
+     * Returns the Atom ID of the first atom in the list of target atoms, belonging to the ligand.
+     * @return The interaction's first target atom ID.
+     */
     @Override
     public int getFirstTargetAtom() {
         if (atoms2.iterator().hasNext()) {
