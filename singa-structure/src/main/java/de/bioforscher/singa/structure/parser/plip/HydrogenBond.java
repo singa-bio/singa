@@ -8,12 +8,12 @@ import java.util.Arrays;
 public class HydrogenBond extends Interaction {
 
     /**
-     * The Atom ID of the donor atom of the halogen bond.
+     * The Atom ID of the donor atom of the hydrogen bond.
      */
     private int donor;
 
     /**
-     * The Atom ID of the acceptor atom of the halogen bond.
+     * The Atom ID of the acceptor atom of the hydrogen bond.
      */
     private int acceptor;
 
@@ -132,7 +132,7 @@ public class HydrogenBond extends Interaction {
 
     /**
      * Returns the Atom ID of the source atom of the interaction.
-     * Decides whether ...
+     * Decides whether protein is the donor, if so, gives the donor atom.
      * @return The interaction's source atom ID.
      */
     @Override
@@ -142,7 +142,7 @@ public class HydrogenBond extends Interaction {
 
     /**
      * Returns the Atom ID of the target atom of the interaction.
-     * Decides whether ...
+     * Decides whether protein is the donor, if so, gives the acceptor atom.
      * @return The interaction's target atom ID.
      */
     @Override
