@@ -103,13 +103,7 @@ public class VesicleLayer {
         }
     }
 
-    public void rescaleDiffusifity() {
-        for (Vesicle vesicle : vesicles) {
-            vesicle.rescaleDiffusivity();
-        }
-    }
-
-    public void step() {
+    public void applyDeltas() {
         checkForCollisions();
         for (Vesicle vesicle : vesicles) {
             vesicle.move();

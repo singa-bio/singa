@@ -4,9 +4,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureConta
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
-import de.bioforscher.singa.features.model.ScalableFeature;
 
-import javax.measure.Quantity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,15 +21,12 @@ public class ModuleFeatureManager implements Featureable {
 
     private Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
 
-    private FieldSupplier supplier;
-
     /**
      * The features of the reaction.
      */
     private FeatureContainer features;
 
-    public ModuleFeatureManager(FieldSupplier supplier) {
-        this.supplier = supplier;
+    public ModuleFeatureManager() {
         features = new ChemistryFeatureContainer();
     }
 
@@ -43,22 +38,6 @@ public class ModuleFeatureManager implements Featureable {
     @Override
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
         return features.getFeature(featureTypeClass);
-    }
-
-    /**
-     * Returns the feature for the entity. The feature is scaled according to the time step size and considering half
-     * steps.
-     *
-     * @param featureClass The feature to get.
-     * @param <FeatureContentType> The type of the feature.
-     * @return The requested feature for the corresponding entity.
-     */
-    public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        ScalableFeature<FeatureContentType> feature = getFeature(featureClass);
-        if (supplier.isStrutCalculation()) {
-            return feature.getHalfScaledQuantity();
-        }
-        return feature.getScaledQuantity();
     }
 
     @Override

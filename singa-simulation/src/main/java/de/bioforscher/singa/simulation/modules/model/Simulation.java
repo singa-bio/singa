@@ -173,7 +173,7 @@ public class Simulation {
         }
         // move vesicles
         if (vesicleLayer != null) {
-            vesicleLayer.step();
+            vesicleLayer.applyDeltas();
             associateVesicles();
         }
         // update epoch and elapsed time

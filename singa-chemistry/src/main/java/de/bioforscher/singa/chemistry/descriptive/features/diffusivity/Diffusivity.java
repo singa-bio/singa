@@ -3,6 +3,8 @@ package de.bioforscher.singa.chemistry.descriptive.features.diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.FeatureRegistry;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.ScalableQuantityFeature;
+import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.features.quantities.NaturalConstants;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -26,6 +28,26 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
     public static final Unit<Diffusivity> SQUARE_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(2).divide(SECOND));
     public static final Unit<Diffusivity> SQUARE_METRE_PER_SECOND = new ProductUnit<>(METRE.pow(2).divide(SECOND));
     public static final String SYMBOL = "D";
+
+    private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
+
+    /**
+     * The diffusivity can be calculated according to the Stokes–Einstein equation:
+     * D = (k_B * T) / (6 * pi * nu * radius)
+     * k_B is the {@link NaturalConstants#BOLTZMANN_CONSTANT} (in (N * m) / K),
+     * T is the Temperature (in K),
+     * nu is the dynamic viscosity (in (N * s) / m^2 ) and,
+     *
+     * @param radius the radius of the vesicle
+     * @return The diffusivity.
+     */
+    public static Diffusivity calculate(Quantity<Length> radius) {
+        final double upper = NaturalConstants.BOLTZMANN_CONSTANT.getValue().doubleValue() * Environment.getTemperature().getValue().doubleValue();
+        final double lower = 6 * Math.PI * Environment.getViscosity().getValue().doubleValue() * radius.to(METRE).getValue().doubleValue();
+        Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(upper / lower, Diffusivity.SQUARE_METRE_PER_SECOND), EINSTEIN1905);
+        diffusivity.scale(Environment.getTimeStep(), Environment.getSystemScale());
+        return diffusivity;
+    }
 
     public Diffusivity(Quantity<Diffusivity> diffusivityQuantity, FeatureOrigin origin) {
         super(diffusivityQuantity, origin);

@@ -3,7 +3,6 @@ package de.bioforscher.singa.simulation.modules.newmodules.module;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.ScalableFeature;
-import de.bioforscher.singa.simulation.modules.model.LocalError;
 
 import javax.measure.Quantity;
 import java.util.Set;
@@ -25,19 +24,10 @@ public interface UpdateModule {
 
     <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass);
 
-    LocalError optimizeTimeStep();
+    void optimizeTimeStep();
 
     Set<ChemicalEntity> getReferencedEntities();
 
-    default void checkFeatures() {
-        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
-            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
-                if (!chemicalEntity.hasFeature(featureClass)) {
-                    chemicalEntity.setFeature(featureClass);
-                }
-            }
-        }
-    }
-
+    void checkFeatures();
 
 }

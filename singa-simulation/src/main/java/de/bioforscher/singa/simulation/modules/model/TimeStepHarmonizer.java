@@ -157,9 +157,6 @@ public class TimeStepHarmonizer {
                 ((Featureable) module).scaleScalableFeatures();
             }
         }
-        if (vesicleLayer != null) {
-            vesicleLayer.rescaleDiffusifity();
-        }
     }
 
     public void increaseTimeStep() {

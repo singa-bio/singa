@@ -62,7 +62,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     public ConcentrationBasedModule() {
         supplier = new FieldSupplier();
-        featureManager = new ModuleFeatureManager(supplier);
+        featureManager = new ModuleFeatureManager();
         referencedChemicalEntities = new HashSet<>();
         state = PENDING;
         applicationCondition = updatable -> true;
@@ -155,7 +155,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         if (supplier.isStrutCalculation()) {
             delta = delta.multiply(2.0);
             supplier.getCurrentHalfDeltas().put(deltaIdentifier, delta);
-            supplier.getCurrentUpdatable().addPotentialDelta(delta);
+            deltaIdentifier.getUpdatable().addPotentialDelta(delta);
         } else {
             supplier.getCurrentFullDeltas().put(deltaIdentifier, delta);
         }
@@ -230,6 +230,9 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         DeltaIdentifier largestIdentifier = null;
         for (DeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getQuantity().getValue().doubleValue();
+            if (supplier.getCurrentHalfDeltas().isEmpty()) {
+                System.out.println(supplier);
+            }
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getQuantity().getValue().doubleValue();
             // calculate error
             double localError = Math.abs(1 - (fullDelta / halfDelta));
@@ -256,7 +259,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     @Override
-    public LocalError optimizeTimeStep() {
+    public void optimizeTimeStep() {
         Updatable updatable = supplier.getLargestLocalError().getUpdatable();
         while (state == REQUIRING_RECALCULATION) {
             // reset previous error
@@ -268,7 +271,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             evaluateModuleState();
         }
         logger.debug("Optimized local error for {} was {} with time step of {}.", this, supplier.getLargestLocalError().getValue(), Environment.getTimeStep());
-        return supplier.getLargestLocalError();
     }
 
     private void evaluateModuleState() {
@@ -305,7 +307,20 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     @Override
     public <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        return featureManager.getScaledFeature(featureClass);
+        // feature from the module (like reaction rates)
+        return choseScaling(featureManager.getFeature(featureClass));
+    }
+
+    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
+        // feature from any entity (like molar mass)
+        return choseScaling(entity.getFeature(featureClass));
+    }
+
+    private <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> choseScaling(ScalableFeature<FeatureContentType> feature) {
+        if (supplier.isStrutCalculation()) {
+            return feature.getHalfScaledQuantity();
+        }
+        return feature.getScaledQuantity();
     }
 
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
@@ -324,12 +339,15 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return featureManager.listFeatures(precedingSpaces);
     }
 
-    protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
-        ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
-        if (supplier.isStrutCalculation()) {
-            return feature.getHalfScaledQuantity();
+    @Override
+    public void checkFeatures() {
+        for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
+            for (ChemicalEntity chemicalEntity : getReferencedEntities()) {
+                if (!chemicalEntity.hasFeature(featureClass)) {
+                    chemicalEntity.setFeature(featureClass);
+                }
+            }
         }
-        return feature.getScaledQuantity();
     }
 
     @Override

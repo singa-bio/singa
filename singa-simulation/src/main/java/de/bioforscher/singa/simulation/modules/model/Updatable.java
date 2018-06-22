@@ -30,6 +30,4 @@ public interface Updatable {
     void shiftDeltas();
     void applyDeltas();
 
-
-
 }

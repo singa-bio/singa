@@ -89,4 +89,16 @@ public class FieldSupplier {
         isStrutCalculation = strutCalculation;
     }
 
+    @Override
+    public String toString() {
+        return "FieldSupplier{" +
+                "updatable=" + updatable +
+                ", subsection=" + subsection +
+                ", entity=" + entity +
+                ", fullDeltas=" + fullDeltas +
+                ", halfDeltas=" + halfDeltas +
+                ", largestLocalError=" + largestLocalError +
+                ", isStrutCalculation=" + isStrutCalculation +
+                '}';
+    }
 }

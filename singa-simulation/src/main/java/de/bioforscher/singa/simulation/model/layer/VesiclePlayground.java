@@ -7,6 +7,7 @@ import de.bioforscher.singa.chemistry.descriptive.features.permeability.Membrane
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
@@ -15,9 +16,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
-import de.bioforscher.singa.simulation.modules.transport.MembraneDiffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.MembraneDiffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.modules.transport.VesicleDiffusion;
 import de.bioforscher.singa.simulation.renderer.AutomatonGraphRenderer;
 import javafx.animation.AnimationTimer;
@@ -78,8 +78,7 @@ public class VesiclePlayground extends Application implements Renderer {
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(220, 220),
-                Quantities.getQuantity(ThreadLocalRandom.current()
-                        .nextDouble(100, 200), NANO(METRE))
+                Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE))
                         .to(Environment.getNodeDistance().getUnit()));
 
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
@@ -110,12 +109,13 @@ public class VesiclePlayground extends Application implements Renderer {
                 .cargo(water)
                 .build();
 
-        FreeDiffusion.inSimulation(simulation)
-                .onlyFor(water)
-                .build();
+//        Diffusion.inSimulation(simulation)
+//                .onlyFor(water)
+//                .build();
 
-        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion(simulation);
-        layer.addVesicleModule(vesicleDiffusion);
+        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
+        vesicleDiffusion.setSimulation(simulation);
+        simulation.getModules().add(vesicleDiffusion);
 
         simulation.initializeSpatialRepresentations();
 
@@ -136,14 +136,12 @@ public class VesiclePlayground extends Application implements Renderer {
             public void handle(long now) {
                 simulation.nextEpoch();
                 renderVesicles();
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    // bs
-                }
             }
         };
         animationTimer.start();
+
+        // TODO vesicle concentration updates are not processed correctly
+        // TODO they seem to lack substantially behind vesicle displacement
 
 
 //        // create manager
@@ -174,6 +172,10 @@ public class VesiclePlayground extends Application implements Renderer {
             getGraphicsContext().setFill(renderer.getBioRenderingOptions().getColorForUpdatable(vesicle));
             fillCircle(circle);
             strokeCircle(circle);
+            for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
+                strokeLineSegment(new SimpleLineSegment(vesicle.getPosition(), node.getPosition()));
+            }
+            System.out.println(simulation.getElapsedTime() + ": " + vesicle.getPosition());
         }
     }
 

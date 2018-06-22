@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.modules.newmodules.simulation;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.modules.model.LocalError;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.module.ModuleState;
@@ -58,10 +59,13 @@ public class UpdateScheduler {
         // until all models passed
         module = moduleIterator.next();
         timestepRescaled = false;
-        processedModules = 0;
-        while (processedModules < modules.size()) {
-            processModuleByState(module.getState());
-        }
+        do {
+            processedModules = 0;
+            while (processedModules < modules.size()) {
+                processModuleByState(module.getState());
+            }
+        } while (!spatialDisplacementIsValid());
+
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
         // wrap up
         finalizeDeltas();
@@ -84,10 +88,7 @@ public class UpdateScheduler {
                 break;
             case REQUIRING_RECALCULATION:
                 // optimize time step
-                LocalError currentError = module.optimizeTimeStep();
-                if (currentError.getValue() > largestError.getValue()) {
-                    largestError = currentError;
-                }
+                module.optimizeTimeStep();
                 // reset states
                 modules.forEach(UpdateModule::resetState);
                 // clear deltas that have previously been calculated
@@ -101,11 +102,23 @@ public class UpdateScheduler {
         }
     }
 
+    private boolean spatialDisplacementIsValid() {
+        if (simulation.getVesicleLayer().getVesicles().isEmpty()) {
+            return true;
+        }
+        if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
+            decreaseTimeStep();
+            simulation.getVesicleLayer().clearUpdates();
+            return false;
+        }
+        return true;
+    }
+
     public LocalError getLargestError() {
         return largestError;
     }
 
-    public boolean timestepWasRescaled() {
+    public boolean timeStepWasRescaled() {
         return timestepRescaled;
     }
 
@@ -113,6 +126,10 @@ public class UpdateScheduler {
         // rescale entity parameters
         for (ChemicalEntity entity : simulation.getChemicalEntities()) {
             entity.scaleScalableFeatures();
+        }
+        // rescale vesicle parameters
+        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+            vesicle.scaleScalableFeatures();
         }
         // rescale module parameters
         for (UpdateModule module : modules) {

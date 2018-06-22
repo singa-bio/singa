@@ -41,10 +41,10 @@ public interface Renderer {
      */
     default void fillPoint(Vector2D point, double radius) {
         getGraphicsContext().fillOval(
-                point.getX() - radius / 2.0,
-                point.getY() - radius / 2.0,
-                radius,
-                radius);
+                point.getX() - radius,
+                point.getY() - radius,
+                radius*2.0,
+                radius*2.0);
     }
 
     /**
@@ -65,16 +65,16 @@ public interface Renderer {
         getGraphicsContext().strokeOval(
                 circle.getMidpoint().getX() - circle.getRadius(),
                 circle.getMidpoint().getY() - circle.getRadius(),
-                circle.getRadius(),
-                circle.getRadius());
+                circle.getRadius() * 2.0,
+                circle.getRadius() * 2.0);
     }
 
     default void strokeCircle(Vector2D midpoint, double radius) {
         getGraphicsContext().strokeOval(
                 midpoint.getX() - radius,
                 midpoint.getY() - radius,
-                radius,
-                radius);
+                radius * 2.0,
+                radius * 2.0);
     }
 
     default void fillCircle(Circle circle) {
