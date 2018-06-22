@@ -7,20 +7,59 @@ import java.util.Arrays;
  */
 public class MetalComplex extends Interaction {
 
+    /**
+     * The Atom ID of the source atom of the interaction - this is the metal ion.
+     */
     private int atom1;
+
+    /**
+     * The Atom ID of the target atom of the interaction - belongs to the corresponding interaction partner (either protein residue or ligand).
+     */
     private int atom2;
+
+    /**
+     * The distance between the interacting atoms or groups in Angstrom.
+     */
     private double distance;
+
+    /**
+     * The RMS of the geometry fit.
+     */
     private double rms;
+
+    /**
+     * The metal coordination type.
+     */
     private String geometry;
+
+    /**
+     * The location of the target group.
+     */
     private String location;
+
+    /**
+     * The atom type of the metal.
+     */
     private String metalType;
+
+    /**
+     * The metal coordination number.
+     */
     private int coordination;
+
+    /**
+     * The continous numbering for the metal complex.
+     */
     private int complexnum;
 
     public MetalComplex(int plipIdentifier) {
         super(plipIdentifier);
     }
 
+    /**
+     * Returns the Atom ID of the source atom / metal ion.
+     * @return The interaction's source atom ID.
+     */
     public int getAtom1() {
         return atom1;
     }
@@ -29,6 +68,10 @@ public class MetalComplex extends Interaction {
         this.atom1 = atom1;
     }
 
+    /**
+     * Returns the Atom ID of the target atom of the interaction, belonging to the interaction partner (protein residue or ligand).
+     * @return The interaction's target atom ID.
+     */
     public int getAtom2() {
         return atom2;
     }
@@ -37,6 +80,10 @@ public class MetalComplex extends Interaction {
         this.atom2 = atom2;
     }
 
+    /**
+     * Returns the distance between both interacting atoms in Angstrom.
+     * @return The distance between the interacting atoms.
+     */
     public double getDistance() {
         return distance;
     }
@@ -45,6 +92,10 @@ public class MetalComplex extends Interaction {
         this.distance = distance;
     }
 
+    /**
+     * Returns the RMS of the geometry fit.
+     * @return The RMS of the geometry fit.
+     */
     public double getRms() {
         return rms;
     }
@@ -53,6 +104,10 @@ public class MetalComplex extends Interaction {
         this.rms = rms;
     }
 
+    /**
+     * Returns the metal coordination type.
+     * @return The metal coordination type.
+     */
     public String getGeometry() {
         return geometry;
     }
@@ -61,6 +116,10 @@ public class MetalComplex extends Interaction {
         this.geometry = geometry;
     }
 
+    /**
+     * Returns the location of the target group.
+     * @return The location of the target group.
+     */
     public String getLocation() {
         return location;
     }
@@ -69,6 +128,10 @@ public class MetalComplex extends Interaction {
         this.location = location;
     }
 
+    /**
+     * Returns the atom type of the metal.
+     * @return The atom type of the metal.
+     */
     public String getMetalType() {
         return metalType;
     }
@@ -77,6 +140,10 @@ public class MetalComplex extends Interaction {
         this.metalType = metalType;
     }
 
+    /**
+     * Returns the metal coordination number.
+     * @return The metal ooordination number.
+     */
     public int getCoordination() {
         return coordination;
     }
@@ -85,6 +152,10 @@ public class MetalComplex extends Interaction {
         this.coordination = coordination;
     }
 
+    /**
+     * Returns the continous numbering for the metal complex.
+     * @return The continous numbering for the metal complex.
+     */
     public int getComplexnum() {
         return complexnum;
     }
@@ -94,7 +165,9 @@ public class MetalComplex extends Interaction {
     }
 
     /**
-     * For {@link MetalComplex}es the first source atom is the atom identifier of the metal ion.
+     * Returns the Atom ID of the source atom. For {@link MetalComplex}es the first source atom is the atom ID of the metal ion.
+     * This is the same as atom1.
+     * @returns The interaction's source atom ID.
      */
     @Override
     public int getFirstSourceAtom() {
@@ -102,8 +175,10 @@ public class MetalComplex extends Interaction {
     }
 
     /**
-     * For {@link MetalComplex}es the first target atom is the atom identifier of the interaction partner (possibly
-     * ligand or residue).
+     * Returns the Atom ID of the target atom. For {@link MetalComplex}es the first target atom is the atom ID of the interaction partner (possibly
+     * ligand or protein residue).
+     * This is the same as atom2.
+     * @return The interaction's target atom ID.
      */
     @Override
     public int getFirstTargetAtom() {

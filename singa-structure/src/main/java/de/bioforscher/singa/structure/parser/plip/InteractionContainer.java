@@ -120,7 +120,7 @@ public class InteractionContainer {
     }
 
     /**
-     * Retuens all interactions from this container.
+     * Returns all interactions from this container.
      *
      * @return All interactions.
      */

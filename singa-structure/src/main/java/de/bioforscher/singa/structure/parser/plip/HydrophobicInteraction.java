@@ -7,14 +7,29 @@ import java.util.Arrays;
  */
 public class HydrophobicInteraction extends Interaction {
 
+    /**
+     * The Atom ID of the source atom of the interaction - belongs to the protein.
+     */
     private int atom1;
+
+    /**
+     * The Atom ID of the target atom of the interaction - belongs to the ligand.
+     */
     private int atom2;
+
+    /**
+     * The distance between the interacting atoms or groups in Angstrom.
+     */
     private double distance;
 
     public HydrophobicInteraction(int plipIdentifier) {
         super(plipIdentifier);
     }
 
+    /**
+     * Returns the distance between both interacting atoms in Angstrom.
+     * @return The distance between the interacting atoms.
+     */
     public double getDistance() {
         return distance;
     }
@@ -23,6 +38,10 @@ public class HydrophobicInteraction extends Interaction {
         this.distance = distance;
     }
 
+    /**
+     * Returns the Atom ID of the source atom of the interaction, belonging to the protein.
+     * @return The interaction's source atom ID.
+     */
     public int getAtom1() {
         return atom1;
     }
@@ -31,6 +50,10 @@ public class HydrophobicInteraction extends Interaction {
         this.atom1 = atom1;
     }
 
+    /**
+     * Returns the Atom ID of the target atom of the interaction, belonging to the ligand.
+     * @return The interaction's target atom ID.
+     */
     public int getAtom2() {
         return atom2;
     }
@@ -39,11 +62,21 @@ public class HydrophobicInteraction extends Interaction {
         this.atom2 = atom2;
     }
 
+    /**
+     * Returns the Atom ID of the source atom of the interaction, belonging to the protein.
+     * This is the same atom as atom1.
+     * @return The interaction's source atom ID.
+     */
     @Override
     public int getFirstSourceAtom() {
         return atom1;
     }
 
+    /**
+     * Returns the Atom ID of the target atom of the interaction, belonging to the ligand.
+     * This is the same atom as atom2.
+     * @return The interaction's target atom ID.
+     */
     @Override
     public int getFirstTargetAtom() {
         return atom2;

@@ -9,10 +9,29 @@ import java.util.List;
  */
 public class SaltBridge extends Interaction {
 
+    /**
+     * The Atom IDs of the source atoms of the interaction - belong to the protein.
+     */
     private List<Integer> atoms1;
+
+    /**
+     * The Atom IDs of the target atoms of the interaction - belong to the ligand.
+     */
     private List<Integer> atoms2;
+
+    /**
+     * The distance between the interacting atoms or groups in Angstrom.
+     */
     private double distance;
+
+    /**
+     * Does the protein carry the positive charge?
+     */
     private boolean protIsPos;
+
+    /**
+     * The functional group in the ligand.
+     */
     private String ligandGroup;
 
     public SaltBridge(int plipIdentifier) {
@@ -21,6 +40,10 @@ public class SaltBridge extends Interaction {
         atoms2 = new ArrayList<>();
     }
 
+    /**
+     * Returns a list of the Atom IDs of the source atoms of the interaction, belonging to the protein.
+     * @return The interaction's source atom IDs.
+     */
     public List<Integer> getAtoms1() {
         return atoms1;
     }
@@ -29,6 +52,10 @@ public class SaltBridge extends Interaction {
         this.atoms1 = atoms1;
     }
 
+    /**
+     * Returns a list of the Atom IDs of the target atoms of the interaction, belonging to the ligand.
+     * @return The interaction's target atom IDs.
+     */
     public List<Integer> getAtoms2() {
         return atoms2;
     }
@@ -37,6 +64,10 @@ public class SaltBridge extends Interaction {
         this.atoms2 = atoms2;
     }
 
+    /**
+     * Returns the distance between the interacting atoms in Angstrom.
+     * @return The distance between the interacting atoms.
+     */
     public double getDistance() {
         return distance;
     }
@@ -45,6 +76,10 @@ public class SaltBridge extends Interaction {
         this.distance = distance;
     }
 
+    /**
+     * Returns whether the protein carries the positive charge.
+     * @return Whether the protein carries the positive charge.
+     */
     public boolean isProtIsPos() {
         return protIsPos;
     }
@@ -53,6 +88,10 @@ public class SaltBridge extends Interaction {
         this.protIsPos = protIsPos;
     }
 
+    /**
+     * Returns the functional group in the ligand.
+     * @return The ligand's functional group.
+     */
     public String getLigandGroup() {
         return ligandGroup;
     }
@@ -61,10 +100,18 @@ public class SaltBridge extends Interaction {
         this.ligandGroup = ligandGroup;
     }
 
+    /**
+     * Merges two salt bridges.
+     * @param other Another salt bridge.
+     */
     public void mergeWith(SaltBridge other) {
         atoms1 = other.atoms2;
     }
 
+    /**
+     * Returns the Atom ID of the first atom in the list of source atoms, belonging to the protein.
+     * @return The interaction's first source atom ID.
+     */
     @Override
     public int getFirstSourceAtom() {
         if (atoms1.iterator().hasNext()) {
@@ -74,6 +121,10 @@ public class SaltBridge extends Interaction {
         }
     }
 
+    /**
+     * Returns the Atom ID of the first atom in the list of target atoms, belonging to the ligand.
+     * @return The interaction's first target atom ID.
+     */
     @Override
     public int getFirstTargetAtom() {
         if (atoms2.iterator().hasNext()) {
