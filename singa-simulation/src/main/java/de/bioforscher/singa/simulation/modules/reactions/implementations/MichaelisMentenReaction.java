@@ -1,21 +1,22 @@
 package de.bioforscher.singa.simulation.modules.reactions.implementations;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.FirstOrderRate;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.model.Feature;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
 import javax.measure.Quantity;
-import javax.measure.quantity.Frequency;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author cl#
+ * @author cl
  * @deprecated
  */
 public class MichaelisMentenReaction extends Reaction {
@@ -40,9 +41,10 @@ public class MichaelisMentenReaction extends Reaction {
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
-        final Quantity<Frequency> kCat = getScaledFeature(TurnoverNumber.class);
-        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent();
-        // (KCAT * enzyme * substrate) / KM + substrate
+        final Quantity<FirstOrderRate> kCat = getScaledFeature(TurnoverNumber.class);
+        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(Environment.getConcentrationUnit());
+        // (k_cat * enzyme * substrate) / k_m + substrate
+        // FIXME currently "only" the first substrate is considered
         double substrateConcentration = concentrationContainer.get(getCurrentCellSection(), enzyme.getSubstrates().iterator().next()).getValue().doubleValue();
         double enzymeConcentration = concentrationContainer.get(getCurrentCellSection(), enzyme).getValue().doubleValue();
         return (kCat.getValue().doubleValue() * enzymeConcentration * substrateConcentration) / (km.getValue().doubleValue() + substrateConcentration);

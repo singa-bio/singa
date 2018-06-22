@@ -57,6 +57,7 @@ public class UpdateScheduler {
         moduleIterator = modules.listIterator();
         // until all models passed
         module = moduleIterator.next();
+        timestepRescaled = false;
         processedModules = 0;
         while (processedModules < modules.size()) {
             processModuleByState(module.getState());

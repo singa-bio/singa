@@ -1,20 +1,18 @@
-package de.bioforscher.singa.simulation.modules.reactions.implementations;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.SectionDeltaFunction;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ModuleFactory;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
 import javax.measure.Quantity;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author cl
- * @deprecated
  */
 public class NthOrderReaction extends Reaction {
 
@@ -22,29 +20,27 @@ public class NthOrderReaction extends Reaction {
         return new Builder(simulation);
     }
 
-    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
-
     private RateConstant rateConstant;
 
-    static {
-        requiredFeatures.add(RateConstant.class);
+    @Override
+    public void initialize() {
+        // apply
+        setApplicationCondition(updatable -> true);
+        // function
+        SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, container -> true);
+        addDeltaFunction(function);
+        // feature
+        getRequiredFeatures().add(RateConstant.class);
+        // reference module in simulation
+        addModuleToSimulation();
     }
 
-    private NthOrderReaction(Simulation simulation) {
-        super(simulation);
-        addDeltaFunction(this::calculateDeltas, bioNode -> true);
-    }
-
+    @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // concentrations of substrates that influence the reaction
         double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
         // calculate acceleration
         return concentration * getScaledReactionRate().getValue().doubleValue();
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return requiredFeatures;
     }
 
     @Override
@@ -68,7 +64,7 @@ public class NthOrderReaction extends Reaction {
                 }
             }
         }
-        if (halfTime) {
+        if (supplier.isStrutCalculation()) {
             return rateConstant.getHalfScaledQuantity();
         }
         return rateConstant.getScaledQuantity();
@@ -82,7 +78,11 @@ public class NthOrderReaction extends Reaction {
 
         @Override
         protected NthOrderReaction createObject(Simulation simulation) {
-            return new NthOrderReaction(simulation);
+            NthOrderReaction module = ModuleFactory.setupModule(NthOrderReaction.class,
+                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Specificity.SECTION_SPECIFIC);
+            module.setSimulation(simulation);
+            return module;
         }
 
         public Builder rateConstant(RateConstant rateConstant) {

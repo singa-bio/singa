@@ -73,6 +73,8 @@ public class Simulation {
 
     private boolean initializationDone;
 
+    private Quantity<Time> maximalTimeStep;
+
     /**
      * Creates a new plain simulation.
      */
@@ -122,7 +124,10 @@ public class Simulation {
         // update epoch and elapsed time
         updateEpoch();
         // if time step did not change
+        // temporary max timestep fix
+
         if (!scheduler.timestepWasRescaled()) {
+            if (maximalTimeStep == null || Environment.getTimeStep().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue())
             // if error was below tolerance threshold (10 percent of epsilon)
             if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
                 // try larger time step next time
@@ -254,6 +259,10 @@ public class Simulation {
 
     public void setScheduler(UpdateScheduler scheduler) {
         this.scheduler = scheduler;
+    }
+
+    public void setMaximalTimeStep(Quantity<Time> maximalTimeStep) {
+        this.maximalTimeStep = maximalTimeStep;
     }
 
     /**

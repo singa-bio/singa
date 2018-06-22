@@ -18,7 +18,6 @@ public abstract class FirstOrderRateConstant extends RateConstant<FirstOrderRate
         super(firstOrderRateQuantity, featureOrigin);
     }
 
-
     @Override
     public void scale(Quantity<Time> time, Quantity<Length> space) {
         // transform to specified unit

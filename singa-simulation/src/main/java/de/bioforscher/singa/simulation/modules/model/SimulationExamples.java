@@ -32,6 +32,7 @@ import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -39,15 +40,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber.PER_MINUTE;
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.newsections.CellRegion.MEMBRANE;
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
+import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * A factory class that can be used to create different examples to test and explore certain aspects to the api.
@@ -202,7 +202,7 @@ public class SimulationExamples {
                 .addSubstrate(fructosePhosphate)
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
                 .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()), MANUALLY_ANNOTATED))
-                .assignFeature(new TurnoverNumber(Quantities.getQuantity(76, PER_MINUTE), MANUALLY_ANNOTATED))
+                .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
                 .build();
 
         // setup graph with a single node

@@ -37,7 +37,7 @@ import static tec.uom.se.unit.Units.*;
  */
 public class ComplexBuildingReactionTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(de.bioforscher.singa.simulation.modules.signalling.ComplexBuildingReactionTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
 
     @After
     public void cleanUp() {

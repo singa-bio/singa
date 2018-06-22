@@ -15,8 +15,8 @@ public class MichaelisConstant extends AbstractFeature<Quantity<MolarConcentrati
 
     public static final String SYMBOL = "k_m";
 
-    public MichaelisConstant(Quantity<MolarConcentration> molarConcentrationQuantity, FeatureOrigin featureOrigin) {
-        super(molarConcentrationQuantity, featureOrigin);
+    public MichaelisConstant(Quantity<MolarConcentration> molarConcentration, FeatureOrigin featureOrigin) {
+        super(molarConcentration, featureOrigin);
     }
 
     @Override

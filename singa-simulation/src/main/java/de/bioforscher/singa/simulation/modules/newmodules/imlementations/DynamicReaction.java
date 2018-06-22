@@ -1,23 +1,19 @@
-package de.bioforscher.singa.simulation.modules.reactions.implementations;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
+import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.features.scale.AppliedScale;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.SectionDeltaFunction;
+import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
-import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * The velocity of dynamic reactions is determined by {@link DynamicKineticLaw}s that can be defined by arbitrary
- * functions.
- *
  * @author cl
- * @deprecated
  */
 public class DynamicReaction extends Reaction {
 
@@ -31,20 +27,17 @@ public class DynamicReaction extends Reaction {
      */
     private DynamicKineticLaw kineticLaw;
 
-    /**
-     * Creates a new dynamic reaction.
-     * @param simulation The associated simulation.
-     * @param kineticLaw The kinetic law for this reaction.
-     */
-    public DynamicReaction(Simulation simulation, DynamicKineticLaw kineticLaw) {
-        super(simulation);
-        this.kineticLaw = kineticLaw;
-        catalyticReactants = new ArrayList<>();
-        // assign dimensionless scaling factor as feature that is rescaled with time steps
-        availableFeatures.add(AppliedScale.class);
-        setFeature(new AppliedScale());
-        // delta function
-        addDeltaFunction(this::calculateDeltas, bioNode -> true);
+    @Override
+    public void initialize() {
+        // apply
+        setApplicationCondition(updatable -> true);
+        // function
+        SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, container -> true);
+        addDeltaFunction(function);
+        // feature
+        getRequiredFeatures().add(RateConstant.class);
+        // reference module in simulation
+        addModuleToSimulation();
     }
 
     /**
@@ -86,7 +79,7 @@ public class DynamicReaction extends Reaction {
 
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
-        kineticLaw.setCurrentCellSection(getCurrentCellSection());
+        kineticLaw.setCurrentCellSection(supplier.getCurrentSubsection());
         kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class).getValue().doubleValue());
         return kineticLaw.calculateVelocity(concentrationContainer);
     }

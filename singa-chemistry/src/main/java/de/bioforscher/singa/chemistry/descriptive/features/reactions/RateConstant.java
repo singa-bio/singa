@@ -35,7 +35,6 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         super(quantityTypeQuantity, featureOrigin);
     }
 
-
     @Override
     public String toString() {
         return getSymbol() + " = " + getFeatureContent();
@@ -141,25 +140,30 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
             }
 
             if (direction == FORWARDS && order == ZERO) {
-                return new ZeroOrderForwardsRateConstant(value, new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+                return new ZeroOrderForwardsRateConstant(value,
+                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
             }
             if (direction == FORWARDS && order == FIRST) {
-                return new FirstOrderForwardsRateConstant(value, new ProductUnit<>(ONE.divide(timeUnit)), origin);
+                return new FirstOrderForwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(timeUnit)), origin);
             }
             if (direction == FORWARDS && order == SECOND) {
-                return new SecondOrderForwardsRateConstant(value, new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+                return new SecondOrderForwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
             }
 
             if (direction == BACKWARDS && order == ZERO) {
-                return new ZeroOrderBackwardsRateConstant(value, new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
+                return new ZeroOrderBackwardsRateConstant(value,
+                        new ProductUnit<>(concentrationUnit.divide(timeUnit)), origin);
             }
             if (direction == BACKWARDS && order == FIRST) {
-                return new FirstOrderBackwardsRateConstant(value, new ProductUnit<>(ONE.divide(timeUnit)), origin);
+                return new FirstOrderBackwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(timeUnit)), origin);
             }
             if (direction == BACKWARDS && order == SECOND) {
-                return new SecondOrderBackwardsRateConstant(value, new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
+                return new SecondOrderBackwardsRateConstant(value,
+                        new ProductUnit<>(ONE.divide(concentrationUnit.multiply(timeUnit))), origin);
             }
-
             throw new IllegalStateException("Reaction Rate cannot be created with the given parameters.");
         }
     }

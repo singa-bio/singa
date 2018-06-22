@@ -308,6 +308,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return featureManager.getScaledFeature(featureClass);
     }
 
+    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        return featureManager.getFeature(featureTypeClass);
+    }
+
     public <FeatureType extends Feature> void setFeature(FeatureType feature) {
         featureManager.setFeature(feature);
     }

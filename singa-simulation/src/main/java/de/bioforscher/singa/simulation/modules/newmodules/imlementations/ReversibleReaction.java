@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.modules.reactions.implementations;
+package de.bioforscher.singa.simulation.modules.newmodules.imlementations;
 
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
@@ -6,37 +6,39 @@ import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstan
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.Reaction;
+import de.bioforscher.singa.simulation.modules.newmodules.functions.SectionDeltaFunction;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ModuleFactory;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 
 import javax.measure.Quantity;
-import java.util.HashSet;
-import java.util.Set;
+
+import static de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole.DECREASING;
+import static de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole.INCREASING;
 
 /**
  * @author cl
- * @deprecated
  */
-public class EquilibriumReaction extends Reaction {
+public class ReversibleReaction extends Reaction {
 
     public static Builder inSimulation(Simulation simulation) {
         return new Builder(simulation);
     }
 
-    private static Set<Class<? extends Feature>> requiredFeatures = new HashSet<>();
-
-    static {
-        requiredFeatures.add(ForwardsRateConstant.class);
-        requiredFeatures.add(BackwardsRateConstant.class);
-    }
-
     private RateConstant forwardsReactionRate;
     private RateConstant backwardsReactionRate;
 
-    private EquilibriumReaction(Simulation simulation) {
-        super(simulation);
-        addDeltaFunction(this::calculateDeltas, bioNode -> true);
+    @Override
+    public void initialize() {
+        // apply
+        setApplicationCondition(updatable -> true);
+        // function
+        SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, container -> true);
+        addDeltaFunction(function);
+        // feature
+        getRequiredFeatures().add(ForwardsRateConstant.class);
+        getRequiredFeatures().add(BackwardsRateConstant.class);
+        // reference module in simulation
+        addModuleToSimulation();
     }
 
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
@@ -44,8 +46,8 @@ public class EquilibriumReaction extends Reaction {
         final Quantity forwardsRateConstant = getScaledForwardsReactionRate();
         final Quantity backwardsRateConstant = getScaledBackwardsReactionRate();
         // concentrations of substrates that influence the reaction
-        double substrateConcentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
-        double productConcentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.INCREASING);
+        double substrateConcentration = determineEffectiveConcentration(concentrationContainer, DECREASING);
+        double productConcentration = determineEffectiveConcentration(concentrationContainer, INCREASING);
         // calculate acceleration
         return substrateConcentration * forwardsRateConstant.getValue().doubleValue() -
                 productConcentration * backwardsRateConstant.getValue().doubleValue();
@@ -59,11 +61,6 @@ public class EquilibriumReaction extends Reaction {
             substrates = substrates.substring(1);
         }
         return substrates + " \u21CB" + products;
-    }
-
-    @Override
-    public Set<Class<? extends Feature>> getRequiredFeatures() {
-        return requiredFeatures;
     }
 
     @Override
@@ -95,7 +92,7 @@ public class EquilibriumReaction extends Reaction {
                 }
             }
         }
-        if (halfTime) {
+        if (supplier.isStrutCalculation()) {
             return forwardsReactionRate.getHalfScaledQuantity();
         }
         return forwardsReactionRate.getScaledQuantity();
@@ -112,21 +109,25 @@ public class EquilibriumReaction extends Reaction {
                 }
             }
         }
-        if (halfTime) {
+        if (supplier.isStrutCalculation()) {
             return backwardsReactionRate.getHalfScaledQuantity();
         }
         return backwardsReactionRate.getScaledQuantity();
     }
 
-    public static class Builder extends Reaction.Builder<EquilibriumReaction, Builder> {
+    public static class Builder extends Reaction.Builder<ReversibleReaction, Builder> {
 
         public Builder(Simulation identifier) {
             super(identifier);
         }
 
         @Override
-        protected EquilibriumReaction createObject(Simulation simulation) {
-            return new EquilibriumReaction(simulation);
+        protected ReversibleReaction createObject(Simulation simulation) {
+            ReversibleReaction module = ModuleFactory.setupModule(ReversibleReaction.class,
+                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Specificity.SECTION_SPECIFIC);
+            module.setSimulation(simulation);
+            return module;
         }
 
         public Builder forwardsRateConstant(RateConstant forwardsRateConstant) {

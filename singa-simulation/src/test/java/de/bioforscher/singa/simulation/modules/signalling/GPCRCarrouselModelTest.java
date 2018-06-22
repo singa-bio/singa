@@ -36,7 +36,7 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class GPCRCarrouselModelTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MonovalentReceptorBindingTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(GPCRCarrouselModelTest.class);
 
     private static final FeatureOrigin BUSH2016 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Bush 2016", "Bush, Alan, et al. \"Yeast GPCR signaling reflects the fraction of occupied receptors, not the number.\" Molecular systems biology 12.12 (2016): 898.");
 
@@ -402,8 +402,6 @@ public class GPCRCarrouselModelTest {
 //            automatonNode.setConcentration(gProteinAlphaBetaGamma, Quantities.getQuantity(520, NANO(MOLE_PER_LITRE)).to(getConcentrationUnit()));
 //        }
 
-
     }
-
 
 }
