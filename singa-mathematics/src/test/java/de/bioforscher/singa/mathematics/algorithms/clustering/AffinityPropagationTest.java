@@ -23,7 +23,7 @@ public class AffinityPropagationTest {
                 .maximalEpochs(100)
                 .run();
         affinityPropagation.getSilhouetteCoefficient();
-        assertEquals(3, affinityPropagation.getClusters().size());
+        assertEquals(1, affinityPropagation.getClusters().size());
     }
 
     @Test(expected = IllegalArgumentException.class)

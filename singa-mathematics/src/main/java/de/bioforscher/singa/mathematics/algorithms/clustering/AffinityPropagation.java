@@ -1,9 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.clustering;
 
-import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
-import de.bioforscher.singa.mathematics.matrices.LabeledRegularMatrix;
-import de.bioforscher.singa.mathematics.matrices.Matrix;
-import de.bioforscher.singa.mathematics.matrices.RegularMatrix;
+import de.bioforscher.singa.mathematics.matrices.*;
 import de.bioforscher.singa.mathematics.vectors.RegularVector;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import org.slf4j.Logger;
@@ -28,9 +25,11 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     private final List<DataType> dataPoints;
     private final int dataSize;
     private final int maximalEpochs;
+    private final LabeledMatrix<DataType> similarityMatrix;
     private final LabeledMatrix<DataType> distanceMatrix;
     private final double lambda;
-    private LabeledMatrix<DataType> similarityMatrix;
+    private final LabeledMatrix<DataType> s;
+    private final double selfSimilarity;
     private LabeledMatrix<DataType> availabilityMatrix;
     private LabeledMatrix<DataType> responsibilityMatrix;
     private int epoch;
@@ -41,35 +40,40 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         logger.info("affinity propagation initialized with {} data points", builder.dataPoints.size());
         dataPoints = builder.dataPoints;
         dataSize = dataPoints.size();
-        similarityMatrix = builder.matrix;
+        LabeledMatrix<DataType> inputMatrix = builder.matrix;
         lambda = builder.lambda;
-        double selfSimilarity = builder.selfSimilarity;
+        selfSimilarity = builder.selfSimilarity;
         maximalEpochs = builder.maximalEpochs;
-        checkInput(dataPoints, similarityMatrix);
-        double[][] invertedValues;
-        // convert to similarity matrix if distance matrix provided
+        checkInput(dataPoints, inputMatrix);
+        // convert to similarity matrix (1 - dissimilarity) if distance matrix provided
         if (builder.distance) {
-            distanceMatrix = similarityMatrix;
-            invertedValues = similarityMatrix.additivelyInvert().getElements();
-            // assign inverted self similarities
-            for (int i = 0; i < invertedValues.length; i++) {
-                invertedValues[i][i] = -selfSimilarity;
-            }
+            distanceMatrix = inputMatrix;
+            similarityMatrix = new LabeledRegularMatrix<>(convertToInverseValues(inputMatrix));
+            similarityMatrix.setRowLabels(dataPoints);
+            similarityMatrix.setColumnLabels(dataPoints);
         } else {
-            invertedValues = similarityMatrix.getElements();
-            distanceMatrix = new LabeledRegularMatrix<>(new RegularMatrix(invertedValues).additivelyInvert().getElements());
+            similarityMatrix = inputMatrix;
+            distanceMatrix = new LabeledRegularMatrix<>(convertToInverseValues(inputMatrix));
             distanceMatrix.setRowLabels(dataPoints);
             distanceMatrix.setColumnLabels(dataPoints);
-            // assign self similarities
-            for (int i = 0; i < invertedValues.length; i++) {
-                invertedValues[i][i] = selfSimilarity;
-            }
         }
-        similarityMatrix = new LabeledRegularMatrix<>(invertedValues);
-        similarityMatrix.setRowLabels(dataPoints);
-        similarityMatrix.setColumnLabels(dataPoints);
+        s = new LabeledSymmetricMatrix<>(similarityMatrix.getElements());
+        // assign self similarities
+        double[][] elements = s.getElements();
+        for (int i = 0; i < s.getElements().length; i++) {
+            elements[i][i] = selfSimilarity;
+        }
+        s.setRowLabels(dataPoints);
+        s.setColumnLabels(dataPoints);
         initialize();
         run();
+    }
+
+    // FIXME: this is probably wrong, we have to come back to additive inversion, distance values are not in [0,1]
+    private static double[][] convertToInverseValues(Matrix distanceMatrix) {
+        Matrix matrixOfOnes = Matrices.generateyMatrixOfOnes(distanceMatrix.getRowDimension(),
+                distanceMatrix.getColumnDimension());
+        return matrixOfOnes.subtract(distanceMatrix).getElements();
     }
 
     public static <DataType> DataStep<DataType> create() {
@@ -84,6 +88,14 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
     @Override
     public LabeledMatrix<DataType> getDistanceMatrix() {
         return distanceMatrix;
+    }
+
+    public double getSelfSimilarity() {
+        return selfSimilarity;
+    }
+
+    public LabeledMatrix<DataType> getSimilarityMatrix() {
+        return similarityMatrix;
     }
 
     @Override
@@ -152,7 +164,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
                     bestExemplar = currentDataPoint;
                     break;
                 }
-                double similarity = similarityMatrix.getValueForLabel(currentDataPoint, exemplar);
+                double similarity = s.getValueForLabel(currentDataPoint, exemplar);
                 if (similarity > bestSimilarity) {
                     bestSimilarity = similarity;
                     bestExemplar = exemplar;
@@ -189,7 +201,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
      */
     private void updateResponsibilities() {
         double[][] updatedResponsibilities = new double[dataSize][dataSize];
-        Matrix as = similarityMatrix.add(availabilityMatrix);
+        Matrix as = s.add(availabilityMatrix);
         for (int i = 0; i < dataPoints.size(); i++) {
             for (int j = 0; j < dataPoints.size(); j++) {
                 double[] row = Arrays.copyOf(as.getRow(i).getElements(), as.getRow(i).getElements().length);
@@ -197,7 +209,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
                 RegularVector rowVector = new RegularVector(row);
                 int positionOfMax = Vectors.getIndexWithMaximalElement(rowVector);
                 double maxValue = rowVector.getElement(positionOfMax);
-                double finalValue = similarityMatrix.getElement(i, j) - maxValue;
+                double finalValue = s.getElement(i, j) - maxValue;
                 updatedResponsibilities[i][j] = finalValue;
             }
         }
@@ -278,29 +290,12 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         return converged;
     }
 
-
-    public LabeledMatrix<DataType> getSimilarityMatrix() {
-        return similarityMatrix;
-    }
-
-    public void setSimilarityMatrix(LabeledMatrix<DataType> similarityMatrix) {
-        this.similarityMatrix = similarityMatrix;
-    }
-
     public LabeledMatrix<DataType> getAvailabilityMatrix() {
         return availabilityMatrix;
     }
 
-    public void setAvailabilityMatrix(LabeledMatrix<DataType> availabilityMatrix) {
-        this.availabilityMatrix = availabilityMatrix;
-    }
-
     public LabeledMatrix<DataType> getResponsibilityMatrix() {
         return responsibilityMatrix;
-    }
-
-    public void setResponsibilityMatrix(LabeledMatrix<DataType> responsibilityMatrix) {
-        this.responsibilityMatrix = responsibilityMatrix;
     }
 
     public interface DataStep<DataType> {
@@ -317,6 +312,8 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
 
     public interface ParameterStep<DataType> {
         ParameterStep<DataType> selfSimilarity(double selfSimilarity);
+
+        ParameterStep<DataType> selfSimilarityByMedian();
 
         ParameterStep<DataType> lambda(double lambda);
 
@@ -354,7 +351,15 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         public ParameterStep<DataType> selfSimilarity(double selfSimilarity) {
             this.selfSimilarity = selfSimilarity;
             return this;
+        }
 
+        @Override
+        public ParameterStep<DataType> selfSimilarityByMedian() {
+            double[] values = matrix.streamElements()
+                    .toArray();
+            selfSimilarity = Vectors.getMedian(new RegularVector(values));
+            logger.info("determined self-similarity value of data points (median) is {}", selfSimilarity);
+            return this;
         }
 
         @Override

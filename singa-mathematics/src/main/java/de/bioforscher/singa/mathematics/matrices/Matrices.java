@@ -53,6 +53,48 @@ public final class Matrices {
         return new SquareMatrix(values);
     }
 
+
+    /**
+     * Creates a matrix of the desired size that contains only ones. Every element is equal to 1.0. <br>
+     * <p>
+     * For example the call:
+     * <pre>
+     * Matrices.generateMatrixOfOnes(4) </pre>
+     * results in the matrix:
+     * <pre>
+     * 1.0 1.0 1.0 1.0
+     * 1.0 1.0 1.0 1.0
+     * 1.0 1.0 1.0 1.0
+     * 1.0 1.0 1.0 1.0 </pre>
+     *
+     * @param rowSize The row size of the resulting matrix.
+     * @param  columnSize The column size of the resulting matrix.
+     * @return A identity matrix.
+     */
+    public static Matrix generateyMatrixOfOnes(int rowSize, int columnSize){
+        if(rowSize == columnSize){
+            // initialize jagged array
+            double[][] compactValues = new double[rowSize][];
+            for (int rowIndex = 0; rowIndex < rowSize; rowIndex++) {
+                compactValues[rowIndex] = new double[rowIndex + 1];
+            }
+            // compute distances
+            for (int rowIndex = 0; rowIndex < compactValues.length; rowIndex++) {
+                for (int columnIndex = 0; columnIndex < compactValues[rowIndex].length; columnIndex++) {
+                    compactValues[rowIndex][columnIndex] = 1.0;
+                }
+            }
+            return new SymmetricMatrix(compactValues);
+        }
+        double[][] values = new double[rowSize][columnSize];
+        for (int i = 0; i < rowSize; i++) {
+            for (int j = 0; j < columnSize; j++) {
+                values[i][j] = 1.0;
+            }
+        }
+        return new RegularMatrix(values);
+    }
+
     /**
      * Divides the matrix into columns. The resulting list contains all columns of the original matrix in vectors. The
      * order is maintained (the column with index 0 is in the list at index 0).
