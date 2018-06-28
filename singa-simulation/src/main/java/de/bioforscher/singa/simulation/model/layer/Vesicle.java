@@ -5,7 +5,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureConta
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
-import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.model.Featureable;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -16,10 +15,10 @@ import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.CellTopology;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import de.bioforscher.singa.simulation.modules.newmodules.module.DisplacementBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateManager;
 import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,6 @@ public class Vesicle implements Updatable, Featureable {
 
     private static final Logger logger = LoggerFactory.getLogger(Vesicle.class);
 
-    private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
-
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
     static {
@@ -52,7 +49,7 @@ public class Vesicle implements Updatable, Featureable {
 
     protected FeatureContainer features;
 
-    private SimpleUpdateManager updateManager;
+    private UpdateManager updateManager;
     private final CellRegion region;
     private Map<AutomatonNode, Quantity<Area>> associatedNodes;
 
@@ -89,7 +86,7 @@ public class Vesicle implements Updatable, Featureable {
         features = new ChemistryFeatureContainer();
         setRadius(radius);
         region = CellRegion.forVesicle(identifier);
-        updateManager = new SimpleUpdateManager(region.setUpConcentrationContainer());
+        updateManager = new UpdateManager(region.setUpConcentrationContainer());
         associatedNodes = new HashMap<>();
     }
 
@@ -181,6 +178,24 @@ public class Vesicle implements Updatable, Featureable {
     @Override
     public String getStringIdentifier() {
         return "Vesicle "+identifier;
+    }
+
+    /**
+     * Returns {@code true} if this node is observed.
+     *
+     * @return {@code true} if this node is observed.
+     */
+    public boolean isObserved() {
+        return updateManager.isObserved();
+    }
+
+    /**
+     * Sets the observed state of this node.
+     *
+     * @param isObserved {@code true} if this node is observed.
+     */
+    public void setObserved(boolean isObserved) {
+        updateManager.setObserved(isObserved);
     }
 
     @Override

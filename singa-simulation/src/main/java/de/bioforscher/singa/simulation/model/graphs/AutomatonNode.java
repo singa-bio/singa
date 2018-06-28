@@ -9,9 +9,9 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateManager;
 import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 
 import javax.measure.Quantity;
@@ -29,14 +29,14 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private CellRegion cellRegion;
 
-    private SimpleUpdateManager updateManager;
+    private UpdateManager updateManager;
 
     private Polygon spatialRepresentation;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         cellRegion = CellRegion.CYTOSOL_A;
-        updateManager = new SimpleUpdateManager(cellRegion.setUpConcentrationContainer());
+        updateManager = new UpdateManager(cellRegion.setUpConcentrationContainer());
     }
 
     public AutomatonNode(int column, int row) {

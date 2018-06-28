@@ -7,7 +7,6 @@ import de.bioforscher.singa.mathematics.graphs.grid.AbstractGridGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;

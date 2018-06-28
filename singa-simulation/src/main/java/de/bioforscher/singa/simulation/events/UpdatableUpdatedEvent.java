@@ -6,11 +6,11 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 
 /**
- * The Event that is emitted from the {@link NodeEventEmitter}, encapsulating a node.
+ * The Event that is emitted from the {@link NodeEventEmitter}, encapsulating a updatable.
  *
  * @author cl
  */
-public class NodeUpdatedEvent {
+public class UpdatableUpdatedEvent {
 
     /**
      * The time the event was emitted.
@@ -20,16 +20,16 @@ public class NodeUpdatedEvent {
     /**
      * The encapsulated updatable.
      */
-    private final Updatable node;
+    private final Updatable updatable;
 
     /**
      * Creates a new NodeUpdatedEvent.
      * @param time The time the event was emitted.
-     * @param node The encapsulated node.
+     * @param updatable The encapsulated updatable.
      */
-    public NodeUpdatedEvent(Quantity<Time> time, Updatable node) {
+    public UpdatableUpdatedEvent(Quantity<Time> time, Updatable updatable) {
         this.time = time;
-        this.node = node;
+        this.updatable = updatable;
     }
 
     /**
@@ -44,8 +44,8 @@ public class NodeUpdatedEvent {
      * Returns the updatable
      * @return The updatable
      */
-    public Updatable getNode() {
-        return node;
+    public Updatable getUpdatable() {
+        return updatable;
     }
 
 }

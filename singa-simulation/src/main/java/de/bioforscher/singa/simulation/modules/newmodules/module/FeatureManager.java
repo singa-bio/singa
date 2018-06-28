@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author cl
  */
-public class ModuleFeatureManager implements Featureable {
+public class FeatureManager implements Featureable {
 
     /**
      * The features available for automatic annotation and assignment.
@@ -26,7 +26,7 @@ public class ModuleFeatureManager implements Featureable {
      */
     private FeatureContainer features;
 
-    public ModuleFeatureManager() {
+    public FeatureManager() {
         features = new ChemistryFeatureContainer();
     }
 

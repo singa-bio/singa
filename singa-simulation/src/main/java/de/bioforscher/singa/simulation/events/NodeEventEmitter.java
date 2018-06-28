@@ -10,12 +10,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author cl
  */
-public class NodeEventEmitter implements UpdateEventEmitter<NodeUpdatedEvent> {
+public class NodeEventEmitter implements UpdateEventEmitter<UpdatableUpdatedEvent> {
 
     /**
      * All registered listeners.
      */
-    private CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> listeners;
+    private CopyOnWriteArrayList<UpdateEventListener<UpdatableUpdatedEvent>> listeners;
 
     /**
      * Creates a new NodeEventEmitter.
@@ -25,7 +25,7 @@ public class NodeEventEmitter implements UpdateEventEmitter<NodeUpdatedEvent> {
     }
 
     @Override
-    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getListeners() {
+    public CopyOnWriteArrayList<UpdateEventListener<UpdatableUpdatedEvent>> getListeners() {
         return listeners;
     }
 

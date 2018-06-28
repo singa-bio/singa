@@ -7,10 +7,10 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Module;
 import de.bioforscher.singa.simulation.modules.model.SimulationManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
@@ -32,7 +32,7 @@ import static tec.uom.se.unit.Units.SECOND;
  *
  * @author cl
  */
-public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
+public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEvent> {
 
     /**
      * The character indication a comment line.
@@ -87,7 +87,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     /**
      * The modules deltas should be recorded for.
      */
-    private final List<Module> observedModules;
+    private final List<ConcentrationBasedModule> observedModules;
 
     /**
      * The formatter for time based values.
@@ -107,7 +107,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param entitiesToObserve The entities to observe.
      * @param modulesToObserve The modules to record deltas from.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve) {
         this(workspacePath, folder, entitiesToObserve, modulesToObserve, true);
     }
 
@@ -120,7 +120,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param modulesToObserve The modules to record deltas from.
      * @param printHeader True, if an extended header should be printed.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve, boolean printHeader) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve, boolean printHeader) {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
@@ -355,7 +355,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     @Override
-    public void onEventReceived(NodeUpdatedEvent event) {
+    public void onEventReceived(UpdatableUpdatedEvent event) {
         appendConcentrationContent(event);
         appendDeltaContent(event);
     }
@@ -365,8 +365,8 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      *
      * @param event The event.
      */
-    private void appendConcentrationContent(NodeUpdatedEvent event) {
-        Updatable node = event.getNode();
+    private void appendConcentrationContent(UpdatableUpdatedEvent event) {
+        Updatable node = event.getUpdatable();
         Set<CellSubsection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
@@ -396,8 +396,8 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      *
      * @param event The event.
      */
-    private void appendDeltaContent(NodeUpdatedEvent event) {
-        Updatable node = event.getNode();
+    private void appendDeltaContent(UpdatableUpdatedEvent event) {
+        Updatable node = event.getUpdatable();
         StringBuilder sb = new StringBuilder();
         for (Delta delta : node.getPotentialSpatialDeltas()) {
             if (delta.getQuantity().getValue().doubleValue() > 0.0) {

@@ -11,10 +11,12 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.ComplexBuildingReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.Diffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.NthOrderReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.ReversibleReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -251,7 +253,7 @@ public class GPCRCarrouselModelTest {
                 .build();
 
         // exchange Gd, hydrolysis Gt
-        EquilibriumReaction reaction09 = EquilibriumReaction.inSimulation(simulation)
+        ReversibleReaction reaction09 = ReversibleReaction.inSimulation(simulation)
                 .identifier("reaction 09")
                 .addSubstrate(gtpGProteinAlpha)
                 .addProduct(gdpGProteinAlpha)
@@ -270,7 +272,7 @@ public class GPCRCarrouselModelTest {
                 .build();
 
         // hydrolysis LR.Gt, exchange LR.Gd
-        EquilibriumReaction reaction11 = EquilibriumReaction.inSimulation(simulation)
+        ReversibleReaction reaction11 = ReversibleReaction.inSimulation(simulation)
                 .identifier("reaction 11")
                 .addSubstrate(alphaGDPReceptorLigandComplex)
                 .addProduct(alphaGTPReceptorLigandComplex)
@@ -299,7 +301,7 @@ public class GPCRCarrouselModelTest {
                 .build();
 
         // hydrolysis R.Gt, exchange R.Gd
-        EquilibriumReaction reaction14 = EquilibriumReaction.inSimulation(simulation)
+        ReversibleReaction reaction14 = ReversibleReaction.inSimulation(simulation)
                 .identifier("reaction 14")
                 .addSubstrate(alphaGDPReceptor)
                 .addProduct(alphaGTPReceptor)
@@ -358,7 +360,7 @@ public class GPCRCarrouselModelTest {
                 .build();
 
         // add diffusion
-        FreeDiffusion.inSimulation(simulation)
+        Diffusion.inSimulation(simulation)
                 .identifier("free diffusion")
                 .forAll(simulation.getChemicalEntities())
                 .build();
@@ -373,7 +375,7 @@ public class GPCRCarrouselModelTest {
         System.out.println("--- Modules ---");
         System.out.println();
         simulation.getModules().stream()
-                .sorted(Comparator.comparing(module -> module.getIdentifier().getIdentifier()))
+                .sorted(Comparator.comparing(UpdateModule::getIdentifier))
                 .forEach(module -> System.out.println(module.getStringForProtocol() + System.lineSeparator()));
 
 

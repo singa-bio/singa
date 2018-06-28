@@ -152,6 +152,8 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         this.elementary = elementary;
     }
 
+
+
     /**
      * Returns a nicely formatted string representation of the reaction.
      *

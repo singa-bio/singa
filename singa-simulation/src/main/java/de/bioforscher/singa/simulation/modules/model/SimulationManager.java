@@ -5,6 +5,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.events.*;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -99,7 +100,7 @@ public class SimulationManager extends Task<Simulation> {
      *
      * @param listener The listener.
      */
-    public void addNodeUpdateListener(UpdateEventListener<NodeUpdatedEvent> listener) {
+    public void addNodeUpdateListener(UpdateEventListener<UpdatableUpdatedEvent> listener) {
         logger.info("Added {} to node update listeners.", listener.getClass().getSimpleName());
         nodeEventEmitter.addEventListener(listener);
     }
@@ -109,7 +110,7 @@ public class SimulationManager extends Task<Simulation> {
      *
      * @return All currently registered node event listeners.
      */
-    public CopyOnWriteArrayList<UpdateEventListener<NodeUpdatedEvent>> getNodeListeners() {
+    public CopyOnWriteArrayList<UpdateEventListener<UpdatableUpdatedEvent>> getNodeListeners() {
         return nodeEventEmitter.getListeners();
     }
 
@@ -202,8 +203,8 @@ public class SimulationManager extends Task<Simulation> {
         graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), simulation.getElapsedTime()));
     }
 
-    public void emitNodeEvent(Simulation simulation, AutomatonNode automatonNode) {
-        nodeEventEmitter.emitEvent(new NodeUpdatedEvent(simulation.getElapsedTime(), automatonNode));
+    public void emitNodeEvent(Simulation simulation, Updatable updatable) {
+        nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(simulation.getElapsedTime(), updatable));
     }
 
 
@@ -222,9 +223,9 @@ public class SimulationManager extends Task<Simulation> {
             if (emitCondition.test(simulation)) {
                 logger.info("Emitting event after {} (epoch {}).", simulation.getElapsedTime(), simulation.getEpoch());
                 emitGraphEvent(simulation);
-                for (AutomatonNode automatonNode : simulation.getObservedNodes()) {
-                    emitNodeEvent(simulation, automatonNode);
-                    logger.debug("Emitted next epoch event for node {}.", automatonNode.getIdentifier());
+                for (Updatable updatable : simulation.getObservedUpdatables()) {
+                    emitNodeEvent(simulation, updatable);
+                    logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
                 }
                 long currentTimeMillis = System.currentTimeMillis();
                 ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
@@ -250,7 +251,7 @@ public class SimulationManager extends Task<Simulation> {
     protected void done() {
         try {
             logger.info("Simulation finished.");
-            for (UpdateEventListener<NodeUpdatedEvent> nodeEventListener : getNodeListeners()) {
+            for (UpdateEventListener<UpdatableUpdatedEvent> nodeEventListener : getNodeListeners()) {
                 if (nodeEventListener instanceof EpochUpdateWriter) {
                     ((EpochUpdateWriter) nodeEventListener).closeWriters();
                 }

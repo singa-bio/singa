@@ -14,7 +14,7 @@ import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.DynamicReaction;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLAssignmentRuleConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLParameterConverter;
 import de.bioforscher.singa.simulation.parser.sbml.converter.SBMLReactionConverter;

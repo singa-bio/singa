@@ -11,6 +11,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.layer.Vesicle;
 import de.bioforscher.singa.simulation.model.layer.VesicleLayer;
+import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
+import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 import org.slf4j.Logger;
@@ -48,6 +50,11 @@ public class Simulation {
     private Map<SimpleStringIdentifier, ChemicalEntity> chemicalEntities;
 
     /**
+     * The assignment rules.
+     */
+    private List<AssignmentRule> assignmentRules;
+
+    /**
      * The current epoch.
      */
     private long epoch;
@@ -80,6 +87,7 @@ public class Simulation {
      */
     public Simulation() {
         modules = new ArrayList<>();
+        assignmentRules = new ArrayList<>();
         chemicalEntities = new HashMap<>();
         elapsedTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
         epoch = 0;
@@ -245,6 +253,27 @@ public class Simulation {
         updatables.addAll(vesicleLayer.getVesicles());
     }
 
+    /**
+     * Apply all referenced assignment rules.
+     */
+    public void applyAssignmentRules() {
+        for (AssignmentRule rule : assignmentRules) {
+            for (AutomatonNode bioNode : graph.getNodes()) {
+                rule.applyRule(bioNode);
+            }
+        }
+    }
+
+    /**
+     * Adds a list of assignment rules, sorting them by their dependencies.
+     *
+     * @param assignmentRules The assignment rules.
+     * @see AssignmentRules#sortAssignmentRulesByPriority(List)
+     */
+    public void setAssignmentRules(List<AssignmentRule> assignmentRules) {
+        this.assignmentRules = AssignmentRules.sortAssignmentRulesByPriority(assignmentRules);
+    }
+
     public ArrayList<Updatable> getUpdatables() {
         return updatables;
     }
@@ -304,6 +333,15 @@ public class Simulation {
 
     public void addReferencedEntity(ChemicalEntity chemicalEntity) {
         chemicalEntities.put(chemicalEntity.getIdentifier(), chemicalEntity);
+    }
+
+    public void observeNode(Updatable updatable) {
+        observedUpdatables.add(updatable);
+        updatable.setObserved(true);
+    }
+
+    public Set<Updatable> getObservedUpdatables() {
+        return observedUpdatables;
     }
 
 }

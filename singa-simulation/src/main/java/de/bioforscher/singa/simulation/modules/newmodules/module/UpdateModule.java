@@ -30,4 +30,8 @@ public interface UpdateModule {
 
     void checkFeatures();
 
+    String getIdentifier();
+
+    String getStringForProtocol();
+
 }

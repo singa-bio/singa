@@ -4,7 +4,6 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.modules.model.VesicleModule;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -22,15 +21,12 @@ public class VesicleLayer {
 
     private List<Vesicle> vesicles;
 
-    private List<VesicleModule> vesicleModules;
-
     private Rectangle simulationArea;
 
     private final Quantity<Length> displacementEpsilon;
 
     public VesicleLayer() {
         vesicles = new ArrayList<>();
-        vesicleModules = new ArrayList<>();
         displacementEpsilon = Environment.getNodeDistance().divide(5);
     }
 
@@ -48,14 +44,6 @@ public class VesicleLayer {
 
     public List<Vesicle> getVesicles() {
         return vesicles;
-    }
-
-    public void addVesicleModule(VesicleModule vesicleModule) {
-        vesicleModules.add(vesicleModule);
-    }
-
-    public List<VesicleModule> getVesicleModules() {
-        return vesicleModules;
     }
 
     private void checkForCollisions() {

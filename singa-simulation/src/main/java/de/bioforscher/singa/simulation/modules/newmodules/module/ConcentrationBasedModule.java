@@ -51,7 +51,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private UpdateScope scope;
     private UpdateSpecificity<DeltaFunctionType> specificity;
     private UpdateScheduler updateScheduler;
-    private ModuleFeatureManager featureManager;
+    private FeatureManager featureManager;
     private Predicate<Updatable> applicationCondition;
     private Set<ChemicalEntity> referencedChemicalEntities;
     private String identifier;
@@ -62,7 +62,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     public ConcentrationBasedModule() {
         supplier = new FieldSupplier();
-        featureManager = new ModuleFeatureManager();
+        featureManager = new FeatureManager();
         referencedChemicalEntities = new HashSet<>();
         state = PENDING;
         applicationCondition = updatable -> true;
@@ -86,6 +86,13 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
 
     public void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
         referencedChemicalEntities.addAll(chemicalEntities);
+    }
+
+    public String getStringForProtocol() {
+        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
+                "  " + "features: " + System.lineSeparator() +
+                listFeatures("    ");
     }
 
     public double getDeltaCutoff() {

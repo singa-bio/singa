@@ -1,31 +1,24 @@
 package de.bioforscher.singa.simulation.modules.model;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
 import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
 import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.mathematics.graphs.grid.GridCoordinateConverter;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
-import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
-import de.bioforscher.singa.simulation.features.permeability.MembraneEntry;
-import de.bioforscher.singa.simulation.features.permeability.MembraneExit;
-import de.bioforscher.singa.simulation.features.permeability.MembraneFlipFlop;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.EquilibriumReaction;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.MichaelisMentenReaction;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.NthOrderReaction;
-import de.bioforscher.singa.simulation.modules.transport.FlipFlopMembraneTransport;
-import de.bioforscher.singa.simulation.modules.transport.FreeDiffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.Diffusion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.MichaelisMentenReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.NthOrderReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.ReversibleReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.parser.sbml.BioModelsParserService;
 import de.bioforscher.singa.simulation.parser.sbml.SBMLParser;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
@@ -37,12 +30,9 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static de.bioforscher.singa.simulation.model.newsections.CellRegion.MEMBRANE;
 import static de.bioforscher.singa.simulation.model.newsections.CellTopology.INNER;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
@@ -165,7 +155,7 @@ public class SimulationExamples {
         RateConstant backwardsRate = RateConstant.create(10).backward().firstOrder().timeUnit(SECOND).build();
 
         // create reaction
-        EquilibriumReaction.inSimulation(simulation)
+        ReversibleReaction.inSimulation(simulation)
                 .addSubstrate(speciesA)
                 .addProduct(speciesB)
                 .forwardsRateConstant(forwardsRate)
@@ -270,7 +260,7 @@ public class SimulationExamples {
         // add graph
         simulation.setGraph(graph);
 
-        FreeDiffusion.inSimulation(simulation)
+        Diffusion.inSimulation(simulation)
                 .forAll(methanol, ethyleneGlycol, valine, sucrose)
                 .build();
 
@@ -355,7 +345,7 @@ public class SimulationExamples {
         RateConstant thirdBackwardRate = RateConstant.create(2.2).backward().firstOrder().timeUnit(SECOND).build();
 
         // third reaction
-        EquilibriumReaction.inSimulation(simulation)
+        ReversibleReaction.inSimulation(simulation)
                 .addSubstrate(hia)
                 .addSubstrate(iodide)
                 .addSubstrate(hydron)
@@ -428,123 +418,5 @@ public class SimulationExamples {
 
         return simulation;
     }
-
-    public static Simulation createPassiveMembraneTransportExample() {
-        logger.info("Setting up the passive membrane diffusion example ...");
-        // get required species
-        logger.debug("Importing species ...");
-        // setup time step size as given
-        logger.debug("Adjusting time step size ... ");
-        Environment.setTimeStep(Quantities.getQuantity(100, NANO(SECOND)));
-        // setup node distance to diameter
-        logger.debug("Adjusting spatial step size ... ");
-        Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), 11);
-        // all species
-        Set<ChemicalEntity> chemicalEntities = new HashSet<>();
-        // Domperidone
-        SmallMolecule domperidone = PubChemParserService.parse("CID:3151");
-        domperidone.setFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED));
-        domperidone.setFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED));
-        domperidone.setFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED));
-        chemicalEntities.add(domperidone);
-        // Loperamide
-        SmallMolecule loperamide = PubChemParserService.parse("CID:3955");
-        loperamide.setFeature(new MembraneEntry(8.59e8, MANUALLY_ANNOTATED));
-        loperamide.setFeature(new MembraneExit(1.81e3, MANUALLY_ANNOTATED));
-        loperamide.setFeature(new MembraneFlipFlop(6.71e5, MANUALLY_ANNOTATED));
-        chemicalEntities.add(loperamide);
-        // Propranolol
-        SmallMolecule propranolol = PubChemParserService.parse("CID:4946");
-        propranolol.setFeature(new MembraneEntry(1.27e9, MANUALLY_ANNOTATED));
-        propranolol.setFeature(new MembraneExit(3.09e4, MANUALLY_ANNOTATED));
-        propranolol.setFeature(new MembraneFlipFlop(4.75e6, MANUALLY_ANNOTATED));
-        chemicalEntities.add(propranolol);
-        // Desipramine
-        SmallMolecule desipramine = PubChemParserService.parse("CID:2995");
-        desipramine.setFeature(new MembraneEntry(2.13e9, MANUALLY_ANNOTATED));
-        desipramine.setFeature(new MembraneExit(4.86e4, MANUALLY_ANNOTATED));
-        desipramine.setFeature(new MembraneFlipFlop(1.09e7, MANUALLY_ANNOTATED));
-        chemicalEntities.add(desipramine);
-
-        logger.debug("Setting up example graph ...");
-        AutomatonGraph graph = AutomatonGraphs.createRectangularAutomatonGraph(11, 11);
-        AutomatonGraphs.splitRectangularGraphWithMembrane(graph, MEMBRANE.getInnerSubsection(), MEMBRANE.getOuterSubsection(), false);
-
-        // set concentrations
-        // only 5 left most nodes
-        for (AutomatonNode node : graph.getNodes()) {
-            if (node.getIdentifier().getColumn() < (graph.getNumberOfColumns() / 2)) {
-                for (ChemicalEntity species : chemicalEntities) {
-                    node.getConcentrationContainer().set(MEMBRANE.getInnerSubsection(), species, 1.0);
-                }
-            } else {
-                for (ChemicalEntity species : chemicalEntities) {
-                    node.getConcentrationContainer().set(MEMBRANE.getOuterSubsection(), species, 0.0);
-                }
-            }
-        }
-
-        // setup simulation
-        logger.debug("Composing simulation ... ");
-        Simulation simulation = new Simulation();
-        // add graph
-        simulation.setGraph(graph);
-        // add transmembrane transport
-        simulation.getModules().add(new FlipFlopMembraneTransport(simulation));
-
-        FreeDiffusion.inSimulation(simulation)
-                .forAll(chemicalEntities)
-                .build();
-
-        return simulation;
-    }
-
-    public static Simulation createDiffusionAndMembraneTransportExample() {
-        SmallMolecule domperidone = new SmallMolecule.Builder("CHEBI:31515")
-                .name("domperidone")
-                .assignFeature(Diffusivity.class)
-                .assignFeature(new MembraneEntry(1.48e9, MANUALLY_ANNOTATED))
-                .assignFeature(new MembraneExit(1.76e3, MANUALLY_ANNOTATED))
-                .assignFeature(new MembraneFlipFlop(3.50e2, MANUALLY_ANNOTATED))
-                .build();
-
-        Simulation simulation = new Simulation();
-        GridCoordinateConverter gcc = new GridCoordinateConverter(30, 20);
-        // setup rectangular graph with number of nodes
-        AutomatonGraph graph = AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(20, 30));
-        // create compartments and membrane
-
-
-        // initialize species in graph with desired concentration
-        for (AutomatonNode node : graph.getNodes()) {
-            RectangularCoordinate coordinate = node.getIdentifier();
-            if ((coordinate.getColumn() == 2 && coordinate.getRow() > 2 && coordinate.getRow() < 17) ||
-                    (coordinate.getColumn() == 27 && coordinate.getRow() > 2 && coordinate.getRow() < 17) ||
-                    (coordinate.getRow() == 2 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28) ||
-                    (coordinate.getRow() == 17 && coordinate.getColumn() > 1 && coordinate.getColumn() < 28)) {
-                // setup membrane
-                node.setCellRegion(CellRegion.MEMBRANE);
-                node.setAvailableConcentration(CellRegion.MEMBRANE.getOuterSubsection(), domperidone, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()));
-            } else if (coordinate.getColumn() > 2 && coordinate.getRow() > 2 && coordinate.getColumn() < 27 && coordinate.getRow() < 17) {
-                node.setCellRegion(CellRegion.CYTOSOL_A);
-                node.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getInnerSubsection(), domperidone, 0.0);
-            } else {
-                node.setCellRegion(CellRegion.CYTOSOL_A);
-                node.getConcentrationContainer().set(CellRegion.CYTOSOL_A.getOuterSubsection(), domperidone, 1.0);
-            }
-        }
-
-        simulation.setGraph(graph);
-
-        FreeDiffusion.inSimulation(simulation)
-                .onlyFor(domperidone)
-                .build();
-
-        FlipFlopMembraneTransport membraneTransport = new FlipFlopMembraneTransport(simulation);
-        simulation.getModules().add(membraneTransport);
-
-        return simulation;
-    }
-
 
 }

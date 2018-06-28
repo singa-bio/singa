@@ -7,7 +7,6 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.layer.SpatialDelta;
 import de.bioforscher.singa.simulation.model.layer.Vesicle;
-import de.bioforscher.singa.simulation.modules.model.VesicleModule;
 import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.modules.newmodules.simulation.UpdateScheduler;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ public class DisplacementBasedModule implements UpdateModule {
     /**
      * The logger.
      */
-    private static final Logger logger = LoggerFactory.getLogger(VesicleModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
     private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/5.0;
 
@@ -42,7 +41,8 @@ public class DisplacementBasedModule implements UpdateModule {
      */
     private final Map<Function<Vesicle, SpatialDelta>, Predicate<Vesicle>> deltaFunctions;
 
-    private ModuleFeatureManager featureManager;
+    private String identifier;
+    private FeatureManager featureManager;
     private ModuleState state;
     private UpdateScheduler updateScheduler;
     private Set<ChemicalEntity> referencedChemicalEntities;
@@ -54,7 +54,7 @@ public class DisplacementBasedModule implements UpdateModule {
         deltaFunctions = new HashMap<>();
         displacementCutoff = Environment.convertSystemToSimulationScale(Environment.getNodeDistance().multiply(displacementCutoffFactor));
         referencedChemicalEntities = new HashSet<>();
-        featureManager = new ModuleFeatureManager();
+        featureManager = new FeatureManager();
         state = PENDING;
     }
 
@@ -171,6 +171,19 @@ public class DisplacementBasedModule implements UpdateModule {
                 }
             }
         }
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public String getStringForProtocol() {
+        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
+                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
+                "  " + "features: " + System.lineSeparator() +
+                listFeatures("    ");
     }
 
     @Override

@@ -2,9 +2,9 @@ package de.bioforscher.singa.simulation.parser.sbml.converter;
 
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.DynamicReaction;
+import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
 import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
 import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
 import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
@@ -52,7 +52,9 @@ public class SBMLReactionConverter {
         Simulation simulation = new Simulation();
         logger.debug("Parsing Reaction {} ...", reaction.getName());
         DynamicKineticLaw kineticLaw = kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
-        currentReaction = new DynamicReaction(simulation, kineticLaw);
+        currentReaction = new DynamicReaction();
+        currentReaction.setSimulation(simulation);
+        currentReaction.setKineticLaw(kineticLaw);
         assignSubstrates(reaction.getListOfReactants());
         assignProducts(reaction.getListOfProducts());
         assignModifiers(reaction.getListOfModifiers());

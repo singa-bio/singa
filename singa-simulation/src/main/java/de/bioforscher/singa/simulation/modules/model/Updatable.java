@@ -32,4 +32,6 @@ public interface Updatable {
     void shiftDeltas();
     void applyDeltas();
 
+    void setObserved(boolean observed);
+    boolean isObserved();
 }

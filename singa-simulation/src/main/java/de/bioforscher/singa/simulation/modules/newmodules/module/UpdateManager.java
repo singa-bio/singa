@@ -1,11 +1,10 @@
-package de.bioforscher.singa.simulation.modules.model;
+package de.bioforscher.singa.simulation.modules.newmodules.module;
 
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
-import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +16,9 @@ import java.util.List;
 /**
  * @author cl
  */
-public class SimpleUpdateManager {
+public class UpdateManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleUpdateManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateManager.class);
 
     /**
      * Deltas that are to be applied to the node.
@@ -43,7 +42,7 @@ public class SimpleUpdateManager {
 
     private ConcentrationContainer concentrations;
 
-    public SimpleUpdateManager(ConcentrationContainer concentrationContainer) {
+    public UpdateManager(ConcentrationContainer concentrationContainer) {
         finalDeltas = new ArrayList<>();
         potentialDeltas = new ArrayList<>();
         observed = false;
