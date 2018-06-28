@@ -6,11 +6,11 @@ import de.bioforscher.singa.features.model.QuantityFormatter;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.SimulationManager;
-import de.bioforscher.singa.simulation.modules.model.Updatable;
-import de.bioforscher.singa.simulation.modules.newmodules.Delta;
-import de.bioforscher.singa.simulation.modules.newmodules.module.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.simulation.SimulationManager;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
@@ -399,7 +399,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     private void appendDeltaContent(UpdatableUpdatedEvent event) {
         Updatable node = event.getUpdatable();
         StringBuilder sb = new StringBuilder();
-        for (Delta delta : node.getPotentialSpatialDeltas()) {
+        for (ConcentrationDelta delta : node.getPotentialSpatialDeltas()) {
             if (delta.getQuantity().getValue().doubleValue() > 0.0) {
                 if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
                     sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)

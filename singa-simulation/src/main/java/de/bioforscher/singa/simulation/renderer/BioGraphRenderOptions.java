@@ -3,8 +3,8 @@ package de.bioforscher.singa.simulation.renderer;
 import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
 import de.bioforscher.singa.javafx.renderer.colors.ColorScale;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
-import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 import javafx.scene.paint.Color;
 
 public class BioGraphRenderOptions {

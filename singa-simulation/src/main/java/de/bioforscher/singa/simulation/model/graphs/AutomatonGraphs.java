@@ -10,7 +10,7 @@ import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.newsections.*;
+import de.bioforscher.singa.simulation.model.sections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

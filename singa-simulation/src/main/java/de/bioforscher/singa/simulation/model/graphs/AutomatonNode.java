@@ -6,13 +6,13 @@ import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.newsections.CellRegion;
-import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
-import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Updatable;
-import de.bioforscher.singa.simulation.modules.newmodules.Delta;
-import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateManager;
-import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
+import de.bioforscher.singa.simulation.model.modules.UpdateModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
+import de.bioforscher.singa.simulation.model.sections.CellRegion;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -29,14 +29,14 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private CellRegion cellRegion;
 
-    private UpdateManager updateManager;
+    private ConcentrationDeltaManager updateManager;
 
     private Polygon spatialRepresentation;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         cellRegion = CellRegion.CYTOSOL_A;
-        updateManager = new UpdateManager(cellRegion.setUpConcentrationContainer());
+        updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
     public AutomatonNode(int column, int row) {
@@ -72,7 +72,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @param potentialDelta The potential delta.
      */
-    public void addPotentialDelta(Delta potentialDelta) {
+    public void addPotentialDelta(ConcentrationDelta potentialDelta) {
         updateManager.addPotentialDelta(potentialDelta);
     }
 
@@ -104,7 +104,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     }
 
     @Override
-    public List<Delta> getPotentialSpatialDeltas() {
+    public List<ConcentrationDelta> getPotentialSpatialDeltas() {
         return updateManager.getPotentialDeltas();
     }
 

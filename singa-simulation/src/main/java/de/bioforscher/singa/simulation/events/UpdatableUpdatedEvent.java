@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.simulation.modules.model.Updatable;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;

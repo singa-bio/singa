@@ -15,7 +15,7 @@ import de.bioforscher.singa.simulation.events.GraphUpdatedEvent;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
