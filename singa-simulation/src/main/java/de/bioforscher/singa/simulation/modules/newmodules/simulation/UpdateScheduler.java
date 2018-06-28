@@ -90,9 +90,11 @@ public class UpdateScheduler {
                 // optimize time step
                 module.optimizeTimeStep();
                 // reset states
-                modules.forEach(UpdateModule::resetState);
+                modules.stream()
+                        .filter(m -> m != module)
+                        .forEach(UpdateModule::resetState);
                 // clear deltas that have previously been calculated
-                updatables.forEach(Updatable::clearPotentialDeltas);
+                updatables.forEach(updatable -> updatable.clearPotentialDeltasBut(module));
                 // start from the beginning
                 moduleIterator = modules.listIterator();
                 module = moduleIterator.next();

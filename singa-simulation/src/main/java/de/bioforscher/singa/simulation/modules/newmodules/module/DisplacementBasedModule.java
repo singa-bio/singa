@@ -154,8 +154,9 @@ public class DisplacementBasedModule implements UpdateModule {
             Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
             double length = displacement.getMagnitude();
             if (length > displacementCutoff) {
-                logger.trace("Recalculation required for simulation displacement magnitude {}.", length);
+                logger.trace("Recalculation required for module {} displacement magnitude {} exceeding threshold.", this, length, displacementCutoff);
                 state = REQUIRING_RECALCULATION;
+                return;
             }
         }
         state = SUCCEEDED;

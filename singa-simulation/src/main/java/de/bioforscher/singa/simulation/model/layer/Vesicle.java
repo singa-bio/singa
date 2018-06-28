@@ -20,6 +20,7 @@ import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
 import de.bioforscher.singa.simulation.modules.newmodules.module.DisplacementBasedModule;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,6 +216,12 @@ public class Vesicle implements Updatable, Featureable {
     @Override
     public void clearPotentialDeltas() {
         updateManager.clearPotentialDeltas();
+    }
+
+    @Override
+    public void clearPotentialDeltasBut(UpdateModule module) {
+        updateManager.clearPotentialDeltasBut(module);
+        clearPotentialSpatialDeltas();
     }
 
     @Override

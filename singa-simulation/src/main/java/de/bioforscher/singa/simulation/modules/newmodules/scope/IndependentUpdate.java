@@ -63,6 +63,11 @@ public class IndependentUpdate implements UpdateScope {
         return supply().getLargestLocalError();
     }
 
+    @Override
+    public void clearPotentialDeltas(Updatable updatable) {
+        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialDeltas);
+    }
+
     private void determineHalfStepConcentration() {
         halfConcentration = supply().getCurrentUpdatable().getConcentrationContainer().fullCopy();
         for (Delta delta : supply().getCurrentFullDeltas().values()) {

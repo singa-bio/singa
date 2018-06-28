@@ -125,11 +125,13 @@ public class Simulation {
         updateEpoch();
         // if time step did not change it can possibly be increased
         if (!scheduler.timeStepWasRescaled()) {
-            // if (maximalTimeStep == null || Environment.getTimeStep().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue())
-            // if error was below tolerance threshold (10 percent of epsilon)
-            if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
-                // try larger time step next time
-                scheduler.increaseTimeStep();
+            // if no maximal time step is given or time step is not already maximal
+            if (maximalTimeStep == null || Environment.getTimeStep().to(maximalTimeStep.getUnit()).getValue().doubleValue() < maximalTimeStep.getValue().doubleValue()) {
+                // if error was below tolerance threshold (10 percent of epsilon)
+                if (scheduler.getRecalculationCutoff() - scheduler.getLargestError().getValue() > 0.1 * scheduler.getRecalculationCutoff()) {
+                    // try larger time step next time
+                    scheduler.increaseTimeStep();
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.model.SimpleUpdateManager;
 import de.bioforscher.singa.simulation.modules.model.Updatable;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -81,6 +82,11 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      */
     public void clearPotentialDeltas() {
         updateManager.clearPotentialDeltas();
+    }
+
+    @Override
+    public void clearPotentialDeltasBut(UpdateModule module) {
+        updateManager.clearPotentialDeltasBut(module);
     }
 
     /**

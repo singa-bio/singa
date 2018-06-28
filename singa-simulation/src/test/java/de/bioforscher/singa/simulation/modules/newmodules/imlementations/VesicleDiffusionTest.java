@@ -7,7 +7,6 @@ import de.bioforscher.singa.chemistry.descriptive.features.permeability.Membrane
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
@@ -75,7 +74,6 @@ public class VesicleDiffusionTest {
                 Quantities.getQuantity(100, NANO(METRE)));
 
         vesicle.scaleScalableFeatures();
-        System.out.println(vesicle.getFeature(Diffusivity.class));
         assertEquals(2.1460983910913096E-9, vesicle.getFeature(Diffusivity.class).getValue().doubleValue(), 1e-8);
         Environment.setTimeStep(Quantities.getQuantity(2, MICRO(SECOND)));
         vesicle.scaleScalableFeatures();
@@ -83,9 +81,7 @@ public class VesicleDiffusionTest {
     }
 
     @Test
-    public void shouldSimulateVesicleDiffusion() {
-        double simulationExtend = 800;
-        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
+    public void shouldMembraneDiffusionWithVesicles() {
 
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(20, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
@@ -97,7 +93,7 @@ public class VesicleDiffusionTest {
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(220, 220),
-                Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE))
+                Quantities.getQuantity(150, NANO(METRE))
                         .to(Environment.getNodeDistance().getUnit()));
 
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
@@ -119,8 +115,8 @@ public class VesicleDiffusionTest {
         // setup species
         SmallMolecule water = new SmallMolecule.Builder("water")
                 .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-                .assignFeature(new Diffusivity(10, FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new MembranePermeability(Quantities.getQuantity(1.75e-3, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+                .assignFeature(new Diffusivity(2.6e-6, FeatureOrigin.MANUALLY_ANNOTATED))
                 .build();
 
         // add diffusion
@@ -138,26 +134,8 @@ public class VesicleDiffusionTest {
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
-        }
 
-        // FIXME seems like something is not reset correctly, error changes for the same calculation but time step and delta don't change
-//        15:40:16 DEBUG [ConcentrationBasedModule:determineLargestLocalError:250] - The largest error was 0.010517200761954837 for Vesicle{radius=0.17851068340352283 µm, position=Vector 2D (220.35791294623274, 219.81862432174586)}
-//        15:40:16 TRACE [ConcentrationBasedModule:evaluateModuleState:280] - Recalculation required for error 0.010517200761954837.
-//        15:40:16 DEBUG [UpdateScheduler:processModuleByState:76] - MembraneDiffusion (water) is REQUIRING_RECALCULATION
-//        15:40:16 DEBUG [UpdateScheduler:decreaseTimeStep:149] - Decreasing time step to 3.919284520776990226398735931284693 µs.
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Full delta for water in Vesicle 0:V0I = -9.56897593902488E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Full delta for water in Node (4, 4):SA = 9.56897593902488E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Half delta for water in Vesicle 0:V0I = -4.8315877479966114E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Half delta for water in Node (4, 4):SA = 4.8315877479966114E-18 mol/µm³
-//        15:40:16 DEBUG [ConcentrationBasedModule:determineLargestLocalError:250] - The largest error was 0.009748302409223752 for Vesicle{radius=0.17851068340352283 µm, position=Vector 2D (220.35791294623274, 219.81862432174586)}
-//        15:40:16 DEBUG [ConcentrationBasedModule:optimizeTimeStep:273] - Optimized local error for MembraneDiffusion (water) was 0.009748302409223752 with time step of 3.919284520776990226398735931284693 µs.
-//        15:40:16 DEBUG [UpdateScheduler:processModuleByState:76] - MembraneDiffusion (water) is PENDING
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Full delta for water in Vesicle 0:V0I = -9.56897593902488E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Full delta for water in Node (4, 4):SA = 9.56897593902488E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Half delta for water in Vesicle 0:V0I = -4.827833261447305E-18 mol/µm³
-//        15:40:16 TRACE [ConcentrationBasedModule:logDelta:165] - Half delta for water in Node (4, 4):SA = 4.827833261447305E-18 mol/µm³
-//        15:40:16 DEBUG [ConcentrationBasedModule:determineLargestLocalError:250] - The largest error was 0.00897820815002015 for Vesicle{radius=0.17851068340352283 µm, position=Vector 2D (220.35791294623274, 219.81862432174586)}
-//        15:40:16 DEBUG [UpdateScheduler:processModuleByState:76] - MembraneDiffusion (water) is SUCCEEDED
+        }
 
     }
 

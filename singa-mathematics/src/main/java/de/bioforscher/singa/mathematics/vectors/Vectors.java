@@ -72,8 +72,7 @@ public class Vectors {
         double z = ThreadLocalRandom.current().nextDouble();
         return new Vector3D(x, y, z);
     }
-
-
+    
     /**
      * Returns the average value of an {@link Vector}s elements or Double.NaN if not present.
      *

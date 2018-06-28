@@ -25,13 +25,13 @@ public class UniProtParserService extends AbstractXMLParser<Protein> {
 
     private UniProtParserService(String uniProtIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler());
-        setResource("http://www.uniprot.org/uniprot/");
+        setResource("https://www.uniprot.org/uniprot/");
         setIdentifier(new UniProtIdentifier(uniProtIdentifier));
     }
 
     private UniProtParserService(String uniProtIdentifier, String primaryIdentifier) {
         getXmlReader().setContentHandler(new UniProtContentHandler(primaryIdentifier));
-        setResource("http://www.uniprot.org/uniprot/");
+        setResource("https://www.uniprot.org/uniprot/");
         setIdentifier(new UniProtIdentifier(uniProtIdentifier));
     }
 

@@ -89,6 +89,11 @@ public class FieldSupplier {
         isStrutCalculation = strutCalculation;
     }
 
+    public void clearDeltas() {
+        fullDeltas.clear();
+        halfDeltas.clear();
+    }
+
     @Override
     public String toString() {
         return "FieldSupplier{" +

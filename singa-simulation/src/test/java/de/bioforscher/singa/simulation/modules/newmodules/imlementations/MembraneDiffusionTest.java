@@ -54,7 +54,7 @@ public class MembraneDiffusionTest {
 
     @Test
     public void shouldSimulateMembraneDiffusion() {
-
+        Environment.reset();
         Simulation simulation = new Simulation();
 
         final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();

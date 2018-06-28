@@ -74,12 +74,12 @@ public class DiffusionUnhinderedTest {
         return Arrays.asList(new Object[][]{
                 /* species, number of nodes (node distance), expected result */
                 /* test different numbers of nodes (10, 20, 30)*/
-                /* 0 */ {hydrogen, 10, Quantities.getQuantity(123, MICRO(SECOND))},
-                /* 1 */ {hydrogen, 20, Quantities.getQuantity(131, MICRO(SECOND))},
-                /* 2 */ {hydrogen, 30, Quantities.getQuantity(133, MICRO(SECOND))},
+                /* 0 */ {hydrogen, 10, Quantities.getQuantity(130, MICRO(SECOND))},
+                /* 1 */ {hydrogen, 20, Quantities.getQuantity(134, MICRO(SECOND))},
+                /* 2 */ {hydrogen, 30, Quantities.getQuantity(134, MICRO(SECOND))},
                 /* test different species (ammonia, benzene)*/
-                /* 3 */ {ammonia, 30, Quantities.getQuantity(256, MICRO(SECOND))},
-                /* 4 */ {benzene, 30, Quantities.getQuantity(537, MICRO(SECOND))}
+                /* 3 */ {ammonia, 30, Quantities.getQuantity(260, MICRO(SECOND))},
+                /* 4 */ {benzene, 30, Quantities.getQuantity(544, MICRO(SECOND))}
         });
     }
 

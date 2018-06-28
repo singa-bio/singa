@@ -5,6 +5,7 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,6 +115,14 @@ public class SimpleUpdateManager {
     }
 
     /**
+     * Clears the list of potential deltas retaining updates from a specific module. Usually done after
+     * {@link AutomatonNode#shiftDeltas()} or after rejecting a time step.
+     */
+    public void clearPotentialDeltasBut(UpdateModule module) {
+        potentialDeltas.removeIf(delta -> delta.getModule() != module);
+    }
+
+    /**
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
@@ -129,13 +138,14 @@ public class SimpleUpdateManager {
     public void applyDeltas() {
         if (!concentrationFixed) {
             for (Delta delta : finalDeltas) {
-                Quantity<MolarConcentration> updatedConcentration = concentrations.get(delta.getCellSubsection(), delta.getChemicalEntity()).add(delta.getQuantity());
+                Quantity<MolarConcentration> previousConcentration = concentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+                Quantity<MolarConcentration> updatedConcentration = previousConcentration.add(delta.getQuantity());
                 if (updatedConcentration.getValue().doubleValue() < 0.0) {
                     // FIXME updated concentration should probably not be capped
                     // FIXME the the delta that resulted in the decrease probably had a corresponding increase
                     updatedConcentration = Environment.emptyConcentration();
                 }
-                logger.trace("Setting c({}) in {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), updatedConcentration);
+                logger.trace("Setting c({}) in {} from {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
                 concentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
         }

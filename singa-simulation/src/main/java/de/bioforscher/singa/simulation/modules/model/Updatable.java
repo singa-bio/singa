@@ -6,6 +6,7 @@ import de.bioforscher.singa.simulation.model.newsections.CellRegion;
 import de.bioforscher.singa.simulation.model.newsections.CellSubsection;
 import de.bioforscher.singa.simulation.model.newsections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.modules.newmodules.Delta;
+import de.bioforscher.singa.simulation.modules.newmodules.module.UpdateModule;
 
 import javax.measure.Quantity;
 import java.util.List;
@@ -27,6 +28,7 @@ public interface Updatable {
 
     void addPotentialDelta(Delta delta);
     void clearPotentialDeltas();
+    void clearPotentialDeltasBut(UpdateModule module);
     void shiftDeltas();
     void applyDeltas();
 

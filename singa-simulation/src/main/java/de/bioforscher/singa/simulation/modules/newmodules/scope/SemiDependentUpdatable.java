@@ -65,7 +65,13 @@ public class SemiDependentUpdatable implements UpdateScope {
         return supply().getLargestLocalError();
     }
 
+    @Override
+    public void clearPotentialDeltas(Updatable updatable) {
+        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialDeltas);
+    }
+
     private void determineHalfStepConcentrations() {
+        halfConcentrations.clear();
         // for each full delta
         for (Map.Entry<DeltaIdentifier, Delta> entry : supply().getCurrentFullDeltas().entrySet()) {
             DeltaIdentifier identifier = entry.getKey();

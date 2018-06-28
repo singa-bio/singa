@@ -231,7 +231,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         for (DeltaIdentifier identifier : supplier.getCurrentFullDeltas().keySet()) {
             double fullDelta = supplier.getCurrentFullDeltas().get(identifier).getQuantity().getValue().doubleValue();
             if (supplier.getCurrentHalfDeltas().isEmpty()) {
-                System.out.println(supplier);
+                throw new NumericalInstabilityException("The deltas that should be applied have fallen below " +
+                        "the threshold of "+deltaCutoff+".");
             }
             double halfDelta = supplier.getCurrentHalfDeltas().get(identifier).getQuantity().getValue().doubleValue();
             // calculate error
@@ -279,6 +280,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
             state = REQUIRING_RECALCULATION;
+            supplier.clearDeltas();
+            scope.clearPotentialDeltas(supplier.getLargestLocalError().getUpdatable());
         }
     }
 

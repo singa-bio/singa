@@ -16,6 +16,8 @@ public interface UpdateScope {
 
     LocalError processUpdatable(Updatable updatable);
 
+    void clearPotentialDeltas(Updatable updatable);
+
     ConcentrationContainer getHalfStepConcentration(Updatable updatable);
 
 }

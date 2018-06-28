@@ -16,6 +16,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.newsections.CellRegion;
+import de.bioforscher.singa.simulation.modules.newmodules.imlementations.Diffusion;
 import de.bioforscher.singa.simulation.modules.newmodules.imlementations.MembraneDiffusion;
 import de.bioforscher.singa.simulation.modules.newmodules.simulation.Simulation;
 import de.bioforscher.singa.simulation.modules.transport.VesicleDiffusion;
@@ -109,9 +110,9 @@ public class VesiclePlayground extends Application implements Renderer {
                 .cargo(water)
                 .build();
 
-//        Diffusion.inSimulation(simulation)
-//                .onlyFor(water)
-//                .build();
+        Diffusion.inSimulation(simulation)
+                .onlyFor(water)
+                .build();
 
         VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
         vesicleDiffusion.setSimulation(simulation);
@@ -136,23 +137,10 @@ public class VesiclePlayground extends Application implements Renderer {
             public void handle(long now) {
                 simulation.nextEpoch();
                 renderVesicles();
+                System.out.println(Environment.getTimeStep());
             }
         };
         animationTimer.start();
-
-        // TODO vesicle concentration updates are not processed correctly
-        // TODO they seem to lack substantially behind vesicle displacement
-
-
-//        // create manager
-//        SimulationManager simulationManager = new SimulationManager(simulation);
-//        // set termination condition
-//        simulationManager.setSimulationTerminationToTime(Quantities.getQuantity(10, MINUTE));
-//        simulationManager.setUpdateEmissionToTimePassed(Quantities.getQuantity(1, SECOND));
-//
-//        Thread thread = new Thread(simulationManager);
-//        thread.setDaemon(true);
-//        thread.start();
 
     }
 
@@ -175,7 +163,6 @@ public class VesiclePlayground extends Application implements Renderer {
             for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
                 strokeLineSegment(new SimpleLineSegment(vesicle.getPosition(), node.getPosition()));
             }
-            System.out.println(simulation.getElapsedTime() + ": " + vesicle.getPosition());
         }
     }
 
