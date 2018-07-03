@@ -167,7 +167,7 @@ public class MetalComplex extends Interaction {
     /**
      * Returns the Atom ID of the source atom. For {@link MetalComplex}es the first source atom is the atom ID of the metal ion.
      * This is the same as atom1.
-     * @returns The interaction's source atom ID.
+     * @return The interaction's source atom ID.
      */
     @Override
     public int getFirstSourceAtom() {
