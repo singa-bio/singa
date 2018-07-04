@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.parser.sbml.converter;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.DynamicReaction;
 import de.bioforscher.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import de.bioforscher.singa.simulation.model.modules.concentration.reactants.KineticLaw;

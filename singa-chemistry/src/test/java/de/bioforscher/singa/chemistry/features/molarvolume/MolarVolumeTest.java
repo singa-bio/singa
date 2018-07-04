@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.features.molarvolume;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
 import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.features.quantities.MolarVolume;
 import org.junit.Test;

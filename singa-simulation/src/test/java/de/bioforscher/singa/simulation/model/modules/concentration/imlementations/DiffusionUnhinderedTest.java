@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -24,7 +24,7 @@ import javax.measure.quantity.Time;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
+import static de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static org.junit.Assert.assertEquals;

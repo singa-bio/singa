@@ -62,7 +62,13 @@ public class Vectors {
     public static Vector2D generateStandardGaussian2DVector() {
         double x = ThreadLocalRandom.current().nextGaussian();
         double y = ThreadLocalRandom.current().nextGaussian();
-        return new Vector2D(x,y);
+        return new Vector2D(x, y);
+    }
+
+    public static Vector2D generateRandomUnit2DVector() {
+        double x = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
+        double y = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
+        return new Vector2D(x, y).normalize();
     }
 
 

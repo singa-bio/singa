@@ -6,6 +6,9 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
+import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
+
 /**
  * @author cl
  */
@@ -48,7 +51,14 @@ public interface LineSegment {
                 && Math.max(getStartingPoint().getX(), getEndingPoint().getX()) >= vector.getX()
                 && Math.min(getStartingPoint().getY(), getEndingPoint().getY()) <= vector.getY()
                 && Math.max(getStartingPoint().getY(), getEndingPoint().getY()) >= vector.getY();
+    }
 
+    default boolean isHorizontal() {
+        return getStartingPoint().getX() == getEndingPoint().getX();
+    }
+
+    default boolean isVertical() {
+        return getStartingPoint().getY() == getEndingPoint().getY();
     }
 
     default Set<Vector2D> intersectionsWith(Circle circle) {
@@ -89,5 +99,46 @@ public interface LineSegment {
         return intersections;
     }
 
+    default Set<Vector2D> intersectionsWith(LineSegment lineSegment) {
+
+        Set<Vector2D> result = new HashSet<>();
+
+        double p0_x = getStartingPoint().getX();
+        double p0_y = getStartingPoint().getY();
+        double p1_x = getEndingPoint().getX();
+        double p1_y = getEndingPoint().getY();
+
+        double p2_x = lineSegment.getStartingPoint().getX();
+        double p2_y = lineSegment.getStartingPoint().getY();
+        double p3_x = lineSegment.getEndingPoint().getX();
+        double p3_y = lineSegment.getEndingPoint().getY();
+
+        double s1_x = p1_x - p0_x;
+        double s1_y = p1_y - p0_y;
+        double s2_x = p3_x - p2_x;
+        double s2_y = p3_y - p2_y;
+
+        double s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+        double t = (s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+        if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+            // collision detected
+            result.add(new Vector2D(p0_x + (t * s1_x), p0_y + (t * s1_y)));
+        }
+        return result;
+    }
+
+    default double distanceTo(Vector2D vector) {
+        Vector2D start = getStartingPoint();
+        Vector2D end = getEndingPoint();
+        // |w-v|^2 -  avoid a sqrt
+        double l2 = SQUARED_EUCLIDEAN_METRIC.calculateDistance(start, end);
+        // find projection of point p onto the line, where t = [(p-v) . (w-v)] / |w-v|^2
+        // clamp t from [0,1] to handle points outside the segment
+        double t = Math.max(0, Math.min(1, vector.subtract(start).dotProduct(end.subtract(start))/l2));
+        // projection falls on the segment v + t * (w - v);
+        Vector2D projection = start.add(end.subtract(start).multiply(t));
+        return EUCLIDEAN_METRIC.calculateDistance(vector, projection);
+    }
 
 }

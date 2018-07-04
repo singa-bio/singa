@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
@@ -25,7 +25,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
+import static de.bioforscher.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static de.bioforscher.singa.simulation.model.sections.CellTopology.INNER;
 import static org.junit.Assert.assertEquals;

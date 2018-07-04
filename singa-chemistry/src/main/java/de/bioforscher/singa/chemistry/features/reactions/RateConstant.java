@@ -9,9 +9,9 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Direction.BACKWARDS;
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Direction.FORWARDS;
-import static de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant.Order.*;
+import static de.bioforscher.singa.chemistry.features.reactions.RateConstant.Direction.BACKWARDS;
+import static de.bioforscher.singa.chemistry.features.reactions.RateConstant.Direction.FORWARDS;
+import static de.bioforscher.singa.chemistry.features.reactions.RateConstant.Order.*;
 import static tec.uom.se.AbstractUnit.ONE;
 
 /**
@@ -93,7 +93,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
 
         @Override
         public OrderStep backward() {
-            direction = Direction.BACKWARDS;
+            direction = BACKWARDS;
             return this;
         }
 

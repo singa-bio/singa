@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.features.databases.chebi;
 
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
+import de.bioforscher.singa.chemistry.features.smiles.Smiles;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.model.FeatureOrigin;

@@ -1,8 +1,8 @@
 package de.bioforscher.singa.chemistry.features.databases.uniprot;
 
 import de.bioforscher.singa.chemistry.annotations.AnnotationType;
-import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Organism;
-import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
+import de.bioforscher.singa.chemistry.annotations.taxonomy.Organism;
+import de.bioforscher.singa.chemistry.entities.Protein;
 import de.bioforscher.singa.features.identifiers.ENAAccessionNumber;
 import de.bioforscher.singa.features.identifiers.model.Identifier;
 import de.bioforscher.singa.features.identifiers.model.IdentifierPatternRegistry;

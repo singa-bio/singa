@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.simulation;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.geometry.faces.Circle;
@@ -112,7 +112,7 @@ public class Simulation {
         // clear observed nodes if necessary
         if (!observedUpdatables.isEmpty()) {
             for (Updatable observedUpdatable : observedUpdatables) {
-                observedUpdatable.clearPotentialDeltas();
+                observedUpdatable.clearPotentialConcentrationDeltas();
             }
         }
         // apply all modules
@@ -120,8 +120,10 @@ public class Simulation {
         // apply generated deltas
         logger.debug("Applying deltas.");
         for (Updatable updatable : updatables) {
-            logger.trace("Deltas in {}:", updatable.getStringIdentifier());
-            updatable.applyDeltas();
+            if (updatable.hasDeltas()) {
+                logger.trace("Deltas in {}:", updatable.getStringIdentifier());
+                updatable.applyDeltas();
+            }
         }
         // move vesicles
         if (vesicleLayer != null) {

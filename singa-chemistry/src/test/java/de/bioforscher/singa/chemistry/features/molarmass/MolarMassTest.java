@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.features.molarmass;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.Protein;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 

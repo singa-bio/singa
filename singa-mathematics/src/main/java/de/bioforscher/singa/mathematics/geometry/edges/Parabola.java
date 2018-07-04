@@ -99,11 +99,11 @@ public class Parabola {
         }
 
         // if both foci are equidistant
-        if (focus.distanceTo(directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
-            // one focus is in the middle between both foci
-            results.add((focus.getX() - parabola.getFocus().getX()) / 2);
-            return results;
-        }
+//        if (focus.distanceTo(directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
+//            // one focus is in the middle between both foci
+//            results.add((focus.getX() - parabola.getFocus().getX()) / 2);
+//            return results;
+//        }
 
         double h2 = parabola.getVertex().getX();
         double k2 = parabola.getVertex().getY();

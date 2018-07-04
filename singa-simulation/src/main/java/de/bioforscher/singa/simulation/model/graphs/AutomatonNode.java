@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
@@ -80,7 +80,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * Clears the list of potential deltas. Usually done after {@link AutomatonNode#shiftDeltas()} or after rejecting a
      * time step.
      */
-    public void clearPotentialDeltas() {
+    public void clearPotentialConcentrationDeltas() {
         updateManager.clearPotentialDeltas();
     }
 
@@ -101,6 +101,11 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      */
     public void applyDeltas() {
         updateManager.applyDeltas();
+    }
+
+    @Override
+    public boolean hasDeltas() {
+        return !updateManager.getFinalDeltas().isEmpty();
     }
 
     @Override

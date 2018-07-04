@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.reactants;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 
 /**
  * {@code CatalyticReactant}s are {@link Reactant}s that are not consumed or produced during Reactions, but

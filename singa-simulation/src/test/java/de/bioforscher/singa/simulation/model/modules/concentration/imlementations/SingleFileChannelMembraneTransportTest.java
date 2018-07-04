@@ -1,10 +1,10 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.entities.Transporter;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.Transporter;
+import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.features.databases.uniprot.UniProtParserService;
+import de.bioforscher.singa.chemistry.features.permeability.OsmoticPermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.reactants;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 
 /**
  * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s. This abstract class has

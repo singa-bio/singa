@@ -182,6 +182,10 @@ public class Line {
         return Math.atan(slope / 1);
     }
 
+    public double getAngleTo(Line line) {
+        return Math.abs(Math.atan(slope) - Math.atan(line.slope));
+    }
+
     /**
      * Returns the perpendicular slope.
      * <pre>
@@ -217,7 +221,7 @@ public class Line {
      * @param line Another line.
      * @return The intersection.
      */
-    public Vector2D getInterceptWithLine(Line line) {
+    public Vector2D getIntersectWithLine(Line line) {
         final double a = slope;
         final double b = line.getSlope();
         final double c = getYIntercept();

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.displacement;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.ScalableFeature;
 import de.bioforscher.singa.features.parameters.Environment;
@@ -30,7 +30,7 @@ public class DisplacementBasedModule implements UpdateModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/5.0;
+    private static final double DEFAULT_DISPLACEMENT_CUTOFF_FACTOR = 1.0/10.0;
 
     /**
      * The simulation.
@@ -145,6 +145,7 @@ public class DisplacementBasedModule implements UpdateModule {
     @Override
     public void optimizeTimeStep() {
         while (state == REQUIRING_RECALCULATION) {
+            simulation.getVesicleLayer().clearUpdates();
             updateScheduler.decreaseTimeStep();
             calculateUpdates();
         }

@@ -1,11 +1,11 @@
 package de.bioforscher.singa.simulation.parser.sbml;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.Protein;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;

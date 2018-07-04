@@ -1,5 +1,7 @@
 package de.bioforscher.singa.mathematics.geometry.faces;
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.model.HorizontalPosition;
 import de.bioforscher.singa.mathematics.geometry.model.VerticalPosition;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -17,6 +19,22 @@ public class Rectangle extends SimplePolygon {
 
     public Rectangle(double width, double height) {
         this(new Vector2D(0.0, 0.0), new Vector2D(width, height));
+    }
+
+    public LineSegment getTopEdge() {
+        return new SimpleLineSegment(getTopLeftVertex(), getTopRightVertex());
+    }
+
+    public LineSegment getBottomEdge() {
+        return new SimpleLineSegment(getBottomLeftVertex(), getBottomRightVertex());
+    }
+
+    public LineSegment getRightEdge() {
+        return new SimpleLineSegment(getTopRightVertex(), getBottomRightVertex());
+    }
+
+    public LineSegment getLeftEdge() {
+        return new SimpleLineSegment(getTopLeftVertex(), getBottomLeftVertex());
     }
 
     public Vector2D getTopLeftVertex() {
@@ -89,6 +107,12 @@ public class Rectangle extends SimplePolygon {
     @Override
     public double getArea() {
         return getWidth() * getHeight();
+    }
+
+    public Vector2D getCentre() {
+        Vector2D topLeftVertex = getTopLeftVertex();
+        Vector2D bottomRightVertex = getBottomRightVertex();
+        return new Vector2D((topLeftVertex.getX() + bottomRightVertex.getX()) / 2.0, (topLeftVertex.getY() + bottomRightVertex.getY()) / 2.0);
     }
 
 }

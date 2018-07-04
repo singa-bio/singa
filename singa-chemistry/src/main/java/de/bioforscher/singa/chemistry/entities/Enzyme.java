@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.entities;
 
 
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.chemistry.features.databases.uniprot.UniProtParserService;
+import de.bioforscher.singa.chemistry.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.Feature;
@@ -19,8 +19,7 @@ import java.util.Set;
  * entity can be supplied with a Michaelis constant (usually abbreviated with km), an turnover number (abbreviated
  * with kcat), a List of possible substrates and a critical substrate that is rate determining. Additionally multiple
  * predefined Annotations can be set (additional names, organisms, amino acid sequences, ...). Enzymes may be parsed
- * from the UniProt Database using the
- * {@link UniProtParserService UniProtParserService}.
+ * from the UniProt Database using the {@link UniProtParserService UniProtParserService}.
  *
  * @author cl
  * @see <a href="https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics">Wikipedia: Michaelis–Menten

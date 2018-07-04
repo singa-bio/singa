@@ -5,6 +5,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static de.bioforscher.singa.simulation.model.sections.CellTopology.INNER;
@@ -88,5 +89,19 @@ public class CellRegion {
     @Override
     public String toString() {
         return "Region "+identifier+" ("+getSubsections().stream().map(CellSubsection::getIdentifier).collect(Collectors.joining(","))+")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CellRegion that = (CellRegion) o;
+        return Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(identifier);
     }
 }

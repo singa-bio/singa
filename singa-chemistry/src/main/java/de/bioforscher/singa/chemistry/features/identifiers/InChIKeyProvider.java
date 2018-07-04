@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.features.identifiers;
 
-import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemDatabase;
 import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIDatabase;
+import de.bioforscher.singa.chemistry.features.databases.pubchem.PubChemDatabase;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;

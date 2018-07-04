@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.model.modules.displacement;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.permeability.MembranePermeability;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
@@ -15,8 +15,6 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.Diffusion;
-import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.MembraneDiffusion;
 import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
@@ -35,7 +33,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.quantity.Length;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
+import static de.bioforscher.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
 import static de.bioforscher.singa.simulation.model.sections.CellTopology.INNER;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -51,7 +49,11 @@ public class VesiclePlayground extends Application implements Renderer {
     private VesicleLayer layer;
     private Rectangle rectangle;
     private Simulation simulation;
-    private static final ChemicalEntity water = SmallMolecule.create("water").build();
+    private static final ChemicalEntity water = new SmallMolecule.Builder("water")
+            .name("water")
+            .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
+            .assignFeature(new Diffusivity(10, FeatureOrigin.MANUALLY_ANNOTATED))
+            .build();
     private AutomatonGraphRenderer renderer;
 
 
@@ -98,21 +100,15 @@ public class VesiclePlayground extends Application implements Renderer {
             node.getConcentrationContainer().set(INNER, water, 40.0);
         }
 
-        // setup species
-        SmallMolecule water = new SmallMolecule.Builder("water")
-                .name("water")
-                .assignFeature(new MembranePermeability(Quantities.getQuantity(0.1, CENTIMETRE_PER_SECOND), FeatureOrigin.MANUALLY_ANNOTATED))
-                .assignFeature(new Diffusivity(10, FeatureOrigin.MANUALLY_ANNOTATED))
-                .build();
 
         // add diffusion
-        MembraneDiffusion.inSimulation(simulation)
-                .cargo(water)
-                .build();
-
-        Diffusion.inSimulation(simulation)
-                .onlyFor(water)
-                .build();
+//        MembraneDiffusion.inSimulation(simulation)
+//                .cargo(water)
+//                .build();
+//
+//        Diffusion.inSimulation(simulation)
+//                .onlyFor(water)
+//                .build();
 
         VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
         vesicleDiffusion.setSimulation(simulation);
@@ -137,7 +133,6 @@ public class VesiclePlayground extends Application implements Renderer {
             public void handle(long now) {
                 simulation.nextEpoch();
                 renderVesicles();
-                System.out.println(Environment.getTimeStep());
             }
         };
         animationTimer.start();

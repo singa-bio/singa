@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.grid.GridEdge;
@@ -80,7 +80,7 @@ public class AutomatonGraphs {
     public static AutomatonGraph singularGraph() {
         AutomatonGraph automatonGraph = new AutomatonGraph(1, 1);
         AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0, 0));
-        node.setPosition(new Vector2D(0.0,0.0));
+        node.setPosition(new Vector2D(0.0, 0.0));
         automatonGraph.addNode(node);
         return automatonGraph;
     }
@@ -124,6 +124,80 @@ public class AutomatonGraphs {
         graph.addCellRegion(membrane);
         return membrane;
     }
+
+    public static void circleRegion(AutomatonGraph graph, CellRegion membraneRegion, RectangularCoordinate centre, int radius) {
+
+        int x0 = centre.getColumn();
+        int y0 = centre.getRow();
+
+        int x = radius - 1;
+        int y = 0;
+        int dx = 1;
+        int dy = 1;
+        int err = dx - (radius << 1);
+
+        while (x >= y) {
+
+            graph.getNode(x + x0, y + y0).setCellRegion(membraneRegion);
+            graph.getNode(y + x0, x + y0).setCellRegion(membraneRegion);
+            graph.getNode(-x + x0, y + y0).setCellRegion(membraneRegion);
+            graph.getNode(-y + x0, x + y0).setCellRegion(membraneRegion);
+            graph.getNode(-x + x0, -y + y0).setCellRegion(membraneRegion);
+            graph.getNode(-y + x0, -x + y0).setCellRegion(membraneRegion);
+            graph.getNode(x + x0, -y + y0).setCellRegion(membraneRegion);
+            graph.getNode(y + x0, -x + y0).setCellRegion(membraneRegion);
+
+            if (err <= 0) {
+                y++;
+                err += dy;
+                dy += 2;
+            }
+
+            if (err > 0) {
+                x--;
+                dx += 2;
+                err += dx - (radius << 1);
+            }
+        }
+
+    }
+
+    public static void fillRegion(AutomatonGraph graph, CellRegion innerRegion, RectangularCoordinate centre, int radius)
+    {
+        int x0 = centre.getColumn();
+        int y0 = centre.getRow();
+
+        int x = radius-1;
+        int y = 0;
+        int xChange = 1 - (radius << 1);
+        int yChange = 0;
+        int radiusError = 0;
+
+        while (x >= y)
+        {
+            for (int i = x0 - x; i <= x0 + x; i++)
+            {
+                graph.getNode(i, y0 + y).setCellRegion(innerRegion);
+                graph.getNode(i, y0 - y).setCellRegion(innerRegion);
+            }
+            for (int i = x0 - y; i <= x0 + y; i++)
+            {
+                graph.getNode(i, y0 + x).setCellRegion(innerRegion);
+                graph.getNode(i, y0 - x).setCellRegion(innerRegion);
+            }
+
+            y++;
+            radiusError += yChange;
+            yChange += 2;
+            if (((radiusError << 1) + xChange) > 0)
+            {
+                x--;
+                radiusError += xChange;
+                xChange += 2;
+            }
+        }
+    }
+
 
 
 }

@@ -4,6 +4,8 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
@@ -17,6 +19,11 @@ import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvide
  */
 public class VesicleLayer {
 
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
+
     public static VesicleLayer EMPTY_LAYER = new VesicleLayer();
 
     private List<Vesicle> vesicles;
@@ -27,7 +34,7 @@ public class VesicleLayer {
 
     public VesicleLayer() {
         vesicles = new ArrayList<>();
-        displacementEpsilon = Environment.getNodeDistance().divide(5);
+        displacementEpsilon = Environment.getNodeDistance().divide(10);
     }
 
     public Rectangle getSimulationArea() {
@@ -78,6 +85,7 @@ public class VesicleLayer {
             Quantity<Length> lengthQuantity = Environment.convertSimulationToSystemScale(totalDisplacement.getMagnitude());
             lengthQuantity.to(displacementEpsilon.getUnit());
             if (lengthQuantity.getValue().doubleValue() > displacementEpsilon.getValue().doubleValue()) {
+                logger.info("The magnitude of the spatial displacement of {} is {}, higher than the allowed {}.", vesicle.getStringIdentifier(), lengthQuantity, displacementEpsilon);
                 return false;
             }
         }
@@ -86,7 +94,8 @@ public class VesicleLayer {
 
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {
-            vesicle.clearPotentialDeltas();
+            vesicle.clearPotentialConcentrationDeltas();
+            vesicle.clearPotentialSpatialDeltas();
             vesicle.permitDisplacement();
         }
     }
@@ -95,7 +104,7 @@ public class VesicleLayer {
         checkForCollisions();
         for (Vesicle vesicle : vesicles) {
             vesicle.move();
-            vesicle.clearPotentialDeltas();
+            vesicle.clearPotentialSpatialDeltas();
         }
     }
 

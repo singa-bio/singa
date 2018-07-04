@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;

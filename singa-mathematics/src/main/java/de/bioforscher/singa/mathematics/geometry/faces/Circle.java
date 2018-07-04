@@ -20,12 +20,12 @@ public class Circle {
     public Circle(Vector2D firstPoint, Vector2D secondPoint, Vector2D thirdPoint) {
 
         SimpleLineSegment abLine = new SimpleLineSegment(firstPoint, secondPoint);
-        Line abBisect = abLine.calculatePerpendicularBisector();
+        Line abBisect = abLine.getPerpendicularBisector();
 
         SimpleLineSegment acLine = new SimpleLineSegment(firstPoint, thirdPoint);
-        Line acBisect = acLine.calculatePerpendicularBisector();
+        Line acBisect = acLine.getPerpendicularBisector();
 
-        midpoint = abBisect.getInterceptWithLine(acBisect);
+        midpoint = abBisect.getIntersectWithLine(acBisect);
 
         radius = midpoint.distanceTo(firstPoint);
 

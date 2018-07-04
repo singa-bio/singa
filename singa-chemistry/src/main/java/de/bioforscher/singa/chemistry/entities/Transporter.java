@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.entities;
 
-import de.bioforscher.singa.chemistry.descriptive.features.permeability.OsmoticPermeability;
+import de.bioforscher.singa.chemistry.features.permeability.OsmoticPermeability;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 

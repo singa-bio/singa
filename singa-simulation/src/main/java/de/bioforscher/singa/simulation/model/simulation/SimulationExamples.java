@@ -1,12 +1,12 @@
 package de.bioforscher.singa.simulation.model.simulation;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.chebi.ChEBIParserService;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.chemistry.entities.Enzyme;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIParserService;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;

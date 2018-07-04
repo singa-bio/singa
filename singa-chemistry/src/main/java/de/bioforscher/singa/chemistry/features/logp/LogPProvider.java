@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.features.logp;
 
-import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemDatabase;
-import de.bioforscher.singa.chemistry.descriptive.features.databases.pubchem.PubChemParserService;
+import de.bioforscher.singa.chemistry.features.databases.pubchem.PubChemDatabase;
+import de.bioforscher.singa.chemistry.features.databases.pubchem.PubChemParserService;
 import de.bioforscher.singa.features.identifiers.PubChemIdentifier;
 import de.bioforscher.singa.features.model.FeatureProvider;
 import de.bioforscher.singa.features.model.Featureable;

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.FirstOrderRate;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.MichaelisConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.chemistry.entities.Enzyme;
+import de.bioforscher.singa.chemistry.features.reactions.FirstOrderRate;
+import de.bioforscher.singa.chemistry.features.reactions.MichaelisConstant;
+import de.bioforscher.singa.chemistry.features.reactions.TurnoverNumber;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.parameters.Environment;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.core.utility.GifWriter;
 import de.bioforscher.singa.features.model.QuantityFormatter;

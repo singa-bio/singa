@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.renderer;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.javafx.renderer.colors.ColorScale;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;

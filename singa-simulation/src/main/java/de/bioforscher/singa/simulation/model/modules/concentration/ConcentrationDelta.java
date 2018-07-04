@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 

@@ -1,9 +1,9 @@
 package de.bioforscher.singa.chemistry.features.databases.chebi;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.Smiles;
-import de.bioforscher.singa.chemistry.descriptive.features.structure3d.MolStructureParser;
-import de.bioforscher.singa.chemistry.descriptive.features.structure3d.Structure3D;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.features.smiles.Smiles;
+import de.bioforscher.singa.chemistry.features.structure3d.MolStructureParser;
+import de.bioforscher.singa.chemistry.features.structure3d.Structure3D;
 import de.bioforscher.singa.features.identifiers.InChIKey;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;

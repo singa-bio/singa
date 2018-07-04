@@ -3,6 +3,8 @@ package de.bioforscher.singa.mathematics.geometry.edges;
 import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
+import java.util.Objects;
+
 /**
  * A line segment is a part of a line that is bounded by two distinct points and
  * "contains" every point on the line between and including its end points.
@@ -141,8 +143,8 @@ public class SimpleLineSegment extends Line implements LineSegment {
             Line parallel = getParallel(distance);
             Line perpendicularStart = new Line(startingPoint, parallel.getPerpendicularSlope());
             Line perpendicularEnd = new Line(endingPoint, parallel.getPerpendicularSlope());
-            return new SimpleLineSegment(parallel.getInterceptWithLine(perpendicularStart),
-                    parallel.getInterceptWithLine(perpendicularEnd));
+            return new SimpleLineSegment(parallel.getIntersectWithLine(perpendicularStart),
+                    parallel.getIntersectWithLine(perpendicularEnd));
         }
     }
 
@@ -161,7 +163,7 @@ public class SimpleLineSegment extends Line implements LineSegment {
      * @return A new perpendicular bisecting Line.
      * @see <a href="https://en.wikipedia.org/wiki/Bisection#Line_segment_bisector">Wikipedia: Bisection</a>
      */
-    public Line calculatePerpendicularBisector() {
+    public Line getPerpendicularBisector() {
         Vector2D midAB = getStartingPoint().getMidpointTo(getEndingPoint());
         double slope = getPerpendicularSlope();
         double yIntercept = midAB.getY() - slope * midAB.getX();
@@ -175,6 +177,22 @@ public class SimpleLineSegment extends Line implements LineSegment {
      */
     public double getLength() {
         return VectorMetricProvider.EUCLIDEAN_METRIC.calculateDistance(startingPoint, endingPoint);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SimpleLineSegment that = (SimpleLineSegment) o;
+        return Objects.equals(startingPoint, that.startingPoint) &&
+                Objects.equals(endingPoint, that.endingPoint);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(super.hashCode(), startingPoint, endingPoint);
     }
 
     @Override

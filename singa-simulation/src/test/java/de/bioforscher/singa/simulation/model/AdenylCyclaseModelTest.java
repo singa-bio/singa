@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.Enzyme;
-import de.bioforscher.singa.chemistry.descriptive.entities.Protein;
+import de.bioforscher.singa.chemistry.entities.Enzyme;
+import de.bioforscher.singa.chemistry.entities.Protein;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 
 /**

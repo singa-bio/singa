@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.simulation;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -27,10 +27,11 @@ public interface Updatable {
     List<ConcentrationDelta> getPotentialSpatialDeltas();
 
     void addPotentialDelta(ConcentrationDelta delta);
-    void clearPotentialDeltas();
+    void clearPotentialConcentrationDeltas();
     void clearPotentialDeltasBut(UpdateModule module);
     void shiftDeltas();
     void applyDeltas();
+    boolean hasDeltas();
 
     void setObserved(boolean observed);
     boolean isObserved();

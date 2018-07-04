@@ -1,13 +1,13 @@
 package de.bioforscher.singa.chemistry.features.diffusivity;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
-import static de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
+import static de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIMETRE_PER_SECOND;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.MetricPrefix.MILLI;

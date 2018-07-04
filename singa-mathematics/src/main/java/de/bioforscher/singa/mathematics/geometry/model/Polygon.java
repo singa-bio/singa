@@ -40,22 +40,20 @@ public interface Polygon extends Polytope<Vector2D> {
         return intersections;
     }
 
-    default boolean detectCollision(Circle circle) {
-//        for (LineSegment lineSegment : getEdges()) {
-//            if (lineSegment.collidesWith(circle)) {
-//                return true;
-//            }
-//        }
-//        return false;
-        return !getIntersections(circle).isEmpty();
+    default Set<Vector2D> getIntersections(LineSegment lineSegment) {
+        Set<Vector2D> intersections = new HashSet<>();
+        for (LineSegment polygonSegment : getEdges()) {
+            intersections.addAll(polygonSegment.intersectionsWith(lineSegment));
+        }
+        return intersections;
     }
 
     /**
-     * Returns an integer, describing whether a point is inside, on, or outside of the cell:
+     * Returns an integer, describing whether a point is inside, on, or outside of the polygon:
      * <pre>
-     * -1: point is outside the perimeter of the cell
-     *  0: point is on the perimeter of the cell
-     *  1: point is inside the perimeter of the cell
+     * -1: point is outside the perimeter of the polygon
+     *  0: point is on the perimeter of the polygon
+     *  1: point is inside the perimeter of the polygon
      * </pre>
      *
      * @param point The point to check.

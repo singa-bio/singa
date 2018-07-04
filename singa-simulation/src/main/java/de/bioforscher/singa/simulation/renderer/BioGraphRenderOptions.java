@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.renderer;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.javafx.renderer.colors.ColorScale;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonEdge;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;

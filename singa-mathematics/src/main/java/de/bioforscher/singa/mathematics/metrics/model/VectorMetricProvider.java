@@ -1,9 +1,6 @@
 package de.bioforscher.singa.mathematics.metrics.model;
 
-import de.bioforscher.singa.mathematics.metrics.implementations.AngularDistance;
-import de.bioforscher.singa.mathematics.metrics.implementations.CosineSimilarity;
-import de.bioforscher.singa.mathematics.metrics.implementations.MinkowskiMetric;
-import de.bioforscher.singa.mathematics.metrics.implementations.SquaredEuclideanDistance;
+import de.bioforscher.singa.mathematics.metrics.implementations.*;
 import de.bioforscher.singa.mathematics.vectors.Vector;
 
 import java.util.Collections;
@@ -31,7 +28,7 @@ public final class VectorMetricProvider {
      *
      * @see <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia: Euclidean distance</a>
      */
-    public static final MinkowskiMetric<Vector> EUCLIDEAN_METRIC = addElement(new MinkowskiMetric<>(2));
+    public static final EuclideanDistance<Vector> EUCLIDEAN_METRIC = addElement(new EuclideanDistance<>());
     /**
      * Calculates the squared euclidean distance between two {@link Vector}s.
      */

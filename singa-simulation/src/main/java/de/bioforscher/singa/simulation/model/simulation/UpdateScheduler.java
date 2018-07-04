@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.simulation;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.LocalError;
@@ -110,6 +110,7 @@ public class UpdateScheduler {
         if (!simulation.getVesicleLayer().deltasAreBelowDisplacementCutoff()) {
             decreaseTimeStep();
             simulation.getVesicleLayer().clearUpdates();
+            modules.forEach(UpdateModule::resetState);
             return false;
         }
         return true;

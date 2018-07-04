@@ -1,11 +1,11 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.BackwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.ForwardsRateConstant;
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.reactions.BackwardsRateConstant;
+import de.bioforscher.singa.chemistry.features.reactions.ForwardsRateConstant;
+import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;

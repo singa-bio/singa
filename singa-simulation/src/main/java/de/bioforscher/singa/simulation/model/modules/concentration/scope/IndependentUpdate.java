@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.scope;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -65,7 +65,7 @@ public class IndependentUpdate implements UpdateScope {
 
     @Override
     public void clearPotentialDeltas(Updatable updatable) {
-        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialDeltas);
+        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
     }
 
     private void determineHalfStepConcentration() {

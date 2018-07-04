@@ -170,8 +170,8 @@ public interface Renderer {
             start = new Vector2D(line.getXIntercept(), minY);
             end = new Vector2D(line.getXIntercept(), maxY);
         } else {
-            start = line.getInterceptWithLine(new Line(0, 0));
-            end = line.getInterceptWithLine(new Line(maxY, 0));
+            start = line.getIntersectWithLine(new Line(0, 0));
+            end = line.getIntersectWithLine(new Line(maxY, 0));
         }
         strokeStraight(start, end);
     }

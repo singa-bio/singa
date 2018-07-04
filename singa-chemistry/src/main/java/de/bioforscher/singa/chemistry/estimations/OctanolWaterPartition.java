@@ -1,6 +1,6 @@
 package de.bioforscher.singa.chemistry.estimations;
 
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
+import de.bioforscher.singa.chemistry.features.smiles.SmilesParser;
 import de.bioforscher.singa.structure.elements.Element;
 import de.bioforscher.singa.structure.elements.ElementProvider;
 import de.bioforscher.singa.structure.model.molecules.*;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.descriptive.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.modules.concentration.ModuleFactory;

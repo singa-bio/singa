@@ -1,6 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.displacement.implementations;
 
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;

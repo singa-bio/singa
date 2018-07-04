@@ -1,7 +1,7 @@
 package de.bioforscher.singa.chemistry.features.molarmass;
 
-import de.bioforscher.singa.chemistry.descriptive.features.databases.uniprot.UniProtDatabase;
 import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIDatabase;
+import de.bioforscher.singa.chemistry.features.databases.uniprot.UniProtDatabase;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.model.FeatureProvider;

@@ -1,6 +1,6 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
+import de.bioforscher.singa.chemistry.features.smiles.SmilesParser;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import de.bioforscher.singa.structure.algorithms.molecules.MoleculeIsomorphism;

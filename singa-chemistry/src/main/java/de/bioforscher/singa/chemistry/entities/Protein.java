@@ -2,7 +2,7 @@ package de.bioforscher.singa.chemistry.entities;
 
 import de.bioforscher.singa.chemistry.annotations.Annotation;
 import de.bioforscher.singa.chemistry.annotations.AnnotationType;
-import de.bioforscher.singa.chemistry.descriptive.annotations.taxonomy.Organism;
+import de.bioforscher.singa.chemistry.annotations.taxonomy.Organism;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.model.Feature;
 

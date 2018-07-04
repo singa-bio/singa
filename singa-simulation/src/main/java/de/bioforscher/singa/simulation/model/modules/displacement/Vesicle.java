@@ -1,8 +1,8 @@
 package de.bioforscher.singa.simulation.model.modules.displacement;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.features.ChemistryFeatureContainer;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;
@@ -228,7 +228,7 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     @Override
-    public void clearPotentialDeltas() {
+    public void clearPotentialConcentrationDeltas() {
         updateManager.clearPotentialDeltas();
     }
 
@@ -236,6 +236,11 @@ public class Vesicle implements Updatable, Featureable {
     public void clearPotentialDeltasBut(UpdateModule module) {
         updateManager.clearPotentialDeltasBut(module);
         clearPotentialSpatialDeltas();
+    }
+
+    @Override
+    public boolean hasDeltas() {
+        return !updateManager.getFinalDeltas().isEmpty();
     }
 
     @Override

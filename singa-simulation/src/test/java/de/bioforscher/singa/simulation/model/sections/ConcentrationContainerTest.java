@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.sections;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.chemistry.descriptive.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.SmallMolecule;
 import de.bioforscher.singa.features.parameters.Environment;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;

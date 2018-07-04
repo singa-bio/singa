@@ -1,10 +1,10 @@
 package de.bioforscher.singa.chemistry.features;
 
-import de.bioforscher.singa.chemistry.descriptive.features.identifiers.InChIKeyProvider;
-import de.bioforscher.singa.chemistry.descriptive.features.identifiers.PubChemIdentifierProvider;
-import de.bioforscher.singa.chemistry.descriptive.features.molarmass.MolarMassProvider;
-import de.bioforscher.singa.chemistry.descriptive.features.molarvolume.MolarVolumePredictor;
+import de.bioforscher.singa.chemistry.features.identifiers.InChIKeyProvider;
+import de.bioforscher.singa.chemistry.features.identifiers.PubChemIdentifierProvider;
 import de.bioforscher.singa.chemistry.features.identifiers.PubChemToChEBI;
+import de.bioforscher.singa.chemistry.features.molarmass.MolarMassProvider;
+import de.bioforscher.singa.chemistry.features.molarvolume.MolarVolumePredictor;
 import de.bioforscher.singa.features.exceptions.IllegalFeatureRequestException;
 import de.bioforscher.singa.features.identifiers.ChEBIIdentifier;
 import de.bioforscher.singa.features.identifiers.InChIKey;

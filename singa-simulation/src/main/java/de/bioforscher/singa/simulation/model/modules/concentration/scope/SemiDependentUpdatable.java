@@ -63,7 +63,7 @@ public class SemiDependentUpdatable implements UpdateScope {
 
     @Override
     public void clearPotentialDeltas(Updatable updatable) {
-        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialDeltas);
+        module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
     }
 
     private void determineHalfStepConcentrations() {
