@@ -4,7 +4,9 @@ import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author cl
@@ -13,12 +15,12 @@ public class MacroscopicMembrane {
 
     private String identifier;
     private CellRegion representativeRegion;
-    private Map<AutomatonNode, List<LineSegment>> segments;
+    private List<MembraneSegment> segments;
 
     public MacroscopicMembrane(String identifier, CellRegion representativeRegion) {
         this.identifier = identifier;
         this.representativeRegion = representativeRegion;
-        segments = new LinkedHashMap<>();
+        segments = new ArrayList<>();
     }
 
     public String getIdentifier() {
@@ -30,13 +32,18 @@ public class MacroscopicMembrane {
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
-        if (!segments.containsKey(node)) {
-            segments.put(node, new ArrayList<>());
+        for (MembraneSegment membraneSegment : segments) {
+            if (membraneSegment.getNode().equals(node)) {
+                membraneSegment.addSegment(segment);
+                return;
+            }
         }
-        segments.get(node).add(segment);
+        MembraneSegment membraneSegment = new MembraneSegment(node);
+        membraneSegment.addSegment(segment);
+        segments.add(membraneSegment);
     }
 
-    public Map<AutomatonNode, List<LineSegment>> getSegments() {
+    public List<MembraneSegment> getSegments() {
         return segments;
     }
 

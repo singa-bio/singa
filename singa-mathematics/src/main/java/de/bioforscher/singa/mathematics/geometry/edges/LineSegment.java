@@ -5,6 +5,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC;
@@ -139,6 +140,53 @@ public interface LineSegment {
         // projection falls on the segment v + t * (w - v);
         Vector2D projection = start.add(end.subtract(start).multiply(t));
         return EUCLIDEAN_METRIC.calculateDistance(vector, projection);
+    }
+
+    default Vector2D getRandomPoint() {
+        if (isHorizontal()) {
+            // x can be varied
+            double segmentStartX = getStartingPoint().getX();
+            double segmentEndX = getEndingPoint().getX();
+            // switch points if necessary
+            if (segmentStartX >= segmentEndX) {
+                double temp = segmentStartX;
+                segmentStartX = segmentEndX;
+                segmentEndX = temp;
+            }
+            // determine random initial position
+            double startY = getStartingPoint().getY();
+            double startX = ThreadLocalRandom.current().nextDouble(segmentStartX, segmentEndX);
+            return new Vector2D(startX, startY);
+
+        }
+        if (isVertical()) {
+            // y can be varied
+            double segmentStartY = getStartingPoint().getY();
+            double segmentEndY = getEndingPoint().getY();
+            // switch points if necessary
+            if (segmentStartY >= segmentEndY) {
+                double temp = segmentStartY;
+                segmentStartY = segmentEndY;
+                segmentEndY = temp;
+            }
+            // determine random initial position
+            double startX = getStartingPoint().getX();
+            double startY = ThreadLocalRandom.current().nextDouble(segmentStartY, segmentEndY);
+            return new Vector2D(startX, startY);
+        }
+        SimpleLineSegment simpleLineSegment = (SimpleLineSegment) this;
+        double start = getStartingPoint().getX();
+        double end = getEndingPoint().getX();
+        // switch points if necessary
+        if (start >= end) {
+            double temp = start;
+            start = end;
+            end = temp;
+        }
+        // calculate initial position
+        double xValue = ThreadLocalRandom.current().nextDouble(start, end);
+        double yValue = simpleLineSegment.getYValue(xValue);
+        return new Vector2D(xValue, yValue);
     }
 
 }

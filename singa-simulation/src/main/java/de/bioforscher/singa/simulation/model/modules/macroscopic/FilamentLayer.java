@@ -1,7 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.macroscopic;
 
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
-import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
@@ -29,9 +28,9 @@ public class FilamentLayer {
     }
 
     public void spawnFilament(MacroscopicMembrane membrane) {
-        List<List<LineSegment>> segments = new ArrayList<>(membrane.getSegments().values());
+        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).iterator().next();
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
         // add corresponding filament
         if (lineSegment.isHorizontal()) {
             addVerticalFilament(lineSegment);
@@ -43,12 +42,12 @@ public class FilamentLayer {
     }
 
     public void spawnHorizontalFilament(MacroscopicMembrane membrane) {
-        List<List<LineSegment>> segments = new ArrayList<>(membrane.getSegments().values());
+        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).iterator().next();
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
         // add corresponding filament
         while (lineSegment.isHorizontal()) {
-            lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).iterator().next();
+            lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
         }
         if (lineSegment.isVertical()) {
             addHorizontalFilament(lineSegment);
@@ -58,19 +57,7 @@ public class FilamentLayer {
     }
 
     private void addVerticalFilament(LineSegment lineSegment) {
-        // x can be varied
-        double segmentStartX = lineSegment.getStartingPoint().getX();
-        double segmentEndX = lineSegment.getEndingPoint().getX();
-        // switch points if necessary
-        if (segmentStartX >= segmentEndX) {
-            double temp = segmentStartX;
-            segmentStartX = segmentEndX;
-            segmentEndX = temp;
-        }
-        // determine random initial position
-        double startY = lineSegment.getStartingPoint().getY();
-        double startX = ThreadLocalRandom.current().nextDouble(segmentStartX, segmentEndX);
-        Vector2D initialPosition = new Vector2D(startX, startY);
+        Vector2D initialPosition = lineSegment.getRandomPoint();
         // calculate distances to top and bottom
         double topDistance = simulationRegion.getTopEdge().distanceTo(initialPosition);
         double bottomDistance = simulationRegion.getBottomEdge().distanceTo(initialPosition);
@@ -83,19 +70,7 @@ public class FilamentLayer {
     }
 
     private void addHorizontalFilament(LineSegment lineSegment) {
-        // x can be varied
-        double segmentStartY = lineSegment.getStartingPoint().getY();
-        double segmentEndY = lineSegment.getEndingPoint().getY();
-        // switch points if necessary
-        if (segmentStartY >= segmentEndY) {
-            double temp = segmentStartY;
-            segmentStartY = segmentEndY;
-            segmentEndY = temp;
-        }
-        // determine random initial position
-        double startX = lineSegment.getStartingPoint().getX();
-        double startY = ThreadLocalRandom.current().nextDouble(segmentStartY, segmentEndY);
-        Vector2D initialPosition = new Vector2D(startX, startY);
+        Vector2D initialPosition = lineSegment.getRandomPoint();
         // calculate distances to left and right
         double rightDistance = simulationRegion.getRightEdge().distanceTo(initialPosition);
         double leftDistance = simulationRegion.getLeftEdge().distanceTo(initialPosition);
@@ -108,19 +83,7 @@ public class FilamentLayer {
     }
 
     private void addPerpendicularFilament(LineSegment lineSegment) {
-        SimpleLineSegment simpleLineSegment = (SimpleLineSegment) lineSegment;
-        double start = lineSegment.getStartingPoint().getX();
-        double end = lineSegment.getEndingPoint().getX();
-        // switch points if necessary
-        if (start >= end) {
-            double temp = start;
-            start = end;
-            end = temp;
-        }
-        // calculate initial position
-        double xValue = ThreadLocalRandom.current().nextDouble(start, end);
-        double yValue = simpleLineSegment.getYValue(xValue);
-        Vector2D initialPosition = new Vector2D(xValue, yValue);
+        Vector2D initialPosition = lineSegment.getRandomPoint();
         Vector2D centre = simulationRegion.getCentre();
         addFilament(initialPosition, centre.subtract(initialPosition));
     }
@@ -145,8 +108,8 @@ public class FilamentLayer {
             // TODO collisions with simulation borders
             if (filament.getPlusEndBehaviour() != STAGNANT) {
                 for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                    for (List<LineSegment> lineSegments : membrane.getSegments().values()) {
-                        for (LineSegment lineSegment : lineSegments) {
+                    for (MembraneSegment membraneSegment : membrane.getSegments()) {
+                        for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
                             if (lineSegment.distanceTo(head) < 1 && filament.getSegments().size() > 10) {
                                 filament.setPlusEndBehaviour(STAGNANT);
                                 break;

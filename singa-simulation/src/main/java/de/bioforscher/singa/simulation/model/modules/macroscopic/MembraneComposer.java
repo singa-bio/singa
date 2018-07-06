@@ -139,9 +139,9 @@ public class MembraneComposer {
         membranes.add(membrane);
 
         // cut segments to size
-        for (Map.Entry<AutomatonNode, List<LineSegment>> entry : membrane.getSegments().entrySet()) {
-            Polygon spatialRepresentation = entry.getKey().getSpatialRepresentation();
-            for (LineSegment lineSegment : entry.getValue()) {
+        for (MembraneSegment entry : membrane.getSegments()) {
+            Polygon spatialRepresentation = entry.getNode().getSpatialRepresentation();
+            for (LineSegment lineSegment : entry.getLineSegments()) {
                 Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
                 // starting point should be always associated node
                 lineSegment.setEndingPoint(intersections.iterator().next());
@@ -149,8 +149,8 @@ public class MembraneComposer {
         }
 
         // merge segments
-        for (Map.Entry<AutomatonNode, List<LineSegment>> entry : membrane.getSegments().entrySet()) {
-            List<LineSegment> segments = entry.getValue();
+        for (MembraneSegment entry : membrane.getSegments()) {
+            List<LineSegment> segments = entry.getLineSegments();
             Iterator<LineSegment> lineSegmentIterator = segments.iterator();
             LineSegment firstSegment = lineSegmentIterator.next();
             LineSegment secondSegment = lineSegmentIterator.next();

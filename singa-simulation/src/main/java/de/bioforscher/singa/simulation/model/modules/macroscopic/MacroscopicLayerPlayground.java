@@ -1,16 +1,24 @@
 package de.bioforscher.singa.simulation.model.modules.macroscopic;
 
+import de.bioforscher.singa.features.model.FeatureOrigin;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.features.endocytosis.BuddingFrequency;
+import de.bioforscher.singa.simulation.features.endocytosis.MaturationTime;
+import de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.ConstitutiveEndocytosis;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
@@ -29,11 +37,10 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
@@ -46,6 +53,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     private Rectangle rectangle;
     private AutomatonGraph graph;
     private Simulation simulation;
+    private ConstitutiveEndocytosis endocytosis;
 
     public static void main(String[] args) {
         launch();
@@ -65,11 +73,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         simulation = new Simulation();
 
+        // setup regions
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(22, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
-        System.out.println(Environment.getNodeDistance());
         Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
 
         // distribute nodes to sections
@@ -95,6 +103,20 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         CellRegion nucleus = new CellRegion("Nucleus");
         nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
 
+        // setup endocytosis
+        endocytosis = new ConstitutiveEndocytosis();
+        endocytosis.setSimulation(simulation);;
+        endocytosis.setFeature(new BuddingFrequency(Quantities.getQuantity(0.1, HERTZ), FeatureOrigin.MANUALLY_ANNOTATED));
+        endocytosis.setFeature(new VesicleRadius(Quantities.getQuantity(75.0, NANO(METRE)), FeatureOrigin.MANUALLY_ANNOTATED));
+        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(100, SECOND), FeatureOrigin.MANUALLY_ANNOTATED));
+
+        simulation.getModules().add(endocytosis);
+
+        // setup vesicle diffusion
+        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
+        vesicleDiffusion.setSimulation(simulation);
+        simulation.getModules().add(vesicleDiffusion);
+
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
         for (AutomatonNode node : graph.getNodes()) {
@@ -119,14 +141,28 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
         membraneLayer = new MembraneLayer(MembraneComposer.composeMacroscopicMembrane(graph));
+
+        // add left membrane to as endocytosis site
+        // TODO the spawn frequency should be depending on the area of segments
+        List<MacroscopicMembrane> membranes = membraneLayer.getMembranes();
+        for (MacroscopicMembrane membrane : membranes) {
+            if (membrane.getIdentifier().equals("Cell membrane")) {
+                for (MembraneSegment membraneSegment : membrane.getSegments()) {
+                    if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
+                        endocytosis.addMembraneSegment(membraneSegment);
+                    }
+                }
+            }
+        }
+
         // setup filament layer
         skeletalLayer = new FilamentLayer(rectangle, membraneLayer);
-        Iterator<MacroscopicMembrane> iterator = membraneLayer.getMembranes().iterator();
-        iterator.next();
-        MacroscopicMembrane membrane = iterator.next();
-        for (int i = 0; i < 30; i++) {
-            skeletalLayer.spawnHorizontalFilament(membrane);
-        }
+//        Iterator<MacroscopicMembrane> iterator = membraneLayer.getMembranes().iterator();
+//        iterator.next();
+//        MacroscopicMembrane membrane = iterator.next();
+//        for (int i = 0; i < 30; i++) {
+//            skeletalLayer.spawnHorizontalFilament(membrane);
+//        }
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -135,15 +171,17 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                skeletalLayer.nextEpoch();
-                renderFilaments();
+                // skeletalLayer.nextEpoch();
+                simulation.nextEpoch();
+                System.out.println(simulation.getElapsedTime().to(SECOND));
+                render();
             }
         };
         animationTimer.start();
 
     }
 
-    public void renderFilaments() {
+    public void render() {
         getGraphicsContext().setFill(Color.WHITE);
         fillPolygon(rectangle);
         // draw cells
@@ -178,14 +216,29 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         getGraphicsContext().setLineWidth(3);
         if (membraneLayer != null) {
             for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                Map<AutomatonNode, List<LineSegment>> segments = membrane.getSegments();
-                for (Map.Entry<AutomatonNode, List<LineSegment>> entry : segments.entrySet()) {
-                    List<LineSegment> lineSegments = entry.getValue();
+                List<MembraneSegment> segments = membrane.getSegments();
+                for (MembraneSegment segment : segments) {
+                    List<LineSegment> lineSegments = segment.getLineSegments();
                     for (LineSegment lineSegment : lineSegments) {
                         strokeLineSegment(lineSegment);
                     }
                 }
             }
+        }
+        // draw budding vesicles
+        getGraphicsContext().setLineWidth(1);
+        getGraphicsContext().setFill(Color.YELLOWGREEN);
+        for (Vesicle vesicle : endocytosis.getMaturingVesicles().keySet()) {
+            Circle circle = vesicle.getCircleRepresentation();
+            fillCircle(circle);
+            strokeCircle(circle);
+        }
+
+        getGraphicsContext().setFill(Color.BLUE);
+        for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
+            Circle circle = vesicle.getCircleRepresentation();
+            fillCircle(circle);
+            strokeCircle(circle);
         }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);

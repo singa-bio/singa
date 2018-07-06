@@ -27,6 +27,7 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Volume;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author cl
@@ -34,6 +35,7 @@ import java.util.*;
 public class Vesicle implements Updatable, Featureable {
 
     private static final Logger logger = LoggerFactory.getLogger(Vesicle.class);
+    private static AtomicInteger vesicleCounter = new AtomicInteger();
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
 
@@ -45,6 +47,7 @@ public class Vesicle implements Updatable, Featureable {
     private Quantity<Length> radius;
     private Quantity<Area> area;
     private Quantity<Volume> volume;
+    private double clathrins;
 
     protected FeatureContainer features;
 
@@ -89,6 +92,10 @@ public class Vesicle implements Updatable, Featureable {
         associatedNodes = new HashMap<>();
     }
 
+    public Vesicle(Vector2D position, Quantity<Length> radius) {
+        this("Vesicle "+vesicleCounter.getAndIncrement(), position, radius);
+    }
+
     public Vector2D getPosition() {
         return position;
     }
@@ -126,6 +133,8 @@ public class Vesicle implements Updatable, Featureable {
         this.radius = radius;
         area = calculateArea(radius);
         volume = calculateVolume(radius);
+        // relation between clathrins and radius = r^2 * 60/50^2
+        clathrins = radius.multiply(radius).multiply(60.0/Math.pow(50.0,2)).getValue().doubleValue();
         setFeature(Diffusivity.calculate(radius));
     }
 

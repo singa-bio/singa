@@ -35,7 +35,7 @@ public class DisplacementBasedModule implements UpdateModule {
     /**
      * The simulation.
      */
-    private Simulation simulation;
+    protected Simulation simulation;
 
     /**
      * The functions that are applied with each epoch.
@@ -44,8 +44,8 @@ public class DisplacementBasedModule implements UpdateModule {
 
     private String identifier;
     private FeatureManager featureManager;
-    private ModuleState state;
-    private UpdateScheduler updateScheduler;
+    protected ModuleState state;
+    protected UpdateScheduler updateScheduler;
     private Set<ChemicalEntity> referencedChemicalEntities;
 
     private double displacementCutoffFactor = DEFAULT_DISPLACEMENT_CUTOFF_FACTOR;
@@ -129,6 +129,10 @@ public class DisplacementBasedModule implements UpdateModule {
         featureManager.setFeature(feature);
     }
 
+    public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
+        return featureManager.getFeature(featureTypeClass);
+    }
+
     public Collection<Feature<?>> getFeatures() {
         return featureManager.getAllFeatures();
     }
@@ -151,7 +155,7 @@ public class DisplacementBasedModule implements UpdateModule {
         }
     }
 
-    private void evaluateModuleState() {
+    protected void evaluateModuleState() {
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             Vector2D displacement = vesicle.getSpatialDelta(this).getDeltaVector();
             double length = displacement.getMagnitude();
