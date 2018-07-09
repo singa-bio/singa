@@ -1,39 +1,49 @@
 package de.bioforscher.singa.simulation.model.modules.displacement.implementations;
 
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.features.endocytosis.BuddingFrequency;
+import de.bioforscher.singa.simulation.features.endocytosis.BuddingRate;
 import de.bioforscher.singa.simulation.features.endocytosis.MaturationTime;
 import de.bioforscher.singa.simulation.features.endocytosis.SpawnTimeSampler;
 import de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius;
 import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.MembraneSegment;
+import de.bioforscher.singa.simulation.model.sections.CellTopology;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Area;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static de.bioforscher.singa.simulation.model.modules.concentration.ModuleState.*;
-import static tec.uom.se.unit.Units.HERTZ;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
  */
-public class ConstitutiveEndocytosis extends DisplacementBasedModule {
+public class EndocytosisBudding extends DisplacementBasedModule {
 
     private HashMap<Vesicle, Quantity<Time>> maturingVesicles;
     private List<MembraneSegment> segments;
+
+    private Quantity<Area> totalArea;
+    private Quantity<Frequency> normalizedFrequency;
+
+    // referencing entity to area and number
+    private Map<ChemicalEntity, AbstractMap.Entry<Quantity<Area>, Double>> initialMembraneCargo;
+
 
     // randomized next spawn time
     private Quantity<Time> nextSpawnTime;
@@ -42,17 +52,23 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
     // randomized radius
     private Quantity<Length> nextSpawnRadius;
 
-    public ConstitutiveEndocytosis() {
+    public EndocytosisBudding() {
         maturingVesicles = new HashMap<>();
         segments = new ArrayList<>();
+        initialMembraneCargo = new HashMap<>();
         // features
-        getRequiredFeatures().add(BuddingFrequency.class);
+        getRequiredFeatures().add(BuddingRate.class);
         getRequiredFeatures().add(VesicleRadius.class);
         getRequiredFeatures().add(MaturationTime.class);
+
     }
 
     @Override
     public void calculateUpdates() {
+        if (totalArea == null) {
+            calculateTotalMembraneArea();
+        }
+        normalizeSpawnFrequency();
         evaluateModuleState();
         if (state == PENDING) {
             updateMaturation();
@@ -60,12 +76,29 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
         }
     }
 
+    private void calculateTotalMembraneArea() {
+        totalArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
+        for (MembraneSegment segment : segments) {
+            for (LineSegment lineSegment : segment.getLineSegments()) {
+                totalArea = totalArea.add(Environment.convertSimulationToSystemScale(lineSegment.getLength())
+                        .multiply(Environment.getNodeDistance()).asType(Area.class));
+            }
+        }
+    }
+
+    private void normalizeSpawnFrequency() {
+        normalizedFrequency = getFeature(BuddingRate.class).getFeatureContent().multiply(totalArea.to(new ProductUnit(NANO(METRE).pow(2)))).asType(Frequency.class);
+    }
+
+    public void addMembraneCargo(Quantity<Area> referenceArea, double numberOfEntities, ChemicalEntity chemicalEntity) {
+        initialMembraneCargo.put(chemicalEntity, new AbstractMap.SimpleEntry<>(referenceArea, numberOfEntities));
+    }
+
     @Override
     protected void evaluateModuleState() {
         // TODO module currently does not work with recalculations of time steps
-        BuddingFrequency frequency = getFeature(BuddingFrequency.class);
-        // more than on spawn par time step
-        ComparableQuantity<Time> timeBetweenEvents = Quantities.getQuantity(1.0 / frequency.getFeatureContent().to(HERTZ).getValue().doubleValue(), SECOND);
+        // more than one spawn per time step
+        ComparableQuantity<Time> timeBetweenEvents = Quantities.getQuantity(1.0 / (normalizedFrequency.getValue().doubleValue() * 2.0), SECOND);
         if (timeBetweenEvents.isLessThan(Environment.getTimeStep())) {
             state = REQUIRING_RECALCULATION;
         } else {
@@ -94,7 +127,7 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
             determineNextSpawnEvent();
         }
         // check if spawn event needs to happen
-        if (simulation.getElapsedTime().isGreaterThan(nextSpawnTime)) {
+        if (simulation.getElapsedTime().isGreaterThanOrEqualTo(nextSpawnTime)) {
             // spawn vesicle
             spawnVesicle();
             determineNextSpawnEvent();
@@ -104,12 +137,11 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
         for (Map.Entry<Vesicle, Quantity<Time>> entry : maturingVesicles.entrySet()) {
             Vesicle maturingVesicle = entry.getKey();
             Quantity<Time> maturationTime = entry.getValue();
-            // TODO currently all vesicles take the same time to mature
             ComparableQuantity<Time> totalTime = getFeature(MaturationTime.class).getFeatureContent();
             // if maturation time is reached
             if (totalTime.isLessThan(maturationTime)) {
                 // add vesicle to vesicle layer
-                simulation.getVesicleLayer().addVesicle(maturingVesicle);
+                scissiorVesicle(maturingVesicle);
                 maturedVesicles.add(maturingVesicle);
             } else {
                 // increase Maturation time
@@ -124,8 +156,23 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
 
     private void spawnVesicle() {
         Vesicle vesicle = new Vesicle(nextSpawnSite, nextSpawnRadius);
-        System.out.println("Spawing "+vesicle);
         maturingVesicles.put(vesicle, Quantities.getQuantity(0.0, Environment.getTimeUnit()));
+    }
+
+    private void scissiorVesicle(Vesicle vesicle) {
+        for (Map.Entry<ChemicalEntity, Map.Entry<Quantity<Area>, Double>> entry : initialMembraneCargo.entrySet()) {
+            ChemicalEntity chemicalEntity = entry.getKey();
+            Quantity<Area> area = entry.getValue().getKey();
+            Double number = entry.getValue().getValue();
+
+            double molecules = vesicle.getArea()
+                    .multiply(number / area.to(vesicle.getArea().getUnit())
+                            .getValue().doubleValue()).getValue().doubleValue();
+
+            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules, Environment.getSubsectionVolume()).to(Environment.getConcentrationUnit());
+            vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, chemicalEntity, concentration);
+        }
+        simulation.getVesicleLayer().addVesicle(vesicle);
     }
 
     private void determineNextSpawnEvent() {
@@ -134,11 +181,14 @@ public class ConstitutiveEndocytosis extends DisplacementBasedModule {
         // choose random point on that site
         nextSpawnSite = lineSegment.getRandomPoint();
         // sample spawn time
-        Quantity<Frequency> frequency = getFeature(BuddingFrequency.class).getFeatureContent();
-        nextSpawnTime = SpawnTimeSampler.sampleNextEventTime(simulation.getElapsedTime(), frequency);
+        nextSpawnTime = SpawnTimeSampler.sampleNextEventTime(simulation.getElapsedTime(), normalizedFrequency);
         // sample vesicle radius
         Quantity<Length> vesicleRadius = getFeature(VesicleRadius.class).getFeatureContent();
         nextSpawnRadius = SpawnTimeSampler.sampleNextVesicleRadius(vesicleRadius);
     }
 
+    @Override
+    public String toString() {
+        return "Endocytosis maturing and scission";
+    }
 }

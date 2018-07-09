@@ -42,6 +42,6 @@ public class FeatureOrigin {
     }
 
     public enum OriginType {
-        PREDICTION, DATABASE, MANUAL_ANNOTATION
+        PREDICTION, DATABASE, LITERATURE, MANUAL_ANNOTATION
     }
 }

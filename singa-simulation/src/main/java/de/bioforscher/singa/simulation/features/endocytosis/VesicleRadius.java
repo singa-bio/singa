@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.features.endocytosis;
 
 import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.simulation.features.DefautFeatureSources;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -15,7 +16,9 @@ import static tec.uom.se.unit.Units.METRE;
  */
 public class VesicleRadius extends AbstractFeature<Quantity<Length>> {
 
-    public static final String SYMBOL = "r_vesicle";
+    public static final VesicleRadius DEFAULT_VESICLE_RADIUS = new VesicleRadius(Quantities.getQuantity(50.0, NANO(METRE)), DefautFeatureSources.EHRLICH2004);
+
+    private static final String SYMBOL = "r_Vesicle";
 
     public VesicleRadius(Quantity<Length> radius, FeatureOrigin featureOrigin) {
         super(radius, featureOrigin);

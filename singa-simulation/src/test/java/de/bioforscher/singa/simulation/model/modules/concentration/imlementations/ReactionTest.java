@@ -1,16 +1,21 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
-import de.bioforscher.singa.chemistry.entities.Enzyme;
-import de.bioforscher.singa.chemistry.entities.SmallMolecule;
+import de.bioforscher.singa.chemistry.entities.*;
 import de.bioforscher.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import de.bioforscher.singa.chemistry.features.reactions.MichaelisConstant;
 import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
 import de.bioforscher.singa.chemistry.features.reactions.TurnoverNumber;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
+import de.bioforscher.singa.simulation.model.modules.displacement.VesicleLayer;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
+import de.bioforscher.singa.simulation.model.sections.CellTopology;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import org.junit.After;
 import org.junit.Ignore;
@@ -21,16 +26,18 @@ import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 
 import static de.bioforscher.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static de.bioforscher.singa.simulation.model.sections.CellSubsection.SECTION_A;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.MINUTE;
-import static tec.uom.se.unit.Units.SECOND;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.*;
 
 /**
  * @author cl
@@ -230,6 +237,52 @@ public class ReactionTest {
         logger.info("Second and final checkpoint (at {}) reached successfully.", simulation.getElapsedTime().to(MILLI(SECOND)));
 
     }
+
+   @Test
+   public void testDecayInMembrane() {
+       logger.info("Testing Decay in Membrane.");
+       // create simulation
+       Simulation simulation = new Simulation();
+       simulation.setMaximalTimeStep(Quantities.getQuantity(0.1, SECOND));
+
+       // setup graph
+       AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(graph);
+
+       // prepare species
+       ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
+               .assignFeature(new UniProtIdentifier("Q00610"))
+               .build();
+
+       ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
+               .assignFeature(new UniProtIdentifier("P09496"))
+               .build();
+
+       ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
+               .addAssociatedPart(clathrinHeavyChain, 3)
+               .addAssociatedPart(clathrinLightChain, 3)
+               .build();
+
+       VesicleLayer layer = new VesicleLayer();
+       Vesicle vesicle = new Vesicle(new Vector2D(0.0,0.0),  Quantities.getQuantity(50, NANO(METRE)));
+       vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(Environment.getConcentrationUnit()));
+       layer.addVesicle(vesicle);
+       simulation.setVesicleLayer(layer);
+
+       NthOrderReaction reaction = NthOrderReaction.inSimulation(simulation)
+               .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+               .addSubstrate(clathrinTriskelion)
+               .build();
+
+       System.out.println(reaction.getStringForProtocol());
+
+       while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(11, SECOND))) {
+           simulation.nextEpoch();
+           Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, clathrinTriskelion), vesicle.getVolume());
+           System.out.println(simulation.getElapsedTime().to(SECOND)+" - "+molecules.getValue().intValue());
+       }
+
+   }
 
 
     @Test

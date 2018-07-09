@@ -48,6 +48,11 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
         computeMolarMass();
     }
 
+    public void addAssociatedPart(ChemicalEntity chemicalEntity, int stochiometry) {
+        associatedParts.put(chemicalEntity, stochiometry);
+        computeMolarMass();
+    }
+
     public Map<ChemicalEntity, Integer> getAssociatedParts() {
         return associatedParts;
     }
@@ -103,6 +108,13 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
         public ComplexedChemicalEntity.Builder addAssociatedPart(ChemicalEntity chemicalEntity) {
             if (chemicalEntity != null) {
                 topLevelObject.addAssociatedPart(chemicalEntity);
+            }
+            return this;
+        }
+
+        public ComplexedChemicalEntity.Builder addAssociatedPart(ChemicalEntity chemicalEntity, int stochiometry) {
+            if (chemicalEntity != null) {
+                topLevelObject.addAssociatedPart(chemicalEntity, stochiometry);
             }
             return this;
         }

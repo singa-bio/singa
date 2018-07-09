@@ -9,6 +9,7 @@ import de.bioforscher.singa.simulation.model.modules.concentration.reactants.Rea
 import de.bioforscher.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
     public void addStochiometricReactant(StoichiometricReactant stoichiometricReactant) {
         stoichiometricReactants.add(stoichiometricReactant);
+    }
+
+    public boolean substratesAvailable(Updatable updatable) {
+        return updatable.getConcentrationContainer().getReferencedEntities().containsAll(getSubstrates());
     }
 
     /**
@@ -117,7 +122,6 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
                 deltaValue = -velocity * reactant.getStoichiometricNumber();
             } else {
                 deltaValue = velocity * reactant.getStoichiometricNumber();
-
             }
             deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
         }
@@ -151,7 +155,6 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
     public void setElementary(boolean elementary) {
         this.elementary = elementary;
     }
-
 
 
     /**
@@ -194,7 +197,7 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": " + getIdentifier() + " (" + getReactionString() + ")";
+        return getClass().getSimpleName() + ": " + (getIdentifier() == null ? "" : getIdentifier()) + " (" + getReactionString() + ")";
     }
 
     public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> {

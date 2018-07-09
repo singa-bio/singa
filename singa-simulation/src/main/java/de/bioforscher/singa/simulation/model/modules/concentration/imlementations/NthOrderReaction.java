@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
 import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
+import de.bioforscher.singa.chemistry.features.reactions.ZeroOrderRateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -25,7 +26,7 @@ public class NthOrderReaction extends Reaction {
     @Override
     public void initialize() {
         // apply
-        setApplicationCondition(updatable -> true);
+        setApplicationCondition(this::substratesAvailable);
         // function
         SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, container -> true);
         addDeltaFunction(function);
@@ -37,6 +38,10 @@ public class NthOrderReaction extends Reaction {
 
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
+        Quantity scaledReactionRate = getScaledReactionRate();
+        if (rateConstant instanceof ZeroOrderRateConstant) {
+            return scaledReactionRate.getValue().doubleValue();
+        }
         // concentrations of substrates that influence the reaction
         double concentration = determineEffectiveConcentration(concentrationContainer, ReactantRole.DECREASING);
         // calculate acceleration

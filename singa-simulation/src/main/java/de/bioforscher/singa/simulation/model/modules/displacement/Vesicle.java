@@ -21,6 +21,7 @@ import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -28,6 +29,9 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
@@ -47,7 +51,6 @@ public class Vesicle implements Updatable, Featureable {
     private Quantity<Length> radius;
     private Quantity<Area> area;
     private Quantity<Volume> volume;
-    private double clathrins;
 
     protected FeatureContainer features;
 
@@ -58,6 +61,8 @@ public class Vesicle implements Updatable, Featureable {
     private Vector2D position;
     private List<SpatialDelta> potentialSpatialDeltas;
     private Vector2D potentialUpdate;
+
+    public Quantity<Length> totalDistance = Quantities.getQuantity(0.0, NANO(METRE));
 
     /**
      * The volume of a sphere is calculated by
@@ -133,8 +138,6 @@ public class Vesicle implements Updatable, Featureable {
         this.radius = radius;
         area = calculateArea(radius);
         volume = calculateVolume(radius);
-        // relation between clathrins and radius = r^2 * 60/50^2
-        clathrins = radius.multiply(radius).multiply(60.0/Math.pow(50.0,2)).getValue().doubleValue();
         setFeature(Diffusivity.calculate(radius));
     }
 

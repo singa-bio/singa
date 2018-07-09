@@ -1,6 +1,9 @@
 package de.bioforscher.singa.simulation.model.modules.macroscopic;
 
-import de.bioforscher.singa.features.model.FeatureOrigin;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.Protein;
+import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
@@ -10,15 +13,13 @@ import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.features.endocytosis.BuddingFrequency;
-import de.bioforscher.singa.simulation.features.endocytosis.MaturationTime;
-import de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.ConstitutiveEndocytosis;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisBudding;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
@@ -33,14 +34,22 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
 
+import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
 
+import static de.bioforscher.singa.simulation.features.endocytosis.ActinBoostVelocity.DEFAULT_ACTIN_VELOCITY;
+import static de.bioforscher.singa.simulation.features.endocytosis.BuddingRate.DEFAULT_BUDDING_RATE;
+import static de.bioforscher.singa.simulation.features.endocytosis.MaturationTime.DEFAULT_MATURATION_TIME;
+import static de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius.DEFAULT_VESICLE_RADIUS;
+import static de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.*;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -53,7 +62,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     private Rectangle rectangle;
     private AutomatonGraph graph;
     private Simulation simulation;
-    private ConstitutiveEndocytosis endocytosis;
+    private EndocytosisBudding endocytosis;
 
     public static void main(String[] args) {
         launch();
@@ -103,19 +112,48 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         CellRegion nucleus = new CellRegion("Nucleus");
         nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
 
+        // clathrin decay
+        ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
+                .assignFeature(new UniProtIdentifier("Q00610"))
+                .build();
+
+        ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
+                .assignFeature(new UniProtIdentifier("P09496"))
+                .build();
+
+        ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
+                .addAssociatedPart(clathrinHeavyChain, 3)
+                .addAssociatedPart(clathrinLightChain, 3)
+                .build();
+
+        NthOrderReaction.inSimulation(simulation)
+                .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+                .addSubstrate(clathrinTriskelion)
+                .build();
+
         // setup endocytosis
-        endocytosis = new ConstitutiveEndocytosis();
-        endocytosis.setSimulation(simulation);;
-        endocytosis.setFeature(new BuddingFrequency(Quantities.getQuantity(0.1, HERTZ), FeatureOrigin.MANUALLY_ANNOTATED));
-        endocytosis.setFeature(new VesicleRadius(Quantities.getQuantity(75.0, NANO(METRE)), FeatureOrigin.MANUALLY_ANNOTATED));
-        endocytosis.setFeature(new MaturationTime(Quantities.getQuantity(100, SECOND), FeatureOrigin.MANUALLY_ANNOTATED));
+        endocytosis = new EndocytosisBudding();
+        endocytosis.setSimulation(simulation);
+        endocytosis.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
+        endocytosis.setFeature(DEFAULT_BUDDING_RATE);
+        endocytosis.setFeature(DEFAULT_VESICLE_RADIUS);
+        endocytosis.setFeature(DEFAULT_MATURATION_TIME);
 
         simulation.getModules().add(endocytosis);
 
         // setup vesicle diffusion
-        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
-        vesicleDiffusion.setSimulation(simulation);
-        simulation.getModules().add(vesicleDiffusion);
+//        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
+//        vesicleDiffusion.useLiteratureDiffusivity();
+//        vesicleDiffusion.setSimulation(simulation);
+//        simulation.getModules().add(vesicleDiffusion);
+
+        // setup actin boost
+        EndocytosisActinBoost boost = new EndocytosisActinBoost();
+        boost.setDecayingEntity(clathrinTriskelion);
+        boost.setFeature(DEFAULT_ACTIN_VELOCITY);
+        boost.setSimulationRegion(rectangle);
+        boost.setSimulation(simulation);
+        simulation.getModules().add(boost);
 
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);

@@ -31,6 +31,7 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
 
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
+
     /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
      * D = (k_B * T) / (6 * pi * nu * radius)
