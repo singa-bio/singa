@@ -263,7 +263,7 @@ public class ReactionTest {
                .addAssociatedPart(clathrinLightChain, 3)
                .build();
 
-       VesicleLayer layer = new VesicleLayer();
+       VesicleLayer layer = new VesicleLayer(simulation);
        Vesicle vesicle = new Vesicle(new Vector2D(0.0,0.0),  Quantities.getQuantity(50, NANO(METRE)));
        vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(Environment.getConcentrationUnit()));
        layer.addVesicle(vesicle);

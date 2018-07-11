@@ -1,16 +1,19 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.filaments;
 
 import de.bioforscher.singa.mathematics.geometry.edges.Line;
+import de.bioforscher.singa.mathematics.geometry.faces.Circle;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
+import static de.bioforscher.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
-import static de.bioforscher.singa.simulation.model.modules.macroscopic.SkeletalFilament.FilamentBehaviour.GROW;
-import static de.bioforscher.singa.simulation.model.modules.macroscopic.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.GROW;
+import static de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * Modified: Mirabet, Vincent, et al. "The self-organization of plant microtubules inside the cell volume yields their
@@ -34,27 +37,31 @@ public class SkeletalFilament {
      * Plus side is front, Minus side is back.
      */
     private LinkedList<Vector2D> segments;
-
     private SkeletalFilament lead;
-
     private FilamentBehaviour minusEndBehaviour;
     private FilamentBehaviour plusEndBehaviour;
+    private AutomatonGraph graph;
 
-    public SkeletalFilament() {
-        segments = new LinkedList<>();
+    private Set<AutomatonNode> associatedNodes;
+
+    SkeletalFilament(Vector2D initialPosition, Vector2D initialDirection, AutomatonGraph graph) {
         minusEndBehaviour = STAGNANT;
         plusEndBehaviour = GROW;
-    }
-
-    public SkeletalFilament(Vector2D initialPosition, Vector2D initialDirection) {
-        this();
+        this.graph = graph;
+        segments = new LinkedList<>();
+        associatedNodes = new HashSet<>();
         segments.add(initialPosition);
         segments.add(initialDirection.normalize().add(initialPosition));
     }
 
-    private Vector2D getPreviousSegment(Vector2D vector2D) {
-        int index = segments.indexOf(vector2D);
+    private Vector2D getPreviousSegment(Vector2D segment) {
+        int index = segments.indexOf(segment);
         return segments.get(index + 1);
+    }
+
+    public ListIterator<Vector2D> getSegmentIterator(Vector2D segment) {
+        int index = segments.indexOf(segment);
+        return segments.listIterator(index);
     }
 
     public int nextEpoch() {
@@ -91,7 +98,9 @@ public class SkeletalFilament {
         Vector2D closestFragment = closestFragmentEntry.getKey();
         Vector2D previousSegment = lead.getPreviousSegment(closestFragment);
         Vector2D head = closestFragment.subtract(previousSegment);
-        segments.addFirst(segments.getFirst().add(head));
+        Vector2D nextPosition = segments.getFirst().add(head);
+        associateNodes(nextPosition);
+        segments.addFirst(nextPosition);
     }
 
     private void growPlus() {
@@ -107,12 +116,34 @@ public class SkeletalFilament {
             head = iterator.next().subtract(iterator.next());
         }
         Vector2D nextSegment = computeNextSegment(head);
-        segments.addFirst(segments.getFirst().add(nextSegment));
+        Vector2D nextPosition = segments.getFirst().add(nextSegment);
+        associateNodes(nextPosition);
+        segments.addFirst(nextPosition);
     }
 
     private Vector2D computeNextSegment(Vector2D head) {
         // r_n+1 = (r_n * (1 - r_d) + r_d * u) / mag(r_n * (1 - r_d) + r_d * u)
         return head.multiply(1 - rd).add(Vectors.generateRandomUnit2DVector().multiply(rd)).normalize().multiply(2);
+    }
+
+    private void associateNodes(Vector2D segment) {
+        associatedNodes.clear();
+        Circle headRegion = new Circle(segment, 10);
+        // determine associated nodes
+        for (AutomatonNode node : graph.getNodes()) {
+            // get representative region of the node
+            Polygon polygon = node.getSpatialRepresentation();
+            // associate segment to the node with the largest part of the vesicle (midpoint is inside)
+            if (polygon.evaluatePointPosition(segment) >= ON_LINE) {
+                node.addAssociatedSegment(this, segment);
+                associatedNodes.add(node);
+            }
+            // associate partial containment to other nodes
+            if (!polygon.getIntersections(headRegion).isEmpty()) {
+                node.addAssociatedSegment(this, segment);
+                associatedNodes.add(node);
+            }
+        }
     }
 
     private void shrinkMinus() {
@@ -131,21 +162,51 @@ public class SkeletalFilament {
         return thisLine.getAngleTo(otherLine);
     }
 
-    double distanceTo(SkeletalFilament filament) {
+    Map.Entry<SkeletalFilament, Double> getClosestRelevantDistance() {
         Vector2D head = segments.getFirst();
-        Map.Entry<Vector2D, Double> closestFragment = EUCLIDEAN_METRIC.calculateClosestDistance(filament.getSegments(), head);
-        return closestFragment.getValue();
+
+        SkeletalFilament closestFilament = null;
+        double closestDistance = Double.MAX_VALUE;
+        // get closest relevant node
+        for (AutomatonNode associatedNode : associatedNodes) {
+            // get the associated segments
+            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : associatedNode.getAssociatedSegments().entrySet()) {
+                SkeletalFilament currentFilament = entry.getKey();
+                // don't compare to fragments in the same fragment
+                if (currentFilament != this) {
+                    Set<Vector2D> segments = entry.getValue();
+                    // check each segment
+                    for (Vector2D segment : segments) {
+                        double currentDistance = head.distanceTo(segment);
+                        if (currentDistance < closestDistance) {
+                            closestDistance = currentDistance;
+                            closestFilament = currentFilament;
+                        }
+                    }
+                }
+            }
+        }
+
+        return new AbstractMap.SimpleEntry<>(closestFilament, closestDistance);
     }
 
     public LinkedList<Vector2D> getSegments() {
         return segments;
     }
 
+    public Vector2D getHead() {
+        return segments.getFirst();
+    }
+
+    public Set<AutomatonNode> getAssociatedNodes() {
+        return associatedNodes;
+    }
+
     Vector2D getPlusEnd() {
         return segments.getFirst();
     }
 
-    FilamentBehaviour getPlusEndBehaviour() {
+    public FilamentBehaviour getPlusEndBehaviour() {
         return plusEndBehaviour;
     }
 

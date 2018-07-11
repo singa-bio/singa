@@ -5,7 +5,7 @@ import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.mathematics.vectors.Vectors;
 import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementBasedModule;
-import de.bioforscher.singa.simulation.model.modules.displacement.SpatialDelta;
+import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementDelta;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import tec.uom.se.quantity.Quantities;
 
@@ -24,7 +24,7 @@ public class VesicleDiffusion extends DisplacementBasedModule {
 
     public VesicleDiffusion() {
         // delta function
-        addDeltaFunction(this::calculateDisplacement, vesicle -> true);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getAttachmentState() == Vesicle.AttachmentState.UNATTACHED);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
     }
@@ -46,7 +46,7 @@ public class VesicleDiffusion extends DisplacementBasedModule {
         setFeature(DEFAULT_VESICLE_DIFFUSIVITY);
     }
 
-    public SpatialDelta calculateDisplacement(Vesicle vesicle) {
+    public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         double scaling;
         if (useEstimation) {
             scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 * vesicle.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue()), Environment.getSystemScale().getUnit()));
@@ -54,7 +54,7 @@ public class VesicleDiffusion extends DisplacementBasedModule {
             scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 * diffusivity.getScaledQuantity().getValue().doubleValue()), Environment.getSystemScale().getUnit()));
         }
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
-        return new SpatialDelta(this, gaussian.multiply(scaling));
+        return new DisplacementDelta(this, gaussian.multiply(scaling));
     }
 
     @Override

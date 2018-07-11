@@ -87,7 +87,7 @@ public class VesiclePlayground extends Application implements Renderer {
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
 
         // add vesicle transport layer
-        layer = new VesicleLayer();
+        layer = new VesicleLayer(simulation);
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
@@ -156,7 +156,7 @@ public class VesiclePlayground extends Application implements Renderer {
             fillCircle(circle);
             strokeCircle(circle);
             for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
-                strokeLineSegment(new SimpleLineSegment(vesicle.getPosition(), node.getPosition()));
+                strokeLineSegment(new SimpleLineSegment(vesicle.getCurrentPosition(), node.getPosition()));
             }
         }
     }

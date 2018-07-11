@@ -42,7 +42,7 @@ public class VesicleDiffusionTest {
                         .to(Environment.getNodeDistance().getUnit()));
 
         // add vesicle transport layer
-        VesicleLayer layer = new VesicleLayer();
+        VesicleLayer layer = new VesicleLayer(simulation);
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 
@@ -58,7 +58,7 @@ public class VesicleDiffusionTest {
 
         for (int i = 0; i < 10; i++) {
             simulation.nextEpoch();
-            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getPosition();
+            Vector2D currentPosition = simulation.getVesicleLayer().getVesicles().get(0).getCurrentPosition();
             assertNotEquals(currentPosition, previousPosition);
             previousPosition = currentPosition;
         }

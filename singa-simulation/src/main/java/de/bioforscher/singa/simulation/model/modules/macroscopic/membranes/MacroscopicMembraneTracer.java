@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.membranes;
 
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author cl
  */
-public class MembraneComposer {
+public class MacroscopicMembraneTracer {
 
     // input
     private HashMap<CellRegion, List<AutomatonNode>> regionNodeMapping;
@@ -28,11 +28,11 @@ public class MembraneComposer {
     private List<AutomatonNode> unprocessedNodes;
 
     public static List<MacroscopicMembrane> composeMacroscopicMembrane(AutomatonGraph graph) {
-        MembraneComposer composer = new MembraneComposer(graph);
+        MacroscopicMembraneTracer composer = new MacroscopicMembraneTracer(graph);
         return composer.membranes;
     }
 
-    public MembraneComposer(AutomatonGraph graph) {
+    public MacroscopicMembraneTracer(AutomatonGraph graph) {
         this.graph = graph;
         currentNodes = new LinkedList<>();
         queue = new ArrayDeque<>();
@@ -139,7 +139,7 @@ public class MembraneComposer {
         membranes.add(membrane);
 
         // cut segments to size
-        for (MembraneSegment entry : membrane.getSegments()) {
+        for (MacroscopicMembraneSegment entry : membrane.getSegments()) {
             Polygon spatialRepresentation = entry.getNode().getSpatialRepresentation();
             for (LineSegment lineSegment : entry.getLineSegments()) {
                 Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
@@ -149,7 +149,7 @@ public class MembraneComposer {
         }
 
         // merge segments
-        for (MembraneSegment entry : membrane.getSegments()) {
+        for (MacroscopicMembraneSegment entry : membrane.getSegments()) {
             List<LineSegment> segments = entry.getLineSegments();
             Iterator<LineSegment> lineSegmentIterator = segments.iterator();
             LineSegment firstSegment = lineSegmentIterator.next();

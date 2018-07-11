@@ -9,14 +9,14 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A node of the {@link AutomatonGraph}. Contains the concentrations of {@link ChemicalEntity}s
@@ -33,8 +33,11 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private Polygon spatialRepresentation;
 
+    private Map<SkeletalFilament, Set<Vector2D>> associatedSegments;
+
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
+        associatedSegments = new HashMap<>();
         cellRegion = CellRegion.CYTOSOL_A;
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
@@ -187,6 +190,25 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public void setSpatialRepresentation(Polygon spatialRepresentation) {
         this.spatialRepresentation = spatialRepresentation;
+    }
+
+    public ConcentrationDeltaManager getUpdateManager() {
+        return updateManager;
+    }
+
+    public void setUpdateManager(ConcentrationDeltaManager updateManager) {
+        this.updateManager = updateManager;
+    }
+
+    public Map<SkeletalFilament, Set<Vector2D>> getAssociatedSegments() {
+        return associatedSegments;
+    }
+
+    public void addAssociatedSegment(SkeletalFilament filament, Vector2D segment) {
+        if (!associatedSegments.containsKey(filament)) {
+            associatedSegments.put(filament, new HashSet<>());
+        }
+        associatedSegments.get(filament).add(segment);
     }
 
     @Override

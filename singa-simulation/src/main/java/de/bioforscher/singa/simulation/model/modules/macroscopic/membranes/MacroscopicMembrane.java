@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.membranes;
 
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -15,7 +15,7 @@ public class MacroscopicMembrane {
 
     private String identifier;
     private CellRegion representativeRegion;
-    private List<MembraneSegment> segments;
+    private List<MacroscopicMembraneSegment> segments;
 
     public MacroscopicMembrane(String identifier, CellRegion representativeRegion) {
         this.identifier = identifier;
@@ -32,18 +32,18 @@ public class MacroscopicMembrane {
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
-        for (MembraneSegment membraneSegment : segments) {
+        for (MacroscopicMembraneSegment membraneSegment : segments) {
             if (membraneSegment.getNode().equals(node)) {
                 membraneSegment.addSegment(segment);
                 return;
             }
         }
-        MembraneSegment membraneSegment = new MembraneSegment(node);
+        MacroscopicMembraneSegment membraneSegment = new MacroscopicMembraneSegment(node);
         membraneSegment.addSegment(segment);
         segments.add(membraneSegment);
     }
 
-    public List<MembraneSegment> getSegments() {
+    public List<MacroscopicMembraneSegment> getSegments() {
         return segments;
     }
 

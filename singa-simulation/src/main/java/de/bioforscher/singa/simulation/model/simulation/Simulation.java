@@ -12,6 +12,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.modules.displacement.VesicleLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import org.slf4j.Logger;
@@ -42,6 +43,10 @@ public class Simulation {
      * The layer for vesicles
      */
     private VesicleLayer vesicleLayer;
+
+    private MacroscopicMembraneLayer membraneLayer;
+
+    private Rectangle simulationRegion;
 
     /**
      * The chemical entities referenced in the graph.
@@ -92,7 +97,7 @@ public class Simulation {
         epoch = 0;
         initializationDone = false;
         observedUpdatables = new HashSet<>();
-        vesicleLayer = VesicleLayer.EMPTY_LAYER;
+        vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
     }
 
@@ -176,6 +181,7 @@ public class Simulation {
     private void initializeVesicleLayer() {
         logger.info("Initializing vesicle layer and individual vesicles.");
         // initialize simulation space
+        vesicleLayer.setSimulation(this);
         vesicleLayer.setSimulationArea(new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend()));
         associateVesicles();
     }
@@ -191,12 +197,11 @@ public class Simulation {
             // determine representative and associated nodes
             AutomatonNode representativeNode = null;
             Map<AutomatonNode, Set<Vector2D>> associatedNodes = new HashMap<>();
-            // FIXME this can potentially be improved by reducing the number of nodes to check (eg using a quadtree)
             for (AutomatonNode node : graph.getNodes()) {
                 // get representative region of the node
                 Polygon polygon = node.getSpatialRepresentation();
                 // associate vesicle to the node with the largest part of the vesicle (midpoint is inside)
-                if (representativeNode == null && polygon.evaluatePointPosition(vesicle.getPosition()) >= ON_LINE) {
+                if (representativeNode == null && polygon.evaluatePointPosition(vesicle.getCurrentPosition()) >= ON_LINE) {
                     representativeNode = node;
                 }
                 // associate partial containment to other nodes
@@ -247,6 +252,22 @@ public class Simulation {
 
     public void setVesicleLayer(VesicleLayer vesicleLayer) {
         this.vesicleLayer = vesicleLayer;
+    }
+
+    public MacroscopicMembraneLayer getMembraneLayer() {
+        return membraneLayer;
+    }
+
+    public void setMembraneLayer(MacroscopicMembraneLayer membraneLayer) {
+        this.membraneLayer = membraneLayer;
+    }
+
+    public Rectangle getSimulationRegion() {
+        return simulationRegion;
+    }
+
+    public void setSimulationRegion(Rectangle simulationRegion) {
+        this.simulationRegion = simulationRegion;
     }
 
     public void collectUpdatables() {

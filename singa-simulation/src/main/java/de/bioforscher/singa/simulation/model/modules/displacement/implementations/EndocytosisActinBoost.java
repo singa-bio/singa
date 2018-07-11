@@ -4,11 +4,10 @@ import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.endocytosis.ActinBoostVelocity;
 import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementBasedModule;
-import de.bioforscher.singa.simulation.model.modules.displacement.SpatialDelta;
+import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementDelta;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import tec.uom.se.quantity.Quantities;
 
@@ -17,6 +16,9 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 
 import static de.bioforscher.singa.simulation.features.DefautFeatureSources.EHRLICH2004;
+import static de.bioforscher.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.ACTIN_DEPOLYMERIZATION;
+import static de.bioforscher.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.UNATTACHED;
+import static de.bioforscher.singa.simulation.model.modules.displacement.Vesicle.TargetDirection.MINUS;
 import static de.bioforscher.singa.simulation.model.sections.CellTopology.MEMBRANE;
 import static tec.uom.se.unit.Units.SECOND;
 
@@ -40,13 +42,11 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
             .build();
 
     private Quantity<Speed> scaledVelocity;
-    private Rectangle simulationRegion;
     private ChemicalEntity decayingEntity;
 
     public EndocytosisActinBoost() {
         // delta function
-        // TODO only if molecules of clathrin is bigger than 0
-        addDeltaFunction(this::calculateDisplacement, vesicle -> true);
+        addDeltaFunction(this::calculateDisplacement, vesicle -> vesicle.getAttachmentState() == ACTIN_DEPOLYMERIZATION);
         // feature
         getRequiredFeatures().add(ActinBoostVelocity.class);
     }
@@ -61,21 +61,22 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
         super.calculateUpdates();
     }
 
-    public void setSimulationRegion(Rectangle simulationRegion) {
-        this.simulationRegion = simulationRegion;
-    }
-
-    public SpatialDelta calculateDisplacement(Vesicle vesicle) {
+    public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         // calculate speed based on clathrins available
         double numberOfClathrins = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, decayingEntity), Environment.getSubsectionVolume()).getValue().doubleValue();
+        if (numberOfClathrins < 1) {
+            vesicle.setAttachmentState(UNATTACHED);
+            // TODO alter for vesicles moving from centre to outside
+            vesicle.setTargetDirection(MINUS);
+        }
         Quantity<Speed> systemSpeed = scaledVelocity.multiply(numberOfClathrins);
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), Environment.getNodeDistanceUnit());
         // determine direction
-        Vector2D centre = simulationRegion.getCentre();
-        Vector2D direction = centre.subtract(vesicle.getPosition()).normalize();
+        Vector2D centre = simulation.getSimulationRegion().getCentre();
+        Vector2D direction = centre.subtract(vesicle.getCurrentPosition()).normalize();
         // determine delta
         Vector2D delta = direction.multiply(Environment.convertSystemToSimulationScale(distance));
-        return new SpatialDelta(this, delta);
+        return new DisplacementDelta(this, delta);
     }
 
     @Override

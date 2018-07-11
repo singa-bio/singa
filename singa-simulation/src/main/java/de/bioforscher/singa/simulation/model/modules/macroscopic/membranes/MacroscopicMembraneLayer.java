@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.membranes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 /**
  * @author cl
  */
-public class MembraneLayer {
+public class MacroscopicMembraneLayer {
 
     private List<MacroscopicMembrane> membranes;
 
-    public MembraneLayer() {
+    public MacroscopicMembraneLayer() {
         membranes = new ArrayList<>();
     }
 
-    public MembraneLayer(List<MacroscopicMembrane> membranes) {
+    public MacroscopicMembraneLayer(List<MacroscopicMembrane> membranes) {
         this.membranes = membranes;
     }
 

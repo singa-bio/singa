@@ -5,7 +5,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
 /**
  * @author cl
  */
-public class SpatialDelta {
+public class DisplacementDelta {
 
     /**
      * The module, that calculated this delta.
@@ -17,7 +17,7 @@ public class SpatialDelta {
      */
     private final Vector2D deltaVector;
 
-    public SpatialDelta(DisplacementBasedModule module, Vector2D deltaVector) {
+    public DisplacementDelta(DisplacementBasedModule module, Vector2D deltaVector) {
         this.module = module;
         this.deltaVector = deltaVector;
     }

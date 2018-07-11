@@ -34,9 +34,9 @@ public class CellRegion {
     }
 
     public static CellRegion forVesicle(String identifier) {
-        CellRegion region = new CellRegion("Vesicle-"+identifier);
-        region.addSubSection(INNER, new CellSubsection("V"+identifier+"I"));
-        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection("V"+identifier+"M"));
+        CellRegion region = new CellRegion(identifier+"-region");
+        region.addSubSection(INNER, new CellSubsection(identifier+"-cargo"));
+        region.addSubSection(CellTopology.MEMBRANE, new CellSubsection(identifier+"-coat"));
         return region;
     }
 

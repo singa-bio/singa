@@ -99,7 +99,7 @@ public class VesicleDiffusionTest {
         vesicle.getConcentrationContainer().set(INNER, water, 50.0);
 
         // add vesicle transport layer
-        VesicleLayer layer = new VesicleLayer();
+        VesicleLayer layer = new VesicleLayer(simulation);
         layer.addVesicle(vesicle);
         simulation.setVesicleLayer(layer);
 

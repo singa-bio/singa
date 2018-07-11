@@ -20,6 +20,14 @@ import de.bioforscher.singa.simulation.model.modules.concentration.imlementation
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisBudding;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleAttachment;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneTracer;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
@@ -42,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static de.bioforscher.singa.simulation.features.endocytosis.ActinBoostVelocity.DEFAULT_ACTIN_VELOCITY;
+import static de.bioforscher.singa.simulation.features.endocytosis.AttachmentDistance.DEFAULT_ATTACHMENT_DISTANCE;
 import static de.bioforscher.singa.simulation.features.endocytosis.BuddingRate.DEFAULT_BUDDING_RATE;
 import static de.bioforscher.singa.simulation.features.endocytosis.MaturationTime.DEFAULT_MATURATION_TIME;
 import static de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius.DEFAULT_VESICLE_RADIUS;
@@ -58,11 +67,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
     private Canvas canvas;
     private FilamentLayer skeletalLayer;
-    private MembraneLayer membraneLayer;
+    private MacroscopicMembraneLayer membraneLayer;
     private Rectangle rectangle;
     private AutomatonGraph graph;
     private Simulation simulation;
-    private EndocytosisBudding endocytosis;
+    private EndocytosisBudding budding;
 
     public static void main(String[] args) {
         launch();
@@ -81,15 +90,16 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         root.setCenter(canvas);
 
         simulation = new Simulation();
+        simulation.setSimulationRegion(rectangle);
 
-        // setup regions
+        // setup scaling
         ComparableQuantity<Length> systemExtend = Quantities.getQuantity(22, MICRO(METRE));
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
         Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
 
-        // distribute nodes to sections
+        // setup regions
         CellRegion outer = new CellRegion("Outer");
         CellSubsection outerSubsection = new CellSubsection("Aqueous Solution");
         outer.addSubSection(CellTopology.INNER, outerSubsection);
@@ -131,30 +141,35 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .addSubstrate(clathrinTriskelion)
                 .build();
 
-        // setup endocytosis
-        endocytosis = new EndocytosisBudding();
-        endocytosis.setSimulation(simulation);
-        endocytosis.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
-        endocytosis.setFeature(DEFAULT_BUDDING_RATE);
-        endocytosis.setFeature(DEFAULT_VESICLE_RADIUS);
-        endocytosis.setFeature(DEFAULT_MATURATION_TIME);
-
-        simulation.getModules().add(endocytosis);
+        // setup endocytosis budding
+        budding = new EndocytosisBudding();
+        budding.setSimulation(simulation);
+        budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
+        budding.setFeature(DEFAULT_BUDDING_RATE);
+        budding.setFeature(DEFAULT_VESICLE_RADIUS);
+        budding.setFeature(DEFAULT_MATURATION_TIME);
+        simulation.getModules().add(budding);
 
         // setup vesicle diffusion
-//        VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
-//        vesicleDiffusion.useLiteratureDiffusivity();
-//        vesicleDiffusion.setSimulation(simulation);
-//        simulation.getModules().add(vesicleDiffusion);
+        VesicleDiffusion diffusion = new VesicleDiffusion();
+        diffusion.useLiteratureDiffusivity();
+        diffusion.setSimulation(simulation);
+        simulation.getModules().add(diffusion);
 
         // setup actin boost
         EndocytosisActinBoost boost = new EndocytosisActinBoost();
         boost.setDecayingEntity(clathrinTriskelion);
         boost.setFeature(DEFAULT_ACTIN_VELOCITY);
-        boost.setSimulationRegion(rectangle);
         boost.setSimulation(simulation);
         simulation.getModules().add(boost);
 
+        // setup attachment
+        VesicleAttachment attachment = new VesicleAttachment();
+        attachment.setFeature(DEFAULT_ATTACHMENT_DISTANCE);
+        attachment.setSimulation(simulation);
+        simulation.getModules().add(attachment);
+
+        // setup graph and assign regions
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
         for (AutomatonNode node : graph.getNodes()) {
@@ -175,43 +190,49 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         AutomatonGraphs.circleRegion(graph, nuclearEnvelope, new RectangularCoordinate(11, 11), 3);
         AutomatonGraphs.fillRegion(graph, nucleus, new RectangularCoordinate(11, 11), 2);
 
-        // 1 setup spatial representations
+        // setup spatial representations
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
-        membraneLayer = new MembraneLayer(MembraneComposer.composeMacroscopicMembrane(graph));
+        membraneLayer = new MacroscopicMembraneLayer(MacroscopicMembraneTracer.composeMacroscopicMembrane(graph));
+        simulation.setMembraneLayer(membraneLayer);
 
         // add left membrane to as endocytosis site
-        // TODO the spawn frequency should be depending on the area of segments
         List<MacroscopicMembrane> membranes = membraneLayer.getMembranes();
         for (MacroscopicMembrane membrane : membranes) {
             if (membrane.getIdentifier().equals("Cell membrane")) {
-                for (MembraneSegment membraneSegment : membrane.getSegments()) {
+                for (MacroscopicMembraneSegment membraneSegment : membrane.getSegments()) {
                     if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
-                        endocytosis.addMembraneSegment(membraneSegment);
+                        budding.addMembraneSegment(membraneSegment);
                     }
                 }
             }
         }
 
         // setup filament layer
-        skeletalLayer = new FilamentLayer(rectangle, membraneLayer);
-//        Iterator<MacroscopicMembrane> iterator = membraneLayer.getMembranes().iterator();
-//        iterator.next();
-//        MacroscopicMembrane membrane = iterator.next();
-//        for (int i = 0; i < 30; i++) {
-//            skeletalLayer.spawnHorizontalFilament(membrane);
-//        }
+        skeletalLayer = new FilamentLayer(rectangle, membraneLayer, simulation);
+        Iterator<MacroscopicMembrane> iterator = membraneLayer.getMembranes().iterator();
+        iterator.next();
+        MacroscopicMembrane membrane = iterator.next();
+        for (int i = 0; i < 30; i++) {
+            skeletalLayer.spawnHorizontalFilament(membrane);
+        }
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        final boolean[] hasGrowingFilaments = {true};
+
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // skeletalLayer.nextEpoch();
-                simulation.nextEpoch();
-                System.out.println(simulation.getElapsedTime().to(SECOND));
+                if (hasGrowingFilaments[0]) {
+                    hasGrowingFilaments[0] = skeletalLayer.hasGrowingFilaments();
+                    skeletalLayer.nextEpoch();
+                } else {
+                    simulation.nextEpoch();
+                    System.out.println(simulation.getElapsedTime().to(SECOND));
+                }
                 render();
             }
         };
@@ -254,8 +275,8 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         getGraphicsContext().setLineWidth(3);
         if (membraneLayer != null) {
             for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                List<MembraneSegment> segments = membrane.getSegments();
-                for (MembraneSegment segment : segments) {
+                List<MacroscopicMembraneSegment> segments = membrane.getSegments();
+                for (MacroscopicMembraneSegment segment : segments) {
                     List<LineSegment> lineSegments = segment.getLineSegments();
                     for (LineSegment lineSegment : lineSegments) {
                         strokeLineSegment(lineSegment);
@@ -266,7 +287,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw budding vesicles
         getGraphicsContext().setLineWidth(1);
         getGraphicsContext().setFill(Color.YELLOWGREEN);
-        for (Vesicle vesicle : endocytosis.getMaturingVesicles().keySet()) {
+        for (Vesicle vesicle : budding.getMaturingVesicles().keySet()) {
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
@@ -304,6 +325,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                     }
                     previous = current;
                 }
+            }
+            getGraphicsContext().setStroke(Color.GRAY);
+            getGraphicsContext().setLineWidth(1);
+            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
+                strokeStraight(node.getPosition(), skeletalFilament.getHead());
             }
         }
     }

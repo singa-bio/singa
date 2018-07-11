@@ -1,15 +1,20 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.filaments;
 
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.simulation.Simulation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static de.bioforscher.singa.simulation.model.modules.macroscopic.SkeletalFilament.FilamentBehaviour.*;
+import static de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.*;
 import static java.lang.Math.PI;
 
 /**
@@ -18,17 +23,19 @@ import static java.lang.Math.PI;
 public class FilamentLayer {
 
     private List<SkeletalFilament> filaments;
-    private MembraneLayer membraneLayer;
+    private MacroscopicMembraneLayer membraneLayer;
     private Rectangle simulationRegion;
+    private Simulation simulation;
 
-    public FilamentLayer(Rectangle simulationRegion, MembraneLayer membraneLayer) {
+    public FilamentLayer(Rectangle simulationRegion, MacroscopicMembraneLayer membraneLayer, Simulation simulation) {
         filaments = new ArrayList<>();
         this.simulationRegion = simulationRegion;
         this.membraneLayer = membraneLayer;
+        this.simulation = simulation;
     }
 
     public void spawnFilament(MacroscopicMembrane membrane) {
-        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+        List<MacroscopicMembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
         LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
         // add corresponding filament
@@ -42,7 +49,7 @@ public class FilamentLayer {
     }
 
     public void spawnHorizontalFilament(MacroscopicMembrane membrane) {
-        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+        List<MacroscopicMembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
         LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
         // add corresponding filament
@@ -89,6 +96,7 @@ public class FilamentLayer {
     }
 
     public void nextEpoch() {
+        // TODO scale with time
         ListIterator<SkeletalFilament> iterator = filaments.listIterator();
         while (iterator.hasNext()) {
             SkeletalFilament filament = iterator.next();
@@ -108,7 +116,7 @@ public class FilamentLayer {
             // TODO collisions with simulation borders
             if (filament.getPlusEndBehaviour() != STAGNANT) {
                 for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                    for (MembraneSegment membraneSegment : membrane.getSegments()) {
+                    for (MacroscopicMembraneSegment membraneSegment : membrane.getSegments()) {
                         for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
                             if (lineSegment.distanceTo(head) < 1 && filament.getSegments().size() > 10) {
                                 filament.setPlusEndBehaviour(STAGNANT);
@@ -121,33 +129,37 @@ public class FilamentLayer {
 
         }
         // check pairwise interactions
-        for (int first = 0; first < filaments.size(); first++) {
-            SkeletalFilament filament1 = filaments.get(first);
-            // only check each filament once
-            for (int second = first + 1; second < filaments.size(); second++) {
-                SkeletalFilament filament2 = filaments.get(second);
-                if (filament1 != filament2) {
-                    // check pairwise distances
-                    double distance = filament1.distanceTo(filament2);
-                    // TODO < 25 nm in system scale
-                    if (distance < 1) {
-                        // calculate angle and convert to degree
-                        double angle = filament1.angleTo(filament2) * 180 / PI;
-                        if (angle < 40) {
-                            // zippering - plus: follow
-                            if (filament1.getPlusEndBehaviour() == GROW) {
-                                filament1.setPlusEndBehaviour(FOLLOW);
-                                filament1.setLeadFilament(filament2);
-                            }
-                        }
+        for (SkeletalFilament filament : filaments) {
+            Map.Entry<SkeletalFilament, Double> closestRelevantDistance = filament.getClosestRelevantDistance();
+            SkeletalFilament closestFragment = closestRelevantDistance.getKey();
+            double closestDistance = closestRelevantDistance.getValue();
+            // TODO < 25 nm in system scale
+            if (closestDistance < 1) {
+                // calculate angle and convert to degree
+                double angle = filament.angleTo(closestFragment) * 180 / PI;
+                if (angle < 40) {
+                    // zippering - plus: follow
+                    if (filament.getPlusEndBehaviour() == GROW) {
+                        filament.setPlusEndBehaviour(FOLLOW);
+                        filament.setLeadFilament(closestFragment);
                     }
                 }
             }
         }
+
+    }
+
+    public boolean hasGrowingFilaments() {
+        for (SkeletalFilament filament : filaments) {
+            if (filament.getPlusEndBehaviour() != SkeletalFilament.FilamentBehaviour.STAGNANT) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addFilament(Vector2D initialPosition, Vector2D initialDirection) {
-        filaments.add(new SkeletalFilament(initialPosition, initialDirection));
+        filaments.add(new SkeletalFilament(initialPosition, initialDirection, simulation.getGraph()));
     }
 
     public List<SkeletalFilament> getFilaments() {

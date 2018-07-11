@@ -40,7 +40,7 @@ public class DisplacementBasedModule implements UpdateModule {
     /**
      * The functions that are applied with each epoch.
      */
-    private final Map<Function<Vesicle, SpatialDelta>, Predicate<Vesicle>> deltaFunctions;
+    private final Map<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> deltaFunctions;
 
     private String identifier;
     private FeatureManager featureManager;
@@ -59,7 +59,7 @@ public class DisplacementBasedModule implements UpdateModule {
         state = PENDING;
     }
 
-    public void addDeltaFunction(Function<Vesicle, SpatialDelta> deltaFunction, Predicate<Vesicle> predicate) {
+    public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
     }
 
@@ -78,20 +78,20 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     public void determineDeltas(Vesicle vesicle) {
-        for (Map.Entry<Function<Vesicle, SpatialDelta>, Predicate<Vesicle>> entry : deltaFunctions.entrySet()) {
+        for (Map.Entry<Function<Vesicle, DisplacementDelta>, Predicate<Vesicle>> entry : deltaFunctions.entrySet()) {
             // test predicate
             if (entry.getValue().test(vesicle)) {
-                SpatialDelta spatialDelta = entry.getKey().apply(vesicle);
+                DisplacementDelta spatialDelta = entry.getKey().apply(vesicle);
                 logDelta(vesicle, spatialDelta);
                 vesicle.addPotentialSpatialDelta(spatialDelta);
             }
         }
     }
 
-    private void logDelta(Vesicle vesicle, SpatialDelta delta) {
+    private void logDelta(Vesicle vesicle, DisplacementDelta delta) {
         logger.trace("Displacement delta for {} at {} is {}",
                 vesicle.getStringIdentifier(),
-                vesicle.getPosition(),
+                vesicle.getCurrentPosition(),
                 delta.getDeltaVector());
     }
 

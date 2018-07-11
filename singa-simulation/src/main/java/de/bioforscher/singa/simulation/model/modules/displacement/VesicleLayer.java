@@ -1,9 +1,14 @@
 package de.bioforscher.singa.simulation.model.modules.displacement;
 
 import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +29,13 @@ public class VesicleLayer {
      */
     private static final Logger logger = LoggerFactory.getLogger(DisplacementBasedModule.class);
 
-    public static VesicleLayer EMPTY_LAYER = new VesicleLayer();
-
     private List<Vesicle> vesicles;
-
     private Rectangle simulationArea;
-
     private final Quantity<Length> displacementEpsilon;
+    private Simulation simulation;
 
-    public VesicleLayer() {
+    public VesicleLayer(Simulation simulation) {
+        this.simulation = simulation;
         vesicles = new ArrayList<>();
         displacementEpsilon = Environment.getNodeDistance().divide(10);
     }
@@ -45,6 +48,14 @@ public class VesicleLayer {
         this.simulationArea = simulationArea;
     }
 
+    public Simulation getSimulation() {
+        return simulation;
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
+    }
+
     public void addVesicle(Vesicle vesicle) {
         vesicles.add(vesicle);
     }
@@ -55,26 +66,41 @@ public class VesicleLayer {
 
     private void checkForCollisions() {
         //compare the distance to combined radii
-        LabeledSymmetricMatrix<Vesicle> distances = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(vesicles, Vesicle::getPotentialUpdate);
+        LabeledSymmetricMatrix<Vesicle> distances = SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(vesicles, Vesicle::getNextPosition);
+        vesicleLoop:
         for (Vesicle vesicle1 : vesicles) {
-            // check for collisions with other vesicles
+            // check collisions with other vesicles
             double firstRadius = Environment.convertSystemToSimulationScale(vesicle1.getRadius());
             for (Vesicle vesicle2 : vesicles) {
                 if (vesicle1 != vesicle2) {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
                     double combinedRadii = firstRadius * Environment.convertSystemToSimulationScale(vesicle2.getRadius());
                     if (distance < combinedRadii) {
-                        vesicle1.permitDisplacement();
-                        break;
+                        vesicle1.resetNextPosition();
+                        continue vesicleLoop;
                     }
                 }
             }
-            // check for collisions with border
-            double x = vesicle1.getPotentialUpdate().getX();
-            double y = vesicle1.getPotentialUpdate().getY();
+            // check collisions with membranes
+            for (MacroscopicMembrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
+                for (MacroscopicMembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
+                    for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
+                        if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
+                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
+                            if (!displacementVector.intersectionsWith(lineSegment).isEmpty()) {
+                                vesicle1.resetNextPosition();
+                                continue vesicleLoop;
+                            }
+                        }
+                    }
+                }
+            }
+            // check collisions with border
+            double x = vesicle1.getNextPosition().getX();
+            double y = vesicle1.getNextPosition().getY();
             if (x - firstRadius < simulationArea.getLeftMostXPosition() || x + firstRadius > simulationArea.getRightMostXPosition() ||
                     y - firstRadius < simulationArea.getTopMostYPosition() || y + firstRadius > simulationArea.getBottomMostYPosition()) {
-                vesicle1.permitDisplacement();
+                vesicle1.resetNextPosition();
             }
         }
     }
@@ -95,16 +121,16 @@ public class VesicleLayer {
     public void clearUpdates() {
         for (Vesicle vesicle : vesicles) {
             vesicle.clearPotentialConcentrationDeltas();
-            vesicle.clearPotentialSpatialDeltas();
-            vesicle.permitDisplacement();
+            vesicle.clearPotentialDisplacementDeltas();
+            vesicle.resetNextPosition();
         }
     }
 
     public void applyDeltas() {
         checkForCollisions();
         for (Vesicle vesicle : vesicles) {
-            vesicle.move();
-            vesicle.clearPotentialSpatialDeltas();
+            vesicle.clearPotentialDisplacementDeltas();
+            vesicle.updatePosition();
         }
     }
 

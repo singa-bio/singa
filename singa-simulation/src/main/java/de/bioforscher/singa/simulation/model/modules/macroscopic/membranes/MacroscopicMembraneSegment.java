@@ -1,4 +1,4 @@
-package de.bioforscher.singa.simulation.model.modules.macroscopic;
+package de.bioforscher.singa.simulation.model.modules.macroscopic.membranes;
 
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * @author cl
  */
-public class MembraneSegment {
+public class MacroscopicMembraneSegment {
 
     AutomatonNode node;
     List<LineSegment> segments;
 
-    public MembraneSegment(AutomatonNode node) {
+    public MacroscopicMembraneSegment(AutomatonNode node) {
         this.node = node;
         segments = new ArrayList<>();
     }

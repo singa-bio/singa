@@ -14,14 +14,12 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -30,15 +28,19 @@ import javax.measure.quantity.Volume;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static tec.uom.se.unit.MetricPrefix.NANO;
-import static tec.uom.se.unit.Units.METRE;
-
 /**
  * @author cl
  */
 public class Vesicle implements Updatable, Featureable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Vesicle.class);
+    public enum AttachmentState {
+        ACTIN_DEPOLYMERIZATION, MICROTUBULE, UNATTACHED
+    }
+
+    public enum TargetDirection {
+        PLUS, MINUS
+    }
+
     private static AtomicInteger vesicleCounter = new AtomicInteger();
 
     protected static final Set<Class<? extends Feature>> availableFeatures = new HashSet<>();
@@ -54,15 +56,16 @@ public class Vesicle implements Updatable, Featureable {
 
     protected FeatureContainer features;
 
-    private ConcentrationDeltaManager updateManager;
+    private ConcentrationDeltaManager concentrationManager;
+    private DisplacementDeltaManager displacementManager;
+
     private final CellRegion region;
     private Map<AutomatonNode, Quantity<Area>> associatedNodes;
 
-    private Vector2D position;
-    private List<SpatialDelta> potentialSpatialDeltas;
-    private Vector2D potentialUpdate;
-
-    public Quantity<Length> totalDistance = Quantities.getQuantity(0.0, NANO(METRE));
+    private AttachmentState attachmentState;
+    private TargetDirection targetDirection;
+    private SkeletalFilament attachedFilament;
+    private ListIterator<Vector2D> segmentIterator;
 
     /**
      * The volume of a sphere is calculated by
@@ -76,11 +79,11 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     /**
-     * The volume of a sphere is calculated by
+     * The area of a sphere is calculated by
      * V = 4/3 * pi * radius * radius * radius
      *
      * @param radius the radius of the vesicle
-     * @return The volume.
+     * @return The area.
      */
     private static Quantity<Area> calculateArea(Quantity<Length> radius) {
         return radius.multiply(radius).multiply(Math.PI).multiply(4.0).asType(Area.class);
@@ -88,21 +91,25 @@ public class Vesicle implements Updatable, Featureable {
 
     public Vesicle(String identifier, Vector2D position, Quantity<Length> radius) {
         this.identifier = identifier;
-        this.position = position;
-        potentialSpatialDeltas = new ArrayList<>();
         features = new ChemistryFeatureContainer();
         setRadius(radius);
         region = CellRegion.forVesicle(identifier);
-        updateManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
+        concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
+        displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
-        this("Vesicle "+vesicleCounter.getAndIncrement(), position, radius);
+        this("Vesicle " + vesicleCounter.getAndIncrement(), position, radius);
     }
 
-    public Vector2D getPosition() {
-        return position;
+    @Override
+    public String getStringIdentifier() {
+        return identifier;
+    }
+
+    public Vector2D getCurrentPosition() {
+        return displacementManager.getCurrentPosition();
     }
 
     public Quantity<Length> getRadius() {
@@ -117,21 +124,48 @@ public class Vesicle implements Updatable, Featureable {
         return volume;
     }
 
-    public Vector2D getPotentialUpdate() {
-        return potentialUpdate;
+    public Vector2D getNextPosition() {
+        return displacementManager.getNextPosition();
     }
 
-    public void addPotentialSpatialDelta(SpatialDelta spatialDelta) {
-        potentialSpatialDeltas.add(spatialDelta);
+    public AttachmentState getAttachmentState() {
+        return attachmentState;
     }
 
-    public SpatialDelta getSpatialDelta(DisplacementBasedModule module) {
-        for (SpatialDelta potentialSpatialDelta : potentialSpatialDeltas) {
-            if (potentialSpatialDelta.getModule().equals(module)) {
-                return potentialSpatialDelta;
-            }
-        }
-        return null;
+    public void setAttachmentState(AttachmentState attachmentState) {
+        this.attachmentState = attachmentState;
+    }
+
+    public SkeletalFilament getAttachedFilament() {
+        return attachedFilament;
+    }
+
+    public void setAttachedFilament(SkeletalFilament attachedFilament) {
+        this.attachedFilament = attachedFilament;
+    }
+
+    public TargetDirection getTargetDirection() {
+        return targetDirection;
+    }
+
+    public void setTargetDirection(TargetDirection targetDirection) {
+        this.targetDirection = targetDirection;
+    }
+
+    public ListIterator<Vector2D> getSegmentIterator() {
+        return segmentIterator;
+    }
+
+    public void setSegmentIterator(ListIterator<Vector2D> segmentIterator) {
+        this.segmentIterator = segmentIterator;
+    }
+
+    public void addPotentialSpatialDelta(DisplacementDelta spatialDelta) {
+        displacementManager.addPotentialSpatialDelta(spatialDelta);
+    }
+
+    public DisplacementDelta getSpatialDelta(DisplacementBasedModule module) {
+        return displacementManager.getPotentialSpatialDelta(module);
     }
 
     public void setRadius(Quantity<Length> radius) {
@@ -142,11 +176,11 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        updateManager.getConcentrationContainer().set(region.getInnerSubsection(), entity, concentration);
+        concentrationManager.getConcentrationContainer().set(region.getInnerSubsection(), entity, concentration);
     }
 
     public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return updateManager.getConcentrationContainer().get(region.getInnerSubsection(), entity);
+        return concentrationManager.getConcentrationContainer().get(region.getInnerSubsection(), entity);
     }
 
     public Map<AutomatonNode, Quantity<Area>> getAssociatedNodes() {
@@ -165,30 +199,19 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     public Vector2D calculateTotalDisplacement() {
-        Vector2D sum = new Vector2D(0.0,0.0);
-        for (SpatialDelta potentialSpatialDelta : potentialSpatialDeltas) {
-            sum = sum.add(potentialSpatialDelta.getDeltaVector());
-        }
-        potentialUpdate = position.add(sum);
-        return sum;
+        return displacementManager.calculateTotalDisplacement();
     }
 
-    public void clearPotentialSpatialDeltas() {
-        potentialSpatialDeltas.clear();
+    public void clearPotentialDisplacementDeltas() {
+        displacementManager.clearPotentialDisplacementDeltas();
     }
 
-    public void permitDisplacement() {
-        potentialUpdate = position;
+    public void resetNextPosition() {
+        displacementManager.resetNextPosition();
     }
 
-    public void move() {
-        logger.trace("Moving vesicle from {} to {}.", position, potentialUpdate);
-        position = potentialUpdate;
-    }
-
-    @Override
-    public String getStringIdentifier() {
-        return "Vesicle "+identifier;
+    public void updatePosition() {
+        displacementManager.updatePosition();
     }
 
     /**
@@ -197,7 +220,7 @@ public class Vesicle implements Updatable, Featureable {
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return updateManager.isObserved();
+        return concentrationManager.isObserved();
     }
 
     /**
@@ -206,17 +229,17 @@ public class Vesicle implements Updatable, Featureable {
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
-        updateManager.setObserved(isObserved);
+        concentrationManager.setObserved(isObserved);
     }
 
     @Override
     public ConcentrationContainer getConcentrationContainer() {
-        return updateManager.getConcentrationContainer();
+        return concentrationManager.getConcentrationContainer();
     }
 
     @Override
     public Quantity<MolarConcentration> getConcentration(CellSubsection cellSection, ChemicalEntity chemicalEntity) {
-        return updateManager.getConcentrationContainer().get(cellSection, chemicalEntity);
+        return concentrationManager.getConcentrationContainer().get(cellSection, chemicalEntity);
     }
 
     @Override
@@ -226,47 +249,47 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public Set<CellSubsection> getAllReferencedSections() {
-        return updateManager.getConcentrationContainer().getReferencedSubSections();
+        return concentrationManager.getConcentrationContainer().getReferencedSubSections();
     }
 
     @Override
     public List<ConcentrationDelta> getPotentialSpatialDeltas() {
-        return updateManager.getPotentialDeltas();
+        return concentrationManager.getPotentialDeltas();
     }
 
     @Override
     public void addPotentialDelta(ConcentrationDelta delta) {
-        updateManager.addPotentialDelta(delta);
+        concentrationManager.addPotentialDelta(delta);
     }
 
     @Override
     public void clearPotentialConcentrationDeltas() {
-        updateManager.clearPotentialDeltas();
+        concentrationManager.clearPotentialDeltas();
     }
 
     @Override
     public void clearPotentialDeltasBut(UpdateModule module) {
-        updateManager.clearPotentialDeltasBut(module);
-        clearPotentialSpatialDeltas();
+        concentrationManager.clearPotentialDeltasBut(module);
+        clearPotentialDisplacementDeltas();
     }
 
     @Override
     public boolean hasDeltas() {
-        return !updateManager.getFinalDeltas().isEmpty();
+        return !concentrationManager.getFinalDeltas().isEmpty();
     }
 
     @Override
     public void shiftDeltas() {
-        updateManager.shiftDeltas();
+        concentrationManager.shiftDeltas();
     }
 
     @Override
     public void applyDeltas() {
-        updateManager.applyDeltas();
+        concentrationManager.applyDeltas();
     }
 
     public Circle getCircleRepresentation() {
-        return new Circle(position,Environment.convertSystemToSimulationScale(radius));
+        return new Circle(displacementManager.getCurrentPosition(), Environment.convertSystemToSimulationScale(radius));
     }
 
     @Override
@@ -304,9 +327,7 @@ public class Vesicle implements Updatable, Featureable {
 
     @Override
     public String toString() {
-        return "Vesicle{" +
-                "radius=" + radius +
-                ", position=" + position +
-                '}';
+        return "Vesicle: " + identifier + " radius = " + radius + " " + " position = " + displacementManager.getCurrentPosition();
     }
+
 }
