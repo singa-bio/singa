@@ -18,10 +18,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisBudding;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleAttachment;
-import de.bioforscher.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import de.bioforscher.singa.simulation.model.modules.displacement.implementations.*;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
@@ -53,6 +50,7 @@ import static de.bioforscher.singa.simulation.features.endocytosis.ActinBoostVel
 import static de.bioforscher.singa.simulation.features.endocytosis.AttachmentDistance.DEFAULT_ATTACHMENT_DISTANCE;
 import static de.bioforscher.singa.simulation.features.endocytosis.BuddingRate.DEFAULT_BUDDING_RATE;
 import static de.bioforscher.singa.simulation.features.endocytosis.MaturationTime.DEFAULT_MATURATION_TIME;
+import static de.bioforscher.singa.simulation.features.endocytosis.MotorMovementVelocity.DEFAULT_MOTOR_VELOCITY;
 import static de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius.DEFAULT_VESICLE_RADIUS;
 import static de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -168,6 +166,12 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         attachment.setFeature(DEFAULT_ATTACHMENT_DISTANCE);
         attachment.setSimulation(simulation);
         simulation.getModules().add(attachment);
+
+        // setup transport
+        VesicleTransport transport = new VesicleTransport();
+        transport.setFeature(DEFAULT_MOTOR_VELOCITY);
+        transport.setSimulation(simulation);
+        simulation.getModules().add(transport);
 
         // setup graph and assign regions
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);

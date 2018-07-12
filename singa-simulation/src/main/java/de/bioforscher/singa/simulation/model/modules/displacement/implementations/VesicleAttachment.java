@@ -75,9 +75,9 @@ public class VesicleAttachment extends DisplacementBasedModule {
                 }
             }
         }
-
-        segmentIterator = closestFilament.getSegmentIterator(closestSegment);
-
+        if (closestSegment != null) {
+            segmentIterator = closestFilament.getSegmentIterator(closestSegment);
+        }
     }
 
 }

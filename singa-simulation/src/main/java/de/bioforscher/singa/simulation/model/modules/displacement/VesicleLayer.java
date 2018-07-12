@@ -72,6 +72,7 @@ public class VesicleLayer {
             // check collisions with other vesicles
             double firstRadius = Environment.convertSystemToSimulationScale(vesicle1.getRadius());
             for (Vesicle vesicle2 : vesicles) {
+                // TODO speed up by comparing only to close vesicles with referenced automaton nodes
                 if (vesicle1 != vesicle2) {
                     double distance = distances.getValueForLabel(vesicle1, vesicle2);
                     double combinedRadii = firstRadius * Environment.convertSystemToSimulationScale(vesicle2.getRadius());

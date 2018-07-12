@@ -19,23 +19,23 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class ActinBoostVelocity extends ScalableQuantityFeature<Speed> {
+public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
 
-    public static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
+    private static final Unit<Speed> NANOMETRE_PER_SECOND = new ProductUnit<>(NANO(METRE).divide(SECOND));
 
     /**
      * Average lateral displacement velocity after scission for 11 seconds.
      */
-    public static final ActinBoostVelocity DEFAULT_ACTIN_VELOCITY = new ActinBoostVelocity(Quantities.getQuantity(57.0, NANOMETRE_PER_SECOND), DefautFeatureSources.EHRLICH2004);
+    public static final MotorMovementVelocity DEFAULT_MOTOR_VELOCITY = new MotorMovementVelocity(Quantities.getQuantity(800.0, NANOMETRE_PER_SECOND), DefautFeatureSources.EHRLICH2004);
 
     public static final String SYMBOL = "v_ActinBoost";
 
-    public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, FeatureOrigin featureOrigin) {
+    public MotorMovementVelocity(Quantity<Speed> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity, featureOrigin);
     }
 
-    public ActinBoostVelocity(double frequency, FeatureOrigin featureOrigin) {
-        super(Quantities.getQuantity(frequency,NANOMETRE_PER_SECOND ), featureOrigin);
+    public MotorMovementVelocity(double frequency, FeatureOrigin featureOrigin) {
+        super(Quantities.getQuantity(frequency, NANOMETRE_PER_SECOND), featureOrigin);
     }
 
     @Override

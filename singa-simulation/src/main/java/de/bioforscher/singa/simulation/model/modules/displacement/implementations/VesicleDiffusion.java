@@ -51,7 +51,8 @@ public class VesicleDiffusion extends DisplacementBasedModule {
         if (useEstimation) {
             scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 * vesicle.getFeature(Diffusivity.class).getScaledQuantity().getValue().doubleValue()), Environment.getSystemScale().getUnit()));
         } else {
-            scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 * diffusivity.getScaledQuantity().getValue().doubleValue()), Environment.getSystemScale().getUnit()));
+//            scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(Math.sqrt(2.0 * diffusivity.getScaledQuantity().getValue().doubleValue()), Environment.getSystemScale().getUnit()));
+            scaling = Environment.convertSystemToSimulationScale(Quantities.getQuantity(diffusivity.getScaledQuantity().getValue().doubleValue(), Environment.getSystemScale().getUnit()));
         }
         Vector2D gaussian = Vectors.generateStandardGaussian2DVector();
         return new DisplacementDelta(this, gaussian.multiply(scaling));

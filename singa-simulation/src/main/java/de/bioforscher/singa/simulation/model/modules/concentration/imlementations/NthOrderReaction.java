@@ -1,5 +1,6 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.imlementations;
 
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
 import de.bioforscher.singa.chemistry.features.reactions.ZeroOrderRateConstant;
 import de.bioforscher.singa.features.exceptions.FeatureUnassignableException;
@@ -7,10 +8,12 @@ import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.simulation.model.modules.concentration.ModuleFactory;
 import de.bioforscher.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import de.bioforscher.singa.simulation.model.modules.concentration.reactants.ReactantRole;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Quantity;
+import java.util.List;
 
 /**
  * @author cl
@@ -28,13 +31,25 @@ public class NthOrderReaction extends Reaction {
         // apply
         setApplicationCondition(this::substratesAvailable);
         // function
-        SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, container -> true);
+        SectionDeltaFunction function = new SectionDeltaFunction(this::calculateDeltas, this::containsSubstrate);
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(RateConstant.class);
         // reference module in simulation
         addModuleToSimulation();
     }
+
+    private boolean containsSubstrate(ConcentrationContainer concentrationContainer) {
+        CellSubsection currentSubsection = supplier.getCurrentSubsection();
+        List<ChemicalEntity> substrates = getSubstrates();
+        for (ChemicalEntity substrate : substrates) {
+            if (concentrationContainer.get(currentSubsection, substrate).getValue().doubleValue() == 0.0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     @Override
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
