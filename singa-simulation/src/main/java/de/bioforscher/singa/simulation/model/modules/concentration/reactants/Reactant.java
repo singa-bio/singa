@@ -1,6 +1,7 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.reactants;
 
 import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.Reaction;
 
 /**
  * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s. This abstract class has
@@ -9,10 +10,22 @@ import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
  */
 public abstract class Reactant {
 
+    /**
+     * The referenced entity.
+     */
     private ChemicalEntity entity;
+
+    /**
+     * The role of the reactant.
+     */
     private ReactantRole role;
 
-    public Reactant(ChemicalEntity entity, ReactantRole role) {
+    /**
+     * Creates a new reactant.
+     * @param entity The referenced entity.
+     * @param role The reactants role.
+     */
+    Reactant(ChemicalEntity entity, ReactantRole role) {
         this.entity = entity;
         this.role = role;
     }
@@ -52,6 +65,5 @@ public abstract class Reactant {
     public void setRole(ReactantRole role) {
         this.role = role;
     }
-
 
 }

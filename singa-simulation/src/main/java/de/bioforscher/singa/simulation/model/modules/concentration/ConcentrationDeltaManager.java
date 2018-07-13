@@ -1,34 +1,46 @@
 package de.bioforscher.singa.simulation.model.modules.concentration;
 
+import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
+ * The ConcentrationDeltaManager handles current concentrations of an updatable and the updates to those
+ * concentrations that should be applied during simulation.
+ *
  * @author cl
  */
 public class ConcentrationDeltaManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConcentrationDeltaManager.class);
-
     /**
-     * Deltas that are to be applied to the node.
+     * The logger.
      */
-    private final List<ConcentrationDelta> finalDeltas;
+    private static final Logger logger = LoggerFactory.getLogger(ConcentrationDeltaManager.class);
 
     /**
      * A list of potential deltas.
      */
     private final List<ConcentrationDelta> potentialDeltas;
+
+    /**
+     * The current concentrations.
+     */
+    private ConcentrationContainer currentConcentrations;
+
+    /**
+     * Deltas that are to be applied to the node.
+     */
+    private final List<ConcentrationDelta> finalDeltas;
 
     /**
      * A flag signifying if this node is observed.
@@ -40,36 +52,69 @@ public class ConcentrationDeltaManager {
      */
     private boolean concentrationFixed;
 
-    private ConcentrationContainer concentrations;
-
-    public ConcentrationDeltaManager(ConcentrationContainer concentrationContainer) {
+    /**
+     * Creates a new Concentration Delta Manager.
+     *
+     * @param initialConcentrations The initial concentrations.
+     */
+    public ConcentrationDeltaManager(ConcentrationContainer initialConcentrations) {
         finalDeltas = new ArrayList<>();
         potentialDeltas = new ArrayList<>();
         observed = false;
         concentrationFixed = false;
-        concentrations = concentrationContainer;
+        currentConcentrations = initialConcentrations;
     }
 
+    /**
+     * Returns the current concentration container.
+     *
+     * @return The current concentration container.
+     */
     public ConcentrationContainer getConcentrationContainer() {
-        return concentrations;
+        return currentConcentrations;
     }
 
+    /**
+     * Sets the current concentration container.
+     *
+     * @param concentrations The current concentration container.
+     */
     public void setConcentrationContainer(ConcentrationContainer concentrations) {
-        this.concentrations = concentrations;
+        currentConcentrations = concentrations;
     }
 
+    /**
+     * Returns true if the concentrations are observed.
+     *
+     * @return True if the concentrations are observed.
+     */
     public boolean isObserved() {
         return observed;
     }
 
+    /**
+     * Sets the concentrations to be observed, this additional requires seting up a {@link UpdateEventListener}.
+     *
+     * @param observed True if th concentrations should be observed.
+     */
     public void setObserved(boolean observed) {
         this.observed = observed;
     }
 
+    /**
+     * Returns true if the concentration is fixed - no deltas are applied.
+     *
+     * @return true if the concentration is fixed - no deltas are applied.
+     */
     public boolean isConcentrationFixed() {
         return concentrationFixed;
     }
 
+    /**
+     * Sets the concentration to be fixed - no deltas will be applied.
+     *
+     * @param concentrationFixed True if the concentration should be fixed.
+     */
     public void setConcentrationFixed(boolean concentrationFixed) {
         this.concentrationFixed = concentrationFixed;
     }
@@ -84,20 +129,16 @@ public class ConcentrationDeltaManager {
     }
 
     /**
-     * Adds a list of potential deltas to this node.
+     * Returns all potential deltas that should be applied.
      *
-     * @param potentialDeltas The potential deltas.
+     * @return All potential deltas that should be applied.
      */
-    public void addPotentialDeltas(Collection<ConcentrationDelta> potentialDeltas) {
-        this.potentialDeltas.addAll(potentialDeltas);
-    }
-
     public List<ConcentrationDelta> getPotentialDeltas() {
         return potentialDeltas;
     }
 
     /**
-     * Adds a potential delta to this node.
+     * Adds a potential delta to this updatable.
      *
      * @param potentialDelta The potential delta.
      */
@@ -115,7 +156,7 @@ public class ConcentrationDeltaManager {
 
     /**
      * Clears the list of potential deltas retaining updates from a specific module. Usually done after
-     * {@link AutomatonNode#shiftDeltas()} or after rejecting a time step.
+     * {@link Updatable#shiftDeltas()} or after rejecting a time step.
      */
     public void clearPotentialDeltasBut(UpdateModule module) {
         potentialDeltas.removeIf(delta -> delta.getModule() != module);
@@ -137,7 +178,7 @@ public class ConcentrationDeltaManager {
     public void applyDeltas() {
         if (!concentrationFixed) {
             for (ConcentrationDelta delta : finalDeltas) {
-                Quantity<MolarConcentration> previousConcentration = concentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
+                Quantity<MolarConcentration> previousConcentration = currentConcentrations.get(delta.getCellSubsection(), delta.getChemicalEntity());
                 Quantity<MolarConcentration> updatedConcentration = previousConcentration.add(delta.getQuantity());
                 if (updatedConcentration.getValue().doubleValue() < 0.0) {
                     // FIXME updated concentration should probably not be capped
@@ -145,7 +186,7 @@ public class ConcentrationDeltaManager {
                     updatedConcentration = Environment.emptyConcentration();
                 }
                 logger.trace("Setting c({}) in {} from {} to {} ", delta.getChemicalEntity().getIdentifier(), delta.getCellSubsection().getIdentifier(), previousConcentration, updatedConcentration);
-                concentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
+                currentConcentrations.set(delta.getCellSubsection(), delta.getChemicalEntity(), updatedConcentration);
             }
         }
         finalDeltas.clear();

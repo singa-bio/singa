@@ -161,11 +161,11 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     public void addPotentialSpatialDelta(DisplacementDelta spatialDelta) {
-        displacementManager.addPotentialSpatialDelta(spatialDelta);
+        displacementManager.addPotentialDisplacementDelta(spatialDelta);
     }
 
     public DisplacementDelta getSpatialDelta(DisplacementBasedModule module) {
-        return displacementManager.getPotentialSpatialDelta(module);
+        return displacementManager.getPotentialDisplacementDelta(module);
     }
 
     public void setRadius(Quantity<Length> radius) {

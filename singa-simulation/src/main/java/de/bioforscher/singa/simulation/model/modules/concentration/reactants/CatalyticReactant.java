@@ -9,8 +9,16 @@ import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
  */
 public class CatalyticReactant extends Reactant {
 
+    /**
+     * The strength of the catalytic behaviour.
+     */
     private double strength;
 
+    /**
+     * Creates a new catalytic reactant.
+     * @param entity The referenced entity.
+     * @param role The reactants role.
+     */
     public CatalyticReactant(ChemicalEntity entity, ReactantRole role) {
         super(entity, role);
     }

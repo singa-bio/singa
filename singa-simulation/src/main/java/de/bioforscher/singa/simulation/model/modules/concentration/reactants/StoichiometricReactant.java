@@ -10,62 +10,80 @@ import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
  */
 public class StoichiometricReactant extends Reactant {
 
+    /**
+     * The number of molecules required for one reaction.
+     */
     private double stoichiometricNumber;
-    private double reactionOrder;
-    private boolean rateDetermining;
 
+    /**
+     * The reaction order of the reactant.
+     */
+    private double reactionOrder;
+
+    /**
+     * Creates a new {@link StoichiometricReactant}.
+     * @param entity The referenced entity.
+     * @param role The reactant role.
+     * @param stoichiometricNumber The number of molecules required for one reaction.
+     * @param reactionOrder The reaction order of the reactant.
+     */
     public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber, double reactionOrder) {
         this(entity, role, stoichiometricNumber);
         this.reactionOrder = reactionOrder;
     }
 
+    /**
+     * Creates a new {@link StoichiometricReactant}. Reaction order is set to 1.
+     * @param entity The referenced entity.
+     * @param role The reactant role.
+     * @param stoichiometricNumber The number of molecules required for one reaction.
+     */
     public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber) {
         this(entity, role);
         this.stoichiometricNumber = stoichiometricNumber;
     }
 
-    public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, boolean rateDetermining) {
-        this(entity, role);
-        this.rateDetermining = rateDetermining;
-    }
-
+    /**
+     * Creates a new {@link StoichiometricReactant}. Reaction order and spectrometric number are set to 1 .
+     * @param entity The referenced entity.
+     * @param role The reactant role.
+     */
     public StoichiometricReactant(ChemicalEntity entity, ReactantRole role) {
         super(entity, role);
         stoichiometricNumber = 1;
         reactionOrder = 1;
     }
 
+    /**
+     * Returns the stoichiometric number (the number of molecules required for one reaction.).
+     * @return the stoichiometric number.
+     */
     public double getStoichiometricNumber() {
         return stoichiometricNumber;
     }
 
-    public void setStoichiometricNumber(double stoichiometricNumber) {
-        this.stoichiometricNumber = stoichiometricNumber;
-    }
-
+    /**
+     * Returns the reaction order.
+     * @return The reaction order.
+     */
     public double getReactionOrder() {
         return reactionOrder;
     }
 
-    public void setReactionOrder(double reactionOrder) {
-        this.reactionOrder = reactionOrder;
-    }
-
-    public boolean isRateDetermining() {
-        return rateDetermining;
-    }
-
-    public void setRateDetermining(boolean rateDetermining) {
-        this.rateDetermining = rateDetermining;
-    }
-
+    /**
+     * Returns true if this reactant is a substrate.
+     * @return true if this reactant is a substrate.
+     */
     public boolean isSubstrate() {
         return getRole() == ReactantRole.DECREASING;
     }
 
+    /**
+     * Returns true if this reactant is a product.
+     * @return true if this reactant is a product.
+     */
     public boolean isProduct() {
         return getRole() == ReactantRole.INCREASING;
     }
-
 
 }

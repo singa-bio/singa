@@ -1,8 +1,14 @@
 package de.bioforscher.singa.simulation.model.modules.concentration.scope;
 
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.modules.concentration.*;
+import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
+import de.bioforscher.singa.simulation.model.modules.concentration.FieldSupplier;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.MembraneDiffusion;
 import de.bioforscher.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
+import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
@@ -12,22 +18,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Independent Updatable {@link ConcentrationBasedModule}s require the integer state of a subset of updatables.
+ * For example {@link MembraneDiffusion} might happen between a {@link Vesicle} and an {@link AutomatonNode}, therefore
+ * at least two updatables are changed during calculation. Half step deltas can be calculated independently but, more
+ * half deltas need to be stored to evaluate the error of the computation.
+ *
  * @author cl
  */
-public class SemiDependentUpdatable implements UpdateScope {
+public class SemiDependentUpdate implements UpdateScope {
 
+    /**
+     * The storage of the half concentrations.
+     */
     private Map<Updatable, ConcentrationContainer> halfConcentrations;
+
+    /**
+     * The associated module.
+     */
     private ConcentrationBasedModule module;
 
-    public SemiDependentUpdatable(ConcentrationBasedModule module) {
+    /**
+     * Initializes the update scope for the corresponding module.
+     */
+    public SemiDependentUpdate(ConcentrationBasedModule module) {
         this.module = module;
         halfConcentrations = new HashMap<>();
     }
 
+    /**
+     * Returns a object, managing shared properties of the module.
+     * @return The supplier.
+     */
     private FieldSupplier supply() {
         return module.getSupplier();
     }
 
+    /**
+     * Returns the update specificity behaviour of the module, required for the actual computation of the updates.
+     * @return The update specificity behaviour.
+     */
     private UpdateSpecificity specify() {
         return module.getSpecificity();
     }
@@ -44,7 +73,7 @@ public class SemiDependentUpdatable implements UpdateScope {
     }
 
     @Override
-    public LocalError processUpdatable(Updatable updatable) {
+    public void processUpdatable(Updatable updatable) {
         // calculate full step deltas
         supply().setStrutCalculation(false);
         specify().processContainer(updatable.getConcentrationContainer());
@@ -58,7 +87,6 @@ public class SemiDependentUpdatable implements UpdateScope {
         // clear used deltas
         supply().getCurrentFullDeltas().clear();
         supply().getCurrentHalfDeltas().clear();
-        return supply().getLargestLocalError();
     }
 
     @Override
@@ -66,22 +94,27 @@ public class SemiDependentUpdatable implements UpdateScope {
         module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
     }
 
+    /**
+     * Determines all half step concentrations for each calculated full delta.
+     */
     private void determineHalfStepConcentrations() {
+        // clean up previous values
         halfConcentrations.clear();
         // for each full delta
         for (Map.Entry<ConcentrationDeltaIdentifier, ConcentrationDelta> entry : supply().getCurrentFullDeltas().entrySet()) {
-            ConcentrationDeltaIdentifier identifier = entry.getKey();
-            ConcentrationDelta fullDelta = entry.getValue();
-            Updatable updatable = identifier.getUpdatable();
+            // get required values
+            final ConcentrationDeltaIdentifier identifier = entry.getKey();
+            final ConcentrationDelta fullDelta = entry.getValue();
+            final Updatable updatable = identifier.getUpdatable();
             ConcentrationContainer container;
-            // check if container has been initialized
+            // check if container has already been initialized
             if (halfConcentrations.containsKey(updatable)) {
                 container = halfConcentrations.get(updatable);
             } else {
                 container = updatable.getConcentrationContainer().fullCopy();
                 halfConcentrations.put(updatable, container);
             }
-            // get previous concentration
+            // get full concentration
             Quantity<MolarConcentration> fullConcentration = container.get(identifier.getSubsection(), identifier.getEntity());
             // add half of the full delta
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));

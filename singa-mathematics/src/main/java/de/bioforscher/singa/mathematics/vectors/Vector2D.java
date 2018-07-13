@@ -19,7 +19,7 @@ public class Vector2D extends RegularVector {
     public static final int X_INDEX = 0;
 
     /**
-     * The index of the y (first2DVector) element or coordinate.
+     * The index of the y (second) element or coordinate.
      */
     public static final int Y_INDEX = 1;
 

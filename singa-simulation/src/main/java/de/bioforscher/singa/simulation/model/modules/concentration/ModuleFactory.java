@@ -2,7 +2,7 @@ package de.bioforscher.singa.simulation.model.modules.concentration;
 
 import de.bioforscher.singa.simulation.model.modules.concentration.scope.DependentUpdate;
 import de.bioforscher.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
-import de.bioforscher.singa.simulation.model.modules.concentration.scope.SemiDependentUpdatable;
+import de.bioforscher.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
 import de.bioforscher.singa.simulation.model.modules.concentration.scope.UpdateScope;
 import de.bioforscher.singa.simulation.model.modules.concentration.specifity.EntitySpecific;
 import de.bioforscher.singa.simulation.model.modules.concentration.specifity.SectionSpecific;
@@ -12,19 +12,63 @@ import de.bioforscher.singa.simulation.model.modules.concentration.specifity.Upd
 import java.util.Objects;
 
 /**
+ * Handles module creation with certain {@link UpdateScope} and {@link UpdateSpecificity}.
+ *
  * @author cl
  */
 public class ModuleFactory {
 
+    /**
+     * The type of {@link UpdateScope}.
+     */
     public enum Scope {
-        NEIGHBOURHOOD_DEPENDENT, NEIGHBOURHOOD_INDEPENDENT, SEMI_NEIGHBOURHOOD_DEPENDENT
+        /**
+         * References {@link DependentUpdate}.
+         */
+        NEIGHBOURHOOD_DEPENDENT,
+
+        /**
+         * References {@link IndependentUpdate}.
+         */
+        NEIGHBOURHOOD_INDEPENDENT,
+
+        /**
+         * References {@link SemiDependentUpdate}.
+         */
+        SEMI_NEIGHBOURHOOD_DEPENDENT
     }
 
+    /**
+     * The type of {@link UpdateSpecificity}.
+     */
     public enum Specificity {
-        ENTITY_SPECIFIC, SECTION_SPECIFIC, UPDATABLE_SPECIFIC
+        /**
+         * References {@link EntitySpecific}.
+         */
+        ENTITY_SPECIFIC,
+
+        /**
+         * References {@link SectionSpecific}.
+         */
+        SECTION_SPECIFIC,
+
+        /**
+         * References {@link UpdatableSpecific}.
+         */
+        UPDATABLE_SPECIFIC
     }
 
+    /**
+     * Creates a new module with the specified setup.
+     *
+     * @param moduleCLass The implementation of the module.
+     * @param scope The scope of the module.
+     * @param specificity The specificity of the module.
+     * @param <ModuleImplementation> The type of the implementation.
+     * @return The instantiated module.
+     */
     public static <ModuleImplementation extends ConcentrationBasedModule> ModuleImplementation setupModule(Class<ModuleImplementation> moduleCLass, Scope scope, Specificity specificity) {
+        // instantiate new module
         ModuleImplementation module = null;
         try {
             module = moduleCLass.newInstance();
@@ -32,7 +76,7 @@ public class ModuleFactory {
             e.printStackTrace();
         }
         Objects.requireNonNull(module);
-        // scope
+        // define scope
         UpdateScope updateScope = null;
         switch (scope) {
             case NEIGHBOURHOOD_DEPENDENT:
@@ -42,11 +86,11 @@ public class ModuleFactory {
                 updateScope = new IndependentUpdate(module);
                 break;
             case SEMI_NEIGHBOURHOOD_DEPENDENT:
-                updateScope = new SemiDependentUpdatable(module);
+                updateScope = new SemiDependentUpdate(module);
                 break;
         }
         module.setScope(updateScope);
-        // specificity
+        // define specificity
         UpdateSpecificity updateSpecificity = null;
         switch (specificity) {
             case ENTITY_SPECIFIC:

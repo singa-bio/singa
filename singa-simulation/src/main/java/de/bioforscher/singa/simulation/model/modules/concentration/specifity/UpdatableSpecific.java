@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.model.modules.concentration.specifity;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
-import de.bioforscher.singa.simulation.model.modules.concentration.FieldSupplier;
+import de.bioforscher.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import de.bioforscher.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 
@@ -12,24 +12,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * defines delta functions
+ * Updatable specific {@link ConcentrationBasedModule}s calculate their {@link AbstractDeltaFunction} for every
+ * updatable.
  *
  * @author cl
  */
 public class UpdatableSpecific implements UpdateSpecificity<UpdatableDeltaFunction> {
 
+    /**
+     * The delta functions to be calculated.
+     */
     private List<UpdatableDeltaFunction> deltaFunctions;
+
+    /**
+     * The associated module.
+     */
     private ConcentrationBasedModule module;
 
+    /**
+     * Initializes the update specificity for the corresponding module.
+     */
     public UpdatableSpecific(ConcentrationBasedModule module) {
         this.module = module;
         deltaFunctions = new ArrayList<>();
     }
 
-    private FieldSupplier supply() {
-        return module.getSupplier();
-    }
-
+    @Override
     public void processContainer(ConcentrationContainer container) {
         determineDeltas(container);
     }
@@ -46,9 +54,6 @@ public class UpdatableSpecific implements UpdateSpecificity<UpdatableDeltaFuncti
                 for (Map.Entry<ConcentrationDeltaIdentifier, ConcentrationDelta> entry : fullDeltas.entrySet()) {
                     ConcentrationDelta delta = entry.getValue();
                     ConcentrationDeltaIdentifier identifier = entry.getKey();
-//                    supply().setCurrentUpdatable(identifier.getUpdatable());
-//                    supply().setCurrentSubsection(identifier.getSubsection());
-//                    supply().setCurrentEntity(identifier.getEntity());
                     if (module.deltaIsValid(delta)) {
                         module.handleDelta(identifier, delta);
                     }

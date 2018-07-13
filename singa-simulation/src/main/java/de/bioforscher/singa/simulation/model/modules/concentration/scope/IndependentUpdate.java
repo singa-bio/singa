@@ -5,7 +5,7 @@ import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.FieldSupplier;
-import de.bioforscher.singa.simulation.model.modules.concentration.LocalError;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import de.bioforscher.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
@@ -15,21 +15,43 @@ import javax.measure.Quantity;
 import java.util.Collection;
 
 /**
+ * Independent Updatable {@link ConcentrationBasedModule}s require the integer state of the currently calculated
+ * {@link Updatable}. Therefore the update for the current updatable can be calculated and instantly compared with the
+ * associated half step delta (e.g. {@link Reaction}).
+ *
  * @author cl
  */
 public class IndependentUpdate implements UpdateScope {
 
+    /**
+     * The storage of the half concentration.
+     */
     private ConcentrationContainer halfConcentration;
+
+    /**
+     * The associated module.
+     */
     private ConcentrationBasedModule module;
 
+    /**
+     * Initializes the update scope for the corresponding module.
+     */
     public IndependentUpdate(ConcentrationBasedModule module) {
         this.module = module;
     }
 
+    /**
+     * Returns a object, managing shared properties of the module.
+     * @return The supplier.
+     */
     private FieldSupplier supply() {
         return module.getSupplier();
     }
 
+    /**
+     * Returns the update specificity behaviour of the module, required for the actual computation of the updates.
+     * @return The update specificity behaviour.
+     */
     private UpdateSpecificity specify() {
         return module.getSpecificity();
     }
@@ -46,7 +68,7 @@ public class IndependentUpdate implements UpdateScope {
     }
 
     @Override
-    public LocalError processUpdatable(Updatable updatable) {
+    public void processUpdatable(Updatable updatable) {
         // calculate full step deltas
         supply().setStrutCalculation(false);
         specify().processContainer(updatable.getConcentrationContainer());
@@ -60,7 +82,6 @@ public class IndependentUpdate implements UpdateScope {
         // clear used deltas
         supply().getCurrentFullDeltas().clear();
         supply().getCurrentHalfDeltas().clear();
-        return supply().getLargestLocalError();
     }
 
     @Override
@@ -68,13 +89,22 @@ public class IndependentUpdate implements UpdateScope {
         module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
     }
 
+    /**
+     * Determines the half step concentrations current full delta.
+     */
     private void determineHalfStepConcentration() {
+        // initialize the container
         halfConcentration = supply().getCurrentUpdatable().getConcentrationContainer().fullCopy();
+        // for each full delta
         for (ConcentrationDelta delta : supply().getCurrentFullDeltas().values()) {
-            CellSubsection currentSubsection = delta.getCellSubsection();
-            ChemicalEntity currentEntity = delta.getChemicalEntity();
+            // get required values
+            final CellSubsection currentSubsection = delta.getCellSubsection();
+            final ChemicalEntity currentEntity = delta.getChemicalEntity();
+            // get full concentration
             Quantity<MolarConcentration> fullConcentration = halfConcentration.get(currentSubsection, currentEntity);
+            // add half of the full delta
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(delta.getQuantity().multiply(0.5));
+            // update concentration
             halfConcentration.set(currentSubsection, currentEntity, halfStepConcentration);
         }
     }

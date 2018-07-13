@@ -91,6 +91,11 @@ public class KineticLaw {
         this.currentCellSection = currentCellSection;
     }
 
+    /**
+     * Calculates the velocity of the reaction based on the entities in the concentration container.
+     * @param concentrationContainer The concentration container.
+     * @return The velocity.
+     */
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // set entity parameters
         for (Map.Entry<ChemicalEntity, String> entry : entityReference.entrySet()) {
@@ -98,6 +103,7 @@ public class KineticLaw {
             final String parameterName = entityReference.get(entry.getKey());
             expression.acceptValue(parameterName, concentration.getValue().doubleValue());
         }
+        // calculate
         return expression.evaluate().getValue().doubleValue() * appliedScale;
     }
 

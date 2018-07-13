@@ -2,6 +2,7 @@ package de.bioforscher.singa.simulation.model.modules.concentration.scope;
 
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.simulation.model.modules.concentration.*;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.Diffusion;
 import de.bioforscher.singa.simulation.model.modules.concentration.specifity.UpdateSpecificity;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
@@ -12,22 +13,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Dependent Updatable {@link ConcentrationBasedModule}s require an integer state of basically all updatables in a
+ * simulation. First all updates for all updatables are calculated. Afterwards all half step concentrations are
+ * determined and further all errors are calculated, looking for the {@link Updatable} with the largest
+ * {@link LocalError} (e.g. {@link Diffusion}).
+ *
  * @author cl
  */
 public class DependentUpdate implements UpdateScope {
 
+    /**
+     * The storage of the half concentrations.
+     */
     private Map<Updatable, ConcentrationContainer> halfConcentrations;
+
+    /**
+     * The associated module.
+     */
     private ConcentrationBasedModule<?> module;
 
+    /**
+     * Initializes the update scope for the corresponding module.
+     */
     public DependentUpdate(ConcentrationBasedModule<?> module) {
         this.module = module;
         halfConcentrations = new HashMap<>();
     }
 
+    /**
+     * Returns a object, managing shared properties of the module.
+     * @return The supplier.
+     */
     private FieldSupplier supply() {
         return module.getSupplier();
     }
 
+    /**
+     * Returns the update specificity behaviour of the module, required for the actual computation of the updates.
+     * @return The update specificity behaviour.
+     */
     private UpdateSpecificity specify() {
         return module.getSpecificity();
     }
@@ -57,9 +81,8 @@ public class DependentUpdate implements UpdateScope {
     }
 
     @Override
-    public LocalError processUpdatable(Updatable updatable) {
+    public void processUpdatable(Updatable updatable) {
         processAllUpdatables(module.getSimulation().getUpdatables());
-        return supply().getLargestLocalError();
     }
 
     @Override
@@ -67,13 +90,18 @@ public class DependentUpdate implements UpdateScope {
         module.getSimulation().getUpdatables().forEach(Updatable::clearPotentialConcentrationDeltas);
     }
 
+    /**
+     * Determines all half step concentrations for each calculated full delta.
+     */
     private void determineHalfStepConcentrations() {
+        // clean up previous values
         halfConcentrations.clear();
         // for each full delta
         for (Map.Entry<ConcentrationDeltaIdentifier, ConcentrationDelta> entry : supply().getCurrentFullDeltas().entrySet()) {
-            ConcentrationDeltaIdentifier identifier = entry.getKey();
-            ConcentrationDelta fullDelta = entry.getValue();
-            Updatable updatable = identifier.getUpdatable();
+            // get required values
+            final ConcentrationDeltaIdentifier identifier = entry.getKey();
+            final ConcentrationDelta fullDelta = entry.getValue();
+            final Updatable updatable = identifier.getUpdatable();
             ConcentrationContainer container;
             // check if container has been initialized
             if (halfConcentrations.containsKey(updatable)) {
@@ -82,7 +110,7 @@ public class DependentUpdate implements UpdateScope {
                 container = updatable.getConcentrationContainer().fullCopy();
                 halfConcentrations.put(updatable, container);
             }
-            // get previous concentration
+            // get full concentration
             Quantity<MolarConcentration> fullConcentration = updatable.getConcentration(identifier.getSubsection(), identifier.getEntity());
             // add half of the full delta
             Quantity<MolarConcentration> halfStepConcentration = fullConcentration.add(fullDelta.getQuantity().multiply(0.5));

@@ -120,7 +120,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         CellRegion nucleus = new CellRegion("Nucleus");
         nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
 
-        // clathrin decay
+        // setup clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
                 .assignFeature(new UniProtIdentifier("Q00610"))
                 .build();
