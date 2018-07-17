@@ -403,6 +403,7 @@ public class Fit3DAlignmentTest {
                 .map(Optional::get)
                 .map(Map::values)
                 .flatMap(Collection::stream)
+                .peek(System.out::println)
                 .anyMatch(uniProtIdentifier -> uniProtIdentifier.getIdentifier().equals("P00766")));
         assertTrue(fit3d.getMatches().stream()
                 .map(Fit3DMatch::getEcNumbers)

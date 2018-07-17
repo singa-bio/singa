@@ -56,7 +56,7 @@ public class Fit3DAlignment implements Fit3D {
     private List<CommutablePair<LeafSubstructure<?>>> queryMotifPairs;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?>>> environments;
-    private HashMap<List<LeafSubstructure<?>>, Set<Set<LeafSubstructure<?>>>> candidates;
+    private HashMap<List<LeafSubstructure<?>>, List<List<LeafSubstructure<?>>>> candidates;
     private List<Fit3DMatch> matches;
 
     Fit3DAlignment(Fit3DBuilder.Builder builder) {
@@ -216,51 +216,43 @@ public class Fit3DAlignment implements Fit3D {
     /**
      * Computes all valid alignments of a given {@link LeafSubstructure}.
      *
-     * @param leafSubstructures the {@link LeafSubstructure} for which alignments should be computed.
+     * @param candidate the list of {@link LeafSubstructure} candidates for which alignments should be computed.
      */
-    private void computeAlignments(Set<LeafSubstructure<?>> leafSubstructures) {
-        // check if the match is redundant on residue level
+    private void computeAlignments(List<LeafSubstructure<?>> candidate) {
+        // check if the match is redundant at residue level
         boolean redundant = matches.stream()
                 .filter(match -> match.getSubstructureSuperimposition() != null)
-                .anyMatch(match -> match.getSubstructureSuperimposition().getCandidate().containsAll(leafSubstructures));
+                .anyMatch(match -> match.getSubstructureSuperimposition().getCandidate().containsAll(candidate));
         if (redundant) {
-            logger.trace("redundant candidate {} skipped", leafSubstructures);
+            logger.trace("redundant candidate {} skipped", candidate);
             return;
         }
-        ValidAlignmentGenerator validAlignmentGenerator =
-                new ValidAlignmentGenerator(queryMotif.getAllLeafSubstructures(), new ArrayList<>(leafSubstructures));
-        List<List<Pair<LeafSubstructure<?>>>> validAlignments = validAlignmentGenerator.getValidAlignments();
-        for (List<Pair<LeafSubstructure<?>>> validAlignment : validAlignments) {
-            // create candidate for alignment
-            List<LeafSubstructure<?>> alignmentCandidate = validAlignment.stream()
-                    .map(Pair::getSecond).collect(Collectors.toList());
-            // apply representation scheme if defined
-            SubstructureSuperimposition superimposition;
-            if (representationScheme != null) {
-                superimposition = SubstructureSuperimposer
-                        .calculateSubstructureSuperimposition(queryMotif.getAllLeafSubstructures(),
-                                alignmentCandidate, representationScheme);
-            } else {
-                superimposition = SubstructureSuperimposer
-                        .calculateSubstructureSuperimposition(queryMotif.getAllLeafSubstructures(),
-                                alignmentCandidate, atomFilter);
-            }
-            if (superimposition.getRmsd() <= rmsdCutoff) {
-                // decide if match RMSD is beyond statistical model correctness cutoff
-                if (statisticalModel != null && statisticalModel instanceof FofanovEstimation) {
-                    if (superimposition.getRmsd() <= ((FofanovEstimation) statisticalModel).getModelCorrectnessCutoff()) {
-                        matches.add(Fit3DMatch.of(superimposition.getRmsd(), superimposition));
-                    } else {
-                        // only store RMSD values if match RMSD is beyond model correctness cutoff and which were not already sampled
-                        boolean redundantRmsd = matches.stream()
-                                .anyMatch(match -> match.getRmsd() == superimposition.getRmsd());
-                        if (!redundantRmsd) {
-                            matches.add(Fit3DMatch.of(superimposition.getRmsd()));
-                        }
-                    }
-                } else {
+        // apply representation scheme if defined
+        SubstructureSuperimposition superimposition;
+        if (representationScheme != null) {
+            superimposition = SubstructureSuperimposer
+                    .calculateSubstructureSuperimposition(queryMotif.getAllLeafSubstructures(),
+                            candidate, representationScheme);
+        } else {
+            superimposition = SubstructureSuperimposer
+                    .calculateSubstructureSuperimposition(queryMotif.getAllLeafSubstructures(),
+                            candidate, atomFilter);
+        }
+        if (superimposition.getRmsd() <= rmsdCutoff) {
+            // decide if match RMSD is beyond statistical model correctness cutoff
+            if (statisticalModel instanceof FofanovEstimation) {
+                if (superimposition.getRmsd() <= ((FofanovEstimation) statisticalModel).getModelCorrectnessCutoff()) {
                     matches.add(Fit3DMatch.of(superimposition.getRmsd(), superimposition));
+                } else {
+                    // only store RMSD values if match RMSD is beyond model correctness cutoff and which were not already sampled
+                    boolean redundantRmsd = matches.stream()
+                            .anyMatch(match -> match.getRmsd() == superimposition.getRmsd());
+                    if (!redundantRmsd) {
+                        matches.add(Fit3DMatch.of(superimposition.getRmsd()));
+                    }
                 }
+            } else {
+                matches.add(Fit3DMatch.of(superimposition.getRmsd(), superimposition));
             }
         }
     }
@@ -270,9 +262,7 @@ public class Fit3DAlignment implements Fit3D {
      */
     private void generateCandidates() {
         for (List<LeafSubstructure<?>> environment : environments) {
-            Set<Set<LeafSubstructure<?>>> currentCandidates = new ValidCandidateGenerator(
-                    queryMotif.getAllLeafSubstructures(),
-                    environment).getValidCandidates();
+            List<List<LeafSubstructure<?>>> currentCandidates = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment).getCandidates();
             if (!currentCandidates.isEmpty()) {
                 candidates.put(environment, currentCandidates);
             }

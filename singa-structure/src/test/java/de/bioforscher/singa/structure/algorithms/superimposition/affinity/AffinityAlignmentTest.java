@@ -45,7 +45,7 @@ public class AffinityAlignmentTest {
         AffinityAlignment affinityAlignment = AffinityAlignment.create()
                 .inputStructuralMotifs(input)
                 .run();
-        Assert.assertEquals(3, affinityAlignment.getClusters().size());
+        Assert.assertEquals(2, affinityAlignment.getClusters().size());
         Assert.assertEquals(input.size(), affinityAlignment.getClusters().values().stream()
                 .mapToInt(Collection::size)
                 .sum());

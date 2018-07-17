@@ -68,11 +68,11 @@ public final class Matrices {
      * 1.0 1.0 1.0 1.0 </pre>
      *
      * @param rowSize The row size of the resulting matrix.
-     * @param  columnSize The column size of the resulting matrix.
+     * @param columnSize The column size of the resulting matrix.
      * @return A identity matrix.
      */
-    public static Matrix generateyMatrixOfOnes(int rowSize, int columnSize){
-        if(rowSize == columnSize){
+    public static Matrix generateMatrixOfOnes(int rowSize, int columnSize) {
+        if (rowSize == columnSize) {
             // initialize jagged array
             double[][] compactValues = new double[rowSize][];
             for (int rowIndex = 0; rowIndex < rowSize; rowIndex++) {
@@ -428,4 +428,24 @@ public final class Matrices {
         return new SVDecomposition(matrix);
     }
 
+    /**
+     * Normalizes the values of the matrix between [0,1].
+     *
+     * @param matrix A new matrix with all values scaled between [0,1]
+     * @return The normalized matrix as {@link RegularMatrix}.
+     * @see <a href="https://en.wikipedia.org/wiki/Feature_scaling>Wikipedia: Feature Scaling</a>
+     */
+    public static Matrix normalize(Matrix matrix) {
+        Pair<Integer> minimalElementPosition = Matrices.getPositionsOfMinimalElement(matrix).get(0);
+        double minimalElement = matrix.getElement(minimalElementPosition.getFirst(), minimalElementPosition.getSecond());
+        Pair<Integer> maximalElementPosition = Matrices.getPositionsOfMaximalElement(matrix).get(0);
+        double maximalElement = matrix.getElement(maximalElementPosition.getFirst(), maximalElementPosition.getSecond());
+        double[][] normalizedValues = new double[matrix.getRowDimension()][matrix.getColumnDimension()];
+        for (int i = 0; i < matrix.getRowDimension(); i++) {
+            for (int j = 0; j < matrix.getColumnDimension(); j++) {
+                normalizedValues[i][j] = (matrix.getElement(i, j) - minimalElement) / (maximalElement - minimalElement);
+            }
+        }
+        return new RegularMatrix(normalizedValues);
+    }
 }

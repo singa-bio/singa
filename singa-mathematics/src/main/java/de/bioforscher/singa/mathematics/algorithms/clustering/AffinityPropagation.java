@@ -47,6 +47,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         checkInput(dataPoints, inputMatrix);
         // convert to similarity matrix (1 - dissimilarity) if distance matrix provided
         if (builder.distance) {
+            logger.info("input is distance matrix, all values are normalized between [0,1] and converted to similarities");
             distanceMatrix = inputMatrix;
             similarityMatrix = new LabeledRegularMatrix<>(convertToInverseValues(inputMatrix));
             similarityMatrix.setRowLabels(dataPoints);
@@ -69,11 +70,11 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         run();
     }
 
-    // FIXME: this is probably wrong, we have to come back to additive inversion, distance values are not in [0,1]
     private static double[][] convertToInverseValues(Matrix distanceMatrix) {
-        Matrix matrixOfOnes = Matrices.generateyMatrixOfOnes(distanceMatrix.getRowDimension(),
+        Matrix normalizedDistanceMatrix = Matrices.normalize(distanceMatrix);
+        Matrix matrixOfOnes = Matrices.generateMatrixOfOnes(distanceMatrix.getRowDimension(),
                 distanceMatrix.getColumnDimension());
-        return matrixOfOnes.subtract(distanceMatrix).getElements();
+        return matrixOfOnes.subtract(normalizedDistanceMatrix).getElements();
     }
 
     public static <DataType> DataStep<DataType> create() {

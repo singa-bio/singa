@@ -54,7 +54,7 @@ public class PDBPfamMapper extends AbstractHTMLParser<Map<String, PfamIdentifier
     @Override
     public Map<String, PfamIdentifier> parse() {
         Map<String, PfamIdentifier> result = new HashMap<>();
-        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t\\w*\\t(\\w*)$");
+        Pattern pattern = Pattern.compile("^" + currentPDBIdentifier + "\\t(\\p{Alpha}*)\\t\\w*\\t(\\w*)\t.*$");
         for (String mappingString : mappingStrings) {
             Matcher matcher = pattern.matcher(mappingString);
             if (matcher.matches()) {

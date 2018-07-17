@@ -32,13 +32,12 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
-
-    private final DoubleProperty drawingWidth;
-    private final DoubleProperty drawingHeight;
     private StringProperty renderingMode;
 
     public GraphRenderer() {
@@ -116,8 +115,9 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         drawPoint(node.getPosition(), renderingOptions.getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(renderingOptions.getIdentifierTextColor());
-        drawTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
-
+        if (renderingOptions.isDisplayingIdentifierText()) {
+            drawTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
+        }
     }
 
     public ConcurrentLinkedQueue<GraphType> getGraphQueue() {
@@ -140,7 +140,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
                 drawDiagram(voronoiDiagram);
                 return null;
             };
-        } else  {
+        } else {
             renderBeforeFunction = null;
         }
     }
@@ -193,12 +193,12 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         return renderingMode.get();
     }
 
-    public StringProperty renderingModeProperty() {
-        return renderingMode;
-    }
-
     public void setRenderingMode(String renderingMode) {
         this.renderingMode.set(renderingMode);
+    }
+
+    public StringProperty renderingModeProperty() {
+        return renderingMode;
     }
 
     public enum RenderingMode {

@@ -2,15 +2,15 @@ package de.bioforscher.singa.mathematics.algorithms.clustering;
 
 import de.bioforscher.singa.mathematics.matrices.LabeledMatrix;
 import de.bioforscher.singa.mathematics.matrices.Matrices;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
 public class AffinityPropagationSamplerTest {
 
     @Test
+    @Ignore
     public void shouldSampleAffinityPropagation() throws IOException {
 
         LabeledMatrix<String> rmsdMatrix = Matrices.readLabeledMatrixFromCSV(Thread.currentThread()

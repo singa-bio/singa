@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author fk
@@ -67,5 +68,14 @@ public class MatricesTest {
                 .getContextClassLoader().getResource("matrices/labeled_symmetric_matrix_triangular_upper.csv").toURI());
         LabeledMatrix<String> labeledSymmetricMatrix = Matrices.readLabeledMatrixFromCSV(labeledSymmetricMatrixPath);
         Assert.assertArrayEquals(new double[]{8.0, 14.0, 20.0, 28.0}, labeledSymmetricMatrix.getColumnByLabel("L4").getElements(), 0.0);
+    }
+
+    @Test
+    public void shouldNormalizeMatrix() {
+        double[][] values = {{1.0, 2.0, 3.0}, {4.0, 5.0, 5.0}, {7.0, 8.0, 9.0}};
+        Matrix matrix = new RegularMatrix(values);
+        Matrix normalizedMatrix = Matrices.normalize(matrix);
+        assertEquals(0.0, normalizedMatrix.getElement(0, 0), 1E-9);
+        assertEquals(1.0, normalizedMatrix.getElement(2, 2), 1E-9);
     }
 }

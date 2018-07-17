@@ -71,7 +71,7 @@ public class RegularMatrixTest {
     @Test
     public void testSameDimension() {
         boolean sameDimensions = firstRectangularMatrix.hasSameDimensions(secondRectangularMatrix);
-        assertEquals(true, sameDimensions);
+        assertTrue(sameDimensions);
     }
 
     @Test
