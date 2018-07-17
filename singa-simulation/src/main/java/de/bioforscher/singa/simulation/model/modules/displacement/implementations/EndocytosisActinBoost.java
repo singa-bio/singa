@@ -63,7 +63,8 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
 
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         // calculate speed based on clathrins available
-        double numberOfClathrins = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, decayingEntity), Environment.getSubsectionVolume()).getValue().doubleValue();
+        double numberOfClathrins = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(MEMBRANE, decayingEntity),
+                Environment.getSubsectionVolume()).getValue().doubleValue();
         if (numberOfClathrins < 1) {
             vesicle.setAttachmentState(UNATTACHED);
             // TODO alter for vesicles moving from centre to outside

@@ -1,10 +1,13 @@
 package de.bioforscher.singa.simulation.model.modules.macroscopic;
 
+import de.bioforscher.singa.chemistry.annotations.Annotation;
+import de.bioforscher.singa.chemistry.annotations.AnnotationType;
 import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
 import de.bioforscher.singa.chemistry.entities.Protein;
 import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
@@ -45,12 +48,14 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static de.bioforscher.singa.simulation.features.endocytosis.ActinBoostVelocity.DEFAULT_ACTIN_VELOCITY;
-import static de.bioforscher.singa.simulation.features.endocytosis.AttachmentDistance.DEFAULT_ATTACHMENT_DISTANCE;
+import static de.bioforscher.singa.simulation.features.endocytosis.AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE;
 import static de.bioforscher.singa.simulation.features.endocytosis.BuddingRate.DEFAULT_BUDDING_RATE;
 import static de.bioforscher.singa.simulation.features.endocytosis.MaturationTime.DEFAULT_MATURATION_TIME;
 import static de.bioforscher.singa.simulation.features.endocytosis.MotorMovementVelocity.DEFAULT_MOTOR_VELOCITY;
+import static de.bioforscher.singa.simulation.features.endocytosis.TetheringTime.DEFAULT_TETHERING_TIME;
 import static de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius.DEFAULT_VESICLE_RADIUS;
 import static de.bioforscher.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -70,6 +75,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     private AutomatonGraph graph;
     private Simulation simulation;
     private EndocytosisBudding budding;
+    private VesicleFusion fusion;
 
     public static void main(String[] args) {
         launch();
@@ -120,7 +126,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         CellRegion nucleus = new CellRegion("Nucleus");
         nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
 
-        // setup clathrin decay
+        // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
                 .assignFeature(new UniProtIdentifier("Q00610"))
                 .build();
@@ -134,6 +140,45 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .addAssociatedPart(clathrinLightChain, 3)
                 .build();
 
+        // setup snares for fusion
+        Protein vamp2 = new Protein.Builder("VAMP2")
+                .assignFeature(new UniProtIdentifier("Q15836"))
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
+                .build();
+
+        Protein vamp3 = new Protein.Builder("VAMP3")
+                .assignFeature(new UniProtIdentifier("P63027"))
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "R-SNARE"))
+                .build();
+
+        Protein syntaxin3 = new Protein.Builder("Syntaxin 3")
+                .assignFeature(new UniProtIdentifier("Q13277"))
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
+                .build();
+
+        Protein syntaxin4 = new Protein.Builder("Syntaxin 4")
+                .assignFeature(new UniProtIdentifier("Q12846"))
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qa-SNARE"))
+                .build();
+
+        Protein snap23 = new Protein.Builder("SNAP23")
+                .assignFeature(new UniProtIdentifier("O00161"))
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qbc-SNARE"))
+                .build();
+
+        ComplexedChemicalEntity snareComplex1 = ComplexedChemicalEntity.create(syntaxin3.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
+                .addAssociatedPart(syntaxin3)
+                .addAssociatedPart(snap23)
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
+                .build();
+
+        ComplexedChemicalEntity snareComplex2 = ComplexedChemicalEntity.create(syntaxin4.getIdentifier().getIdentifier() + ":" + snap23.getIdentifier().getIdentifier())
+                .addAssociatedPart(syntaxin4)
+                .addAssociatedPart(snap23)
+                .annotation(new Annotation<>(AnnotationType.NOTE, "SNARE type", "Qabc-SNARE"))
+                .build();
+
+        // setup clathrin decay reaction
         NthOrderReaction.inSimulation(simulation)
                 .rateConstant(DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
                 .addSubstrate(clathrinTriskelion)
@@ -143,6 +188,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         budding = new EndocytosisBudding();
         budding.setSimulation(simulation);
         budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
+        budding.addMembraneCargo(Quantities.getQuantity(10000, new ProductUnit<Area>(NANO(METRE).pow(2))), 10, vamp3);
         budding.setFeature(DEFAULT_BUDDING_RATE);
         budding.setFeature(DEFAULT_VESICLE_RADIUS);
         budding.setFeature(DEFAULT_MATURATION_TIME);
@@ -163,7 +209,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         // setup attachment
         VesicleAttachment attachment = new VesicleAttachment();
-        attachment.setFeature(DEFAULT_ATTACHMENT_DISTANCE);
+        attachment.setFeature(DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         attachment.setSimulation(simulation);
         simulation.getModules().add(attachment);
 
@@ -172,6 +218,19 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         transport.setFeature(DEFAULT_MOTOR_VELOCITY);
         transport.setSimulation(simulation);
         simulation.getModules().add(transport);
+
+        // setup tethering and fusion
+        fusion = new VesicleFusion();
+        fusion.addMatchingQSnare(snareComplex1);
+        fusion.addMatchingQSnare(snareComplex2);
+        fusion.addMatchingRSnare(vamp2);
+        fusion.addMatchingRSnare(vamp3);
+        fusion.initializeComplexes();
+        fusion.setMinimalPairs(3);
+        fusion.setFeature(DEFAULT_TETHERING_TIME);
+        fusion.setFeature(DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
+        fusion.setSimulation(simulation);
+        simulation.getModules().add(fusion);
 
         // setup graph and assign regions
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
@@ -191,7 +250,10 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             }
         }
 
-        AutomatonGraphs.circleRegion(graph, nuclearEnvelope, new RectangularCoordinate(11, 11), 3);
+        Set<AutomatonNode> envelopeNodes = AutomatonGraphs.circleRegion(graph, nuclearEnvelope, new RectangularCoordinate(11, 11), 3);
+        for (AutomatonNode envelopeNode : envelopeNodes) {
+            envelopeNode.getConcentrationContainer().set(CellTopology.MEMBRANE, snareComplex2, MolarConcentration.moleculesToConcentration(20, Environment.getSubsectionVolume()));
+        }
         AutomatonGraphs.fillRegion(graph, nucleus, new RectangularCoordinate(11, 11), 2);
 
         // setup spatial representations
@@ -295,13 +357,23 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
+            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
-
+        // draw moving vesicles
         getGraphicsContext().setFill(Color.BLUE);
         for (Vesicle vesicle : simulation.getVesicleLayer().getVesicles()) {
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
+            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
+        }
+        // draw fusing vesicles
+        getGraphicsContext().setFill(Color.RED);
+        for (Vesicle vesicle : fusion.getTetheredVesicles().keySet()) {
+            Circle circle = vesicle.getCircleRepresentation();
+            fillCircle(circle);
+            strokeCircle(circle);
+            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);

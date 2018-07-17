@@ -19,7 +19,7 @@ public class AttachmentDistance extends AbstractFeature<ComparableQuantity<Lengt
     /**
      * Size of the dynein complex fom vesicle surface to microtubule.
      */
-    public static final AttachmentDistance DEFAULT_ATTACHMENT_DISTANCE = new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefautFeatureSources.JHA2015);
+    public static final AttachmentDistance DEFAULT_DYNEIN_ATTACHMENT_DISTANCE = new AttachmentDistance(Quantities.getQuantity(61, NANO(METRE)), DefautFeatureSources.JHA2015);
 
     private static final String SYMBOL = "d_Attachment";
 

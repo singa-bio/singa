@@ -20,6 +20,12 @@ public enum ModuleState {
     SUCCEEDED,
 
     /**
+     * The module has completed successfully but contains some changes to the simulation that should be applied at the
+     * very end of the time step.
+     */
+    SUCCEEDED_WITH_PENDING_CHANGES,
+
+    /**
      * The calculation has finished but the numerical error was too large (set by
      * {@link UpdateScheduler#setRecalculationCutoff(double)}).
      */

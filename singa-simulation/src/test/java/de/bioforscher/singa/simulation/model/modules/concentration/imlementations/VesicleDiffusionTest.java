@@ -124,17 +124,12 @@ public class VesicleDiffusionTest {
                 .cargo(water)
                 .build();
 
-//        Diffusion.inSimulation(simulation)
-//                .onlyFor(water)
-//                .build();
-
         VesicleDiffusion vesicleDiffusion = new VesicleDiffusion();
         vesicleDiffusion.setSimulation(simulation);
         simulation.getModules().add(vesicleDiffusion);
 
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
-
         }
 
     }

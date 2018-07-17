@@ -17,6 +17,7 @@ public class MacroscopicMembraneSegment {
     public MacroscopicMembraneSegment(AutomatonNode node) {
         this.node = node;
         segments = new ArrayList<>();
+        node.addMembraneSegment(this);
     }
 
     public AutomatonNode getNode() {

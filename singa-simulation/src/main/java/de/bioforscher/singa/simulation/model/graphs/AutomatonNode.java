@@ -10,6 +10,7 @@ import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
@@ -33,11 +34,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     private Polygon spatialRepresentation;
 
-    private Map<SkeletalFilament, Set<Vector2D>> associatedSegments;
+    private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
+    private Set<MacroscopicMembraneSegment> membraneSegments;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
-        associatedSegments = new HashMap<>();
+        microtubuleSegments = new HashMap<>();
+        membraneSegments = new HashSet<>();
         cellRegion = CellRegion.CYTOSOL_A;
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
@@ -200,15 +203,23 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         this.updateManager = updateManager;
     }
 
-    public Map<SkeletalFilament, Set<Vector2D>> getAssociatedSegments() {
-        return associatedSegments;
+    public Map<SkeletalFilament, Set<Vector2D>> getMicrotubuleSegments() {
+        return microtubuleSegments;
     }
 
-    public void addAssociatedSegment(SkeletalFilament filament, Vector2D segment) {
-        if (!associatedSegments.containsKey(filament)) {
-            associatedSegments.put(filament, new HashSet<>());
+    public void addMicrotubuleSegment(SkeletalFilament filament, Vector2D segment) {
+        if (!microtubuleSegments.containsKey(filament)) {
+            microtubuleSegments.put(filament, new HashSet<>());
         }
-        associatedSegments.get(filament).add(segment);
+        microtubuleSegments.get(filament).add(segment);
+    }
+
+    public Set<MacroscopicMembraneSegment> getMembraneSegments() {
+        return membraneSegments;
+    }
+
+    public void addMembraneSegment(MacroscopicMembraneSegment segment) {
+        membraneSegments.add(segment);
     }
 
     @Override

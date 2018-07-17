@@ -60,6 +60,10 @@ public class VesicleLayer {
         vesicles.add(vesicle);
     }
 
+    public void removeVesicle(Vesicle vesicle) {
+        vesicles.remove(vesicle);
+    }
+
     public List<Vesicle> getVesicles() {
         return vesicles;
     }
@@ -83,14 +87,16 @@ public class VesicleLayer {
                 }
             }
             // check collisions with membranes
-            for (MacroscopicMembrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
-                for (MacroscopicMembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                    for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
-                        if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
-                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
-                            if (!displacementVector.intersectionsWith(lineSegment).isEmpty()) {
-                                vesicle1.resetNextPosition();
-                                continue vesicleLoop;
+            if(simulation.getMembraneLayer() != null) {
+                for (MacroscopicMembrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
+                    for (MacroscopicMembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
+                        for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
+                            if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
+                                SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
+                                if (!displacementVector.intersectionsWith(lineSegment).isEmpty()) {
+                                    vesicle1.resetNextPosition();
+                                    continue vesicleLoop;
+                                }
                             }
                         }
                     }

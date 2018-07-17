@@ -15,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author cl
@@ -125,8 +127,8 @@ public class AutomatonGraphs {
         return membrane;
     }
 
-    public static void circleRegion(AutomatonGraph graph, CellRegion membraneRegion, RectangularCoordinate centre, int radius) {
-
+    public static Set<AutomatonNode> circleRegion(AutomatonGraph graph, CellRegion membraneRegion, RectangularCoordinate centre, int radius) {
+        Set<AutomatonNode> nodes = new HashSet<>();
         int x0 = centre.getColumn();
         int y0 = centre.getRow();
 
@@ -135,17 +137,17 @@ public class AutomatonGraphs {
         int dx = 1;
         int dy = 1;
         int err = dx - (radius << 1);
-
+        // collect nodes
         while (x >= y) {
 
-            graph.getNode(x + x0, y + y0).setCellRegion(membraneRegion);
-            graph.getNode(y + x0, x + y0).setCellRegion(membraneRegion);
-            graph.getNode(-x + x0, y + y0).setCellRegion(membraneRegion);
-            graph.getNode(-y + x0, x + y0).setCellRegion(membraneRegion);
-            graph.getNode(-x + x0, -y + y0).setCellRegion(membraneRegion);
-            graph.getNode(-y + x0, -x + y0).setCellRegion(membraneRegion);
-            graph.getNode(x + x0, -y + y0).setCellRegion(membraneRegion);
-            graph.getNode(y + x0, -x + y0).setCellRegion(membraneRegion);
+            nodes.add(graph.getNode(x + x0, y + y0));
+            nodes.add(graph.getNode(y + x0, x + y0));
+            nodes.add(graph.getNode(-x + x0, y + y0));
+            nodes.add(graph.getNode(-y + x0, x + y0));
+            nodes.add(graph.getNode(-x + x0, -y + y0));
+            nodes.add(graph.getNode(-y + x0, -x + y0));
+            nodes.add(graph.getNode(x + x0, -y + y0));
+            nodes.add(graph.getNode(y + x0, -x + y0));
 
             if (err <= 0) {
                 y++;
@@ -159,7 +161,12 @@ public class AutomatonGraphs {
                 err += dx - (radius << 1);
             }
         }
-
+        // set region
+        for (AutomatonNode node : nodes) {
+            node.setCellRegion(membraneRegion);
+        }
+        // return them
+        return nodes;
     }
 
     public static void fillRegion(AutomatonGraph graph, CellRegion innerRegion, RectangularCoordinate centre, int radius)

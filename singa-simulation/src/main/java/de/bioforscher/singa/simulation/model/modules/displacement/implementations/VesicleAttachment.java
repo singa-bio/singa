@@ -61,7 +61,7 @@ public class VesicleAttachment extends DisplacementBasedModule {
         // get closest relevant node
         for (AutomatonNode node : vesicle.getAssociatedNodes().keySet()) {
             // get relevant segments
-            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : node.getAssociatedSegments().entrySet()) {
+            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : node.getMicrotubuleSegments().entrySet()) {
                 SkeletalFilament currentFilament = entry.getKey();
                 Set<Vector2D> segments = entry.getValue();
                 // check each segment

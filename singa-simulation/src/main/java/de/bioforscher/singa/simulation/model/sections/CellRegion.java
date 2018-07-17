@@ -12,6 +12,8 @@ import static de.bioforscher.singa.simulation.model.sections.CellTopology.INNER;
 import static de.bioforscher.singa.simulation.model.sections.CellTopology.OUTER;
 
 /**
+ *
+ *
  * @author cl
  */
 public class CellRegion {

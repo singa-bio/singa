@@ -135,12 +135,12 @@ public class SkeletalFilament {
             Polygon polygon = node.getSpatialRepresentation();
             // associate segment to the node with the largest part of the vesicle (midpoint is inside)
             if (polygon.evaluatePointPosition(segment) >= ON_LINE) {
-                node.addAssociatedSegment(this, segment);
+                node.addMicrotubuleSegment(this, segment);
                 associatedNodes.add(node);
             }
             // associate partial containment to other nodes
             if (!polygon.getIntersections(headRegion).isEmpty()) {
-                node.addAssociatedSegment(this, segment);
+                node.addMicrotubuleSegment(this, segment);
                 associatedNodes.add(node);
             }
         }
@@ -170,7 +170,7 @@ public class SkeletalFilament {
         // get closest relevant node
         for (AutomatonNode associatedNode : associatedNodes) {
             // get the associated segments
-            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : associatedNode.getAssociatedSegments().entrySet()) {
+            for (Map.Entry<SkeletalFilament, Set<Vector2D>> entry : associatedNode.getMicrotubuleSegments().entrySet()) {
                 SkeletalFilament currentFilament = entry.getKey();
                 // don't compare to fragments in the same fragment
                 if (currentFilament != this) {

@@ -5,7 +5,7 @@ import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 /**
- * Used to identify changes to concentrations ({@link ConcentrationDelta}s) in maps.
+ * Used to identify changes to concentrations ({@link ConcentrationDelta}s) (mostly in maps).
  *
  * @author cl
  */

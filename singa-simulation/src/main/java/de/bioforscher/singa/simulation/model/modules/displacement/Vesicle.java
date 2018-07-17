@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Vesicle implements Updatable, Featureable {
 
     public enum AttachmentState {
-        ACTIN_DEPOLYMERIZATION, MICROTUBULE, UNATTACHED
+        ACTIN_DEPOLYMERIZATION, MICROTUBULE, TETHERED, UNATTACHED
     }
 
     public enum TargetDirection {
@@ -97,6 +97,7 @@ public class Vesicle implements Updatable, Featureable {
         concentrationManager = new ConcentrationDeltaManager(region.setUpConcentrationContainer());
         displacementManager = new DisplacementDeltaManager(position);
         associatedNodes = new HashMap<>();
+        attachmentState = AttachmentState.UNATTACHED;
     }
 
     public Vesicle(Vector2D position, Quantity<Length> radius) {
