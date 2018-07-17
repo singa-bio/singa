@@ -46,6 +46,7 @@ public class ComplexBuildingReactionTest {
 
     @Test
     public void testPrazosinExample() {
+        Environment.reset();
         Environment.setNodeDistance(Quantities.getQuantity(1.0, MILLI(METRE)));
         logger.info("Testing Monovalent Receptor Binding.");
 
@@ -114,7 +115,7 @@ public class ComplexBuildingReactionTest {
 
     @Test
     public void testMembraneAbsorption() {
-
+        Environment.reset();
         logger.info("Testing section changing binding (membrane absorption).");
         // the rate constants
         RateConstant forwardRate = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
@@ -167,7 +168,7 @@ public class ComplexBuildingReactionTest {
 
     @Test
     public void shouldReactInsideAndOutside() {
-
+        Environment.reset();
         logger.info("Testing section changing binding (inside and outside reactions).");
 
         // the rate constants
