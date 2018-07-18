@@ -42,6 +42,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         microtubuleSegments = new HashMap<>();
         membraneSegments = new HashSet<>();
         cellRegion = CellRegion.CYTOSOL_A;
+        setPosition(new Vector2D());
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
@@ -49,16 +50,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         this(new RectangularCoordinate(column, row));
     }
 
-    /**
-     * Gets the concentration of the given chemical entity in the given compartment.
-     *
-     * @param entity The chemical entity.
-     * @param section The cell section.
-     * @param quantity The quantity.
-     */
-    public void setAvailableConcentration(CellSubsection section, ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        updateManager.getConcentrationContainer().set(section, entity, quantity);
-    }
 
     /**
      * Returns the concentration of the given chemical entity in the given compartment.

@@ -226,24 +226,28 @@ public class SimulationManager extends Task<Simulation> {
                     emitNodeEvent(simulation, updatable);
                     logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
                 }
-                long currentTimeMillis = System.currentTimeMillis();
-                ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
-                double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
-                long timeRequired = System.currentTimeMillis() - startingTime;
-                long estimatedTimeRemaining = (long) (timeRequired / fractionDone) - timeRequired;
-
-                if (previousTimeMillis > 0) {
-                    ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
-                    double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-                    logger.info("estimated time remaining: " + formatMillis(estimatedTimeRemaining) + ", current simulation speed: " + df.format(speed)  +" µs(Simulation Time)/s(Real Time)");
+                if (terminationTime != null) {
+                    estimateRuntime();
                 }
-                previousTimeMillis = currentTimeMillis;
-                previousTimeSimulation = currentTimeSimulation;
-
             }
             simulation.nextEpoch();
         }
         return simulation;
+    }
+
+    private void estimateRuntime() {
+        long currentTimeMillis = System.currentTimeMillis();
+        ComparableQuantity<Time> currentTimeSimulation = simulation.getElapsedTime().to(MICRO(SECOND));
+        double fractionDone = currentTimeSimulation.getValue().doubleValue() / terminationTime.getValue().doubleValue();
+        long timeRequired = System.currentTimeMillis() - startingTime;
+        long estimatedTimeRemaining = (long) (timeRequired / fractionDone) - timeRequired;
+        if (previousTimeMillis > 0) {
+            ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
+            double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
+            logger.info("estimated time remaining: " + formatMillis(estimatedTimeRemaining) + ", current simulation speed: " + df.format(speed) + " µs(Simulation Time)/s(Real Time)");
+        }
+        previousTimeMillis = currentTimeMillis;
+        previousTimeSimulation = currentTimeSimulation;
     }
 
     @Override

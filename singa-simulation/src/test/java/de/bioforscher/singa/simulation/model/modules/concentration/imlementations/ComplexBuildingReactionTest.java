@@ -12,6 +12,8 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonGraphs;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.sections.CellTopology;
+import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import de.bioforscher.singa.structure.features.molarmass.MolarMass;
 import org.junit.After;
@@ -42,6 +44,69 @@ public class ComplexBuildingReactionTest {
     @After
     public void cleanUp() {
         Environment.reset();
+    }
+
+    @Test
+    public void minimalSetUpTest() {
+        Environment.reset();
+        logger.info("Testing section changing binding (minimal setup).");
+        // the rate constants
+        RateConstant forwardRate = RateConstant.create(1).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(SECOND).build();
+        RateConstant backwardRate = RateConstant.create(1).backward().firstOrder().timeUnit(SECOND).build();
+
+        // the ligand
+        ChemicalEntity bindee = new SmallMolecule.Builder("bindee")
+                .name("bindee")
+                .build();
+
+        // the receptor
+        Protein binder = new Protein.Builder("binder")
+                .name("binder")
+                .build();
+
+        // create simulation
+        Simulation simulation = new Simulation();
+
+        // create and add module
+        ComplexBuildingReaction binding = ComplexBuildingReaction.inSimulation(simulation)
+                .identifier("binding")
+                .of(bindee, forwardRate)
+                .in(OUTER)
+                .by(binder, backwardRate)
+                .to(MEMBRANE)
+                .build();
+        ComplexedChemicalEntity complex = binding.getComplex();
+
+        // setup graph
+        final AutomatonGraph automatonGraph = AutomatonGraphs.singularGraph();
+        simulation.setGraph(automatonGraph);
+        // set concentrations
+        AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
+        membraneNode.setCellRegion(CellRegion.MEMBRANE);
+        membraneNode.getConcentrationContainer().set(OUTER, bindee, 1.0);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 1.0);
+        membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 1.0);
+
+        // forewared and backward reactions should cancel each other out
+        Quantity<MolarConcentration> empty = Environment.emptyConcentration();
+        Quantity<MolarConcentration> one = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(Environment.getConcentrationUnit());
+        for (int i = 0; i < 10; i++) {
+            ConcentrationContainer container = membraneNode.getConcentrationContainer();
+
+            assertEquals(container.get(CellTopology.INNER, bindee), empty);
+            assertEquals(container.get(CellTopology.INNER, binder), empty);
+            assertEquals(container.get(CellTopology.INNER, complex), empty);
+
+            assertEquals(container.get(CellTopology.MEMBRANE, bindee), empty);
+            assertEquals(container.get(CellTopology.MEMBRANE, binder), one);
+            assertEquals(container.get(CellTopology.MEMBRANE, complex), one);
+
+            assertEquals(container.get(CellTopology.OUTER, bindee), one);
+            assertEquals(container.get(CellTopology.OUTER, binder), empty);
+            assertEquals(container.get(CellTopology.OUTER, complex), empty);
+
+            simulation.nextEpoch();
+        }
     }
 
     @Test
@@ -98,7 +163,7 @@ public class ComplexBuildingReactionTest {
             simulation.nextEpoch();
             if (!firstCheckpointPassed && currentTime.getValue().doubleValue() > firstCheckpoint.getValue().doubleValue()) {
                 logger.info("First checkpoint reached at {}.", simulation.getElapsedTime().to(MILLI(SECOND)));
-                assertEquals(0.00476 , membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
+                assertEquals(0.00476, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, receptor).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 assertEquals(0.00476, membraneNode.getConcentrationContainer().get(INNER, ligand).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 assertEquals(0.09523, membraneNode.getConcentrationContainer().get(CellSubsection.MEMBRANE, complex).to(MOLE_PER_LITRE).getValue().doubleValue(), 1e-3);
                 firstCheckpointPassed = true;

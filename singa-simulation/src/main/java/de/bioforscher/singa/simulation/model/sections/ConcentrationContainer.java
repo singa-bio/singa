@@ -42,6 +42,7 @@ public class ConcentrationContainer {
 
     /**
      * Initializes a new concentration pool for the corresponding subsection and topology.
+     *
      * @param subsection The subsection.
      * @param topology The topology.
      */
@@ -51,6 +52,7 @@ public class ConcentrationContainer {
 
     /**
      * Adds a concentration pool, referenced to the subsection and topology.
+     *
      * @param subsection The subsection.
      * @param topology The topology.
      * @param concentrationPool The concentration pool.
@@ -62,6 +64,7 @@ public class ConcentrationContainer {
 
     /**
      * Removes a subsection, the corresponding topology and concentration pool from the container.
+     *
      * @param subsection The subsection to remove.
      */
     public void removeSubsection(CellSubsection subsection) {
@@ -71,6 +74,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the topology referenced to the subsection and null otherwise.
+     *
      * @param subsection The subsection.
      * @return the topology referenced to the subsection and null otherwise.
      */
@@ -85,6 +89,7 @@ public class ConcentrationContainer {
 
     /**
      * Removes a subsection, the given topology and concentration pool from the container.
+     *
      * @param topology The topology to remove.
      */
     public void removeSubsection(CellTopology topology) {
@@ -95,6 +100,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns all subsections, referenced in this container.
+     *
      * @return All subsections, referenced in this container.
      */
     public Set<CellSubsection> getReferencedSubSections() {
@@ -103,6 +109,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns all concentration pools in this container.
+     *
      * @return All concentration pools in this container.
      */
     public Collection<ConcentrationPool> getPoolsOfConcentration() {
@@ -111,6 +118,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns all entities referenced in any concentration pool.
+     *
      * @return All entities referenced in any concentration pool.
      */
     public Set<ChemicalEntity> getReferencedEntities() {
@@ -123,6 +131,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the topology and concentration pool for the subsection.
+     *
      * @param subsection The subsection.
      * @return The topology and concentration pool for the subsection.
      */
@@ -136,6 +145,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the subsection and concentration pool for the topology.
+     *
      * @param topology Th topology.
      * @return The subsection and concentration pool for the topology.
      */
@@ -149,6 +159,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the concentration of the entity in the corresponding subsection.
+     *
      * @param subsection The subsection.
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding subsection.
@@ -163,6 +174,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the concentration of the entity in the corresponding topology.
+     *
      * @param topology The topology.
      * @param entity The entity.
      * @return The concentration of the entity in the corresponding topology.
@@ -177,6 +189,7 @@ public class ConcentrationContainer {
 
     /**
      * Sets the concentration of the given entity in the given subsection.
+     *
      * @param subsection The subsection.
      * @param entity The entity.
      * @param concentration The concentration.
@@ -185,8 +198,13 @@ public class ConcentrationContainer {
         concentrations.get(subsection).set(entity, concentration);
     }
 
+    public void initialize(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+        concentrations.get(subsection).set(entity, concentration.to(Environment.getConcentrationUnit()));
+    }
+
     /**
      * Sets the concentration of the given entity in the given topology.
+     *
      * @param topology The topology.
      * @param entity The entity.
      * @param concentration The concentration.
@@ -194,6 +212,11 @@ public class ConcentrationContainer {
     public void set(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
         set(subsectionTopology.get(topology), entity, concentration);
     }
+
+    public void initialize(CellTopology topology, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
+        initialize(subsectionTopology.get(topology), entity, concentration);
+    }
+
 
     /**
      * Sets the concentration of the given entity in the given subsection. The concentration is assumed to be
@@ -223,6 +246,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the subsection corresponding to the topology.
+     *
      * @param topology The topology.
      * @return The subsection.
      */
@@ -232,6 +256,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the inner subsection.
+     *
      * @return The inner subsection.
      */
     public CellSubsection getInnerSubsection() {
@@ -240,6 +265,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the outer subsection.
+     *
      * @return The outer subsection.
      */
     public CellSubsection getOuterSubsection() {
@@ -248,6 +274,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns the membrane subsection.
+     *
      * @return The membrane subsection.
      */
     public CellSubsection getMembraneSubsection() {
@@ -256,6 +283,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns a empty copy of this container, keeping subsections and cell topologies associated.
+     *
      * @return A empty copy of this container.
      */
     public ConcentrationContainer emptyCopy() {
@@ -268,6 +296,7 @@ public class ConcentrationContainer {
 
     /**
      * Returns a full copy of this container, keeping concentrations.
+     *
      * @return A full copy of this container.
      */
     public ConcentrationContainer fullCopy() {

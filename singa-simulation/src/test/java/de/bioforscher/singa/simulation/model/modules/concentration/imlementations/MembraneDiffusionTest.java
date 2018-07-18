@@ -62,8 +62,8 @@ public class MembraneDiffusionTest {
 
         AutomatonNode membraneNode = automatonGraph.getNode(0, 0);
         membraneNode.setCellRegion(MEMBRANE);
-        membraneNode.setAvailableConcentration(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
-        membraneNode.setAvailableConcentration(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().set(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
+        membraneNode.getConcentrationContainer().set(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
         automatonGraph.addNode(membraneNode);
 
         MembraneDiffusion.inSimulation(simulation)

@@ -45,12 +45,16 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
     public void addAssociatedPart(ChemicalEntity chemicalEntity) {
         associatedParts.computeIfPresent(chemicalEntity, (key, value) -> value + 1);
         associatedParts.putIfAbsent(chemicalEntity, 1);
-        computeMolarMass();
+        if (chemicalEntity.hasFeature(MolarMass.class)) {
+            computeMolarMass();
+        }
     }
 
     public void addAssociatedPart(ChemicalEntity chemicalEntity, int stochiometry) {
         associatedParts.put(chemicalEntity, stochiometry);
-        computeMolarMass();
+        if (chemicalEntity.hasFeature(MolarMass.class)) {
+            computeMolarMass();
+        }
     }
 
     public Map<ChemicalEntity, Integer> getAssociatedParts() {

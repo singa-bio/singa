@@ -2,7 +2,6 @@ package de.bioforscher.singa.simulation.model.modules.concentration.imlementatio
 
 import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
-import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
 import de.bioforscher.singa.chemistry.features.reactions.BackwardsRateConstant;
 import de.bioforscher.singa.chemistry.features.reactions.ForwardsRateConstant;
 import de.bioforscher.singa.chemistry.features.reactions.RateConstant;
@@ -47,12 +46,14 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     public void initialize() {
         // apply
+        // TODO apply condition
         setApplicationCondition(updatable -> true);
         // function
-        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
+        UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, this::containsReactants);
         addDeltaFunction(function);
         // feature
-        getRequiredFeatures().add(Diffusivity.class);
+        getRequiredFeatures().add(ForwardsRateConstant.class);
+        getRequiredFeatures().add(BackwardsRateConstant.class);
         // in no complex has been set create it
         if (complex == null) {
             complex = new ComplexedChemicalEntity.Builder(binder.getIdentifier().getIdentifier() + ":" + bindee.getIdentifier().getIdentifier())
@@ -66,6 +67,20 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         addReferencedEntity(complex);
         // reference module in simulation
         addModuleToSimulation();
+    }
+
+    private boolean containsReactants(ConcentrationContainer concentrationContainer) {
+        // binder and complex are zero
+        if (concentrationContainer.get(binderTopology, binder).getValue().doubleValue() == 0.0
+                && concentrationContainer.get(binderTopology, complex).getValue().doubleValue() == 0.0) {
+            return false;
+        }
+        // bindee and complex are zero
+        if (concentrationContainer.get(bindeeTopology, bindee).getValue().doubleValue() == 0.0
+                && concentrationContainer.get(binderTopology, complex).getValue().doubleValue() == 0.0) {
+            return false;
+        }
+        return true;
     }
 
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
@@ -92,7 +107,7 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         // get concentrations
         final double bindeeConcentration = concentrationContainer.get(bindeeTopology, bindee).getValue().doubleValue();
         final double binderConcentration = concentrationContainer.get(binderTopology, binder).getValue().doubleValue();
-        final double complexConcentration = concentrationContainer.get(bindeeTopology, complex).getValue().doubleValue();
+        final double complexConcentration = concentrationContainer.get(binderTopology, complex).getValue().doubleValue();
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
