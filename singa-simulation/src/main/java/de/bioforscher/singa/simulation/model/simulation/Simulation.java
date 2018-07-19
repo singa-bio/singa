@@ -12,7 +12,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.modules.displacement.VesicleLayer;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRule;
 import de.bioforscher.singa.simulation.model.rules.AssignmentRules;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class Simulation {
      */
     private VesicleLayer vesicleLayer;
 
-    private MacroscopicMembraneLayer membraneLayer;
+    private MembraneLayer membraneLayer;
 
     private Rectangle simulationRegion;
 
@@ -254,11 +254,11 @@ public class Simulation {
         this.vesicleLayer = vesicleLayer;
     }
 
-    public MacroscopicMembraneLayer getMembraneLayer() {
+    public MembraneLayer getMembraneLayer() {
         return membraneLayer;
     }
 
-    public void setMembraneLayer(MacroscopicMembraneLayer membraneLayer) {
+    public void setMembraneLayer(MembraneLayer membraneLayer) {
         this.membraneLayer = membraneLayer;
     }
 

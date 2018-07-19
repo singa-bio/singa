@@ -6,23 +6,23 @@ import java.util.List;
 /**
  * @author cl
  */
-public class MacroscopicMembraneLayer {
+public class MembraneLayer {
 
-    private List<MacroscopicMembrane> membranes;
+    private List<Membrane> membranes;
 
-    public MacroscopicMembraneLayer() {
+    public MembraneLayer() {
         membranes = new ArrayList<>();
     }
 
-    public MacroscopicMembraneLayer(List<MacroscopicMembrane> membranes) {
+    public MembraneLayer(List<Membrane> membranes) {
         this.membranes = membranes;
     }
 
-    public List<MacroscopicMembrane> getMembranes() {
+    public List<Membrane> getMembranes() {
         return membranes;
     }
 
-    public void addMembrane(MacroscopicMembrane membrane) {
+    public void addMembrane(Membrane membrane) {
         membranes.add(membrane);
     }
 

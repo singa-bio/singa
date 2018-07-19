@@ -3,9 +3,9 @@ package de.bioforscher.singa.simulation.model.modules.macroscopic.filaments;
 import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.Membrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 
 import java.util.ArrayList;
@@ -21,21 +21,21 @@ import static de.bioforscher.singa.simulation.model.modules.macroscopic.filament
 public class FilamentLayer {
 
     private List<SkeletalFilament> filaments;
-    private MacroscopicMembraneLayer membraneLayer;
+    private MembraneLayer membraneLayer;
     private Rectangle simulationRegion;
     private Simulation simulation;
 
-    public FilamentLayer(Simulation simulation, MacroscopicMembraneLayer membraneLayer) {
+    public FilamentLayer(Simulation simulation, MembraneLayer membraneLayer) {
         filaments = new ArrayList<>();
         this.simulation = simulation;
         simulationRegion = simulation.getSimulationRegion();
         this.membraneLayer = membraneLayer;
     }
 
-    public void spawnFilament(MacroscopicMembrane membrane) {
-        List<MacroscopicMembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+    public void spawnFilament(Membrane membrane) {
+        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
         // add corresponding filament
         if (lineSegment.isHorizontal()) {
             addVerticalFilament(lineSegment);
@@ -46,13 +46,13 @@ public class FilamentLayer {
         }
     }
 
-    public void spawnHorizontalFilament(MacroscopicMembrane membrane) {
-        List<MacroscopicMembraneSegment> segments = new ArrayList<>(membrane.getSegments());
+    public void spawnHorizontalFilament(Membrane membrane) {
+        List<MembraneSegment> segments = new ArrayList<>(membrane.getSegments());
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
         // add corresponding filament
         while (lineSegment.isHorizontal()) {
-            lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
+            lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
         }
         if (lineSegment.isVertical()) {
             addHorizontalFilament(lineSegment);
@@ -113,13 +113,11 @@ public class FilamentLayer {
             Vector2D head = filament.getPlusEnd();
             // TODO collisions with simulation borders
             if (filament.getPlusEndBehaviour() != STAGNANT) {
-                for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                    for (MacroscopicMembraneSegment membraneSegment : membrane.getSegments()) {
-                        for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
-                            if (lineSegment.distanceTo(head) < 1 && filament.getSegments().size() > 10) {
-                                filament.setPlusEndBehaviour(STAGNANT);
-                                break;
-                            }
+                for (Membrane membrane : membraneLayer.getMembranes()) {
+                    for (MembraneSegment membraneSegment : membrane.getSegments()) {
+                        if (membraneSegment.distanceTo(head) < 1 && filament.getSegments().size() > 10) {
+                            filament.setPlusEndBehaviour(STAGNANT);
+                            break;
                         }
                     }
                 }

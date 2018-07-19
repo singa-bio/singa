@@ -98,7 +98,9 @@ public interface Metric<MetrizableType> {
         Map.Entry<SubType, Double> min = null;
         for (Map.Entry<SubType, Double> entry : distances.entrySet()) {
             if (min == null || min.getValue() > entry.getValue()) {
-                min = entry;
+                if (!reference.equals(entry.getKey())) {
+                    min = entry;
+                }
             }
         }
         return min;

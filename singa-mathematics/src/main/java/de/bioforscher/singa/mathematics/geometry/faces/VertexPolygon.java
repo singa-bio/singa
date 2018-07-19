@@ -6,15 +6,15 @@ import de.bioforscher.singa.mathematics.vectors.Vectors;
 
 import java.util.ArrayList;
 
-public class SimplePolygon implements Polygon {
+public class VertexPolygon implements Polygon {
 
     private final Vector2D[] vertices;
 
-    public SimplePolygon(Vector2D... vertices) {
+    public VertexPolygon(Vector2D... vertices) {
         this.vertices = vertices;
     }
 
-    public SimplePolygon(ArrayList<Vector2D> vertices) {
+    public VertexPolygon(ArrayList<Vector2D> vertices) {
         this(vertices.toArray(new Vector2D[0]));
     }
 

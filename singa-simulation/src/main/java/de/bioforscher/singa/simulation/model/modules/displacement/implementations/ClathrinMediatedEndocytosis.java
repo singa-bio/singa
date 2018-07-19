@@ -11,7 +11,7 @@ import de.bioforscher.singa.simulation.features.endocytosis.SpawnTimeSampler;
 import de.bioforscher.singa.simulation.features.endocytosis.VesicleRadius;
 import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -37,7 +37,7 @@ import static tec.uom.se.unit.Units.SECOND;
 public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
 
     private HashMap<Vesicle, Quantity<Time>> maturingVesicles;
-    private List<MacroscopicMembraneSegment> segments;
+    private List<MembraneSegment> segments;
 
     private Quantity<Area> totalArea;
     private Quantity<Frequency> normalizedFrequency;
@@ -77,11 +77,11 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
 
     private void calculateTotalMembraneArea() {
         totalArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
-        for (MacroscopicMembraneSegment segment : segments) {
-            for (LineSegment lineSegment : segment.getLineSegments()) {
-                totalArea = totalArea.add(Environment.convertSimulationToSystemScale(lineSegment.getLength())
+        for (MembraneSegment segment : segments) {
+
+                totalArea = totalArea.add(Environment.convertSimulationToSystemScale(segment.getLength())
                         .multiply(Environment.getNodeDistance()).asType(Area.class));
-            }
+
         }
     }
 
@@ -112,7 +112,7 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
         }
     }
 
-    public void addMembraneSegment(MacroscopicMembraneSegment segment) {
+    public void addMembraneSegment(MembraneSegment segment) {
         segments.add(segment);
     }
 
@@ -177,7 +177,7 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
 
     private void determineNextSpawnEvent() {
         // choose random line segment from the given membrane
-        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getLineSegments().iterator().next();
+        LineSegment lineSegment = segments.get(ThreadLocalRandom.current().nextInt(0, segments.size())).getSegment();
         // choose random point on that site, spawn a little on the inside
         nextSpawnSite = lineSegment.getRandomPoint().add(simulation.getSimulationRegion().getCentre().normalize());
         // sample spawn time

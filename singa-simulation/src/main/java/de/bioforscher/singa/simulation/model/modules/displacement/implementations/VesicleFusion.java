@@ -5,7 +5,6 @@ import de.bioforscher.singa.chemistry.entities.ComplexedChemicalEntity;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.features.endocytosis.AttachmentDistance;
 import de.bioforscher.singa.simulation.features.endocytosis.TetheringTime;
@@ -13,7 +12,7 @@ import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
 import de.bioforscher.singa.simulation.model.modules.concentration.ModuleState;
 import de.bioforscher.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationPool;
 import de.bioforscher.singa.simulation.model.simulation.Updatable;
@@ -162,24 +161,22 @@ public class VesicleFusion extends DisplacementBasedModule {
                 // if it contains a membrane
                 if (node.getCellRegion().hasMembrane()) {
                     // get membrane segment
-                    for (MacroscopicMembraneSegment membraneSegment : node.getMembraneSegments()) {
-                        // get line representations
-                        for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
-                            // TODO implement distance checking in general module (similar approach in VesicleAttachment)
-                            // check distance cutoff
-                            double currentDistance = lineSegment.distanceTo(currentPosition);
-                            ComparableQuantity<Length> threshold = getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
-                            Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
-                            if (threshold.isGreaterThanOrEqualTo(distance)) {
-                                if (snaresMatch(node, vesicle)) {
-                                    vesicle.setAttachmentState(TETHERED);
-                                    tetheredVesicles.put(vesicle, Environment.getTimeStep());
-                                    tetheredNodes.put(vesicle, node);
-                                    break nodesLoop;
-                                }
+                    for (MembraneSegment membraneSegment : node.getMembraneSegments()) {
+                        // TODO implement distance checking in general module (similar approach in VesicleAttachment)
+                        // check distance cutoff
+                        double currentDistance = membraneSegment.distanceTo(currentPosition);
+                        ComparableQuantity<Length> threshold = getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
+                        Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
+                        if (threshold.isGreaterThanOrEqualTo(distance)) {
+                            if (snaresMatch(node, vesicle)) {
+                                vesicle.setAttachmentState(TETHERED);
+                                tetheredVesicles.put(vesicle, Environment.getTimeStep());
+                                tetheredNodes.put(vesicle, node);
+                                break nodesLoop;
                             }
                         }
                     }
+
                 }
             }
         }

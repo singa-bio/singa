@@ -10,7 +10,7 @@ import de.bioforscher.singa.simulation.model.modules.UpdateModule;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
@@ -27,22 +27,18 @@ import java.util.*;
  */
 public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> implements Updatable {
 
-
     private CellRegion cellRegion;
-
     private ConcentrationDeltaManager updateManager;
-
     private Polygon spatialRepresentation;
-
     private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
-    private Set<MacroscopicMembraneSegment> membraneSegments;
+    private Set<MembraneSegment> membraneSegments;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
+        setPosition(new Vector2D());
         microtubuleSegments = new HashMap<>();
         membraneSegments = new HashSet<>();
         cellRegion = CellRegion.CYTOSOL_A;
-        setPosition(new Vector2D());
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
@@ -205,11 +201,11 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         microtubuleSegments.get(filament).add(segment);
     }
 
-    public Set<MacroscopicMembraneSegment> getMembraneSegments() {
+    public Set<MembraneSegment> getMembraneSegments() {
         return membraneSegments;
     }
 
-    public void addMembraneSegment(MacroscopicMembraneSegment segment) {
+    public void addMembraneSegment(MembraneSegment segment) {
         membraneSegments.add(segment);
     }
 

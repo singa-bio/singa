@@ -1,13 +1,12 @@
 package de.bioforscher.singa.simulation.model.modules.displacement;
 
 import de.bioforscher.singa.features.parameters.Environment;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.Membrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,16 +86,14 @@ public class VesicleLayer {
                 }
             }
             // check collisions with membranes
-            if(simulation.getMembraneLayer() != null) {
-                for (MacroscopicMembrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
-                    for (MacroscopicMembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
-                        for (LineSegment lineSegment : membraneSegment.getLineSegments()) {
-                            if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
-                                SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
-                                if (!displacementVector.intersectionsWith(lineSegment).isEmpty()) {
-                                    vesicle1.resetNextPosition();
-                                    continue vesicleLoop;
-                                }
+            if (simulation.getMembraneLayer() != null) {
+                for (Membrane macroscopicMembrane : simulation.getMembraneLayer().getMembranes()) {
+                    for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
+                        if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
+                            SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
+                            if (!displacementVector.intersectionsWith(membraneSegment).isEmpty()) {
+                                vesicle1.resetNextPosition();
+                                continue vesicleLoop;
                             }
                         }
                     }

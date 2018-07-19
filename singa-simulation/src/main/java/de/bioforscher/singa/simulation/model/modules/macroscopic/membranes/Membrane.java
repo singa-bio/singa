@@ -11,13 +11,13 @@ import java.util.Objects;
 /**
  * @author cl
  */
-public class MacroscopicMembrane {
+public class Membrane {
 
     private String identifier;
     private CellRegion representativeRegion;
-    private List<MacroscopicMembraneSegment> segments;
+    private List<MembraneSegment> segments;
 
-    public MacroscopicMembrane(String identifier, CellRegion representativeRegion) {
+    public Membrane(String identifier, CellRegion representativeRegion) {
         this.identifier = identifier;
         this.representativeRegion = representativeRegion;
         segments = new ArrayList<>();
@@ -32,18 +32,11 @@ public class MacroscopicMembrane {
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
-        for (MacroscopicMembraneSegment membraneSegment : segments) {
-            if (membraneSegment.getNode().equals(node)) {
-                membraneSegment.addSegment(segment);
-                return;
-            }
-        }
-        MacroscopicMembraneSegment membraneSegment = new MacroscopicMembraneSegment(node);
-        membraneSegment.addSegment(segment);
+        MembraneSegment membraneSegment = new MembraneSegment(node, segment);
         segments.add(membraneSegment);
     }
 
-    public List<MacroscopicMembraneSegment> getSegments() {
+    public List<MembraneSegment> getSegments() {
         return segments;
     }
 
@@ -51,13 +44,12 @@ public class MacroscopicMembrane {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MacroscopicMembrane that = (MacroscopicMembrane) o;
+        Membrane that = (Membrane) o;
         return Objects.equals(identifier, that.identifier);
     }
 
     @Override
     public int hashCode() {
-
         return Objects.hash(identifier);
     }
 }

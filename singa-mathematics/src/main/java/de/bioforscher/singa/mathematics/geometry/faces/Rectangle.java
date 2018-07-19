@@ -6,7 +6,7 @@ import de.bioforscher.singa.mathematics.geometry.model.HorizontalPosition;
 import de.bioforscher.singa.mathematics.geometry.model.VerticalPosition;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
-public class Rectangle extends SimplePolygon {
+public class Rectangle extends VertexPolygon {
 
     private static final int topLeftVertexIndex = 0;
     private static final int topRightVertexIndex = 1;

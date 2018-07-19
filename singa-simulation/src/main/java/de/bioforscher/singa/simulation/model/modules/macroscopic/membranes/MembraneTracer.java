@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.modules.macroscopic.membranes;
 
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
+import de.bioforscher.singa.mathematics.geometry.faces.LineSegmentPolygon;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonGraph;
@@ -13,26 +13,33 @@ import java.util.*;
 /**
  * @author cl
  */
-public class MacroscopicMembraneTracer {
+public class MembraneTracer {
 
     // input
     private HashMap<CellRegion, List<AutomatonNode>> regionNodeMapping;
     private AutomatonGraph graph;
 
     // output
-    private List<MacroscopicMembrane> membranes;
+    private List<Membrane> membranes;
 
     // working
     private LinkedList<AutomatonNode> currentNodes;
     private Deque<AutomatonNode> queue;
     private List<AutomatonNode> unprocessedNodes;
 
-    public static List<MacroscopicMembrane> composeMacroscopicMembrane(AutomatonGraph graph) {
-        MacroscopicMembraneTracer composer = new MacroscopicMembraneTracer(graph);
+    public static Membrane membraneToRegion(LineSegmentPolygon polygon, AutomatonGraph graph) {
+        // TODO create region from polygon
+
+
+        return null;
+    }
+
+    public static List<Membrane> regionsToMembrane(AutomatonGraph graph) {
+        MembraneTracer composer = new MembraneTracer(graph);
         return composer.membranes;
     }
 
-    public MacroscopicMembraneTracer(AutomatonGraph graph) {
+    public MembraneTracer(AutomatonGraph graph) {
         this.graph = graph;
         currentNodes = new LinkedList<>();
         queue = new ArrayDeque<>();
@@ -108,7 +115,7 @@ public class MacroscopicMembraneTracer {
         }
 
         // create membrane section
-        MacroscopicMembrane membrane = new MacroscopicMembrane(region.getIdentifier(), region);
+        Membrane membrane = new Membrane(region.getIdentifier(), region);
         // add full segments first
         // get first node
         ListIterator<AutomatonNode> iterator = currentNodes.listIterator();
@@ -139,23 +146,13 @@ public class MacroscopicMembraneTracer {
         membranes.add(membrane);
 
         // cut segments to size
-        for (MacroscopicMembraneSegment entry : membrane.getSegments()) {
+        for (MembraneSegment entry : membrane.getSegments()) {
             Polygon spatialRepresentation = entry.getNode().getSpatialRepresentation();
-            for (LineSegment lineSegment : entry.getLineSegments()) {
-                Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
-                // starting point should be always associated node
-                lineSegment.setEndingPoint(intersections.iterator().next());
-            }
-        }
 
-        // merge segments
-        for (MacroscopicMembraneSegment entry : membrane.getSegments()) {
-            List<LineSegment> segments = entry.getLineSegments();
-            Iterator<LineSegment> lineSegmentIterator = segments.iterator();
-            LineSegment firstSegment = lineSegmentIterator.next();
-            LineSegment secondSegment = lineSegmentIterator.next();
-            segments.clear();
-            segments.add(new SimpleLineSegment(firstSegment.getEndingPoint(), secondSegment.getEndingPoint()));
+                Set<Vector2D> intersections = spatialRepresentation.getIntersections(entry);
+                // starting point should be always associated node
+                entry.setEndingPoint(intersections.iterator().next());
+
         }
 
     }

@@ -216,6 +216,7 @@ public class Vector2D extends RegularVector {
         return new Vector2D((getX() + vector.getX()) / 2, (getY() + vector.getY()) / 2);
     }
 
+
     public Vector2D rotate(Vector2D centreOfRotation, double angle) {
         double originX = centreOfRotation.getX();
         double originY = centreOfRotation.getY();

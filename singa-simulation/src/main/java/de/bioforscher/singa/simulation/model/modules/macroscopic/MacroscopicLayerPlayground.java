@@ -9,7 +9,6 @@ import de.bioforscher.singa.features.identifiers.UniProtIdentifier;
 import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.javafx.renderer.Renderer;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
@@ -24,11 +23,12 @@ import de.bioforscher.singa.simulation.model.modules.displacement.Vesicle;
 import de.bioforscher.singa.simulation.model.modules.displacement.implementations.*;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembrane;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneTracer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.Membrane;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneTracer;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.organelles.Organelle;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
@@ -71,12 +71,13 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
     private Canvas canvas;
     private FilamentLayer filamentLayer;
-    private MacroscopicMembraneLayer membraneLayer;
+    private MembraneLayer membraneLayer;
     private Rectangle rectangle;
     private AutomatonGraph graph;
     private Simulation simulation;
     private ClathrinMediatedEndocytosis budding;
     private VesicleFusion fusion;
+    private Organelle earlyEndosome;
 
     public static void main(String[] args) {
         launch();
@@ -260,14 +261,14 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // setup spatial representations
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
-        membraneLayer = new MacroscopicMembraneLayer(MacroscopicMembraneTracer.composeMacroscopicMembrane(graph));
+        membraneLayer = new MembraneLayer(MembraneTracer.regionsToMembrane(graph));
         simulation.setMembraneLayer(membraneLayer);
 
         // add left membrane to as endocytosis site
-        List<MacroscopicMembrane> membranes = membraneLayer.getMembranes();
-        for (MacroscopicMembrane membrane : membranes) {
+        List<Membrane> membranes = membraneLayer.getMembranes();
+        for (Membrane membrane : membranes) {
             if (membrane.getIdentifier().equals("Cell membrane")) {
-                for (MacroscopicMembraneSegment membraneSegment : membrane.getSegments()) {
+                for (MembraneSegment membraneSegment : membrane.getSegments()) {
                     if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
                         budding.addMembraneSegment(membraneSegment);
                     }
@@ -279,6 +280,14 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(250, NANO(METRE)))), 60);
         filamentLayer = moc.initializeFilaments();
+
+//        earlyEndosome = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.EARLY_ENDOSOME);
+//        earlyEndosome.reduce(5);
+//        earlyEndosome.rotate(Math.toRadians(90));
+//        earlyEndosome.scale();
+//
+//        earlyEndosome.moveCentreTo(new Vector2D(500.0, 500.0));
+
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -330,13 +339,10 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw membrane
         getGraphicsContext().setLineWidth(3);
         if (membraneLayer != null) {
-            for (MacroscopicMembrane membrane : membraneLayer.getMembranes()) {
-                List<MacroscopicMembraneSegment> segments = membrane.getSegments();
-                for (MacroscopicMembraneSegment segment : segments) {
-                    List<LineSegment> lineSegments = segment.getLineSegments();
-                    for (LineSegment lineSegment : lineSegments) {
-                        strokeLineSegment(lineSegment);
-                    }
+            for (Membrane membrane : membraneLayer.getMembranes()) {
+                List<MembraneSegment> segments = membrane.getSegments();
+                for (MembraneSegment segment : segments) {
+                        strokeLineSegment(segment);
                 }
             }
         }
@@ -365,6 +371,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             strokeCircle(circle);
             strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
+        // draw organelle
+        getGraphicsContext().setFill(Color.GREEN);
+//        for (LineSegment lineSegment : earlyEndosome.getLineSegments()) {
+//            strokeLineSegment(lineSegment);
+//        }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(3);

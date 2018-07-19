@@ -3,7 +3,7 @@ package de.bioforscher.singa.simulation.model.modules.macroscopic.organelles;
 import de.bioforscher.singa.mathematics.geometry.faces.Circle;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
-import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
 import de.bioforscher.singa.simulation.model.simulation.Simulation;
 
 /**
@@ -12,13 +12,13 @@ import de.bioforscher.singa.simulation.model.simulation.Simulation;
 public class MicrotubuleOrganizingCentre {
 
     private Simulation simulation;
-    private MacroscopicMembraneLayer membraneLayer;
+    private MembraneLayer membraneLayer;
 
     private Circle circleRepresentation;
     private int initialFilaments;
 
 
-    public MicrotubuleOrganizingCentre(Simulation simulation, MacroscopicMembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
+    public MicrotubuleOrganizingCentre(Simulation simulation, MembraneLayer membraneLayer, Circle circleRepresentation, int initialFilaments) {
         this.simulation = simulation;
         this.circleRepresentation = circleRepresentation;
         this.initialFilaments = initialFilaments;
