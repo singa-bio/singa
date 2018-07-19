@@ -11,11 +11,9 @@ import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.*;
-import static java.lang.Math.PI;
+import static de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * @author cl
@@ -27,11 +25,11 @@ public class FilamentLayer {
     private Rectangle simulationRegion;
     private Simulation simulation;
 
-    public FilamentLayer(Rectangle simulationRegion, MacroscopicMembraneLayer membraneLayer, Simulation simulation) {
+    public FilamentLayer(Simulation simulation, MacroscopicMembraneLayer membraneLayer) {
         filaments = new ArrayList<>();
-        this.simulationRegion = simulationRegion;
-        this.membraneLayer = membraneLayer;
         this.simulation = simulation;
+        simulationRegion = simulation.getSimulationRegion();
+        this.membraneLayer = membraneLayer;
     }
 
     public void spawnFilament(MacroscopicMembrane membrane) {
@@ -129,23 +127,23 @@ public class FilamentLayer {
 
         }
         // check pairwise interactions
-        for (SkeletalFilament filament : filaments) {
-            Map.Entry<SkeletalFilament, Double> closestRelevantDistance = filament.getClosestRelevantDistance();
-            SkeletalFilament closestFragment = closestRelevantDistance.getKey();
-            double closestDistance = closestRelevantDistance.getValue();
-            // TODO < 25 nm in system scale
-            if (closestDistance < 1) {
-                // calculate angle and convert to degree
-                double angle = filament.angleTo(closestFragment) * 180 / PI;
-                if (angle < 40) {
-                    // zippering - plus: follow
-                    if (filament.getPlusEndBehaviour() == GROW) {
-                        filament.setPlusEndBehaviour(FOLLOW);
-                        filament.setLeadFilament(closestFragment);
-                    }
-                }
-            }
-        }
+//        for (SkeletalFilament filament : filaments) {
+//            Map.Entry<SkeletalFilament, Double> closestRelevantDistance = filament.getClosestRelevantDistance();
+//            SkeletalFilament closestFragment = closestRelevantDistance.getKey();
+//            double closestDistance = closestRelevantDistance.getValue();
+//            // TODO < 25 nm in system scale
+//            if (closestDistance < 1) {
+//                // calculate angle and convert to degree
+//                double angle = filament.angleTo(closestFragment) * 180 / PI;
+//                if (angle < 40) {
+//                    // zippering - plus: follow
+//                    if (filament.getPlusEndBehaviour() == GROW) {
+//                        filament.setPlusEndBehaviour(FOLLOW);
+//                        filament.setLeadFilament(closestFragment);
+//                    }
+//                }
+//            }
+//        }
 
     }
 

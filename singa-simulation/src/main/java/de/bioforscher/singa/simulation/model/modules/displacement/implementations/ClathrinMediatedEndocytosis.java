@@ -34,7 +34,7 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class EndocytosisBudding extends DisplacementBasedModule {
+public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
 
     private HashMap<Vesicle, Quantity<Time>> maturingVesicles;
     private List<MacroscopicMembraneSegment> segments;
@@ -52,7 +52,7 @@ public class EndocytosisBudding extends DisplacementBasedModule {
     // randomized radius
     private Quantity<Length> nextSpawnRadius;
 
-    public EndocytosisBudding() {
+    public ClathrinMediatedEndocytosis() {
         maturingVesicles = new HashMap<>();
         segments = new ArrayList<>();
         initialMembraneCargo = new HashMap<>();
@@ -191,4 +191,5 @@ public class EndocytosisBudding extends DisplacementBasedModule {
     public String toString() {
         return "Endocytosis maturing and scission";
     }
+
 }

@@ -28,6 +28,7 @@ import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.Macro
 import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneLayer;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneSegment;
 import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MacroscopicMembraneTracer;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
 import de.bioforscher.singa.simulation.model.sections.CellRegion;
 import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import de.bioforscher.singa.simulation.model.sections.CellTopology;
@@ -69,12 +70,12 @@ import static tec.uom.se.unit.Units.SECOND;
 public class MacroscopicLayerPlayground extends Application implements Renderer {
 
     private Canvas canvas;
-    private FilamentLayer skeletalLayer;
+    private FilamentLayer filamentLayer;
     private MacroscopicMembraneLayer membraneLayer;
     private Rectangle rectangle;
     private AutomatonGraph graph;
     private Simulation simulation;
-    private EndocytosisBudding budding;
+    private ClathrinMediatedEndocytosis budding;
     private VesicleFusion fusion;
 
     public static void main(String[] args) {
@@ -185,7 +186,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 .build();
 
         // setup endocytosis budding
-        budding = new EndocytosisBudding();
+        budding = new ClathrinMediatedEndocytosis();
         budding.setSimulation(simulation);
         budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
         budding.addMembraneCargo(Quantities.getQuantity(10000, new ProductUnit<Area>(NANO(METRE).pow(2))), 10, vamp3);
@@ -274,31 +275,20 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             }
         }
 
-        // setup filament layer
-        skeletalLayer = new FilamentLayer(rectangle, membraneLayer, simulation);
-        Iterator<MacroscopicMembrane> iterator = membraneLayer.getMembranes().iterator();
-        iterator.next();
-        MacroscopicMembrane membrane = iterator.next();
-        for (int i = 0; i < 30; i++) {
-            skeletalLayer.spawnHorizontalFilament(membrane);
-        }
+        // setup microtubules
+        MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
+                Environment.convertSystemToSimulationScale(Quantities.getQuantity(250, NANO(METRE)))), 60);
+        filamentLayer = moc.initializeFilaments();
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        final boolean[] hasGrowingFilaments = {true};
-
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (hasGrowingFilaments[0]) {
-                    hasGrowingFilaments[0] = skeletalLayer.hasGrowingFilaments();
-                    skeletalLayer.nextEpoch();
-                } else {
-                    simulation.nextEpoch();
-                    System.out.println(simulation.getElapsedTime().to(SECOND));
-                }
+                simulation.nextEpoch();
+                System.out.println(simulation.getElapsedTime().to(SECOND));
                 render();
             }
         };
@@ -378,7 +368,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(3);
-        for (SkeletalFilament skeletalFilament : skeletalLayer.getFilaments()) {
+        for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
             switch (skeletalFilament.getPlusEndBehaviour()) {
                 case GROW:
                     getGraphicsContext().setStroke(Color.GREEN);

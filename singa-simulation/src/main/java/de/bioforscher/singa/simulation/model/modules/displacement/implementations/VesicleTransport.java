@@ -35,27 +35,34 @@ public class VesicleTransport extends DisplacementBasedModule {
         // new position = current position + velocity * time step size * unit direction
         ListIterator<Vector2D> segmentIterator = vesicle.getSegmentIterator();
         // segments are sorted, such that the first element is the + end and the last element is the - end
-        Vector2D guide;
+        Vector2D guide = null;
         if (vesicle.getTargetDirection() == MINUS) {
             // to get to minus go to next
             Pair<Vector2D> surroundingSegments = scoutMinusEnd(segmentIterator);
             Vector2D currentPosition = vesicle.getCurrentPosition();
             double distanceNext = currentPosition.distanceTo(surroundingSegments.getFirst());
-            double distanceAfterNext = currentPosition.distanceTo(surroundingSegments.getSecond());
-            if (distanceAfterNext < distanceNext) {
-                segmentIterator.next();
+            if (surroundingSegments.getSecond() != null) {
+                double distanceAfterNext = currentPosition.distanceTo(surroundingSegments.getSecond());
+                if (distanceAfterNext < distanceNext) {
+                    segmentIterator.next();
+                }
+                guide = surroundingSegments.getSecond().subtract(currentPosition).normalize();
             }
-            guide = surroundingSegments.getSecond().subtract(currentPosition).normalize();
         } else {
             // to get to plus go to previous
             Pair<Vector2D> surroundingSegments = scoutPlusEnd(segmentIterator);
             Vector2D currentPosition = vesicle.getCurrentPosition();
             double distanceNext = currentPosition.distanceTo(surroundingSegments.getFirst());
-            double distanceAfterNext = currentPosition.distanceTo(surroundingSegments.getSecond());
-            if (distanceAfterNext < distanceNext) {
-                segmentIterator.next();
+            if (surroundingSegments.getSecond() != null) {
+                double distanceAfterNext = currentPosition.distanceTo(surroundingSegments.getSecond());
+                if (distanceAfterNext < distanceNext) {
+                    segmentIterator.next();
+                }
+                guide = surroundingSegments.getSecond().subtract(currentPosition).normalize();
             }
-            guide = surroundingSegments.getSecond().subtract(currentPosition).normalize();
+        }
+        if (guide == null) {
+            return new DisplacementDelta(this, new Vector2D(0.0,0.0));
         }
         Quantity<Speed> speed = getScaledFeature(MotorMovementVelocity.class);
         Quantity<Length> distance = Quantities.getQuantity(speed.getValue().doubleValue(), Environment.getNodeDistanceUnit());

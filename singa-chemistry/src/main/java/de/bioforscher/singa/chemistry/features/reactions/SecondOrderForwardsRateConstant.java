@@ -11,7 +11,7 @@ import javax.measure.Unit;
  */
 public class SecondOrderForwardsRateConstant extends SecondOrderRateConstant implements ForwardsRateConstant<SecondOrderRate> {
 
-    public static final String symbol = "f_fwd_2";
+    public static final String symbol = "k_fwd_2";
 
     public SecondOrderForwardsRateConstant(Quantity<SecondOrderRate> secondOrderRateQuantity, FeatureOrigin featureOrigin) {
         super(secondOrderRateQuantity, featureOrigin);
