@@ -162,8 +162,9 @@ public class Fit3DAlignmentTest {
                 .query(structuralMotif)
                 .target(target.getFirstModel())
                 .atomFilter(AtomFilter.isArbitrary())
-                .filterEnvironments()
+                .filterEnvironments(3.0)
                 .run();
+
         List<Fit3DMatch> matches = fit3d.getMatches();
         assertEquals(0.0000, matches.get(0).getRmsd(), 1E-6);
     }

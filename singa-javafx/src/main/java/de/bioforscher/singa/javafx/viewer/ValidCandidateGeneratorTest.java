@@ -4,7 +4,12 @@ import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
 import de.bioforscher.singa.mathematics.graphs.model.DirectedGraph;
 import de.bioforscher.singa.mathematics.graphs.model.GenericNode;
+import de.bioforscher.singa.mathematics.matrices.LabeledSymmetricMatrix;
+import de.bioforscher.singa.mathematics.metrics.model.VectorMetricProvider;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.ValidCandidateGenerator;
+import de.bioforscher.singa.structure.model.families.AminoAcidFamily;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
+import de.bioforscher.singa.structure.model.identifiers.LeafIdentifier;
 import de.bioforscher.singa.structure.model.identifiers.LeafIdentifiers;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.Structure;
@@ -12,7 +17,12 @@ import de.bioforscher.singa.structure.model.oak.StructuralMotif;
 import de.bioforscher.singa.structure.parser.pdb.structures.StructureParser;
 import javafx.application.Application;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static de.bioforscher.singa.structure.algorithms.superimposition.fit3d.Fit3DAlignment.generateLabelHashCode;
 
 /**
  * @author fk
@@ -29,10 +39,42 @@ public class ValidCandidateGeneratorTest {
                 "A-102",
                 "A-195"));
 
-//        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-57"),AminoAcidFamily.METHIONINE);
-//        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-57"),AminoAcidFamily.VALINE);
-//        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-102"),AminoAcidFamily.VALINE);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-57"), AminoAcidFamily.METHIONINE);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-57"), AminoAcidFamily.VALINE);
+        queryMotif.addExchangeableFamily(LeafIdentifier.fromSimpleString("A-102"), AminoAcidFamily.VALINE);
 
+
+        Map<Integer, List<Double>> pairwiseQueryMotifDistanceMap = new HashMap<>();
+        LabeledSymmetricMatrix<LeafSubstructure<?>> queryMotifSquaredDistanceMatrix = VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(queryMotif.getAllLeafSubstructures(), LeafSubstructure::getPosition);
+
+        for (int i = 0; i < queryMotif.getAllLeafSubstructures().size(); i++) {
+            for (int j = i + 1; j < queryMotif.getAllLeafSubstructures().size(); j++) {
+                LeafSubstructure<?> firstLeafSubstructure = queryMotif.getAllLeafSubstructures().get(j);
+                LeafSubstructure<?> secondLeafSubstructure = queryMotif.getAllLeafSubstructures().get(i);
+
+                List<StructuralFamily> firstFamilies = new ArrayList<>();
+                firstFamilies.add(firstLeafSubstructure.getFamily());
+                firstFamilies.addAll(firstLeafSubstructure.getExchangeableFamilies());
+
+                List<StructuralFamily> secondFamilies = new ArrayList<>();
+                secondFamilies.add(secondLeafSubstructure.getFamily());
+                secondFamilies.addAll(secondLeafSubstructure.getExchangeableFamilies());
+
+                for (StructuralFamily firstFamily : firstFamilies) {
+                    for (StructuralFamily secondFamily : secondFamilies) {
+                        int hashCode = generateLabelHashCode(firstFamily, secondFamily);
+                        double distance = queryMotifSquaredDistanceMatrix.getValueForLabel(firstLeafSubstructure, secondLeafSubstructure);
+                        if (pairwiseQueryMotifDistanceMap.containsKey(hashCode)) {
+                            pairwiseQueryMotifDistanceMap.get(hashCode).add(distance);
+                        } else {
+                            List<Double> distances = new ArrayList<>();
+                            distances.add(distance);
+                            pairwiseQueryMotifDistanceMap.put(hashCode, distances);
+                        }
+                    }
+                }
+            }
+        }
 
         List<LeafSubstructure<?>> environment = StructuralMotif.fromLeafIdentifiers(structure, LeafIdentifiers.of(
                 "A-104",
@@ -87,7 +129,9 @@ public class ValidCandidateGeneratorTest {
                 "A-57",
                 "A-102")).getAllLeafSubstructures();
 
-        ValidCandidateGenerator validCandidateGeneratorGraphBased = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment);
+        LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix = VectorMetricProvider.SQUARED_EUCLIDEAN_METRIC.calculateDistancesPairwise(environment, LeafSubstructure::getPosition);
+
+        ValidCandidateGenerator validCandidateGeneratorGraphBased = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment, pairwiseQueryMotifDistanceMap, squaredDistanceMatrix, 1.0);
         DirectedGraph<GenericNode<LeafSubstructure<?>>> searchSpace = validCandidateGeneratorGraphBased.getSearchSpace();
 
 

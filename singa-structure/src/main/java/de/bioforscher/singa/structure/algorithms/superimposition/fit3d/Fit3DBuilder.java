@@ -279,9 +279,10 @@ public class Fit3DBuilder {
          * Enables pre-filtering of extracted environments, i.e. each pair of residues has to have a compatible pair
          * in the environment within distance cutoff.
          *
+         * @param filterThreshold The threshold used to check the distances in Angstroem.
          * @return The {@link ParameterStep} that can be used to define optional parameters.
          */
-        ParameterStep filterEnvironments();
+        ParameterStep filterEnvironments(double filterThreshold);
     }
 
     public static class Builder implements QueryStep, SiteStep, SiteParameterConfigurationStep, SiteConfigurationStep, TargetStep, AtomStep, BatchParameterStep, ParameterStep {
@@ -291,6 +292,7 @@ public class Fit3DBuilder {
         LeafSubstructureContainer target;
         int parallelism;
         double rmsdCutoff = DEFAULT_RMSD_CUTOFF;
+        double filterThreshold;
         double distanceTolerance = DEFAULT_DISTANCE_TOLERANCE;
         Predicate<Atom> atomFilter = DEFAULT_ATOM_FILTER;
         RepresentationScheme representationScheme;
@@ -436,7 +438,8 @@ public class Fit3DBuilder {
         }
 
         @Override
-        public ParameterStep filterEnvironments() {
+        public ParameterStep filterEnvironments(double filterThreshold) {
+            this.filterThreshold = filterThreshold;
             filterEnvironments = true;
             return this;
         }

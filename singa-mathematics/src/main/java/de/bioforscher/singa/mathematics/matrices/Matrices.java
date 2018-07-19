@@ -433,7 +433,6 @@ public final class Matrices {
      *
      * @param matrix A new matrix with all values scaled between [0,1]
      * @return The normalized matrix as {@link RegularMatrix}.
-     * @see <a href="https://en.wikipedia.org/wiki/Feature_scaling>Wikipedia: Feature Scaling</a>
      */
     public static Matrix normalize(Matrix matrix) {
         Pair<Integer> minimalElementPosition = Matrices.getPositionsOfMinimalElement(matrix).get(0);

@@ -45,6 +45,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
     private final boolean mapPfamIdentifiers;
     private final boolean mapEcNumbers;
     private final boolean filterEnvironments;
+    private final double filterThreshold;
     private List<Fit3DMatch> allMatches;
 
     Fit3DAlignmentBatch(Fit3DBuilder.Builder builder) {
@@ -63,6 +64,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
         mapPfamIdentifiers = builder.mapPfamIdentifiers;
         mapEcNumbers = builder.mapEcNumbers;
         filterEnvironments = builder.filterEnvironments;
+        filterThreshold = builder.filterThreshold;
         logger.info("Fit3D alignment batch initialized with {} target structures", multiParser.getNumberOfQueuedStructures());
         computeAlignments();
         logger.info("found {} matches in {} target structures", allMatches.size(), multiParser.getNumberOfQueuedStructures());
@@ -181,7 +183,7 @@ public class Fit3DAlignmentBatch implements Fit3D {
                         parameterStep.mapECNumbers();
                     }
                     if (filterEnvironments) {
-                        parameterStep.filterEnvironments();
+                        parameterStep.filterEnvironments(filterThreshold);
                     }
                     fit3d = parameterStep.run();
 

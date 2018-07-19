@@ -1,6 +1,5 @@
 package de.bioforscher.singa.structure.algorithms.superimposition.fit3d;
 
-import de.bioforscher.singa.core.utility.CommutablePair;
 import de.bioforscher.singa.core.utility.Pair;
 import de.bioforscher.singa.features.identifiers.ECNumber;
 import de.bioforscher.singa.features.identifiers.PfamIdentifier;
@@ -14,6 +13,7 @@ import de.bioforscher.singa.structure.algorithms.superimposition.SubstructureSup
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.representations.RepresentationScheme;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.FofanovEstimation;
 import de.bioforscher.singa.structure.algorithms.superimposition.fit3d.statistics.StatisticalModel;
+import de.bioforscher.singa.structure.model.families.StructuralFamily;
 import de.bioforscher.singa.structure.model.interfaces.Atom;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructure;
 import de.bioforscher.singa.structure.model.interfaces.LeafSubstructureContainer;
@@ -51,9 +51,10 @@ public class Fit3DAlignment implements Fit3D {
     private final boolean mapPfamIdentifiers;
     private final boolean mapUniProtIdentifiers;
     private final boolean filterEnvironments;
+    private final double squaredFilterThreshold;
+    private Map<Integer, List<Double>> pairwiseQueryMotifDistanceMap;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> queryMotifSquaredDistanceMatrix;
     private double squaredQueryExtent;
-    private List<CommutablePair<LeafSubstructure<?>>> queryMotifPairs;
     private LabeledSymmetricMatrix<LeafSubstructure<?>> squaredDistanceMatrix;
     private List<List<LeafSubstructure<?>>> environments;
     private HashMap<List<LeafSubstructure<?>>, List<List<LeafSubstructure<?>>>> candidates;
@@ -66,6 +67,8 @@ public class Fit3DAlignment implements Fit3D {
         rmsdCutoff = builder.rmsdCutoff;
         // use squared distance tolerance
         squaredDistanceTolerance = builder.distanceTolerance * builder.distanceTolerance;
+        // use squared filter threshold if environment filtering is enabled
+        squaredFilterThreshold = builder.filterThreshold * builder.filterThreshold;
         atomFilter = builder.atomFilter;
         representationScheme = builder.representationScheme;
         statisticalModel = builder.statisticalModel;
@@ -102,13 +105,34 @@ public class Fit3DAlignment implements Fit3D {
         logger.debug("the squared query motif extent is {}", squaredQueryExtent);
 
         if (filterEnvironments) {
-            // generate query motif pairs
-            queryMotifPairs = new ArrayList<>();
+            logger.debug("environment filtering is enabled with filter threshold of {}", builder.filterThreshold);
+            pairwiseQueryMotifDistanceMap = new HashMap<>();
             for (int i = 0; i < queryMotif.getAllLeafSubstructures().size(); i++) {
                 for (int j = i + 1; j < queryMotif.getAllLeafSubstructures().size(); j++) {
-                    CommutablePair<LeafSubstructure<?>> queryMotifPair = new CommutablePair<>(queryMotif.getAllLeafSubstructures().get(i),
-                            queryMotif.getAllLeafSubstructures().get(j));
-                    queryMotifPairs.add(queryMotifPair);
+                    LeafSubstructure<?> firstLeafSubstructure = queryMotif.getAllLeafSubstructures().get(j);
+                    LeafSubstructure<?> secondLeafSubstructure = queryMotif.getAllLeafSubstructures().get(i);
+
+                    List<StructuralFamily> firstFamilies = new ArrayList<>();
+                    firstFamilies.add(firstLeafSubstructure.getFamily());
+                    firstFamilies.addAll(firstLeafSubstructure.getExchangeableFamilies());
+
+                    List<StructuralFamily> secondFamilies = new ArrayList<>();
+                    secondFamilies.add(secondLeafSubstructure.getFamily());
+                    secondFamilies.addAll(secondLeafSubstructure.getExchangeableFamilies());
+
+                    for (StructuralFamily firstFamily : firstFamilies) {
+                        for (StructuralFamily secondFamily : secondFamilies) {
+                            int hashCode = generateLabelHashCode(firstFamily, secondFamily);
+                            double distance = queryMotifSquaredDistanceMatrix.getValueForLabel(firstLeafSubstructure, secondLeafSubstructure);
+                            if (pairwiseQueryMotifDistanceMap.containsKey(hashCode)) {
+                                pairwiseQueryMotifDistanceMap.get(hashCode).add(distance);
+                            } else {
+                                List<Double> distances = new ArrayList<>();
+                                distances.add(distance);
+                                pairwiseQueryMotifDistanceMap.put(hashCode, distances);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -121,6 +145,10 @@ public class Fit3DAlignment implements Fit3D {
         computeMatches();
         calculateStatistics();
         mapIdentifiers();
+    }
+
+    public static int generateLabelHashCode(StructuralFamily<?> structuralFamily1, StructuralFamily<?> structuralFamily2) {
+        return structuralFamily1.getThreeLetterCode().hashCode() * structuralFamily2.getThreeLetterCode().hashCode();
     }
 
     /**
@@ -262,7 +290,13 @@ public class Fit3DAlignment implements Fit3D {
      */
     private void generateCandidates() {
         for (List<LeafSubstructure<?>> environment : environments) {
-            List<List<LeafSubstructure<?>>> currentCandidates = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment).getCandidates();
+            ValidCandidateGenerator validCandidateGenerator;
+            if (filterEnvironments) {
+                validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment, pairwiseQueryMotifDistanceMap, squaredDistanceMatrix, squaredFilterThreshold);
+            } else {
+                validCandidateGenerator = new ValidCandidateGenerator(queryMotif.getAllLeafSubstructures(), environment);
+            }
+            List<List<LeafSubstructure<?>>> currentCandidates = validCandidateGenerator.getCandidates();
             if (!currentCandidates.isEmpty()) {
                 candidates.put(environment, currentCandidates);
             }
@@ -286,52 +320,8 @@ public class Fit3DAlignment implements Fit3D {
             }
             if (environment.size() >= queryMotif.size()) {
                 logger.debug("possible environment {} within around {} added", environment, currentSubstructure);
-                if (filterEnvironments && filterEnvironment(environment)) {
-                    environments.add(environment);
-                } else {
-                    environments.add(environment);
-                }
+                environments.add(environment);
             }
         }
-    }
-
-    private boolean filterEnvironment(List<LeafSubstructure<?>> environment) {
-        // generate environment pairs
-        List<CommutablePair<LeafSubstructure<?>>> environmentPairs = new ArrayList<>();
-        for (int i = 0; i < environment.size(); i++) {
-            for (int j = i + 1; j < environment.size(); j++) {
-                environmentPairs.add(new CommutablePair<>(environment.get(i), environment.get(j)));
-            }
-        }
-        // check for compatibility of distances
-        for (CommutablePair<LeafSubstructure<?>> queryMotifPair : queryMotifPairs) {
-            double queryMotifPairDistance = queryMotifSquaredDistanceMatrix.getValueForLabel(queryMotifPair.getFirst(), queryMotifPair.getSecond());
-            // determine all compatible pairs contained in the environment
-            List<CommutablePair<LeafSubstructure<?>>> compatiblePairs = environmentPairs.stream()
-                    .filter(environmentPair -> (queryMotifPair.getFirst().getExchangeableFamilies().contains(environmentPair.getFirst().getFamily()) ||
-                            queryMotifPair.getSecond().getExchangeableFamilies().contains(environmentPair.getSecond().getFamily())) ||
-                            (queryMotifPair.getFirst().getFamily() == environmentPair.getFirst().getFamily() ||
-                                    queryMotifPair.getFirst().getFamily() == environmentPair.getSecond().getFamily())
-                    )
-                    .filter(environmentPair -> (queryMotifPair.getSecond().getExchangeableFamilies().contains(environmentPair.getSecond().getFamily()) ||
-                            queryMotifPair.getSecond().getExchangeableFamilies().contains(environmentPair.getFirst().getFamily())) ||
-                            (queryMotifPair.getSecond().getFamily() == environmentPair.getSecond().getFamily() ||
-                                    queryMotifPair.getSecond().getFamily() == environmentPair.getFirst().getFamily())
-                    )
-                    .collect(Collectors.toList());
-            boolean hasCompatiblePair = false;
-            for (CommutablePair<LeafSubstructure<?>> compatiblePair : compatiblePairs) {
-                double compatiblePairDistance = squaredDistanceMatrix.getValueForLabel(compatiblePair.getFirst(), compatiblePair.getSecond());
-                if (compatiblePairDistance >= queryMotifPairDistance - squaredDistanceTolerance &&
-                        compatiblePairDistance <= queryMotifPairDistance + squaredDistanceTolerance) {
-                    hasCompatiblePair = true;
-                }
-            }
-            // immediately return false if one pair of the query motif does not have a valid pair in the environment
-            if (!hasCompatiblePair) {
-                return false;
-            }
-        }
-        return true;
     }
 }
