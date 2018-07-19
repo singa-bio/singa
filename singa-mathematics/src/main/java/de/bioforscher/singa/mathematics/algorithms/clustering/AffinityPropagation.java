@@ -42,7 +42,6 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         dataSize = dataPoints.size();
         LabeledMatrix<DataType> inputMatrix = builder.matrix;
         lambda = builder.lambda;
-        selfSimilarity = builder.selfSimilarity;
         maximalEpochs = builder.maximalEpochs;
         checkInput(dataPoints, inputMatrix);
         // convert to similarity matrix (1 - dissimilarity) if distance matrix provided
@@ -60,6 +59,24 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         }
         s = new LabeledSymmetricMatrix<>(similarityMatrix.getElements());
         // assign self similarities
+        if (builder.selfSimilarityByMedian) {
+            double[] values = new double[s.getRowDimension() * s.getColumnDimension() - dataSize];
+            int position = 0;
+            for (int i = 0; i < s.getRowDimension(); i++) {
+                for (int j = 0; j < s.getColumnDimension(); j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    values[position] = s.getElement(i, j);
+                    position++;
+                }
+            }
+            selfSimilarity = Vectors.getMedian(new RegularVector(values));
+            logger.info("determined self-similarity value of data points (median) is {}", selfSimilarity);
+        } else {
+
+            selfSimilarity = builder.selfSimilarity;
+        }
         double[][] elements = s.getElements();
         for (int i = 0; i < s.getElements().length; i++) {
             elements[i][i] = selfSimilarity;
@@ -335,6 +352,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
         private double lambda = DEFAULT_LAMBDA;
         private int maximalEpochs = DEFAULT_MAXIMAL_EPOCHS;
         private boolean distance;
+        private boolean selfSimilarityByMedian;
 
         @Override
         public MatrixStep<DataType> dataPoints(List<DataType> dataPoints) {
@@ -356,10 +374,7 @@ public class AffinityPropagation<DataType> implements Clustering<DataType> {
 
         @Override
         public ParameterStep<DataType> selfSimilarityByMedian() {
-            double[] values = matrix.streamElements()
-                    .toArray();
-            selfSimilarity = Vectors.getMedian(new RegularVector(values));
-            logger.info("determined self-similarity value of data points (median) is {}", selfSimilarity);
+            selfSimilarityByMedian = true;
             return this;
         }
 

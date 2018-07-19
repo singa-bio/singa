@@ -26,6 +26,21 @@ public class AffinityPropagationTest {
         assertEquals(2, affinityPropagation.getClusters().size());
     }
 
+    @Test
+    public void shouldRunClusteringSelfSimilarityByMedian() throws IOException {
+        LabeledMatrix<String> rmsdMatrix = Matrices.readLabeledMatrixFromCSV(Thread.currentThread()
+                .getContextClassLoader().getResourceAsStream("clustering/rmsd_distances.csv"));
+        AffinityPropagation<String> affinityPropagation = AffinityPropagation.<String>create()
+                .dataPoints(rmsdMatrix.getRowLabels())
+                .matrix(rmsdMatrix)
+                .isDistance(true)
+                .selfSimilarityByMedian()
+                .maximalEpochs(100)
+                .run();
+        affinityPropagation.getSilhouetteCoefficient();
+        assertEquals(3, affinityPropagation.getClusters().size());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWithWrongInput() throws IOException {
         LabeledMatrix<String> rmsdMatrix = Matrices.readLabeledMatrixFromCSV(Thread.currentThread()
