@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.parameters;
 
-import de.bioforscher.singa.chemistry.descriptive.annotations.Annotatable;
-import de.bioforscher.singa.chemistry.descriptive.annotations.Annotation;
+import de.bioforscher.singa.chemistry.annotations.Annotatable;
+import de.bioforscher.singa.chemistry.annotations.Annotation;
 import de.bioforscher.singa.core.utility.Nameable;
 import de.bioforscher.singa.features.identifiers.SimpleStringIdentifier;
 import de.bioforscher.singa.features.identifiers.model.Identifiable;

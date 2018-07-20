@@ -1,6 +1,6 @@
 package de.bioforscher.singa.features.quantities;
 
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import org.junit.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -84,21 +84,28 @@ public class MolarConcentrationTest {
     }
 
     @Test
-    public void toMolesOfSubstance() {
+    public void concentrationToMoles() {
         MolarConcentration molePerLitre = new MolarConcentration(1.0, MOLE_PER_LITRE);
         Quantity<Volume> volume = Quantities.getQuantity(2, CUBIC_METRE);
-        Quantity<AmountOfSubstance> actualResult = molePerLitre.toMolesOfSubstance(volume);
+        Quantity<AmountOfSubstance> actualResult = MolarConcentration.concentrationToMoles(molePerLitre,volume);
         Quantity<AmountOfSubstance> expectedResult = Quantities.getQuantity(2000.0, MOLE);
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    public void toMoleculesOfSubstance() {
+    public void concentrationToMolecules() {
         MolarConcentration molePerLitre = new MolarConcentration(0.1, MOLE_PER_LITRE);
-        EnvironmentalParameters.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
-        Quantity<Volume> volume = Quantities.getQuantity(1.0, EnvironmentalParameters.getTransformedVolume());
-        Quantity<Dimensionless> actualResult = molePerLitre.toMoleculesOfSubstance(volume);
+        Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
+        Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getVolumeUnit());
+        Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
         Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, MOLECULES);
         assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void moleculesToConcentration() {
+        Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(4000, Quantities.getQuantity(2.0, CUBIC_METRE));
+        Quantity<Dimensionless> molecules = MolarConcentration.concentrationToMolecules(concentration, Quantities.getQuantity(1.0, CUBIC_METRE));
+        assertEquals(2000, molecules.getValue().doubleValue(), 1e-10);
     }
 }

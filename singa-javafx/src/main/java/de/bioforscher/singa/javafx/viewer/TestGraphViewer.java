@@ -50,12 +50,12 @@ public class TestGraphViewer {
         renderer.setRenderAfter(graph -> {
             for (GenericNode<GenericNode<String>> genericNodeGenericNode : searchSpace.getNodes()) {
                 renderer.getGraphicsContext().setFill(Color.SEAGREEN);
-                renderer.drawPoint(genericNodeGenericNode.getPosition(), 25);
+                renderer.fillPoint(genericNodeGenericNode.getPosition(), 25);
                 renderer.getGraphicsContext().setFill(Color.BLACK);
 
                 GenericNode<String> content = genericNodeGenericNode.getContent();
                 if (content != null) {
-                    renderer.drawTextCenteredOnPoint(content.getContent(), genericNodeGenericNode.getPosition());
+                    renderer.strokeTextCenteredOnPoint(content.getContent(), genericNodeGenericNode.getPosition());
                 }
             }
             return null;

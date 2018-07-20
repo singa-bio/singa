@@ -2,7 +2,7 @@ package de.bioforscher.singa.javafx.renderer.molecules;
 
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderOptions;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphRenderer;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.structure.model.molecules.MoleculeAtom;
 import de.bioforscher.singa.structure.model.molecules.MoleculeBond;
 import de.bioforscher.singa.structure.model.molecules.MoleculeGraph;
@@ -21,13 +21,13 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
     protected void drawNode(MoleculeAtom atom) {
         // draw node
         getGraphicsContext().setFill(moleculeOptions.getColorForElement(atom.getElement().getSymbol()));
-        drawPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
+        fillPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw outline
         getGraphicsContext().setStroke(getRenderingOptions().getEdgeColor());
-        circlePoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
+        strokeCircle(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
-        drawTextCenteredOnPoint(atom.getElement().toString() + "." + atom.getIdentifier(), atom.getPosition());
+        strokeTextCenteredOnPoint(atom.getElement().toString() + "." + atom.getIdentifier(), atom.getPosition());
     }
 
     @Override
@@ -41,29 +41,29 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
 
 
     private void drawBond(MoleculeBond bond) {
-        LineSegment connectingSegment = new LineSegment(bond.getSource().getPosition(), bond.getTarget().getPosition());
+        SimpleLineSegment connectingSegment = new SimpleLineSegment(bond.getSource().getPosition(), bond.getTarget().getPosition());
         switch (bond.getType()) {
             case DOUBLE_BOND: {
                 // draw upper parallel
-                LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(upperParallelSegment);
+                SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
+                strokeLineSegment(upperParallelSegment);
                 // draw lower parallel
-                LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(lowerParallelSegment);
+                SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
+                strokeLineSegment(lowerParallelSegment);
                 break;
             }
             case AROMATIC_BOND: {
                 // draw upper parallel
-                LineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
-                drawLineSegment(upperParallelSegment);
+                SimpleLineSegment upperParallelSegment = connectingSegment.getParallelSegment((getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
+                strokeLineSegment(upperParallelSegment);
                 // draw lower parallel
-                LineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
+                SimpleLineSegment lowerParallelSegment = connectingSegment.getParallelSegment((-getRenderingOptions().getNodeDiameter() / 2.0) * 0.5);
                 dashLineSegment(lowerParallelSegment, 2d, 4d);
                 break;
             }
             default:
                 // draw single bond
-                drawLineSegment(connectingSegment);
+                strokeLineSegment(connectingSegment);
                 break;
         }
 

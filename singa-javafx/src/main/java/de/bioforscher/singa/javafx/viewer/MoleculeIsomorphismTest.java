@@ -1,6 +1,6 @@
 package de.bioforscher.singa.javafx.viewer;
 
-import de.bioforscher.singa.chemistry.descriptive.features.smiles.SmilesParser;
+import de.bioforscher.singa.chemistry.features.smiles.SmilesParser;
 import de.bioforscher.singa.javafx.renderer.graphs.GraphDisplayApplication;
 import de.bioforscher.singa.javafx.renderer.molecules.MoleculeGraphRenderer;
 import de.bioforscher.singa.structure.algorithms.molecules.MoleculeIsomorphism;
@@ -44,7 +44,7 @@ public class MoleculeIsomorphismTest {
 //            for (MoleculeAtom moleculeAtom : targetGraph.getNodes()) {
 //                if (finder.getFullMatches().get(0).contains(moleculeAtom)) {
 //                    GraphDisplayApplication.renderer.getGraphicsContext().setStroke(Color.DARKRED);
-//                    GraphDisplayApplication.renderer.circlePoint(moleculeAtom.getPosition(), 35);
+//                    GraphDisplayApplication.renderer.strokeCircle(moleculeAtom.getPosition(), 35);
 //                }
 //            }
 //            return null;
@@ -78,7 +78,7 @@ public class MoleculeIsomorphismTest {
             for (MoleculeAtom moleculeAtom : fa5Graph.getNodes()) {
                 if (moleculeIsomorphism.getFullMatches().get(0).getNodes().contains(moleculeAtom)) {
                     GraphDisplayApplication.renderer.getGraphicsContext().setStroke(Color.DARKRED);
-                    GraphDisplayApplication.renderer.circlePoint(moleculeAtom.getPosition(), 35);
+                    GraphDisplayApplication.renderer.strokeCircle(moleculeAtom.getPosition(), 35);
                 }
             }
             return null;

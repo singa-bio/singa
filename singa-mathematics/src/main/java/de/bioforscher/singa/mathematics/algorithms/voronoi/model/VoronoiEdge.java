@@ -1,6 +1,7 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
 /**
@@ -16,7 +17,7 @@ import de.bioforscher.singa.mathematics.vectors.Vector2D;
  * vertical: left.y == right.y
  * </pre>
  */
-public class VoronoiEdge {
+public class VoronoiEdge implements LineSegment {
 
     /**
      * The site to the left of this line.
@@ -55,7 +56,7 @@ public class VoronoiEdge {
      * @return The site to the left of this line.
      */
     public SiteEvent getLeftSite() {
-        return this.leftSite;
+        return leftSite;
     }
 
     /**
@@ -64,7 +65,7 @@ public class VoronoiEdge {
      * @return The site to the right of this line.
      */
     public SiteEvent getRightSite() {
-        return this.rightSite;
+        return rightSite;
     }
 
     /**
@@ -73,7 +74,7 @@ public class VoronoiEdge {
      * @return The point where this line starts.
      */
     public Vector2D getStartingPoint() {
-        return this.startingPoint;
+        return startingPoint;
     }
 
     /**
@@ -81,7 +82,7 @@ public class VoronoiEdge {
      *
      * @param startingPoint The point where the line starts.
      */
-    void setStartingPoint(Vector2D startingPoint) {
+    public void setStartingPoint(Vector2D startingPoint) {
         this.startingPoint = startingPoint;
     }
 
@@ -93,12 +94,12 @@ public class VoronoiEdge {
      * @param startingPoint The starting point.
      */
     void setStartingPoint(SiteEvent leftSite, SiteEvent rightSite, Vector2D startingPoint) {
-        if (this.startingPoint == null && this.endingPoint == null) {
+        if (this.startingPoint == null && endingPoint == null) {
             this.startingPoint = startingPoint;
             this.leftSite = leftSite;
             this.rightSite = rightSite;
         } else if (this.leftSite.equals(rightSite)) {
-            this.endingPoint = startingPoint;
+            endingPoint = startingPoint;
         } else {
             this.startingPoint = startingPoint;
         }
@@ -109,14 +110,14 @@ public class VoronoiEdge {
      * @return The point where the line ends.
      */
     public Vector2D getEndingPoint() {
-        return this.endingPoint;
+        return endingPoint;
     }
 
     /**
      * Sets the point where the line ends.
      * @param endingPoint The point where the line ends.
      */
-    void setEndingPoint(Vector2D endingPoint) {
+    public void setEndingPoint(Vector2D endingPoint) {
         this.endingPoint = endingPoint;
     }
 
@@ -134,8 +135,8 @@ public class VoronoiEdge {
     @Override
     public String toString() {
         return "VoronoiEdge{" +
-                "startingPoint=" + this.startingPoint +
-                ", endingPoint=" + this.endingPoint +
+                "startingPoint=" + startingPoint +
+                ", endingPoint=" + endingPoint +
                 '}';
     }
 }

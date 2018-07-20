@@ -194,20 +194,22 @@ public class Graphs {
     public static GridGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
         logger.debug("Creating randomized grid graph with with {} columns and {} rows.", columns, rows);
         GridGraph graph = new GridGraph(columns, rows);
-        double horizontalSpacing = boundingBox.getWidth() / (rows + 1);
-        double verticalSpacing = boundingBox.getHeight() / (columns + 1);
+        double horizontalSpacing = boundingBox.getWidth() / rows;
+        double horizontalOffset = 0.5 * horizontalSpacing;
+        double verticalSpacing = boundingBox.getHeight() / columns;
+        double verticalOffset = 0.5 * verticalSpacing;
 
         // adding nodes
         logger.trace("Creating and placing nodes ...");
         for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
             for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
                 GridNode node = new GridNode(new RectangularCoordinate(columnIndex, rowIndex));
-                node.setPosition(new Vector2D(horizontalSpacing * (columnIndex + 1), verticalSpacing * (rowIndex + 1)));
+                node.setPosition(new Vector2D(horizontalSpacing * (columnIndex + 1) - horizontalOffset, verticalSpacing * (rowIndex + 1) - verticalOffset));
                 graph.addNode(node);
             }
         }
 
-         // add connections
+        // add connections
         logger.trace("Adding connections ...");
         for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
             for (int rowIndex = 0; rowIndex < rows; rowIndex++) {

@@ -1,8 +1,7 @@
 package de.bioforscher.singa.simulation.features.permeability;
 
-import de.bioforscher.singa.features.model.AbstractFeature;
 import de.bioforscher.singa.features.model.FeatureOrigin;
-import de.bioforscher.singa.features.model.ScalableFeature;
+import de.bioforscher.singa.features.model.ScalableQuantityFeature;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -17,12 +16,9 @@ import static tec.uom.se.unit.Units.HERTZ;
 /**
  * @author cl
  */
-public class MembraneFlipFlop extends AbstractFeature<Quantity<Frequency>> implements ScalableFeature<Quantity<Frequency>> {
+public class MembraneFlipFlop extends ScalableQuantityFeature<Frequency> {
 
     public static final String SYMBOL = "k_flip";
-
-    private Quantity<Frequency> scaledQuantity;
-    private Quantity<Frequency> halfScaledQuantity;
 
     public MembraneFlipFlop(Quantity<Frequency> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity, featureOrigin);
@@ -41,16 +37,6 @@ public class MembraneFlipFlop extends AbstractFeature<Quantity<Frequency>> imple
         this.scaledQuantity = scaledQuantity.multiply(time.getValue().doubleValue());
         // and half
         halfScaledQuantity = scaledQuantity.multiply(time.multiply(0.5).getValue().doubleValue());
-    }
-
-    @Override
-    public Quantity<Frequency> getScaledQuantity() {
-        return scaledQuantity;
-    }
-
-    @Override
-    public Quantity<Frequency> getHalfScaledQuantity() {
-        return halfScaledQuantity;
     }
 
     @Override

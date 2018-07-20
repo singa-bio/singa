@@ -79,8 +79,7 @@ public interface Metric<MetrizableType> {
      * @param <SubType> The Type or Subtype of the Metrizable.
      * @return A mapping of the target vector to its distance.
      */
-    default <SubType extends MetrizableType> Map<SubType, Double> calculateDistancesToReference(List<SubType> list,
-                                                                                                SubType reference) {
+    default <SubType extends MetrizableType> Map<SubType, Double> calculateDistancesToReference(List<SubType> list, SubType reference) {
         Map<SubType, Double> result = new HashMap<>();
         list.forEach(point -> result.put(point, calculateDistance(point, reference)));
         return result;
@@ -94,13 +93,14 @@ public interface Metric<MetrizableType> {
      * @param <SubType> The Type or Subtype of the Metrizable.
      * @return A Entry with the closest element and its distance.
      */
-    default <SubType extends MetrizableType> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list,
-                                                                                                 SubType reference) {
+    default <SubType extends MetrizableType> Map.Entry<SubType, Double> calculateClosestDistance(List<SubType> list, SubType reference) {
         Map<SubType, Double> distances = calculateDistancesToReference(list, reference);
         Map.Entry<SubType, Double> min = null;
         for (Map.Entry<SubType, Double> entry : distances.entrySet()) {
             if (min == null || min.getValue() > entry.getValue()) {
-                min = entry;
+                if (!reference.equals(entry.getKey())) {
+                    min = entry;
+                }
             }
         }
         return min;

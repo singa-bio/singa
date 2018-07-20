@@ -1,20 +1,23 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.Environment;
+import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.grid.GridEdge;
 import de.bioforscher.singa.mathematics.graphs.grid.GridGraph;
 import de.bioforscher.singa.mathematics.graphs.grid.GridNode;
 import de.bioforscher.singa.mathematics.graphs.model.Graphs;
 import de.bioforscher.singa.mathematics.graphs.model.UndirectedGraph;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
+import de.bioforscher.singa.mathematics.vectors.Vector2D;
+import de.bioforscher.singa.simulation.model.sections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author cl
@@ -37,16 +40,19 @@ public class AutomatonGraphs {
     public static Map<String, ChemicalEntity> generateMapOfEntities(AutomatonGraph graph) {
         Map<String, ChemicalEntity> results = new HashMap<>();
         for (AutomatonNode node : graph.getNodes()) {
-            for (ChemicalEntity entity : node.getAllReferencedEntities()) {
-                // TODO check entity equals
-                results.put(entity.getIdentifier().toString(), entity);
+            ConcentrationContainer concentrationContainer = node.getConcentrationContainer();
+            for (ConcentrationPool pool : concentrationContainer.getPoolsOfConcentration()) {
+                for (ChemicalEntity entity : pool.getReferencedEntities()) {
+                    results.put(entity.getIdentifier().toString(), entity);
+                }
             }
         }
         return results;
     }
 
     public static AutomatonGraph createRectangularAutomatonGraph(int numberOfColumns, int numberOfRows) {
-        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows));
+        return AutomatonGraphs.useStructureFrom(Graphs.buildGridGraph(numberOfColumns, numberOfRows,
+                new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend())));
     }
 
     /**
@@ -75,38 +81,130 @@ public class AutomatonGraphs {
 
     public static AutomatonGraph singularGraph() {
         AutomatonGraph automatonGraph = new AutomatonGraph(1, 1);
-        AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0,0));
+        AutomatonNode node = new AutomatonNode(new RectangularCoordinate(0, 0));
+        node.setPosition(new Vector2D(0.0, 0.0));
         automatonGraph.addNode(node);
         return automatonGraph;
     }
 
-    public static Membrane splitRectangularGraphWithMembrane(AutomatonGraph graph, EnclosedCompartment innerSection, CellSection outerSection) {
-        logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getName(), outerSection.getName());
-        // create Membrane for enclosed compartment
-        Membrane membrane = Membrane.forCompartment(innerSection);
+    public static CellRegion splitRectangularGraphWithMembrane(AutomatonGraph graph, CellSubsection innerSection, CellSubsection outerSection, boolean switchSides) {
+        logger.debug("Splitting graph in inner ({}) and outer ({}) compartment with membrane.", innerSection.getIdentifier(), outerSection.getIdentifier());
         // distribute nodes to sections
+        CellRegion outer = new CellRegion("Outer");
+        outer.addSubSection(CellTopology.INNER, outerSection);
+        CellRegion inner = new CellRegion("Inner");
+        inner.addSubSection(CellTopology.INNER, innerSection);
+        CellRegion membrane = new CellRegion("Membrane");
+        membrane.addSubSection(CellTopology.INNER, innerSection);
+        membrane.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Membrane"));
+        membrane.addSubSection(CellTopology.OUTER, outerSection);
+
         int numberOfColumns = graph.getNumberOfColumns();
         for (AutomatonNode node : graph.getNodes()) {
             if (node.getIdentifier().getColumn() < (numberOfColumns / 2)) {
                 // left half is outer
-                node.setCellSection(outerSection);
+                if (switchSides) {
+                    node.setCellRegion(inner);
+                } else {
+                    node.setCellRegion(outer);
+                }
             } else if (node.getIdentifier().getColumn() == (numberOfColumns / 2)) {
                 // middle is membrane
-                node.setCellSection(membrane);
+                node.setCellRegion(membrane);
             } else {
                 // right half is inner
-                node.setCellSection(innerSection);
+                if (switchSides) {
+                    node.setCellRegion(outer);
+                } else {
+                    node.setCellRegion(inner);
+                }
             }
         }
         // reference sections in graph
-        graph.addCellSection(outerSection);
-        graph.addCellSection(innerSection);
-        graph.addCellSection(membrane);
-        // membrane has to be initialized after every node knows its section
-        membrane.initializeNodes(graph);
-
+        graph.addCellRegion(outer);
+        graph.addCellRegion(inner);
+        graph.addCellRegion(membrane);
         return membrane;
     }
+
+    public static Set<AutomatonNode> circleRegion(AutomatonGraph graph, CellRegion membraneRegion, RectangularCoordinate centre, int radius) {
+        Set<AutomatonNode> nodes = new HashSet<>();
+        int x0 = centre.getColumn();
+        int y0 = centre.getRow();
+
+        int x = radius - 1;
+        int y = 0;
+        int dx = 1;
+        int dy = 1;
+        int err = dx - (radius << 1);
+        // collect nodes
+        while (x >= y) {
+
+            nodes.add(graph.getNode(x + x0, y + y0));
+            nodes.add(graph.getNode(y + x0, x + y0));
+            nodes.add(graph.getNode(-x + x0, y + y0));
+            nodes.add(graph.getNode(-y + x0, x + y0));
+            nodes.add(graph.getNode(-x + x0, -y + y0));
+            nodes.add(graph.getNode(-y + x0, -x + y0));
+            nodes.add(graph.getNode(x + x0, -y + y0));
+            nodes.add(graph.getNode(y + x0, -x + y0));
+
+            if (err <= 0) {
+                y++;
+                err += dy;
+                dy += 2;
+            }
+
+            if (err > 0) {
+                x--;
+                dx += 2;
+                err += dx - (radius << 1);
+            }
+        }
+        // set region
+        for (AutomatonNode node : nodes) {
+            node.setCellRegion(membraneRegion);
+        }
+        // return them
+        return nodes;
+    }
+
+    public static void fillRegion(AutomatonGraph graph, CellRegion innerRegion, RectangularCoordinate centre, int radius)
+    {
+        int x0 = centre.getColumn();
+        int y0 = centre.getRow();
+
+        int x = radius-1;
+        int y = 0;
+        int xChange = 1 - (radius << 1);
+        int yChange = 0;
+        int radiusError = 0;
+
+        while (x >= y)
+        {
+            for (int i = x0 - x; i <= x0 + x; i++)
+            {
+                graph.getNode(i, y0 + y).setCellRegion(innerRegion);
+                graph.getNode(i, y0 - y).setCellRegion(innerRegion);
+            }
+            for (int i = x0 - y; i <= x0 + y; i++)
+            {
+                graph.getNode(i, y0 + x).setCellRegion(innerRegion);
+                graph.getNode(i, y0 - x).setCellRegion(innerRegion);
+            }
+
+            y++;
+            radiusError += yChange;
+            yChange += 2;
+            if (((radiusError << 1) + xChange) > 0)
+            {
+                x--;
+                radiusError += xChange;
+                xChange += 2;
+            }
+        }
+    }
+
 
 
 }

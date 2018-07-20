@@ -1,6 +1,5 @@
 package de.bioforscher.singa.mathematics.vectors;
 
-import de.bioforscher.singa.mathematics.geometry.edges.Line;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 
 /**
@@ -20,9 +19,14 @@ public class Vector2D extends RegularVector {
     public static final int X_INDEX = 0;
 
     /**
-     * The index of the y (first2DVector) element or coordinate.
+     * The index of the y (second) element or coordinate.
      */
     public static final int Y_INDEX = 1;
+
+    public static final Vector2D UNIT_VECTOR_UP = new Vector2D(0, -1);
+    public static final Vector2D UNIT_VECTOR_DOWN = new Vector2D(0, 1);
+    public static final Vector2D UNIT_VECTOR_RIGHT = new Vector2D(1, 0);
+    public static final Vector2D UNIT_VECTOR_LEFT = new Vector2D(-1, 0);
 
     /**
      * Creates a new vector with the given elements.
@@ -182,13 +186,24 @@ public class Vector2D extends RegularVector {
     }
 
     /**
-     * Returns the angle between this vector and the given vector in radians.
+     * Returns the angle between this vector and the given vector, in relation to the origin (0,0) in radians.
      *
      * @param vector Another 2D vector.
      * @return The angle in radians.
      */
     public double angleTo(Vector2D vector) {
         return Math.acos(dotProduct(vector) / (getMagnitude() * vector.getMagnitude()));
+    }
+
+    /**
+     * Returns the angle between this vector and the given target vector, in relation to the given origin in radians.
+     *
+     * @param origin The origin.
+     * @param target The target vector.
+     * @return The angle in radians.
+     */
+    public double angleTo(Vector2D origin, Vector2D target) {
+        return Math.atan2(target.getY() - origin.getY(), target.getX() - origin.getX()) - Math.atan2(getY() - origin.getY(), getX() - origin.getY());
     }
 
     /**
@@ -201,15 +216,15 @@ public class Vector2D extends RegularVector {
         return new Vector2D((getX() + vector.getX()) / 2, (getY() + vector.getY()) / 2);
     }
 
-    /**
-     * Returns the distance between this vector and a {@link Line}.
-     *
-     * @param line A HorizontalLine.
-     * @return The distance
-     */
-    public double distanceTo(Line line) {
-        // TODO implement me
-        return 0.0;
+
+    public Vector2D rotate(Vector2D centreOfRotation, double angle) {
+        double originX = centreOfRotation.getX();
+        double originY = centreOfRotation.getY();
+        double x = getX();
+        double y = getY();
+        double rotatedX = ((x - originX) * Math.cos(angle)) - ((originY - y) * Math.sin(angle)) + originX;
+        double rotatedY = ((originY - y) * Math.cos(angle)) - ((x - originX) * Math.sin(angle)) + originY;
+        return new Vector2D(rotatedX, rotatedY);
     }
 
     /**

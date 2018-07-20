@@ -1,6 +1,6 @@
 package de.bioforscher.singa.sequence.model;
 
-import de.bioforscher.singa.chemistry.descriptive.features.ChemistryFeatureContainer;
+import de.bioforscher.singa.chemistry.features.ChemistryFeatureContainer;
 import de.bioforscher.singa.features.model.Feature;
 import de.bioforscher.singa.features.model.FeatureContainer;
 import de.bioforscher.singa.features.model.Featureable;

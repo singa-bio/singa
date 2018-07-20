@@ -4,7 +4,7 @@ import de.bioforscher.singa.javafx.renderer.Renderer;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiGenerator;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import de.bioforscher.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
-import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.graphs.model.Edge;
 import de.bioforscher.singa.mathematics.graphs.model.Graph;
@@ -32,12 +32,13 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
-    private final DoubleProperty drawingWidth;
-    private final DoubleProperty drawingHeight;
     private GraphRenderOptions renderingOptions = new GraphRenderOptions();
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
+
+    private final DoubleProperty drawingWidth;
+    private final DoubleProperty drawingHeight;
     private StringProperty renderingMode;
 
     public GraphRenderer() {
@@ -112,11 +113,11 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     protected void drawNode(NodeType node) {
         // set color and diameter
         getGraphicsContext().setFill(renderingOptions.getNodeColor());
-        drawPoint(node.getPosition(), renderingOptions.getNodeDiameter());
+        fillPoint(node.getPosition(), renderingOptions.getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(renderingOptions.getIdentifierTextColor());
         if (renderingOptions.isDisplayingIdentifierText()) {
-            drawTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
+            strokeTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
         }
     }
 
@@ -129,7 +130,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         getGraphicsContext().setLineWidth(renderingOptions.getEdgeThickness());
         getGraphicsContext().setStroke(renderingOptions.getEdgeColor());
         // draw
-        drawLineSegment(new LineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
+        strokeLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
     }
 
     public void renderVoronoi(boolean flag) {
@@ -148,10 +149,10 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
     public void drawDiagram(VoronoiDiagram diagram) {
         getGraphicsContext().setStroke(Color.SEAGREEN);
         getGraphicsContext().setLineWidth(4);
-        diagram.getEdges().forEach(edge -> drawStraight(edge.getStartingPoint(), edge.getEndingPoint()));
+        diagram.getEdges().forEach(edge -> strokeStraight(edge.getStartingPoint(), edge.getEndingPoint()));
         getGraphicsContext().setLineWidth(6);
         getGraphicsContext().setFill(Color.SEAGREEN.darker());
-        diagram.getVertices().forEach(this::drawPoint);
+        diagram.getVertices().forEach(this::fillPoint);
     }
 
     public DoubleProperty drawingWidthProperty() {
@@ -193,12 +194,12 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         return renderingMode.get();
     }
 
-    public void setRenderingMode(String renderingMode) {
-        this.renderingMode.set(renderingMode);
-    }
-
     public StringProperty renderingModeProperty() {
         return renderingMode;
+    }
+
+    public void setRenderingMode(String renderingMode) {
+        this.renderingMode.set(renderingMode);
     }
 
     public enum RenderingMode {

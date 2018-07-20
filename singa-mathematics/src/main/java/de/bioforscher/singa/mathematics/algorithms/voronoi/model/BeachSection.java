@@ -28,7 +28,7 @@ public class BeachSection extends RedBlackNode<BeachSection> {
     }
 
     public SiteEvent getSite() {
-        return this.site;
+        return site;
     }
 
     public void setSite(SiteEvent site) {
@@ -36,7 +36,7 @@ public class BeachSection extends RedBlackNode<BeachSection> {
     }
 
     public CircleEvent getCircleEvent() {
-        return this.circleEvent;
+        return circleEvent;
     }
 
     public void setCircleEvent(CircleEvent circleEvent) {
@@ -44,7 +44,7 @@ public class BeachSection extends RedBlackNode<BeachSection> {
     }
 
     public VoronoiEdge getEdge() {
-        return this.edge;
+        return edge;
     }
 
     public void setEdge(VoronoiEdge edge) {

@@ -1,5 +1,6 @@
 package de.bioforscher.singa.mathematics.algorithms.voronoi.model;
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
 import de.bioforscher.singa.mathematics.geometry.faces.Rectangle;
 import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
@@ -8,15 +9,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  * A cell of the voronoi diagram. Containing its bounding half edges and the corresponding site.
  */
 public class VoronoiCell implements Polygon {
-
-    public static int OUTSIDE = -1;
-    public static int ON_LINE = 0;
-    public static int INSIDE = 1;
 
     /**
      * The original site of this cell.
@@ -40,8 +38,8 @@ public class VoronoiCell implements Polygon {
      */
     VoronoiCell(SiteEvent site) {
         this.site = site;
-        this.halfEdges = new ArrayList<>();
-        this.closed = true;
+        halfEdges = new ArrayList<>();
+        closed = true;
     }
 
     /**
@@ -59,9 +57,9 @@ public class VoronoiCell implements Polygon {
             }
         }
         // sort them by angle
-        this.halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle).reversed());
+        halfEdges.sort(Comparator.comparing(VoronoiHalfEdge::getAngle).reversed());
         // return the number of remaining edges
-        return this.halfEdges.size();
+        return halfEdges.size();
     }
 
     /**
@@ -74,9 +72,9 @@ public class VoronoiCell implements Polygon {
         // get references from the neighbouring cells.
         for (VoronoiHalfEdge halfEdge : halfEdges) {
             VoronoiEdge edge = halfEdge.getEdge();
-            if (edge.getLeftSite() != null && edge.getLeftSite().getIdentifier() != this.site.getIdentifier()) {
+            if (edge.getLeftSite() != null && edge.getLeftSite().getIdentifier() != site.getIdentifier()) {
                 neighbours.add(edge.getLeftSite().getIdentifier());
-            } else if (edge.getRightSite() != null && edge.getRightSite().getIdentifier() != this.site.getIdentifier()) {
+            } else if (edge.getRightSite() != null && edge.getRightSite().getIdentifier() != site.getIdentifier()) {
                 neighbours.add(edge.getRightSite().getIdentifier());
             }
         }
@@ -115,17 +113,45 @@ public class VoronoiCell implements Polygon {
     }
 
     /**
-     * Returns an integer, describing whether a point is inside, on, or outside of the cell:
-     * <pre>
-     * -1: point is outside the perimeter of the cell
-     *  0: point is on the perimeter of the cell
-     *  1: point is inside the perimeter of the cell
-     * </pre>
+     * Returns the original site of this cell.
      *
-     * @param point The point to check.
-     * @return -1 if the point is outside of the perimeter of the cell, 0 if point is on the perimeter of the cell and 1
-     * if the point is inside of the cell
+     * @return The original site of this cell.
      */
+    public SiteEvent getSite() {
+        return site;
+    }
+
+    /**
+     * Returns all half edges enclosing this cell.
+     *
+     * @return All half edges enclosing this cell.
+     */
+    public List<VoronoiHalfEdge> getHalfEdges() {
+        return halfEdges;
+    }
+
+    /**
+     * Returns true, if this cell is closed and false otherwise.
+     *
+     * @return true, if this cell is closed and false otherwise.
+     */
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public boolean isOpen() {
+        return !closed;
+    }
+
+    /**
+     * Sets whether this cell is considered as closed or not.
+     *
+     * @param closed true, if this cell is closed and false otherwise.
+     */
+    void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
     public int evaluatePointPosition(Vector2D point) {
         // Since all polygons of a Voronoi diagram are convex, the following solution applies:
         // http://paulbourke.net/geometry/polygonmesh/
@@ -138,9 +164,11 @@ public class VoronoiCell implements Polygon {
         //   "if it is less than 0 then P is to the right of the line segment,
         //   "if greater than 0 it is to the left, if equal to 0 then it lies
         //   "on the line segment"
-        for (VoronoiHalfEdge halfEdge : halfEdges) {
-            Vector2D p0 = halfEdge.getStartPoint();
-            Vector2D p1 = halfEdge.getEndPoint();
+        for (VoronoiHalfEdge lineSegment : getHalfEdges()) {
+            // FIXME this relies on the ordering of the line segments
+            // voronoi segemnts are ordered in reverse
+            Vector2D p0 = lineSegment.getStartPoint();
+            Vector2D p1 = lineSegment.getEndPoint();
             double r = (point.getY() - p0.getY()) * (p1.getX() - p0.getX()) - (point.getX() - p0.getX()) * (p1.getY() - p0.getY());
             if (r == 0) {
                 return ON_LINE;
@@ -150,46 +178,6 @@ public class VoronoiCell implements Polygon {
             }
         }
         return INSIDE;
-    }
-
-    /**
-     * Returns the original site of this cell.
-     *
-     * @return The original site of this cell.
-     */
-    public SiteEvent getSite() {
-        return this.site;
-    }
-
-    /**
-     * Returns all half edges enclosing this cell.
-     *
-     * @return All half edges enclosing this cell.
-     */
-    public List<VoronoiHalfEdge> getHalfEdges() {
-        return this.halfEdges;
-    }
-
-    /**
-     * Returns true, if this cell is closed and false otherwise.
-     *
-     * @return true, if this cell is closed and false otherwise.
-     */
-    public boolean isClosed() {
-        return this.closed;
-    }
-
-    public boolean isOpen() {
-        return !this.closed;
-    }
-
-    /**
-     * Sets whether this cell is considered as closed or not.
-     *
-     * @param closed true, if this cell is closed and false otherwise.
-     */
-    void setClosed(boolean closed) {
-        this.closed = closed;
     }
 
     public Vector2D getCentroid() {
@@ -219,7 +207,7 @@ public class VoronoiCell implements Polygon {
 
     @Override
     public Vector2D[] getVertices() {
-        Vector2D[] vertices = new Vector2D[this.halfEdges.size()];
+        Vector2D[] vertices = new Vector2D[halfEdges.size()];
         for (int index = 0; index < halfEdges.size(); index++) {
             vertices[index] = halfEdges.get(index).getStartPoint();
         }
@@ -229,6 +217,11 @@ public class VoronoiCell implements Polygon {
     @Override
     public Vector2D getVertex(int vertexIdentifier) {
         return halfEdges.get(vertexIdentifier).getStartPoint();
+    }
+
+    @Override
+    public List<LineSegment> getEdges() {
+        return halfEdges.stream().map(VoronoiHalfEdge::getEdge).collect(Collectors.toList());
     }
 
     @Override

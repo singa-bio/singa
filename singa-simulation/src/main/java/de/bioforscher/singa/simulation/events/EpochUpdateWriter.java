@@ -1,15 +1,16 @@
 package de.bioforscher.singa.simulation.events;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.core.events.UpdateEventListener;
 import de.bioforscher.singa.features.model.QuantityFormatter;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
 import de.bioforscher.singa.simulation.model.graphs.AutomatonNode;
-import de.bioforscher.singa.simulation.modules.model.Delta;
-import de.bioforscher.singa.simulation.modules.model.Module;
-import de.bioforscher.singa.simulation.modules.model.SimulationManager;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.simulation.SimulationManager;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
@@ -31,7 +32,7 @@ import static tec.uom.se.unit.Units.SECOND;
  *
  * @author cl
  */
-public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> {
+public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEvent> {
 
     /**
      * The character indication a comment line.
@@ -71,12 +72,12 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     /**
      * The writers for concentration files.
      */
-    private final Map<AutomatonNode, BufferedWriter> concentrationWriters;
+    private final Map<Updatable, BufferedWriter> concentrationWriters;
 
     /**
      * The writers for deltas or changes.
      */
-    private final Map<AutomatonNode, BufferedWriter> deltaWriters;
+    private final Map<Updatable, BufferedWriter> deltaWriters;
 
     /**
      * The entities that should be observed.
@@ -86,7 +87,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     /**
      * The modules deltas should be recorded for.
      */
-    private final List<Module> observedModules;
+    private final List<ConcentrationBasedModule> observedModules;
 
     /**
      * The formatter for time based values.
@@ -106,7 +107,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param entitiesToObserve The entities to observe.
      * @param modulesToObserve The modules to record deltas from.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve) {
         this(workspacePath, folder, entitiesToObserve, modulesToObserve, true);
     }
 
@@ -119,7 +120,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
      * @param modulesToObserve The modules to record deltas from.
      * @param printHeader True, if an extended header should be printed.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<Module> modulesToObserve, boolean printHeader) {
+    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve, boolean printHeader) {
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
@@ -128,6 +129,22 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
         this.printHeader = printHeader;
         concentrationWriters = new HashMap<>();
         deltaWriters = new HashMap<>();
+    }
+
+    public QuantityFormatter<Time> getTimeFormatter() {
+        return timeFormatter;
+    }
+
+    public void setTimeFormatter(QuantityFormatter<Time> timeFormatter) {
+        this.timeFormatter = timeFormatter;
+    }
+
+    public QuantityFormatter<MolarConcentration> getConcentrationFormatter() {
+        return concentrationFormatter;
+    }
+
+    public void setConcentrationFormatter(QuantityFormatter<MolarConcentration> concentrationFormatter) {
+        this.concentrationFormatter = concentrationFormatter;
     }
 
     /**
@@ -195,6 +212,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Writes the header for delta files.
+     *
      * @param node The node.
      * @throws IOException If the file could not be written.
      */
@@ -212,6 +230,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Creates a String for the column header of delta files.
+     *
      * @return The column header.
      */
     private String prepareDeltaColumnHeader() {
@@ -226,6 +245,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Writes the header for concentration files.
+     *
      * @param node The node.
      * @throws IOException If the file could not be written.
      */
@@ -244,6 +264,7 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Creates a String with information about the observed entities.
+     *
      * @return The entity information.
      */
     private String prepareEntityInformation() {
@@ -261,17 +282,18 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Creates a String for the column header of concentration files.
+     *
      * @param node The node.
      * @return The column header.
      */
     private String prepareConcentrationColumnHeader(AutomatonNode node) {
-        Set<CellSection> referencedSections = node.getAllReferencedSections();
+        Set<CellSubsection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append("elapsed time").append(SEPARATOR_CHARACTER);
         int count = 0;
         int size = observedEntities.size() * referencedSections.size() - 1;
         for (ChemicalEntity entity : observedEntities) {
-            for (CellSection cellSection : referencedSections) {
+            for (CellSubsection cellSection : referencedSections) {
                 if (count < size) {
                     sb.append(entity.getIdentifier())
                             .append(SECTION_SPACER)
@@ -291,21 +313,23 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Appends content to the concentration file associated to a node.
+     *
      * @param node The corresponding node.
      * @param content The content to be written.
      * @throws IOException The the file could not be written.
      */
-    private void appendConcentrationContent(AutomatonNode node, String content) throws IOException {
+    private void appendConcentrationContent(Updatable node, String content) throws IOException {
         concentrationWriters.get(node).write(content);
     }
 
     /**
      * Appends content to the delta file associated to a node.
+     *
      * @param node The corresponding node.
      * @param content The content to be written.
      * @throws IOException The the file could not be written.
      */
-    private void appendDeltaContent(AutomatonNode node, String content) throws IOException {
+    private void appendDeltaContent(Updatable node, String content) throws IOException {
         deltaWriters.get(node).write(content);
     }
 
@@ -331,29 +355,30 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
     }
 
     @Override
-    public void onEventReceived(NodeUpdatedEvent event) {
+    public void onEventReceived(UpdatableUpdatedEvent event) {
         appendConcentrationContent(event);
         appendDeltaContent(event);
     }
 
     /**
      * Appends the latest concentrations to the prepared files.
+     *
      * @param event The event.
      */
-    private void appendConcentrationContent(NodeUpdatedEvent event) {
-        AutomatonNode node = event.getNode();
-        Set<CellSection> referencedSections = node.getAllReferencedSections();
+    private void appendConcentrationContent(UpdatableUpdatedEvent event) {
+        Updatable node = event.getUpdatable();
+        Set<CellSubsection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
         sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
         int count = 0;
         int size = observedEntities.size() * referencedSections.size() - 1;
         for (ChemicalEntity entity : observedEntities) {
-            for (CellSection cellSection : referencedSections) {
+            for (CellSubsection cellSection : referencedSections) {
                 if (count < size) {
-                    sb.append(concentrationFormatter.format(node.getAvailableConcentration(entity, cellSection)))
+                    sb.append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
                             .append(SEPARATOR_CHARACTER);
                 } else {
-                    sb.append(concentrationFormatter.format(node.getAvailableConcentration(entity, cellSection)))
+                    sb.append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
                             .append(LINEBREAK);
                 }
                 count++;
@@ -368,20 +393,23 @@ public class EpochUpdateWriter implements UpdateEventListener<NodeUpdatedEvent> 
 
     /**
      * Appends the latest deltas to the prepared files.
+     *
      * @param event The event.
      */
-    private void appendDeltaContent(NodeUpdatedEvent event) {
-        AutomatonNode node = event.getNode();
+    private void appendDeltaContent(UpdatableUpdatedEvent event) {
+        Updatable node = event.getUpdatable();
         StringBuilder sb = new StringBuilder();
-        for (Delta delta : node.getPotentialDeltas()) {
-            if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
-                sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
-                        .append(EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getModule()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
-                        .append(delta.getCellSection().getIdentifier()).append(SEPARATOR_CHARACTER)
-                        .append(EnvironmentalParameters.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
-                        .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / EnvironmentalParameters.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
+        for (ConcentrationDelta delta : node.getPotentialSpatialDeltas()) {
+            if (delta.getQuantity().getValue().doubleValue() > 0.0) {
+                if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
+                    sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
+                            .append(Environment.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getModule()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
+                            .append(delta.getCellSubsection().getIdentifier()).append(SEPARATOR_CHARACTER)
+                            .append(Environment.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
+                            .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / Environment.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
+                }
             }
         }
         try {

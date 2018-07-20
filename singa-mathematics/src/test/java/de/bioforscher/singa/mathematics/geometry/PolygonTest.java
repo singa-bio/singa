@@ -1,6 +1,6 @@
 package de.bioforscher.singa.mathematics.geometry;
 
-import de.bioforscher.singa.mathematics.geometry.faces.SimplePolygon;
+import de.bioforscher.singa.mathematics.geometry.faces.VertexPolygon;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PolygonTest {
 
-    private SimplePolygon simplePolygon;
+    private VertexPolygon simplePolygon;
 
     @Before
     public void initialize() {
@@ -21,7 +21,7 @@ public class PolygonTest {
         vectors.add(new Vector2D(9.0, 7.0));
         vectors.add(new Vector2D(11.0, 2.0));
         vectors.add(new Vector2D(-2.0, 2.0));
-        simplePolygon = new SimplePolygon(vectors.toArray(new Vector2D[0]));
+        simplePolygon = new VertexPolygon(vectors.toArray(new Vector2D[0]));
     }
 
     @Test

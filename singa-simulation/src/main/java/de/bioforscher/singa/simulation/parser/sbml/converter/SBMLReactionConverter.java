@@ -1,13 +1,13 @@
 package de.bioforscher.singa.simulation.parser.sbml.converter;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.simulation.model.modules.concentration.imlementations.DynamicReaction;
+import de.bioforscher.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
+import de.bioforscher.singa.simulation.model.modules.concentration.reactants.KineticLaw;
+import de.bioforscher.singa.simulation.model.modules.concentration.reactants.ReactantRole;
+import de.bioforscher.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicReaction;
-import de.bioforscher.singa.simulation.modules.reactions.model.CatalyticReactant;
-import de.bioforscher.singa.simulation.modules.reactions.model.ReactantRole;
-import de.bioforscher.singa.simulation.modules.reactions.model.StoichiometricReactant;
+import de.bioforscher.singa.simulation.model.simulation.Simulation;
 import de.bioforscher.singa.simulation.parser.sbml.FunctionReference;
 import org.sbml.jsbml.ListOf;
 import org.sbml.jsbml.ModifierSpeciesReference;
@@ -51,12 +51,14 @@ public class SBMLReactionConverter {
     public DynamicReaction convertReaction(Reaction reaction) {
         Simulation simulation = new Simulation();
         logger.debug("Parsing Reaction {} ...", reaction.getName());
-        DynamicKineticLaw kineticLaw = kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
-        currentReaction = new DynamicReaction(simulation, kineticLaw);
+        KineticLaw kineticLaw = kineticLawConverter.convertKineticLaw(reaction.getKineticLaw());
+        currentReaction = new DynamicReaction();
+        currentReaction.setSimulation(simulation);
+        currentReaction.setKineticLaw(kineticLaw);
         assignSubstrates(reaction.getListOfReactants());
         assignProducts(reaction.getListOfProducts());
         assignModifiers(reaction.getListOfModifiers());
-        logger.debug("Parsed Reaction:{}", currentReaction.getDisplayString());
+        logger.debug("Parsed Reaction:{}", currentReaction.getReactionString());
         return currentReaction;
     }
 

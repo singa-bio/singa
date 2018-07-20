@@ -1,12 +1,12 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
+import de.bioforscher.singa.features.parameters.Environment;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
 import de.bioforscher.singa.mathematics.graphs.grid.AbstractGridGraph;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.modules.model.Simulation;
+import de.bioforscher.singa.simulation.model.sections.CellRegion;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
@@ -20,7 +20,7 @@ import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 /**
  * The Automaton graph class is the underlying graph of cellular graph automaton {@link Simulation}s. Each {@link
  * AutomatonNode} is placed in a two dimensional simulation space, neighbourhoods are defined by {@link AutomatonEdge}s.
- * Nodes can be assigned to groups using {@link CellSection}s that emulate compartments, extracellular space or
+ * Nodes can be assigned to groups using {@link CellRegion}s that emulate compartments, extracellular space or
  * membranes.
  *
  * @author cl
@@ -30,7 +30,7 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
     /**
      * The cell sections referenced in this graph.
      */
-    private final Map<String, CellSection> cellSections;
+    private final Map<String, CellRegion> cellRegions;
 
     /**
      * Creates a new empty graph, initialized with node and edge capacity.
@@ -40,7 +40,7 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      */
     public AutomatonGraph(int columns, int rows) {
         super(columns, rows);
-        cellSections = new HashMap<>();
+        cellRegions = new HashMap<>();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      * @param concentration The concentration in mol/l.
      */
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {
-        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
+        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()));
     }
 
     /**
@@ -71,16 +71,16 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      * @param concentration The concentration.
      */
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        getNodes().forEach(node -> node.setConcentration(entity, concentration));
+        getNodes().forEach(node -> node.getConcentrationContainer().set(node.getCellRegion().getInnerSubsection(), entity, concentration));
     }
 
     /**
-     * Returns all {@link CellSection}s referenced in this graph.
+     * Returns all {@link CellSubsection}s referenced in this graph.
      *
      * @return The cell sections.
      */
-    public Set<CellSection> getCellSections() {
-        return new HashSet<>(cellSections.values());
+    public Set<CellRegion> getCellSections() {
+        return new HashSet<>(cellRegions.values());
     }
 
     /**
@@ -89,8 +89,8 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      * @param identifier The identifier.
      * @return The cell section.
      */
-    public CellSection getCellSection(String identifier) {
-        return cellSections.get(identifier);
+    public CellRegion getCellRegion(String identifier) {
+        return cellRegions.get(identifier);
     }
 
     /**
@@ -98,8 +98,8 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      *
      * @param cellSection The cell section.
      */
-    public void addCellSection(CellSection cellSection) {
-        cellSections.put(cellSection.getIdentifier(), cellSection);
+    public void addCellRegion(CellRegion cellSection) {
+        cellRegions.put(cellSection.getIdentifier(), cellSection);
     }
 
 }

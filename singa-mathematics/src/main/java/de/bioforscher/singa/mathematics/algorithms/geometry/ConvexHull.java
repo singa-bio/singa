@@ -10,7 +10,9 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 
 /**
- * Created by Christoph on 14/04/2017.
+ * Based on Graham Scan
+ *
+ * @author cl
  */
 public class ConvexHull {
 
@@ -25,7 +27,7 @@ public class ConvexHull {
     public static ConvexHull calculateHullFor(Collection<Vector2D> vectors) {
         if (vectors.size() < 3) {
             ConvexHull convexHull = new ConvexHull(vectors);
-            vectors.forEach(vector -> convexHull.stack.push(vector));
+            vectors.forEach(convexHull.stack::push);
             return convexHull;
         }
 

@@ -67,18 +67,18 @@ public class VoronoiDiagram {
      * @param boundingBox The bounding box surrounding the voronoi diagram.
      */
     VoronoiDiagram(Rectangle boundingBox) {
-        this.cells = new HashMap<>();
-        this.edges = new ArrayList<>();
-        this.vertices = new ArrayList<>();
+        cells = new HashMap<>();
+        edges = new ArrayList<>();
+        vertices = new ArrayList<>();
         this.boundingBox = boundingBox;
-        this.leftBorder = boundingBox.getLeftMostXPosition();
-        this.rightBorder = boundingBox.getRightMostXPosition();
-        this.bottomBorder = boundingBox.getTopMostYPosition();
-        this.topBorder = boundingBox.getBottomMostYPosition();
+        leftBorder = boundingBox.getLeftMostXPosition();
+        rightBorder = boundingBox.getRightMostXPosition();
+        bottomBorder = boundingBox.getTopMostYPosition();
+        topBorder = boundingBox.getBottomMostYPosition();
     }
 
     public List<Vector2D> getSites() {
-        return this.cells.values().stream().map(cell -> cell.getSite().getSite()).collect(Collectors.toList());
+        return cells.values().stream().map(cell -> cell.getSite().getSite()).collect(Collectors.toList());
     }
 
     /**
@@ -87,7 +87,7 @@ public class VoronoiDiagram {
      * @return The edges of the Voronoi diagram.
      */
     public List<VoronoiEdge> getEdges() {
-        return this.edges;
+        return edges;
     }
 
     /**
@@ -101,15 +101,15 @@ public class VoronoiDiagram {
      */
     VoronoiEdge createEdge(SiteEvent leftSite, SiteEvent rightSite, Vector2D startingPoint, Vector2D endingPoint) {
         VoronoiEdge edge = new VoronoiEdge(leftSite, rightSite);
-        this.edges.add(edge);
+        edges.add(edge);
         if (startingPoint != null) {
             edge.setStartingPoint(leftSite, rightSite, startingPoint);
         }
         if (endingPoint != null) {
             edge.setEndingPoint(leftSite, rightSite, endingPoint);
         }
-        this.cells.get(leftSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, leftSite, rightSite));
-        this.cells.get(rightSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, rightSite, leftSite));
+        cells.get(leftSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, leftSite, rightSite));
+        cells.get(rightSite.getIdentifier()).getHalfEdges().add(new VoronoiHalfEdge(edge, rightSite, leftSite));
         return edge;
     }
 
@@ -136,7 +136,7 @@ public class VoronoiDiagram {
         VoronoiEdge edge = new VoronoiEdge(leftSite, null);
         edge.setStartingPoint(startingPoint);
         edge.setEndingPoint(endingPoint);
-        this.edges.add(edge);
+        edges.add(edge);
         return edge;
     }
 
@@ -146,7 +146,7 @@ public class VoronoiDiagram {
      * @return All vertices of the diagram.
      */
     public List<Vector2D> getVertices() {
-        return this.vertices;
+        return vertices;
     }
 
     /**
@@ -167,10 +167,10 @@ public class VoronoiDiagram {
      * @return The vertex.
      */
     Vector2D createVertex(Vector2D vertex) {
-        if (this.vertices.contains(vertex)) {
+        if (vertices.contains(vertex)) {
             return vertex;
         }
-        this.vertices.add(vertex);
+        vertices.add(vertex);
         return vertex;
     }
 
@@ -185,7 +185,7 @@ public class VoronoiDiagram {
     public VoronoiCell createCell(int siteIdentifier, SiteEvent site) {
         site.setIdentifier(siteIdentifier);
         VoronoiCell cell = new VoronoiCell(site);
-        this.cells.put(siteIdentifier, cell);
+        cells.put(siteIdentifier, cell);
         return cell;
     }
 
@@ -195,7 +195,7 @@ public class VoronoiDiagram {
      * @return All cells.
      */
     public Collection<VoronoiCell> getCells() {
-        return this.cells.values();
+        return cells.values();
     }
 
     public Rectangle getBoundingBox() {
@@ -209,8 +209,8 @@ public class VoronoiDiagram {
         // connect all dangling edges to bounding box
         // or get rid of them if it can't be done
         // iterate backward so we can splice safely
-        for (int iEdge = this.edges.size() - 1; iEdge >= 0; iEdge--) {
-            VoronoiEdge edge = this.edges.get(iEdge);
+        for (int iEdge = edges.size() - 1; iEdge >= 0; iEdge--) {
+            VoronoiEdge edge = edges.get(iEdge);
             logger.trace("Post processing edge {}, starting at {}, ending at {}", iEdge, edge.getStartingPoint(), edge.getEndingPoint());
             // edge is removed if:
             //   it is wholly outside the bounding box
@@ -255,8 +255,8 @@ public class VoronoiDiagram {
         // if we reach here, this means cells which use this edge will need
         // to be closed, whether because the edge was removed, or because it
         // was connected to the bounding box.
-        this.cells.get(lSite.getIdentifier()).setClosed(false);
-        this.cells.get(rSite.getIdentifier()).setClosed(false);
+        cells.get(lSite.getIdentifier()).setClosed(false);
+        cells.get(rSite.getIdentifier()).setClosed(false);
 
         // get the line equation of the bisector if line is not vertical
         double fm = 0.0;
@@ -282,15 +282,15 @@ public class VoronoiDiagram {
                 } else if (va.getY() >= bottomBorder) {
                     return false;
                 }
-                vb = this.createVertex(fx, bottomBorder);
+                vb = createVertex(fx, bottomBorder);
             } else {
                 // upward
                 if (va == null || va.getY() > bottomBorder) {
-                    va = this.createVertex(fx, bottomBorder);
+                    va = createVertex(fx, bottomBorder);
                 } else if (va.getY() < topBorder) {
                     return false;
                 }
-                vb = this.createVertex(fx, topBorder);
+                vb = createVertex(fx, topBorder);
             }
         } else if (fm < -1 || fm > 1) {
             // closer to vertical than horizontal, connect start point to the
@@ -298,19 +298,19 @@ public class VoronoiDiagram {
             if (lx > rx) {
                 // downward
                 if (va == null || va.getY() < topBorder) {
-                    va = this.createVertex((topBorder - fb) / fm, topBorder);
+                    va = createVertex((topBorder - fb) / fm, topBorder);
                 } else if (va.getY() >= bottomBorder) {
                     return false;
                 }
-                vb = this.createVertex((bottomBorder - fb) / fm, bottomBorder);
+                vb = createVertex((bottomBorder - fb) / fm, bottomBorder);
             } else {
                 // upward
                 if (va == null || va.getY() > bottomBorder) {
-                    va = this.createVertex((bottomBorder - fb) / fm, bottomBorder);
+                    va = createVertex((bottomBorder - fb) / fm, bottomBorder);
                 } else if (va.getY() < topBorder) {
                     return false;
                 }
-                vb = this.createVertex((topBorder - fb) / fm, topBorder);
+                vb = createVertex((topBorder - fb) / fm, topBorder);
             }
         } else {
             // closer to horizontal than vertical, connect start point to the
@@ -318,19 +318,19 @@ public class VoronoiDiagram {
             if (ly < ry) {
                 // rightward
                 if (va == null || va.getX() < leftBorder) {
-                    va = this.createVertex(leftBorder, fm * leftBorder + fb);
+                    va = createVertex(leftBorder, fm * leftBorder + fb);
                 } else if (va.getX() >= rightBorder) {
                     return false;
                 }
-                vb = this.createVertex(rightBorder, fm * rightBorder + fb);
+                vb = createVertex(rightBorder, fm * rightBorder + fb);
             } else {
                 // leftward
                 if (va == null || va.getX() > rightBorder) {
-                    va = this.createVertex(rightBorder, fm * rightBorder + fb);
+                    va = createVertex(rightBorder, fm * rightBorder + fb);
                 } else if (va.getX() < leftBorder) {
                     return false;
                 }
-                vb = this.createVertex(leftBorder, fm * leftBorder + fb);
+                vb = createVertex(leftBorder, fm * leftBorder + fb);
             }
         }
         // set points
@@ -463,8 +463,8 @@ public class VoronoiDiagram {
         // va and/or vb were clipped, thus we will need to close
         // cells which use this edge.
         if (t0 > 0 || t1 < 1) {
-            this.cells.get(edge.getLeftSite().getIdentifier()).setClosed(false);
-            this.cells.get(edge.getRightSite().getIdentifier()).setClosed(false);
+            cells.get(edge.getLeftSite().getIdentifier()).setClosed(false);
+            cells.get(edge.getRightSite().getIdentifier()).setClosed(false);
         }
 
         return true;
@@ -516,8 +516,8 @@ public class VoronoiDiagram {
                     // walk rightward along bottom side
                     if (equalWithEpsilon(va.getY(), bottomBorder) && lessThanWithEpsilon(va.getX(), rightBorder)) {
                         lastBorderSegment = equalWithEpsilon(vz.getY(), bottomBorder);
-                        Vector2D vb = this.createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
-                        VoronoiEdge edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        Vector2D vb = createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
+                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
@@ -530,8 +530,8 @@ public class VoronoiDiagram {
                     // walk upward along right side
                     if (equalWithEpsilon(va.getX(), rightBorder) && greaterThanWithEpsilon(va.getY(), topBorder)) {
                         lastBorderSegment = equalWithEpsilon(vz.getX(), rightBorder);
-                        Vector2D vb = this.createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
-                        VoronoiEdge edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        Vector2D vb = createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
+                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
@@ -544,8 +544,8 @@ public class VoronoiDiagram {
                     // walk leftward along top side
                     if (equalWithEpsilon(va.getY(), topBorder) && greaterThanWithEpsilon(va.getX(), leftBorder)) {
                         lastBorderSegment = equalWithEpsilon(vz.getY(), topBorder);
-                        Vector2D vb = this.createVertex(lastBorderSegment ? vz.getX() : leftBorder, topBorder);
-                        VoronoiEdge edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        Vector2D vb = createVertex(lastBorderSegment ? vz.getX() : leftBorder, topBorder);
+                        VoronoiEdge edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
@@ -556,8 +556,8 @@ public class VoronoiDiagram {
 
                         // walk downward along left side
                         lastBorderSegment = equalWithEpsilon(vz.getX(), leftBorder);
-                        vb = this.createVertex(leftBorder, lastBorderSegment ? vz.getY() : bottomBorder);
-                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        vb = createVertex(leftBorder, lastBorderSegment ? vz.getY() : bottomBorder);
+                        edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
@@ -568,8 +568,8 @@ public class VoronoiDiagram {
 
                         // walk rightward along bottom side
                         lastBorderSegment = equalWithEpsilon(vz.getY(), bottomBorder);
-                        vb = this.createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
-                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        vb = createVertex(lastBorderSegment ? vz.getX() : rightBorder, bottomBorder);
+                        edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;
@@ -580,8 +580,8 @@ public class VoronoiDiagram {
 
                         // walk upward along right side
                         lastBorderSegment = equalWithEpsilon(vz.getX(), rightBorder);
-                        vb = this.createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
-                        edge = this.createBorderEdge(cell.getSite(), va, vb);
+                        vb = createVertex(rightBorder, lastBorderSegment ? vz.getY() : topBorder);
+                        edge = createBorderEdge(cell.getSite(), va, vb);
                         iLeft++;
                         halfEdges.add(iLeft, new VoronoiHalfEdge(edge, cell.getSite(), null));
                         nHalfedges++;

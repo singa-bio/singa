@@ -37,27 +37,27 @@ public class RendererExamples extends Application implements Renderer {
         Line xAxis = new Line(0, 0);
         Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
 
-        drawLine(xAxis);
-        drawLine(yAxis);
+        strokeLine(xAxis);
+        strokeLine(yAxis);
 
         getGraphicsContext().setStroke(Color.INDIANRED);
         Vector2D focus = new Vector2D(150, 70);
-        drawPoint(focus);
+        fillPoint(focus);
 
         getGraphicsContext().setLineWidth(2);
         getGraphicsContext().setFill(Color.CORAL);
         Line directrix = new Line(50, 0);
-        drawLine(directrix);
+        strokeLine(directrix);
 
         Parabola parabola = new Parabola(focus, directrix);
-        drawParabola(parabola, 30);
+        strokeParabola(parabola, 30);
 
         Line randomLine = new Line(new Vector2D(140, 60), Double.POSITIVE_INFINITY);
         getGraphicsContext().setStroke(Color.DARKGOLDENROD);
-        drawLine(randomLine);
+        strokeLine(randomLine);
         getGraphicsContext().setLineWidth(5);
         getGraphicsContext().setFill(Color.BROWN);
-        parabola.getIntercepts(randomLine).forEach(this::drawPoint);
+        parabola.getIntercepts(randomLine).forEach(this::fillPoint);
 
         // show
         Scene scene = new Scene(root);

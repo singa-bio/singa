@@ -69,7 +69,6 @@ public class MmtfModel implements Model {
                     } else {
                         chainMap.get(chainName).add(groupIndex);
                     }
-
                 }
             }
         }

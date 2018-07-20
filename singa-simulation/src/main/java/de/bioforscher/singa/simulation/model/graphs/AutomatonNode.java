@@ -1,240 +1,109 @@
 package de.bioforscher.singa.simulation.model.graphs;
 
-import de.bioforscher.singa.chemistry.descriptive.entities.ChemicalEntity;
-import de.bioforscher.singa.features.parameters.EnvironmentalParameters;
+import de.bioforscher.singa.chemistry.entities.ChemicalEntity;
 import de.bioforscher.singa.features.quantities.MolarConcentration;
+import de.bioforscher.singa.mathematics.geometry.model.Polygon;
 import de.bioforscher.singa.mathematics.graphs.model.AbstractNode;
 import de.bioforscher.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
-import de.bioforscher.singa.simulation.model.compartments.CellSection;
-import de.bioforscher.singa.simulation.model.compartments.EnclosedCompartment;
-import de.bioforscher.singa.simulation.model.compartments.Membrane;
-import de.bioforscher.singa.simulation.model.compartments.NodeState;
-import de.bioforscher.singa.simulation.model.concentrations.ConcentrationContainer;
-import de.bioforscher.singa.simulation.model.concentrations.SimpleConcentrationContainer;
-import de.bioforscher.singa.simulation.modules.model.Delta;
-import tec.uom.se.quantity.Quantities;
+import de.bioforscher.singa.simulation.model.modules.UpdateModule;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import de.bioforscher.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
+import de.bioforscher.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
+import de.bioforscher.singa.simulation.model.sections.CellRegion;
+import de.bioforscher.singa.simulation.model.sections.CellSubsection;
+import de.bioforscher.singa.simulation.model.sections.ConcentrationContainer;
+import de.bioforscher.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
 import java.util.*;
 
-import static de.bioforscher.singa.features.units.UnitProvider.MOLE_PER_LITRE;
-import static de.bioforscher.singa.simulation.model.compartments.NodeState.AQUEOUS;
-import static de.bioforscher.singa.simulation.model.compartments.NodeState.MEMBRANE;
-
 /**
- * A node of the {@link AutomatonGraph}. Contains the {@link NodeState}, the concentrations of {@link ChemicalEntity}s
- * in a {@link ConcentrationContainer}, the {@link CellSection}, and amongst other attributes. Each node holds
- * references to its neighbour nodes.
+ * A node of the {@link AutomatonGraph}. Contains the concentrations of {@link ChemicalEntity}s
+ * in a {@link ConcentrationContainer} and other attributes. Each node holds references to its neighbour nodes.
  *
  * @author cl
  */
-public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> {
+public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, RectangularCoordinate> implements Updatable {
 
-    /**
-     * Deltas that are to be applied to the node.
-     */
-    private final List<Delta> finalDeltas;
+    private CellRegion cellRegion;
+    private ConcentrationDeltaManager updateManager;
+    private Polygon spatialRepresentation;
+    private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
+    private Set<MembraneSegment> membraneSegments;
 
-    /**
-     * A list of potential deltas.
-     */
-    private final List<Delta> potentialDeltas;
-
-    /**
-     * The state.
-     */
-    private NodeState state;
-
-    /**
-     * A reference to the containing cell section.
-     */
-    private CellSection cellSection;
-
-    /**
-     * The contained chemical entities with their concentrations.
-     */
-    private ConcentrationContainer concentrationContainer;
-
-    /**
-     * A flag signifying if this node is observed.
-     */
-    private boolean observed;
-
-    /**
-     * A flag signifying if this node has a fixed concentration.
-     */
-    private boolean concentrationFixed;
-
-    /**
-     * Creates a new plain automaton node. Initialized as {@link NodeState#AQUEOUS} in a "default" compartment with a
-     * {@link SimpleConcentrationContainer}.
-     *
-     * @param identifier The identifier of the node.
-     */
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
-        state = AQUEOUS;
-        cellSection = new EnclosedCompartment("default", "Default Compartment");
-        concentrationContainer = new SimpleConcentrationContainer(cellSection);
-        finalDeltas = new ArrayList<>();
-        potentialDeltas = new ArrayList<>();
-        observed = false;
-        concentrationFixed = false;
+        setPosition(new Vector2D());
+        microtubuleSegments = new HashMap<>();
+        membraneSegments = new HashSet<>();
+        cellRegion = CellRegion.CYTOSOL_A;
+        updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
 
     public AutomatonNode(int column, int row) {
         this(new RectangularCoordinate(column, row));
     }
 
-    /**
-     * Sets the concentration of the given chemical entities.
-     *
-     * @param concentration The concentration in mol/l
-     * @param entities The chemical entities.
-     */
-    public void setConcentrations(double concentration, ChemicalEntity... entities) {
-        for (ChemicalEntity entity : entities) {
-            setConcentration(entity, concentration);
-        }
-    }
-
-    /**
-     * Sets the concentration of the entity in mol/l.
-     *
-     * @param entity The entity.
-     * @param concentration The concentration in mol/l.
-     */
-    public void setConcentration(ChemicalEntity entity, double concentration) {
-        setConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(EnvironmentalParameters.getTransformedMolarConcentration()));
-    }
-
-    /**
-     * Sets the concentration of the entity.
-     *
-     * @param entity The chemical entity.
-     * @param quantity The quantity.
-     */
-    public void setConcentration(ChemicalEntity entity, Quantity<MolarConcentration> quantity) {
-        concentrationContainer.setConcentration(entity, quantity);
-    }
-
-    /**
-     * Returns all concentrations of all chemical entities.
-     *
-     * @return All concentrations of all chemical entities.
-     */
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrations() {
-        return concentrationContainer.getAllConcentrations();
-    }
-
-    /**
-     * Returns all concentrations of all chemical entities in the given cell section.
-     *
-     * @param cellSection The cell section.
-     * @return All concentrations of all chemical entities.
-     */
-    public Map<ChemicalEntity, Quantity<MolarConcentration>> getAllConcentrationsForSection(CellSection cellSection) {
-        return concentrationContainer.getAllConcentrationsForSection(cellSection);
-    }
-
-    /**
-     * Gets the concentration of the given chemical entity.
-     *
-     * @param entity The chemical entity.
-     * @return The concentration in mol/l.
-     */
-    public Quantity<MolarConcentration> getConcentration(ChemicalEntity entity) {
-        return concentrationContainer.getConcentration(entity);
-    }
-
-    /**
-     * Gets the concentration of the given chemical entity in the given compartment.
-     *
-     * @param entity The chemical entity.
-     * @param cellSection The cell section.
-     * @param quantity The quantity.
-     */
-    public void setAvailableConcentration(ChemicalEntity entity, CellSection cellSection, Quantity<MolarConcentration> quantity) {
-        concentrationContainer.setAvailableConcentration(cellSection, entity, quantity);
-    }
 
     /**
      * Returns the concentration of the given chemical entity in the given compartment.
      *
      * @param entity The chemical entity.
-     * @param cellSection The cell section.
+     * @param section The cell section.
      * @return The concentration of the given chemical entity.
      */
-    public Quantity<MolarConcentration> getAvailableConcentration(ChemicalEntity entity, CellSection cellSection) {
-        return concentrationContainer.getAvailableConcentration(cellSection, entity);
+    @Override
+    public Quantity<MolarConcentration> getConcentration(CellSubsection section, ChemicalEntity entity) {
+        return updateManager.getConcentrationContainer().get(section, entity);
     }
 
-    /**
-     * Returns all deltas that are going to be applied to this node.
-     *
-     * @return All deltas that are going to be applied to this node.
-     */
-    public List<Delta> getFinalDeltas() {
-        return finalDeltas;
-    }
-
-    /**
-     * Adds a list of potential deltas to this node.
-     *
-     * @param potentialDeltas The potential deltas.
-     */
-    public void addPotentialDeltas(Collection<Delta> potentialDeltas) {
-        this.potentialDeltas.addAll(potentialDeltas);
-    }
-
-    public List<Delta> getPotentialDeltas() {
-        return potentialDeltas;
-    }
 
     /**
      * Adds a potential delta to this node.
      *
      * @param potentialDelta The potential delta.
      */
-    public void addPotentialDelta(Delta potentialDelta) {
-        potentialDeltas.add(potentialDelta);
+    public void addPotentialDelta(ConcentrationDelta potentialDelta) {
+        updateManager.addPotentialDelta(potentialDelta);
     }
 
     /**
      * Clears the list of potential deltas. Usually done after {@link AutomatonNode#shiftDeltas()} or after rejecting a
      * time step.
      */
-    public void clearPotentialDeltas() {
-        potentialDeltas.clear();
+    public void clearPotentialConcentrationDeltas() {
+        updateManager.clearPotentialDeltas();
+    }
+
+    @Override
+    public void clearPotentialDeltasBut(UpdateModule module) {
+        updateManager.clearPotentialDeltasBut(module);
     }
 
     /**
      * Shifts the deltas from the potential delta list to the final delta list.
      */
     public void shiftDeltas() {
-        finalDeltas.addAll(potentialDeltas);
-        if (!observed) {
-            potentialDeltas.clear();
-        }
+        updateManager.shiftDeltas();
     }
 
     /**
      * Applies all final deltas and clears the delta list.
      */
     public void applyDeltas() {
-        if (!concentrationFixed) {
-            for (Delta delta : finalDeltas) {
-                Quantity<MolarConcentration> updatedConcentration = getAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection()).add(delta.getQuantity());
-                if (updatedConcentration.getValue().doubleValue() < 0.0) {
-                    // FIXME updated concentration should probably not be capped
-                    // FIXME the the delta that resulted in the decrease probably had a corresponding increase
-                    updatedConcentration = EnvironmentalParameters.emptyConcentration();
-                }
-                setAvailableConcentration(delta.getChemicalEntity(), delta.getCellSection(), updatedConcentration);
-            }
-        }
-        finalDeltas.clear();
+        updateManager.applyDeltas();
+    }
+
+    @Override
+    public boolean hasDeltas() {
+        return !updateManager.getFinalDeltas().isEmpty();
+    }
+
+    @Override
+    public List<ConcentrationDelta> getPotentialSpatialDeltas() {
+        return updateManager.getPotentialDeltas();
     }
 
     /**
@@ -242,35 +111,8 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      *
      * @return all referenced sections in this node.
      */
-    public Set<CellSection> getAllReferencedSections() {
-        return concentrationContainer.getAllReferencedSections();
-    }
-
-    /**
-     * Returns all chemical entities referenced in this node.
-     *
-     * @return All chemical entities referenced in this node.
-     */
-    public Set<ChemicalEntity> getAllReferencedEntities() {
-        return concentrationContainer.getAllReferencedEntities();
-    }
-
-    /**
-     * Returns the node state.
-     *
-     * @return The node state.
-     */
-    public NodeState getState() {
-        return state;
-    }
-
-    /**
-     * Sets the state.
-     *
-     * @param state The node state.
-     */
-    public void setState(NodeState state) {
-        this.state = state;
+    public Set<CellSubsection> getAllReferencedSections() {
+        return updateManager.getConcentrationContainer().getReferencedSubSections();
     }
 
     /**
@@ -279,7 +121,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return {@code true} if this node is observed.
      */
     public boolean isObserved() {
-        return observed;
+        return updateManager.isObserved();
     }
 
     /**
@@ -288,39 +130,30 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param isObserved {@code true} if this node is observed.
      */
     public void setObserved(boolean isObserved) {
-        observed = isObserved;
+        updateManager.setObserved(isObserved);
     }
 
     public boolean isConcentrationFixed() {
-        return concentrationFixed;
+        return updateManager.isConcentrationFixed();
     }
 
     public void setConcentrationFixed(boolean concentrationFixed) {
-        this.concentrationFixed = concentrationFixed;
+        updateManager.setConcentrationFixed(concentrationFixed);
     }
 
-    /**
-     * Returns the primary cell section of this node (Membrane nodes may belong to multiple sections).
-     *
-     * @return The primary cell section of this node.
-     */
-    public CellSection getCellSection() {
-        return cellSection;
+    @Override
+    public CellRegion getCellRegion() {
+        return cellRegion;
     }
 
-    /**
-     * Sets the cell section of this node and references the node in the corresponding section.
-     *
-     * @param cellSection The cell section.
-     */
-    public void setCellSection(CellSection cellSection) {
-        // TODO potentially all membrane stuff could be set here
-        if (cellSection instanceof Membrane) {
-            setState(MEMBRANE);
-        }
-        this.cellSection = cellSection;
-        concentrationContainer = new SimpleConcentrationContainer(cellSection);
-        this.cellSection.addNode(this);
+    public void setCellRegion(CellRegion cellRegion) {
+        this.cellRegion = cellRegion;
+        updateManager.setConcentrationContainer(cellRegion.setUpConcentrationContainer());
+    }
+
+    @Override
+    public String getStringIdentifier() {
+        return "Node "+getIdentifier().toString();
     }
 
     /**
@@ -329,7 +162,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @return The {@link ConcentrationContainer} used by this node.
      */
     public ConcentrationContainer getConcentrationContainer() {
-        return concentrationContainer;
+        return updateManager.getConcentrationContainer();
     }
 
     /**
@@ -338,12 +171,47 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
      * @param concentrationContainer The {@link ConcentrationContainer} for this node.
      */
     public void setConcentrationContainer(ConcentrationContainer concentrationContainer) {
-        this.concentrationContainer = concentrationContainer;
+        updateManager.setConcentrationContainer(concentrationContainer);
+    }
+
+    public Polygon getSpatialRepresentation() {
+        return spatialRepresentation;
+    }
+
+    public void setSpatialRepresentation(Polygon spatialRepresentation) {
+        this.spatialRepresentation = spatialRepresentation;
+    }
+
+    public ConcentrationDeltaManager getUpdateManager() {
+        return updateManager;
+    }
+
+    public void setUpdateManager(ConcentrationDeltaManager updateManager) {
+        this.updateManager = updateManager;
+    }
+
+    public Map<SkeletalFilament, Set<Vector2D>> getMicrotubuleSegments() {
+        return microtubuleSegments;
+    }
+
+    public void addMicrotubuleSegment(SkeletalFilament filament, Vector2D segment) {
+        if (!microtubuleSegments.containsKey(filament)) {
+            microtubuleSegments.put(filament, new HashSet<>());
+        }
+        microtubuleSegments.get(filament).add(segment);
+    }
+
+    public Set<MembraneSegment> getMembraneSegments() {
+        return membraneSegments;
+    }
+
+    public void addMembraneSegment(MembraneSegment segment) {
+        membraneSegments.add(segment);
     }
 
     @Override
     public String toString() {
-        return "Node "+getIdentifier()+" ("+getState()+")";
+        return "Node "+getIdentifier()+" ("+cellRegion+")";
     }
 
     @Override

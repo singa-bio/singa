@@ -99,11 +99,11 @@ public class Parabola {
         }
 
         // if both foci are equidistant
-        if (focus.distanceTo(directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
-            // one focus is in the middle between both foci
-            results.add((focus.getX() - parabola.getFocus().getX()) / 2);
-            return results;
-        }
+//        if (focus.distanceTo(directrix) == parabola.getFocus().distanceTo(parabola.getFocus())) {
+//            // one focus is in the middle between both foci
+//            results.add((focus.getX() - parabola.getFocus().getX()) / 2);
+//            return results;
+//        }
 
         double h2 = parabola.getVertex().getX();
         double k2 = parabola.getVertex().getY();
@@ -127,12 +127,12 @@ public class Parabola {
             double x = line.getXIntercept();
             intercepts.add(new Vector2D(x, getYValue(x)));
         } else {
-            double x1 = (-this.b + line.getSlope() + Math.sqrt(
-                    4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
-                            2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
-            double x2 = (-this.b + line.getSlope() - Math.sqrt(
-                    4 * this.a * line.getYIntercept() + this.b * this.b - 4 * this.a * this.c -
-                            2 * this.b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * this.a);
+            double x1 = (-b + line.getSlope() + Math.sqrt(
+                    4 * a * line.getYIntercept() + b * b - 4 * a * c -
+                            2 * b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * a);
+            double x2 = (-b + line.getSlope() - Math.sqrt(
+                    4 * a * line.getYIntercept() + b * b - 4 * a * c -
+                            2 * b * line.getSlope() + line.getSlope() * line.getSlope())) / (2 * a);
             intercepts.add(new Vector2D(x1, line.getYValue(x1)));
             intercepts.add(new Vector2D(x2, line.getYValue(x2)));
         }

@@ -1,10 +1,9 @@
 package de.bioforscher.singa.simulation.parser.sbml.converter;
 
+import de.bioforscher.singa.simulation.model.modules.concentration.reactants.KineticLaw;
 import de.bioforscher.singa.simulation.model.parameters.SimulationParameter;
 import de.bioforscher.singa.simulation.model.rules.AppliedExpression;
-import de.bioforscher.singa.simulation.modules.reactions.implementations.DynamicKineticLaw;
 import de.bioforscher.singa.simulation.parser.sbml.FunctionReference;
-import org.sbml.jsbml.KineticLaw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ public class SBMLKineticLawConverter {
         expressionConverter = new SBMLExpressionConverter(this.units, functions, globalParameters);
     }
 
-    public DynamicKineticLaw convertKineticLaw(KineticLaw sbmlKineticLaw) {
+    public KineticLaw convertKineticLaw(org.sbml.jsbml.KineticLaw sbmlKineticLaw) {
         if (!sbmlKineticLaw.getMath().toString().equals("NaN")) {
             String unitIdentifier = sbmlKineticLaw.getDerivedUnitDefinition().getId();
             Unit<?> parameterUnit;
@@ -43,7 +42,7 @@ public class SBMLKineticLawConverter {
             }
             logger.debug("Creating kinetic law with expression {} ...", sbmlKineticLaw.getMath().toString());
             AppliedExpression appliedExpression = expressionConverter.convertRawExpression(sbmlKineticLaw.getMath(), sbmlKineticLaw.getListOfLocalParameters(), parameterUnit);
-            return new DynamicKineticLaw(appliedExpression);
+            return new KineticLaw(appliedExpression);
         } else {
             logger.warn("Could not parse a valid expression for this reaction.");
             return null;

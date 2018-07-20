@@ -1,20 +1,40 @@
 package de.bioforscher.singa.mathematics.geometry.faces;
 
+import de.bioforscher.singa.mathematics.geometry.edges.LineSegment;
+import de.bioforscher.singa.mathematics.geometry.edges.SimpleLineSegment;
 import de.bioforscher.singa.mathematics.geometry.model.HorizontalPosition;
 import de.bioforscher.singa.mathematics.geometry.model.VerticalPosition;
 import de.bioforscher.singa.mathematics.vectors.Vector2D;
 
-public class Rectangle extends SimplePolygon {
+public class Rectangle extends VertexPolygon {
 
     private static final int topLeftVertexIndex = 0;
-    private static final int bottomRightVertexIndex = 1;
+    private static final int topRightVertexIndex = 1;
+    private static final int bottomRightVertexIndex = 2;
+    private static final int bottomLeftVertexIndex = 3;
 
     public Rectangle(Vector2D topLeftVertex, Vector2D bottomRightVertex) {
-        super(topLeftVertex, bottomRightVertex);
+        super(topLeftVertex, new Vector2D(bottomRightVertex.getX(), topLeftVertex.getY()), bottomRightVertex, new Vector2D(topLeftVertex.getX(), bottomRightVertex.getY()));
     }
 
     public Rectangle(double width, double height) {
-        this(new Vector2D(0.0, height), new Vector2D(width, 0.0));
+        this(new Vector2D(0.0, 0.0), new Vector2D(width, height));
+    }
+
+    public LineSegment getTopEdge() {
+        return new SimpleLineSegment(getTopLeftVertex(), getTopRightVertex());
+    }
+
+    public LineSegment getBottomEdge() {
+        return new SimpleLineSegment(getBottomLeftVertex(), getBottomRightVertex());
+    }
+
+    public LineSegment getRightEdge() {
+        return new SimpleLineSegment(getTopRightVertex(), getBottomRightVertex());
+    }
+
+    public LineSegment getLeftEdge() {
+        return new SimpleLineSegment(getTopLeftVertex(), getBottomLeftVertex());
     }
 
     public Vector2D getTopLeftVertex() {
@@ -26,11 +46,11 @@ public class Rectangle extends SimplePolygon {
     }
 
     public Vector2D getTopRightVertex() {
-        return new Vector2D(getTopLeftVertex().getX(), getBottomRightVertex().getY());
+        return getVertex(topRightVertexIndex);
     }
 
     public Vector2D getBottomLeftVertex() {
-        return new Vector2D(getBottomRightVertex().getX(), getTopLeftVertex().getY());
+        return getVertex(bottomLeftVertexIndex);
     }
 
     public Vector2D getVertex(HorizontalPosition horizontalPosition, VerticalPosition verticalPosition) {
@@ -51,12 +71,12 @@ public class Rectangle extends SimplePolygon {
 
     @Override
     public double getWidth() {
-        return getTopLeftVertex().distanceTo(getTopRightVertex());
+        return getTopRightVertex().getX() - getTopLeftVertex().getX();
     }
 
     @Override
     public double getHeight() {
-        return getTopLeftVertex().distanceTo(getBottomLeftVertex());
+        return getBottomLeftVertex().getY() - getTopLeftVertex().getY();
     }
 
     @Override
@@ -87,6 +107,12 @@ public class Rectangle extends SimplePolygon {
     @Override
     public double getArea() {
         return getWidth() * getHeight();
+    }
+
+    public Vector2D getCentre() {
+        Vector2D topLeftVertex = getTopLeftVertex();
+        Vector2D bottomRightVertex = getBottomRightVertex();
+        return new Vector2D((topLeftVertex.getX() + bottomRightVertex.getX()) / 2.0, (topLeftVertex.getY() + bottomRightVertex.getY()) / 2.0);
     }
 
 }

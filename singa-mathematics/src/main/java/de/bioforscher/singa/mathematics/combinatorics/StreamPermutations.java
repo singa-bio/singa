@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  * An implementation of permutations realized as stream as shown on:
  *
  * @author fk
- * @see <a href="https://minborgsjavapot.blogspot.de/2015/07/java-8-master-permutations.html">Wikipedia: Addition</a>
+ * @see <a href="https://minborgsjavapot.blogspot.de/2015/07/java-8-master-permutations.html">Minborgs Javapot</a>
  */
 public class StreamPermutations {
 

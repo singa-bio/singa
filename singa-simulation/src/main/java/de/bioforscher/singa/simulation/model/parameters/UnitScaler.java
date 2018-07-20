@@ -1,7 +1,7 @@
 package de.bioforscher.singa.simulation.model.parameters;
 
 
-import de.bioforscher.singa.chemistry.descriptive.features.diffusivity.Diffusivity;
+import de.bioforscher.singa.chemistry.features.diffusivity.Diffusivity;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;

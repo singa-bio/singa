@@ -114,46 +114,46 @@ public class GraphDrawingTool<NodeType extends Node<NodeType, Vector2D, Identifi
         }
 
         // calculate repulsion from boundaries
-        for (NodeType node : graph.getNodes()) {
-
-            // size of the barrier
-            Vector2D position = node.getPosition();
-            double barrierRadius = drawingWidth.doubleValue() / 4.0;
-
-            // calculate west and east barrier forces
-            Vector2D accelerationX;
-            if (position.getX() < barrierRadius) {
-                // calculate west barrier repulsive acceleration
-                accelerationX = boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
-            } else if (position.getX() > drawingWidth.doubleValue() - barrierRadius) {
-                // calculate east barrier repulsive acceleration
-                accelerationX = boundaryForce.calculateAcceleration(position,
-                        new Vector2D(drawingWidth.doubleValue(), position.getY()));
-            } else {
-                // if not within barrier range
-                accelerationX = new Vector2D(0, 0);
-            }
-
-            // calculate north and south barrier forces
-            Vector2D accelerationY;
-            if (position.getY() < barrierRadius) {
-                // calculate north barrier repulsive acceleration
-                accelerationY = boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
-            } else if (position.getY() > drawingHeight.doubleValue() - barrierRadius) {
-                // calculate south barrier repulsive acceleration
-                accelerationY = boundaryForce.calculateAcceleration(position,
-                        new Vector2D(position.getX(), drawingHeight.doubleValue()));
-            } else {
-                // if not within barrier range
-                accelerationY = new Vector2D(0, 0);
-            }
-
-            // add acceleration to velocities
-            Vector2D totalAcceleration = accelerationX.add(accelerationY);
-            Vector2D velocitySource = velocities.get(node).add(totalAcceleration);
-            velocities.put(node, velocitySource);
-
-        }
+//        for (NodeType node : graph.getNodes()) {
+//
+//            // size of the barrier
+//            Vector2D position = node.getPosition();
+//            double barrierRadius = drawingWidth.doubleValue() / 15.0;
+//
+//            // calculate west and east barrier forces
+//            Vector2D accelerationX;
+//            if (position.getX() < barrierRadius) {
+//                // calculate west barrier repulsive acceleration
+//                accelerationX = boundaryForce.calculateAcceleration(position, new Vector2D(0, position.getY()));
+//            } else if (position.getX() > drawingWidth.doubleValue() - barrierRadius) {
+//                // calculate east barrier repulsive acceleration
+//                accelerationX = boundaryForce.calculateAcceleration(position,
+//                        new Vector2D(drawingWidth.doubleValue(), position.getY()));
+//            } else {
+//                // if not within barrier range
+//                accelerationX = new Vector2D(0, 0);
+//            }
+//
+//            // calculate north and south barrier forces
+//            Vector2D accelerationY;
+//            if (position.getY() < barrierRadius) {
+//                // calculate north barrier repulsive acceleration
+//                accelerationY = boundaryForce.calculateAcceleration(position, new Vector2D(position.getX(), 0));
+//            } else if (position.getY() > drawingHeight.doubleValue() - barrierRadius) {
+//                // calculate south barrier repulsive acceleration
+//                accelerationY = boundaryForce.calculateAcceleration(position,
+//                        new Vector2D(position.getX(), drawingHeight.doubleValue()));
+//            } else {
+//                // if not within barrier range
+//                accelerationY = new Vector2D(0, 0);
+//            }
+//
+//            // add acceleration to velocities
+//            Vector2D totalAcceleration = accelerationX.add(accelerationY);
+//            Vector2D velocitySource = velocities.get(node).add(totalAcceleration);
+//            velocities.put(node, velocitySource);
+//
+//        }
 
         // placement depending on current velocity
         for (NodeType node : graph.getNodes()) {
