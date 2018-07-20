@@ -1,5 +1,7 @@
 package bio.singa.simulation.model.modules.macroscopic.membranes;
 
+import bio.singa.features.parameters.Environment;
+import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
@@ -7,8 +9,12 @@ import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
+import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
+
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
 
 /**
  * @author cl
@@ -27,11 +33,24 @@ public class MembraneTracer {
     private Deque<AutomatonNode> queue;
     private List<AutomatonNode> unprocessedNodes;
 
-    public static Membrane membraneToRegion(LineSegmentPolygon polygon, AutomatonGraph graph) {
-        // TODO create region from polygon
-
-
-        return null;
+    public static Membrane membraneToRegion(String identifier, CellRegion region, LineSegmentPolygon polygon, AutomatonGraph graph) {
+        polygon.reduce(3);
+        polygon.scale(Environment.convertSystemToSimulationScale(Quantities.getQuantity(1.0, NANO(METRE))));
+        polygon.moveCentreTo(new Vector2D(200,290));
+        Membrane membrane = new Membrane(identifier, region);
+        for (LineSegment lineSegment : polygon.getEdges()) {
+            Vector2D startingPoint = lineSegment.getStartingPoint();
+            for (AutomatonNode node : graph.getNodes()) {
+                Polygon spatialRepresentation = node.getSpatialRepresentation();
+                // starting point is on line or inside of the polygon
+                if (spatialRepresentation.evaluatePointPosition(startingPoint) >= Polygon.ON_LINE) {
+                    // reference segment
+                    membrane.addSegment(node, lineSegment);
+                    node.setCellRegion(region);
+                }
+            }
+        }
+        return membrane;
     }
 
     public static List<Membrane> regionsToMembrane(AutomatonGraph graph) {
@@ -148,11 +167,9 @@ public class MembraneTracer {
         // cut segments to size
         for (MembraneSegment entry : membrane.getSegments()) {
             Polygon spatialRepresentation = entry.getNode().getSpatialRepresentation();
-
-                Set<Vector2D> intersections = spatialRepresentation.getIntersections(entry);
-                // starting point should be always associated node
-                entry.setEndingPoint(intersections.iterator().next());
-
+            Set<Vector2D> intersections = spatialRepresentation.getIntersections(entry);
+            // starting point should be always associated node
+            entry.setEndingPoint(intersections.iterator().next());
         }
 
     }

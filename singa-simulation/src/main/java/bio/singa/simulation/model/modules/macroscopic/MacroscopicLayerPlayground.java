@@ -11,6 +11,7 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
+import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -29,11 +30,11 @@ import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
 import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneTracer;
 import bio.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
-import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.parser.organelles.OrganelleImageParser;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -70,7 +71,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     private Simulation simulation;
     private ClathrinMediatedEndocytosis budding;
     private VesicleFusion fusion;
-    private Organelle earlyEndosome;
 
     public static void main(String[] args) {
         launch();
@@ -120,6 +120,19 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         CellRegion nucleus = new CellRegion("Nucleus");
         nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
+
+        CellRegion endosome = new CellRegion("Endosome");
+        CellSubsection endosomePlasm = new CellSubsection("Endosomeplasm");
+        CellSubsection endosomeMembrane = new CellSubsection("Endosome membrane");
+        endosome.addSubSection(CellTopology.INNER, endosomePlasm);
+        endosome.addSubSection(CellTopology.MEMBRANE, endosomeMembrane);
+        endosome.addSubSection(CellTopology.OUTER, cytoplasm);
+
+//        earlyEndosome.reduce(5);
+//        earlyEndosome.rotate(Math.toRadians(90));
+//        earlyEndosome.scale();
+//
+//        earlyEndosome.moveCentreTo(new Vector2D(500.0, 500.0));
 
         // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
@@ -255,6 +268,10 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
         membraneLayer = new MembraneLayer(MembraneTracer.regionsToMembrane(graph));
+        LineSegmentPolygon endosomePolygon = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.EARLY_ENDOSOME);
+
+        Membrane macroscopicMembrane = MembraneTracer.membraneToRegion("Endosome membrane", endosome, endosomePolygon, graph);
+        membraneLayer.addMembrane(macroscopicMembrane);
         simulation.setMembraneLayer(membraneLayer);
 
         // add left membrane to as endocytosis site
@@ -273,14 +290,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(250, NANO(METRE)))), 60);
         filamentLayer = moc.initializeFilaments();
-
-//        earlyEndosome = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.EARLY_ENDOSOME);
-//        earlyEndosome.reduce(5);
-//        earlyEndosome.rotate(Math.toRadians(90));
-//        earlyEndosome.scale();
-//
-//        earlyEndosome.moveCentreTo(new Vector2D(500.0, 500.0));
-
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -303,6 +312,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         fillPolygon(rectangle);
         // draw cells
         getGraphicsContext().setFill(Color.BLACK);
+        getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(1);
         for (AutomatonNode node : graph.getNodes()) {
             Polygon polygon = node.getSpatialRepresentation();
@@ -324,18 +334,19 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 case "Nucleus":
                     getGraphicsContext().setFill(Color.color(27.0 / 256.0, 120.0 / 256.0, 55.0 / 256.0));
                     break;
+                default:
+                    getGraphicsContext().setFill(Color.GRAY);
             }
             fillPolygon(polygon);
-            getGraphicsContext().setStroke(Color.BLACK);
             strokePolygon(polygon);
         }
         // draw membrane
-        getGraphicsContext().setLineWidth(3);
         if (membraneLayer != null) {
             for (Membrane membrane : membraneLayer.getMembranes()) {
                 List<MembraneSegment> segments = membrane.getSegments();
                 for (MembraneSegment segment : segments) {
-                        strokeLineSegment(segment);
+                    getGraphicsContext().setLineWidth(1);
+                    strokeLineSegment(segment);
                 }
             }
         }
@@ -364,11 +375,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             strokeCircle(circle);
             strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
-        // draw organelle
-        getGraphicsContext().setFill(Color.GREEN);
-//        for (LineSegment lineSegment : earlyEndosome.getLineSegments()) {
-//            strokeLineSegment(lineSegment);
-//        }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(3);
@@ -396,11 +402,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                     previous = current;
                 }
             }
-            getGraphicsContext().setStroke(Color.GRAY);
-            getGraphicsContext().setLineWidth(1);
-            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
-                strokeStraight(node.getPosition(), skeletalFilament.getHead());
-            }
+//            getGraphicsContext().setStroke(Color.GRAY);
+//            getGraphicsContext().setLineWidth(1);
+//            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
+//                strokeStraight(node.getPosition(), skeletalFilament.getHead());
+//            }
         }
     }
 
