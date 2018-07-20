@@ -1,5 +1,5 @@
 /*
- * This software and all files contained in it are distrubted under the MIT license.
+ * This software and all files contained in it are distrusted under the MIT license.
  *
  * Copyright (c) 2013 Cogito Learning Ltd
  *
@@ -26,7 +26,7 @@ package uk.co.cogitolearning.cogpar;
 
 /**
  * An ExpressionNode that handles additions and subtractions. The node can hold
- * an arbitrary number of terms that are either added or subtraced from the sum.
+ * an arbitrary number of terms that are either added or subtracted from the sum.
  */
 public class AdditionExpressionNode extends SequenceExpressionNode {
 

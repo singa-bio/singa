@@ -15,7 +15,7 @@ SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/ar
 ```xml
 <dependencies>
     <dependency>
-        <groupId>de.bioforscher.singa</groupId>
+        <groupId>bio.singa</groupId>
         <artifactId>singa-[module]</artifactId>
         <version>0.3.3</version>
     </dependency>

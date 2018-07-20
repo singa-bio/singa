@@ -6,25 +6,25 @@
 
     <parent>
         <artifactId>singa-all</artifactId>
-        <groupId>de.bioforscher.singa</groupId>
-        <version>0.3.3</version>
+        <groupId>bio.singa</groupId>
+        <version>0.4.0</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-structure</artifactId>
-    <version>0.3.3</version>
+    <version>0.4.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>de.bioforscher.singa</groupId>
+            <groupId>bio.singa</groupId>
             <artifactId>singa-mathematics</artifactId>
-            <version>0.3.3</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
-            <groupId>de.bioforscher.singa</groupId>
+            <groupId>bio.singa</groupId>
             <artifactId>singa-features</artifactId>
-            <version>0.3.3</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.rcsb</groupId>
