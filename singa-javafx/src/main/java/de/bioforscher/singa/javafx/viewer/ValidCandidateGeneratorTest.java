@@ -148,7 +148,7 @@ public class ValidCandidateGeneratorTest {
                 } else {
                     label = "root";
                 }
-                GraphDisplayApplication.renderer.drawTextCenteredOnPoint(label, node.getPosition());
+                GraphDisplayApplication.renderer.strokeTextCenteredOnPoint(label, node.getPosition());
             }
             return null;
         });
