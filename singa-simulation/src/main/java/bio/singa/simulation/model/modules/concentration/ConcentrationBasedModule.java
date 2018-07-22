@@ -12,7 +12,6 @@ import bio.singa.simulation.model.modules.concentration.specifity.UpdateSpecific
 import bio.singa.simulation.model.parameters.FeatureManager;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
-import bio.singa.simulation.model.simulation.UpdateScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +25,11 @@ import java.util.function.Predicate;
 import static bio.singa.simulation.model.modules.concentration.ModuleState.*;
 
 /**
+ * Concentration based modules handle updates that are applied to the concentrations in {@link Updatable}s during a
+ * simulation. Each module has a {@link UpdateScope} that regulates the dependence of this module to other parts of the
+ * simulation. Further, the {@link UpdateSpecificity} defines how fine-grained the updates are calculated. New modules
+ * should be created with the {@link ModuleFactory}.
+ *
  * @author cl
  */
 public abstract class ConcentrationBasedModule<DeltaFunctionType extends AbstractDeltaFunction> implements UpdateModule {
@@ -41,114 +45,250 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     private static final double DEFAULT_NUMERICAL_CUTOFF = 1e-100;
 
     /**
-     * The default value where numerical errors to be considered irretrievably unstable
+     * The default value where numerical errors to be considered irretrievably unstable.
      */
     private static final double DEFAULT_ERROR_CUTOFF = 100;
 
-    private Simulation simulation;
-    protected FieldSupplier supplier;
-    private UpdateScope scope;
-    private UpdateSpecificity<DeltaFunctionType> specificity;
-    private UpdateScheduler updateScheduler;
-    private FeatureManager featureManager;
-    private Predicate<Updatable> applicationCondition;
-    private Set<ChemicalEntity> referencedChemicalEntities;
+    /**
+     * The identifier of this module.
+     */
     private String identifier;
 
+    /**
+     * The current state of this module.
+     */
     private ModuleState state;
+
+    /**
+     * The cutoff where deltas are validated to be effectively zero.
+     */
     private double deltaCutoff = DEFAULT_NUMERICAL_CUTOFF;
+
+    /**
+     * The cutoff where numerical errors to be considered irretrievably unstable.
+     */
     private double errorCutoff = DEFAULT_ERROR_CUTOFF;
 
+    /**
+     * The referenced simulation.
+     */
+    private Simulation simulation;
+
+    /**
+     * Frequently required fields.
+     */
+    protected FieldSupplier supplier;
+
+    /**
+     * The scope of this module.
+     */
+    private UpdateScope scope;
+
+    /**
+     * The specificity of this module.
+     */
+    private UpdateSpecificity<DeltaFunctionType> specificity;
+
+    /**
+     * The feature manager of this module
+     */
+    private FeatureManager featureManager;
+
+    /**
+     * Evaluated every time the module is applied to any updatable.
+     */
+    private Predicate<Updatable> applicationCondition;
+
+    /**
+     * All chemical entities that might be accessed by this module.
+     */
+    private Set<ChemicalEntity> referencedChemicalEntities;
+
+    /**
+     * Creates a new concentration based module.
+     */
     public ConcentrationBasedModule() {
         supplier = new FieldSupplier();
         featureManager = new FeatureManager();
         referencedChemicalEntities = new HashSet<>();
         state = PENDING;
         applicationCondition = updatable -> true;
+        identifier = getClass().getSimpleName();
     }
 
+    /**
+     * Adds a delta function to the module. Delta functions are applied according to {@link UpdateScope} and {@link
+     * UpdateSpecificity}.
+     *
+     * @param deltaFunction The delta function.
+     */
     protected void addDeltaFunction(DeltaFunctionType deltaFunction) {
         specificity.addDeltaFunction(deltaFunction);
     }
 
-    public void setApplicationCondition(Predicate<Updatable> applicationCondition) {
+    /**
+     * Sets the application condition for this module. The module is only evaluated if the updatable fulfills the given
+     * predicate.
+     *
+     * @param applicationCondition The application condition.
+     */
+    protected void setApplicationCondition(Predicate<Updatable> applicationCondition) {
         this.applicationCondition = applicationCondition;
     }
 
+    /**
+     * Returns the application condition for this module.The module is only evaluated if the updatable fulfills the
+     * given predicate.
+     *
+     * @return The application condition.
+     */
+    public Predicate<Updatable> getApplicationCondition() {
+        return applicationCondition;
+    }
+
+    /**
+     * Returns all chemical entities that might be accessed by this module.
+     *
+     * @return All chemical entities that might be accessed by this module.
+     */
     public Set<ChemicalEntity> getReferencedEntities() {
         return referencedChemicalEntities;
     }
 
-    public void addReferencedEntity(ChemicalEntity chemicalEntity) {
+    /**
+     * Adds a referenced chemical entity.
+     *
+     * @param chemicalEntity The chemical entity.
+     */
+    protected void addReferencedEntity(ChemicalEntity chemicalEntity) {
         referencedChemicalEntities.add(chemicalEntity);
     }
 
-    public void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
+    /**
+     * Adds multiple referenced chemical entities.
+     *
+     * @param chemicalEntities The chemical entities.
+     */
+    protected void addReferencedEntities(Collection<? extends ChemicalEntity> chemicalEntities) {
         referencedChemicalEntities.addAll(chemicalEntities);
     }
 
     public String getStringForProtocol() {
         return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
                 "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
+                "  " + "referenced entities" + getReferencedEntities() + System.lineSeparator() +
                 "  " + "features: " + System.lineSeparator() +
                 listFeatures("    ");
     }
 
+    /**
+     * Returns the cutoff where deltas are validated to be effectively zero.
+     *
+     * @return The delta cutoff.
+     */
     public double getDeltaCutoff() {
         return deltaCutoff;
     }
 
+    /**
+     * Sets the cutoff where deltas are validated to be effectively zero.
+     *
+     * @param deltaCutoff The delta cutoff.
+     */
     public void setDeltaCutoff(double deltaCutoff) {
         this.deltaCutoff = deltaCutoff;
     }
 
+    /**
+     * Returns the cutoff where numerical errors to be considered irretrievably unstable.
+     *
+     * @return The error cutoff.
+     */
     public double getErrorCutoff() {
         return errorCutoff;
     }
 
+    /**
+     * Sets the cutoff where numerical errors to be considered irretrievably unstable.
+     *
+     * @param errorCutoff The error cutoff.
+     */
     public void setErrorCutoff(double errorCutoff) {
         this.errorCutoff = errorCutoff;
     }
 
+    /**
+     * Returns the referenced simulation.
+     *
+     * @return The referenced simulation.
+     */
     public Simulation getSimulation() {
         return simulation;
     }
 
-    public Predicate<Updatable> getApplicationCondition() {
-        return applicationCondition;
+    /**
+     * References the simulation to this module.
+     *
+     * @param simulation The simulation.
+     */
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
 
+    /**
+     * Returns the identifier of this module.
+     * @return The identifier.
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Sets the identifier of this module.
+     * @param identifier The identifier.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Returns the field supplier.
+     * @return The field supplier.
+     */
     public FieldSupplier getSupplier() {
         return supplier;
     }
 
+    /**
+     * Returns the scope of this module.
+     * @return The scope of this module.
+     */
     public UpdateScope getScope() {
         return scope;
     }
 
+    /**
+     * Sets the scope of this module.
+     * @param scope The scope of this module.
+     */
     void setScope(UpdateScope scope) {
         this.scope = scope;
     }
 
+    /**
+     * Returns the specificity of this module.
+     * @return The specificity of this module.
+     */
     public UpdateSpecificity getSpecificity() {
         return specificity;
     }
 
+    /**
+     * Sets the specificity of this module.
+     * @param specificity The specificity of this module.
+     */
     void setSpecificity(UpdateSpecificity<DeltaFunctionType> specificity) {
         this.specificity = specificity;
-    }
-
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-        updateScheduler = simulation.getScheduler();
     }
 
     @Override
@@ -156,6 +296,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return state;
     }
 
+    /**
+     * Handles a delta based on the current state of the calculation.
+     * @param deltaIdentifier The unique identifier of the delta.
+     * @param delta The delta itself.
+     */
     public void handleDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
         logDelta(deltaIdentifier, delta);
         if (supplier.isStrutCalculation()) {
@@ -167,6 +312,11 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
     }
 
+    /**
+     * Produces a log massage for the given update.
+     * @param deltaIdentifier THe delta identifier.
+     * @param delta The delta.
+     */
     private void logDelta(ConcentrationDeltaIdentifier deltaIdentifier, ConcentrationDelta delta) {
         logger.trace("{} delta for {} in {}:{} = {}",
                 supplier.isStrutCalculation() ? "Half" : "Full",
@@ -197,34 +347,25 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     /**
-     * Returns true if the delta is above the numerical cutoff (not effectivley zero).
+     * Returns true if the delta is above the numerical cutoff (not effectively zero).
      *
      * @param delta The delta to be evaluated.
-     * @return true if the delta is above the numerical cutoff (not effectivley zero).
+     * @return true if the delta is above the numerical cutoff (not effectively zero).
      */
     private boolean deltaIsAboveNumericCutoff(ConcentrationDelta delta) {
         return Math.abs(delta.getQuantity().getValue().doubleValue()) > deltaCutoff;
     }
 
-    private void checkErrorStability(double fullDelta, double halfDelta, double error) {
-        if (error > errorCutoff) {
-            throw new NumericalInstabilityException("The simulation experiences numerical instabilities. The local " +
-                    "error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta + ") is "
-                    + error + ". This can be an result of time steps that have been initially chosen too large" +
-                    " or an implementation error in module that calculated the delta.");
-        }
-    }
-
     /**
      * The local error is calculated and the largest local error of the current epoch resulting from the executing
-     * module is returned. The local error is calculated according to the midpoint method
-     * E = abs(1 - (fullDelta / 2.0 * halfDelta)). Intuitively, applying the the delta for the current time step once
-     * results in the same result as if the delta for half the time step would be applied twice. This method calculates
-     * the difference between the full delta and twice the half delta. If the difference is large the error is large and
-     * vice versa.
+     * module is returned. The local error is calculated according to the midpoint method E = abs(1 - (fullDelta / 2.0 *
+     * halfDelta)). Intuitively, applying the the delta for the current time step once results in the same result as if
+     * the delta for half the time step would be applied twice. This method calculates the difference between the full
+     * delta and twice the half delta. If the difference is large the error is large and vice versa.
      *
      * @return The calculated local error.
-     * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical instability.
+     * @throws NumericalInstabilityException if any of the encountered errors is the result of an numerical
+     * instability.
      */
     public LocalError determineLargestLocalError() {
         // no deltas mean this module did not change anything in the course of this simulation step
@@ -233,7 +374,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         }
         if (supplier.getCurrentFullDeltas().size() != supplier.getCurrentHalfDeltas().size()) {
             logger.warn("The deltas that should be applied have fallen below " +
-                        "the threshold of "+deltaCutoff+". (Module: "+getIdentifier()+")");
+                    "the threshold of " + deltaCutoff + ". (Module: " + getIdentifier() + ")");
             return LocalError.MINIMAL_EMPTY_ERROR;
         }
 
@@ -260,6 +401,21 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         // set local error and return local error
         return localError;
     }
+    /**
+     * Determines if the current error can be considered stable (is above the error cutoff).
+     * @param fullDelta The full delta (only for logging purposes).
+     * @param halfDelta The half delta (only for logging purposes).
+     * @param error The error.
+     */
+    private void checkErrorStability(double fullDelta, double halfDelta, double error) {
+        if (error > errorCutoff) {
+            throw new NumericalInstabilityException("The simulation experiences numerical instabilities. The local " +
+                    "error between the full step delta (" + fullDelta + ") and half step delta (" + halfDelta + ") is "
+                    + error + ". This can be an result of time steps that have been initially chosen too large" +
+                    " or an implementation error in module that calculated the delta.");
+        }
+    }
+
 
     @Override
     public void calculateUpdates() {
@@ -274,7 +430,7 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
             // reset previous error
             supplier.resetError();
             // determine new local error with decreased time step
-            updateScheduler.decreaseTimeStep();
+            simulation.getScheduler().decreaseTimeStep();
             scope.processUpdatable(updatable);
             // evaluate module state by error
             evaluateModuleState();
@@ -282,8 +438,12 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         logger.debug("Optimized local error for {} was {} with time step of {}.", this, supplier.getLargestLocalError().getValue(), Environment.getTimeStep());
     }
 
+    /**
+     * Evaluates the current state of the module. This includes evaluating the local error and if necessary scheduling
+     * a recalculation.
+     */
     private void evaluateModuleState() {
-        if (supplier.getLargestLocalError().getValue() < updateScheduler.getRecalculationCutoff()) {
+        if (supplier.getLargestLocalError().getValue() < simulation.getScheduler().getRecalculationCutoff()) {
             state = SUCCEEDED;
         } else {
             logger.trace("Recalculation required for error {}.", supplier.getLargestLocalError().getValue());
@@ -299,7 +459,10 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         supplier.resetError();
     }
 
-    public void addModuleToSimulation() {
+    /**
+     * References the module and referenced entities to the referenced simulation.
+     */
+    protected void addModuleToSimulation() {
         simulation.getModules().add(this);
         for (ChemicalEntity chemicalEntity : referencedChemicalEntities) {
             simulation.addReferencedEntity(chemicalEntity);
@@ -322,11 +485,26 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return choseScaling(featureManager.getFeature(featureClass));
     }
 
+    /**
+     * Returns the requested feature of the given chemical entities, scaled according to the current time step and
+     * spatial scaling.
+     *
+     * @param entity The chemical entity.
+     * @param featureClass The requested feature.
+     * @param <FeatureContentType> The resulting content type.
+     * @return The scaled feature.
+     */
     protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         // feature from any entity (like molar mass)
         return choseScaling(entity.getFeature(featureClass));
     }
 
+    /**
+     * Determines the correct scaling based on the state of the strut calculation.
+     * @param feature The requested feature.
+     * @param <FeatureContentType> The resulting content type.
+     * @return The scaled feature.
+     */
     private <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> choseScaling(ScalableFeature<FeatureContentType> feature) {
         if (supplier.isStrutCalculation()) {
             return feature.getHalfScaledQuantity();
@@ -334,19 +512,39 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         return feature.getScaledQuantity();
     }
 
+    /**
+     * Returns the requested feature.
+     * @param featureTypeClass The requested feature.
+     * @param <FeatureType> The resulting content type.
+     * @return The requested feature.
+     */
     public <FeatureType extends Feature> FeatureType getFeature(Class<FeatureType> featureTypeClass) {
         return featureManager.getFeature(featureTypeClass);
     }
 
+    /**
+     * Sets a feature.
+     * @param feature The feature.
+     * @param <FeatureType> The class of the feature.
+     */
     public <FeatureType extends Feature> void setFeature(FeatureType feature) {
         featureManager.setFeature(feature);
     }
 
+    /**
+     * Returns all features of this module (not its entities).
+     * @return all features of this module.
+     */
     public Collection<Feature<?>> getFeatures() {
         return featureManager.getAllFeatures();
     }
 
-    public String listFeatures(String precedingSpaces) {
+    /**
+     * Returns a formatted string of the features of this module.
+     * @param precedingSpaces The number of preceding spaces.
+     * @return A formatted string of the features of this module.
+     */
+    protected String listFeatures(String precedingSpaces) {
         return featureManager.listFeatures(precedingSpaces);
     }
 
