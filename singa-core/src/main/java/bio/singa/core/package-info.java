@@ -4,4 +4,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.core;
+package bio.singa.core;

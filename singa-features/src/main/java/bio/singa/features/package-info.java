@@ -12,4 +12,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.features;
+package bio.singa.features;

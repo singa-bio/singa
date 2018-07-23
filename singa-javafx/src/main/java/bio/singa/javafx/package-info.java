@@ -8,4 +8,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.javafx;
+package bio.singa.javafx;

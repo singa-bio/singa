@@ -5,4 +5,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.structure;
+package bio.singa.structure;

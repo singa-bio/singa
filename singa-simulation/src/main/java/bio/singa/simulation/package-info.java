@@ -9,4 +9,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.simulation;
+package bio.singa.simulation;

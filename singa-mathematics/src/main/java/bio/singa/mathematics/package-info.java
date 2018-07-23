@@ -7,4 +7,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.mathematics;
+package bio.singa.mathematics;

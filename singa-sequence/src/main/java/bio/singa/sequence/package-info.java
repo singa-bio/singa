@@ -5,4 +5,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.sequence;
+package bio.singa.sequence;

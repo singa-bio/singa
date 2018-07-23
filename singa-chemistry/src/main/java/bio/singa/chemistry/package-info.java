@@ -8,4 +8,4 @@
  *
  * @author cl
  */
-package de.bioforscher.singa.chemistry.descriptive;
+package bio.singa.chemistry;
