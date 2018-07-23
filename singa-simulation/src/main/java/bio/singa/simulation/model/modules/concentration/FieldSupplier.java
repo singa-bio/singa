@@ -35,7 +35,7 @@ public class FieldSupplier {
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> fullDeltas;
 
     /**
-     * Th ecurrent half deltas.
+     * The current half deltas.
      */
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> halfDeltas;
 

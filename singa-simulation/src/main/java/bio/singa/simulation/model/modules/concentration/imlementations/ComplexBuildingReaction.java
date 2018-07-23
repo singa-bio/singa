@@ -25,6 +25,53 @@ import java.util.Map;
 import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 
 /**
+ * Complex building or breaking reactions are a special kind of {@link ReversibleReaction}. In this kind of reaction
+ * association or dissociation of chemical entities results in a change of section. For example when a ligand is bound
+ * to a receptor the resulting complex is associated to the membrane section the receptor is located in.<br> Speaking in
+ * terms of this module a <b>bindee</b> in the <b>bindee topology</b> is bound to a <b>binder</b> in the
+ * <b>binder topology</b>, resulting in a <b>complex</b> in the <b>binder topology</b>.<br>
+ * The speed of the reaction is guided by any {@link ForwardsRateConstant} that determines the speed of the association
+ * reaction and a {@link BackwardsRateConstant} the determines the speed of the dissociation of the complex.
+ * <pre>
+ *  // From: Lauffenburger, Douglas A., and Jennifer J. Linderman.
+ *  //       Receptors: models for binding, trafficking, and signaling. Oxford University Press, 1996.
+ *  //       Table on Page 30
+ *
+ *  // prazosin
+ *  ChemicalEntity ligand = new SmallMolecule.Builder("ligand")
+ *      .name("prazosin")
+ *      .additionalIdentifier(new ChEBIIdentifier("CHEBI:8364"))
+ *      .build();
+ *
+ *  // alpha-1 adrenergic receptor
+ *  Receptor receptor = new Receptor.Builder("receptor")
+ *      .name("alpha-1 adrenergic receptor")
+ *      .additionalIdentifier(new UniProtIdentifier("P35348"))
+ *      .build();
+ *
+ *  // the forwards rate constants
+ *  RateConstant forwardsRate = RateConstant.create(2.4e8)
+ *      .forward().secondOder()
+ *      .concentrationUnit(MOLE_PER_LITRE)
+ *      .timeUnit(MINUTE)
+ *      .build();
+ *
+ *  // the backwards rate constants
+ *  RateConstant backwardsRate = RateConstant.create(0.018)
+ *      .backward().firstOrder()
+ *      .timeUnit(MINUTE)
+ *      .build();
+ *
+ *  // create and add module
+ *  ComplexBuildingReaction reaction = ComplexBuildingReaction.inSimulation(simulation)
+ *      .identifier("binding reaction")
+ *      .of(ligand, forwardsRate)
+ *      .in(OUTER)
+ *      .by(receptor, backwardsRate)
+ *      .to(MEMBRANE)
+ *      .build();
+ * </pre>
+ *
  * @author cl
  */
 public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
@@ -108,7 +155,6 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         // calculate velocity
         return forwardsRateConstant * binderConcentration * bindeeConcentration - backwardsRateConstant * complexConcentration;
     }
-
 
     public ComplexedChemicalEntity getComplex() {
         return complex;

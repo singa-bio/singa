@@ -7,8 +7,8 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import javax.measure.Quantity;
 
 /**
- * The delta object signifies the change that will be applied to the concentration of a specific {@link ChemicalEntity}
- * in a specific {@link CellSubsection}.
+ * The delta object manages the change that will be applied to the concentration of a specific {@link ChemicalEntity} in
+ * a {@link CellSubsection}.
  *
  * @author cl
  */
@@ -34,7 +34,13 @@ public class ConcentrationDelta {
      */
     private Quantity<MolarConcentration> quantity;
 
-
+    /**
+     * Creates a new concentration delta.
+     * @param module The module the delta was calculated by.
+     * @param cellSubsection The subsection the delta is applied to
+     * @param chemicalEntity The chemical entity the delta is applied to.
+     * @param quantity The actual quantity of the change.
+     */
     public ConcentrationDelta(ConcentrationBasedModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
@@ -43,7 +49,7 @@ public class ConcentrationDelta {
     }
 
     /**
-     * Reutns the module, that calculated this delta.
+     * Returns the module, that calculated this delta.
      *
      * @return The module, that calculated this delta.
      */
@@ -51,6 +57,11 @@ public class ConcentrationDelta {
         return module;
     }
 
+    /**
+     * Returns the subsection.
+     *
+     * @return The subsection.
+     */
     public CellSubsection getCellSubsection() {
         return cellSubsection;
     }
@@ -74,7 +85,7 @@ public class ConcentrationDelta {
     }
 
     /**
-     * Multiplies (modifies) this delta .
+     * Multiplies (modifies) this delta with the given multiplicand.
      *
      * @param multiplicand The scalar that the delta is multiplied with.
      * @return This multiplied delta.
@@ -86,6 +97,6 @@ public class ConcentrationDelta {
 
     @Override
     public String toString() {
-        return module + " : " + cellSubsection.getIdentifier()+"-"+chemicalEntity.getIdentifier()+" = "+quantity;
+        return module + " : " + cellSubsection.getIdentifier() + "-" + chemicalEntity.getIdentifier() + " = " + quantity;
     }
 }
