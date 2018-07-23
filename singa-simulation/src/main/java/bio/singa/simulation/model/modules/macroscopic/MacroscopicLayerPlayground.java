@@ -268,7 +268,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
         membraneLayer = new MembraneLayer(MembraneTracer.regionsToMembrane(graph));
-        LineSegmentPolygon endosomePolygon = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.EARLY_ENDOSOME);
+        LineSegmentPolygon endosomePolygon = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.CELL_MEMBRANE);
 
         Membrane macroscopicMembrane = MembraneTracer.membraneToRegion("Endosome membrane", endosome, endosomePolygon, graph);
         membraneLayer.addMembrane(macroscopicMembrane);

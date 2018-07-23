@@ -13,7 +13,7 @@ import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.METRE;
 
 /**
@@ -34,9 +34,10 @@ public class MembraneTracer {
     private List<AutomatonNode> unprocessedNodes;
 
     public static Membrane membraneToRegion(String identifier, CellRegion region, LineSegmentPolygon polygon, AutomatonGraph graph) {
+        polygon.moveCentreTo(new Vector2D(0,0));
         polygon.reduce(3);
-        polygon.scale(Environment.convertSystemToSimulationScale(Quantities.getQuantity(1.0, NANO(METRE))));
-        polygon.moveCentreTo(new Vector2D(200,290));
+        polygon.scale(Environment.convertSystemToSimulationScale(Quantities.getQuantity(0.0016, MICRO(METRE))));
+        polygon.moveCentreTo(new Vector2D(400,400));
         Membrane membrane = new Membrane(identifier, region);
         for (LineSegment lineSegment : polygon.getEdges()) {
             Vector2D startingPoint = lineSegment.getStartingPoint();
