@@ -47,10 +47,12 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
+import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
@@ -268,9 +270,15 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
         membraneLayer = new MembraneLayer(MembraneTracer.regionsToMembrane(graph));
-        LineSegmentPolygon endosomePolygon = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.CELL_MEMBRANE);
+        Map.Entry<LineSegmentPolygon, Quantity<Length>> result = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.CELL_MEMBRANE);
 
-        Membrane macroscopicMembrane = MembraneTracer.membraneToRegion("Endosome membrane", endosome, endosomePolygon, graph);
+        // TODO add cell membrane and nuclear membrane
+        // TODO set inner sections to be inner (all points of graphical representations are inside)
+        // TODO render to actual membranes
+        // TODO consider area of membranes in membrane diffusion
+
+
+        Membrane macroscopicMembrane = MembraneTracer.membraneToRegion("Endosome membrane", endosome, result.getKey(), graph);
         membraneLayer.addMembrane(macroscopicMembrane);
         simulation.setMembraneLayer(membraneLayer);
 

@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,12 @@ public class OrganelleImageParser {
 
     private static final Quantity<Length> DEFAULT_SCALE_LENGTH = Quantities.getQuantity(100.0, NANO(METRE));
 
-
-
     private BufferedImage templateImage;
-    private LineSegmentPolygon lineSegmentPolygon;
     private List<Vector2D> scalePixels;
     private List<Vector2D> templatePixels;
+
+    private LineSegmentPolygon lineSegmentPolygon;
+    private Quantity<Length> scale;
 
     public enum OrganelleType {
         EARLY_ENDOSOME,
@@ -45,7 +46,7 @@ public class OrganelleImageParser {
         NUCLEAR_ENVELOPE
     }
 
-    public static LineSegmentPolygon getPolygonTemplate(OrganelleType organelles) {
+    public static Map.Entry<LineSegmentPolygon, Quantity<Length>> getPolygonTemplate(OrganelleType organelles) {
         // get image
         String resourceLocation = "organelle_templates/" + organelles.name().toLowerCase() + ".png";
         InputStream resource = Resources.getResourceAsStream(resourceLocation);
@@ -58,8 +59,9 @@ public class OrganelleImageParser {
         // create polygon from trace
         OrganelleImageParser organelleImageParser = new OrganelleImageParser(image);
         organelleImageParser.createTrace();
-        organelleImageParser.handleScaling();
-        return organelleImageParser.lineSegmentPolygon;
+        organelleImageParser.determineScale();
+        // return polygon and scale
+        return new AbstractMap.SimpleEntry<>(organelleImageParser.lineSegmentPolygon, organelleImageParser.scale);
     }
 
     public OrganelleImageParser(BufferedImage templateImage) {
@@ -68,7 +70,7 @@ public class OrganelleImageParser {
         scalePixels = new ArrayList<>();
     }
 
-    public void createTrace() {
+    private void createTrace() {
         List<Vector2D> vectors = convertToVectors(templateImage);
         List<LineSegment> segments = connect(vectors);
         lineSegmentPolygon = new LineSegmentPolygon(segments);
@@ -123,14 +125,14 @@ public class OrganelleImageParser {
         return segments;
     }
 
-    private void handleScaling() {
+    private void determineScale() {
         // get from scale pixels
         SymmetricMatrix symmetricMatrix = EUCLIDEAN_METRIC.calculateDistancesPairwise(scalePixels);
         // get maximal extend (length)
         List<Pair<Integer>> positionsOfMaximalElement = Matrices.getPositionsOfMaximalElement(symmetricMatrix);
         double length = symmetricMatrix.getElement(positionsOfMaximalElement.get(0).getFirst(), positionsOfMaximalElement.get(0).getSecond());
-        // scale should be 100 nm
-        // DEFAULT_SCALE_LENGTH =
+        // calculate dimensionality of one pixel (e.g. 100 nm : 10 px -> 10 nm per px)
+        scale = DEFAULT_SCALE_LENGTH.divide(length);
     }
 
 }
