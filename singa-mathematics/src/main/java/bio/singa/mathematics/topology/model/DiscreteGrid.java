@@ -3,7 +3,7 @@ package bio.singa.mathematics.topology.model;
 /**
  * @author cl
  */
-public interface DiscreteGrid<ValueType, CoordinateType extends DiscreteCoordinate<CoordinateType, ? extends DiscreteDirection>>  {
+public interface DiscreteGrid<ValueType, DirectionType extends DiscreteDirection, CoordinateType extends DiscreteCoordinate<CoordinateType, DirectionType>>  {
 
     void setValue(CoordinateType coordinate, ValueType value);
 

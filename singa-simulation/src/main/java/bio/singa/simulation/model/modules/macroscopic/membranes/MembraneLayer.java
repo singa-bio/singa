@@ -14,10 +14,6 @@ public class MembraneLayer {
         membranes = new ArrayList<>();
     }
 
-    public MembraneLayer(List<Membrane> membranes) {
-        this.membranes = membranes;
-    }
-
     public List<Membrane> getMembranes() {
         return membranes;
     }

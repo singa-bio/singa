@@ -19,6 +19,10 @@ public class LineSegmentPolygon implements Polygon {
         this.edges = edges;
     }
 
+    public LineSegmentPolygon(LineSegmentPolygon polygon) {
+        edges = new ArrayList<>(polygon.edges);
+    }
+
     @Override
     public Vector2D[] getVertices() {
         Vector2D[] vertices = new Vector2D[edges.size()];
@@ -96,6 +100,10 @@ public class LineSegmentPolygon implements Polygon {
             movedLineSegments.add(new SimpleLineSegment(lineSegment.getStartingPoint().add(displacement), lineSegment.getEndingPoint().add(displacement)));
         }
         edges = movedLineSegments;
+    }
+
+    public LineSegmentPolygon getCopy() {
+        return new LineSegmentPolygon(this);
     }
 
 }

@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.sections;
 
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.parameters.Environment;
 
 import java.util.Collection;
@@ -40,12 +41,17 @@ public class CellRegion {
     }
 
     private String identifier;
-
+    private GoTerm goTerm;
     private Map<CellTopology, CellSubsection> cellSubSections;
 
     public CellRegion(String identifier) {
         this.identifier = identifier;
         cellSubSections = new HashMap<>();
+    }
+
+    public CellRegion(String identifier, GoTerm goTerm) {
+        this(identifier);
+        this.goTerm = goTerm;
     }
 
     public String getIdentifier() {

@@ -40,17 +40,11 @@ public class OrganelleImageParser {
     private LineSegmentPolygon lineSegmentPolygon;
     private Quantity<Length> scale;
 
-    public enum OrganelleType {
-        EARLY_ENDOSOME,
-        CELL_MEMBRANE,
-        NUCLEAR_ENVELOPE
-    }
-
-    public static Map.Entry<LineSegmentPolygon, Quantity<Length>> getPolygonTemplate(OrganelleType organelles) {
+    public static Map.Entry<LineSegmentPolygon, Quantity<Length>> getPolygonTemplate(String resourceLocation) {
         // get image
-        String resourceLocation = "organelle_templates/" + organelles.name().toLowerCase() + ".png";
+        // String resourceLocation = "organelle_templates/" + organelles.name().toLowerCase() + ".png";
         InputStream resource = Resources.getResourceAsStream(resourceLocation);
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             image = ImageIO.read(resource);
         } catch (IOException e) {
@@ -109,12 +103,15 @@ public class OrganelleImageParser {
         List<Vector2D> copy = new ArrayList<>(vectors);
         copy.remove(first);
         Vector2D previous = first;
+        // for each vector
         while (!copy.isEmpty()) {
+            // determine closest neighbour
             Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
             if (entry.getValue() > errorCutoff) {
                 // remove nonsense connections
                 copy.remove(entry.getKey());
             } else {
+                // add line segment
                 Vector2D next = entry.getKey();
                 segments.add(new SimpleLineSegment(previous, next));
                 copy.remove(next);

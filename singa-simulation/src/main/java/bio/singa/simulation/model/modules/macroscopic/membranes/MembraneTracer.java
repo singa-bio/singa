@@ -1,6 +1,6 @@
 package bio.singa.simulation.model.modules.macroscopic.membranes;
 
-import bio.singa.features.parameters.Environment;
+import bio.singa.mathematics.algorithms.topology.FloodFill;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
@@ -8,13 +8,12 @@ import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
 import bio.singa.simulation.model.sections.CellRegion;
-import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
 
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.Units.METRE;
+import static bio.singa.mathematics.geometry.model.Polygon.*;
 
 /**
  * @author cl
@@ -33,24 +32,67 @@ public class MembraneTracer {
     private Deque<AutomatonNode> queue;
     private List<AutomatonNode> unprocessedNodes;
 
-    public static Membrane membraneToRegion(String identifier, CellRegion region, LineSegmentPolygon polygon, AutomatonGraph graph) {
-        polygon.moveCentreTo(new Vector2D(0,0));
-        polygon.reduce(3);
-        polygon.scale(Environment.convertSystemToSimulationScale(Quantities.getQuantity(0.0016, MICRO(METRE))));
-        polygon.moveCentreTo(new Vector2D(400,400));
-        Membrane membrane = new Membrane(identifier, region);
-        for (LineSegment lineSegment : polygon.getEdges()) {
+    public static Membrane membraneToRegion(Organelle organelle,  AutomatonGraph graph) {
+        Membrane membrane = new Membrane(organelle.getMembraneRegion().getIdentifier(), organelle.getMembraneRegion());
+        LineSegmentPolygon organellePolygon = organelle.getPolygon();
+
+
+        // determine membrane cells
+        for (LineSegment lineSegment : organellePolygon.getEdges()) {
             Vector2D startingPoint = lineSegment.getStartingPoint();
+            Vector2D endingPoint = lineSegment.getEndingPoint();
             for (AutomatonNode node : graph.getNodes()) {
                 Polygon spatialRepresentation = node.getSpatialRepresentation();
-                // starting point is on line or inside of the polygon
-                if (spatialRepresentation.evaluatePointPosition(startingPoint) >= Polygon.ON_LINE) {
-                    // reference segment
+                // evaluate line segment
+                int startingPosition = spatialRepresentation.evaluatePointPosition(startingPoint);
+                int endingPosition = spatialRepresentation.evaluatePointPosition(endingPoint);
+                Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
+                if (startingPosition == INSIDE && endingPosition == INSIDE) {
+                    // completely inside
                     membrane.addSegment(node, lineSegment);
-                    node.setCellRegion(region);
+                    node.setCellRegion(organelle.getMembraneRegion());
+                    break;
+                } else if (startingPosition == INSIDE && endingPosition <= ON_LINE) {
+                    // end outside or on line
+                    Vector2D intersectionPoint = intersections.iterator().next();
+                    membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
+                    node.setCellRegion(organelle.getMembraneRegion());
+                } else if (startingPosition <= ON_LINE && endingPosition == INSIDE) {
+                    // start outside or on line
+                    Vector2D intersectionPoint = intersections.iterator().next();
+                    membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
+                    node.setCellRegion(organelle.getMembraneRegion());
+                } else if (intersections.size() == 2) {
+                    // line only crosses the membrane
+                    Iterator<Vector2D> iterator = intersections.iterator();
+                    Vector2D first = iterator.next();
+                    Vector2D second = iterator.next();
+                    membrane.addSegment(node, new SimpleLineSegment(first, second));
+                    node.setCellRegion(organelle.getMembraneRegion());
                 }
             }
         }
+
+        // determine cell that is completely inside of the membrane as starting point
+        for (AutomatonNode node : graph.getNodes()) {
+            // therefore check if all segments of the representative region are inside
+            boolean allPointsAreIside = true;
+            for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
+                // FIXME potentially not save for organelles with invagination
+                if (organellePolygon.evaluatePointPosition(vector) == OUTSIDE) {
+                    allPointsAreIside = false;
+                    break;
+                }
+            }
+            if (allPointsAreIside) {
+                FloodFill.fill(graph.getGrid(), node.getIdentifier(),
+                        currentNode -> currentNode.getCellRegion().equals(organelle.getMembraneRegion()),
+                        currentCoordiante -> graph.getNode(currentCoordiante).setCellRegion(organelle.getInternalRegion()),
+                        reccurentNode -> reccurentNode.getCellRegion().equals(organelle.getInternalRegion()));
+                break;
+            }
+        }
+
         return membrane;
     }
 

@@ -3,7 +3,7 @@ package bio.singa.mathematics.topology.grids.hexagonal;
 import bio.singa.mathematics.topology.model.DiscreteGrid;
 
 
-public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, HexagonalCoordinate> {
+public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, HexagonalDirection, HexagonalCoordinate> {
 
     private final int width;
     private final int height;
