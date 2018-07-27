@@ -1,8 +1,11 @@
 package bio.singa.structure.parser.pdb.structures;
 
 
+import bio.singa.structure.model.families.StructuralFamily;
 import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.*;
+import org.rcsb.mmtf.dataholders.MmtfStructure;
+import org.rcsb.mmtf.encoder.AdapterToStructureData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +60,9 @@ public class StructureWriter {
     }
 
     /**
-     * Writes a {@link Structure} in PDB format.
+     * Writes a {@link OakStructure} in PDB format.
      *
-     * @param structure The structure to be written.
+     * @param structure The {@link OakStructure} to be written.
      * @param outputPath The output {@link Path}.
      * @throws IOException If the path cannot be written.
      */
@@ -67,6 +70,51 @@ public class StructureWriter {
         logger.info("Writing structure {} to {}.", structure, outputPath);
         Files.createDirectories(outputPath.getParent());
         Files.write(outputPath, StructureRepresentation.composePdbRepresentation(structure).getBytes());
+    }
+
+    /**
+     * Writes a {@link OakStructure} in MMTF format.
+     *
+     * @param structure The {@link OakStructure} to be written.
+     * @param outputPath The output {@link Path}.
+     * @throws IOException If the path cannot be written.
+     */
+    public static void writeMMTFStructure(OakStructure structure, Path outputPath) throws IOException {
+        AdapterToStructureData structureAdapterInterface = new AdapterToStructureData();
+        // init structure
+        structureAdapterInterface.initStructure(0, structure.getAllAtoms().size(),
+                structure.getAllLeafSubstructures().size(),
+                structure.getAllChains().size(),
+                structure.getAllModels().size(),
+                structure.getPdbIdentifier().toLowerCase());
+        structureAdapterInterface.setMmtfProducer("SiNGA");
+        // handle all models
+        List<Model> allModels = structure.getAllModels();
+        for (int i = 0; i < allModels.size(); i++) {
+            Model model = allModels.get(i);
+            List<Chain> allChains = model.getAllChains();
+            structureAdapterInterface.setModelInfo(i, allChains.size());
+            // handle all chains
+            for (Chain chain : allChains) {
+                List<LeafSubstructure<?>> leafSubstructures = chain.getAllLeafSubstructures();
+                // TODO here we presumably need a mapping between "real" chain names and internal IDs as first argument
+                structureAdapterInterface.setChainInfo(chain.getChainIdentifier(), chain.getChainIdentifier(), leafSubstructures.size());
+                for (int j = 0; j < leafSubstructures.size(); j++) {
+                    LeafSubstructure<?> leafSubstructure = leafSubstructures.get(j);
+                    List<Atom> atoms = leafSubstructure.getAllAtoms();
+                    char insertionCode = leafSubstructure.getInsertionCode();
+                    if (insertionCode == '\u0000') {
+                        insertionCode = MmtfStructure.UNAVAILABLE_CHAR_VALUE;
+                    }
+                    StructuralFamily family = leafSubstructure.getFamily();
+                    char oneLetterCode = family.getOneLetterCode().charAt(0);
+                    // TODO correct vocabulary has to be found for polymerType
+                    // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
+                    // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
+                    structureAdapterInterface.setGroupInfo(family.getThreeLetterCode().toUpperCase(), leafSubstructure.getSerial(), insertionCode, "L-peptide linking", leafSubstructure.getAllAtoms().size(), 0, oneLetterCode, leafSubstructure.getSerial(), -1);
+                }
+            }
+        }
     }
 
 
