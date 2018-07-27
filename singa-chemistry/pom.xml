@@ -7,19 +7,19 @@
     <parent>
         <artifactId>singa-all</artifactId>
         <groupId>bio.singa</groupId>
-        <version>0.4.0</version>
+        <version>0.4.1</version>
         <relativePath>../singa-all/pom.xml</relativePath>
     </parent>
 
     <artifactId>singa-chemistry</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>bio.singa</groupId>
             <artifactId>singa-structure</artifactId>
-            <version>0.4.0</version>
+            <version>0.4.1</version>
         </dependency>
     </dependencies>
 

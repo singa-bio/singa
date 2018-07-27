@@ -43,13 +43,16 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      *
      * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
+     * @param graph The graph where to find the path.
      * @param <VectorType> The type of the position of the node.
      * @param <NodeType> The type of the node.
      * @param <IdentifierType> The type of the identifier.
+     * @param <GraphType> The type of the graph.
+     * @param <EdgeType> The type of the edge.
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
-            EdgeType extends Edge<NodeType>, VectorType extends bio.singa.mathematics.vectors.Vector, IdentifierType,
+            EdgeType extends Edge<NodeType>, VectorType extends Vector, IdentifierType,
             GraphType extends Graph<NodeType, EdgeType, IdentifierType>> GraphPath<NodeType, EdgeType> findBasedOnPredicate(GraphType graph, NodeType sourceNode, Predicate<NodeType> targetPredicate) {
         ShortestPathFinder<NodeType, EdgeType, VectorType, IdentifierType, GraphType> pathfinder = new ShortestPathFinder<>(graph, sourceNode);
         // processes
@@ -70,12 +73,15 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
      * target predicate. Additionally all nodes on the path to the target predicate have to fulfill the track predicate.
      * If no path can be found null is returned.
      *
+     * @param graph The graph where to find the path.
      * @param sourceNode The source node.
      * @param targetPredicate The predicate the target has to fulfill.
      * @param trackPredicate The predicate all nodes on the path have to fulfill.
      * @param <VectorType> The type of the position of the node.
      * @param <NodeType> The type of the node.
      * @param <IdentifierType> The type of the identifier.
+     * @param <EdgeType> The type of the edge.
+     * @param <GraphType> The type of the graph.
      * @return The shortest path.
      */
     public static <NodeType extends Node<NodeType, VectorType, IdentifierType>,
@@ -151,7 +157,7 @@ public class ShortestPathFinder<NodeType extends Node<NodeType, VectorType, Iden
             if ((edge = graph.getEdgeBetween(current, next)).isPresent()) {
                 path.addEdge(edge.get());
             } else {
-                throw new IllegalStateException("Unable to determine edge between "+current+" and "+next+".");
+                throw new IllegalStateException("Unable to determine edge between " + current + " and " + next + ".");
             }
             current = next;
         }

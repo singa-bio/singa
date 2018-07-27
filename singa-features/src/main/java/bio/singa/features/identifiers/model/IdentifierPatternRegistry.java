@@ -52,6 +52,7 @@ public class IdentifierPatternRegistry {
      *
      * @param identifierClass The target identifier class the identifier should be checked against.
      * @param identifier The identifier to check.
+     * @param <IdentifierType> The type of the identifier.
      * @return True, if the identifier is valid.
      */
     public static <IdentifierType extends Identifier> boolean check(Class<IdentifierType> identifierClass, Identifier identifier) {
@@ -61,7 +62,9 @@ public class IdentifierPatternRegistry {
     /**
      * Searches a valid identifier in a collection of identifiers and returns it.
      *
+     * @param identifierClass The target identifier class the identifier should be checked against.
      * @param identifiers A collection of identifiers.
+     * @param <IdentifierType> The type of the identifier.
      * @return The first identifier matching the pattern or an empty optional if no identifier could be found.
      */
     public static <IdentifierType extends Identifier> Optional<IdentifierType> find(Class<IdentifierType> identifierClass, Collection<Identifier> identifiers) {
@@ -90,6 +93,10 @@ public class IdentifierPatternRegistry {
         return Optional.empty();
     }
 
+    private static boolean check(Pattern pattern, Identifier identifier) {
+        return pattern.matcher(identifier.toString()).matches();
+    }
+
     private <IdentifierType extends Identifier> Pattern getPattern(Class<IdentifierType> identifierClass) {
         Pattern pattern = getInstance().identifierPatternRegistry.get(identifierClass);
         if (pattern == null) {
@@ -98,10 +105,6 @@ public class IdentifierPatternRegistry {
                     " a pattern.");
         }
         return pattern;
-    }
-
-    private static boolean check(Pattern pattern, Identifier identifier) {
-        return pattern.matcher(identifier.toString()).matches();
     }
 
 
