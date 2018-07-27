@@ -177,35 +177,38 @@ public class Fit3DAlignment implements Fit3D {
     private void mapIdentifiers() {
         if (mapUniProtIdentifiers || mapPfamIdentifiers || mapEcNumbers) {
             logger.debug("mapping identifiers for matches: UniProt: {}, Pfam: {}, EC: {}", mapUniProtIdentifiers, mapPfamIdentifiers, mapEcNumbers);
-            matches.forEach(match -> {
-                String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getPdbIdentifier();
-                List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
-                        .map(LeafSubstructure::getChainIdentifier)
-                        .distinct()
-                        .collect(Collectors.toList());
-                Map<String, UniProtIdentifier> uniProtIdentifiers;
-                if (mapUniProtIdentifiers) {
-                    uniProtIdentifiers = PDBUniProtMapper.map(pdbIdentifier);
-                    uniProtIdentifiers.keySet().retainAll(chainIdentifiers);
-                    if (!uniProtIdentifiers.isEmpty()) {
-                        match.setUniProtIdentifiers(uniProtIdentifiers);
-                    }
-                }
-                if (mapPfamIdentifiers) {
-                    Map<String, PfamIdentifier> pfamIdentifiers = PDBPfamMapper.map(pdbIdentifier);
-                    pfamIdentifiers.keySet().retainAll(chainIdentifiers);
-                    if (!pfamIdentifiers.isEmpty()) {
-                        match.setPfamIdentifiers(pfamIdentifiers);
-                    }
-                }
-                if (mapEcNumbers) {
-                    Map<String, ECNumber> ecNumbers = PDBEnzymeMapper.map(pdbIdentifier);
-                    ecNumbers.keySet().retainAll(chainIdentifiers);
-                    if (!ecNumbers.isEmpty()) {
-                        match.setEcNumbers(ecNumbers);
-                    }
-                }
-            });
+            matches.stream()
+                    // filter hollow matches which are used for p-value calculation
+                    .filter(match -> match.getSubstructureSuperimposition() != null)
+                    .forEach(match -> {
+                        String pdbIdentifier = match.getSubstructureSuperimposition().getCandidate().get(0).getPdbIdentifier();
+                        List<String> chainIdentifiers = match.getSubstructureSuperimposition().getCandidate().stream()
+                                .map(LeafSubstructure::getChainIdentifier)
+                                .distinct()
+                                .collect(Collectors.toList());
+                        Map<String, UniProtIdentifier> uniProtIdentifiers;
+                        if (mapUniProtIdentifiers) {
+                            uniProtIdentifiers = PDBUniProtMapper.map(pdbIdentifier);
+                            uniProtIdentifiers.keySet().retainAll(chainIdentifiers);
+                            if (!uniProtIdentifiers.isEmpty()) {
+                                match.setUniProtIdentifiers(uniProtIdentifiers);
+                            }
+                        }
+                        if (mapPfamIdentifiers) {
+                            Map<String, PfamIdentifier> pfamIdentifiers = PDBPfamMapper.map(pdbIdentifier);
+                            pfamIdentifiers.keySet().retainAll(chainIdentifiers);
+                            if (!pfamIdentifiers.isEmpty()) {
+                                match.setPfamIdentifiers(pfamIdentifiers);
+                            }
+                        }
+                        if (mapEcNumbers) {
+                            Map<String, ECNumber> ecNumbers = PDBEnzymeMapper.map(pdbIdentifier);
+                            ecNumbers.keySet().retainAll(chainIdentifiers);
+                            if (!ecNumbers.isEmpty()) {
+                                match.setEcNumbers(ecNumbers);
+                            }
+                        }
+                    });
             // annotate title if original target was a structure
             if (target instanceof Structure) {
                 matches.forEach(match -> match.setStructureTitle(((Structure) target).getTitle()));
