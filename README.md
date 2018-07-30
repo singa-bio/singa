@@ -10,7 +10,7 @@ SiNGA (**Si**mulation of **N**atural Systems using **G**raph **A**utomata) is an
 Many aspects of the API are under development. API changes are frequent, never the less we try to keep them minimal.
 
 ## Quick start
-SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/de.bioforscher.singa). Simply add the desired modules to your ```pom.xml```:
+SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/bio.singa). Simply add the desired modules to your ```pom.xml```:
 
 ```xml
 <dependencies>
