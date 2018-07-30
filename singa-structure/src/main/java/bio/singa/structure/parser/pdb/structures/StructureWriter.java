@@ -6,6 +6,7 @@ import bio.singa.structure.model.interfaces.*;
 import bio.singa.structure.model.oak.*;
 import org.rcsb.mmtf.dataholders.MmtfStructure;
 import org.rcsb.mmtf.encoder.AdapterToStructureData;
+import org.rcsb.mmtf.encoder.WriterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +89,11 @@ public class StructureWriter {
                 structure.getAllModels().size(),
                 structure.getPdbIdentifier().toLowerCase());
         structureAdapterInterface.setMmtfProducer("SiNGA");
+
+        // TODO currently we do not consider header information
+        // add header information
+        structureAdapterInterface.setHeaderInfo(0.0F, 0.0F, 0.0F, structure.getTitle(), "yyyy/mm/dd", "yyyy/mm/dd", new String[]{"xtal"});
+
         // handle all models
         List<Model> allModels = structure.getAllModels();
         for (int i = 0; i < allModels.size(); i++) {
@@ -112,9 +118,19 @@ public class StructureWriter {
                     // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
                     // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
                     structureAdapterInterface.setGroupInfo(family.getThreeLetterCode().toUpperCase(), leafSubstructure.getSerial(), insertionCode, "L-peptide linking", leafSubstructure.getAllAtoms().size(), 0, oneLetterCode, leafSubstructure.getSerial(), -1);
+                    for (Atom atom : atoms) {
+                        // TODO currently alternate location, occupancy, and B-factor are ignored
+                        structureAdapterInterface.setAtomInfo(atom.getAtomName(), atom.getAtomIdentifier(), MmtfStructure.UNAVAILABLE_CHAR_VALUE,
+                                ((float) atom.getPosition().getX()), ((float) atom.getPosition().getY()), ((float) atom.getPosition().getZ()),
+                                1.0F, 0.0F, atom.getElement().getSymbol().toUpperCase(), atom.getElement().getCharge());
+                        // TODO here we should add bonds
+                        // addBonds(atom, atoms, allAtoms);
+                    }
                 }
             }
         }
+        structureAdapterInterface.finalizeStructure();
+        WriterUtils.writeDataToFile(structureAdapterInterface, outputPath);
     }
 
 
