@@ -144,7 +144,7 @@ public class Vectors {
      * @param vectors A collection of Vectors.
      * @return The maximal value of the given index.
      */
-    public static double getMaximalValueForIndex(int index, Vector... vectors) {
+    public static double getMaximalValueForIndex(int index, List<? extends Vector> vectors) {
         double maximalValue = -Double.MAX_VALUE;
         for (Vector vector : vectors) {
             if (vector.getElement(index) > maximalValue) {
@@ -161,7 +161,7 @@ public class Vectors {
      * @param vectors A collection of Vectors.
      * @return The minimal value of the given index.
      */
-    public static double getMinimalValueForIndex(int index, Vector... vectors) {
+    public static double getMinimalValueForIndex(int index, List<? extends Vector> vectors) {
         double minimalValue = Double.MAX_VALUE;
         for (Vector vector : vectors) {
             if (vector.getElement(index) < minimalValue) {

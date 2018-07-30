@@ -20,6 +20,14 @@ public class HexagonalCoordinate implements DiscreteCoordinate<HexagonalCoordina
         return r;
     }
 
+    public int getColumn() {
+        return q;
+    }
+
+    public int getRow() {
+        return r;
+    }
+
     @Override
     public HexagonalCoordinate getNeighbour(HexagonalDirection hexagonalDirection) {
         switch (hexagonalDirection) {

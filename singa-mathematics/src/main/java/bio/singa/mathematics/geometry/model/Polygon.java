@@ -21,21 +21,21 @@ public interface Polygon extends Polytope<Vector2D> {
 
     default List<LineSegment> getEdges() {
         List<LineSegment> segments = new ArrayList<>();
-        Vector2D[] vertices = getVertices();
-        if (vertices.length < 2) {
+        List<Vector2D> vertices = getVertices();
+        if (vertices.size() < 2) {
             return segments;
         }
-        for (int i = 1; i < vertices.length; i++) {
-            segments.add(new SimpleLineSegment(vertices[i - 1],vertices[i]));
+        for (int i = 1; i < vertices.size(); i++) {
+            segments.add(new SimpleLineSegment(vertices.get(i - 1), vertices.get(i)));
         }
-        segments.add(new SimpleLineSegment(vertices[vertices.length-1],vertices[0]));
+        segments.add(new SimpleLineSegment(vertices.get(vertices.size() - 1), vertices.get(0)));
         return segments;
     }
 
     default Set<Vector2D> getIntersections(Circle circle) {
         Set<Vector2D> intersections = new HashSet<>();
         for (LineSegment lineSegment : getEdges()) {
-            intersections.addAll(lineSegment.intersectionsWith(circle));
+            intersections.addAll(lineSegment.getIntersectionWith(circle));
         }
         return intersections;
     }
@@ -43,9 +43,20 @@ public interface Polygon extends Polytope<Vector2D> {
     default Set<Vector2D> getIntersections(LineSegment lineSegment) {
         Set<Vector2D> intersections = new HashSet<>();
         for (LineSegment polygonSegment : getEdges()) {
-            intersections.addAll(polygonSegment.intersectionsWith(lineSegment));
+            polygonSegment.getIntersectionWith(lineSegment).ifPresent(intersections::add);
         }
         return intersections;
+    }
+
+    default Vector2D getCentroid() {
+        List<Vector2D> vertices = getVertices();
+        int vectorCount = vertices.size();
+        double[] sum = new double[2];
+        for (Vector2D vector : vertices) {
+            sum[0] += vector.getX();
+            sum[1] += vector.getY();
+        }
+        return new Vector2D(sum[0] / vectorCount, sum[1] / vectorCount);
     }
 
     /**
@@ -61,20 +72,7 @@ public interface Polygon extends Polytope<Vector2D> {
      * if the point is inside of the cell
      */
     default int evaluatePointPosition(Vector2D point) {
-        // Since all polygons of a Voronoi diagram are convex, the following solution applies:
-        // http://paulbourke.net/geometry/polygonmesh/
-        // Solution 3 (2D):
-        //   "If the polygon is convex then one can consider the polygon
-        //   "as a 'path' from the first vertex. A point is on the interior
-        //   "of this polygons if it is always on the same side of all the
-        //   "line segments making up the path. ...
-        //   "(y - y0) (x1 - x0) - (x - x0) (y1 - y0)
-        //   "if it is less than 0 then P is to the right of the line segment,
-        //   "if greater than 0 it is to the left, if equal to 0 then it lies
-        //   "on the line segment"
         for (LineSegment lineSegment : getEdges()) {
-            // FIXME this relies on the ordering of the line segments
-            // voronoi segemnts are ordered in reverse
             Vector2D first = lineSegment.getEndingPoint();
             Vector2D second = lineSegment.getStartingPoint();
             double r = (point.getY() - first.getY()) * (second.getX() - first.getX()) - (point.getX() - first.getX()) * (second.getY() - first.getY());
@@ -89,4 +87,9 @@ public interface Polygon extends Polytope<Vector2D> {
     }
 
 
+    Polygon getCopy();
+
+    void scale(double scalingFactor);
+
+    void reduce(int times);
 }

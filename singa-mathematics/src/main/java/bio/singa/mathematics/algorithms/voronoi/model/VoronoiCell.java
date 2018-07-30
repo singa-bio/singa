@@ -191,7 +191,7 @@ public class VoronoiCell implements Polygon {
             y += (startPoint.getY() + endPoint.getY()) * v;
         }
         double m = getArea() * 6.0;
-        return new Vector2D(x/m, y/m);
+        return new Vector2D(x / m, y / m);
     }
 
     public double getArea() {
@@ -206,10 +206,10 @@ public class VoronoiCell implements Polygon {
     }
 
     @Override
-    public Vector2D[] getVertices() {
-        Vector2D[] vertices = new Vector2D[halfEdges.size()];
-        for (int index = 0; index < halfEdges.size(); index++) {
-            vertices[index] = halfEdges.get(index).getStartPoint();
+    public List<Vector2D> getVertices() {
+        List<Vector2D> vertices = new ArrayList<>();
+        for (VoronoiHalfEdge halfEdge : halfEdges) {
+            vertices.add(halfEdge.getStartPoint());
         }
         return vertices;
     }
@@ -222,6 +222,21 @@ public class VoronoiCell implements Polygon {
     @Override
     public List<LineSegment> getEdges() {
         return halfEdges.stream().map(VoronoiHalfEdge::getEdge).collect(Collectors.toList());
+    }
+
+    @Override
+    public void scale(double scalingFactor) {
+
+    }
+
+    @Override
+    public void reduce(int times) {
+
+    }
+
+    @Override
+    public Polygon getCopy() {
+        return null;
     }
 
     @Override

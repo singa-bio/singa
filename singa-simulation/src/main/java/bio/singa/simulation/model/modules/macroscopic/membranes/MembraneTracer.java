@@ -1,9 +1,11 @@
 package bio.singa.simulation.model.modules.macroscopic.membranes;
 
+import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
-import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
+import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -32,10 +34,9 @@ public class MembraneTracer {
     private Deque<AutomatonNode> queue;
     private List<AutomatonNode> unprocessedNodes;
 
-    public static Membrane membraneToRegion(Organelle organelle,  AutomatonGraph graph) {
+    public static Membrane membraneToRegion(Organelle organelle, AutomatonGraph graph, Rectangle simulationExtend) {
         Membrane membrane = new Membrane(organelle.getMembraneRegion().getIdentifier(), organelle.getMembraneRegion());
-        LineSegmentPolygon organellePolygon = organelle.getPolygon();
-
+        Polygon organellePolygon = organelle.getPolygon();
 
         // determine membrane cells
         for (LineSegment lineSegment : organellePolygon.getEdges()) {
@@ -78,7 +79,6 @@ public class MembraneTracer {
             // therefore check if all segments of the representative region are inside
             boolean allPointsAreIside = true;
             for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
-                // FIXME potentially not save for organelles with invagination
                 if (organellePolygon.evaluatePointPosition(vector) == OUTSIDE) {
                     allPointsAreIside = false;
                     break;
@@ -93,6 +93,40 @@ public class MembraneTracer {
             }
         }
 
+
+        for (AutomatonNode automatonNode : graph.getNodes()) {
+            if (automatonNode.getCellRegion().equals(organelle.getMembraneRegion())) {
+
+                // inner
+                Polygon nodePolygon = automatonNode.getSpatialRepresentation();
+                Polygon innerPolygon = SutherandHodgmanClipping.clip(organellePolygon, nodePolygon);
+                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), innerPolygon);
+                // outer
+                List<Vector2D> outerVectors = new ArrayList<>();
+                List<Vector2D> insideNode = new ArrayList<>();
+                for (Vector2D polygonVertex : innerPolygon.getVertices()) {
+                    boolean differentToAll = true;
+                    for (Vector2D nodeVertex : nodePolygon.getVertices()) {
+                        if (polygonVertex.isSimilarTo(nodeVertex, 1e-6)) {
+                            insideNode.add(nodeVertex);
+                            differentToAll = false;
+                        }
+                    }
+                    if (differentToAll) {
+                        outerVectors.add(polygonVertex);
+                    }
+                }
+
+
+                for (Vector2D nodeVertex : nodePolygon.getVertices()) {
+                    if (!insideNode.contains(nodeVertex)) {
+                        outerVectors.add(nodeVertex);
+                    }
+                }
+                // FIXME some subsections are not calculated correctly
+                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getOuterSubsection(), new VertexPolygon(outerVectors));
+            }
+        }
         return membrane;
     }
 

@@ -31,13 +31,15 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private ConcentrationDeltaManager updateManager;
     private Polygon spatialRepresentation;
     private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
-    private Set<MembraneSegment> membraneSegments;
+    private Map<CellSubsection, Polygon> subsectionRepresentations;
+    private List<MembraneSegment> membraneSegments;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         setPosition(new Vector2D());
         microtubuleSegments = new HashMap<>();
-        membraneSegments = new HashSet<>();
+        subsectionRepresentations = new HashMap<>();
+        membraneSegments = new ArrayList<>();
         cellRegion = CellRegion.CYTOSOL_A;
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
@@ -45,7 +47,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public AutomatonNode(int column, int row) {
         this(new RectangularCoordinate(column, row));
     }
-
 
     /**
      * Returns the concentration of the given chemical entity in the given compartment.
@@ -59,6 +60,9 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         return updateManager.getConcentrationContainer().get(section, entity);
     }
 
+    public Map<CellSubsection, Polygon> getSubsectionRepresentations() {
+        return subsectionRepresentations;
+    }
 
     /**
      * Adds a potential delta to this node.
@@ -153,7 +157,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     @Override
     public String getStringIdentifier() {
-        return "Node "+getIdentifier().toString();
+        return "Node " + getIdentifier().toString();
     }
 
     /**
@@ -201,7 +205,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         microtubuleSegments.get(filament).add(segment);
     }
 
-    public Set<MembraneSegment> getMembraneSegments() {
+    public List<MembraneSegment> getMembraneSegments() {
         return membraneSegments;
     }
 
@@ -209,9 +213,13 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         membraneSegments.add(segment);
     }
 
+    public void addSubsectionRepresentation(CellSubsection subsection, Polygon representation) {
+        subsectionRepresentations.put(subsection, representation);
+    }
+
     @Override
     public String toString() {
-        return "Node "+getIdentifier()+" ("+cellRegion+")";
+        return "Node " + getIdentifier() + " (" + cellRegion + ")";
     }
 
     @Override

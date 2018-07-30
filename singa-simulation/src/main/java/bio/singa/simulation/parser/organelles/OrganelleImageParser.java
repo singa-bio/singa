@@ -4,7 +4,8 @@ import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
-import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
+import bio.singa.mathematics.geometry.faces.VertexPolygon;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.Matrices;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
 import bio.singa.mathematics.vectors.Vector2D;
@@ -37,10 +38,10 @@ public class OrganelleImageParser {
     private List<Vector2D> scalePixels;
     private List<Vector2D> templatePixels;
 
-    private LineSegmentPolygon lineSegmentPolygon;
+    private Polygon lineSegmentPolygon;
     private Quantity<Length> scale;
 
-    public static Map.Entry<LineSegmentPolygon, Quantity<Length>> getPolygonTemplate(String resourceLocation) {
+    public static Map.Entry<Polygon, Quantity<Length>> getPolygonTemplate(String resourceLocation) {
         // get image
         // String resourceLocation = "organelle_templates/" + organelles.name().toLowerCase() + ".png";
         InputStream resource = Resources.getResourceAsStream(resourceLocation);
@@ -66,8 +67,7 @@ public class OrganelleImageParser {
 
     private void createTrace() {
         List<Vector2D> vectors = convertToVectors(templateImage);
-        List<LineSegment> segments = connect(vectors);
-        lineSegmentPolygon = new LineSegmentPolygon(segments);
+        lineSegmentPolygon = new VertexPolygon(vectors);
     }
 
     private List<Vector2D> convertToVectors(BufferedImage image) {

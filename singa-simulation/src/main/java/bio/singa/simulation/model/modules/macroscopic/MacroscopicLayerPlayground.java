@@ -29,6 +29,7 @@ import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneTracer;
 import bio.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
 import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
 import bio.singa.simulation.model.modules.macroscopic.organelles.OrganelleTypes;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -46,6 +47,7 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -211,11 +213,14 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // TODO add cell membrane and nuclear membrane
         Organelle cell = OrganelleTypes.CELL.create();
         Organelle nucleus = OrganelleTypes.NUCLEUS.create();
+        // initialize extracellular space as default
+        for (AutomatonNode automatonNode : graph.getNodes()) {
+            automatonNode.setCellRegion(OrganelleTypes.Constants.extracellularRegionRegion);
+        }
 
-
-        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
+        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph, rectangle);
         membraneLayer.addMembrane(cellMembrane);
-        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph);
+        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph, rectangle);
         membraneLayer.addMembrane(nuclearMembrane);
 
         // TODO set inner sections to be inner (all points of graphical representations are inside)
@@ -246,7 +251,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // simulation.nextEpoch();
+                simulation.nextEpoch();
                 System.out.println(simulation.getElapsedTime().to(SECOND));
                 render();
             }
@@ -265,7 +270,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         for (AutomatonNode node : graph.getNodes()) {
             Polygon polygon = node.getSpatialRepresentation();
             // http://colorbrewer2.org/?type=diverging&scheme=PRGn&n=7
-            // todo define some better color handling
+            // TODO define some better color handling
             switch (node.getCellRegion().getIdentifier()) {
                 case "extracellular region":
                     getGraphicsContext().setFill(Color.color(231.0 / 256.0, 212.0 / 256.0, 232.0 / 256.0));
@@ -286,7 +291,34 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                     getGraphicsContext().setFill(Color.GRAY);
             }
             fillPolygon(polygon);
-            strokePolygon(polygon);
+
+            for (Map.Entry<CellSubsection, Polygon> entry : node.getSubsectionRepresentations().entrySet()) {
+                switch (entry.getKey().toString()) {
+                    case "extracellular region":
+                        getGraphicsContext().setFill(Color.color(231.0 / 256.0, 212.0 / 256.0, 232.0 / 256.0));
+                        break;
+                    case "cytoplasm":
+                        getGraphicsContext().setFill(Color.color(217.0 / 256.0, 240.0 / 256.0, 211.0 / 256.0));
+                        break;
+                    case "cell outer membrane":
+                        getGraphicsContext().setFill(Color.color(175.0 / 256.0, 141.0 / 256.0, 195.0 / 256.0));
+                        break;
+                    case "nuclear membrane":
+                        getGraphicsContext().setFill(Color.color(127.0 / 256.0, 191.0 / 256.0, 123.0 / 256.0));
+                        break;
+                    case "nucleoplasm":
+                        getGraphicsContext().setFill(Color.color(27.0 / 256.0, 120.0 / 256.0, 55.0 / 256.0));
+                        break;
+                    default:
+                        getGraphicsContext().setFill(Color.GRAY);
+                }
+                fillPolygon(entry.getValue());
+                // strokePolygon(entry.getValue());
+//                for (Vector2D vector2D : entry.getValue().getVertices()) {
+//                    strokeCircle(vector2D, 2);
+//                }
+            }
+
         }
         // draw membrane
         if (membraneLayer != null) {
@@ -295,6 +327,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 for (MembraneSegment segment : segments) {
                     getGraphicsContext().setLineWidth(1);
                     strokeLineSegment(segment);
+                    // strokeCircle(segment.getStartingPoint(), 2);
                 }
             }
         }
@@ -326,35 +359,36 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(3);
-        for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-            switch (skeletalFilament.getPlusEndBehaviour()) {
-                case GROW:
-                    getGraphicsContext().setStroke(Color.GREEN);
-                    break;
-                case STAGNANT:
-                    getGraphicsContext().setStroke(Color.BLACK);
-                    break;
-                case FOLLOW:
-                    getGraphicsContext().setStroke(Color.BLUE);
-                    break;
-            }
-            if (skeletalFilament.getSegments().size() > 1) {
-                Vector2D previous = skeletalFilament.getSegments().getLast();
-                Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
-                while (vector2DIterator.hasNext()) {
-                    Vector2D current = vector2DIterator.next();
-                    if (current != previous) {
-                        SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
-                        strokeLineSegment(lineSegment);
-                    }
-                    previous = current;
+        if (filamentLayer != null) {
+            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
+                switch (skeletalFilament.getPlusEndBehaviour()) {
+                    case GROW:
+                        getGraphicsContext().setStroke(Color.GREEN);
+                        break;
+                    case STAGNANT:
+                        getGraphicsContext().setStroke(Color.BLACK);
+                        break;
+                    case FOLLOW:
+                        getGraphicsContext().setStroke(Color.BLUE);
+                        break;
                 }
-            }
+                if (skeletalFilament.getSegments().size() > 1) {
+                    Vector2D previous = skeletalFilament.getSegments().getLast();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+                    while (vector2DIterator.hasNext()) {
+                        Vector2D current = vector2DIterator.next();
+                        if (current != previous) {
+                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
+                            strokeLineSegment(lineSegment);
+                        }
+                        previous = current;
+                    }
+                }
 //            getGraphicsContext().setStroke(Color.GRAY);
 //            getGraphicsContext().setLineWidth(1);
 //            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
 //                strokeStraight(node.getPosition(), skeletalFilament.getHead());
-//            }
+            }
         }
     }
 

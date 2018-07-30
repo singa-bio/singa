@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.macroscopic.organelles;
 
 import bio.singa.features.parameters.Environment;
-import bio.singa.mathematics.geometry.faces.LineSegmentPolygon;
+import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.simulation.model.sections.CellRegion;
 
 import javax.measure.Quantity;
@@ -15,9 +15,9 @@ public class Organelle {
     private final CellRegion internalRegion;
     private final CellRegion membraneRegion;
     private final Quantity<Length> scale;
-    private LineSegmentPolygon polygon;
+    private Polygon polygon;
 
-    public Organelle(CellRegion internalRegion, CellRegion membraneRegion, LineSegmentPolygon polygon, Quantity<Length> scale) {
+    public Organelle(CellRegion internalRegion, CellRegion membraneRegion, Polygon polygon, Quantity<Length> scale) {
         this.internalRegion = internalRegion;
         this.membraneRegion = membraneRegion;
         this.scale = scale;
@@ -38,7 +38,7 @@ public class Organelle {
         return membraneRegion;
     }
 
-    public LineSegmentPolygon getPolygon() {
+    public Polygon getPolygon() {
         return polygon;
     }
 }
