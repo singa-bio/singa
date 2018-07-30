@@ -225,6 +225,11 @@ public class VoronoiCell implements Polygon {
     }
 
     @Override
+    public void move(Vector2D targetLocation) {
+
+    }
+
+    @Override
     public void scale(double scalingFactor) {
 
     }

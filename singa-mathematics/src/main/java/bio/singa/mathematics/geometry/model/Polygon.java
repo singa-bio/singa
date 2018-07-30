@@ -89,6 +89,8 @@ public interface Polygon extends Polytope<Vector2D> {
 
     Polygon getCopy();
 
+    void move(Vector2D targetLocation);
+
     void scale(double scalingFactor);
 
     void reduce(int times);

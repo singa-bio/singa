@@ -5,7 +5,6 @@ import bio.singa.mathematics.algorithms.topology.FloodFill;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
-import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -38,6 +37,9 @@ public class MembraneTracer {
         Membrane membrane = new Membrane(organelle.getMembraneRegion().getIdentifier(), organelle.getMembraneRegion());
         Polygon organellePolygon = organelle.getPolygon();
 
+        // check if all segments are contained in a single node
+        boolean isContained = true;
+
         // determine membrane cells
         for (LineSegment lineSegment : organellePolygon.getEdges()) {
             Vector2D startingPoint = lineSegment.getStartingPoint();
@@ -48,21 +50,23 @@ public class MembraneTracer {
                 int startingPosition = spatialRepresentation.evaluatePointPosition(startingPoint);
                 int endingPosition = spatialRepresentation.evaluatePointPosition(endingPoint);
                 Set<Vector2D> intersections = spatialRepresentation.getIntersections(lineSegment);
-                if (startingPosition == INSIDE && endingPosition == INSIDE) {
+                if (startingPosition >= ON_LINE && endingPosition >= ON_LINE) {
                     // completely inside
                     membrane.addSegment(node, lineSegment);
                     node.setCellRegion(organelle.getMembraneRegion());
                     break;
-                } else if (startingPosition == INSIDE && endingPosition <= ON_LINE) {
+                } else if (startingPosition == INSIDE && endingPosition == OUTSIDE) {
                     // end outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
                     node.setCellRegion(organelle.getMembraneRegion());
-                } else if (startingPosition <= ON_LINE && endingPosition == INSIDE) {
+                    isContained = false;
+                } else if (startingPosition == OUTSIDE && endingPosition == INSIDE) {
                     // start outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
                     node.setCellRegion(organelle.getMembraneRegion());
+                    isContained = false;
                 } else if (intersections.size() == 2) {
                     // line only crosses the membrane
                     Iterator<Vector2D> iterator = intersections.iterator();
@@ -70,8 +74,15 @@ public class MembraneTracer {
                     Vector2D second = iterator.next();
                     membrane.addSegment(node, new SimpleLineSegment(first, second));
                     node.setCellRegion(organelle.getMembraneRegion());
+                    isContained = false;
                 }
             }
+        }
+
+        if (isContained) {
+            AutomatonNode containingNode = membrane.getSegments().iterator().next().getNode();
+            containingNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), organellePolygon);
+            return membrane;
         }
 
         // determine cell that is completely inside of the membrane as starting point
@@ -102,29 +113,29 @@ public class MembraneTracer {
                 Polygon innerPolygon = SutherandHodgmanClipping.clip(organellePolygon, nodePolygon);
                 automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), innerPolygon);
                 // outer
-                List<Vector2D> outerVectors = new ArrayList<>();
-                List<Vector2D> insideNode = new ArrayList<>();
-                for (Vector2D polygonVertex : innerPolygon.getVertices()) {
-                    boolean differentToAll = true;
-                    for (Vector2D nodeVertex : nodePolygon.getVertices()) {
-                        if (polygonVertex.isSimilarTo(nodeVertex, 1e-6)) {
-                            insideNode.add(nodeVertex);
-                            differentToAll = false;
-                        }
-                    }
-                    if (differentToAll) {
-                        outerVectors.add(polygonVertex);
-                    }
-                }
-
-
-                for (Vector2D nodeVertex : nodePolygon.getVertices()) {
-                    if (!insideNode.contains(nodeVertex)) {
-                        outerVectors.add(nodeVertex);
-                    }
-                }
-                // FIXME some subsections are not calculated correctly
-                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getOuterSubsection(), new VertexPolygon(outerVectors));
+//                List<Vector2D> outerVectors = new ArrayList<>();
+//                List<Vector2D> insideNode = new ArrayList<>();
+//                for (Vector2D polygonVertex : innerPolygon.getVertices()) {
+//                    boolean differentToAll = true;
+//                    for (Vector2D nodeVertex : nodePolygon.getVertices()) {
+//                        if (polygonVertex.isSimilarTo(nodeVertex, 1e-6)) {
+//                            insideNode.add(nodeVertex);
+//                            differentToAll = false;
+//                        }
+//                    }
+//                    if (differentToAll) {
+//                        outerVectors.add(polygonVertex);
+//                    }
+//                }
+//
+//
+//                for (Vector2D nodeVertex : nodePolygon.getVertices()) {
+//                    if (!insideNode.contains(nodeVertex)) {
+//                        outerVectors.add(nodeVertex);
+//                    }
+//                }
+//                // FIXME some subsections are not calculated correctly
+//                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getOuterSubsection(), new VertexPolygon(outerVectors));
             }
         }
         return membrane;

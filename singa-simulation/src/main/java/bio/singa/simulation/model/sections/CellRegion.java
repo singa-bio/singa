@@ -58,6 +58,10 @@ public class CellRegion {
         return identifier;
     }
 
+    public GoTerm getGoTerm() {
+        return goTerm;
+    }
+
     public void addSubSection(CellTopology topology, CellSubsection subsection) {
         cellSubSections.put(topology, subsection);
     }

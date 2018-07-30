@@ -150,14 +150,14 @@ public class VertexPolygon implements Polygon {
         vertices = reducedVectors;
     }
 
-    public void moveCentreTo(Vector2D newCentre) {
-        Vector2D displacement = newCentre.subtract(getCentroid());
+    public void move(Vector2D targetLocation) {
+        Vector2D displacement = targetLocation.subtract(getCentroid());
         List<Vector2D> reducedVectors = new ArrayList<>();
         for (Vector2D vertex : vertices) {
             reducedVectors.add(vertex.add(displacement));
         }
         vertices = reducedVectors;
-        centre = newCentre;
+        centre = targetLocation;
     }
 
 
