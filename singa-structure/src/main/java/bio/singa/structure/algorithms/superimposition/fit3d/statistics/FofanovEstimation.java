@@ -189,7 +189,7 @@ public class FofanovEstimation implements StatisticalModel {
     private void createTemporaryDirectory() throws IOException {
         temporaryDirectoryPath = Files.createTempDirectory("fit3d_");
         rmsdValuesPath = temporaryDirectoryPath.resolve("rmsd.csv");
-        InputStream resourceAsStream = Resources.getResourceAsStream("bio.singa/structure/algorithms/superimposition/fit3d/statistics/statistics/fofanov.R");
+        InputStream resourceAsStream = Resources.getResourceAsStream("bio/singa/structure/algorithms/superimposition/fit3d/statistics/fofanov.R");
         scriptPath = temporaryDirectoryPath.resolve("fofanov.R");
         Files.copy(resourceAsStream, scriptPath);
         logger.debug("script fofanov.R copied to {}", scriptPath);

@@ -81,7 +81,6 @@ public class AffinityAlignment {
 
         // calculate initial alignments
         calculateInitialAlignments();
-        determineSelfSimilarity();
         computeClustering();
         // align within clusters if specified
         if (builder.alignWithinClusters) {
@@ -139,17 +138,12 @@ public class AffinityAlignment {
         }
     }
 
-    private void determineSelfSimilarity() {
-        selfDissimilarity = Vectors.getMedian(new RegularVector(distanceMatrix.streamElements().toArray()));
-        logger.info("self-dissimilarity of input structures (median of RMSD values) is {}", selfDissimilarity);
-    }
-
     private void computeClustering() {
         AffinityPropagation<StructuralMotif> affinityPropagation = AffinityPropagation.<StructuralMotif>create()
                 .dataPoints(input)
                 .matrix(distanceMatrix)
                 .isDistance(true)
-                .selfSimilarity(selfDissimilarity)
+                .selfSimilarityByMedian()
                 .maximalEpochs(MAXIMAL_EPOCHS)
                 .lambda(LAMBDA)
                 .run();
