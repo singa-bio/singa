@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
@@ -17,6 +18,7 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Area;
 import java.util.*;
 
 /**
@@ -31,8 +33,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private ConcentrationDeltaManager updateManager;
     private Polygon spatialRepresentation;
     private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
-    private Map<CellSubsection, Polygon> subsectionRepresentations;
     private List<MembraneSegment> membraneSegments;
+    private Map<CellSubsection, Polygon> subsectionRepresentations;
+
+    private Quantity<Area> membraneArea;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
@@ -211,6 +215,19 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public void addMembraneSegment(MembraneSegment segment) {
         membraneSegments.add(segment);
+    }
+
+    public Quantity<Area> getMembraneArea() {
+        if (membraneArea == null) {
+            double totalLength = 0.0;
+            for (MembraneSegment membraneSegment : membraneSegments) {
+                totalLength += membraneSegment.getSegment().getLength();
+            }
+            membraneArea = Environment.convertSimulationToSystemScale(totalLength)
+                    .multiply(Environment.getNodeDistance())
+                    .asType(Area.class);
+        }
+        return membraneArea;
     }
 
     public void addSubsectionRepresentation(CellSubsection subsection, Polygon representation) {

@@ -2,6 +2,8 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
+import bio.singa.features.model.Feature;
+import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -9,6 +11,8 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.EntityDeltaFunction;
+import bio.singa.simulation.model.modules.concentration.scope.DependentUpdate;
+import bio.singa.simulation.model.modules.concentration.specifity.EntitySpecific;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -18,6 +22,31 @@ import javax.measure.Quantity;
 import java.util.Collection;
 
 /**
+ * Diffusion is the fundamental force governing the random movement of molecules in cells. As a
+ * {@link ConcentrationBasedModule} it has the {@link DependentUpdate} scope and is {@link EntitySpecific}. The module
+ * is only applied for automaton nodes for the entities specified during the build process (via
+ * {@link DiffusionBuilder}). Diffusion is parametrized by the {@link Diffusivity} {@link Feature}, therefore
+ * Diffusivity must be assigned to each entity or a {@link FeatureProvider} will try to resolve it.
+ * Entities might be anchored to membranes ({@link ChemicalEntity#setMembraneAnchored(boolean)}), which permits
+ * diffusion to nodes with non membrane regions.
+ *
+ * <pre>
+ *  // define the feature to parametrize the diffusion
+ *  Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
+ *         FeatureOrigin.MANUALLY_ANNOTATED);
+ *
+ *  // assign it to the chemical entity
+ *  SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
+ *         .name("ammonia")
+ *         .assignFeature(diffusivity)
+ *         .build();
+ *
+ *  // create the module
+ *  Diffusion diffusion = Diffusion.inSimulation(simulation)
+ *         .identifier("ammonia diffusion")
+ *         .onlyFor(ammonia)
+ *         .build(); </pre>
+ *
  * @author cl
  */
 public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
@@ -26,7 +55,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return new DiffusionBuilder(simulation);
     }
 
-    public void initialize() {
+    private void initialize() {
         // apply
         setApplicationCondition(updatable -> updatable instanceof AutomatonNode);
         // function
@@ -83,7 +112,6 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        // System.out.println(delta);
         return new ConcentrationDelta(this, subsection, entity, Quantities.getQuantity(delta, Environment.getConcentrationUnit()));
     }
 

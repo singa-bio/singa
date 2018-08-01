@@ -218,18 +218,16 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // initialize cell membrane and nucleus
         Organelle cell = OrganelleTypes.CELL.create();
         Organelle nucleus = OrganelleTypes.NUCLEUS.create();
-        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph, rectangle);
+        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
         membraneLayer.addMembrane(cellMembrane);
-        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph, rectangle);
+        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph);
         membraneLayer.addMembrane(nuclearMembrane);
 
-        // initialize
+        // initialize endosome
         Organelle endosome = OrganelleTypes.EARLY_ENDOSOME.create();
         endosome.getPolygon().move(new Vector2D(200, 300));
-        Membrane endosomeMembrane = MembraneTracer.membraneToRegion(endosome, graph, rectangle);
+        Membrane endosomeMembrane = MembraneTracer.membraneToRegion(endosome, graph);
         membraneLayer.addMembrane(endosomeMembrane);
-
-        // TODO consider area of membranes in membrane diffusion
 
         // add left membrane to as endocytosis site
         List<Membrane> membranes = membraneLayer.getMembranes();
@@ -302,7 +300,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw moving vesicles
         getGraphicsContext().setFill(Color.BLUE);
@@ -310,7 +307,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw fusing vesicles
         getGraphicsContext().setFill(Color.RED);
@@ -318,24 +314,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
-        getGraphicsContext().setLineWidth(3);
         if (filamentLayer != null) {
             for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-                switch (skeletalFilament.getPlusEndBehaviour()) {
-                    case GROW:
-                        getGraphicsContext().setStroke(Color.GREEN);
-                        break;
-                    case STAGNANT:
-                        getGraphicsContext().setStroke(Color.BLACK);
-                        break;
-                    case FOLLOW:
-                        getGraphicsContext().setStroke(Color.BLUE);
-                        break;
-                }
                 if (skeletalFilament.getSegments().size() > 1) {
                     Vector2D previous = skeletalFilament.getSegments().getLast();
                     Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
@@ -348,10 +331,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                         previous = current;
                     }
                 }
-//            getGraphicsContext().setStroke(Color.GRAY);
-//            getGraphicsContext().setLineWidth(1);
-//            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
-//                strokeStraight(node.getPosition(), skeletalFilament.getHead());
             }
         }
     }

@@ -4,7 +4,6 @@ import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
-import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -33,7 +32,7 @@ public class MembraneTracer {
     private Deque<AutomatonNode> queue;
     private List<AutomatonNode> unprocessedNodes;
 
-    public static Membrane membraneToRegion(Organelle organelle, AutomatonGraph graph, Rectangle simulationExtend) {
+    public static Membrane membraneToRegion(Organelle organelle, AutomatonGraph graph) {
         Membrane membrane = new Membrane(organelle.getMembraneRegion().getIdentifier(), organelle.getMembraneRegion());
         Polygon organellePolygon = organelle.getPolygon();
 

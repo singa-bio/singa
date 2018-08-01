@@ -12,6 +12,8 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
+import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
+import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -32,6 +34,9 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
  * <b>binder topology</b>, resulting in a <b>complex</b> in the <b>binder topology</b>.<br>
  * The speed of the reaction is guided by any {@link ForwardsRateConstant} that determines the speed of the association
  * reaction and a {@link BackwardsRateConstant} the determines the speed of the dissociation of the complex.
+ *
+ * Complex building reactions are {@link UpdatableSpecific}, {@link IndependentUpdate}s.
+ *
  * <pre>
  *  // From: Lauffenburger, Douglas A., and Jennifer J. Linderman.
  *  //       Receptors: models for binding, trafficking, and signaling. Oxford University Press, 1996.
@@ -69,8 +74,7 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
  *      .in(OUTER)
  *      .by(receptor, backwardsRate)
  *      .to(MEMBRANE)
- *      .build();
- * </pre>
+ *      .build(); </pre>
  *
  * @author cl
  */
