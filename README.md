@@ -1,6 +1,6 @@
 <img src="singa_logo_text.png" height="125"/>
 
-[![Build Status](https://travis-ci.org/cleberecht/singa.svg?branch=master)](https://travis-ci.org/cleberecht/singa)
+[![Build Status](https://travis-ci.org/singa-bio/singa.svg?branch=master)](https://travis-ci.org/singa-bio/singa)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 [![MMTF support](https://img.shields.io/badge/MMTF-supported-blue.svg)](https://mmtf.rcsb.org/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1320146.svg)](https://doi.org/10.5281/zenodo.1320146)
