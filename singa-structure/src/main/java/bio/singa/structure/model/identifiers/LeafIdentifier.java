@@ -34,7 +34,7 @@ public class LeafIdentifier implements Comparable<LeafIdentifier> {
     public LeafIdentifier(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int serial, char insertionCode) {
         this.pdbIdentifer = pdbIdentifer.toLowerCase();
         this.modelIdentifer = modelIdentifer;
-        this.chainIdentifer = chainIdentifer.toUpperCase();
+        this.chainIdentifer = chainIdentifer;
         this.serial = serial;
         this.insertionCode = insertionCode;
     }
