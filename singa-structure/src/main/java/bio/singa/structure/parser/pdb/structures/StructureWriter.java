@@ -130,6 +130,7 @@ public class StructureWriter {
             }
         }
         structureAdapterInterface.finalizeStructure();
+        Files.createDirectories(outputPath.getParent());
         WriterUtils.writeDataToFile(structureAdapterInterface, outputPath);
     }
 
