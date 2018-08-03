@@ -17,7 +17,7 @@ public class UniqueAtomIdentifer implements Comparable<UniqueAtomIdentifer> {
     public UniqueAtomIdentifer(String pdbIdentifer, int modelIdentifer, String chainIdentifer, int leafSerial, char leafInsertionCode, int atomSerial) {
         this.pdbIdentifer = pdbIdentifer.toUpperCase();
         this.modelIdentifer = modelIdentifer;
-        this.chainIdentifer = chainIdentifer.toUpperCase();
+        this.chainIdentifer = chainIdentifer;
         this.leafSerial = leafSerial;
         this.leafInsertionCode = leafInsertionCode;
         this.atomSerial = atomSerial;
