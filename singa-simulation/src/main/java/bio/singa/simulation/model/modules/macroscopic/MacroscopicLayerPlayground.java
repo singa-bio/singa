@@ -7,13 +7,11 @@ import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
-import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
-import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.endocytosis.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -30,9 +28,9 @@ import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
 import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneTracer;
 import bio.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
 import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
-import bio.singa.simulation.model.sections.CellRegion;
-import bio.singa.simulation.model.sections.CellSubsection;
-import bio.singa.simulation.model.sections.CellTopology;
+import bio.singa.simulation.model.modules.macroscopic.organelles.OrganelleTypes;
+import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -50,7 +48,6 @@ import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -70,7 +67,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     private Simulation simulation;
     private ClathrinMediatedEndocytosis budding;
     private VesicleFusion fusion;
-    private Organelle earlyEndosome;
 
     public static void main(String[] args) {
         launch();
@@ -97,29 +93,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
         Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
-
-        // setup regions
-        CellRegion outer = new CellRegion("Outer");
-        CellSubsection outerSubsection = new CellSubsection("Aqueous Solution");
-        outer.addSubSection(CellTopology.INNER, outerSubsection);
-
-        CellRegion inner = new CellRegion("Inner");
-        CellSubsection cytoplasm = new CellSubsection("Cytoplasm");
-        inner.addSubSection(CellTopology.INNER, cytoplasm);
-
-        CellRegion cellMembrane = new CellRegion("Cell membrane");
-        cellMembrane.addSubSection(CellTopology.INNER, cytoplasm);
-        cellMembrane.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Plasma membrane"));
-        cellMembrane.addSubSection(CellTopology.OUTER, outerSubsection);
-
-        CellRegion nuclearEnvelope = new CellRegion("Nuclear envelope");
-        CellSubsection nucleoplasm = new CellSubsection("Nucleoplasm");
-        nuclearEnvelope.addSubSection(CellTopology.INNER, nucleoplasm);
-        nuclearEnvelope.addSubSection(CellTopology.MEMBRANE, new CellSubsection("Nuclear membrane"));
-        nuclearEnvelope.addSubSection(CellTopology.OUTER, cytoplasm);
-
-        CellRegion nucleus = new CellRegion("Nucleus");
-        nucleus.addSubSection(CellTopology.INNER, nucleoplasm);
 
         // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
@@ -230,37 +203,36 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // setup graph and assign regions
         graph = AutomatonGraphs.createRectangularAutomatonGraph(nodesHorizontal, nodesVertical);
         simulation.setGraph(graph);
-        for (AutomatonNode node : graph.getNodes()) {
-            int column = node.getIdentifier().getColumn();
-            int row = node.getIdentifier().getRow();
-            if ((column == 1 && row != 0 && row != nodesVertical - 1) ||
-                    (column == nodesVertical - 2 && row != 0 && row != nodesVertical - 1) ||
-                    (row == 1 && column != 0 && column != nodesVertical - 1) ||
-                    (row == nodesVertical - 2 && column != 0 && column != nodesVertical - 1)) {
-                node.setCellRegion(cellMembrane);
-            } else if (column == 0 || column == nodesVertical - 1 || row == 0 || row == nodesVertical - 1) {
-                node.setCellRegion(outer);
-            } else {
-                node.setCellRegion(inner);
-            }
-        }
-
-        Set<AutomatonNode> envelopeNodes = AutomatonGraphs.circleRegion(graph, nuclearEnvelope, new RectangularCoordinate(11, 11), 3);
-        for (AutomatonNode envelopeNode : envelopeNodes) {
-            envelopeNode.getConcentrationContainer().set(CellTopology.MEMBRANE, snareComplex2, MolarConcentration.moleculesToConcentration(20, Environment.getSubsectionVolume()));
-        }
-        AutomatonGraphs.fillRegion(graph, nucleus, new RectangularCoordinate(11, 11), 2);
 
         // setup spatial representations
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
-        membraneLayer = new MembraneLayer(MembraneTracer.regionsToMembrane(graph));
+        membraneLayer = new MembraneLayer();
         simulation.setMembraneLayer(membraneLayer);
+
+        // initialize extracellular space as default
+        for (AutomatonNode automatonNode : graph.getNodes()) {
+            automatonNode.setCellRegion(CellRegions.EXTRACELLULAR_REGION);
+        }
+
+        // initialize cell membrane and nucleus
+        Organelle cell = OrganelleTypes.CELL.create();
+        Organelle nucleus = OrganelleTypes.NUCLEUS.create();
+        Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
+        membraneLayer.addMembrane(cellMembrane);
+        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph);
+        membraneLayer.addMembrane(nuclearMembrane);
+
+        // initialize endosome
+        Organelle endosome = OrganelleTypes.EARLY_ENDOSOME.create();
+        endosome.getPolygon().move(new Vector2D(200, 300));
+        Membrane endosomeMembrane = MembraneTracer.membraneToRegion(endosome, graph);
+        membraneLayer.addMembrane(endosomeMembrane);
 
         // add left membrane to as endocytosis site
         List<Membrane> membranes = membraneLayer.getMembranes();
         for (Membrane membrane : membranes) {
-            if (membrane.getIdentifier().equals("Cell membrane")) {
+            if (membrane.getIdentifier().equals("cell outer membrane")) {
                 for (MembraneSegment membraneSegment : membrane.getSegments()) {
                     if (membraneSegment.getNode().getIdentifier().getColumn() == 1) {
                         budding.addMembraneSegment(membraneSegment);
@@ -273,14 +245,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         MicrotubuleOrganizingCentre moc = new MicrotubuleOrganizingCentre(simulation, membraneLayer, new Circle(new Vector2D(310, 400),
                 Environment.convertSystemToSimulationScale(Quantities.getQuantity(250, NANO(METRE)))), 60);
         filamentLayer = moc.initializeFilaments();
-
-//        earlyEndosome = OrganelleImageParser.getPolygonTemplate(OrganelleImageParser.OrganelleType.EARLY_ENDOSOME);
-//        earlyEndosome.reduce(5);
-//        earlyEndosome.rotate(Math.toRadians(90));
-//        earlyEndosome.scale();
-//
-//        earlyEndosome.moveCentreTo(new Vector2D(500.0, 500.0));
-
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -299,43 +263,33 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
     }
 
     public void render() {
-        getGraphicsContext().setFill(Color.WHITE);
+        // background is extracellular
+        getGraphicsContext().setFill(CellSubsections.getColor(CellSubsections.EXTRACELLULAR_REGION));
         fillPolygon(rectangle);
-        // draw cells
-        getGraphicsContext().setFill(Color.BLACK);
+        // draw cells and polygons for subsections
+        getGraphicsContext().setStroke(Color.BLACK);
         getGraphicsContext().setLineWidth(1);
         for (AutomatonNode node : graph.getNodes()) {
-            Polygon polygon = node.getSpatialRepresentation();
-            // http://colorbrewer2.org/?type=diverging&scheme=PRGn&n=7
-            // todo define some better color handling
-            switch (node.getCellRegion().getIdentifier()) {
-                case "Outer":
-                    getGraphicsContext().setFill(Color.color(231.0 / 256.0, 212.0 / 256.0, 232.0 / 256.0));
-                    break;
-                case "Inner":
-                    getGraphicsContext().setFill(Color.color(217.0 / 256.0, 240.0 / 256.0, 211.0 / 256.0));
-                    break;
-                case "Cell membrane":
-                    getGraphicsContext().setFill(Color.color(175.0 / 256.0, 141.0 / 256.0, 195.0 / 256.0));
-                    break;
-                case "Nuclear envelope":
-                    getGraphicsContext().setFill(Color.color(127.0 / 256.0, 191.0 / 256.0, 123.0 / 256.0));
-                    break;
-                case "Nucleus":
-                    getGraphicsContext().setFill(Color.color(27.0 / 256.0, 120.0 / 256.0, 55.0 / 256.0));
-                    break;
+            Polygon nodePolygon = node.getSpatialRepresentation();
+            if (node.getCellRegion().hasMembrane()) {
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getOuterSubsection()));
+                fillPolygon(nodePolygon);
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
+                Polygon organellePolygon = node.getSubsectionRepresentations().get(node.getCellRegion().getInnerSubsection());
+                fillPolygon(organellePolygon);
+            } else {
+                getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
+                fillPolygon(nodePolygon);
             }
-            fillPolygon(polygon);
-            getGraphicsContext().setStroke(Color.BLACK);
-            strokePolygon(polygon);
         }
         // draw membrane
-        getGraphicsContext().setLineWidth(3);
         if (membraneLayer != null) {
             for (Membrane membrane : membraneLayer.getMembranes()) {
                 List<MembraneSegment> segments = membrane.getSegments();
                 for (MembraneSegment segment : segments) {
-                        strokeLineSegment(segment);
+                    getGraphicsContext().setLineWidth(1);
+                    strokeLineSegment(segment);
+                    // strokeCircle(segment.getStartingPoint(), 2);
                 }
             }
         }
@@ -346,7 +300,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw moving vesicles
         getGraphicsContext().setFill(Color.BLUE);
@@ -354,7 +307,6 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
         // draw fusing vesicles
         getGraphicsContext().setFill(Color.RED);
@@ -362,44 +314,23 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             Circle circle = vesicle.getCircleRepresentation();
             fillCircle(circle);
             strokeCircle(circle);
-            strokeTextCenteredOnPoint(vesicle.getStringIdentifier(), circle.getMidpoint().add(Vector2D.UNIT_VECTOR_RIGHT));
         }
-        // draw organelle
-        getGraphicsContext().setFill(Color.GREEN);
-//        for (LineSegment lineSegment : earlyEndosome.getLineSegments()) {
-//            strokeLineSegment(lineSegment);
-//        }
         // draw filaments
         getGraphicsContext().setStroke(Color.BLACK);
-        getGraphicsContext().setLineWidth(3);
-        for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
-            switch (skeletalFilament.getPlusEndBehaviour()) {
-                case GROW:
-                    getGraphicsContext().setStroke(Color.GREEN);
-                    break;
-                case STAGNANT:
-                    getGraphicsContext().setStroke(Color.BLACK);
-                    break;
-                case FOLLOW:
-                    getGraphicsContext().setStroke(Color.BLUE);
-                    break;
-            }
-            if (skeletalFilament.getSegments().size() > 1) {
-                Vector2D previous = skeletalFilament.getSegments().getLast();
-                Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
-                while (vector2DIterator.hasNext()) {
-                    Vector2D current = vector2DIterator.next();
-                    if (current != previous) {
-                        SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
-                        strokeLineSegment(lineSegment);
+        if (filamentLayer != null) {
+            for (SkeletalFilament skeletalFilament : filamentLayer.getFilaments()) {
+                if (skeletalFilament.getSegments().size() > 1) {
+                    Vector2D previous = skeletalFilament.getSegments().getLast();
+                    Iterator<Vector2D> vector2DIterator = skeletalFilament.getSegments().descendingIterator();
+                    while (vector2DIterator.hasNext()) {
+                        Vector2D current = vector2DIterator.next();
+                        if (current != previous) {
+                            SimpleLineSegment lineSegment = new SimpleLineSegment(previous, current);
+                            strokeLineSegment(lineSegment);
+                        }
+                        previous = current;
                     }
-                    previous = current;
                 }
-            }
-            getGraphicsContext().setStroke(Color.GRAY);
-            getGraphicsContext().setLineWidth(1);
-            for (AutomatonNode node : skeletalFilament.getAssociatedNodes()) {
-                strokeStraight(node.getPosition(), skeletalFilament.getHead());
             }
         }
     }

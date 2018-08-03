@@ -415,7 +415,6 @@ public class SBMLParser {
     private boolean resourcesHaveTheSameOrigin(CVTerm term) {
         Set<String> origins = new HashSet<>();
         term.getResources().forEach(resource -> {
-            // TODO: 06/11/2016 this can implemented better with some default method in the identifier package
             if (ChEBIIdentifier.PATTERN.matcher(resource).find()) {
                 origins.add(ChEBIIdentifier.class.getName());
             } else if (UniProtIdentifier.PATTERN.matcher(resource).find()) {

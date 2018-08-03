@@ -2,8 +2,12 @@ package bio.singa.mathematics.topology.grids.hexagonal;
 
 import bio.singa.mathematics.topology.model.DiscreteGrid;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, HexagonalCoordinate> {
+
+public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, HexagonalDirection, HexagonalCoordinate> {
 
     private final int width;
     private final int height;
@@ -27,9 +31,57 @@ public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, Hexagon
         return values[q][r];
     }
 
+    public List<ValueType> getValues() {
+        List<ValueType> results = new ArrayList<>();
+        for (int columnIndex = 0; columnIndex < width; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < height; rowIndex++) {
+                ValueType value = values[columnIndex][rowIndex];
+                if (value != null) {
+                    results.add(value);
+                }
+            }
+        }
+        return results;
+    }
+    public List<ValueType> getColumn(int columnIndex) {
+        if (columnIndex > width - 1) {
+            throw new IndexOutOfBoundsException("The row " + columnIndex + " is out of bounds.");
+        }
+        return Arrays.asList(values[columnIndex]);
+    }
+
+    public List<ValueType> getRow(int rowIndex) {
+        if (rowIndex > height - 1) {
+            throw new IndexOutOfBoundsException("The row " + rowIndex + " is out of bounds.");
+        }
+        List<ValueType> results = new ArrayList<>();
+        for (int columnIndex = 0; columnIndex < width; columnIndex++) {
+            results.add(values[columnIndex][rowIndex]);
+        }
+        return results;
+    }
+
+    public boolean containsValue(Object value) {
+        for (int columnIndex = 0; columnIndex < width; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < height; rowIndex++) {
+                if (getValue(columnIndex, rowIndex).equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     @Override
     public ValueType getValue(HexagonalCoordinate coordinate) {
         return getValue(coordinate.getQ(), coordinate.getR());
+    }
+
+    public ValueType removeValue(HexagonalCoordinate coordinate) {
+        ValueType nodeType = getValue(coordinate);
+        setValue(coordinate, null);
+        return nodeType;
     }
 
     public int getWidth() {

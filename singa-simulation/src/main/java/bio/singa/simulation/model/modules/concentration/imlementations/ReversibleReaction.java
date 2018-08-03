@@ -16,6 +16,12 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.INCREASING;
 
 /**
+ * Reversible reactions are {@link Reaction}s where the substrates form products, and products can also from substrates.
+ * Reversible reactions follow the laws of mass action.
+ * <pre>
+ *     A <-> B
+ * </pre>
+ *
  * @author cl
  */
 public class ReversibleReaction extends Reaction {

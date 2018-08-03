@@ -1,6 +1,11 @@
-package bio.singa.javafx.renderer;
+package bio.singa.simulation.model.modules.macroscopic;
 
-import bio.singa.mathematics.geometry.edges.Line;
+import bio.singa.javafx.renderer.Renderer;
+import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
+import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
+import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.modules.macroscopic.organelles.OrganelleTypes;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -12,7 +17,7 @@ import javafx.stage.Stage;
 /**
  * @author cl
  */
-public class RendererExamples extends Application implements Renderer {
+public class ClippingPlayground extends Application implements Renderer {
 
     private Canvas canvas;
 
@@ -23,17 +28,17 @@ public class RendererExamples extends Application implements Renderer {
     @Override
     public void start(Stage primaryStage) {
 
-        canvas = new Canvas(600, 600);
+        canvas = new Canvas(800, 800);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
 
         // add axis
-        getGraphicsContext().setLineWidth(5);
+        getGraphicsContext().setLineWidth(2);
         getGraphicsContext().setStroke(Color.BLACK);
 
-        Line xAxis = new Line(0, 0);
-        Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
+//        Line xAxis = new Line(0, 0);
+//        Line yAxis = new Line(0, Double.POSITIVE_INFINITY);
 
         // strokeLine(xAxis);
         // strokeLine(yAxis);
@@ -63,7 +68,31 @@ public class RendererExamples extends Application implements Renderer {
 //        strokeLineSegment(edge);
 //        strokeLineSegment(points);
 
+         Polygon polygon = OrganelleTypes.CELL.create().getPolygon();
+         polygon.scale(0.2);
+//         Polygon polygon = new Rectangle(new Vector2D(25, 25), new Vector2D(75, 75));
+        Rectangle rect = new Rectangle(new Vector2D(50, 50), new Vector2D(100, 100));
 
+        Polygon clip = SutherandHodgmanClipping.clip(polygon, rect);
+
+
+        getGraphicsContext().setStroke(Color.RED);
+        strokePolygon(polygon);
+        for (Vector2D polygonPoint : polygon.getVertices()) {
+            strokeCircle(polygonPoint, 2);
+        }
+
+        getGraphicsContext().setStroke(Color.GREEN);
+        strokePolygon(rect);
+        for (Vector2D polygonPoint : rect.getVertices()) {
+            strokeCircle(polygonPoint, 2);
+        }
+
+        getGraphicsContext().setStroke(Color.BLUE);
+        strokePolygon(clip);
+        for (Vector2D polygonPoint : clip.getVertices()) {
+            strokeCircle(polygonPoint, 2);
+        }
 
         // show
         Scene scene = new Scene(root);

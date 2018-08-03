@@ -52,9 +52,9 @@ public class FofanovEstimationTest {
                 .statisticalModel(fofanovEstimation)
                 .run();
         assertTrue(fit3dBatch.getMatches().stream()
-                .anyMatch(match -> match.getPvalue() != 0.0));
+                .noneMatch(match -> match.getPvalue() == 0.0));
         assertTrue(fit3dBatch.getMatches().stream()
-                .anyMatch(match -> match.getPvalue() != Double.NaN));
+                .noneMatch(match -> Double.isNaN(match.getPvalue())));
     }
 
     @Test
@@ -74,9 +74,9 @@ public class FofanovEstimationTest {
                 .rmsdCutoff(epsilon)
                 .run();
         assertTrue(fit3dBatch.getMatches().stream()
-                .anyMatch(match -> match.getPvalue() != 0.0));
+                .noneMatch(match -> match.getPvalue() == 0.0));
         assertTrue(fit3dBatch.getMatches().stream()
-                .anyMatch(match -> match.getPvalue() != Double.NaN));
+                .noneMatch(match -> Double.isNaN(match.getPvalue()) && match.getRmsd() < modelCorrectnessCutoff));
     }
 
 }

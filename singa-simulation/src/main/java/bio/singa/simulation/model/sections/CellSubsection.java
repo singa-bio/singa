@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.sections;
 
+import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.simulation.Updatable;
@@ -37,6 +38,8 @@ public class CellSubsection implements Observer {
      */
     private String identifier;
 
+    private GoTerm goTerm;
+
     /**
      * The preferred concentration unit.
      */
@@ -49,6 +52,11 @@ public class CellSubsection implements Observer {
      */
     public CellSubsection(String identifier) {
         this(identifier, true);
+    }
+
+    public CellSubsection(String identifier, GoTerm goTerm) {
+        this.identifier = identifier;
+        this.goTerm = goTerm;
     }
 
     /**
@@ -73,6 +81,18 @@ public class CellSubsection implements Observer {
      */
     public String getIdentifier() {
         return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public GoTerm getGoTerm() {
+        return goTerm;
+    }
+
+    public void setGoTerm(GoTerm goTerm) {
+        this.goTerm = goTerm;
     }
 
     /**

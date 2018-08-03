@@ -91,7 +91,7 @@ public class VesicleLayer {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
                         if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
                             SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
-                            if (!displacementVector.intersectionsWith(membraneSegment).isEmpty()) {
+                            if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
                                 vesicle1.resetNextPosition();
                                 continue vesicleLoop;
                             }

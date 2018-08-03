@@ -30,4 +30,11 @@ public class DisplacementDelta {
         return deltaVector;
     }
 
+    @Override
+    public String toString() {
+        return "DisplacementDelta{" +
+                "module=" + module +
+                ", deltaVector=" + deltaVector +
+                '}';
+    }
 }

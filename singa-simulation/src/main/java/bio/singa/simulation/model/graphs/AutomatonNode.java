@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
@@ -17,6 +18,7 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Area;
 import java.util.*;
 
 /**
@@ -31,13 +33,17 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     private ConcentrationDeltaManager updateManager;
     private Polygon spatialRepresentation;
     private Map<SkeletalFilament, Set<Vector2D>> microtubuleSegments;
-    private Set<MembraneSegment> membraneSegments;
+    private List<MembraneSegment> membraneSegments;
+    private Map<CellSubsection, Polygon> subsectionRepresentations;
+
+    private Quantity<Area> membraneArea;
 
     public AutomatonNode(RectangularCoordinate identifier) {
         super(identifier);
         setPosition(new Vector2D());
         microtubuleSegments = new HashMap<>();
-        membraneSegments = new HashSet<>();
+        subsectionRepresentations = new HashMap<>();
+        membraneSegments = new ArrayList<>();
         cellRegion = CellRegion.CYTOSOL_A;
         updateManager = new ConcentrationDeltaManager(cellRegion.setUpConcentrationContainer());
     }
@@ -45,7 +51,6 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public AutomatonNode(int column, int row) {
         this(new RectangularCoordinate(column, row));
     }
-
 
     /**
      * Returns the concentration of the given chemical entity in the given compartment.
@@ -59,6 +64,9 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         return updateManager.getConcentrationContainer().get(section, entity);
     }
 
+    public Map<CellSubsection, Polygon> getSubsectionRepresentations() {
+        return subsectionRepresentations;
+    }
 
     /**
      * Adds a potential delta to this node.
@@ -153,7 +161,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     @Override
     public String getStringIdentifier() {
-        return "Node "+getIdentifier().toString();
+        return "Node " + getIdentifier().toString();
     }
 
     /**
@@ -201,7 +209,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         microtubuleSegments.get(filament).add(segment);
     }
 
-    public Set<MembraneSegment> getMembraneSegments() {
+    public List<MembraneSegment> getMembraneSegments() {
         return membraneSegments;
     }
 
@@ -209,9 +217,26 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
         membraneSegments.add(segment);
     }
 
+    public Quantity<Area> getMembraneArea() {
+        if (membraneArea == null) {
+            double totalLength = 0.0;
+            for (MembraneSegment membraneSegment : membraneSegments) {
+                totalLength += membraneSegment.getSegment().getLength();
+            }
+            membraneArea = Environment.convertSimulationToSystemScale(totalLength)
+                    .multiply(Environment.getNodeDistance())
+                    .asType(Area.class);
+        }
+        return membraneArea;
+    }
+
+    public void addSubsectionRepresentation(CellSubsection subsection, Polygon representation) {
+        subsectionRepresentations.put(subsection, representation);
+    }
+
     @Override
     public String toString() {
-        return "Node "+getIdentifier()+" ("+cellRegion+")";
+        return "Node " + getIdentifier() + " (" + cellRegion + ")";
     }
 
     @Override

@@ -49,6 +49,10 @@ public abstract class AbstractGridGraph<NodeType extends Node<NodeType, VectorTy
         return grid.getRow(rowIndex);
     }
 
+    public RectangularGrid<NodeType> getGrid() {
+        return grid;
+    }
+
     @Override
     public Collection<NodeType> getNodes() {
         return grid.getValues();
