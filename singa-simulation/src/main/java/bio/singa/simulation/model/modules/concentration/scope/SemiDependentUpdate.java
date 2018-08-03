@@ -47,6 +47,7 @@ public class SemiDependentUpdate implements UpdateScope {
 
     /**
      * Returns a object, managing shared properties of the module.
+     *
      * @return The supplier.
      */
     private FieldSupplier supply() {
@@ -55,6 +56,7 @@ public class SemiDependentUpdate implements UpdateScope {
 
     /**
      * Returns the update specificity behaviour of the module, required for the actual computation of the updates.
+     *
      * @return The update specificity behaviour.
      */
     private UpdateSpecificity specify() {
@@ -77,16 +79,19 @@ public class SemiDependentUpdate implements UpdateScope {
         // calculate full step deltas
         supply().setStrutCalculation(false);
         specify().processContainer(updatable.getConcentrationContainer());
-        // explicitly calculate half step concentrations
-        determineHalfStepConcentrations();
-        // calculate half step deltas
-        supply().setStrutCalculation(true);
-        specify().processContainer(getHalfStepConcentration(updatable));
-        // set largest local error
-        supply().setLargestLocalError(module.determineLargestLocalError());
-        // clear used deltas
-        supply().getCurrentFullDeltas().clear();
-        supply().getCurrentHalfDeltas().clear();
+        // if at least one delta has been determined
+        if (!supply().getCurrentFullDeltas().isEmpty()) {
+            // explicitly calculate half step concentrations
+            determineHalfStepConcentrations();
+            // calculate half step deltas
+            supply().setStrutCalculation(true);
+            specify().processContainer(getHalfStepConcentration(updatable));
+            // set largest local error
+            supply().setLargestLocalError(module.determineLargestLocalError());
+            // clear used deltas
+            supply().getCurrentFullDeltas().clear();
+            supply().getCurrentHalfDeltas().clear();
+        }
     }
 
     @Override
