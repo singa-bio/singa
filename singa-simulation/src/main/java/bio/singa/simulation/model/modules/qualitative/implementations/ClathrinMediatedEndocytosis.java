@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.displacement.implementations;
+package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
@@ -9,10 +9,10 @@ import bio.singa.simulation.features.endocytosis.BuddingRate;
 import bio.singa.simulation.features.endocytosis.MaturationTime;
 import bio.singa.simulation.features.endocytosis.SpawnTimeSampler;
 import bio.singa.simulation.features.endocytosis.VesicleRadius;
-import bio.singa.simulation.model.modules.concentration.ModuleState;
-import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
-import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.modules.concentration.ModuleState;
+import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.modules.qualitative.QualitativeModule;
 import bio.singa.simulation.model.sections.CellTopology;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -34,10 +34,10 @@ import static tec.uom.se.unit.Units.SECOND;
 /**
  * @author cl
  */
-public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
+public class ClathrinMediatedEndocytosis extends QualitativeModule {
 
-    private HashMap<Vesicle, Quantity<Time>> maturingVesicles;
     private List<MembraneSegment> segments;
+    private HashMap<Vesicle, Quantity<Time>> maturingVesicles;
 
     private Quantity<Area> totalArea;
     private Quantity<Frequency> normalizedFrequency;
@@ -51,6 +51,9 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
     private Vector2D nextSpawnSite;
     // randomized radius
     private Quantity<Length> nextSpawnRadius;
+
+
+
 
     public ClathrinMediatedEndocytosis() {
         maturingVesicles = new HashMap<>();
@@ -78,8 +81,8 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
     private void calculateTotalMembraneArea() {
         totalArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
         for (MembraneSegment segment : segments) {
-                totalArea = totalArea.add(Environment.convertSimulationToSystemScale(segment.getLength())
-                        .multiply(Environment.getNodeDistance()).asType(Area.class));
+            totalArea = totalArea.add(Environment.convertSimulationToSystemScale(segment.getLength())
+                    .multiply(Environment.getNodeDistance()).asType(Area.class));
 
         }
     }
@@ -92,7 +95,6 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
         initialMembraneCargo.put(chemicalEntity, new AbstractMap.SimpleEntry<>(referenceArea, numberOfEntities));
     }
 
-    @Override
     protected void evaluateModuleState() {
         // more than one spawn per time step
         ComparableQuantity<Time> timeBetweenEvents = Quantities.getQuantity(1.0 / (normalizedFrequency.getValue().doubleValue() * 2.0), SECOND);
@@ -109,6 +111,16 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
             updateScheduler.decreaseTimeStep();
             calculateUpdates();
         }
+    }
+
+    @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onCompletion() {
+
     }
 
     public void addMembraneSegment(MembraneSegment segment) {

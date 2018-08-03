@@ -1,14 +1,15 @@
-package bio.singa.simulation.model.modules.macroscopic.membranes;
+package bio.singa.simulation.model.agents.membranes;
 
+import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.organelles.Organelle;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
 import bio.singa.simulation.model.sections.CellRegion;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class MembraneTracer {
         // check if all segments are contained in a single node
         boolean isContained = true;
 
-        // determine membrane cells
+        // determine and setup membrane cells
         for (LineSegment lineSegment : organellePolygon.getEdges()) {
             Vector2D startingPoint = lineSegment.getStartingPoint();
             Vector2D endingPoint = lineSegment.getEndingPoint();
@@ -78,14 +79,16 @@ public class MembraneTracer {
             }
         }
 
+        // setup subsection representation for enclosed organelles
         if (isContained) {
             AutomatonNode containingNode = membrane.getSegments().iterator().next().getNode();
             containingNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), organellePolygon);
             return membrane;
         }
 
-        // determine cell that is completely inside of the membrane as starting point
+        // fill region inside of the organelle
         for (AutomatonNode node : graph.getNodes()) {
+            // determine cell that is completely inside of the membrane as starting point
             // therefore check if all segments of the representative region are inside
             boolean allPointsAreIside = true;
             for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
@@ -95,46 +98,22 @@ public class MembraneTracer {
                 }
             }
             if (allPointsAreIside) {
+                // use flood fill algorithm
                 FloodFill.fill(graph.getGrid(), node.getIdentifier(),
                         currentNode -> currentNode.getCellRegion().equals(organelle.getMembraneRegion()),
                         currentCoordiante -> graph.getNode(currentCoordiante).setCellRegion(organelle.getInternalRegion()),
-                        reccurentNode -> reccurentNode.getCellRegion().equals(organelle.getInternalRegion()));
+                        recurrentNode -> recurrentNode.getCellRegion().equals(organelle.getInternalRegion()));
                 break;
             }
         }
 
-
+        // setup subsection representation for nodes compartmentalized by membranes
         for (AutomatonNode automatonNode : graph.getNodes()) {
             if (automatonNode.getCellRegion().equals(organelle.getMembraneRegion())) {
-
-                // inner
+                // use sutherland hodgman to clip inner region
                 Polygon nodePolygon = automatonNode.getSpatialRepresentation();
                 Polygon innerPolygon = SutherandHodgmanClipping.clip(organellePolygon, nodePolygon);
                 automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), innerPolygon);
-                // outer
-//                List<Vector2D> outerVectors = new ArrayList<>();
-//                List<Vector2D> insideNode = new ArrayList<>();
-//                for (Vector2D polygonVertex : innerPolygon.getVertices()) {
-//                    boolean differentToAll = true;
-//                    for (Vector2D nodeVertex : nodePolygon.getVertices()) {
-//                        if (polygonVertex.isSimilarTo(nodeVertex, 1e-6)) {
-//                            insideNode.add(nodeVertex);
-//                            differentToAll = false;
-//                        }
-//                    }
-//                    if (differentToAll) {
-//                        outerVectors.add(polygonVertex);
-//                    }
-//                }
-//
-//
-//                for (Vector2D nodeVertex : nodePolygon.getVertices()) {
-//                    if (!insideNode.contains(nodeVertex)) {
-//                        outerVectors.add(nodeVertex);
-//                    }
-//                }
-//                // FIXME some subsections are not calculated correctly
-//                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getOuterSubsection(), new VertexPolygon(outerVectors));
             }
         }
         return membrane;
@@ -147,18 +126,32 @@ public class MembraneTracer {
 
     public MembraneTracer(AutomatonGraph graph) {
         this.graph = graph;
-        currentNodes = new LinkedList<>();
-        queue = new ArrayDeque<>();
-        unprocessedNodes = new ArrayList<>();
         membranes = new ArrayList<>();
-        initializeRegionNodeMapping();
-        for (CellRegion cellRegion : regionNodeMapping.keySet()) {
-            while (!regionNodeMapping.get(cellRegion).isEmpty()) {
-                traverseRegion(cellRegion);
-                currentNodes.clear();
-                queue.clear();
+        if (graph.getNodes().size() == 1) {
+            traceSingleNode(graph.getNode(0, 0));
+        } else {
+            currentNodes = new LinkedList<>();
+            queue = new ArrayDeque<>();
+            unprocessedNodes = new ArrayList<>();
+            initializeRegionNodeMapping();
+            for (CellRegion cellRegion : regionNodeMapping.keySet()) {
+                while (!regionNodeMapping.get(cellRegion).isEmpty()) {
+                    traverseRegion(cellRegion);
+                    currentNodes.clear();
+                    queue.clear();
+                }
             }
         }
+    }
+
+    private void traceSingleNode(AutomatonNode node) {
+        double simulationExtend = Environment.getSimulationExtend();
+        // add horizontal membrane segment
+        Vector2D start = new Vector2D(0, simulationExtend / 2.0);
+        Vector2D end = new Vector2D(simulationExtend, simulationExtend / 2.0);
+        Membrane membrane = new Membrane(node.getCellRegion().getIdentifier(), node.getCellRegion());
+        membrane.addSegment(node, new SimpleLineSegment(start, end));
+        membranes.add(membrane);
     }
 
     private void initializeRegionNodeMapping() {

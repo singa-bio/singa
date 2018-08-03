@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.macroscopic.membranes;
+package bio.singa.simulation.model.agents.membranes;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.simulation.model.graphs.AutomatonNode;

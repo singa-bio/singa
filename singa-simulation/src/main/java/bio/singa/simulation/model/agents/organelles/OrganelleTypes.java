@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.macroscopic.organelles;
+package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.mathematics.geometry.model.Polygon;

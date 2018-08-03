@@ -12,7 +12,7 @@ import bio.singa.simulation.model.modules.concentration.functions.UpdatableDelta
 import bio.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.macroscopic.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;

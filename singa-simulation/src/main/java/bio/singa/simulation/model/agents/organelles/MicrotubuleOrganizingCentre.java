@@ -1,9 +1,9 @@
-package bio.singa.simulation.model.modules.macroscopic.organelles;
+package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.filaments.FilamentLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.simulation.Simulation;
 
 /**

@@ -549,6 +549,16 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     }
 
     @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onCompletion() {
+
+    }
+
+    @Override
     public void checkFeatures() {
         for (Class<? extends Feature> featureClass : getRequiredFeatures()) {
             for (ChemicalEntity chemicalEntity : getReferencedEntities()) {

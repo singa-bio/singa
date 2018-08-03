@@ -1,6 +1,7 @@
-package bio.singa.simulation.model.modules.macroscopic.membranes;
+package bio.singa.simulation.model.agents.membranes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,6 +21,10 @@ public class MembraneLayer {
 
     public void addMembrane(Membrane membrane) {
         membranes.add(membrane);
+    }
+
+    public void addMembranes(Collection<Membrane> membranes) {
+        this.membranes.addAll(membranes);
     }
 
 }

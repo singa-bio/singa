@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.macroscopic;
+package bio.singa.simulation.model.agents;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
@@ -6,6 +6,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.parameters.Environment;
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
@@ -14,21 +15,26 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.endocytosis.*;
+import bio.singa.simulation.model.agents.filaments.FilamentLayer;
+import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
+import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.membranes.MembraneTracer;
+import bio.singa.simulation.model.agents.organelles.MicrotubuleOrganizingCentre;
+import bio.singa.simulation.model.agents.organelles.Organelle;
+import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.displacement.implementations.*;
-import bio.singa.simulation.model.modules.macroscopic.filaments.FilamentLayer;
-import bio.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
-import bio.singa.simulation.model.modules.macroscopic.membranes.Membrane;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneTracer;
-import bio.singa.simulation.model.modules.macroscopic.organelles.MicrotubuleOrganizingCentre;
-import bio.singa.simulation.model.modules.macroscopic.organelles.Organelle;
-import bio.singa.simulation.model.modules.macroscopic.organelles.OrganelleTypes;
+import bio.singa.simulation.model.modules.displacement.implementations.ClathrinMediatedEndocytosis;
+import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
+import bio.singa.simulation.model.modules.displacement.implementations.VesicleTransport;
+import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAttachment;
+import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -254,7 +260,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
             @Override
             public void handle(long now) {
                 simulation.nextEpoch();
-                System.out.println(simulation.getElapsedTime().to(SECOND));
+                System.out.println(QuantityFormatter.formatTime(simulation.getElapsedTime()));
                 render();
             }
         };

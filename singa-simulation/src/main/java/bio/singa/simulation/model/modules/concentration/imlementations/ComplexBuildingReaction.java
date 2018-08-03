@@ -35,7 +35,7 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
  * The speed of the reaction is guided by any {@link ForwardsRateConstant} that determines the speed of the association
  * reaction and a {@link BackwardsRateConstant} the determines the speed of the dissociation of the complex.
  *
- * Complex building reactions are {@link UpdatableSpecific}, {@link IndependentUpdate}s.
+ * Complex building reactions are {@link UpdatableSpecific} and supply {@link IndependentUpdate}s.
  *
  * <pre>
  *  // From: Lauffenburger, Douglas A., and Jennifer J. Linderman.

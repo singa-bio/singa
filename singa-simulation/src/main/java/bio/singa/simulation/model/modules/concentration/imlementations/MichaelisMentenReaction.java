@@ -72,7 +72,6 @@ public class MichaelisMentenReaction extends Reaction {
         }
     }
 
-
     public static class Builder extends Reaction.Builder<MichaelisMentenReaction, Builder> {
 
         public Builder(Simulation identifier) {

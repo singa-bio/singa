@@ -1,11 +1,11 @@
-package bio.singa.simulation.model.modules.macroscopic;
+package bio.singa.simulation.model.agents;
 
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.modules.macroscopic.organelles.OrganelleTypes;
+import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;

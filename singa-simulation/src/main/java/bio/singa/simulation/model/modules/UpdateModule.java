@@ -35,4 +35,8 @@ public interface UpdateModule {
 
     String getStringForProtocol();
 
+    void onReset();
+
+    void onCompletion();
+
 }
