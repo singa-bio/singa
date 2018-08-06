@@ -1,0 +1,109 @@
+package bio.singa.simulation.model.modules.qualitative.implementations;
+
+import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.chemistry.entities.ComplexedChemicalEntity;
+import bio.singa.chemistry.entities.Protein;
+import bio.singa.features.identifiers.UniProtIdentifier;
+import bio.singa.features.parameters.Environment;
+import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.features.endocytosis.BuddingRate;
+import bio.singa.simulation.features.endocytosis.MaturationTime;
+import bio.singa.simulation.features.endocytosis.VesicleRadius;
+import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneTracer;
+import bio.singa.simulation.model.graphs.AutomatonGraph;
+import bio.singa.simulation.model.graphs.AutomatonGraphs;
+import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
+import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.simulation.Simulation;
+import org.junit.Test;
+import tec.uom.se.ComparableQuantity;
+import tec.uom.se.quantity.Quantities;
+import tec.uom.se.unit.ProductUnit;
+
+import javax.measure.quantity.Area;
+import javax.measure.quantity.Length;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.Units.METRE;
+import static tec.uom.se.unit.Units.SECOND;
+
+/**
+ * @author cl
+ */
+public class ClathrinMediatedEndocytosisTest {
+
+    @Test
+    public void shouldSimulateEndocytosis() {
+
+        // setup simulation
+        Simulation simulation = new Simulation();
+        final double simulationExtend = 100;
+        Rectangle rectangle = new Rectangle(simulationExtend, simulationExtend);
+        simulation.setSimulationRegion(rectangle);
+        ComparableQuantity<Length> systemExtend = Quantities.getQuantity(10, MICRO(METRE));
+        Environment.setSystemExtend(systemExtend);
+        Environment.setSimulationExtend(simulationExtend);
+        Environment.setNodeDistance(systemExtend);
+        Environment.setTimeStep(Quantities.getQuantity(1, MILLI(SECOND)));
+
+        // setup graph
+        AutomatonGraph graph = AutomatonGraphs.singularGraph();
+        AutomatonNode node = graph.getNode(0, 0);
+        node.setPosition(new Vector2D(50.0, 50.0));
+        node.setCellRegion(CellRegion.MEMBRANE);
+        simulation.setGraph(graph);
+
+        // setup membrane
+        List<Membrane> membranes = MembraneTracer.regionsToMembrane(graph);
+        MembraneLayer membraneLayer = new MembraneLayer();
+        membraneLayer.addMembranes(membranes);
+        simulation.setMembraneLayer(membraneLayer);
+
+        // setup species for clathrin decay
+        ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")
+                .assignFeature(new UniProtIdentifier("Q00610"))
+                .build();
+
+        ChemicalEntity clathrinLightChain = new Protein.Builder("Clathrin light chain")
+                .assignFeature(new UniProtIdentifier("P09496"))
+                .build();
+
+        ComplexedChemicalEntity clathrinTriskelion = ComplexedChemicalEntity.create("Clathrin Triskelion")
+                .addAssociatedPart(clathrinHeavyChain, 3)
+                .addAssociatedPart(clathrinLightChain, 3)
+                .build();
+
+        // setup clathrin decay reaction
+        NthOrderReaction.inSimulation(simulation)
+                .rateConstant(EndocytosisActinBoost.DEFAULT_CLATHRIN_DEPOLYMERIZATION_RATE)
+                .addSubstrate(clathrinTriskelion)
+                .build();
+
+        // setup endocytosis budding
+        ClathrinMediatedEndocytosis budding = new ClathrinMediatedEndocytosis();
+        budding.setSimulation(simulation);
+        budding.addMembraneCargo(Quantities.getQuantity(31415.93, new ProductUnit<Area>(NANO(METRE).pow(2))), 60.0, clathrinTriskelion);
+        budding.setFeature(BuddingRate.DEFAULT_BUDDING_RATE);
+        budding.setFeature(VesicleRadius.DEFAULT_VESICLE_RADIUS);
+        budding.setFeature(MaturationTime.DEFAULT_MATURATION_TIME);
+        budding.addMembraneSegments(node.getMembraneSegments());
+        simulation.getModules().add(budding);
+
+        while (simulation.getElapsedTime().isLessThanOrEqualTo(Quantities.getQuantity(200, SECOND))) {
+            simulation.nextEpoch();
+        }
+
+        assertTrue(!simulation.getVesicleLayer().getVesicles().isEmpty());
+    }
+
+
+}

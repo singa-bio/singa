@@ -7,6 +7,7 @@ import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
+import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 
@@ -20,7 +21,8 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
 
-    public static final ProductUnit<SpawnRate> PER_SQUARE_NANOMETRE_PER_SECOND = new ProductUnit<>(ONE.divide(NANO(METRE).pow(2).multiply(SECOND)));
+    public static final ProductUnit<Area> SQUARE_NANOMETRE = new ProductUnit<>(NANO(METRE).pow(2));
+    public static final ProductUnit<SpawnRate> PER_SQUARE_NANOMETRE_PER_SECOND = new ProductUnit<>(ONE.divide(SQUARE_NANOMETRE.multiply(SECOND)));
 
     /**
      * About three events per 10^8 nm^2 s^-1, developing into actual vesicles.

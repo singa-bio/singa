@@ -42,7 +42,7 @@ public class VesicleFusionTest {
 
 
     @Test
-    public void shouldTether() {
+    public void shouldSimulateFusionTethering() {
         // setup simulation
         Simulation simulation = new Simulation();
         final double simulationExtend = 100;

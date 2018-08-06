@@ -29,10 +29,10 @@ import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.imlementations.NthOrderReaction;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.displacement.implementations.ClathrinMediatedEndocytosis;
 import bio.singa.simulation.model.modules.displacement.implementations.EndocytosisActinBoost;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleDiffusion;
 import bio.singa.simulation.model.modules.displacement.implementations.VesicleTransport;
+import bio.singa.simulation.model.modules.qualitative.implementations.ClathrinMediatedEndocytosis;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAttachment;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellRegions;
@@ -302,10 +302,8 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         // draw budding vesicles
         getGraphicsContext().setLineWidth(1);
         getGraphicsContext().setFill(Color.YELLOWGREEN);
-        for (Vesicle vesicle : budding.getMaturingVesicles().keySet()) {
-            Circle circle = vesicle.getCircleRepresentation();
-            fillCircle(circle);
-            strokeCircle(circle);
+        for (ClathrinMediatedEndocytosis.SpawnEvent event : budding.getQueuedEvents()) {
+            strokeCircle(event.getSpawnSite(), 2);
         }
         // draw moving vesicles
         getGraphicsContext().setFill(Color.BLUE);

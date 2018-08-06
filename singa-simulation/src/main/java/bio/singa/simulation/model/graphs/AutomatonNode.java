@@ -7,15 +7,16 @@ import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
+import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
-import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
-import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Updatable;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Area;
@@ -219,13 +220,10 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public Quantity<Area> getMembraneArea() {
         if (membraneArea == null) {
-            double totalLength = 0.0;
+            membraneArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
             for (MembraneSegment membraneSegment : membraneSegments) {
-                totalLength += membraneSegment.getSegment().getLength();
+                membraneArea = membraneArea.add(membraneSegment.getArea());
             }
-            membraneArea = Environment.convertSimulationToSystemScale(totalLength)
-                    .multiply(Environment.getNodeDistance())
-                    .asType(Area.class);
         }
         return membraneArea;
     }
@@ -243,4 +241,5 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     public AutomatonNode getCopy() {
         throw new UnsupportedOperationException("not implemented");
     }
+
 }
