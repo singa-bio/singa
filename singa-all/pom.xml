@@ -14,12 +14,12 @@
         for structural bioinformatics and systems biology.
     </description>
 
-    <url>https://github.com/cleberecht/singa</url>
+    <url>https://github.com/singa-bio/singa</url>
 
     <scm>
-        <connection>scm:git:git://github.com/cleberecht/singa.git</connection>
-        <developerConnection>scm:git:git@github.com:cleberecht/singa.git</developerConnection>
-        <url>https://github.com/cleberecht/singa</url>
+        <connection>scm:git:git://github.com/singa-bio/singa.git</connection>
+        <developerConnection>scm:git:git@github.com:singa-bio/singa.git</developerConnection>
+        <url>https://github.com/singa-bio/singa</url>
     </scm>
 
     <licenses>
