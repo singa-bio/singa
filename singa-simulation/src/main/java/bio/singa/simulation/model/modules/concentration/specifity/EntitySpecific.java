@@ -33,6 +33,7 @@ public class EntitySpecific implements UpdateSpecificity<EntityDeltaFunction> {
 
     /**
      * Initializes the update specificity for the corresponding module.
+     * @param module The module.
      */
     public EntitySpecific(ConcentrationBasedModule<EntityDeltaFunction> module) {
         this.module = module;

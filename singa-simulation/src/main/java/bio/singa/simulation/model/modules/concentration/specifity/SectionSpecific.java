@@ -32,6 +32,7 @@ public class SectionSpecific implements UpdateSpecificity<SectionDeltaFunction> 
 
     /**
      * Initializes the update specificity for the corresponding module.
+     * @param module The module.
      */
     public SectionSpecific(ConcentrationBasedModule module) {
         this.module = module;

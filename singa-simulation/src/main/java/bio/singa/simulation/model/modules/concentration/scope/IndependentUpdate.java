@@ -35,6 +35,7 @@ public class IndependentUpdate implements UpdateScope {
 
     /**
      * Initializes the update scope for the corresponding module.
+     * @param module The module.
      */
     public IndependentUpdate(ConcentrationBasedModule module) {
         this.module = module;

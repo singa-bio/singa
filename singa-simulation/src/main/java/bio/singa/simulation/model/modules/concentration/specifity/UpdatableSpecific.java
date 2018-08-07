@@ -31,6 +31,7 @@ public class UpdatableSpecific implements UpdateSpecificity<UpdatableDeltaFuncti
 
     /**
      * Initializes the update specificity for the corresponding module.
+     * @param module The module.
      */
     public UpdatableSpecific(ConcentrationBasedModule module) {
         this.module = module;

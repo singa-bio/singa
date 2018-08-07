@@ -20,7 +20,7 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
 /**
  * Reversible reactions are {@link Reaction}s where the substrates form products, and products can also from substrates.
  * <pre>
- *  A <-> B</pre>
+ *  A &lt;-&gt; B</pre>
  * The corresponding rate law is as follows:
  * <pre>
  *  v = kfwd * cA - kbwd * cB</pre>
