@@ -65,6 +65,13 @@ public class UpdateScheduler {
             }
         } while (!spatialDisplacementIsValid());
 
+        // resolve pending changes
+        for (UpdateModule updateModule : modules) {
+            if (updateModule.getState() == ModuleState.SUCCEEDED_WITH_PENDING_CHANGES) {
+                updateModule.onCompletion();
+            }
+        }
+
         logger.debug("Finished processing modules for epoch {}.", simulation.getEpoch());
         // wrap up
         finalizeDeltas();
@@ -79,6 +86,7 @@ public class UpdateScheduler {
                 module.calculateUpdates();
                 break;
             case SUCCEEDED:
+            case SUCCEEDED_WITH_PENDING_CHANGES:
                 // continue with next module
                 if (moduleIterator.hasNext()) {
                     module = moduleIterator.next();

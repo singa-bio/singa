@@ -14,7 +14,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaManager;
-import bio.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament;
+import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellTopology;

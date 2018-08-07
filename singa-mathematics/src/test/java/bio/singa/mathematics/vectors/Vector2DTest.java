@@ -1,6 +1,7 @@
 package bio.singa.mathematics.vectors;
 
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.model.Polygon;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -107,11 +108,11 @@ public class Vector2DTest {
         Vector2D left = new Vector2D(-1.0, 5.0);
         Vector2D right = new Vector2D(11.0, 5.0);
         Vector2D inside = new Vector2D(5.0, 5.0);
-        assertFalse(above.canBePlacedIn(r));
-        assertFalse(below.canBePlacedIn(r));
-        assertFalse(left.canBePlacedIn(r));
-        assertFalse(right.canBePlacedIn(r));
-        assertTrue(inside.canBePlacedIn(r));
+        assertNotEquals(r.evaluatePointPosition(above), Polygon.INSIDE);
+        assertNotEquals(r.evaluatePointPosition(below), Polygon.INSIDE);
+        assertNotEquals(r.evaluatePointPosition(left), Polygon.INSIDE);
+        assertNotEquals(r.evaluatePointPosition(right), Polygon.INSIDE);
+        assertEquals(r.evaluatePointPosition(inside), Polygon.INSIDE);
     }
 
     @Test

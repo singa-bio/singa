@@ -12,7 +12,7 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import org.slf4j.Logger;

@@ -1,11 +1,11 @@
-package bio.singa.simulation.model.modules.macroscopic.filaments;
+package bio.singa.simulation.model.agents.filaments;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.modules.macroscopic.membranes.Membrane;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneLayer;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * @author cl

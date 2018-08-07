@@ -10,8 +10,14 @@ import tec.uom.se.unit.ProductUnit;
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 import static tec.uom.se.AbstractUnit.ONE;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.*;
 
 /**
@@ -20,6 +26,20 @@ import static tec.uom.se.unit.Units.*;
  * @author cl
  */
 public final class UnitProvider {
+
+    public static List<Unit<Time>> TIME_UNITS = new ArrayList<>();
+    static {
+        TIME_UNITS.add(NANO(SECOND));
+        TIME_UNITS.add(MICRO(SECOND));
+        TIME_UNITS.add(MILLI(SECOND));
+        TIME_UNITS.add(SECOND);
+        TIME_UNITS.add(MINUTE);
+        TIME_UNITS.add(HOUR);
+        TIME_UNITS.add(DAY);
+        TIME_UNITS.add(WEEK);
+        TIME_UNITS.add(YEAR);
+    }
+
 
     /**
      * Molar concentration, also called molarity, amount concentration or substance concentration, is a measure of the

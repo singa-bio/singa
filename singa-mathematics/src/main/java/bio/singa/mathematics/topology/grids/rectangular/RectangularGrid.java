@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author cl
  */
-public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, RectangularCoordinate> {
+public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, RectangularDirection, RectangularCoordinate> {
 
     private final int width;
     private final int height;
@@ -94,4 +94,15 @@ public class RectangularGrid<ValueType> implements DiscreteGrid<ValueType, Recta
         return height;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int columnIndex = 0; columnIndex < width; columnIndex++) {
+            for (int rowIndex = 0; rowIndex < height; rowIndex++) {
+                sb.append(getValue(columnIndex, rowIndex)).append(" ");
+            }
+            sb.append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
 }

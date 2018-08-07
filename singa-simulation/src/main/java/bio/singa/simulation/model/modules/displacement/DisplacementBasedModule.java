@@ -180,6 +180,16 @@ public class DisplacementBasedModule implements UpdateModule {
     }
 
     @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onCompletion() {
+
+    }
+
+    @Override
     public String getIdentifier() {
         return identifier;
     }

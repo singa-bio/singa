@@ -1,4 +1,4 @@
-package bio.singa.simulation.model.modules.macroscopic.filaments;
+package bio.singa.simulation.model.agents.filaments;
 
 import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.faces.Circle;
@@ -12,8 +12,8 @@ import java.util.*;
 
 import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
-import static bio.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.GROW;
-import static bio.singa.simulation.model.modules.macroscopic.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
+import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.GROW;
+import static bio.singa.simulation.model.agents.filaments.SkeletalFilament.FilamentBehaviour.STAGNANT;
 
 /**
  * Modified: Mirabet, Vincent, et al. "The self-organization of plant microtubules inside the cell volume yields their

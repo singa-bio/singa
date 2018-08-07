@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.sections.CellSubsection;
 
 import javax.measure.Quantity;
@@ -17,7 +18,7 @@ public class ConcentrationDelta {
     /**
      * The module, that calculated this delta.
      */
-    private final ConcentrationBasedModule module;
+    private final UpdateModule module;
 
     /**
      * The cell section.
@@ -41,7 +42,7 @@ public class ConcentrationDelta {
      * @param chemicalEntity The chemical entity the delta is applied to.
      * @param quantity The actual quantity of the change.
      */
-    public ConcentrationDelta(ConcentrationBasedModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
+    public ConcentrationDelta(UpdateModule module, CellSubsection cellSubsection, ChemicalEntity chemicalEntity, Quantity<MolarConcentration> quantity) {
         this.module = module;
         this.chemicalEntity = chemicalEntity;
         this.cellSubsection = cellSubsection;
@@ -53,7 +54,7 @@ public class ConcentrationDelta {
      *
      * @return The module, that calculated this delta.
      */
-    public ConcentrationBasedModule getModule() {
+    public UpdateModule getModule() {
         return module;
     }
 

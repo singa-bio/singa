@@ -37,6 +37,8 @@ public class SimulationManager extends Task<Simulation> {
      */
     private static final Logger logger = LoggerFactory.getLogger(SimulationManager.class);
 
+    private static final boolean DEFAULT_KEEP_PLATFORM_OPEN = false;
+
     /**
      * The simulation.
      */
@@ -79,6 +81,8 @@ public class SimulationManager extends Task<Simulation> {
 
     private Quantity<Time> terminationTime;
     private DecimalFormat df = new DecimalFormat("#.00");
+
+    private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -206,6 +210,13 @@ public class SimulationManager extends Task<Simulation> {
         nodeEventEmitter.emitEvent(new UpdatableUpdatedEvent(simulation.getElapsedTime(), updatable));
     }
 
+    public boolean keepPlatformOpen() {
+        return keepPlatformOpen;
+    }
+
+    public void setKeepPlatformOpen(boolean keepPlatformOpen) {
+        this.keepPlatformOpen = keepPlatformOpen;
+    }
 
     /**
      * Returns the simulation.
@@ -267,8 +278,9 @@ public class SimulationManager extends Task<Simulation> {
                 }
             }
             // will exit jfx when simulation finishes
-            // FIXME implement possibility to keep the GUI after simulation finishes - maybe add toogle
-            Platform.exit();
+            if (!keepPlatformOpen) {
+                Platform.exit();
+            }
             if (!isCancelled()) {
                 get();
             }
@@ -283,24 +295,21 @@ public class SimulationManager extends Task<Simulation> {
     }
 
 
-    private static String formatMillis(long val) {
-        StringBuilder buf = new StringBuilder(20);
+    private static String formatMillis(long millis) {
+        StringBuilder builder = new StringBuilder(20);
         String sgn = "";
 
-        if (val < 0) {
+        if (millis < 0) {
             sgn = "-";
-            val = Math.abs(val);
+            millis = Math.abs(millis);
         }
 
-        append(buf, sgn, 0, (val / 3600000));
-        val %= 3600000;
-        buf.append(" h ");
-        append(buf, "", 2, (val / 60000));
-        val %= 60000;
-        buf.append(" min");
-        // append(buf,":",2,(val/   1000)); val%=   1000;
-        // append(buf,".",3,(val        ));
-        return buf.toString();
+        append(builder, sgn, 0, (millis / 3600000));
+        millis %= 3600000;
+        builder.append(" h ");
+        append(builder, "", 2, (millis / 60000));
+        builder.append(" min");
+        return builder.toString();
     }
 
     /**

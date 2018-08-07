@@ -6,6 +6,9 @@ import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
+import bio.singa.simulation.model.agents.membranes.MembraneTracer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -22,6 +25,7 @@ import tec.uom.se.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static bio.singa.chemistry.features.permeability.MembranePermeability.CENTIMETRE_PER_SECOND;
@@ -65,6 +69,10 @@ public class MembraneDiffusionTest {
         membraneNode.getConcentrationContainer().set(MEMBRANE.getInnerSubsection(), water, Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
         membraneNode.getConcentrationContainer().set(MEMBRANE.getOuterSubsection(), water, Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()));
         automatonGraph.addNode(membraneNode);
+        List<Membrane> membranes = MembraneTracer.regionsToMembrane(automatonGraph);
+        MembraneLayer layer = new MembraneLayer();
+        layer.addMembranes(membranes);
+        simulation.setMembraneLayer(layer);
 
         MembraneDiffusion.inSimulation(simulation)
                 .cargo(water)

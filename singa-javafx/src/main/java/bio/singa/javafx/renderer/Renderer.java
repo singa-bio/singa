@@ -319,11 +319,11 @@ public interface Renderer {
      */
     default void fillPolygon(Polygon polygon) {
         int numberOfVertices = polygon.getNumberOfVertices();
-        double[] xPositions = new double[polygon.getNumberOfVertices()];
-        double[] yPositions = new double[polygon.getNumberOfVertices()];
-        Vector2D[] vertices = polygon.getVertices();
-        for (int index = 0; index < vertices.length; index++) {
-            Vector2D vertex = vertices[index];
+        double[] xPositions = new double[numberOfVertices];
+        double[] yPositions = new double[numberOfVertices];
+        List<Vector2D> vertices = polygon.getVertices();
+        for (int index = 0; index < vertices.size(); index++) {
+            Vector2D vertex = vertices.get(index);
             xPositions[index] = vertex.getX();
             yPositions[index] = vertex.getY();
         }
@@ -332,11 +332,11 @@ public interface Renderer {
 
     default void strokePolygon(Polygon polygon) {
         int numberOfVertices = polygon.getNumberOfVertices();
-        double[] xPositions = new double[polygon.getNumberOfVertices()];
-        double[] yPositions = new double[polygon.getNumberOfVertices()];
-        Vector2D[] vertices = polygon.getVertices();
-        for (int index = 0; index < vertices.length; index++) {
-            Vector2D vertex = vertices[index];
+        double[] xPositions = new double[numberOfVertices];
+        double[] yPositions = new double[numberOfVertices];
+        List<Vector2D> vertices = polygon.getVertices();
+        for (int index = 0; index < vertices.size(); index++) {
+            Vector2D vertex = vertices.get(index);
             xPositions[index] = vertex.getX();
             yPositions[index] = vertex.getY();
         }

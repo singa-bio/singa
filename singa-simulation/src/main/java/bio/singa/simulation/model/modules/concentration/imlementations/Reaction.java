@@ -5,6 +5,8 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
+import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
+import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
@@ -20,6 +22,15 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.INCREASING;
 
 /**
+ * Reactions in general are {@link ConcentrationBasedModule}s following the laws of chemical kinetics. The calculation
+ * of the velocity is defined by the concrete implementation of this module. In general {@link Reactant} are defined
+ * as {@link StoichiometricReactant} that are consumed or produced during the reaction or {@link CatalyticReactant}
+ * that are used to modify the reaction speed but whose concentration is not altered.
+ *
+ * @see ReversibleReaction
+ * @see MichaelisMentenReaction
+ * @see NthOrderReaction
+ *
  * @author cl
  */
 public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunction> {
@@ -155,7 +166,6 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
     public void setElementary(boolean elementary) {
         this.elementary = elementary;
     }
-
 
     /**
      * Returns a nicely formatted string representation of the reaction.

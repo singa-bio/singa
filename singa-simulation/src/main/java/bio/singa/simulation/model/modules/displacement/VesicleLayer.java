@@ -5,8 +5,8 @@ import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.matrices.LabeledSymmetricMatrix;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.model.modules.macroscopic.membranes.Membrane;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.membranes.Membrane;
+import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class VesicleLayer {
                     for (MembraneSegment membraneSegment : macroscopicMembrane.getSegments()) {
                         if (!vesicle1.getCurrentPosition().equals(vesicle1.getNextPosition())) {
                             SimpleLineSegment displacementVector = new SimpleLineSegment(vesicle1.getCurrentPosition(), vesicle1.getNextPosition());
-                            if (!displacementVector.intersectionsWith(membraneSegment).isEmpty()) {
+                            if (displacementVector.getIntersectionWith(membraneSegment).isPresent()) {
                                 vesicle1.resetNextPosition();
                                 continue vesicleLoop;
                             }

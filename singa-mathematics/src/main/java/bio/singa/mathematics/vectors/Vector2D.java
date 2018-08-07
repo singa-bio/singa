@@ -277,4 +277,8 @@ public class Vector2D extends RegularVector {
         return getY() < boundary && getY() > origin;
     }
 
+    public boolean isSimilarTo(Vector2D other, double similarity) {
+        return Math.abs(getX() - other.getX()) < similarity && Math.abs(getY() - other.getY()) < similarity;
+    }
+
 }

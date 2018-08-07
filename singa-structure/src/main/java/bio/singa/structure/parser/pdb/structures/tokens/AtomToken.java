@@ -57,7 +57,7 @@ public enum AtomToken implements PDBToken {
         Double z = Double.valueOf(Z_COORDINATE.extract(atomLine));
         Vector3D coordinates = new Vector3D(x, y, z);
         // serial
-        Integer atomSerial = Integer.valueOf(ATOM_SERIAL.extract(atomLine));
+        int atomSerial = Integer.parseInt(ATOM_SERIAL.extract(atomLine));
         // atom name string
         String atomName = ATOM_NAME.extract(atomLine);
         // element

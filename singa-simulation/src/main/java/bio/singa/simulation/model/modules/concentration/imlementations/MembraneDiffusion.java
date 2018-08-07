@@ -9,7 +9,10 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
+import bio.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
+import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
+import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -22,10 +25,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A permeant is crossing a membrane from side 1 to side 2. The flux JM is determined by terms of
- * JM = P * A * (c1 - c2)
- * where P is the {@link MembranePermeability}, A is the area of the membrane, and c1 and c2 are the
- * concentrations on the corresponding sides of the compartments.
+ * The membrane diffusion module describes the movement of chemical entities across {@link Membrane}s driven by the
+ * {@link MembranePermeability} of the cargo. The cargo molecules are crossing a membrane from one side to the other side.
+ * The flux of concentration is determined by terms of
+ * <pre>
+ *  JM = Pd * A * (c1 - c2)</pre>
+ * where Pd is the {@link MembranePermeability}, A is the area of the membrane, and c1 and c2 are the concentrations on
+ * both sides of the membrane; as in:
+ * <pre>
+ *  Stein, Wilfred. Transport and diffusion across cell membranes. Elsevier, 2012.</pre>
+ * This concentration based module applies {@link SemiDependentUpdate}s and is {@link UpdatableSpecific}.
+ * <pre>
+ *  // define the feature to parametrize the diffusion
+ *  MembranePermeability membranePermeability = new MembranePermeability(Quantities.getQuantity(3.5E-03, CENTIMETRE_PER_SECOND),
+ *         FeatureOrigin.MANUALLY_ANNOTATED);
+ *
+ *  // assign it to the chemical entity
+ *  SmallMolecule water = new SmallMolecule.Builder("water")
+ *         .assignFeature(membranePermeability)
+ *         .build();
+ *
+ *  // create the module
+ *  MembraneDiffusion.inSimulation(simulation)
+ *         .cargo(water)
+ *         .build();</pre>
  *
  * @author cl
  */
@@ -61,7 +84,8 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         if (currentUpdatable instanceof Vesicle) {
             handlePartialDistributionInVesicles(deltas, (Vesicle) currentUpdatable);
         } else {
-            double value = calculateVelocity(container, container) * Environment.getSubsectionArea().getValue().doubleValue();
+            Quantity<Area> membraneArea = ((AutomatonNode) currentUpdatable).getMembraneArea();
+            double value = calculateVelocity(container, container) * membraneArea.getValue().doubleValue();
             deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getInnerSubsection(), cargo), new ConcentrationDelta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
             deltas.put(new ConcentrationDeltaIdentifier(currentUpdatable, container.getOuterSubsection(), cargo), new ConcentrationDelta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         }

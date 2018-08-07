@@ -10,6 +10,8 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
+import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
+import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -18,6 +20,39 @@ import tec.uom.se.quantity.Quantities;
 import java.util.*;
 
 /**
+ * The single file channel transport describes the movement of cargo molecules through {@link Transporter} proteins, so
+ * called membrane channels. In the channels the cargo proteins move in a single file configuration.
+ * The kinetics of the transport is guided by the osmotic pressure of solute molecules as well as the
+ * {@link OsmoticPermeability} of the transporter.
+ * The net flux of the cargo through the membrane is:
+ * <pre>
+ *  JC = pf * nt * (s1 - s2)</pre>
+ * where pf is the {@link OsmoticPermeability}, nt is the number of transporters in the membrane and s1 and s2 are the
+ * concentrations of the solute on both sides of the membrane, as in:
+ * <pre>
+ *  Finkelstein, Alan. "Water movement through membrane channels."
+ *  Current Topics in Membranes and Transport. Vol. 21. Academic Press, 1984. 295-308. </pre>
+ * This concentration based module applies {@link IndependentUpdate}s and is {@link UpdatableSpecific}.
+ * <pre>
+ *  // get water from chebi
+ *  SmallMolecule water = ChEBIParserService.parse("CHEBI:15377", "water");
+ *
+ *  // define solutes as a single species
+ *  SmallMolecule solute = new SmallMolecule.Builder("solutes")
+ *         .name("solutes")
+ *         .build();
+ *
+ *  // aquaporin 2 as a transporter
+ *  Transporter aquaporin2 = UniProtParserService.parse("P41181", "aqp2").asTransporter();
+ *  aquaporin2.setFeature(new OsmoticPermeability(5.31e-14, BINESH2015));
+ *
+ *  // create module
+ *  SingleFileChannelMembraneTransport.inSimulation(simulation)
+ *         .transporter(aquaporin2)
+ *         .cargo(water)
+ *         .forSolute(solute)
+ *         .build(); </pre>
+ *
  * @author cl
  */
 public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule<UpdatableDeltaFunction> {

@@ -209,15 +209,15 @@ public final class Matrices {
     public static List<Pair<Integer>> getPositionsOfMaximalElement(Matrix matrix) {
         double maximalElement = -Double.MAX_VALUE;
         List<Pair<Integer>> maximalElementsPositions = new ArrayList<>();
-        for (int i = 0; i < matrix.getColumnDimension(); i++) {
-            for (int j = 0; j < matrix.getRowDimension(); j++) {
-                double currentMatrixElement = matrix.getElement(i, j);
+        for (int column = 0; column < matrix.getColumnDimension(); column++) {
+            for (int row = 0; row < matrix.getRowDimension(); row++) {
+                double currentMatrixElement = matrix.getElement(column, row);
                 if (Double.compare(currentMatrixElement, maximalElement) == 0)
-                    maximalElementsPositions.add(new Pair<>(i, j));
+                    maximalElementsPositions.add(new Pair<>(column, row));
                 else if (Double.compare(currentMatrixElement, maximalElement) > 0) {
                     maximalElement = currentMatrixElement;
                     maximalElementsPositions.clear();
-                    maximalElementsPositions.add(new Pair<>(i, j));
+                    maximalElementsPositions.add(new Pair<>(column, row));
                 }
             }
         }

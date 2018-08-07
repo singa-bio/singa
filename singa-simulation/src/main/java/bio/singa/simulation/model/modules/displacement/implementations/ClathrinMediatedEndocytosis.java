@@ -12,7 +12,7 @@ import bio.singa.simulation.features.endocytosis.VesicleRadius;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
-import bio.singa.simulation.model.modules.macroscopic.membranes.MembraneSegment;
+import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.sections.CellTopology;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -78,7 +78,6 @@ public class ClathrinMediatedEndocytosis extends DisplacementBasedModule {
     private void calculateTotalMembraneArea() {
         totalArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
         for (MembraneSegment segment : segments) {
-
                 totalArea = totalArea.add(Environment.convertSimulationToSystemScale(segment.getLength())
                         .multiply(Environment.getNodeDistance()).asType(Area.class));
 

@@ -9,15 +9,15 @@ import javafx.scene.paint.Color;
 
 public class BioGraphRenderOptions {
 
-    private ChemicalEntity nodeHighlightEntity;
-    private ChemicalEntity edgeHighlightEntity;
+    private static final double DEFAULT_MINIMAL_CONCENTRATION = 0.0;
+    private static final double DEFAULT_MAXIMAL_CONCENTRATION = 1.0;
 
+    private ChemicalEntity nodeHighlightEntity;
     private RenderingMode renderingMode;
     private ColorScale nodeColorScale;
 
     public BioGraphRenderOptions() {
-        // todo render depending on maximal value in any node
-        nodeColorScale = new ColorScale.Builder(5.0E-15, 10.0E-15).build();
+        nodeColorScale = new ColorScale.Builder(DEFAULT_MINIMAL_CONCENTRATION, DEFAULT_MAXIMAL_CONCENTRATION).build();
         renderingMode = RenderingMode.STATE_BASED;
     }
 
@@ -43,14 +43,6 @@ public class BioGraphRenderOptions {
 
     public void setNodeHighlightEntity(ChemicalEntity species) {
         nodeHighlightEntity = species;
-    }
-
-    public ChemicalEntity getEdgeHighlightEntity() {
-        return edgeHighlightEntity;
-    }
-
-    public void setEdgeHighlightEntity(ChemicalEntity edgeHighlightEntity) {
-        this.edgeHighlightEntity = edgeHighlightEntity;
     }
 
     public Color getColorForUpdatable(Updatable node) {

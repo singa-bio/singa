@@ -52,12 +52,12 @@ public class Environment extends Observable {
     /**
      * Standard system extend [length] (5 um)
      */
-    public static final Quantity<Length> DEFAULT_SYSTEM_EXTEND = Quantities.getQuantity(5.0, MICRO(METRE));
+    public static final Quantity<Length> DEFAULT_SYSTEM_EXTEND = Quantities.getQuantity(1.0, MICRO(METRE));
 
     /**
      * Standard simulation extend [pseudo length] 500
      */
-    public static final double DEFAULT_SIMULATION_EXTEND = 500;
+    public static final double DEFAULT_SIMULATION_EXTEND = 100;
 
     /**
      * The singleton instance.
