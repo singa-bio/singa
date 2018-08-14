@@ -388,6 +388,7 @@ public class PlipContentHandler implements ContentHandler {
         // generate identifiers
         final LeafIdentifier source = new LeafIdentifier(currentPdbIdentifier, 1, firstLeafChain, Integer.valueOf(firstLeafSerial));
         final LeafIdentifier target = new LeafIdentifier(currentPdbIdentifier, 1, secondLeafChain, Integer.valueOf(secondLeafSerial));
+        // FIXME for metal complexes this seems to be not valid to take the first occurring entry as source: at atom level source is always the ion
         currentInteraction.setSource(source);
         currentInteraction.setTarget(target);
         currentInteraction.setLigandCoordinate(new double[]{c1x, c1y, c1z});

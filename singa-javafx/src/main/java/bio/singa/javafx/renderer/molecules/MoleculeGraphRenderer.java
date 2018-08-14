@@ -23,7 +23,8 @@ public class MoleculeGraphRenderer extends GraphRenderer<MoleculeAtom, MoleculeB
         getGraphicsContext().setFill(moleculeOptions.getColorForElement(atom.getElement().getSymbol()));
         fillPoint(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw outline
-        getGraphicsContext().setStroke(getRenderingOptions().getEdgeColor());
+        getGraphicsContext().setLineWidth(getRenderingOptions().getNodeOutlineThickness());
+        getGraphicsContext().setStroke(getRenderingOptions().getNodeOutlineColor());
         strokeCircle(atom.getPosition(), getRenderingOptions().getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(getRenderingOptions().getIdentifierTextColor());
