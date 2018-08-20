@@ -9,6 +9,7 @@ import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReact
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
@@ -27,18 +28,19 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
  * as {@link StoichiometricReactant} that are consumed or produced during the reaction or {@link CatalyticReactant}
  * that are used to modify the reaction speed but whose concentration is not altered.
  *
+ * @author cl
  * @see ReversibleReaction
  * @see MichaelisMentenReaction
  * @see NthOrderReaction
- *
- * @author cl
  */
 public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunction> {
 
     /**
      * The stoichiometric reactants.
      */
-    protected List<StoichiometricReactant> stoichiometricReactants;
+    List<StoichiometricReactant> substrates;
+
+    List<StoichiometricReactant> products;
 
     /**
      * True if this reaction is an elementary reaction.
@@ -51,24 +53,30 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      * @return The list of reactants for this reaction.
      */
     public List<StoichiometricReactant> getStoichiometricReactants() {
-        return stoichiometricReactants;
-    }
-
-    /**
-     * Sets the list of reactants for this reaction.
-     *
-     * @param stoichiometricReactants The list of reactants for this reaction.
-     */
-    public void setStoichiometricReactants(List<StoichiometricReactant> stoichiometricReactants) {
-        this.stoichiometricReactants = stoichiometricReactants;
+        ArrayList<StoichiometricReactant> completeList = new ArrayList<>();
+        completeList.addAll(substrates);
+        completeList.addAll(products);
+        return completeList;
     }
 
     public void addStochiometricReactant(StoichiometricReactant stoichiometricReactant) {
-        stoichiometricReactants.add(stoichiometricReactant);
+        if (stoichiometricReactant.isSubstrate()) {
+            substrates.add(stoichiometricReactant);
+        } else {
+            products.add(stoichiometricReactant);
+        }
     }
 
     public boolean substratesAvailable(Updatable updatable) {
-        return updatable.getConcentrationContainer().getReferencedEntities().containsAll(getSubstrates());
+        return updatable.getConcentrationContainer().getReferencedEntities().containsAll(getSubstrateEntities());
+    }
+
+    public List<StoichiometricReactant> getSubstrates() {
+        return substrates;
+    }
+
+    public List<StoichiometricReactant> getProducts() {
+        return products;
     }
 
     /**
@@ -76,9 +84,8 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      *
      * @return All substrates of this reaction.
      */
-    public List<ChemicalEntity> getSubstrates() {
-        return stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isSubstrate)
+    public List<ChemicalEntity> getSubstrateEntities() {
+        return substrates.stream()
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toList());
     }
@@ -88,9 +95,8 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      *
      * @return All products of this reaction.
      */
-    public List<ChemicalEntity> getProducts() {
-        return stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isProduct)
+    public List<ChemicalEntity> getProductEntities() {
+        return products.stream()
                 .map(StoichiometricReactant::getEntity)
                 .collect(Collectors.toList());
     }
@@ -103,7 +109,7 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
      * ReactantRole#DECREASING} for Substrates).
      * @return The total concentration.
      */
-    protected double determineEffectiveConcentration(ConcentrationContainer concentrationContainer, ReactantRole role) {
+    double determineEffectiveConcentration(ConcentrationContainer concentrationContainer, ReactantRole role) {
         double product = 1.0;
         for (StoichiometricReactant reactant : getStoichiometricReactants()) {
             if (reactant.getRole() == role) {
@@ -127,14 +133,13 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
     protected List<ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         List<ConcentrationDelta> deltas = new ArrayList<>();
         double velocity = calculateVelocity(concentrationContainer);
-        for (StoichiometricReactant reactant : getStoichiometricReactants()) {
-            double deltaValue;
-            if (reactant.isSubstrate()) {
-                deltaValue = -velocity * reactant.getStoichiometricNumber();
-            } else {
-                deltaValue = velocity * reactant.getStoichiometricNumber();
-            }
-            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), reactant.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+        for (StoichiometricReactant substrate : substrates) {
+            double deltaValue = -velocity * substrate.getStoichiometricNumber();
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), substrate.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+        }
+        for (StoichiometricReactant product : products) {
+            double deltaValue = velocity * product.getStoichiometricNumber();
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), product.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
         }
         return deltas;
     }
@@ -182,16 +187,14 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
     }
 
     protected String collectSubstrateString() {
-        return stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isSubstrate)
+        return substrates.stream()
                 .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
                         + substrate.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
     }
 
     protected String collectProductsString() {
-        return stoichiometricReactants.stream()
-                .filter(StoichiometricReactant::isProduct)
+        return products.stream()
                 .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
                         + product.getEntity().getIdentifier())
                 .collect(Collectors.joining(" +"));
@@ -212,13 +215,14 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
     public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> {
 
-        protected final TopLevelType topLevelObject;
-        protected final BuilderType builderObject;
+        final TopLevelType topLevelObject;
+        final BuilderType builderObject;
 
         public Builder(Simulation simulation) {
             topLevelObject = createObject(simulation);
             topLevelObject.setSimulation(simulation);
-            topLevelObject.stoichiometricReactants = new ArrayList<>();
+            topLevelObject.substrates = new ArrayList<>();
+            topLevelObject.products = new ArrayList<>();
             builderObject = getBuilder();
         }
 
@@ -237,8 +241,20 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
             return builderObject;
         }
 
+        public BuilderType addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, DECREASING, topology));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
         public BuilderType addSubstrate(ChemicalEntity chemicalEntity, double stoichiometricNumber) {
             topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, DECREASING, stoichiometricNumber));
+            topLevelObject.addReferencedEntity(chemicalEntity);
+            return builderObject;
+        }
+
+        public BuilderType addSubstrate(ChemicalEntity chemicalEntity, CellTopology topology, double stoichiometricNumber) {
+            topLevelObject.addStochiometricReactant(new StoichiometricReactant(chemicalEntity, DECREASING, topology, stoichiometricNumber));
             topLevelObject.addReferencedEntity(chemicalEntity);
             return builderObject;
         }

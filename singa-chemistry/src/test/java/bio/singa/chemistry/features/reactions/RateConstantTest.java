@@ -35,7 +35,7 @@ public class RateConstantTest {
                 .build();
         secondOder = RateConstant.create(3.0)
                 .backward()
-                .secondOder()
+                .secondOrder()
                 .concentrationUnit(MILLI(MOLE_PER_LITRE))
                 .timeUnit(MINUTE)
                 .build();

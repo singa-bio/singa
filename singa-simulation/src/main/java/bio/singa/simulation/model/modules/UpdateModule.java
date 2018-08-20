@@ -6,6 +6,7 @@ import bio.singa.features.model.ScalableFeature;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 
 import javax.measure.Quantity;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -24,6 +25,8 @@ public interface UpdateModule {
     Set<Class<? extends Feature>> getRequiredFeatures();
 
     <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(Class<? extends ScalableFeature<FeatureContentType>> featureClass);
+
+    Collection<Feature<?>> getFeatures();
 
     void optimizeTimeStep();
 

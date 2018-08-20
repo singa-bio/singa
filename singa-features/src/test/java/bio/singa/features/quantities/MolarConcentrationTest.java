@@ -10,7 +10,6 @@ import javax.measure.quantity.AmountOfSubstance;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Volume;
 
-import static bio.singa.features.units.UnitProvider.MOLECULES;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.AbstractUnit.ONE;
@@ -98,7 +97,7 @@ public class MolarConcentrationTest {
         Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
         Quantity<Volume> volume = Quantities.getQuantity(1.0, Environment.getVolumeUnit());
         Quantity<Dimensionless> actualResult = MolarConcentration.concentrationToMolecules(molePerLitre, volume);
-        Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, MOLECULES);
+        Quantity<Dimensionless> expectedResult = Quantities.getQuantity(6.022140857000001E7, ONE);
         assertEquals(expectedResult, actualResult);
     }
 

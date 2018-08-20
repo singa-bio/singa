@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Objects;
 
-import static bio.singa.features.units.UnitProvider.MOLECULES;
 import static tec.uom.se.unit.Units.*;
 
 /**
@@ -133,7 +132,7 @@ public class MolarConcentration extends AbstractQuantity<MolarConcentration> {
     }
 
     public static Quantity<Dimensionless> concentrationToMolecules(Quantity<MolarConcentration> concentration, Quantity<Volume> volume) {
-        return concentrationToMoles(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class).to(MOLECULES);
+        return concentrationToMoles(concentration, volume).multiply(NaturalConstants.AVOGADRO_CONSTANT).asType(Dimensionless.class);
     }
 
 }

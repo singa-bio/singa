@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.model.sections.CellTopology;
 
 /**
  * {@code StoichiometricReactant}s are {@link Reactant}s that are consumed or produced during the reaction. A
@@ -19,6 +20,12 @@ public class StoichiometricReactant extends Reactant {
      * The reaction order of the reactant.
      */
     private double reactionOrder;
+
+    public StoichiometricReactant(ChemicalEntity entity, ReactantRole role, CellTopology prefferedTopology, double stoichiometricNumber, double reactionOrder) {
+        super(entity, role, prefferedTopology);
+        this.stoichiometricNumber = stoichiometricNumber;
+        this.reactionOrder = reactionOrder;
+    }
 
     /**
      * Creates a new {@link StoichiometricReactant}.
@@ -52,6 +59,17 @@ public class StoichiometricReactant extends Reactant {
         super(entity, role);
         stoichiometricNumber = 1;
         reactionOrder = 1;
+    }
+
+    public StoichiometricReactant(ChemicalEntity chemicalEntity, ReactantRole role, CellTopology topology) {
+        super(chemicalEntity, role, topology);
+        stoichiometricNumber = 1;
+        reactionOrder = 1;
+    }
+
+    public StoichiometricReactant(ChemicalEntity chemicalEntity, ReactantRole role, CellTopology topology, double stoichiometricNumber) {
+        super(chemicalEntity, role, topology);
+        this.stoichiometricNumber = stoichiometricNumber;
     }
 
     /**

@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
+import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.parameters.Environment;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -231,7 +232,7 @@ public class SimulationManager extends Task<Simulation> {
     protected Simulation call() {
         while (!isCancelled() && terminationCondition.test(simulation)) {
             if (emitCondition.test(simulation)) {
-                logger.info("Emitting event after {} (epoch {}).", simulation.getElapsedTime(), simulation.getEpoch());
+                logger.info("Emitting event after {} (epoch {}).", QuantityFormatter.formatTime(simulation.getElapsedTime()), simulation.getEpoch());
                 emitGraphEvent(simulation);
                 for (Updatable updatable : simulation.getObservedUpdatables()) {
                     emitNodeEvent(simulation, updatable);
@@ -255,7 +256,11 @@ public class SimulationManager extends Task<Simulation> {
         if (previousTimeMillis > 0) {
             ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
             double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
-            logger.info("estimated time remaining: " + formatMillis(estimatedTimeRemaining) + ", current simulation speed: " + df.format(speed) + " µs(Simulation Time)/s(Real Time)");
+            if (Double.isInfinite(speed)) {
+                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MICRO(SECOND))) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
+            } else {
+                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MICRO(SECOND))) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
+            }
         }
         previousTimeMillis = currentTimeMillis;
         previousTimeSimulation = currentTimeSimulation;

@@ -287,28 +287,10 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @return The column header.
      */
     private String prepareConcentrationColumnHeader(AutomatonNode node) {
-        Set<CellSubsection> referencedSections = node.getAllReferencedSections();
-        StringBuilder sb = new StringBuilder();
-        sb.append("elapsed time").append(SEPARATOR_CHARACTER);
-        int count = 0;
-        int size = observedEntities.size() * referencedSections.size() - 1;
-        for (ChemicalEntity entity : observedEntities) {
-            for (CellSubsection cellSection : referencedSections) {
-                if (count < size) {
-                    sb.append(entity.getIdentifier())
-                            .append(SECTION_SPACER)
-                            .append(cellSection.getIdentifier())
-                            .append(SEPARATOR_CHARACTER);
-                } else {
-                    sb.append(entity.getIdentifier())
-                            .append(SECTION_SPACER)
-                            .append(cellSection.getIdentifier()).
-                            append(LINEBREAK);
-                }
-                count++;
-            }
-        }
-        return sb.toString();
+        return "elapsed time" + SEPARATOR_CHARACTER +
+                "species" + SEPARATOR_CHARACTER +
+                "compartment" + SEPARATOR_CHARACTER +
+                "concentration" + LINEBREAK;
     }
 
     /**
@@ -369,21 +351,17 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
         Updatable node = event.getUpdatable();
         Set<CellSubsection> referencedSections = node.getAllReferencedSections();
         StringBuilder sb = new StringBuilder();
-        sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER);
-        int count = 0;
-        int size = observedEntities.size() * referencedSections.size() - 1;
+
         for (ChemicalEntity entity : observedEntities) {
             for (CellSubsection cellSection : referencedSections) {
-                if (count < size) {
-                    sb.append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
-                            .append(SEPARATOR_CHARACTER);
-                } else {
-                    sb.append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
-                            .append(LINEBREAK);
-                }
-                count++;
+                sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
+                        .append(entity.getIdentifier()).append(SEPARATOR_CHARACTER)
+                        .append(cellSection.getIdentifier()).append(SEPARATOR_CHARACTER)
+                        .append(concentrationFormatter.format(node.getConcentration(cellSection, entity)))
+                        .append(LINEBREAK);
             }
         }
+
         try {
             appendConcentrationContent(node, sb.toString());
         } catch (IOException e) {

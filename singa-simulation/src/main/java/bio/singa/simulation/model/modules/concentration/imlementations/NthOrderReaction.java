@@ -43,7 +43,7 @@ public class NthOrderReaction extends Reaction {
 
     private boolean containsSubstrate(ConcentrationContainer concentrationContainer) {
         CellSubsection currentSubsection = supplier.getCurrentSubsection();
-        List<ChemicalEntity> substrates = getSubstrates();
+        List<ChemicalEntity> substrates = getSubstrateEntities();
         for (ChemicalEntity substrate : substrates) {
             if (concentrationContainer.get(currentSubsection, substrate).getValue().doubleValue() == 0.0) {
                 return false;

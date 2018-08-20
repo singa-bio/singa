@@ -4,20 +4,15 @@ package bio.singa.features.units;
 import bio.singa.features.quantities.DynamicViscosity;
 import bio.singa.features.quantities.MolarConcentration;
 import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.unit.AlternateUnit;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import static tec.uom.se.AbstractUnit.ONE;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
 
 /**
@@ -63,7 +58,6 @@ public final class UnitProvider {
         SimpleUnitFormat.getInstance().label(ANGSTROEM, "\u212B");
     }
 
-    public static final Unit<Dimensionless> MOLECULES = new AlternateUnit<>(ONE, "molecules");
 
 
 }

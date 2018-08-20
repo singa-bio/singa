@@ -24,8 +24,7 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
     public static final String SYMBOL = "P_d";
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(membranePermeabilityQuantity
-                .to(Environment.getNodeDistanceUnit().divide(SECOND).asType(MembranePermeability.class)),
+        super(membranePermeabilityQuantity.to(Environment.getNodeDistanceUnit().divide(SECOND).asType(MembranePermeability.class)),
                 featureOrigin);
     }
 

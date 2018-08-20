@@ -18,6 +18,7 @@ import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.PASCAL_SECOND;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
+import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.*;
 
 public class Environment extends Observable {
@@ -63,6 +64,7 @@ public class Environment extends Observable {
      * The singleton instance.
      */
     private static Environment instance;
+
 
     /**
      * The global temperature of the simulation system.
@@ -138,7 +140,7 @@ public class Environment extends Observable {
         nodeDistance = DEFAULT_NODE_DISTANCE;
         subsectionArea = DEFAULT_NODE_DISTANCE.multiply(DEFAULT_NODE_DISTANCE).asType(Area.class);
         subsectionVolume = subsectionArea.multiply(DEFAULT_NODE_DISTANCE).asType(Volume.class);
-        subsectionConcentration = MOLE.divide(subsectionVolume.getUnit()).asType(MolarConcentration.class);
+        subsectionConcentration = NANO(MOLE).divide(subsectionVolume.getUnit()).asType(MolarConcentration.class);
         systemExtend = DEFAULT_SYSTEM_EXTEND;
         simulationExtend = DEFAULT_SIMULATION_EXTEND;
         systemTemperature = DEFAULT_TEMPERATURE;
@@ -154,7 +156,7 @@ public class Environment extends Observable {
         getInstance().nodeDistance = DEFAULT_NODE_DISTANCE;
         getInstance().subsectionArea = DEFAULT_NODE_DISTANCE.multiply(DEFAULT_NODE_DISTANCE).asType(Area.class);
         getInstance().subsectionVolume = getSubsectionArea().multiply(DEFAULT_NODE_DISTANCE).asType(Volume.class);
-        getInstance().subsectionConcentration = MOLE.divide(getSubsectionVolume().getUnit()).asType(MolarConcentration.class);
+        getInstance().subsectionConcentration = NANO(MOLE).divide(getSubsectionVolume().getUnit()).asType(MolarConcentration.class);
         getInstance().systemExtend = DEFAULT_SYSTEM_EXTEND;
         getInstance().simulationExtend = DEFAULT_SIMULATION_EXTEND;
         getInstance().systemTemperature = DEFAULT_TEMPERATURE;
@@ -192,7 +194,7 @@ public class Environment extends Observable {
         subsectionArea = nodeDistance.multiply(nodeDistance).asType(Area.class);
         subsectionVolume = subsectionArea.multiply(nodeDistance).asType(Volume.class);
         // concentration
-        subsectionConcentration = MOLE.divide(subsectionVolumeUnit).asType(MolarConcentration.class);
+        subsectionConcentration = NANO(MOLE).divide(subsectionVolumeUnit).asType(MolarConcentration.class);
         emptyConcentration = Quantities.getQuantity(0.0, subsectionConcentration);
     }
 

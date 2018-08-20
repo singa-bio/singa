@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
+import bio.singa.simulation.model.sections.CellTopology;
 
 /**
  * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s. This abstract class has
@@ -20,6 +21,8 @@ public abstract class Reactant {
      */
     private ReactantRole role;
 
+    private CellTopology prefferedTopology;
+
     /**
      * Creates a new reactant.
      * @param entity The referenced entity.
@@ -28,6 +31,13 @@ public abstract class Reactant {
     Reactant(ChemicalEntity entity, ReactantRole role) {
         this.entity = entity;
         this.role = role;
+        prefferedTopology = CellTopology.INNER;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, CellTopology prefferedTopology) {
+        this.entity = entity;
+        this.role = role;
+        this.prefferedTopology = prefferedTopology;
     }
 
     /**
@@ -66,4 +76,11 @@ public abstract class Reactant {
         this.role = role;
     }
 
+    public CellTopology getPrefferedTopology() {
+        return prefferedTopology;
+    }
+
+    public void setPrefferedTopology(CellTopology prefferedTopology) {
+        this.prefferedTopology = prefferedTopology;
+    }
 }

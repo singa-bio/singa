@@ -51,7 +51,7 @@ public class ComplexBuildingReactionTest {
         Environment.reset();
         logger.info("Testing section changing binding (minimal setup).");
         // the rate constants
-        RateConstant forwardRate = RateConstant.create(1).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(SECOND).build();
+        RateConstant forwardRate = RateConstant.create(1).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(SECOND).build();
         RateConstant backwardRate = RateConstant.create(1).backward().firstOrder().timeUnit(SECOND).build();
 
         // the ligand
@@ -123,7 +123,7 @@ public class ComplexBuildingReactionTest {
                 .build();
 
         // the corresponding rate constants
-        RateConstant forwardsRate = RateConstant.create(2.4e8).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant forwardsRate = RateConstant.create(2.4e8).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
         RateConstant backwardsRate = RateConstant.create(0.018).backward().firstOrder().timeUnit(MINUTE).build();
         // alpha-1 adrenergic receptor, P35348
         Receptor receptor = new Receptor.Builder("receptor")
@@ -183,7 +183,7 @@ public class ComplexBuildingReactionTest {
         Environment.reset();
         logger.info("Testing section changing binding (membrane absorption).");
         // the rate constants
-        RateConstant forwardRate = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant forwardRate = RateConstant.create(1.0e6).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
         RateConstant backwardRate = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
         // the ligand
@@ -237,11 +237,11 @@ public class ComplexBuildingReactionTest {
         logger.info("Testing section changing binding (inside and outside reactions).");
 
         // the rate constants
-        RateConstant innerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant innerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
         RateConstant innerBackwardsRateConstant = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
         // the rate constants
-        RateConstant outerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
+        RateConstant outerForwardsRateConstant = RateConstant.create(1.0e6).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(MINUTE).build();
         RateConstant outerBackwardsRateConstant = RateConstant.create(0.01).backward().firstOrder().timeUnit(MINUTE).build();
 
         // the inner ligand

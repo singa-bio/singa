@@ -37,7 +37,6 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
     private List<SpawnEvent> candidateEvents;
     private List<SpawnEvent> completingEvents;
 
-
     public ClathrinMediatedEndocytosis() {
         initialMembraneCargo = new HashMap<>();
         segments = new ArrayList<>();

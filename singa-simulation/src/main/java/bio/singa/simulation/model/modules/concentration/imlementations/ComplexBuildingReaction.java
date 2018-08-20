@@ -56,7 +56,7 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
  *
  *  // the forwards rate constants
  *  RateConstant forwardsRate = RateConstant.create(2.4e8)
- *      .forward().secondOder()
+ *      .forward().secondOrder()
  *      .concentrationUnit(MOLE_PER_LITRE)
  *      .timeUnit(MINUTE)
  *      .build();
@@ -162,6 +162,38 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
 
     public ComplexedChemicalEntity getComplex() {
         return complex;
+    }
+
+    public ChemicalEntity getBinder() {
+        return binder;
+    }
+
+    public void setBinder(ChemicalEntity binder) {
+        this.binder = binder;
+    }
+
+    public CellTopology getBinderTopology() {
+        return binderTopology;
+    }
+
+    public void setBinderTopology(CellTopology binderTopology) {
+        this.binderTopology = binderTopology;
+    }
+
+    public ChemicalEntity getBindee() {
+        return bindee;
+    }
+
+    public void setBindee(ChemicalEntity bindee) {
+        this.bindee = bindee;
+    }
+
+    public CellTopology getBindeeTopology() {
+        return bindeeTopology;
+    }
+
+    public void setBindeeTopology(CellTopology bindeeTopology) {
+        this.bindeeTopology = bindeeTopology;
     }
 
     public String getReactionString() {

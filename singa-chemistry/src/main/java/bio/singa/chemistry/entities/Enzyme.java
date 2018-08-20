@@ -9,9 +9,7 @@ import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.Feature;
 import bio.singa.structure.features.molarmass.MolarMass;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,35 +34,12 @@ public class Enzyme extends Protein {
     }
 
     /**
-     * A list of possible substrate.
-     */
-    private List<SmallMolecule> substrates;
-
-    /**
      * Creates a new Enzyme with the given {@link UniProtIdentifier}.
      *
      * @param identifier The {@link UniProtIdentifier}.
      */
     protected Enzyme(SimpleStringIdentifier identifier) {
         super(identifier);
-    }
-
-    /**
-     * Returns possible substrates of this enzyme.
-     *
-     * @return The possible substrates
-     */
-    public List<SmallMolecule> getSubstrates() {
-        return substrates;
-    }
-
-    /**
-     * Sets possible substrates of this enzyme.
-     *
-     * @param substrates The possible substrates
-     */
-    public void setSubstrates(List<SmallMolecule> substrates) {
-        this.substrates = substrates;
     }
 
     @Override
@@ -81,7 +56,6 @@ public class Enzyme extends Protein {
 
         public Builder(SimpleStringIdentifier identifier) {
             super(identifier);
-            topLevelObject.setSubstrates(new ArrayList<>());
         }
 
         public Builder(String identifier) {
@@ -95,16 +69,6 @@ public class Enzyme extends Protein {
 
         @Override
         protected Builder getBuilder() {
-            return this;
-        }
-
-        public Builder substrates(List<SmallMolecule> substrates) {
-            topLevelObject.setSubstrates(substrates);
-            return this;
-        }
-
-        public Builder addSubstrate(SmallMolecule substrate) {
-            topLevelObject.getSubstrates().add(substrate);
             return this;
         }
 

@@ -18,8 +18,7 @@ public class UniProtDatabase {
 
     public static final FeatureOrigin origin = new FeatureOrigin(FeatureOrigin.OriginType.DATABASE,
             "UniProt Database",
-            "Degtyarenko, Kirill, et al. \"ChEBI: a database and ontology for chemical entities of " +
-                    "biological interest.\" Nucleic acids research 36.suppl 1 (2008): D344-D350.");
+            "UniProt Consortium. \"UniProt: the universal protein knowledgebase.\" Nucleic acids research 46.5 (2018): 2699.");
 
     private static final Logger logger = LoggerFactory.getLogger(UniProtDatabase.class);
 

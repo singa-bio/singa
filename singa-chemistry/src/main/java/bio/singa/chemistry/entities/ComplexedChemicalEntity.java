@@ -19,7 +19,7 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
     private static final Logger logger = LoggerFactory.getLogger(ComplexedChemicalEntity.class);
 
     private static final FeatureOrigin computedMassOrigin = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION,
-            "Computed by the Sum of parts",
+            "computed by sum of components",
             "none");
 
     public static Builder create(String identifier) {
@@ -68,15 +68,17 @@ public class ComplexedChemicalEntity extends ChemicalEntity {
     private void computeMolarMass() {
         double sum = 0.0;
         for (ChemicalEntity entity : associatedParts.keySet()) {
-            Quantity<MolarMass> featureContent = entity.getFeature(MolarMass.class);
-            if (featureContent != null) {
-                double v = featureContent
-                        .multiply(associatedParts.get(entity))
-                        .getValue().doubleValue();
-                sum += v;
-            } else {
-                logger.warn("Could not calculate mass of {}, since not all complexed parts have an associated molar mass.", this);
-                return;
+            if (entity.hasFeature(MolarMass.class)) {
+                Quantity<MolarMass> featureContent = entity.getFeature(MolarMass.class);
+                if (featureContent != null) {
+                    double v = featureContent
+                            .multiply(associatedParts.get(entity))
+                            .getValue().doubleValue();
+                    sum += v;
+                } else {
+                    logger.warn("Could not calculate mass of {}, since not all complexed parts have an associated molar mass.", this);
+                    return;
+                }
             }
         }
         setFeature(new MolarMass(sum, computedMassOrigin));

@@ -51,7 +51,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
 
         TimeStep firstOrder();
 
-        ConcentrationStep secondOder();
+        ConcentrationStep secondOrder();
     }
 
     public interface ConcentrationStep {
@@ -110,7 +110,7 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         }
 
         @Override
-        public ConcentrationStep secondOder() {
+        public ConcentrationStep secondOrder() {
             order = SECOND;
             return this;
         }

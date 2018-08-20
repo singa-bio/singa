@@ -52,9 +52,11 @@ import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.quantity.Area;
 import javax.measure.quantity.Length;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -176,7 +178,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         // setup actin boost
         EndocytosisActinBoost boost = new EndocytosisActinBoost();
-        boost.setDecayingEntity(clathrinTriskelion);
+        boost.setFeature(new DecayingEntity(clathrinTriskelion, MANUALLY_ANNOTATED));
         boost.setFeature(ActinBoostVelocity.DEFAULT_ACTIN_VELOCITY);
         boost.setSimulation(simulation);
         simulation.getModules().add(boost);
@@ -195,12 +197,22 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         // setup tethering and fusion
         fusion = new VesicleFusion();
-        fusion.addMatchingQSnare(snareComplex1);
-        fusion.addMatchingQSnare(snareComplex2);
-        fusion.addMatchingRSnare(vamp2);
-        fusion.addMatchingRSnare(vamp3);
+
+        HashSet<ChemicalEntity> qSnareEntities = new HashSet<>();
+        qSnareEntities.add(snareComplex1);
+        qSnareEntities.add(snareComplex2);
+        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities, MANUALLY_ANNOTATED);
+        fusion.setFeature(qSnares);
+
+        HashSet<ChemicalEntity> rSnareEntities = new HashSet<>();
+        rSnareEntities.add(vamp2);
+        rSnareEntities.add(vamp3);
+        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, MANUALLY_ANNOTATED);
+        fusion.setFeature(rSnares);
+
         fusion.initializeComplexes();
-        fusion.setMinimalPairs(3);
+
+        fusion.setFeature(new FusionPairs(3, MANUALLY_ANNOTATED));
         fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);

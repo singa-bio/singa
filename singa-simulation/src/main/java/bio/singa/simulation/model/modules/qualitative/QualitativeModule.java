@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.measure.Quantity;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,7 +79,6 @@ public abstract class QualitativeModule implements UpdateModule {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 
-
     public <FeatureType extends Feature> void setFeature(FeatureType feature) {
         featureManager.setFeature(feature);
     }
@@ -99,6 +99,10 @@ public abstract class QualitativeModule implements UpdateModule {
                 throw new FeatureUnassignableException(toString()+" requires the "+feature+" feature");
             }
         }
+    }
+
+    public Collection<Feature<?>> getFeatures() {
+        return featureManager.getAllFeatures();
     }
 
     @Override

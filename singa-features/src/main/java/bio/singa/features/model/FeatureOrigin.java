@@ -18,12 +18,6 @@ public class FeatureOrigin {
         this.publication = publication;
     }
 
-    public FeatureOrigin(OriginType originType) {
-        this.originType = originType;
-        name = "Undefined";
-        publication = "Undefined ";
-    }
-
     public OriginType getOriginType() {
         return originType;
     }

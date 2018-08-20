@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.annotations.Annotation;
 import bio.singa.chemistry.annotations.AnnotationType;
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.entities.ComplexedChemicalEntity;
 import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
@@ -9,8 +10,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.AttachmentDistance;
-import bio.singa.simulation.features.endocytosis.TetheringTime;
+import bio.singa.simulation.features.endocytosis.*;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneTracer;
@@ -27,8 +27,10 @@ import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.quantity.Length;
+import java.util.HashSet;
 import java.util.List;
 
+import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static org.junit.Assert.assertEquals;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -114,12 +116,19 @@ public class VesicleFusionTest {
 
         // setup fusion module
         VesicleFusion fusion = new VesicleFusion();
-        fusion.addMatchingQSnare(snareComplex1);
-        fusion.addMatchingQSnare(snareComplex2);
-        fusion.addMatchingRSnare(vamp2);
-        fusion.addMatchingRSnare(vamp3);
+        HashSet<ChemicalEntity> qSnareEntities = new HashSet<>();
+        qSnareEntities.add(snareComplex1);
+        qSnareEntities.add(snareComplex2);
+        MatchingQSnares qSnares = new MatchingQSnares(qSnareEntities, MANUALLY_ANNOTATED);
+        fusion.setFeature(qSnares);
+
+        HashSet<ChemicalEntity> rSnareEntities = new HashSet<>();
+        rSnareEntities.add(vamp2);
+        rSnareEntities.add(vamp3);
+        MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, MANUALLY_ANNOTATED);
+        fusion.setFeature(rSnares);
         fusion.initializeComplexes();
-        fusion.setMinimalPairs(3);
+        fusion.setFeature(new FusionPairs(3, MANUALLY_ANNOTATED));
         fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);

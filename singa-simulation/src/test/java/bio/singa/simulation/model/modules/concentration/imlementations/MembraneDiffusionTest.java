@@ -80,10 +80,10 @@ public class MembraneDiffusionTest {
 
         simulation.nextEpoch();
         // delta should be about 3.5e-20 mol/um3
-        ComparableQuantity<MolarConcentration> expectedLeft = Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()).subtract(Quantities.getQuantity(3.5e-20, getConcentrationUnit()));
-        ComparableQuantity<MolarConcentration> expectedRight = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()).add(Quantities.getQuantity(3.5e-20, getConcentrationUnit()));
-        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getInnerSubsection(), water).getValue().doubleValue(), 1e-23);
-        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getOuterSubsection(), water).getValue().doubleValue(), 1e-23);
+        ComparableQuantity<MolarConcentration> expectedLeft = Quantities.getQuantity(2.0, MOLE_PER_LITRE).to(getConcentrationUnit()).subtract(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
+        ComparableQuantity<MolarConcentration> expectedRight = Quantities.getQuantity(1.0, MOLE_PER_LITRE).to(getConcentrationUnit()).add(Quantities.getQuantity(3.5e-11, getConcentrationUnit()));
+        assertEquals(expectedLeft.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getInnerSubsection(), water).getValue().doubleValue(), 1e-12);
+        assertEquals(expectedRight.getValue().doubleValue(), membraneNode.getConcentration(MEMBRANE.getOuterSubsection(), water).getValue().doubleValue(), 1e-12);
     }
 
     @Test
