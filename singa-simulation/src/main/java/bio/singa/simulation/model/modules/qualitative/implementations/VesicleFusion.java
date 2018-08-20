@@ -6,7 +6,7 @@ import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.*;
+import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
@@ -180,7 +180,7 @@ public class VesicleFusion extends QualitativeModule {
                     for (MembraneSegment membraneSegment : node.getMembraneSegments()) {
                         // check distance cutoff
                         double currentDistance = membraneSegment.distanceTo(currentPosition);
-                        ComparableQuantity<Length> threshold = getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
+                        ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
                         Quantity<Length> distance = Environment.convertSimulationToSystemScale(currentDistance);
                         if (threshold.isGreaterThanOrEqualTo(distance)) {
                             TetheringSnares tetheringSnares = prepareTethering(node, vesicle);
@@ -220,12 +220,12 @@ public class VesicleFusion extends QualitativeModule {
         for (Integer qSnareNumber : snarePattern.getQSnares().values()) {
             qSnareSum += qSnareNumber;
         }
-        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent();
+        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent().getValue().intValue();
         return rSnareSum >= fusionPairs && qSnareSum >= fusionPairs;
     }
 
     private void reserveSnares(Vesicle vesicle, TetheringSnares tetheringSnares) {
-        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent();
+        int fusionPairs = getFeature(FusionPairs.class).getFeatureContent().getValue().intValue();
         List<ChemicalEntity> qSnareEntities = new ArrayList<>(tetheringSnares.getQSnares().keySet());
         List<ChemicalEntity> rSnareEntities = new ArrayList<>(tetheringSnares.getRSnares().keySet());
         for (int occupiedSnareCounter = 0; occupiedSnareCounter < fusionPairs; occupiedSnareCounter++) {

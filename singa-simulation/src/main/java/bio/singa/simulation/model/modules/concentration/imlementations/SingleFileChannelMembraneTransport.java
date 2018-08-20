@@ -1,14 +1,14 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.chemistry.entities.Transporter;
+import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
-import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
-import bio.singa.simulation.model.modules.concentration.ModuleFactory;
+import bio.singa.simulation.features.Cargo;
+import bio.singa.simulation.features.Solutes;
+import bio.singa.simulation.features.Transporter;
+import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
@@ -18,6 +18,8 @@ import bio.singa.simulation.model.simulation.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
+
+import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 
 /**
  * The single file channel transport describes the movement of cargo molecules through {@link Transporter} proteins, so
@@ -61,7 +63,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         return new SingleFileChannelMembraneTransportBuilder(simulation);
     }
 
-    private Transporter transporter;
+    private ChemicalEntity transporter;
     private ChemicalEntity cargo;
     private Set<ChemicalEntity> solutes;
 
@@ -74,8 +76,11 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         // feature
         getRequiredFeatures().add(OsmoticPermeability.class);
         // reference entities for this module
+        transporter = getFeature(Transporter.class).getFeatureContent();
         addReferencedEntity(transporter);
+        cargo = getFeature(Cargo.class).getFeatureContent();
         addReferencedEntity(cargo);
+        solutes = getFeature(Solutes.class).getFeatureContent();
         addReferencedEntities(solutes);
         // reference module in simulation
         addModuleToSimulation();
@@ -114,6 +119,10 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         return innerConcentration - outerConcentration;
     }
 
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new SingleFileChannelMembraneTransportBuilder(simulation);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " (" + transporter.getName() + ")";
@@ -124,7 +133,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
     }
 
     public interface TransporterStep {
-        CargoStep transporter(Transporter transporter);
+        CargoStep transporter(Protein transporter);
     }
 
     public interface CargoStep {
@@ -143,45 +152,56 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         SingleFileChannelMembraneTransport build();
     }
 
-    public static class SingleFileChannelMembraneTransportBuilder implements TransporterStep, CargoStep, SolutesStep, BuildStep {
+    public static class SingleFileChannelMembraneTransportBuilder implements TransporterStep, CargoStep, SolutesStep, BuildStep, ModuleBuilder {
 
         SingleFileChannelMembraneTransport module;
 
         public SingleFileChannelMembraneTransportBuilder(Simulation simulation) {
+            createModule(simulation);
+        }
+
+        @Override
+        public SingleFileChannelMembraneTransport createModule(Simulation simulation) {
             module = ModuleFactory.setupModule(SingleFileChannelMembraneTransport.class,
                     ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
             module.setSimulation(simulation);
-            module.solutes = new HashSet<>();
+            return module;
         }
 
         @Override
-        public CargoStep transporter(Transporter transporter) {
-            module.transporter = transporter;
+        public SingleFileChannelMembraneTransport getModule() {
+            return module;
+        }
+
+
+        @Override
+        public CargoStep transporter(Protein transporter) {
+            module.setFeature(new Transporter(transporter, MANUALLY_ANNOTATED));
             return this;
         }
 
         @Override
         public SolutesStep cargo(ChemicalEntity cargo) {
-            module.cargo = cargo;
+            module.setFeature(new Cargo(cargo, MANUALLY_ANNOTATED));
             return this;
         }
 
         @Override
         public BuildStep forSolute(ChemicalEntity solute) {
-            module.solutes.add(solute);
+            module.setFeature(new Solutes(Collections.singleton(solute), MANUALLY_ANNOTATED));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(ChemicalEntity... solutes) {
-            module.solutes.addAll(Arrays.asList(solutes));
+            module.setFeature(new Solutes(new HashSet<>(Arrays.asList(solutes)), MANUALLY_ANNOTATED));
             return this;
         }
 
         @Override
         public BuildStep forSolutes(Collection<ChemicalEntity> solutes) {
-            module.solutes.addAll(solutes);
+            module.setFeature(new Solutes(new HashSet<>(solutes), MANUALLY_ANNOTATED));
             return this;
         }
 

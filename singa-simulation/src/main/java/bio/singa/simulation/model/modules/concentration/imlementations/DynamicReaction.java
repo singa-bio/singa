@@ -2,11 +2,14 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
-import bio.singa.simulation.features.scale.AppliedScale;
+import bio.singa.simulation.features.AppliedScale;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
+import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
+import bio.singa.simulation.model.simulation.Simulation;
 
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +85,33 @@ public class DynamicReaction extends Reaction {
         kineticLaw.setCurrentCellSection(supplier.getCurrentSubsection());
         kineticLaw.setAppliedScale(getScaledFeature(AppliedScale.class).getValue().doubleValue());
         return kineticLaw.calculateVelocity(concentrationContainer);
+    }
+
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new DynamicReactionBuilder(simulation);
+    }
+
+    public static class DynamicReactionBuilder extends Reaction.Builder<DynamicReaction, DynamicReactionBuilder> {
+
+        public DynamicReactionBuilder(Simulation simulation) {
+            super(simulation);
+        }
+
+        @Override
+        protected DynamicReaction createObject(Simulation simulation) {
+            DynamicReaction module = ModuleFactory.setupModule(DynamicReaction.class,
+                    ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
+                    ModuleFactory.Specificity.SECTION_SPECIFIC);
+            module.setSimulation(simulation);
+            return module;
+        }
+
+
+        @Override
+        protected DynamicReactionBuilder getBuilder() {
+            return this;
+        }
+
     }
 
 }

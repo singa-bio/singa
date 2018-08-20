@@ -1,17 +1,17 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.AbstractFeature;
+import bio.singa.chemistry.features.EntityFeature;
 import bio.singa.features.model.FeatureOrigin;
 
 /**
  * @author cl
  */
-public class DecayingEntity extends AbstractFeature<ChemicalEntity> {
+public class Transporter extends EntityFeature {
 
     private static final String SYMBOL = "e_Decay";
 
-    public DecayingEntity(ChemicalEntity entity, FeatureOrigin featureOrigin) {
+    public Transporter(ChemicalEntity entity, FeatureOrigin featureOrigin) {
         super(entity, featureOrigin);
     }
 
@@ -19,6 +19,5 @@ public class DecayingEntity extends AbstractFeature<ChemicalEntity> {
     public String getSymbol() {
         return SYMBOL;
     }
-
 
 }

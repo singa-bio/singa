@@ -1,4 +1,4 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
 import javax.measure.Quantity;
 

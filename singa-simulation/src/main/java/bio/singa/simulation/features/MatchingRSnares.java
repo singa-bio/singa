@@ -1,7 +1,7 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
+import bio.singa.chemistry.MultiEntityFeature;
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.model.AbstractFeature;
 import bio.singa.features.model.FeatureOrigin;
 
 import java.util.Set;
@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author cl
  */
-public class MatchingRSnares extends AbstractFeature<Set<ChemicalEntity>> {
+public class MatchingRSnares extends MultiEntityFeature {
 
     private static final String SYMBOL = "es_RSnares";
 
@@ -21,4 +21,5 @@ public class MatchingRSnares extends AbstractFeature<Set<ChemicalEntity>> {
     public String getSymbol() {
         return SYMBOL;
     }
+
 }

@@ -49,8 +49,8 @@ public class RateConstantTest {
         // * 10 from 10 seconds
         // / 10E-12 from litre to um3
         // = 1.0e-8 mol/l*s
-        assertEquals(new ProductUnit<>(MOLE.divide(MICRO(METRE).pow(3).multiply(SECOND))), zeroOrder.getScaledQuantity().getUnit());
-        assertEquals(1.0e-23, zeroOrder.getScaledQuantity().getValue().doubleValue(), 1.0E-16);
+        assertEquals(new ProductUnit<>(NANO(MOLE).divide(MICRO(METRE).pow(3).multiply(SECOND))), zeroOrder.getScaledQuantity().getUnit());
+        assertEquals(1.0e-14, zeroOrder.getScaledQuantity().getValue().doubleValue(), 1.0E-16);
     }
 
     @Test
@@ -73,8 +73,8 @@ public class RateConstantTest {
         // / 0.001 from seconds to milli seconds
         // * 10E-12 from litre to um3
         // = 0.05 l/mol*ms
-        assertEquals(new ProductUnit<>(MICRO(METRE).pow(3).divide(MOLE.multiply(MILLI(SECOND)))), secondOder.getScaledQuantity().getUnit());
-        assertEquals(5.0E13, secondOder.getScaledQuantity().getValue().doubleValue(), 0.0);
+        assertEquals(new ProductUnit<>(MICRO(METRE).pow(3).divide(NANO(MOLE).multiply(MILLI(SECOND)))), secondOder.getScaledQuantity().getUnit());
+        assertEquals(5.0E4, secondOder.getScaledQuantity().getValue().doubleValue(), 0.0);
     }
 
 }

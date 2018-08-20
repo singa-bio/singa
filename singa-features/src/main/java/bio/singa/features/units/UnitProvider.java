@@ -41,7 +41,11 @@ public final class UnitProvider {
      * concentration of a solute in a solution, or of any chemical species in terms of amount of substance in a given
      * volume.
      */
-    public static final Unit<MolarConcentration> MOLE_PER_LITRE = new ProductUnit<>(MOLE.divide(LITRE));
+    public static final Unit<MolarConcentration> MOLE_PER_LITRE = MOLE.divide(LITRE).asType(MolarConcentration.class);
+    public static final Unit<MolarConcentration> NANO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
+
+
+
 
     /**
      * The SI unit for dynamic viscosity quantities.

@@ -3,11 +3,9 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.parameters.Environment;
+import bio.singa.simulation.features.Cargo;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
-import bio.singa.simulation.model.modules.concentration.ModuleFactory;
+import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.SemiDependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
@@ -23,6 +21,8 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Area;
 import java.util.HashMap;
 import java.util.Map;
+
+import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 
 /**
  * The membrane diffusion module describes the movement of chemical entities across {@link Membrane}s driven by the
@@ -69,6 +69,7 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         // feature
         getRequiredFeatures().add(MembranePermeability.class);
         // add cargo
+        cargo = getFeature(Cargo.class).getFeatureContent();
         addReferencedEntity(cargo);
         // reference module in simulation
         addModuleToSimulation();
@@ -133,6 +134,10 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         return outerConcentration - innerConcentration;
     }
 
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new MembraneDiffusionBuilder(simulation);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " (" + cargo.getName() + ")";
@@ -146,20 +151,31 @@ public class MembraneDiffusion extends ConcentrationBasedModule<UpdatableDeltaFu
         MembraneDiffusion build();
     }
 
-    public static class MembraneDiffusionBuilder implements CargoStep, BuildStep {
+    public static class MembraneDiffusionBuilder implements CargoStep, BuildStep, ModuleBuilder {
 
         private MembraneDiffusion module;
 
         public MembraneDiffusionBuilder(Simulation simulation) {
+            createModule(simulation);
+        }
+
+        @Override
+        public MembraneDiffusion getModule() {
+            return module;
+        }
+
+        @Override
+        public MembraneDiffusion createModule(Simulation simulation) {
             module = ModuleFactory.setupModule(MembraneDiffusion.class,
                     ModuleFactory.Scope.SEMI_NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
             module.setSimulation(simulation);
+            return module;
         }
 
         @Override
         public BuildStep cargo(ChemicalEntity cargo) {
-            module.cargo = cargo;
+            module.setFeature(new Cargo(cargo, MANUALLY_ANNOTATED));
             return this;
         }
 

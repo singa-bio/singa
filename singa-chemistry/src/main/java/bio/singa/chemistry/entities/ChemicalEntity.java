@@ -195,14 +195,6 @@ public abstract class ChemicalEntity implements Identifiable<SimpleStringIdentif
                 '}';
     }
 
-    public String getStringForProtocol() {
-        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier().getIdentifier() + System.lineSeparator() +
-                "  " + "name: " + getName() + System.lineSeparator() +
-                "  " + "features: " + System.lineSeparator() +
-                features.listFeatures("    ");
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

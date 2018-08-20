@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
@@ -60,8 +61,8 @@ import static bio.singa.simulation.model.modules.concentration.reactants.Reactan
  */
 public class ReversibleReaction extends Reaction {
 
-    public static Builder inSimulation(Simulation simulation) {
-        return new Builder(simulation);
+    public static ReversibleReactionBuilder inSimulation(Simulation simulation) {
+        return new ReversibleReactionBuilder(simulation);
     }
 
     private RateConstant forwardsReactionRate;
@@ -155,9 +156,13 @@ public class ReversibleReaction extends Reaction {
         return backwardsReactionRate.getScaledQuantity();
     }
 
-    public static class Builder extends Reaction.Builder<ReversibleReaction, Builder> {
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new ReversibleReactionBuilder(simulation);
+    }
 
-        public Builder(Simulation identifier) {
+    public static class ReversibleReactionBuilder extends Reaction.Builder<ReversibleReaction, ReversibleReactionBuilder> {
+
+        public ReversibleReactionBuilder(Simulation identifier) {
             super(identifier);
         }
 
@@ -170,20 +175,20 @@ public class ReversibleReaction extends Reaction {
             return module;
         }
 
-        public Builder forwardsRateConstant(RateConstant forwardsRateConstant) {
+        public ReversibleReactionBuilder forwardsRateConstant(RateConstant forwardsRateConstant) {
             topLevelObject.setFeature(forwardsRateConstant);
             topLevelObject.forwardsReactionRate = forwardsRateConstant;
             return this;
         }
 
-        public Builder backwardsRateConstant(RateConstant backwardsRateConstant) {
+        public ReversibleReactionBuilder backwardsRateConstant(RateConstant backwardsRateConstant) {
             topLevelObject.setFeature(backwardsRateConstant);
             topLevelObject.backwardsReactionRate = backwardsRateConstant;
             return this;
         }
 
         @Override
-        protected Builder getBuilder() {
+        protected ReversibleReactionBuilder getBuilder() {
             return this;
         }
 

@@ -96,14 +96,6 @@ public class Protein extends ChemicalEntity {
         return getContentOfAnnotations(String.class, description, AnnotationType.AMINO_ACID_SEQUENCE);
     }
 
-    public Transporter asTransporter() {
-        return new Transporter(this);
-    }
-
-    public Receptor asReceptor() {
-        return new Receptor(this);
-    }
-
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;

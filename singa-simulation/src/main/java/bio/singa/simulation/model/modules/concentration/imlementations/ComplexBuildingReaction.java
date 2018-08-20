@@ -7,10 +7,7 @@ import bio.singa.chemistry.features.reactions.ForwardsRateConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
-import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
-import bio.singa.simulation.model.modules.concentration.ModuleFactory;
+import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.IndependentUpdate;
 import bio.singa.simulation.model.modules.concentration.specifity.UpdatableSpecific;
@@ -81,7 +78,7 @@ import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableDeltaFunction> {
 
     public static BindeeSelection inSimulation(Simulation simulation) {
-        return new BindingBuilder(simulation);
+        return new ComplexBuildingReactionBuilder(simulation);
     }
 
     private RateConstant forwardsReactionRate;
@@ -164,6 +161,10 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         return complex;
     }
 
+    public void setComplex(ComplexedChemicalEntity complex) {
+        this.complex = complex;
+    }
+
     public ChemicalEntity getBinder() {
         return binder;
     }
@@ -200,15 +201,6 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         String substrates = binder.getIdentifier() + " + " + bindee.getIdentifier();
         String products = complex.getIdentifier().toString();
         return substrates + " \u21CB " + products;
-    }
-
-    public String getStringForProtocol() {
-        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
-                "  " + "reaction: " + getReactionString() + System.lineSeparator() +
-                "  " + "binding: " + bindee.getIdentifier() + " is bound to " + binder.getIdentifier() + System.lineSeparator() +
-                "  " + "features: " + System.lineSeparator() +
-                listFeatures("    ");
     }
 
     @Override
@@ -262,6 +254,11 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         return backwardsReactionRate.getScaledQuantity();
     }
 
+
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new ComplexBuildingReactionBuilder(simulation);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": " + getIdentifier() + " (" + getReactionString() + ")";
@@ -295,15 +292,26 @@ public class ComplexBuildingReaction extends ConcentrationBasedModule<UpdatableD
         ComplexBuildingReaction build();
     }
 
-    public static class BindingBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection, BuilderStep {
+    public static class ComplexBuildingReactionBuilder implements BinderSelection, BinderSectionSelection, BindeeSelection, BindeeSectionSelection, BuilderStep, ModuleBuilder {
 
         private ComplexBuildingReaction module;
 
-        public BindingBuilder(Simulation simulation) {
+        public ComplexBuildingReactionBuilder(Simulation simulation) {
+            createModule(simulation);
+        }
+
+        @Override
+        public ComplexBuildingReaction getModule() {
+            return module;
+        }
+
+        @Override
+        public ComplexBuildingReaction createModule(Simulation simulation) {
             module = ModuleFactory.setupModule(ComplexBuildingReaction.class,
                     ModuleFactory.Scope.NEIGHBOURHOOD_INDEPENDENT,
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
             module.setSimulation(simulation);
+            return module;
         }
 
         @Override

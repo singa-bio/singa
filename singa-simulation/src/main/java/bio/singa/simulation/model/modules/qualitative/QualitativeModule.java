@@ -32,6 +32,7 @@ public abstract class QualitativeModule implements UpdateModule {
      * The simulation.
      */
     protected Simulation simulation;
+
     protected UpdateScheduler updateScheduler;
 
     /**
@@ -46,6 +47,10 @@ public abstract class QualitativeModule implements UpdateModule {
         referencedChemicalEntities = new HashSet<>();
         featureManager = new FeatureManager();
         state = ModuleState.PENDING;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public void setSimulation(Simulation simulation) {
@@ -108,11 +113,6 @@ public abstract class QualitativeModule implements UpdateModule {
     @Override
     public String getIdentifier() {
         return identifier;
-    }
-
-    @Override
-    public String getStringForProtocol() {
-        return getClass().getSimpleName();
     }
 
 }

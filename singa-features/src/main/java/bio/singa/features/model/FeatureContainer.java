@@ -2,7 +2,6 @@ package bio.singa.features.model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * @author cl
@@ -31,23 +30,6 @@ public abstract class FeatureContainer {
 
     public Collection<Feature<?>> getAllFeatures() {
         return content.values();
-    }
-
-    public String listFeatures(String precedingSpaces) {
-        if (getAllFeatures().isEmpty()) {
-            return precedingSpaces + "none";
-        }
-        StringBuilder builder = new StringBuilder();
-        Iterator<Feature<?>> iterator = getAllFeatures().iterator();
-        while (iterator.hasNext()) {
-            Feature<?> feature = iterator.next();
-            if (iterator.hasNext()) {
-                builder.append("    ").append(feature).append(System.lineSeparator());
-            } else {
-                builder.append("    ").append(feature);
-            }
-        }
-        return builder.toString();
     }
 
 }

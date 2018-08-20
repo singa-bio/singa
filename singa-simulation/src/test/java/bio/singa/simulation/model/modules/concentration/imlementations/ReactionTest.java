@@ -273,7 +273,6 @@ public class ReactionTest {
                .addSubstrate(clathrinTriskelion)
                .build();
 
-       System.out.println(reaction.getStringForProtocol());
 
        while (simulation.getElapsedTime().isLessThan(Quantities.getQuantity(11, SECOND))) {
            simulation.nextEpoch();

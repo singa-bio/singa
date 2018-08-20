@@ -5,6 +5,7 @@ import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.ZeroOrderRateConstant;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
@@ -22,8 +23,8 @@ import java.util.List;
  */
 public class NthOrderReaction extends Reaction {
 
-    public static Builder inSimulation(Simulation simulation) {
-        return new Builder(simulation);
+    public static NthOrderReactionBuilder inSimulation(Simulation simulation) {
+        return new NthOrderReactionBuilder(simulation);
     }
 
     private RateConstant rateConstant;
@@ -92,10 +93,14 @@ public class NthOrderReaction extends Reaction {
         return rateConstant.getScaledQuantity();
     }
 
-    public static class Builder extends Reaction.Builder<NthOrderReaction, Builder> {
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new NthOrderReactionBuilder(simulation);
+    }
 
-        public Builder(Simulation identifier) {
-            super(identifier);
+    public static class NthOrderReactionBuilder extends Reaction.Builder<NthOrderReaction, NthOrderReactionBuilder> {
+
+        public NthOrderReactionBuilder(Simulation simulation) {
+            super(simulation);
         }
 
         @Override
@@ -107,13 +112,13 @@ public class NthOrderReaction extends Reaction {
             return module;
         }
 
-        public Builder rateConstant(RateConstant rateConstant) {
+        public NthOrderReactionBuilder rateConstant(RateConstant rateConstant) {
             topLevelObject.setFeature(rateConstant);
             return this;
         }
 
         @Override
-        protected Builder getBuilder() {
+        protected NthOrderReactionBuilder getBuilder() {
             return this;
         }
 

@@ -4,9 +4,9 @@ import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.DefautFeatureSources;
-import bio.singa.simulation.features.endocytosis.ActinBoostVelocity;
-import bio.singa.simulation.features.endocytosis.DecayingEntity;
+import bio.singa.simulation.features.DefaultFeatureSources;
+import bio.singa.simulation.features.ActinBoostVelocity;
+import bio.singa.simulation.features.DecayingEntity;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
@@ -38,7 +38,7 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
             .zeroOrder()
             .concentrationUnit(Environment.getConcentrationUnit())
             .timeUnit(SECOND)
-            .origin(DefautFeatureSources.EHRLICH2004)
+            .origin(DefaultFeatureSources.EHRLICH2004)
             .build();
 
     private Quantity<Speed> scaledVelocity;
@@ -60,14 +60,14 @@ public class EndocytosisActinBoost extends DisplacementBasedModule {
     public DisplacementDelta calculateDisplacement(Vesicle vesicle) {
         DecayingEntity decayingEntity = getFeature(DecayingEntity.class);
         // calculate speed based on clathrins available
-        double numberOfClathrins = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent()),
+        double pullingEntity = MolarConcentration.concentrationToMolecules(vesicle.getConcentrationContainer().get(CellTopology.MEMBRANE, decayingEntity.getFeatureContent()),
                 Environment.getSubsectionVolume()).getValue().doubleValue();
-        if (numberOfClathrins < 1) {
+        if (pullingEntity < 1) {
             vesicle.setAttachmentState(UNATTACHED);
             // TODO alter for vesicles moving from centre to outside
             vesicle.setTargetDirection(MINUS);
         }
-        Quantity<Speed> systemSpeed = scaledVelocity.multiply(numberOfClathrins);
+        Quantity<Speed> systemSpeed = scaledVelocity.multiply(pullingEntity);
         Quantity<Length> distance = Quantities.getQuantity(systemSpeed.getValue().doubleValue(), Environment.getNodeDistanceUnit());
         // determine direction
         Vector2D centre = simulation.getSimulationRegion().getCentre();

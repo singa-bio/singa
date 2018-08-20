@@ -4,7 +4,7 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
-import bio.singa.simulation.features.DefautFeatureSources;
+import bio.singa.simulation.features.DefaultFeatureSources;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
@@ -17,7 +17,7 @@ import static bio.singa.chemistry.features.diffusivity.Diffusivity.SQUARE_CENTIM
  */
 public class VesicleDiffusion extends DisplacementBasedModule {
 
-    private static final Diffusivity DEFAULT_VESICLE_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(6.0E-10, SQUARE_CENTIMETRE_PER_SECOND), DefautFeatureSources.EHRLICH2004);
+    private static final Diffusivity DEFAULT_VESICLE_DIFFUSIVITY = new Diffusivity(Quantities.getQuantity(6.0E-10, SQUARE_CENTIMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
     private boolean useEstimation = true;
     private Diffusivity diffusivity;

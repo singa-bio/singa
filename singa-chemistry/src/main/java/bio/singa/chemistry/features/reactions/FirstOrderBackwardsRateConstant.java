@@ -13,11 +13,11 @@ public class FirstOrderBackwardsRateConstant extends FirstOrderRateConstant impl
 
     private static final String symbol = "k_bwd_1";
 
-    protected FirstOrderBackwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, FeatureOrigin featureOrigin) {
+    public FirstOrderBackwardsRateConstant(Quantity<FirstOrderRate> firstOrderRateQuantity, FeatureOrigin featureOrigin) {
         super(firstOrderRateQuantity, featureOrigin);
     }
 
-    protected FirstOrderBackwardsRateConstant(double value, Unit<FirstOrderRate> firstOrderRateQuantity, FeatureOrigin featureOrigin) {
+    public FirstOrderBackwardsRateConstant(double value, Unit<FirstOrderRate> firstOrderRateQuantity, FeatureOrigin featureOrigin) {
         super(Quantities.getQuantity(value, firstOrderRateQuantity), featureOrigin);
     }
 

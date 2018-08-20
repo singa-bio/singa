@@ -31,7 +31,6 @@ public class PubChemParserServiceTest {
         assertEquals("CHEBI:25805", species.getFeature(ChEBIIdentifier.class).getIdentifier());
         // InChIKey
         assertEquals("TUJKJAMUKRIRHC-UHFFFAOYSA-N", species.getFeature(InChIKey.class).getIdentifier());
-        System.out.println(species.getStringForProtocol());
     }
 
     @Test

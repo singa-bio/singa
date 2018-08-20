@@ -1,8 +1,7 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
-import bio.singa.simulation.features.DefautFeatureSources;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -26,7 +25,7 @@ public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
     /**
      * Average lateral displacement velocity after scission for 11 seconds.
      */
-    public static final MotorMovementVelocity DEFAULT_MOTOR_VELOCITY = new MotorMovementVelocity(Quantities.getQuantity(800.0, NANOMETRE_PER_SECOND), DefautFeatureSources.EHRLICH2004);
+    public static final MotorMovementVelocity DEFAULT_MOTOR_VELOCITY = new MotorMovementVelocity(Quantities.getQuantity(800.0, NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
     public static final String SYMBOL = "v_ActinBoost";
 

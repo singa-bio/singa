@@ -14,7 +14,7 @@ import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.*;
+import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.filaments.FilamentLayer;
 import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.agents.membranes.Membrane;
@@ -57,6 +57,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
+import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -212,7 +213,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         fusion.initializeComplexes();
 
-        fusion.setFeature(new FusionPairs(3, MANUALLY_ANNOTATED));
+        fusion.setFeature(new FusionPairs(Quantities.getQuantity(3, ONE), MANUALLY_ANNOTATED));
         fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);

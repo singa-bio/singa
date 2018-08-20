@@ -24,7 +24,7 @@ public class EnvironmentTest {
         Environment.setNodeDistance(Quantities.getQuantity(1, MICRO(METRE)));
         assertEquals(molePerCubicMicroMetre, molePerLitre.to(Environment.getConcentrationUnit()));
         Environment.setNodeDistance(Quantities.getQuantity(2, MICRO(METRE)));
-        assertEquals(1.0E-15 , molePerLitre.to(Environment.getConcentrationUnit()).getValue());
+        assertEquals(1.0E-6 , molePerLitre.to(Environment.getConcentrationUnit()).getValue());
     }
 
 }

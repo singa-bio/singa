@@ -3,7 +3,7 @@ package bio.singa.simulation.model.modules.displacement.implementations;
 import bio.singa.core.utility.Pair;
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.MotorMovementVelocity;
+import bio.singa.simulation.features.MotorMovementVelocity;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
 import bio.singa.simulation.model.modules.displacement.DisplacementDelta;
 import bio.singa.simulation.model.modules.displacement.Vesicle;

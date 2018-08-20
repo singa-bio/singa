@@ -1,8 +1,7 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
-import bio.singa.simulation.features.DefautFeatureSources;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -27,7 +26,7 @@ public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
     /**
      * About three events per 10^8 nm^2 s^-1, developing into actual vesicles.
      */
-    public static final BuddingRate DEFAULT_BUDDING_RATE = new BuddingRate(Quantities.getQuantity(3.0/10.0E8, PER_SQUARE_NANOMETRE_PER_SECOND), DefautFeatureSources.EHRLICH2004);
+    public static final BuddingRate DEFAULT_BUDDING_RATE = new BuddingRate(Quantities.getQuantity(3.0/10.0E8, PER_SQUARE_NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
     public static final String SYMBOL = "k_Budding";
 

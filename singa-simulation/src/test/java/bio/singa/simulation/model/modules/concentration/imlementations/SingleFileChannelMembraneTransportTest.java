@@ -1,11 +1,10 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
+import bio.singa.chemistry.entities.Protein;
 import bio.singa.chemistry.entities.SmallMolecule;
-import bio.singa.chemistry.entities.Transporter;
 import bio.singa.chemistry.features.databases.chebi.ChEBIParserService;
 import bio.singa.chemistry.features.databases.uniprot.UniProtParserService;
 import bio.singa.chemistry.features.permeability.OsmoticPermeability;
-import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
@@ -21,6 +20,7 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
+import static bio.singa.simulation.features.DefaultFeatureSources.BINESH2015;
 import static org.junit.Assert.assertTrue;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.Units.METRE;
@@ -29,8 +29,6 @@ import static tec.uom.se.unit.Units.METRE;
  * @author cl
  */
 public class SingleFileChannelMembraneTransportTest {
-
-    private static final FeatureOrigin BINESH2015 = new FeatureOrigin(FeatureOrigin.OriginType.MANUAL_ANNOTATION, "Binesh 2015", "Binesh, A. R., and R. Kamali. \"Molecular dynamics insights into human aquaporin 2 water channel.\" Biophysical chemistry 207 (2015): 107-113.");
 
     @After
     public void cleanUp() {
@@ -49,7 +47,7 @@ public class SingleFileChannelMembraneTransportTest {
                 .name("solutes")
                 .build();
         // aqp2
-        Transporter aquaporin2 = UniProtParserService.parse("P41181", "aqp2").asTransporter();
+        Protein aquaporin2 = UniProtParserService.parse("P41181", "aqp2");
         aquaporin2.setFeature(new OsmoticPermeability(5.31e-14, BINESH2015));
         // graph
         AutomatonGraph graph = AutomatonGraphs.singularGraph();

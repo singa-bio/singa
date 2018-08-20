@@ -1,4 +1,4 @@
-package bio.singa.simulation.features.endocytosis;
+package bio.singa.simulation.features;
 
 import tec.uom.se.quantity.Quantities;
 

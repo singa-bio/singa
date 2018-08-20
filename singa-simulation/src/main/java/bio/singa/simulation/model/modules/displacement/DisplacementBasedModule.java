@@ -57,6 +57,10 @@ public class DisplacementBasedModule implements UpdateModule {
         state = ModuleState.PENDING;
     }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     public void addDeltaFunction(Function<Vesicle, DisplacementDelta> deltaFunction, Predicate<Vesicle> predicate) {
         deltaFunctions.put(deltaFunction, predicate);
     }
@@ -135,10 +139,6 @@ public class DisplacementBasedModule implements UpdateModule {
         return featureManager.getAllFeatures();
     }
 
-    public String listFeatures(String precedingSpaces) {
-        return featureManager.listFeatures(precedingSpaces);
-    }
-
     protected <FeatureContentType extends Quantity<FeatureContentType>> Quantity<FeatureContentType> getScaledFeature(ChemicalEntity entity, Class<? extends ScalableFeature<FeatureContentType>> featureClass) {
         ScalableFeature<FeatureContentType> feature = entity.getFeature(featureClass);
         return feature.getScaledQuantity();
@@ -192,14 +192,6 @@ public class DisplacementBasedModule implements UpdateModule {
     @Override
     public String getIdentifier() {
         return identifier;
-    }
-
-    @Override
-    public String getStringForProtocol() {
-        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
-                "  " + "features: " + System.lineSeparator() +
-                listFeatures("    ");
     }
 
     @Override

@@ -4,10 +4,10 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.BuddingRate;
-import bio.singa.simulation.features.endocytosis.MaturationTime;
-import bio.singa.simulation.features.endocytosis.SpawnTimeSampler;
-import bio.singa.simulation.features.endocytosis.VesicleRadius;
+import bio.singa.simulation.features.BuddingRate;
+import bio.singa.simulation.features.MaturationTime;
+import bio.singa.simulation.features.SpawnTimeSampler;
+import bio.singa.simulation.features.VesicleRadius;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
@@ -21,7 +21,7 @@ import javax.measure.quantity.Time;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static bio.singa.simulation.features.endocytosis.BuddingRate.SQUARE_NANOMETRE;
+import static bio.singa.simulation.features.BuddingRate.SQUARE_NANOMETRE;
 import static bio.singa.simulation.model.modules.displacement.Vesicle.AttachmentState.ACTIN_DEPOLYMERIZATION;
 import static tec.uom.se.unit.Units.SECOND;
 

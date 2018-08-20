@@ -10,7 +10,7 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.*;
+import bio.singa.simulation.features.*;
 import bio.singa.simulation.model.agents.membranes.Membrane;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneTracer;
@@ -26,12 +26,14 @@ import org.junit.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
 
+import javax.measure.quantity.AmountOfSubstance;
 import javax.measure.quantity.Length;
 import java.util.HashSet;
 import java.util.List;
 
 import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 import static org.junit.Assert.assertEquals;
+import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
 import static tec.uom.se.unit.Units.METRE;
@@ -128,7 +130,7 @@ public class VesicleFusionTest {
         MatchingRSnares rSnares = new MatchingRSnares(rSnareEntities, MANUALLY_ANNOTATED);
         fusion.setFeature(rSnares);
         fusion.initializeComplexes();
-        fusion.setFeature(new FusionPairs(3, MANUALLY_ANNOTATED));
+        fusion.setFeature(new FusionPairs(Quantities.getQuantity(3, ONE), MANUALLY_ANNOTATED));
         fusion.setFeature(TetheringTime.DEFAULT_TETHERING_TIME);
         fusion.setFeature(AttachmentDistance.DEFAULT_DYNEIN_ATTACHMENT_DISTANCE);
         fusion.setSimulation(simulation);

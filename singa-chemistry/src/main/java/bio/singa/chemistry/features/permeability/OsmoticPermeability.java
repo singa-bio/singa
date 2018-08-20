@@ -1,9 +1,7 @@
 package bio.singa.chemistry.features.permeability;
 
-import bio.singa.chemistry.entities.Transporter;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
-import bio.singa.features.parameters.Environment;
 import tec.uom.se.quantity.Quantities;
 import tec.uom.se.unit.ProductUnit;
 
@@ -16,7 +14,7 @@ import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
 
 /**
- * Represents the rate at which a substrate of a {@link Transporter} may be transported through the membrane.
+ * Represents the rate at which a substrate of a Transporter may be transported through the membrane.
  *
  * @author cl
  */
@@ -42,9 +40,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(osmoticPermeabilityQuantity
-                .to(Environment.getVolumeUnit().divide(Environment.getTimeUnit()).asType(OsmoticPermeability.class)),
-                featureOrigin);
+        super(osmoticPermeabilityQuantity.to(CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
     }
 
     /**
@@ -56,7 +52,7 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(double osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        this(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
+        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package bio.singa.simulation.features.scale;
+package bio.singa.simulation.features;
 
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;

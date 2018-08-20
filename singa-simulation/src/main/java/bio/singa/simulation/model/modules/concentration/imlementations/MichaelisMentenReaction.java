@@ -9,6 +9,7 @@ import bio.singa.features.model.Feature;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
@@ -25,8 +26,8 @@ import java.util.List;
  */
 public class MichaelisMentenReaction extends Reaction {
 
-    public static Builder inSimulation(Simulation simulation) {
-        return new Builder(simulation);
+    public static MichaelisMentenReactionBuilder inSimulation(Simulation simulation) {
+        return new MichaelisMentenReactionBuilder(simulation);
     }
 
     private ChemicalEntity enzyme;
@@ -107,10 +108,14 @@ public class MichaelisMentenReaction extends Reaction {
         }
     }
 
-    public static class Builder extends Reaction.Builder<MichaelisMentenReaction, Builder> {
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new MichaelisMentenReactionBuilder(simulation);
+    }
 
-        public Builder(Simulation identifier) {
-            super(identifier);
+    public static class MichaelisMentenReactionBuilder extends Reaction.Builder<MichaelisMentenReaction, MichaelisMentenReactionBuilder> {
+
+        public MichaelisMentenReactionBuilder(Simulation simulation) {
+            super(simulation);
         }
 
         @Override
@@ -122,7 +127,9 @@ public class MichaelisMentenReaction extends Reaction {
             return module;
         }
 
-        public Builder enzyme(ChemicalEntity enzyme) {
+
+
+        public MichaelisMentenReactionBuilder enzyme(ChemicalEntity enzyme) {
             topLevelObject.enzyme = enzyme;
             topLevelObject.addReferencedEntity(enzyme);
             topLevelObject.setFeature(enzyme.getFeature(TurnoverNumber.class));
@@ -131,7 +138,7 @@ public class MichaelisMentenReaction extends Reaction {
         }
 
         @Override
-        protected Builder getBuilder() {
+        protected MichaelisMentenReactionBuilder getBuilder() {
             return this;
         }
 

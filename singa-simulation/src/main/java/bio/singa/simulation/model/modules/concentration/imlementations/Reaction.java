@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
@@ -200,22 +201,14 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
                 .collect(Collectors.joining(" +"));
     }
 
-    public String getStringForProtocol() {
-        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
-                "  " + "reaction: " + getReactionString() + System.lineSeparator() +
-                "  " + "features: " + System.lineSeparator() +
-                listFeatures("    ");
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": " + (getIdentifier() == null ? "" : getIdentifier()) + " (" + getReactionString() + ")";
     }
 
-    public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> {
+    public static abstract class Builder<TopLevelType extends Reaction, BuilderType extends Builder> implements ModuleBuilder {
 
-        final TopLevelType topLevelObject;
+         TopLevelType topLevelObject;
         final BuilderType builderObject;
 
         public Builder(Simulation simulation) {
@@ -228,7 +221,18 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
 
         protected abstract TopLevelType createObject(Simulation primaryIdentifer);
 
+        @Override
+        public TopLevelType createModule(Simulation simulation) {
+            return topLevelObject;
+        }
+
         protected abstract BuilderType getBuilder();
+
+        @Override
+        public TopLevelType getModule() {
+            return topLevelObject;
+        }
+
 
         public BuilderType identifier(String identifier) {
             topLevelObject.setIdentifier(identifier);

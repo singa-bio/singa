@@ -173,14 +173,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
         referencedChemicalEntities.addAll(chemicalEntities);
     }
 
-    public String getStringForProtocol() {
-        return getClass().getSimpleName() + " summary:" + System.lineSeparator() +
-                "  " + "primary identifier: " + getIdentifier() + System.lineSeparator() +
-                "  " + "referenced entities" + getReferencedEntities() + System.lineSeparator() +
-                "  " + "features: " + System.lineSeparator() +
-                listFeatures("    ");
-    }
-
     /**
      * Returns the cutoff where deltas are validated to be effectively zero.
      *
@@ -537,15 +529,6 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
      */
     public Collection<Feature<?>> getFeatures() {
         return featureManager.getAllFeatures();
-    }
-
-    /**
-     * Returns a formatted string of the features of this module.
-     * @param precedingSpaces The number of preceding spaces.
-     * @return A formatted string of the features of this module.
-     */
-    protected String listFeatures(String precedingSpaces) {
-        return featureManager.listFeatures(precedingSpaces);
     }
 
     @Override

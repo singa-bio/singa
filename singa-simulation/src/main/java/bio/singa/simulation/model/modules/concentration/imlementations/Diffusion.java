@@ -6,9 +6,11 @@ import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.EntityDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.scope.DependentUpdate;
@@ -19,7 +21,9 @@ import bio.singa.simulation.model.simulation.Simulation;
 import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.util.Collection;
+import java.util.*;
+
+import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
 
 /**
  * Diffusion is the fundamental force governing the random movement of molecules in cells. As a
@@ -63,6 +67,8 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         addDeltaFunction(function);
         // feature
         getRequiredFeatures().add(Diffusivity.class);
+        Set<ChemicalEntity> cargoes = getFeature(Cargoes.class).getFeatureContent();
+        addReferencedEntities(cargoes);
         addModuleToSimulation();
     }
 
@@ -139,6 +145,10 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         return currentNode.getCellRegion().hasMembrane() && !neighbour.getCellRegion().hasMembrane();
     }
 
+    public static ModuleBuilder getBuilder(Simulation simulation) {
+        return new DiffusionBuilder(simulation);
+    }
+
     public interface SelectionStep {
         SelectionStep identifier(String identifier);
 
@@ -154,15 +164,27 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         Diffusion build();
     }
 
-    public static class DiffusionBuilder implements SelectionStep, BuildStep {
+    public static class DiffusionBuilder implements SelectionStep, BuildStep, ModuleBuilder<Diffusion> {
 
         Diffusion module;
 
-        DiffusionBuilder(Simulation simulation) {
+        public DiffusionBuilder(Simulation simulation) {
+            createModule(simulation);
+        }
+
+        @Override
+        public Diffusion getModule() {
+            return module;
+        }
+
+
+        @Override
+        public Diffusion createModule(Simulation simulation) {
             module = ModuleFactory.setupModule(Diffusion.class,
                     ModuleFactory.Scope.NEIGHBOURHOOD_DEPENDENT,
                     ModuleFactory.Specificity.ENTITY_SPECIFIC);
             module.setSimulation(simulation);
+            return module;
         }
 
         public DiffusionBuilder identifier(String identifier) {
@@ -171,21 +193,17 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         }
 
         public BuildStep onlyFor(ChemicalEntity chemicalEntity) {
-            module.addReferencedEntity(chemicalEntity);
+            module.setFeature(new Cargoes(Collections.singleton(chemicalEntity), MANUALLY_ANNOTATED));
             return this;
         }
 
         public BuildStep forAll(ChemicalEntity... chemicalEntities) {
-            for (ChemicalEntity chemicalEntity : chemicalEntities) {
-                module.addReferencedEntity(chemicalEntity);
-            }
+            module.setFeature(new Cargoes(new HashSet<>(Arrays.asList(chemicalEntities)), MANUALLY_ANNOTATED));
             return this;
         }
 
         public BuildStep forAll(Collection<ChemicalEntity> chemicalEntities) {
-            for (ChemicalEntity chemicalEntity : chemicalEntities) {
-                module.addReferencedEntity(chemicalEntity);
-            }
+            module.setFeature(new Cargoes(new HashSet<>(chemicalEntities), MANUALLY_ANNOTATED));
             return this;
         }
 

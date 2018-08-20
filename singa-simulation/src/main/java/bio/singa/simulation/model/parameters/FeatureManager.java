@@ -59,10 +59,6 @@ public class FeatureManager implements Featureable {
         return features.getAllFeatures();
     }
 
-    public String listFeatures(String precedingSpaces) {
-        return features.listFeatures(precedingSpaces);
-    }
-
     @Override
     public Set<Class<? extends Feature>> getAvailableFeatures() {
         return availableFeatures;

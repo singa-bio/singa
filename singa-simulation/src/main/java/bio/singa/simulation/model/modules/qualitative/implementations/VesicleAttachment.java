@@ -2,7 +2,7 @@ package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.simulation.features.endocytosis.AttachmentDistance;
+import bio.singa.simulation.features.AttachmentDistance;
 import bio.singa.simulation.model.agents.filaments.SkeletalFilament;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
@@ -41,7 +41,7 @@ public class VesicleAttachment extends QualitativeModule {
             // only for unattached vesicles
             if (vesicle.getAttachmentState() == UNATTACHED) {
                 AttachmentInformation attachmentInformation = determineClosestSegment(vesicle);
-                ComparableQuantity<Length> threshold = getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
+                ComparableQuantity<Length> threshold = (ComparableQuantity<Length>) getFeature(AttachmentDistance.class).getFeatureContent().add(vesicle.getRadius());
                 Quantity<Length> distance = Environment.convertSimulationToSystemScale(attachmentInformation.getClosestDistance());
                 if (threshold.isGreaterThanOrEqualTo(distance)) {
                     attachingVesicles.put(vesicle, attachmentInformation);
