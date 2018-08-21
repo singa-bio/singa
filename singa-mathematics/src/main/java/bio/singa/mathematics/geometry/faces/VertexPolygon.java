@@ -1,13 +1,11 @@
 package bio.singa.mathematics.geometry.faces;
 
+import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.mathematics.vectors.Vectors;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class VertexPolygon implements Polygon {
 
@@ -20,10 +18,23 @@ public class VertexPolygon implements Polygon {
         this(Arrays.asList(vertices));
     }
 
-    public VertexPolygon(List<Vector2D> vertices) {
+    public VertexPolygon(Collection<Vector2D> vertices) {
         this.vertices = new ArrayList<>(vertices);
         centre = getCentroid();
         this.vertices.sort(conterClockwise);
+    }
+
+    public VertexPolygon(List<LineSegment> lineSegments) {
+        vertices = new ArrayList<>();
+        for (LineSegment lineSegment : lineSegments) {
+            if (!vertices.contains(lineSegment.getStartingPoint())) {
+                vertices.add(lineSegment.getStartingPoint());
+            } else {
+                vertices.add(lineSegment.getEndingPoint());
+            }
+        }
+        centre = getCentroid();
+        vertices.sort(conterClockwise);
     }
 
     public VertexPolygon() {

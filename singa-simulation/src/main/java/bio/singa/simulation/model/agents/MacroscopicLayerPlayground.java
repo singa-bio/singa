@@ -35,7 +35,6 @@ import bio.singa.simulation.model.modules.displacement.implementations.VesicleTr
 import bio.singa.simulation.model.modules.qualitative.implementations.ClathrinMediatedEndocytosis;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAttachment;
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
-import bio.singa.simulation.model.sections.CellRegions;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
 import javafx.animation.AnimationTimer;
@@ -224,15 +223,11 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.setGraph(graph);
 
         // setup spatial representations
+        simulation.initializeGraph();
         simulation.initializeSpatialRepresentations();
         // setup membrane layer
         membraneLayer = new MembraneLayer();
         simulation.setMembraneLayer(membraneLayer);
-
-        // initialize extracellular space as default
-        for (AutomatonNode automatonNode : graph.getNodes()) {
-            automatonNode.setCellRegion(CellRegions.EXTRACELLULAR_REGION);
-        }
 
         // initialize cell membrane and nucleus
         Organelle cell = OrganelleTypes.CELL.create();

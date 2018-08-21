@@ -16,6 +16,8 @@ import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
+import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellRegions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;
@@ -87,6 +89,8 @@ public class Simulation {
 
     private Quantity<Time> maximalTimeStep;
 
+    private CellRegion standardRegion;
+
     /**
      * Creates a new plain simulation.
      */
@@ -100,6 +104,7 @@ public class Simulation {
         observedUpdatables = new HashSet<>();
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
+        standardRegion = CellRegions.EXTRACELLULAR_REGION;
     }
 
     /**
@@ -158,10 +163,15 @@ public class Simulation {
         }
     }
 
-    private void initializeGraph() {
+    public void initializeGraph() {
         logger.info("Initializing chemical entities.");
         if (graph == null) {
             throw new IllegalStateException("No graph has been assigned to the simulation.");
+        } else {
+//            for (AutomatonNode node : graph.getNodes()) {
+//                node.setCellRegion(standardRegion);
+//            }
+//            simulationRegion = new Rectangle(Environment.getSimulationExtend(), Environment.getSimulationExtend());
         }
     }
 

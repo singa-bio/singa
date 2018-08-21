@@ -34,14 +34,15 @@ public class MembraneTracer {
     private List<AutomatonNode> unprocessedNodes;
 
     public static Membrane membraneToRegion(Organelle organelle, AutomatonGraph graph) {
-        Membrane membrane = new Membrane(organelle.getMembraneRegion().getIdentifier(), organelle.getMembraneRegion());
-        Polygon organellePolygon = organelle.getPolygon();
+        return membraneToRegion(organelle.getMembraneRegion(), organelle.getInternalRegion(), organelle.getPolygon(), graph);
+    }
 
+    public static Membrane membraneToRegion(CellRegion membraneRegion, CellRegion internalRegion, Polygon membranePolygon, AutomatonGraph graph) {
+        Membrane membrane = new Membrane(membraneRegion.getIdentifier(), membraneRegion);
         // check if all segments are contained in a single node
         boolean isContained = true;
-
         // determine and setup membrane cells
-        for (LineSegment lineSegment : organellePolygon.getEdges()) {
+        for (LineSegment lineSegment : membranePolygon.getEdges()) {
             Vector2D startingPoint = lineSegment.getStartingPoint();
             Vector2D endingPoint = lineSegment.getEndingPoint();
             for (AutomatonNode node : graph.getNodes()) {
@@ -53,19 +54,19 @@ public class MembraneTracer {
                 if (startingPosition >= ON_LINE && endingPosition >= ON_LINE) {
                     // completely inside
                     membrane.addSegment(node, lineSegment);
-                    node.setCellRegion(organelle.getMembraneRegion());
+                    node.setCellRegion(membraneRegion);
                     break;
                 } else if (startingPosition == INSIDE && endingPosition == OUTSIDE) {
                     // end outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
-                    node.setCellRegion(organelle.getMembraneRegion());
+                    node.setCellRegion(membraneRegion);
                     isContained = false;
                 } else if (startingPosition == OUTSIDE && endingPosition == INSIDE) {
                     // start outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
-                    node.setCellRegion(organelle.getMembraneRegion());
+                    node.setCellRegion(membraneRegion);
                     isContained = false;
                 } else if (intersections.size() == 2) {
                     // line only crosses the membrane
@@ -73,7 +74,7 @@ public class MembraneTracer {
                     Vector2D first = iterator.next();
                     Vector2D second = iterator.next();
                     membrane.addSegment(node, new SimpleLineSegment(first, second));
-                    node.setCellRegion(organelle.getMembraneRegion());
+                    node.setCellRegion(membraneRegion);
                     isContained = false;
                 }
             }
@@ -82,7 +83,7 @@ public class MembraneTracer {
         // setup subsection representation for enclosed organelles
         if (isContained) {
             AutomatonNode containingNode = membrane.getSegments().iterator().next().getNode();
-            containingNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), organellePolygon);
+            containingNode.addSubsectionRepresentation(membraneRegion.getInnerSubsection(), membranePolygon);
             return membrane;
         }
 
@@ -90,30 +91,30 @@ public class MembraneTracer {
         for (AutomatonNode node : graph.getNodes()) {
             // determine cell that is completely inside of the membrane as starting point
             // therefore check if all segments of the representative region are inside
-            boolean allPointsAreIside = true;
+            boolean allPointsAreInside = true;
             for (Vector2D vector : node.getSpatialRepresentation().getVertices()) {
-                if (organellePolygon.evaluatePointPosition(vector) == OUTSIDE) {
-                    allPointsAreIside = false;
+                if (membranePolygon.evaluatePointPosition(vector) == OUTSIDE) {
+                    allPointsAreInside = false;
                     break;
                 }
             }
-            if (allPointsAreIside) {
+            if (allPointsAreInside) {
                 // use flood fill algorithm
                 FloodFill.fill(graph.getGrid(), node.getIdentifier(),
-                        currentNode -> currentNode.getCellRegion().equals(organelle.getMembraneRegion()),
-                        currentCoordiante -> graph.getNode(currentCoordiante).setCellRegion(organelle.getInternalRegion()),
-                        recurrentNode -> recurrentNode.getCellRegion().equals(organelle.getInternalRegion()));
+                        currentNode -> currentNode.getCellRegion().equals(membraneRegion),
+                        rectangularCoordinate -> graph.getNode(rectangularCoordinate).setCellRegion(internalRegion),
+                        recurrentNode -> recurrentNode.getCellRegion().equals(internalRegion));
                 break;
             }
         }
 
         // setup subsection representation for nodes compartmentalized by membranes
         for (AutomatonNode automatonNode : graph.getNodes()) {
-            if (automatonNode.getCellRegion().equals(organelle.getMembraneRegion())) {
+            if (automatonNode.getCellRegion().equals(membraneRegion)) {
                 // use sutherland hodgman to clip inner region
                 Polygon nodePolygon = automatonNode.getSpatialRepresentation();
-                Polygon innerPolygon = SutherandHodgmanClipping.clip(organellePolygon, nodePolygon);
-                automatonNode.addSubsectionRepresentation(organelle.getMembraneRegion().getInnerSubsection(), innerPolygon);
+                Polygon innerPolygon = SutherandHodgmanClipping.clip(membranePolygon, nodePolygon);
+                automatonNode.addSubsectionRepresentation(membraneRegion.getInnerSubsection(), innerPolygon);
             }
         }
         return membrane;
