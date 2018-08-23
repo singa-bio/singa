@@ -14,6 +14,9 @@ import javax.measure.quantity.Area;
 public class MembraneSegment implements LineSegment {
 
     private AutomatonNode node;
+
+    // determines a grouping term (e.g. lateral or basal membrane)
+    private String group;
     private LineSegment segment;
 
     public MembraneSegment(AutomatonNode node, LineSegment segment) {
@@ -36,6 +39,14 @@ public class MembraneSegment implements LineSegment {
                 .asType(Area.class);
     }
 
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
     @Override
     public Vector2D getStartingPoint() {
         return segment.getStartingPoint();
@@ -55,4 +66,5 @@ public class MembraneSegment implements LineSegment {
     public void setEndingPoint(Vector2D endingPoint) {
         segment.setEndingPoint(endingPoint);
     }
+
 }

@@ -11,6 +11,7 @@ import bio.singa.simulation.model.agents.organelles.Organelle;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 
 import java.util.*;
 
@@ -34,11 +35,12 @@ public class MembraneTracer {
     private List<AutomatonNode> unprocessedNodes;
 
     public static Membrane membraneToRegion(Organelle organelle, AutomatonGraph graph) {
-        return membraneToRegion(organelle.getMembraneRegion(), organelle.getInternalRegion(), organelle.getPolygon(), graph);
+        return membraneToRegion(organelle.getMembraneRegion(), organelle.getInternalRegion(), organelle.getTemplate(), graph);
     }
 
-    public static Membrane membraneToRegion(CellRegion membraneRegion, CellRegion internalRegion, Polygon membranePolygon, AutomatonGraph graph) {
+    public static Membrane membraneToRegion(CellRegion membraneRegion, CellRegion internalRegion, OrganelleTemplate template, AutomatonGraph graph) {
         Membrane membrane = new Membrane(membraneRegion.getIdentifier(), membraneRegion);
+        Polygon membranePolygon = template.getPolygon();
         // check if all segments are contained in a single node
         boolean isContained = true;
         // determine and setup membrane cells
@@ -54,19 +56,37 @@ public class MembraneTracer {
                 if (startingPosition >= ON_LINE && endingPosition >= ON_LINE) {
                     // completely inside
                     membrane.addSegment(node, lineSegment);
-                    node.setCellRegion(membraneRegion);
+                    CellRegion region;
+                    if (template.isGrouped()) {
+                        region = template.getRegion(startingPoint);
+                    } else {
+                        region = membraneRegion;
+                    }
+                    node.setCellRegion(region);
                     break;
                 } else if (startingPosition == INSIDE && endingPosition == OUTSIDE) {
                     // end outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(startingPoint, intersectionPoint));
-                    node.setCellRegion(membraneRegion);
+                    CellRegion region;
+                    if (template.isGrouped()) {
+                        region = template.getRegion(startingPoint);
+                    } else {
+                        region = membraneRegion;
+                    }
+                    node.setCellRegion(region);
                     isContained = false;
                 } else if (startingPosition == OUTSIDE && endingPosition == INSIDE) {
                     // start outside or on line
                     Vector2D intersectionPoint = intersections.iterator().next();
                     membrane.addSegment(node, new SimpleLineSegment(intersectionPoint, endingPoint));
-                    node.setCellRegion(membraneRegion);
+                    CellRegion region;
+                    if (template.isGrouped()) {
+                        region = template.getRegion(startingPoint);
+                    } else {
+                        region = membraneRegion;
+                    }
+                    node.setCellRegion(region);
                     isContained = false;
                 } else if (intersections.size() == 2) {
                     // line only crosses the membrane
@@ -74,7 +94,13 @@ public class MembraneTracer {
                     Vector2D first = iterator.next();
                     Vector2D second = iterator.next();
                     membrane.addSegment(node, new SimpleLineSegment(first, second));
-                    node.setCellRegion(membraneRegion);
+                    CellRegion region;
+                    if (template.isGrouped()) {
+                        region = template.getRegion(startingPoint);
+                    } else {
+                        region = membraneRegion;
+                    }
+                    node.setCellRegion(region);
                     isContained = false;
                 }
             }
@@ -101,7 +127,7 @@ public class MembraneTracer {
             if (allPointsAreInside) {
                 // use flood fill algorithm
                 FloodFill.fill(graph.getGrid(), node.getIdentifier(),
-                        currentNode -> currentNode.getCellRegion().equals(membraneRegion),
+                        currentNode -> currentNode.getCellRegion().equals(membraneRegion) || template.getRegions().contains(currentNode.getCellRegion()),
                         rectangularCoordinate -> graph.getNode(rectangularCoordinate).setCellRegion(internalRegion),
                         recurrentNode -> recurrentNode.getCellRegion().equals(internalRegion));
                 break;
@@ -110,7 +136,7 @@ public class MembraneTracer {
 
         // setup subsection representation for nodes compartmentalized by membranes
         for (AutomatonNode automatonNode : graph.getNodes()) {
-            if (automatonNode.getCellRegion().equals(membraneRegion)) {
+            if (automatonNode.getCellRegion().equals(membraneRegion) || template.getRegions().contains(automatonNode.getCellRegion())) {
                 // use sutherland hodgman to clip inner region
                 Polygon nodePolygon = automatonNode.getSpatialRepresentation();
                 Polygon innerPolygon = SutherandHodgmanClipping.clip(membranePolygon, nodePolygon);

@@ -18,10 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static bio.singa.mathematics.metrics.model.VectorMetricProvider.EUCLIDEAN_METRIC;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -38,10 +35,12 @@ public class OrganelleImageParser {
     private List<Vector2D> scalePixels;
     private List<Vector2D> templatePixels;
 
-    private Polygon lineSegmentPolygon;
+    private Map<Integer, Set<Vector2D>> groups;
+
+    private Polygon polygon;
     private Quantity<Length> scale;
 
-    public static Map.Entry<Polygon, Quantity<Length>> getPolygonTemplate(String resourceLocation) {
+    public static OrganelleTemplate getOrganelleTemplate(String resourceLocation) {
         // get image
         // String resourceLocation = "organelle_templates/" + organelles.name().toLowerCase() + ".png";
         InputStream resource = Resources.getResourceAsStream(resourceLocation);
@@ -52,22 +51,24 @@ public class OrganelleImageParser {
             throw new UncheckedIOException("Template image " + resourceLocation + " could not be parsed.", e);
         }
         // create polygon from trace
-        OrganelleImageParser organelleImageParser = new OrganelleImageParser(image);
-        organelleImageParser.createTrace();
-        organelleImageParser.determineScale();
+        OrganelleImageParser parser = new OrganelleImageParser(image);
+        parser.createTrace();
+        parser.determineScale();
         // return polygon and scale
-        return new AbstractMap.SimpleEntry<>(organelleImageParser.lineSegmentPolygon, organelleImageParser.scale);
+        return new OrganelleTemplate(parser.scale, parser.polygon, parser.groups);
     }
 
     public OrganelleImageParser(BufferedImage templateImage) {
         this.templateImage = templateImage;
         templatePixels = new ArrayList<>();
         scalePixels = new ArrayList<>();
+        groups = new HashMap<>();
     }
 
     private void createTrace() {
         List<Vector2D> vectors = convertToVectors(templateImage);
-        lineSegmentPolygon = new VertexPolygon(vectors);
+        // relies on the angular sorting of the vectors
+        polygon = new VertexPolygon(vectors);
     }
 
     private List<Vector2D> convertToVectors(BufferedImage image) {
@@ -78,22 +79,40 @@ public class OrganelleImageParser {
             for (int row = 0; row < height; row++) {
                 // get rgb values
                 int rgb = image.getRGB(col, row);
-                int red = (rgb >> 16) & 0x000000FF;
-                int green = (rgb >> 8) & 0x000000FF;
-                int blue = (rgb) & 0x000000FF;
+//                int red = (rgb >> 16) & 0x000000FF;
+//                int green = (rgb >> 8) & 0x000000FF;
+//                int blue = (rgb) & 0x000000FF;
                 // decide based on color
-                if (green == 0 && blue == 0) {
-                    if (red == 255) {
-                        // red pixels will be traced
-                        templatePixels.add(new Vector2D(col, row));
-                    } else if (red == 0) {
+                if (isNotWhite(rgb)) {
+                    // white pixels are ignored
+                    if (isBlack(rgb)) {
                         // black pixels are scale
                         scalePixels.add(new Vector2D(col, row));
+                    } else {
+                        // colored pixels will be traced and assigned to groups
+                        Vector2D vector = new Vector2D(col, row);
+                        templatePixels.add(vector);
+                        addToGroup(rgb, vector);
                     }
                 }
             }
         }
         return templatePixels;
+    }
+
+    private void addToGroup(int rgbValue, Vector2D vector) {
+        if (!groups.containsKey(rgbValue)) {
+            groups.put(rgbValue, new HashSet<>());
+        }
+        groups.get(rgbValue).add(vector);
+    }
+
+    private static boolean isNotWhite(int rgbValue) {
+        return rgbValue != -1;
+    }
+
+    private static boolean isBlack(int rgbValue) {
+        return rgbValue == -16777216;
     }
 
     private List<LineSegment> connect(List<Vector2D> vectors) {

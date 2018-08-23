@@ -6,6 +6,7 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
+import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -68,17 +69,17 @@ public class ClippingPlayground extends Application implements Renderer {
 //        strokeLineSegment(edge);
 //        strokeLineSegment(points);
 
-         Polygon polygon = OrganelleTypes.CELL.create().getPolygon();
-         polygon.scale(0.2);
+         OrganelleTemplate template = OrganelleTypes.CELL.create().getTemplate();
+         template.scale(0.2);
 //         Polygon polygon = new Rectangle(new Vector2D(25, 25), new Vector2D(75, 75));
         Rectangle rect = new Rectangle(new Vector2D(50, 50), new Vector2D(100, 100));
 
-        Polygon clip = SutherandHodgmanClipping.clip(polygon, rect);
+        Polygon clip = SutherandHodgmanClipping.clip(template.getPolygon(), rect);
 
 
         getGraphicsContext().setStroke(Color.RED);
-        strokePolygon(polygon);
-        for (Vector2D polygonPoint : polygon.getVertices()) {
+        strokePolygon(template.getPolygon());
+        for (Vector2D polygonPoint : template.getPolygon().getVertices()) {
             strokeCircle(polygonPoint, 2);
         }
 

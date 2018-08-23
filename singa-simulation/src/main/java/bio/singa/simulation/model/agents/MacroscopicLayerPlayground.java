@@ -231,17 +231,27 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
         // initialize cell membrane and nucleus
         Organelle cell = OrganelleTypes.CELL.create();
-        Organelle nucleus = OrganelleTypes.NUCLEUS.create();
+        // blue is basolateral
+        int green = java.awt.Color.GREEN.getRGB();
+        cell.setGroupRegion(green, "basolateral plasma membrane", "GO:0016323");
+        // red is the default region
+        int red = java.awt.Color.RED.getRGB();
+        cell.setGroupRegion(red);
+        // green is the
+        int blue = java.awt.Color.BLUE.getRGB();
+        cell.setGroupRegion(blue, "apical plasma membrane", "GO:0016324");
         Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
         membraneLayer.addMembrane(cellMembrane);
-        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph);
-        membraneLayer.addMembrane(nuclearMembrane);
 
-        // initialize endosome
-        Organelle endosome = OrganelleTypes.EARLY_ENDOSOME.create();
-        endosome.getPolygon().move(new Vector2D(200, 300));
-        Membrane endosomeMembrane = MembraneTracer.membraneToRegion(endosome, graph);
-        membraneLayer.addMembrane(endosomeMembrane);
+//        Organelle nucleus = OrganelleTypes.NUCLEUS.create();
+//        Membrane nuclearMembrane = MembraneTracer.membraneToRegion(nucleus, graph);
+//        membraneLayer.addMembrane(nuclearMembrane);
+//
+//        // initialize endosome
+//        Organelle endosome = OrganelleTypes.EARLY_ENDOSOME.create();
+//        endosome.getTemplate().move(new Vector2D(200, 300));
+//        Membrane endosomeMembrane = MembraneTracer.membraneToRegion(endosome, graph);
+//        membraneLayer.addMembrane(endosomeMembrane);
 
         // add left membrane to as endocytosis site
         List<Membrane> membranes = membraneLayer.getMembranes();
@@ -291,6 +301,8 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
                 Polygon organellePolygon = node.getSubsectionRepresentations().get(node.getCellRegion().getInnerSubsection());
                 fillPolygon(organellePolygon);
+                getGraphicsContext().setFill(Color.BLACK);
+                strokeTextCenteredOnPoint(node.getCellRegion().getGoTerm().toString(), node.getPosition());
             } else {
                 getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
                 fillPolygon(nodePolygon);

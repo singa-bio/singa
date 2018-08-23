@@ -1,16 +1,12 @@
 package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.features.identifiers.GoTerm;
-import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.parser.organelles.OrganelleImageParser;
-
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
-import java.util.Map;
+import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 
 /**
  * @author cl
@@ -33,13 +29,11 @@ public enum OrganelleTypes {
             CellSubsections.CYTOPLASM,
             CellSubsections.CELL_OUTER_MEMBRANE,
             CellSubsections.EXTRACELLULAR_REGION,
-            "cell_membrane");
+            "cell_membrane_grouped");
 
     private CellRegion internalRegion;
     private CellRegion membraneRegion;
     private String templateLocation;
-    private Polygon polygon;
-    private Quantity<Length> scale;
 
     OrganelleTypes(String name, GoTerm goTerm, CellSubsection innerSubsection, CellSubsection membraneSubsection, CellSubsection outerSubsection, String templateName) {
         // region for inner nodes
@@ -63,16 +57,12 @@ public enum OrganelleTypes {
     }
 
     public Organelle create() {
-        if (polygon == null) {
-            Map.Entry<Polygon, Quantity<Length>> entry = OrganelleImageParser.getPolygonTemplate(templateLocation);
-            polygon = entry.getKey();
-            // resize to a handable number of edges
-            while (polygon.getVertices().size() > 200) {
-                polygon.reduce(1);
-            }
-            scale = entry.getValue();
+        OrganelleTemplate template = OrganelleImageParser.getOrganelleTemplate(templateLocation);
+        // resize to a handleable number of edges
+        while (template.getPolygon().getVertices().size() > 200) {
+            template.getPolygon().reduce(1);
         }
-        return new Organelle(internalRegion, membraneRegion, polygon, scale);
+        return new Organelle(internalRegion, membraneRegion, template);
     }
 
 }
