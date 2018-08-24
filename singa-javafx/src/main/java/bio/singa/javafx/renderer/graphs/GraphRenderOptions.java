@@ -2,6 +2,8 @@ package bio.singa.javafx.renderer.graphs;
 
 import javafx.scene.paint.Color;
 
+import java.util.function.Function;
+
 /**
  * The default rendering options for any graph. Supported options are:
  * <ul>
@@ -17,7 +19,7 @@ import javafx.scene.paint.Color;
  * <li> background color (default = {@link Color#WHITE})
  * </ul>
  */
-public class GraphRenderOptions {
+public class GraphRenderOptions<NodeType> {
 
     private double nodeDiameter = 15;
     private Color nodeColor = Color.SEAGREEN;
@@ -28,8 +30,8 @@ public class GraphRenderOptions {
     private boolean displayingEdges = true;
 
     private Color identifierTextColor = Color.BLACK;
-    // private Font identifierFont;
-    private boolean displayingIdentifierText = false;
+    private Function<NodeType, String> textExtractor;
+    private boolean displayText = false;
 
     private Color backgroundColor = Color.WHITE;
 
@@ -97,12 +99,20 @@ public class GraphRenderOptions {
         this.backgroundColor = backgroundColor;
     }
 
-    public boolean isDisplayingIdentifierText() {
-        return displayingIdentifierText;
+    public Function<NodeType, String> getTextExtractor() {
+        return textExtractor;
     }
 
-    public void setDisplayingIdentifierText(boolean displayingIdentifierText) {
-        this.displayingIdentifierText = displayingIdentifierText;
+    public void setTextExtractor(Function<NodeType, String> textExtractor) {
+        this.textExtractor = textExtractor;
+    }
+
+    public boolean isDisplayText() {
+        return displayText;
+    }
+
+    public void setDisplayText(boolean displayText) {
+        this.displayText = displayText;
     }
 
 }

@@ -6,6 +6,7 @@ import bio.singa.mathematics.algorithms.voronoi.VoronoiRelaxation;
 import bio.singa.mathematics.algorithms.voronoi.model.VoronoiDiagram;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.graphs.model.DirectedEdge;
 import bio.singa.mathematics.graphs.model.Edge;
 import bio.singa.mathematics.graphs.model.Graph;
 import bio.singa.mathematics.graphs.model.Node;
@@ -32,7 +33,7 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         IdentifierType, GraphType extends Graph<NodeType, EdgeType, IdentifierType>> extends AnimationTimer implements Renderer {
 
     private final ConcurrentLinkedQueue<GraphType> graphQueue = new ConcurrentLinkedQueue<>();
-    private GraphRenderOptions renderingOptions = new GraphRenderOptions();
+    private GraphRenderOptions<NodeType> renderingOptions = new GraphRenderOptions<>();
     private Function<GraphType, Void> renderBeforeFunction;
     private Function<GraphType, Void> renderAfterFunction;
     private GraphicsContext graphicsContext;
@@ -116,8 +117,15 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         fillPoint(node.getPosition(), renderingOptions.getNodeDiameter());
         // draw text
         getGraphicsContext().setFill(renderingOptions.getIdentifierTextColor());
-        if (renderingOptions.isDisplayingIdentifierText()) {
-            strokeTextCenteredOnPoint(String.valueOf(node.getIdentifier()), node.getPosition());
+        String displayString;
+        if (renderingOptions.isDisplayText()) {
+            if (renderingOptions.getTextExtractor() == null) {
+                displayString = String.valueOf(node.getIdentifier());
+            } else {
+                displayString = renderingOptions.getTextExtractor().apply(node);
+
+            }
+            strokeTextCenteredOnPoint(displayString, node.getPosition());
         }
     }
 
@@ -129,8 +137,36 @@ public class GraphRenderer<NodeType extends Node<NodeType, Vector2D, IdentifierT
         // set color and width
         getGraphicsContext().setLineWidth(renderingOptions.getEdgeThickness());
         getGraphicsContext().setStroke(renderingOptions.getEdgeColor());
+        getGraphicsContext().setFill(renderingOptions.getEdgeColor());
         // draw
         strokeLineSegment(new SimpleLineSegment(edge.getSource().getPosition(), edge.getTarget().getPosition()));
+        // render arrow for directed graphs
+        if (edge instanceof DirectedEdge) {
+            Vector2D source = edge.getSource().getPosition();
+            Vector2D target = edge.getTarget().getPosition();
+
+            Vector2D triangleHead = target.subtract(target.subtract(source).normalize().multiply(renderingOptions.getNodeDiameter()));
+            double arrowLength = renderingOptions.getNodeDiameter() * 2.0 / 3.0;
+
+            double tipX = triangleHead.getX();
+            double tipY = triangleHead.getY();
+
+            double tailX = source.getX();
+            double tailY = source.getY();
+
+            double dx = tipX - tailX;
+            double dy = tipY - tailY;
+
+            double theta = Math.atan2(dy, dx);
+
+            double phi1 = Math.toRadians(25);
+            Vector2D site1 = new Vector2D(tipX - arrowLength * Math.cos(theta + phi1), tipY - arrowLength * Math.sin(theta + phi1));
+
+            double phi2 = Math.toRadians(-25);
+            Vector2D site2 = new Vector2D(tipX - arrowLength * Math.cos(theta + phi2), tipY - arrowLength * Math.sin(theta + phi2));
+
+            fillPolygon(triangleHead, site1, site2);
+        }
     }
 
     public void renderVoronoi(boolean flag) {

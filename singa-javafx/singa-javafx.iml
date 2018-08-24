@@ -12,6 +12,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.7" level="project" />
     <orderEntry type="module" module-name="singa-chemistry" />
     <orderEntry type="module" module-name="singa-structure" />
     <orderEntry type="module" module-name="singa-mathematics" />
@@ -20,8 +23,8 @@
     <orderEntry type="library" name="Maven: tec.uom:uom-se:1.0.8" level="project" />
     <orderEntry type="library" name="Maven: javax.measure:unit-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: tec.uom.lib:uom-lib-common:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.7" level="project" />
-    <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-codec:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-serialization:1.0.8" level="project" />
     <orderEntry type="library" name="Maven: org.msgpack:jackson-dataformat-msgpack:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.msgpack:msgpack-core:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.3" level="project" />
@@ -29,7 +32,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.3" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-api:2.6.2" level="project" />
-    <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.rcsb:mmtf-api:1.0.8" level="project" />
     <orderEntry type="module" module-name="singa-sequence" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:slf4j-log4j12:1.7.21" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: log4j:log4j:1.2.17" level="project" />

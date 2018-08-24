@@ -136,7 +136,7 @@ public class ValidCandidateGeneratorTest {
 
 
         GraphDisplayApplication.renderer = new GraphRenderer();
-        GraphDisplayApplication.renderer.getRenderingOptions().setDisplayingIdentifierText(false);
+        GraphDisplayApplication.renderer.getRenderingOptions().setDisplayText(false);
         GraphDisplayApplication.graph = searchSpace;
 
         GraphDisplayApplication.renderer.setRenderAfter(graph -> {
