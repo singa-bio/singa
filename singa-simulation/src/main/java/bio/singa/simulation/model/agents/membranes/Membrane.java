@@ -1,12 +1,11 @@
 package bio.singa.simulation.model.agents.membranes;
 
 import bio.singa.mathematics.geometry.edges.LineSegment;
+import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author cl
@@ -14,21 +13,18 @@ import java.util.Objects;
 public class Membrane {
 
     private String identifier;
-    private CellRegion representativeRegion;
     private List<MembraneSegment> segments;
+    private CellRegion innerRegion;
+    private CellRegion membraneRegion;
+    private Map<CellRegion, Set<Vector2D>> regionMap;
 
-    public Membrane(String identifier, CellRegion representativeRegion) {
+    public Membrane(String identifier) {
         this.identifier = identifier;
-        this.representativeRegion = representativeRegion;
         segments = new ArrayList<>();
     }
 
     public String getIdentifier() {
         return identifier;
-    }
-
-    public CellRegion getRepresentativeRegion() {
-        return representativeRegion;
     }
 
     public void addSegment(AutomatonNode node, LineSegment segment) {
@@ -38,6 +34,30 @@ public class Membrane {
 
     public List<MembraneSegment> getSegments() {
         return segments;
+    }
+
+    public CellRegion getInnerRegion() {
+        return innerRegion;
+    }
+
+    public void setInnerRegion(CellRegion innerRegion) {
+        this.innerRegion = innerRegion;
+    }
+
+    public CellRegion getMembraneRegion() {
+        return membraneRegion;
+    }
+
+    public void setMembraneRegion(CellRegion membraneRegion) {
+        this.membraneRegion = membraneRegion;
+    }
+
+    public Map<CellRegion, Set<Vector2D>> getRegionMap() {
+        return regionMap;
+    }
+
+    public void setRegionMap(Map<CellRegion, Set<Vector2D>> regionMap) {
+        this.regionMap = regionMap;
     }
 
     @Override

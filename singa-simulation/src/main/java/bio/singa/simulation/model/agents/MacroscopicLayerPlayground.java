@@ -22,7 +22,6 @@ import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.agents.membranes.MembraneSegment;
 import bio.singa.simulation.model.agents.membranes.MembraneTracer;
 import bio.singa.simulation.model.agents.organelles.MicrotubuleOrganizingCentre;
-import bio.singa.simulation.model.agents.organelles.Organelle;
 import bio.singa.simulation.model.agents.organelles.OrganelleTypes;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -37,6 +36,7 @@ import bio.singa.simulation.model.modules.qualitative.implementations.VesicleAtt
 import bio.singa.simulation.model.modules.qualitative.implementations.VesicleFusion;
 import bio.singa.simulation.model.sections.CellSubsections;
 import bio.singa.simulation.model.simulation.Simulation;
+import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -230,16 +230,16 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         simulation.setMembraneLayer(membraneLayer);
 
         // initialize cell membrane and nucleus
-        Organelle cell = OrganelleTypes.CELL.create();
+        OrganelleTemplate cell = OrganelleTypes.CELL.create();
         // blue is basolateral
         int green = java.awt.Color.GREEN.getRGB();
-        cell.setGroupRegion(green, "basolateral plasma membrane", "GO:0016323");
+        cell.initializeGroup(green, "basolateral plasma membrane", "GO:0016323");
         // red is the default region
         int red = java.awt.Color.RED.getRGB();
-        cell.setGroupRegion(red);
+        cell.initializeGroup(red, cell.getMembraneRegion());
         // green is the
         int blue = java.awt.Color.BLUE.getRGB();
-        cell.setGroupRegion(blue, "apical plasma membrane", "GO:0016324");
+        cell.initializeGroup(blue, "apical plasma membrane", "GO:0016324");
         Membrane cellMembrane = MembraneTracer.membraneToRegion(cell, graph);
         membraneLayer.addMembrane(cellMembrane);
 
@@ -302,11 +302,12 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
                 Polygon organellePolygon = node.getSubsectionRepresentations().get(node.getCellRegion().getInnerSubsection());
                 fillPolygon(organellePolygon);
                 getGraphicsContext().setFill(Color.BLACK);
-                strokeTextCenteredOnPoint(node.getCellRegion().getGoTerm().toString(), node.getPosition());
+                // strokeTextCenteredOnPoint(node.getCellRegion().getGoTerm().toString(), node.getPosition());
             } else {
                 getGraphicsContext().setFill(CellSubsections.getColor(node.getCellRegion().getInnerSubsection()));
                 fillPolygon(nodePolygon);
             }
+            strokePolygon(nodePolygon);
         }
         // draw membrane
         if (membraneLayer != null) {

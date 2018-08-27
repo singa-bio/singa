@@ -93,5 +93,5 @@ public interface Polygon extends Polytope<Vector2D> {
 
     void scale(double scalingFactor);
 
-    void reduce(int times);
+    Set<Vector2D> reduce(int times);
 }

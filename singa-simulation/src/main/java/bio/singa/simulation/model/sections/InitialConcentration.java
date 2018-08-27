@@ -33,6 +33,38 @@ public class InitialConcentration {
         this.concentration = concentration;
     }
 
+    public CellRegion getRegion() {
+        return region;
+    }
+
+    public void setRegion(CellRegion region) {
+        this.region = region;
+    }
+
+    public CellSubsection getSubsection() {
+        return subsection;
+    }
+
+    public void setSubsection(CellSubsection subsection) {
+        this.subsection = subsection;
+    }
+
+    public ChemicalEntity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(ChemicalEntity entity) {
+        this.entity = entity;
+    }
+
+    public Quantity<MolarConcentration> getConcentration() {
+        return concentration;
+    }
+
+    public void setConcentration(Quantity<MolarConcentration> concentration) {
+        this.concentration = concentration;
+    }
+
     public void initialize(Simulation simulation) {
         for (Updatable updatable : simulation.getUpdatables()) {
             if (region == null || updatable.getCellRegion().equals(region)) {

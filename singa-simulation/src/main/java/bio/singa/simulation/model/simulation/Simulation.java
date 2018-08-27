@@ -8,16 +8,17 @@ import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
-import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
 import bio.singa.simulation.model.rules.AssignmentRules;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellRegions;
+import bio.singa.simulation.model.sections.ConcentrationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tec.uom.se.ComparableQuantity;
@@ -85,6 +86,8 @@ public class Simulation {
 
     private List<UpdateModule> modules;
 
+    private ConcentrationInitializer concentrationInitializer;
+
     private boolean initializationDone;
 
     private Quantity<Time> maximalTimeStep;
@@ -115,6 +118,7 @@ public class Simulation {
         if (!initializationDone) {
             initializeModules();
             initializeGraph();
+            initializeConcentrations();
             initializeSpatialRepresentations();
             initializeVesicleLayer();
             scheduler.rescaleParameters();
@@ -153,6 +157,13 @@ public class Simulation {
                     scheduler.increaseTimeStep();
                 }
             }
+        }
+    }
+
+    private void initializeConcentrations() {
+        if (concentrationInitializer != null) {
+            logger.info("Initializing starting concentrations");
+            concentrationInitializer.initialize(this);
         }
     }
 
@@ -388,4 +399,11 @@ public class Simulation {
         return observedUpdatables;
     }
 
+    public ConcentrationInitializer getConcentrationInitializer() {
+        return concentrationInitializer;
+    }
+
+    public void setConcentrationInitializer(ConcentrationInitializer concentrationInitializer) {
+        this.concentrationInitializer = concentrationInitializer;
+    }
 }

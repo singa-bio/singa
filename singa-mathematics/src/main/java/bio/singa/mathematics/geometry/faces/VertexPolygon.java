@@ -147,18 +147,26 @@ public class VertexPolygon implements Polygon {
         vertices = rotatedVectors;
     }
 
-    public void reduce(int iterations) {
+    public Set<Vector2D> reduce(int iterations) {
+        Set<Vector2D> removedVectors = new HashSet<>();
         for (int i = 0; i < iterations; i++) {
-            reduce();
+            removedVectors.addAll(reduce());
         }
+        return removedVectors;
     }
 
-    private void reduce() {
+    public Set<Vector2D> reduce() {
         List<Vector2D> reducedVectors = new ArrayList<>();
-        for (int index = 0; index < vertices.size(); index += 2) {
-            reducedVectors.add(vertices.get(index));
+        Set<Vector2D> removedVectors = new HashSet<>();
+        for (int index = 0; index < vertices.size(); index++) {
+            if (index % 2 == 0) {
+                reducedVectors.add(vertices.get(index));
+            } else {
+                removedVectors.add(vertices.get(index));
+            }
         }
         vertices = reducedVectors;
+        return removedVectors;
     }
 
     public void move(Vector2D targetLocation) {

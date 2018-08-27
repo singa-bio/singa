@@ -19,6 +19,10 @@ public class ConcentrationInitializer {
         initialConcentrations = new ArrayList<>();
     }
 
+    public ConcentrationInitializer(List<InitialConcentration> initialConcentrations) {
+        this.initialConcentrations = initialConcentrations;
+    }
+
     public List<InitialConcentration> getInitialConcentrations() {
         return initialConcentrations;
     }

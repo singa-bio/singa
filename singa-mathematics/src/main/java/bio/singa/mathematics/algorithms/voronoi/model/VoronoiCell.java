@@ -5,10 +5,7 @@ import bio.singa.mathematics.geometry.faces.Rectangle;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -235,8 +232,8 @@ public class VoronoiCell implements Polygon {
     }
 
     @Override
-    public void reduce(int times) {
-
+    public Set<Vector2D> reduce(int times) {
+        return null;
     }
 
     @Override

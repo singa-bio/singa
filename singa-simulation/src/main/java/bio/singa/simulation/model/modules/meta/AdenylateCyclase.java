@@ -32,7 +32,6 @@ public class AdenylateCyclase {
 
     }
 
-
     public static void main(String[] args) {
 
         Simulation simulation = new Simulation();
@@ -70,7 +69,6 @@ public class AdenylateCyclase {
                 .addAssociatedPart(gtpGProteinAlpha)
                 .setMembraneAnchored(true)
                 .build();
-
 
         // estimated from k2 = kd = 200 nM (Chen-Goodspeed 2005)
         RateConstant kFwd = RateConstant.create(0.005)

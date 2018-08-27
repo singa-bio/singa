@@ -23,22 +23,22 @@ public enum OrganelleTypes {
             CellSubsections.NUCLEOPLASM,
             CellSubsections.NUCLEAR_MEMBRANE,
             CellSubsections.CYTOPLASM,
-            "nuclear_envelope"),
+            "pc_nuclear_membrane"),
 
     CELL("cell", new GoTerm("GO:0005623"),
             CellSubsections.CYTOPLASM,
             CellSubsections.CELL_OUTER_MEMBRANE,
             CellSubsections.EXTRACELLULAR_REGION,
-            "cell_membrane_grouped");
+            "pc_cell_membrane");
 
-    private CellRegion internalRegion;
+    private CellRegion innerRegion;
     private CellRegion membraneRegion;
     private String templateLocation;
 
     OrganelleTypes(String name, GoTerm goTerm, CellSubsection innerSubsection, CellSubsection membraneSubsection, CellSubsection outerSubsection, String templateName) {
         // region for inner nodes
-        internalRegion = new CellRegion(name, goTerm);
-        internalRegion.addSubSection(CellTopology.INNER, innerSubsection);
+        innerRegion = new CellRegion(name, goTerm);
+        innerRegion.addSubSection(CellTopology.INNER, innerSubsection);
         // region for membrane associated nodes
         membraneRegion = new CellRegion(membraneSubsection.getIdentifier(), membraneSubsection.getGoTerm());
         membraneRegion.addSubSection(CellTopology.INNER, innerSubsection);
@@ -48,21 +48,29 @@ public enum OrganelleTypes {
         templateLocation = "organelle_templates/" + templateName + ".png";
     }
 
-    public CellRegion getInternalRegion() {
-        return internalRegion;
+    public CellRegion getInnerRegion() {
+        return innerRegion;
     }
 
     public CellRegion getMembraneRegion() {
         return membraneRegion;
     }
 
-    public Organelle create() {
+    public OrganelleTemplate create() {
         OrganelleTemplate template = OrganelleImageParser.getOrganelleTemplate(templateLocation);
+        // set scaling
+        template.mapToSystemExtend();
         // resize to a handleable number of edges
-        while (template.getPolygon().getVertices().size() > 200) {
-            template.getPolygon().reduce(1);
+        template.reduce();
+        // if only one group is specified set the enum specified region
+        if (template.getGroups().size() == 1) {
+            template.initializeGroup(membraneRegion);
         }
-        return new Organelle(internalRegion, membraneRegion, template);
+        // set the default regions
+        template.setInnerRegion(innerRegion);
+        template.setMembraneRegion(membraneRegion);
+        // return template
+        return template;
     }
 
 }
