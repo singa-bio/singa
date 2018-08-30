@@ -3,12 +3,12 @@ package bio.singa.simulation.events;
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.model.QuantityFormatter;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.sections.CellSubsection;
+import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.SimulationManager;
 import bio.singa.simulation.model.simulation.Updatable;
 
@@ -19,7 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import static bio.singa.features.units.UnitProvider.MOLE_PER_CUBIC_MICROMETRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
@@ -43,11 +45,6 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * The character separating different values.
      */
     private static final char SEPARATOR_CHARACTER = ',';
-
-    /**
-     * The character separating sections in nodes.
-     */
-    private static final char SECTION_SPACER = '.';
 
     /**
      * The line separator of the current system.
@@ -99,6 +96,9 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      */
     private QuantityFormatter<MolarConcentration> concentrationFormatter = new QuantityFormatter<>(MOLE_PER_LITRE, false);
 
+
+    private Simulation simulation;
+
     /**
      * Creates a new {@link EpochUpdateWriter}. A extended header is printed in each file.
      *
@@ -107,8 +107,8 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @param entitiesToObserve The entities to observe.
      * @param modulesToObserve The modules to record deltas from.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve) {
-        this(workspacePath, folder, entitiesToObserve, modulesToObserve, true);
+    public EpochUpdateWriter(Simulation simulation, Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve) {
+        this(simulation, workspacePath, folder, entitiesToObserve, modulesToObserve, true);
     }
 
     /**
@@ -120,7 +120,8 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @param modulesToObserve The modules to record deltas from.
      * @param printHeader True, if an extended header should be printed.
      */
-    public EpochUpdateWriter(Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve, boolean printHeader) {
+    public EpochUpdateWriter(Simulation simulation, Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve, boolean printHeader) {
+        this.simulation = simulation;
         this.workspacePath = workspacePath;
         this.folder = folder;
         createFolderStructure();
@@ -235,12 +236,10 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      */
     private String prepareDeltaColumnHeader() {
         return "elapsed_time" + SEPARATOR_CHARACTER +
-                "time_step_size" + SEPARATOR_CHARACTER +
                 "module" + SEPARATOR_CHARACTER +
-                "chemical_entity" + SEPARATOR_CHARACTER +
                 "cell_section" + SEPARATOR_CHARACTER +
-                "delta" + SEPARATOR_CHARACTER +
-                "delta_adjusted" + LINEBREAK;
+                "chemical_entity" + SEPARATOR_CHARACTER +
+                "delta_average";
     }
 
     /**
@@ -375,23 +374,36 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @param event The event.
      */
     private void appendDeltaContent(UpdatableUpdatedEvent event) {
-        Updatable node = event.getUpdatable();
-        StringBuilder sb = new StringBuilder();
-        for (ConcentrationDelta delta : node.getPotentialSpatialDeltas()) {
-            if (delta.getQuantity().getValue().doubleValue() > 0.0) {
-                if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
-                    sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
-                            .append(Environment.getTimeStep().getValue().doubleValue()).append(SEPARATOR_CHARACTER)
-                            .append(delta.getModule()).append(SEPARATOR_CHARACTER)
-                            .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
-                            .append(delta.getCellSubsection().getIdentifier()).append(SEPARATOR_CHARACTER)
-                            .append(Environment.DELTA_FORMATTER.format(delta.getQuantity())).append(SEPARATOR_CHARACTER)
-                            .append(delta.getQuantity().to(MOLE_PER_LITRE).getValue().doubleValue() / Environment.getTimeStep().getValue().doubleValue()).append(LINEBREAK);
-                }
-            }
-        }
+        Updatable updatable = event.getUpdatable();
+        List<ConcentrationDelta> previousObservedDeltas = simulation.getPreviousObservedDeltas(updatable);
+
+        String collect = previousObservedDeltas.stream()
+                .collect(Collectors.groupingBy(delta -> delta.getModule().toString() + SEPARATOR_CHARACTER +
+                        delta.getCellSubsection().getIdentifier() + SEPARATOR_CHARACTER +
+                        delta.getChemicalEntity().getIdentifier()))
+                .entrySet()
+                .stream()
+                .map(entry -> timeFormatter.format(event.getTime()) + SEPARATOR_CHARACTER
+                        + entry.getKey() + SEPARATOR_CHARACTER
+                        + entry.getValue().stream()
+                        .mapToDouble(delta -> delta.getQuantity().to(MOLE_PER_CUBIC_MICROMETRE).getValue().doubleValue())
+                        .average()
+                        .orElse(Double.NaN))
+                .collect(Collectors.joining(LINEBREAK, "", LINEBREAK));
+
+        // write
+//        StringBuilder sb = new StringBuilder();
+//        for (ConcentrationDelta delta : updatable.getPotentialConcentrationDeltas()) {
+//            if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
+//                sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
+//                        .append(delta.getModule()).append(SEPARATOR_CHARACTER)
+//                        .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
+//                        .append(delta.getCellSubsection().getIdentifier()).append(SEPARATOR_CHARACTER)
+//                        .append(Environment.DELTA_FORMATTER.format(delta.getQuantity())).append(LINEBREAK);
+//            }
+//        }
         try {
-            appendDeltaContent(node, sb.toString());
+            appendDeltaContent(updatable, collect);
         } catch (IOException e) {
             e.printStackTrace();
         }

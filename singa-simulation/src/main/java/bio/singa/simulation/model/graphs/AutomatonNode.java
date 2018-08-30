@@ -111,7 +111,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
     }
 
     @Override
-    public List<ConcentrationDelta> getPotentialSpatialDeltas() {
+    public List<ConcentrationDelta> getPotentialConcentrationDeltas() {
         return updateManager.getPotentialDeltas();
     }
 

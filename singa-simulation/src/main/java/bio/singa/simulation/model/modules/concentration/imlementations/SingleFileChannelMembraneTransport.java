@@ -69,7 +69,7 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
 
     private void initialize() {
         // apply
-        setApplicationCondition(updatable -> true);
+        setApplicationCondition(updatable -> updatable.getCellRegion().hasMembrane());
         // function
         UpdatableDeltaFunction function = new UpdatableDeltaFunction(this::calculateDeltas, container -> true);
         addDeltaFunction(function);
@@ -97,10 +97,10 @@ public class SingleFileChannelMembraneTransport extends ConcentrationBasedModule
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
         final double permeability = getScaledFeature(transporter, OsmoticPermeability.class).getValue().doubleValue();
         final double value = getSoluteDelta(container) * permeability * MolarConcentration.concentrationToMolecules(container.get(CellTopology.MEMBRANE, transporter), Environment.getSubsectionVolume()).getValue().doubleValue();
-        deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getOuterSubsection(), cargo),
-                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
         deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getInnerSubsection(), cargo),
-                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
+                new ConcentrationDelta(this, container.getInnerSubsection(), cargo, Quantities.getQuantity(value, Environment.getConcentrationUnit())));
+        deltas.put(new ConcentrationDeltaIdentifier(supplier.getCurrentUpdatable(), container.getOuterSubsection(), cargo),
+                new ConcentrationDelta(this, container.getOuterSubsection(), cargo, Quantities.getQuantity(-value, Environment.getConcentrationUnit())));
         return deltas;
     }
 

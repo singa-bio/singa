@@ -99,7 +99,7 @@ public class DiffusionAtMembranesTest {
         Diffusion.inSimulation(simulation)
                 .onlyFor(ammonia)
                 .build();
-        // simulate som epochs
+        // simulate some epochs
         for (int i = 0; i < 100; i++) {
             simulation.nextEpoch();
         }

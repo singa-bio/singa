@@ -49,8 +49,11 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
         int truncated = transformed.getValue().intValue();
 
         ComparableQuantity<Time> nextBest = Quantities.getQuantity(untruncated - truncated, bestUnit).to(nextBestUnit);
-
-        return truncated + " " + bestUnit + " " + nextBest.getValue().intValue() + " " + nextBestUnit;
+        if (nextBest.getValue().doubleValue() == 0.0) {
+            return truncated + " " + bestUnit;
+        } else {
+            return truncated + " " + bestUnit + " " + nextBest.getValue().intValue() + " " + nextBestUnit;
+        }
     }
 
     public QuantityFormatter(Unit<UnitType> targetUnit, boolean displayUnit) {

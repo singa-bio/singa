@@ -33,18 +33,15 @@ import static bio.singa.features.model.FeatureOrigin.MANUALLY_ANNOTATED;
  * Diffusivity must be assigned to each entity or a {@link FeatureProvider} will try to resolve it.
  * Entities might be anchored to membranes ({@link ChemicalEntity#setMembraneAnchored(boolean)}), which permits
  * diffusion to nodes with non membrane regions.
- *
  * <pre>
  *  // define the feature to parametrize the diffusion
  *  Diffusivity diffusivity = new Diffusivity(Quantities.getQuantity(2.28E-05, SQUARE_CENTIMETRE_PER_SECOND),
  *         FeatureOrigin.MANUALLY_ANNOTATED);
- *
  *  // assign it to the chemical entity
  *  SmallMolecule ammonia = new SmallMolecule.Builder("ammonia")
  *         .name("ammonia")
  *         .assignFeature(diffusivity)
  *         .build();
- *
  *  // create the module
  *  Diffusion diffusion = Diffusion.inSimulation(simulation)
  *         .identifier("ammonia diffusion")
@@ -84,29 +81,34 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // traverse each neighbouring cells
         for (AutomatonNode neighbour : node.getNeighbours()) {
 
-            if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(node, neighbour) || bothAreMembrane(node, neighbour)) {
-                // if entity is not anchored in membrane
-                // if current is membrane and neighbour is membrane
-                // if current is non-membrane and neighbour is non-membrane
-                // classical diffusion
-                final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
-                if (availableConcentration != null) {
-                    concentration += availableConcentration.getValue().doubleValue();
-                    numberOfNeighbors++;
-                }
-            } else {
-                // if current is non-membrane and neighbour is membrane
-                if (neigbourIsPotentialSource(node, neighbour)) {
-                    // leaving amount stays unchanged, but entering concentration is relevant
+            if (neighbour.getConcentrationContainer().getReferencedSubSections().contains(subsection)) {
+                // if the neighbour actually contains the same subsection, that is currently handled
+                if (chemicalEntityIsNotMembraneAnchored() || bothAreNonMembrane(node, neighbour) || bothAreMembrane(node, neighbour)) {
+                    // if entity is not anchored in membrane
+                    // if current is membrane and neighbour is membrane
+                    // if current is non-membrane and neighbour is non-membrane
+                    // classical diffusion
+                    // if the neighbour actually contains the same subsection
                     final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
                     if (availableConcentration != null) {
                         concentration += availableConcentration.getValue().doubleValue();
+                        numberOfNeighbors++;
                     }
-                }
-                // if current is membrane and neighbour is non-membrane
-                if (neigbourIsPotentialTarget(node, neighbour)) {
-                    // assert effect on leaving concentration but entering concentration stays unchanged
-                    numberOfNeighbors++;
+
+                } else {
+                    // if current is non-membrane and neighbour is membrane
+                    if (neigbourIsPotentialSource(node, neighbour)) {
+                        // leaving amount stays unchanged, but entering concentration is relevant
+                        final Quantity<MolarConcentration> availableConcentration = neighbour.getConcentration(subsection, entity);
+                        if (availableConcentration != null) {
+                            concentration += availableConcentration.getValue().doubleValue();
+                        }
+                    }
+                    // if current is membrane and neighbour is non-membrane
+                    if (neigbourIsPotentialTarget(node, neighbour)) {
+                        // assert effect on leaving concentration but entering concentration stays unchanged
+                        numberOfNeighbors++;
+                    }
                 }
             }
 

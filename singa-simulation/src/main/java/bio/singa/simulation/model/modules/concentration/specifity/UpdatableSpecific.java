@@ -1,10 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.specifity;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 
 import java.util.ArrayList;
@@ -39,6 +41,11 @@ public class UpdatableSpecific implements UpdateSpecificity<UpdatableDeltaFuncti
 
     @Override
     public void processContainer(ConcentrationContainer container) {
+        determineDeltas(container);
+    }
+
+    @Override
+    public void processContainer(ConcentrationContainer container, CellSubsection subsection, ChemicalEntity chemicalEntity) {
         determineDeltas(container);
     }
 

@@ -71,7 +71,7 @@ public class DependentUpdate implements UpdateScope {
         supply().setStrutCalculation(true);
         for (ConcentrationDeltaIdentifier identifier : supply().getCurrentFullDeltas().keySet()) {
             supply().setCurrentUpdatable(identifier.getUpdatable());
-            specify().processContainer(getHalfStepConcentration(identifier.getUpdatable()));
+            specify().processContainer(getHalfStepConcentration(identifier.getUpdatable()), identifier.getSubsection(), identifier.getEntity());
         }
         // set largest local error
         supply().setLargestLocalError(module.determineLargestLocalError());

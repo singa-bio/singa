@@ -24,7 +24,7 @@ public interface Updatable {
 
     CellRegion getCellRegion();
     Set<CellSubsection> getAllReferencedSections();
-    List<ConcentrationDelta> getPotentialSpatialDeltas();
+    List<ConcentrationDelta> getPotentialConcentrationDeltas();
 
     void addPotentialDelta(ConcentrationDelta delta);
     void clearPotentialConcentrationDeltas();

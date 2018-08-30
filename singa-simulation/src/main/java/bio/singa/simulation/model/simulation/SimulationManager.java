@@ -238,6 +238,7 @@ public class SimulationManager extends Task<Simulation> {
                     emitNodeEvent(simulation, updatable);
                     logger.debug("Emitted next epoch event for node {}.", updatable.getStringIdentifier());
                 }
+                simulation.clearPreviouslyObservedDeltas();
                 if (terminationTime != null) {
                     estimateRuntime();
                 }
@@ -257,9 +258,9 @@ public class SimulationManager extends Task<Simulation> {
             ComparableQuantity<Time> subtract = currentTimeSimulation.subtract(previousTimeSimulation);
             double speed = subtract.getValue().doubleValue() / Quantities.getQuantity(currentTimeMillis - previousTimeMillis, MILLI(SECOND)).to(SECOND).getValue().doubleValue();
             if (Double.isInfinite(speed)) {
-                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MICRO(SECOND))) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
+                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MILLI(SECOND))) + ", current simulation speed: [very high] (Simulation Time) per s(Real Time)");
             } else {
-                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MICRO(SECOND))) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
+                logger.info("estimated time remaining: " + QuantityFormatter.formatTime(Quantities.getQuantity(estimatedTimeRemaining, MILLI(SECOND))) + ", current simulation speed: " + QuantityFormatter.formatTime(Quantities.getQuantity(speed, MICRO(SECOND))) + "(Simulation Time) per s(Real Time)");
             }
         }
         previousTimeMillis = currentTimeMillis;

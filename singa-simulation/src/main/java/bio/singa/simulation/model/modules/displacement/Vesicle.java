@@ -254,7 +254,7 @@ public class Vesicle implements Updatable, Featureable {
     }
 
     @Override
-    public List<ConcentrationDelta> getPotentialSpatialDeltas() {
+    public List<ConcentrationDelta> getPotentialConcentrationDeltas() {
         return concentrationManager.getPotentialDeltas();
     }
 

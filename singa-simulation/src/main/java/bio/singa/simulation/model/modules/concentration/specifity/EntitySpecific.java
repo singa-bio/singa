@@ -41,6 +41,7 @@ public class EntitySpecific implements UpdateSpecificity<EntityDeltaFunction> {
 
     /**
      * Returns a object, managing shared properties of the module.
+     *
      * @return The supplier.
      */
     private FieldSupplier supply() {
@@ -56,6 +57,13 @@ public class EntitySpecific implements UpdateSpecificity<EntityDeltaFunction> {
                 determineDeltas(container);
             }
         }
+    }
+
+    @Override
+    public void processContainer(ConcentrationContainer container, CellSubsection subsection, ChemicalEntity chemicalEntity) {
+        supply().setCurrentSubsection(subsection);
+        supply().setCurrentEntity(chemicalEntity);
+        determineDeltas(container);
     }
 
     @Override

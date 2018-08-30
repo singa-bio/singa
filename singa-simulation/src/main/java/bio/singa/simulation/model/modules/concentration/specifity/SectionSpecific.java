@@ -1,5 +1,6 @@
 package bio.singa.simulation.model.modules.concentration.specifity;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDeltaIdentifier;
@@ -52,6 +53,11 @@ public class SectionSpecific implements UpdateSpecificity<SectionDeltaFunction> 
             supply().setCurrentSubsection(cellSection);
             determineDeltas(container);
         }
+    }
+
+    public void processContainer(ConcentrationContainer container, CellSubsection subsection, ChemicalEntity chemicalEntity) {
+        supply().setCurrentSubsection(subsection);
+        determineDeltas(container);
     }
 
     @Override

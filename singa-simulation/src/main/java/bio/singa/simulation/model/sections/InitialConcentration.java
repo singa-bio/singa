@@ -4,8 +4,11 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.Updatable;
+import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
+
+import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 
 /**
  * @author cl
@@ -31,6 +34,19 @@ public class InitialConcentration {
         this.subsection = subsection;
         this.entity = entity;
         this.concentration = concentration;
+    }
+
+    public InitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, double concentration) {
+        this.region = region;
+        this.subsection = subsection;
+        this.entity = entity;
+        this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
+    }
+
+    public InitialConcentration(CellSubsection subsection, ChemicalEntity entity, double concentration) {
+        this.subsection = subsection;
+        this.entity = entity;
+        this.concentration = Quantities.getQuantity(concentration, MOLE_PER_LITRE);
     }
 
     public CellRegion getRegion() {

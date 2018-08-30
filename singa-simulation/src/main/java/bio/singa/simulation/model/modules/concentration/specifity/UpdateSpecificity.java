@@ -1,6 +1,8 @@
 package bio.singa.simulation.model.modules.concentration.specifity;
 
+import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.functions.AbstractDeltaFunction;
+import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 
 /**
@@ -20,6 +22,8 @@ public interface UpdateSpecificity<DeltaFunctionType extends AbstractDeltaFuncti
      * @param container The container.
      */
     void processContainer(ConcentrationContainer container);
+
+    void processContainer(ConcentrationContainer container, CellSubsection subsection, ChemicalEntity chemicalEntity);
 
     /**
      * Determines all deltas for a Concentration container.

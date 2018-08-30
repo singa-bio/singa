@@ -194,9 +194,9 @@ public class Graphs {
     public static GridGraph buildGridGraph(int columns, int rows, Rectangle boundingBox) {
         logger.debug("Creating randomized grid graph with with {} columns and {} rows.", columns, rows);
         GridGraph graph = new GridGraph(columns, rows);
-        double horizontalSpacing = boundingBox.getWidth() / rows;
+        double horizontalSpacing = boundingBox.getWidth() / columns;
         double horizontalOffset = 0.5 * horizontalSpacing;
-        double verticalSpacing = boundingBox.getHeight() / columns;
+        double verticalSpacing = boundingBox.getHeight() / rows;
         double verticalOffset = 0.5 * verticalSpacing;
 
         // adding nodes

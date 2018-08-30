@@ -3,19 +3,24 @@ package bio.singa.simulation.model.agents.membranes;
 import bio.singa.features.parameters.Environment;
 import bio.singa.mathematics.algorithms.geometry.SutherandHodgmanClipping;
 import bio.singa.mathematics.algorithms.topology.FloodFill;
+import bio.singa.mathematics.geometry.edges.Line;
 import bio.singa.mathematics.geometry.edges.LineSegment;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
+import bio.singa.mathematics.vectors.Vectors;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
+import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.parser.organelles.OrganelleTemplate;
 
 import java.util.*;
 
 import static bio.singa.mathematics.geometry.model.Polygon.*;
+import static bio.singa.mathematics.vectors.Vector2D.X_INDEX;
+import static bio.singa.mathematics.vectors.Vector2D.Y_INDEX;
 
 /**
  * @author cl
@@ -38,7 +43,7 @@ public class MembraneTracer {
         return membraneToRegion(template.getInnerRegion(), template.getMembraneRegion(), template.getRegionMap(), graph);
     }
 
-    public static Membrane membraneToRegion(CellRegion innerRegion, CellRegion membraneRegion,  Map<CellRegion, Set<Vector2D>> regionMap, AutomatonGraph graph) {
+    public static Membrane membraneToRegion(CellRegion innerRegion, CellRegion membraneRegion, Map<CellRegion, Set<Vector2D>> regionMap, AutomatonGraph graph) {
         Membrane membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
@@ -195,11 +200,62 @@ public class MembraneTracer {
         AutomatonNode startingNode = null;
         boolean cyclic = true;
         // see if the membrane is a cycle or linear
-        for (AutomatonNode currentNode : unprocessedNodes) {
+        Iterator<AutomatonNode> currentIterator = unprocessedNodes.iterator();
+        while (currentIterator.hasNext()) {
+            AutomatonNode currentNode = currentIterator.next();
+            // count neighbours
             int neighbouringRegions = 0;
             for (AutomatonNode node : currentNode.getNeighbours()) {
                 if (node.getCellRegion().equals(region)) {
                     neighbouringRegions++;
+                }
+            }
+            // evaluate neighbour counts
+            if (neighbouringRegions == 0) {
+                // a single "piece" of membrane
+                // so this is a simulation with just on line of cells in horizontal or vertical direction
+                if (currentNode.getNeighbours().size() == 2) {
+                    Membrane membrane = new Membrane(region.getIdentifier());
+                    membrane.setMembraneRegion(region);
+                    CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
+                    innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+                    membrane.setInnerRegion(innerRegion);
+                    // check the direction of the membrane
+                    Iterator<AutomatonNode> neighbours = currentNode.getNeighbours().iterator();
+                    AutomatonNode first = neighbours.next();
+                    AutomatonNode second = neighbours.next();
+                    Line line = new Line(first.getPosition(), second.getPosition());
+                    Polygon spatialRepresentation = currentNode.getSpatialRepresentation();
+                    SimpleLineSegment segment;
+                    if (Double.isInfinite(line.getSlope())) {
+                        // horizontal membrane
+                        double minX = Vectors.getMaximalValueForIndex(X_INDEX, spatialRepresentation.getVertices());
+                        double maxX = Vectors.getMinimalValueForIndex(X_INDEX, spatialRepresentation.getVertices());
+                        double y = currentNode.getPosition().getY();
+                        segment = new SimpleLineSegment(minX, y, maxX, y);
+
+                    } else {
+                        // vertical membrane
+                        double minY = Vectors.getMaximalValueForIndex(Y_INDEX, spatialRepresentation.getVertices());
+                        double maxY = Vectors.getMinimalValueForIndex(Y_INDEX, spatialRepresentation.getVertices());
+                        double x = currentNode.getPosition().getX();
+                        segment = new SimpleLineSegment(x, minY, x, maxY);
+                    }
+                    membrane.addSegment(currentNode, segment);
+                    // construct region map
+                    Map<CellRegion, Set<Vector2D>> regionMap = new HashMap<>();
+                    Set<Vector2D> vectors = new HashSet<>();
+                    vectors.add(segment.getStartingPoint());
+                    vectors.add(segment.getEndingPoint());
+                    regionMap.put(membrane.getMembraneRegion(), vectors);
+                    membrane.setRegionMap(regionMap);
+                    membranes.add(membrane);
+                    currentIterator.remove();
+                    return;
+                } else {
+                    // or it is invalid
+                    throw new IllegalStateException("To create a membrane for a region, at least two neighbouring cells" +
+                            " must be assigned to the region.");
                 }
             }
             if (neighbouringRegions == 1) {

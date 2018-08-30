@@ -12,6 +12,7 @@ import bio.singa.simulation.model.agents.membranes.MembraneLayer;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.UpdateModule;
+import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.displacement.Vesicle;
 import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.rules.AssignmentRule;
@@ -30,6 +31,8 @@ import javax.measure.quantity.Time;
 import java.util.*;
 
 import static bio.singa.mathematics.geometry.model.Polygon.ON_LINE;
+import static tec.uom.se.unit.MetricPrefix.MICRO;
+import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -48,8 +51,14 @@ public class Simulation {
      */
     private VesicleLayer vesicleLayer;
 
+    /**
+     * The layer for membranes
+     */
     private MembraneLayer membraneLayer;
 
+    /**
+     * The base area of the membrane
+     */
     private Rectangle simulationRegion;
 
     /**
@@ -94,6 +103,8 @@ public class Simulation {
 
     private CellRegion standardRegion;
 
+    private Map<Updatable, List<ConcentrationDelta>> observedDeltas;
+
     /**
      * Creates a new plain simulation.
      */
@@ -108,6 +119,7 @@ public class Simulation {
         vesicleLayer = new VesicleLayer(this);
         scheduler = new UpdateScheduler(this);
         standardRegion = CellRegions.EXTRACELLULAR_REGION;
+        observedDeltas = new HashMap<>();
     }
 
     /**
@@ -127,6 +139,15 @@ public class Simulation {
         // clear observed nodes if necessary
         if (!observedUpdatables.isEmpty()) {
             for (Updatable observedUpdatable : observedUpdatables) {
+                // remember all updatables until they are written
+                if (!observedDeltas.containsKey(observedUpdatable)) {
+                    observedDeltas.put(observedUpdatable, new ArrayList<>());
+                }
+                for (ConcentrationDelta delta : observedUpdatable.getPotentialConcentrationDeltas()) {
+                    // adjust to time step
+                    observedDeltas.get(observedUpdatable).add(delta.multiply(1.0 / Environment.getTimeStep().to(MICRO(SECOND)).getValue().doubleValue()));
+                }
+                // clear them
                 observedUpdatable.clearPotentialConcentrationDeltas();
             }
         }
@@ -397,6 +418,14 @@ public class Simulation {
 
     public Set<Updatable> getObservedUpdatables() {
         return observedUpdatables;
+    }
+
+    public List<ConcentrationDelta> getPreviousObservedDeltas(Updatable updatable) {
+        return observedDeltas.get(updatable);
+    }
+
+    public void clearPreviouslyObservedDeltas() {
+        observedDeltas.clear();
     }
 
     public ConcentrationInitializer getConcentrationInitializer() {

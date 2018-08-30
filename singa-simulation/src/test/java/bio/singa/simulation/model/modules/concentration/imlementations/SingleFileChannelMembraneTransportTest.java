@@ -14,6 +14,7 @@ import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -31,6 +32,7 @@ import static tec.uom.se.unit.Units.METRE;
 public class SingleFileChannelMembraneTransportTest {
 
     @After
+    @Before
     public void cleanUp() {
         Environment.reset();
     }
