@@ -5,23 +5,28 @@ import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.graphs.AutomatonNode;
+import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
+import bio.singa.simulation.model.modules.concentration.imlementations.ComplexBuildingReaction;
+import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.model.simulation.SimulationManager;
 import bio.singa.simulation.model.simulation.Updatable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.measure.quantity.Time;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static bio.singa.features.units.UnitProvider.MOLE_PER_CUBIC_MICROMETRE;
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.unit.MetricPrefix.MILLI;
 import static tec.uom.se.unit.Units.SECOND;
@@ -36,6 +41,8 @@ import static tec.uom.se.unit.Units.SECOND;
  */
 public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEvent> {
 
+    private static final Logger logger = LoggerFactory.getLogger(EpochUpdateWriter.class);
+
     /**
      * The character indication a comment line.
      */
@@ -49,42 +56,37 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     /**
      * The line separator of the current system.
      */
-    private static final String LINEBREAK = System.getProperty("line.separator");
+    private static final String LINEBREAK = System.lineSeparator();
 
     /**
      * The path to the user defined workspace.
      */
-    private final Path workspacePath;
+    private Path workspacePath;
 
     /**
      * The folder for the current simulation.
      */
-    private final Path folder;
-
-    /**
-     * Determines whether general entity information should be printed in the header.
-     */
-    private final boolean printHeader;
+    private Path folder;
 
     /**
      * The writers for concentration files.
      */
-    private final Map<Updatable, BufferedWriter> concentrationWriters;
+    private Map<Updatable, BufferedWriter> concentrationWriters;
 
     /**
      * The writers for deltas or changes.
      */
-    private final Map<Updatable, BufferedWriter> deltaWriters;
+    private Map<Updatable, BufferedWriter> deltaWriters;
 
     /**
      * The entities that should be observed.
      */
-    private final List<ChemicalEntity> observedEntities;
+    private List<ChemicalEntity> observedEntities;
 
     /**
      * The modules deltas should be recorded for.
      */
-    private final List<ConcentrationBasedModule> observedModules;
+    private List<ConcentrationBasedModule> observedModules;
 
     /**
      * The formatter for time based values.
@@ -98,54 +100,15 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
 
 
     private Simulation simulation;
+    private Path workspaceFolder;
 
-    /**
-     * Creates a new {@link EpochUpdateWriter}. A extended header is printed in each file.
-     *
-     * @param workspacePath The location of the simulation workspace.
-     * @param folder The folder, where the files written by this class should be located.
-     * @param entitiesToObserve The entities to observe.
-     * @param modulesToObserve The modules to record deltas from.
-     */
-    public EpochUpdateWriter(Simulation simulation, Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve) {
-        this(simulation, workspacePath, folder, entitiesToObserve, modulesToObserve, true);
-    }
-
-    /**
-     * Creates a new {@link EpochUpdateWriter}.
-     *
-     * @param workspacePath The location of the simulation workspace.
-     * @param folder The folder, where the files written by this class should be located.
-     * @param entitiesToObserve The entities to observe.
-     * @param modulesToObserve The modules to record deltas from.
-     * @param printHeader True, if an extended header should be printed.
-     */
-    public EpochUpdateWriter(Simulation simulation, Path workspacePath, Path folder, Set<ChemicalEntity> entitiesToObserve, Set<ConcentrationBasedModule> modulesToObserve, boolean printHeader) {
-        this.simulation = simulation;
-        this.workspacePath = workspacePath;
-        this.folder = folder;
-        createFolderStructure();
-        observedEntities = initializeOrdering(entitiesToObserve);
-        observedModules = initializeOrdering(modulesToObserve);
-        this.printHeader = printHeader;
+    public EpochUpdateWriter() {
         concentrationWriters = new HashMap<>();
         deltaWriters = new HashMap<>();
     }
 
-    public QuantityFormatter<Time> getTimeFormatter() {
-        return timeFormatter;
-    }
-
-    public void setTimeFormatter(QuantityFormatter<Time> timeFormatter) {
-        this.timeFormatter = timeFormatter;
-    }
-
-    public QuantityFormatter<MolarConcentration> getConcentrationFormatter() {
-        return concentrationFormatter;
-    }
-
-    public void setConcentrationFormatter(QuantityFormatter<MolarConcentration> concentrationFormatter) {
-        this.concentrationFormatter = concentrationFormatter;
+    public static WorkspaceStep create() {
+        return new EpochUpdateWriterBuilder();
     }
 
     /**
@@ -162,8 +125,13 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
     /**
      * Initialized the folder for the current simulation.
      */
-    private void createFolderStructure() {
-        Path workspaceFolder = workspacePath.resolve(folder);
+    private void createFolderStructure(boolean timestamped) {
+        workspaceFolder = workspacePath.resolve(folder);
+        if (timestamped) {
+            Date date = Calendar.getInstance().getTime();
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss'Z'").format(date);
+            workspaceFolder = workspaceFolder.resolve(timeStamp);
+        }
         try {
             if (!Files.exists(workspaceFolder)) {
                 Files.createDirectory(workspaceFolder);
@@ -180,7 +148,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @return The path to the newly created file.
      */
     private Path createFile(String fileName) {
-        Path file = workspacePath.resolve(folder).resolve(fileName);
+        Path file = workspaceFolder.resolve(fileName);
         if (!Files.exists(file)) {
             try {
                 Files.createFile(file);
@@ -199,6 +167,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @throws IOException If the file can not be created.
      */
     public void addNodeToObserve(AutomatonNode node) throws IOException {
+        logger.info("Observing node {}, results will be written to {}.", node.getIdentifier(), workspaceFolder);
         // add concentration writers
         Path concentrationFile = createFile("node_" + node.getIdentifier() + "_concentrations.csv");
         BufferedWriter concentrationWriter = Files.newBufferedWriter(concentrationFile);
@@ -218,15 +187,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @throws IOException If the file could not be written.
      */
     private void writeDeltaFileHeader(AutomatonNode node) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        if (printHeader) {
-            sb.append(COMMENT_CHARACTER)
-                    .append(" Node ")
-                    .append(node.getIdentifier())
-                    .append(LINEBREAK);
-        }
-        sb.append(prepareDeltaColumnHeader());
-        appendDeltaContent(node, sb.toString());
+        appendDeltaContent(node, prepareDeltaColumnHeader());
     }
 
     /**
@@ -249,34 +210,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
      * @throws IOException If the file could not be written.
      */
     private void writeConcentrationFileHeader(AutomatonNode node) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        if (printHeader) {
-            sb.append(COMMENT_CHARACTER)
-                    .append(" Node ")
-                    .append(node.getIdentifier())
-                    .append(LINEBREAK)
-                    .append(prepareEntityInformation());
-        }
-        sb.append(prepareConcentrationColumnHeader(node));
-        appendConcentrationContent(node, sb.toString());
-    }
-
-    /**
-     * Creates a String with information about the observed entities.
-     *
-     * @return The entity information.
-     */
-    private String prepareEntityInformation() {
-        StringBuilder sb = new StringBuilder();
-        for (ChemicalEntity entity : observedEntities) {
-            sb.append(COMMENT_CHARACTER)
-                    .append(" ")
-                    .append(entity.getName())
-                    .append(" ")
-                    .append(entity.getIdentifier())
-                    .append(LINEBREAK);
-        }
-        return sb.toString();
+        appendConcentrationContent(node, prepareConcentrationColumnHeader(node));
     }
 
     /**
@@ -332,7 +266,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
                 e.printStackTrace();
             }
         }
-
+        logger.info("Simulation observation successfully written to {}.", workspaceFolder);
     }
 
     @Override
@@ -378,35 +312,171 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
         List<ConcentrationDelta> previousObservedDeltas = simulation.getPreviousObservedDeltas(updatable);
 
         String collect = previousObservedDeltas.stream()
-                .collect(Collectors.groupingBy(delta -> delta.getModule().toString() + SEPARATOR_CHARACTER +
+                .collect(Collectors.groupingBy(delta -> getModuleRepresentativeString(delta.getModule()) + SEPARATOR_CHARACTER +
                         delta.getCellSubsection().getIdentifier() + SEPARATOR_CHARACTER +
                         delta.getChemicalEntity().getIdentifier()))
                 .entrySet()
                 .stream()
                 .map(entry -> timeFormatter.format(event.getTime()) + SEPARATOR_CHARACTER
                         + entry.getKey() + SEPARATOR_CHARACTER
-                        + entry.getValue().stream()
-                        .mapToDouble(delta -> delta.getQuantity().to(MOLE_PER_CUBIC_MICROMETRE).getValue().doubleValue())
+                        + concentrationFormatter.format(entry.getValue().stream()
+                        .mapToDouble(delta -> delta.getQuantity().to(concentrationFormatter.getTargetUnit()).getValue().doubleValue())
                         .average()
-                        .orElse(Double.NaN))
+                        .orElse(Double.NaN)))
                 .collect(Collectors.joining(LINEBREAK, "", LINEBREAK));
 
-        // write
-//        StringBuilder sb = new StringBuilder();
-//        for (ConcentrationDelta delta : updatable.getPotentialConcentrationDeltas()) {
-//            if (observedModules.contains(delta.getModule()) && observedEntities.contains(delta.getChemicalEntity())) {
-//                sb.append(timeFormatter.format(event.getTime())).append(SEPARATOR_CHARACTER)
-//                        .append(delta.getModule()).append(SEPARATOR_CHARACTER)
-//                        .append(delta.getChemicalEntity().getIdentifier()).append(SEPARATOR_CHARACTER)
-//                        .append(delta.getCellSubsection().getIdentifier()).append(SEPARATOR_CHARACTER)
-//                        .append(Environment.DELTA_FORMATTER.format(delta.getQuantity())).append(LINEBREAK);
-//            }
-//        }
         try {
             appendDeltaContent(updatable, collect);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getModuleRepresentativeString(UpdateModule module) {
+        if (module instanceof Reaction) {
+            return ((Reaction) module).getReactionString();
+        } else if (module instanceof ComplexBuildingReaction) {
+            return ((ComplexBuildingReaction) module).getReactionString();
+        } else {
+            return module.toString();
+        }
+    }
+
+    public Path getWorkspaceFolder() {
+        return workspaceFolder;
+    }
+
+    public interface WorkspaceStep {
+
+        FolderStep workspace(Path workspace);
+
+    }
+
+    public interface FolderStep {
+
+        SimulationStep folder(Path folder, boolean timeStamped);
+
+    }
+
+    public interface SimulationStep {
+
+        EntitiesStep simulation(Simulation simulation);
+
+    }
+
+    public interface EntitiesStep {
+
+        ModulesStep entities(Set<ChemicalEntity> observedEntities);
+
+        ModulesStep allEntities();
+
+        EpochUpdateWriter build();
+
+    }
+
+    public interface ModulesStep {
+
+        ConcentrationUnitStep modules(Set<ConcentrationBasedModule> observedModules);
+
+        ConcentrationUnitStep allModules();
+
+        EpochUpdateWriter build();
+
+    }
+
+    public interface ConcentrationUnitStep {
+
+        TimeUnitStep concentrationFormat(QuantityFormatter<MolarConcentration> quantityFormatter);
+
+        EpochUpdateWriter build();
+
+    }
+
+    public interface TimeUnitStep {
+
+        BuildStep timeFormat(QuantityFormatter<Time> timeFormatter);
+
+        EpochUpdateWriter build();
+
+    }
+
+    public interface BuildStep {
+
+        EpochUpdateWriter build();
+
+    }
+
+    public static class EpochUpdateWriterBuilder implements WorkspaceStep, FolderStep, SimulationStep, EntitiesStep, ModulesStep, ConcentrationUnitStep, TimeUnitStep, BuildStep {
+
+        private EpochUpdateWriter writer;
+
+        public EpochUpdateWriterBuilder() {
+            writer = new EpochUpdateWriter();
+        }
+
+        @Override
+        public FolderStep workspace(Path workspace) {
+            writer.workspacePath = workspace;
+            return this;
+        }
+
+        @Override
+        public SimulationStep folder(Path folder, boolean timestamped) {
+            writer.folder = folder;
+            writer.createFolderStructure(timestamped);
+            return this;
+        }
+
+        @Override
+        public EntitiesStep simulation(Simulation simulation) {
+            writer.simulation = simulation;
+            return this;
+        }
+
+        @Override
+        public ModulesStep entities(Set<ChemicalEntity> observedEntities) {
+            writer.observedEntities = initializeOrdering(observedEntities);
+            return this;
+        }
+
+        @Override
+        public ModulesStep allEntities() {
+            writer.observedEntities = new ArrayList<>(writer.simulation.getChemicalEntities());
+            return this;
+        }
+
+        @Override
+        public ConcentrationUnitStep modules(Set<ConcentrationBasedModule> observedModules) {
+            writer.observedModules = initializeOrdering(observedModules);
+            return this;
+        }
+
+        @Override
+        public ConcentrationUnitStep allModules() {
+            writer.observedModules = writer.simulation.getModules().stream()
+                    .filter(ConcentrationBasedModule.class::isInstance)
+                    .map(ConcentrationBasedModule.class::cast)
+                    .collect(Collectors.toList());
+            return this;
+        }
+
+        @Override
+        public TimeUnitStep concentrationFormat(QuantityFormatter<MolarConcentration> concentrationFormatter) {
+            writer.concentrationFormatter = concentrationFormatter;
+            return this;
+        }
+
+        @Override
+        public BuildStep timeFormat(QuantityFormatter<Time> timeFormatter) {
+            writer.timeFormatter = timeFormatter;
+            return this;
+        }
+
+        @Override
+        public EpochUpdateWriter build() {
+            return writer;
+        }
+
     }
 
 }

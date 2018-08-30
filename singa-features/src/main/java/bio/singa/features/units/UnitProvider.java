@@ -35,7 +35,6 @@ public final class UnitProvider {
         TIME_UNITS.add(YEAR);
     }
 
-
     /**
      * Molar concentration, also called molarity, amount concentration or substance concentration, is a measure of the
      * concentration of a solute in a solution, or of any chemical species in terms of amount of substance in a given
@@ -45,10 +44,6 @@ public final class UnitProvider {
     public static final Unit<MolarConcentration> MICRO_MOLE_PER_LITRE = MICRO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> NANO_MOLE_PER_LITRE = NANO(MOLE).divide(LITRE).asType(MolarConcentration.class);
     public static final Unit<MolarConcentration> MOLE_PER_CUBIC_MICROMETRE = MOLE.divide(MICRO(METRE).pow(3)).asType(MolarConcentration.class);
-
-
-
-
 
     /**
      * The SI unit for dynamic viscosity quantities.
@@ -64,7 +59,5 @@ public final class UnitProvider {
     static {
         SimpleUnitFormat.getInstance().label(ANGSTROEM, "\u212B");
     }
-
-
 
 }

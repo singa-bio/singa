@@ -77,13 +77,13 @@ public class SingleFileChannelMembraneTransportTest {
             // inner assertions
             Quantity<MolarConcentration> currentInnerConcentration = node.getConcentrationContainer().get(CellTopology.INNER, water).to(MOLE_PER_LITRE);
             if (previousInnerConcentration != null) {
-                assertTrue(currentInnerConcentration.getValue().doubleValue() > previousInnerConcentration.getValue().doubleValue());
+                assertTrue(currentInnerConcentration.getValue().doubleValue() < previousInnerConcentration.getValue().doubleValue());
             }
             previousInnerConcentration = currentInnerConcentration;
             // outer assertions
             Quantity<MolarConcentration> currentOuterConcentration = node.getConcentrationContainer().get(CellTopology.OUTER, water).to(MOLE_PER_LITRE);
             if (previousOuterConcentration != null) {
-                assertTrue(currentOuterConcentration.getValue().doubleValue() < previousOuterConcentration.getValue().doubleValue());
+                assertTrue(currentOuterConcentration.getValue().doubleValue() > previousOuterConcentration.getValue().doubleValue());
             }
             previousOuterConcentration = currentOuterConcentration;
         }

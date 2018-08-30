@@ -61,10 +61,15 @@ public class QuantityFormatter<UnitType extends Quantity<UnitType>> {
     }
 
     public String format(Quantity<UnitType> quantity) {
-        if (quantity == null) {
-
-        }
         return valueFormat.format(quantity.to(targetUnit).getValue().doubleValue()) + (displayUnit ? " " + targetUnit.toString() : "");
+    }
+
+    public Unit<UnitType> getTargetUnit() {
+        return targetUnit;
+    }
+
+    public String format(double quantityValue) {
+        return valueFormat.format(quantityValue) + (displayUnit ? " " + targetUnit.toString() : "");
     }
 
 }
