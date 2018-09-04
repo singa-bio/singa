@@ -15,6 +15,8 @@ import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.parser.organelles.OrganelleTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -26,6 +28,8 @@ import static bio.singa.mathematics.vectors.Vector2D.Y_INDEX;
  * @author cl
  */
 public class MembraneTracer {
+
+    private static final Logger logger = LoggerFactory.getLogger(MembraneTracer.class);
 
     // input
     private HashMap<CellRegion, List<AutomatonNode>> regionNodeMapping;
@@ -44,6 +48,7 @@ public class MembraneTracer {
     }
 
     public static Membrane membraneToRegion(CellRegion innerRegion, CellRegion membraneRegion, Map<CellRegion, Set<Vector2D>> regionMap, AutomatonGraph graph) {
+        logger.info("Initializing regions from assigned membrane.");
         Membrane membrane = new Membrane(membraneRegion.getIdentifier());
         membrane.setInnerRegion(innerRegion);
         membrane.setMembraneRegion(membraneRegion);
@@ -54,6 +59,17 @@ public class MembraneTracer {
             vertices.addAll(group);
         }
         Polygon membranePolygon = new VertexPolygon(vertices);
+
+        // for graphs with only one node
+        if (graph.getNodes().size() == 1) {
+            AutomatonNode node = graph.getNodes().iterator().next();
+            for (LineSegment lineSegment : membranePolygon.getEdges()) {
+                membrane.addSegment(node, lineSegment);
+            }
+            node.setCellRegion(membraneRegion);
+            return membrane;
+        }
+
         // check if all segments are contained in a single node
         boolean isContained = true;
         // determine and setup membrane cells
@@ -150,6 +166,7 @@ public class MembraneTracer {
     }
 
     public MembraneTracer(AutomatonGraph graph) {
+        logger.info("Initializing membranes from assigned regions.");
         this.graph = graph;
         membranes = new ArrayList<>();
         if (graph.getNodes().size() == 1) {
@@ -170,12 +187,29 @@ public class MembraneTracer {
     }
 
     private void traceSingleNode(AutomatonNode node) {
+        if (!node.getCellRegion().hasMembrane()) {
+            logger.warn("The graph contains only one node that has no membrane region assigned. No Membrane will be created.");
+            return;
+        }
         double simulationExtend = Environment.getSimulationExtend();
         // add horizontal membrane segment
         Vector2D start = new Vector2D(0, simulationExtend / 2.0);
         Vector2D end = new Vector2D(simulationExtend, simulationExtend / 2.0);
         Membrane membrane = new Membrane(node.getCellRegion().getIdentifier());
-        membrane.addSegment(node, new SimpleLineSegment(start, end));
+        CellRegion region = node.getCellRegion();
+        membrane.setMembraneRegion(region);
+        CellRegion innerRegion = new CellRegion(region.getInnerSubsection().getIdentifier(), region.getInnerSubsection().getGoTerm());
+        innerRegion.addSubSection(CellTopology.INNER, region.getInnerSubsection());
+        membrane.setInnerRegion(innerRegion);
+        SimpleLineSegment segment = new SimpleLineSegment(start, end);
+        membrane.addSegment(node, segment);
+        // construct region map
+        Map<CellRegion, Set<Vector2D>> regionMap = new HashMap<>();
+        Set<Vector2D> vectors = new HashSet<>();
+        vectors.add(segment.getStartingPoint());
+        vectors.add(segment.getEndingPoint());
+        regionMap.put(membrane.getMembraneRegion(), vectors);
+        membrane.setRegionMap(regionMap);
         membranes.add(membrane);
     }
 
@@ -196,6 +230,7 @@ public class MembraneTracer {
     }
 
     private void traverseRegion(CellRegion region) {
+        logger.debug("Traversing nodes of {}, creating membrane.", region.getIdentifier());
         unprocessedNodes = regionNodeMapping.get(region);
         AutomatonNode startingNode = null;
         boolean cyclic = true;

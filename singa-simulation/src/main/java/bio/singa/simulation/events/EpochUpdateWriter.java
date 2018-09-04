@@ -134,7 +134,7 @@ public class EpochUpdateWriter implements UpdateEventListener<UpdatableUpdatedEv
         }
         try {
             if (!Files.exists(workspaceFolder)) {
-                Files.createDirectory(workspaceFolder);
+                Files.createDirectories(workspaceFolder);
             }
         } catch (IOException e) {
             e.printStackTrace();

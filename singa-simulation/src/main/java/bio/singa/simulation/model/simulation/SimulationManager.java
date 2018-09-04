@@ -15,8 +15,8 @@ import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
-import java.text.DecimalFormat;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
@@ -81,9 +81,10 @@ public class SimulationManager extends Task<Simulation> {
     private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
 
     private Quantity<Time> terminationTime;
-    private DecimalFormat df = new DecimalFormat("#.00");
 
     private boolean keepPlatformOpen = DEFAULT_KEEP_PLATFORM_OPEN;
+
+    private CountDownLatch terminationLatch;
 
     /**
      * Creates a new simulation manager for the given simulation.
@@ -203,6 +204,10 @@ public class SimulationManager extends Task<Simulation> {
         };
     }
 
+    public void setTerminationLatch(CountDownLatch terminationLatch) {
+        this.terminationLatch = terminationLatch;
+    }
+
     public void emitGraphEvent(Simulation simulation) {
         graphEventEmitter.emitEvent(new GraphUpdatedEvent(simulation.getGraph(), simulation.getElapsedTime()));
     }
@@ -282,6 +287,9 @@ public class SimulationManager extends Task<Simulation> {
                     graphImageWriter.shutDown();
                     graphImageWriter.combineToGif();
                 }
+            }
+            if (terminationLatch != null) {
+                terminationLatch.countDown();
             }
             // will exit jfx when simulation finishes
             if (!keepPlatformOpen) {

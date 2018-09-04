@@ -1,6 +1,5 @@
 package bio.singa.features.parameters;
 
-import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.quantities.DynamicViscosity;
 import bio.singa.features.quantities.MolarConcentration;
 import org.slf4j.Logger;
@@ -10,25 +9,17 @@ import tec.uom.se.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.*;
-import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
 
 import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static bio.singa.features.units.UnitProvider.PASCAL_SECOND;
-import static tec.uom.se.unit.MetricPrefix.MICRO;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.MetricPrefix.NANO;
+import static tec.uom.se.unit.MetricPrefix.*;
 import static tec.uom.se.unit.Units.*;
 
 public class Environment extends Observable {
 
     private static final Logger logger = LoggerFactory.getLogger(Environment.class);
-
-    public static final QuantityFormatter<Time> TIME_FORMATTER = new QuantityFormatter<>(SECOND, true);
-
-    private static final DecimalFormat DELTA_VALUE_FORMATTER = new DecimalFormat("0.####E00");
-    public static final QuantityFormatter<MolarConcentration> DELTA_FORMATTER = new QuantityFormatter<>(DELTA_VALUE_FORMATTER, MOLE_PER_LITRE, false);
 
     /**
      * Standard node distance [length] (100 nm)
@@ -146,7 +137,7 @@ public class Environment extends Observable {
         systemTemperature = DEFAULT_TEMPERATURE;
         systemViscosity = DEFAULT_VISCOSITY;
         emptyConcentration = Quantities.getQuantity(0.0, subsectionConcentration);
-        setSystemAnsSimulationScales();
+        setSystemAndSimulationScales();
         setChanged();
         notifyObservers();
     }
@@ -162,7 +153,7 @@ public class Environment extends Observable {
         getInstance().systemTemperature = DEFAULT_TEMPERATURE;
         getInstance().systemViscosity = DEFAULT_VISCOSITY;
         getInstance().emptyConcentration = Quantities.getQuantity(0.0, getConcentrationUnit());
-        getInstance().setSystemAnsSimulationScales();
+        getInstance().setSystemAndSimulationScales();
         getInstance().setChanged();
         getInstance().notifyObservers();
     }
@@ -259,7 +250,7 @@ public class Environment extends Observable {
 
     public static void setSystemExtend(Quantity<Length> systemExtend) {
         getInstance().systemExtend = systemExtend;
-        getInstance().setSystemAnsSimulationScales();
+        getInstance().setSystemAndSimulationScales();
     }
 
     public static double getSimulationExtend() {
@@ -268,7 +259,7 @@ public class Environment extends Observable {
 
     public static void setSimulationExtend(double simulationExtend) {
         getInstance().simulationExtend = simulationExtend;
-        getInstance().setSystemAnsSimulationScales();
+        getInstance().setSystemAndSimulationScales();
     }
 
     public static Quantity<Length> getSystemScale() {
@@ -279,7 +270,7 @@ public class Environment extends Observable {
         return getInstance().simulationScale;
     }
 
-    private void setSystemAnsSimulationScales() {
+    private void setSystemAndSimulationScales() {
         simulationScale = simulationExtend / systemExtend.getValue().doubleValue();
         systemScale = systemExtend.divide(simulationExtend);
     }
