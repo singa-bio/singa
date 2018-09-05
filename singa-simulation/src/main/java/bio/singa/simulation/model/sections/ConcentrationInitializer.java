@@ -5,42 +5,47 @@ import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.simulation.Simulation;
 
 import javax.measure.Quantity;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author cl
  */
 public class ConcentrationInitializer {
 
-    private List<InitialConcentration> initialConcentrations;
+    private Set<InitialConcentration> initialConcentrations;
 
     public ConcentrationInitializer() {
-        initialConcentrations = new ArrayList<>();
+        initialConcentrations = new HashSet<>();
     }
 
-    public ConcentrationInitializer(List<InitialConcentration> initialConcentrations) {
+    public ConcentrationInitializer(Set<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 
-    public List<InitialConcentration> getInitialConcentrations() {
+    public Set<InitialConcentration> getInitialConcentrations() {
         return initialConcentrations;
     }
 
-    public void setInitialConcentrations(List<InitialConcentration> initialConcentrations) {
+    public void setInitialConcentrations(Set<InitialConcentration> initialConcentrations) {
         this.initialConcentrations = initialConcentrations;
     }
 
     public void addInitialConcentration(InitialConcentration initialConcentration) {
+        initialConcentrations.remove(initialConcentration);
         initialConcentrations.add(initialConcentration);
     }
 
     public void addInitialConcentration(CellRegion region, CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        initialConcentrations.add(new InitialConcentration(region, subsection, entity, concentration));
+        InitialConcentration initialConcentration = new InitialConcentration(region, subsection, entity, concentration);
+        initialConcentrations.remove(initialConcentration);
+        initialConcentrations.add(initialConcentration);
     }
 
     public void addInitialConcentration(CellSubsection subsection, ChemicalEntity entity, Quantity<MolarConcentration> concentration) {
-        initialConcentrations.add(new InitialConcentration(subsection, entity, concentration));
+        InitialConcentration initialConcentration = new InitialConcentration(subsection, entity, concentration);
+        initialConcentrations.remove(initialConcentration);
+        initialConcentrations.add(initialConcentration);
     }
 
     public void initialize(Simulation simulation) {

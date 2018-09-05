@@ -517,9 +517,8 @@ public abstract class ConcentrationBasedModule<DeltaFunctionType extends Abstrac
     /**
      * Sets a feature.
      * @param feature The feature.
-     * @param <FeatureType> The class of the feature.
      */
-    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+    public void setFeature(Feature<?> feature) {
         featureManager.setFeature(feature);
     }
 

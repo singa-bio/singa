@@ -73,6 +73,7 @@ public class SimulationManager extends Task<Simulation> {
     private long startingTime = System.currentTimeMillis();
 
     private long previousTimeMillis = 0;
+
     private Quantity<Time> previousTimeSimulation;
 
     /**

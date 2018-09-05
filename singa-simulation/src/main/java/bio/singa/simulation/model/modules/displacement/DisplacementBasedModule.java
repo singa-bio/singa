@@ -127,7 +127,11 @@ public class DisplacementBasedModule implements UpdateModule {
         return featureManager.getFeature(featureClass).getScaledQuantity();
     }
 
-    public <FeatureType extends Feature> void setFeature(FeatureType feature) {
+    /**
+     * Sets a feature.
+     * @param feature The feature.
+     */
+    public void setFeature(Feature<?> feature) {
         featureManager.setFeature(feature);
     }
 
