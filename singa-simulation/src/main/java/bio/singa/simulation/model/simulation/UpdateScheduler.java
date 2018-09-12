@@ -22,7 +22,7 @@ public class UpdateScheduler {
     /**
      * The default value where errors are considered too large and the time step is reduced.
      */
-    private static final double DEFAULT_RECALCULATION_CUTOFF = 0.01;
+    private static final double DEFAULT_RECALCULATION_CUTOFF = 0.001;
 
     private Simulation simulation;
     private List<Updatable> updatables;
