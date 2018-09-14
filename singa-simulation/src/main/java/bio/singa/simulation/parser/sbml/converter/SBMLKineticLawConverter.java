@@ -2,7 +2,6 @@ package bio.singa.simulation.parser.sbml.converter;
 
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
 import bio.singa.simulation.model.parameters.SimulationParameter;
-import bio.singa.simulation.model.rules.AppliedExpression;
 import bio.singa.simulation.parser.sbml.FunctionReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +40,9 @@ public class SBMLKineticLawConverter {
                 parameterUnit = units.get(unitIdentifier);
             }
             logger.debug("Creating kinetic law with expression {} ...", sbmlKineticLaw.getMath().toString());
-            AppliedExpression appliedExpression = expressionConverter.convertRawExpression(sbmlKineticLaw.getMath(), sbmlKineticLaw.getListOfLocalParameters(), parameterUnit);
-            return new KineticLaw(appliedExpression);
+            // TODO Fix dynamic expression parsing
+            // AppliedExpression appliedExpression = expressionConverter.convertRawExpression(sbmlKineticLaw.getMath(), sbmlKineticLaw.getListOfLocalParameters(), parameterUnit);
+            return new KineticLaw(null);
         } else {
             logger.warn("Could not parse a valid expression for this reaction.");
             return null;

@@ -1,6 +1,7 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.simulation.model.sections.CellTopology;
 
 /**
  * {@code CatalyticReactant}s are {@link Reactant}s that are not consumed or produced during Reactions, but
@@ -10,35 +11,12 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 public class CatalyticReactant extends Reactant {
 
     /**
-     * The strength of the catalytic behaviour.
-     */
-    private double strength;
-
-    /**
      * Creates a new catalytic reactant.
      * @param entity The referenced entity.
      * @param role The reactants role.
      */
-    public CatalyticReactant(ChemicalEntity entity, ReactantRole role) {
-        super(entity, role);
-    }
-
-    /**
-     * Gets the strength of this Reactant.
-     *
-     * @return The strength of this Reactant.
-     */
-    public double getStrength() {
-        return strength;
-    }
-
-    /**
-     * Sets the strength of this Reactant.
-     *
-     * @param strength The strength of this Reactant.
-     */
-    public void setStrength(double strength) {
-        this.strength = strength;
+    public CatalyticReactant(ChemicalEntity entity, ReactantRole role, CellTopology preferredTopology) {
+        super(entity, role, preferredTopology);
     }
 
     /**

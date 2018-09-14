@@ -2,10 +2,7 @@ package bio.singa.simulation.parser.sbml.converter;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.simulation.model.modules.concentration.imlementations.DynamicReaction;
-import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
-import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
-import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
 import bio.singa.simulation.model.parameters.SimulationParameter;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.simulation.parser.sbml.FunctionReference;
@@ -66,8 +63,8 @@ public class SBMLReactionConverter {
         for (SpeciesReference reference : substrates) {
             logger.debug("Assigning Chemical Entity {} as substrate.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
-            currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.DECREASING, reference.getStoichiometry()));
+            // currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            // currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.DECREASING, reference.getStoichiometry()));
         }
     }
 
@@ -75,8 +72,8 @@ public class SBMLReactionConverter {
         for (SpeciesReference reference : products) {
             logger.debug("Assigning Chemical Entity {} as product.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
-            currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.INCREASING, reference.getStoichiometry()));
+            // currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            // currentReaction.getStoichiometricReactants().add(new StoichiometricReactant(entities.get(identifier), ReactantRole.INCREASING, reference.getStoichiometry()));
         }
     }
 
@@ -84,8 +81,8 @@ public class SBMLReactionConverter {
         for (ModifierSpeciesReference reference : modifiers) {
             logger.debug("Assigning Chemical Entity {} as catalytic modifier.", reference.getSpecies());
             String identifier = reference.getSpecies();
-            currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
-            currentReaction.getCatalyticReactants().add(new CatalyticReactant(entities.get(identifier), ReactantRole.INCREASING));
+            // currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
+            // currentReaction.getCatalyticReactants().add(new CatalyticReactant(entities.get(identifier), ReactantRole.INCREASING));
         }
     }
 
