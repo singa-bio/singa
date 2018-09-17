@@ -9,7 +9,7 @@ import bio.singa.features.model.FeatureOrigin;
  */
 public class LogP extends AbstractFeature<Double> {
 
-    public static String SYMBOL = "Log P_okt/wat";
+    public static String SYMBOL = "log_p_okt_wat";
 
     public LogP(Double value, FeatureOrigin featureOrigin) {
         super(value, featureOrigin);

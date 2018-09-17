@@ -32,18 +32,29 @@ public class KineticLaw {
     private final ExpressionNode expression;
 
     /**
-     * The features used as parameters
+     * The original string of the expression.
+     */
+    private final String expressionString;
+
+    /**
+     * The features influencing the reaction.
      */
     private Map<String, ScalableQuantityFeature> featureMap;
 
     /**
-     * The concentrations used as parameters
+     * The reactants involved in the reaction.
      */
     private Map<String, Reactant> concentrationMap;
 
-    public KineticLaw(String law) {
+    /**
+     * The parameters remaining constant in the course of the simulation.
+     */
+    private Map<String, Double> constantMap;
+
+    public KineticLaw(String kineticLawString) {
         ExpressionParser parser = new ExpressionParser();
-        expression = parser.parse(law);
+        expressionString = kineticLawString;
+        expression = parser.parse(kineticLawString);
         featureMap = new HashMap<>();
         concentrationMap = new HashMap<>();
     }
@@ -65,6 +76,7 @@ public class KineticLaw {
     }
 
     public void referenceConstant(String parameterIdentifier, double constant) {
+        constantMap.put(parameterIdentifier, constant);
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
@@ -105,7 +117,7 @@ public class KineticLaw {
         }
         // set concentration parameters
         for (Map.Entry<String, Reactant> reactantEntry : concentrationMap.entrySet()) {
-            Quantity<MolarConcentration> concentration = concentrationContainer.get(reactantEntry.getValue().getPrefferedTopology(), reactantEntry.getValue().getEntity());
+            Quantity<MolarConcentration> concentration = concentrationContainer.get(reactantEntry.getValue().getPreferredTopology(), reactantEntry.getValue().getEntity());
             SetVariable variable = new SetVariable(reactantEntry.getKey(), concentration.getValue().doubleValue());
             expression.accept(variable);
         }

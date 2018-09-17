@@ -7,9 +7,8 @@ import bio.singa.features.parameters.Environment;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
 import bio.singa.simulation.model.graphs.AutomatonNode;
-import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
-import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
+import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.ConcentrationInitializer;
 import bio.singa.simulation.model.sections.InitialConcentration;
@@ -72,14 +71,12 @@ public class DynamicReactionTest {
         // create and add module
         DynamicReaction binding = DynamicReaction.inSimulation(simulation)
                 .kineticLaw("substrate*sin(catalyt)*k/product")
-                .referenceParameter(new StoichiometricReactant(substrate, ReactantRole.DECREASING, INNER))
-                .referenceParameter(new StoichiometricReactant(product, ReactantRole.INCREASING, INNER))
-                .referenceParameter(new CatalyticReactant(catalyt, ReactantRole.INCREASING, INNER))
+                .referenceParameter(new Reactant(substrate, ReactantRole.SUBSTRATE, INNER))
+                .referenceParameter(new Reactant(product, ReactantRole.PRODUCT, INNER))
+                .referenceParameter(new Reactant(catalyt, ReactantRole.CATALYTIC, INNER))
                 .referenceParameter("k", rateConstant)
                 .build();
 
-        // TODO reactant role should be Substrate, Product, Catalytic
-        // TODO drop catalytic reactant / stochiometric reactant distinction
         // TODO clean up reaction interface / abstract class (reaction based interface defining default methods?)
 
         // setup graph

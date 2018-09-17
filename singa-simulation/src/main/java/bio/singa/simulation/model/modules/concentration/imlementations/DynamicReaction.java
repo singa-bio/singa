@@ -1,15 +1,12 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
-import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
-import bio.singa.simulation.model.modules.concentration.reactants.CatalyticReactant;
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
-import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -31,16 +28,19 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
     }
 
     /**
-     * The stoichiometric reactants.
+     * The substrates.
      */
-    private List<StoichiometricReactant> substrates;
-
-    private List<StoichiometricReactant> products;
+    private List<Reactant> substrates;
 
     /**
-     * The catalytic reactants for this reaction.
+     * The products.
      */
-    private List<CatalyticReactant> catalyticReactants;
+    private List<Reactant> products;
+
+    /**
+     * The catalysts
+     */
+    private List<Reactant> catalysts;
 
     /**
      * The kinetic law for this reaction.
@@ -60,65 +60,44 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
     }
 
     public void addReactant(Reactant reactant) {
-        if (reactant instanceof StoichiometricReactant) {
-            addStochiometricReactant(((StoichiometricReactant) reactant));
-        } else {
-            catalyticReactants.add((CatalyticReactant) reactant);
+        switch (reactant.getRole()) {
+            case PRODUCT:
+                products.add(reactant);
+                break;
+            case SUBSTRATE:
+                substrates.add(reactant);
+                break;
+            case CATALYTIC:
+                catalysts.add(reactant);
+                break;
         }
     }
 
-    public void addStochiometricReactant(StoichiometricReactant stoichiometricReactant) {
-        if (stoichiometricReactant.isSubstrate()) {
-            substrates.add(stoichiometricReactant);
-        } else {
-            products.add(stoichiometricReactant);
-        }
-    }
-
-    public List<StoichiometricReactant> getSubstrates() {
+    public List<Reactant> getSubstrates() {
         return substrates;
     }
 
-    public List<StoichiometricReactant> getProducts() {
+    public List<Reactant> getProducts() {
         return products;
     }
 
-    /**
-     * Returns all substrates of this reaction.
-     *
-     * @return All substrates of this reaction.
-     */
-    public List<ChemicalEntity> getSubstrateEntities() {
-        return substrates.stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Returns all products of this reaction.
-     *
-     * @return All products of this reaction.
-     */
-    public List<ChemicalEntity> getProductEntities() {
-        return products.stream()
-                .map(StoichiometricReactant::getEntity)
-                .collect(Collectors.toList());
-    }
-
-    protected Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
+    private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
         double velocity = kineticLaw.calculateVelocity(concentrationContainer, supplier.isStrutCalculation());
         Updatable updatable = supplier.getCurrentUpdatable();
         for (Reactant reactant : kineticLaw.getConcentrationMap().values()) {
-            if (reactant instanceof StoichiometricReactant) {
-                CellSubsection subsection = updatable.getConcentrationContainer().getSubsection(reactant.getPrefferedTopology());
-                if (((StoichiometricReactant) reactant).isSubstrate()) {
-                    deltas.put(new ConcentrationDeltaIdentifier(updatable, subsection, reactant.getEntity()),
-                            new ConcentrationDelta(this, subsection, reactant.getEntity(), Quantities.getQuantity(-velocity, getConcentrationUnit())));
-                } else {
+            CellSubsection subsection = updatable.getConcentrationContainer().getSubsection(reactant.getPreferredTopology());
+            switch (reactant.getRole()) {
+                case PRODUCT:
                     deltas.put(new ConcentrationDeltaIdentifier(updatable, subsection, reactant.getEntity()),
                             new ConcentrationDelta(this, subsection, reactant.getEntity(), Quantities.getQuantity(velocity, getConcentrationUnit())));
-                }
+                    break;
+                case SUBSTRATE:
+                    deltas.put(new ConcentrationDeltaIdentifier(updatable, subsection, reactant.getEntity()),
+                            new ConcentrationDelta(this, subsection, reactant.getEntity(), Quantities.getQuantity(-velocity, getConcentrationUnit())));
+                    break;
+                case CATALYTIC:
+                    break;
             }
         }
         return deltas;
@@ -140,24 +119,6 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
      */
     public void setKineticLaw(KineticLaw kineticLaw) {
         this.kineticLaw = kineticLaw;
-    }
-
-    /**
-     * Returns the catalytic reactants.
-     *
-     * @return The catalytic reactants.
-     */
-    public List<CatalyticReactant> getCatalyticReactants() {
-        return catalyticReactants;
-    }
-
-    /**
-     * Sets the catalytic reactants.
-     *
-     * @param catalyticReactants The catalytic reactants.
-     */
-    public void setCatalyticReactants(List<CatalyticReactant> catalyticReactants) {
-        this.catalyticReactants = catalyticReactants;
     }
 
     @Override
@@ -244,7 +205,7 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
                     ModuleFactory.Specificity.UPDATABLE_SPECIFIC);
             module.products = new ArrayList<>();
             module.substrates = new ArrayList<>();
-            module.catalyticReactants = new ArrayList<>();
+            module.catalysts = new ArrayList<>();
             module.setSimulation(simulation);
             return module;
         }

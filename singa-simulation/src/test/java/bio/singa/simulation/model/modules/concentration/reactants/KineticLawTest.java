@@ -32,7 +32,7 @@ public class KineticLawTest {
         SmallMolecule atp = SmallMolecule.create("ATP")
                 .additionalIdentifier(new ChEBIIdentifier("CHEBI:15422"))
                 .build();
-        Reactant reactant = new StoichiometricReactant(atp, ReactantRole.DECREASING, CellTopology.INNER);
+        Reactant reactant = new Reactant(atp, ReactantRole.SUBSTRATE, CellTopology.INNER);
         kl.referenceReactant(atp.getIdentifier().toString(), reactant);
         // exemplary concentration container
         ConcentrationContainer cc = new ConcentrationContainer();

@@ -30,7 +30,7 @@ public class Sampler {
 
     /**
      * Samples logarithmic evenly distributed values between the lower and upper bound.
-     * The sharpness determines the distribution towards the lower bound (values larger than 1) or upper bound (smaller than 1).     *
+     * The sharpness determines the distribution towards the lower bound (values larger than 1) or upper bound (smaller than 1).
      *
      * @param lowerBound The minimal sample.
      * @param upperBound The maximal sample.

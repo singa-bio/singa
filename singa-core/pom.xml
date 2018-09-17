@@ -14,5 +14,9 @@
     <artifactId>singa-core</artifactId>
     <version>0.4.0</version>
     <packaging>jar</packaging>
+    <description>
+        The SiNGA core package contains some convenience methods and data structures required in most other SiNGA
+        packages.
+    </description>
 
 </project>

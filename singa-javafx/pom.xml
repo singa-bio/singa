@@ -14,6 +14,10 @@
     <artifactId>singa-javafx</artifactId>
     <version>0.4.0</version>
     <packaging>jar</packaging>
+    <description>
+        The javafx package of SiNGA provides methods to render visual representations SiNGA data structures in javafx
+        contexts.
+    </description>
 
     <dependencies>
         <dependency>
@@ -25,12 +29,6 @@
             <groupId>bio.singa</groupId>
             <artifactId>singa-sequence</artifactId>
             <version>0.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

@@ -82,7 +82,7 @@ public class SBMLReactionConverter {
             logger.debug("Assigning Chemical Entity {} as catalytic modifier.", reference.getSpecies());
             String identifier = reference.getSpecies();
             // currentReaction.getKineticLaw().referenceChemicalEntityToParameter(identifier, entities.get(identifier));
-            // currentReaction.getCatalyticReactants().add(new CatalyticReactant(entities.get(identifier), ReactantRole.INCREASING));
+            // currentReaction.getCatalyst().add(new CatalyticReactant(entities.get(identifier), ReactantRole.INCREASING));
         }
     }
 

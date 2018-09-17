@@ -12,7 +12,7 @@ import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
-import bio.singa.simulation.model.modules.concentration.reactants.StoichiometricReactant;
+import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import tec.uom.se.quantity.Quantities;
@@ -51,13 +51,13 @@ public class MichaelisMentenReaction extends Reaction {
             List<ConcentrationDelta> deltas = new ArrayList<>();
             if (supplier.getCurrentSubsection().equals(concentrationContainer.getMembraneSubsection())){
                 double velocity = calculateMembraneBasedVelocity(concentrationContainer);
-                for (StoichiometricReactant substrate : substrates) {
+                for (Reactant substrate : substrates) {
                     double deltaValue = -velocity * substrate.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPrefferedTopology()), substrate.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPreferredTopology()), substrate.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
                 }
-                for (StoichiometricReactant product : products) {
+                for (Reactant product : products) {
                     double deltaValue = velocity * product.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPrefferedTopology()), product.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPreferredTopology()), product.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
                 }
             }
             return deltas;
@@ -83,8 +83,8 @@ public class MichaelisMentenReaction extends Reaction {
         final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(Environment.getConcentrationUnit());
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
-        StoichiometricReactant reactant = getSubstrates().iterator().next();
-        double substrateConcentration = concentrationContainer.get(reactant.getPrefferedTopology(), reactant.getEntity()).getValue().doubleValue();
+        Reactant reactant = getSubstrates().iterator().next();
+        double substrateConcentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).getValue().doubleValue();
         double enzymeConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), enzyme).getValue().doubleValue();
         return (kCat.getValue().doubleValue() * enzymeConcentration * substrateConcentration) / (km.getValue().doubleValue() + substrateConcentration);
     }

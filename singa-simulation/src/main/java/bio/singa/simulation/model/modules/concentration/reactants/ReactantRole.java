@@ -8,14 +8,8 @@ package bio.singa.simulation.model.modules.concentration.reactants;
  */
 public enum ReactantRole {
 
-    /**
-     * Used for products and accelerating reactants.
-     */
-    INCREASING,
-
-    /**
-     * Used for substrates and inhibiting reactants.
-     */
-    DECREASING
+    PRODUCT,
+    SUBSTRATE,
+    CATALYTIC
 
 }
