@@ -1,8 +1,11 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
+import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.model.modules.concentration.imlementations.Reaction;
 import bio.singa.simulation.model.sections.CellTopology;
+
+import javax.measure.Unit;
 
 /**
  * A {@code Reactant} encapsulates a {@link ChemicalEntity} for the use in {@link Reaction}s.
@@ -25,11 +28,6 @@ public class Reactant {
     private ReactantRole role;
 
     /**
-     * The preferred topology of the reactant
-     */
-    private CellTopology preferredTopology = CellTopology.INNER;
-
-    /**
      * The number of molecules required for one reaction.
      */
     private double stoichiometricNumber = 1;
@@ -38,6 +36,16 @@ public class Reactant {
      * The reaction order of the reactant.
      */
     private double reactionOrder = 1;
+
+    /**
+     * The preferred topology of the reactant
+     */
+    private CellTopology preferredTopology = CellTopology.INNER;
+
+    /**
+     * The preferred concentration unit that is used for this reactant in the expression.
+     */
+    private Unit<MolarConcentration>  preferredConcentrationUnit;
 
     /**
      * Creates a new reactant.
@@ -58,6 +66,11 @@ public class Reactant {
     public Reactant(ChemicalEntity entity, ReactantRole role, double stoichiometricNumber) {
         this(entity, role);
         this.stoichiometricNumber = stoichiometricNumber;
+    }
+
+    public Reactant(ChemicalEntity entity, ReactantRole role, Unit<MolarConcentration>  preferredConcentrationUnit) {
+        this(entity, role);
+        this.preferredConcentrationUnit = preferredConcentrationUnit;
     }
 
     public Reactant(ChemicalEntity chemicalEntity, ReactantRole role, CellTopology topology, double stoichiometricNumber) {
@@ -118,6 +131,14 @@ public class Reactant {
 
     public void setPreferredTopology(CellTopology preferredTopology) {
         this.preferredTopology = preferredTopology;
+    }
+
+    public Unit<MolarConcentration> getPreferredConcentrationUnit() {
+        return preferredConcentrationUnit;
+    }
+
+    public void setPreferredConcentrationUnit(Unit<MolarConcentration> preferredConcentrationUnit) {
+        this.preferredConcentrationUnit = preferredConcentrationUnit;
     }
 
     /**

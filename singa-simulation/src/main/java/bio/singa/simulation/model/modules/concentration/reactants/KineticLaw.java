@@ -1,12 +1,13 @@
 package bio.singa.simulation.model.modules.concentration.reactants;
 
+import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.model.ScalableFeature;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.simulation.exceptions.ModuleCalculationException;
+import bio.singa.simulation.features.Constant;
 import bio.singa.simulation.model.rules.AppliedExpression;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
@@ -20,11 +21,6 @@ import java.util.Map;
  * @author cl
  */
 public class KineticLaw {
-
-    /**
-     * The logger.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(AppliedExpression.class);
 
     /**
      * The expression that is evaluated.
@@ -49,7 +45,7 @@ public class KineticLaw {
     /**
      * The parameters remaining constant in the course of the simulation.
      */
-    private Map<String, Double> constantMap;
+    private Map<String, Constant> constantMap;
 
     public KineticLaw(String kineticLawString) {
         ExpressionParser parser = new ExpressionParser();
@@ -57,6 +53,7 @@ public class KineticLaw {
         expression = parser.parse(kineticLawString);
         featureMap = new HashMap<>();
         concentrationMap = new HashMap<>();
+        constantMap = new HashMap<>();
     }
 
     public void referenceReactant(String parameterIdentifier, Reactant reactant) {
@@ -76,7 +73,12 @@ public class KineticLaw {
     }
 
     public void referenceConstant(String parameterIdentifier, double constant) {
-        constantMap.put(parameterIdentifier, constant);
+        constantMap.put(parameterIdentifier, new Constant(constant, FeatureOrigin.MANUALLY_ANNOTATED));
+        expression.accept(new SetVariable(parameterIdentifier, constant));
+    }
+
+    public void referenceConstant(String parameterIdentifier, double constant, FeatureOrigin origin) {
+        constantMap.put(parameterIdentifier, new Constant(constant, origin));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
@@ -94,6 +96,22 @@ public class KineticLaw {
 
     public void setConcentrationMap(Map<String, Reactant> concentrationMap) {
         this.concentrationMap = concentrationMap;
+    }
+
+    public String getExpressionString() {
+        return expressionString;
+    }
+
+    public Map<String, Constant> getConstantMap() {
+        return constantMap;
+    }
+
+    public void setConstantMap(Map<String, Constant> constantMap) {
+        this.constantMap = constantMap;
+    }
+
+    public void scaleScalableFeatures() {
+        getFeatureMap().values().forEach(ScalableFeature::scale);
     }
 
     /**
@@ -117,7 +135,13 @@ public class KineticLaw {
         }
         // set concentration parameters
         for (Map.Entry<String, Reactant> reactantEntry : concentrationMap.entrySet()) {
-            Quantity<MolarConcentration> concentration = concentrationContainer.get(reactantEntry.getValue().getPreferredTopology(), reactantEntry.getValue().getEntity());
+            Reactant reactant = reactantEntry.getValue();
+            Quantity<MolarConcentration> concentration;
+            if (reactant.getPreferredConcentrationUnit() != null) {
+                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).to(reactant.getPreferredConcentrationUnit());
+            } else {
+                concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
+            }
             SetVariable variable = new SetVariable(reactantEntry.getKey(), concentration.getValue().doubleValue());
             expression.accept(variable);
         }
@@ -129,19 +153,20 @@ public class KineticLaw {
     /**
      * Evaluates the expression and returns the result. If not all parameters have been set or the expression evaluates
      * to NaN an error is logged.
+     *
      * @return The result of the evaluated expression.
      */
     private double evaluate() {
-        double value = 0.0;
+        double value;
         try {
-            return expression.getValue();
+            value = expression.getValue();
         } catch (ParserException | EvaluationException e) {
-            logger.error("Could not calculate expression for {}.", expression.toString(), e);
+            throw new ModuleCalculationException("Could not calculate expression" + expressionString + ". " + e.getMessage());
         }
         if (Double.isNaN(value)) {
-            logger.error("Could not calculate expression for {}, value was NaN.", expression.toString());
+            throw new ModuleCalculationException("Could not calculate expression for " + expressionString + ", value was NaN.");
         }
-        return 0.0;
+        return value;
     }
 
 }

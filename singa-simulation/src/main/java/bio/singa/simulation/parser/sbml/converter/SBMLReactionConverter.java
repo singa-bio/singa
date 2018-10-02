@@ -55,7 +55,7 @@ public class SBMLReactionConverter {
         assignSubstrates(reaction.getListOfReactants());
         assignProducts(reaction.getListOfProducts());
         assignModifiers(reaction.getListOfModifiers());
-        logger.debug("Parsed Reaction:{}", currentReaction.getReactionString());
+        logger.debug("Parsed Reaction:{}", currentReaction.getKineticLaw().getExpressionString());
         return currentReaction;
     }
 

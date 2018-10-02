@@ -1,7 +1,7 @@
 package bio.singa.chemistry.features.reactions;
 
 /**
- * Second order rates are in concentration * time^-1.
+ * Zero order rates are in concentration * time^-1.
  *
  * @author cl
  */

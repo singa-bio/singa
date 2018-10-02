@@ -2,6 +2,7 @@ package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.features.model.Feature;
+import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
@@ -14,7 +15,6 @@ import bio.singa.simulation.model.simulation.Updatable;
 import tec.uom.se.quantity.Quantities;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static bio.singa.features.parameters.Environment.getConcentrationUnit;
 
@@ -81,6 +81,10 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         return products;
     }
 
+    public List<Reactant> getCatalysts() {
+        return catalysts;
+    }
+
     private Map<ConcentrationDeltaIdentifier, ConcentrationDelta> calculateDeltas(ConcentrationContainer concentrationContainer) {
         Map<ConcentrationDeltaIdentifier, ConcentrationDelta> deltas = new HashMap<>();
         double velocity = kineticLaw.calculateVelocity(concentrationContainer, supplier.isStrutCalculation());
@@ -126,31 +130,13 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         return new HashSet<>();
     }
 
+    @Override
+    public void scaleScalableFeatures() {
+        kineticLaw.scaleScalableFeatures();
+    }
+
     public static ModuleBuilder getBuilder(Simulation simulation) {
         return new DynamicReactionBuilder(simulation);
-    }
-
-    public String getReactionString() {
-        String substrates = collectSubstrateString();
-        String products = collectProductsString();
-        if (substrates.length() > 1 && Character.isWhitespace(substrates.charAt(0))) {
-            substrates = substrates.substring(1);
-        }
-        return substrates + " \u27f6 " + products;
-    }
-
-    protected String collectSubstrateString() {
-        return substrates.stream()
-                .map(substrate -> (substrate.getStoichiometricNumber() > 1 ? substrate.getStoichiometricNumber() : "") + " "
-                        + substrate.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
-    }
-
-    protected String collectProductsString() {
-        return products.stream()
-                .map(product -> (product.getStoichiometricNumber() > 1 ? product.getStoichiometricNumber() : "") + " "
-                        + product.getEntity().getIdentifier())
-                .collect(Collectors.joining(" +"));
     }
 
     public interface KineticLawStep {
@@ -174,6 +160,8 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         ParameterStep referenceParameter(String parameterIdentifier, Reactant reactant);
 
         ParameterStep referenceParameter(String parameterIdentifier, double parameter);
+
+        ParameterStep referenceParameter(String parameterIdentifier, double parameter, FeatureOrigin origin);
 
         DynamicReaction build();
 
@@ -236,14 +224,12 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         @Override
         public ParameterStep referenceParameter(ScalableQuantityFeature<?> scalableFeature) {
-            module.setFeature(scalableFeature);
             module.getKineticLaw().referenceFeature(scalableFeature);
             return this;
         }
 
         @Override
         public ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantityFeature<?> scalableFeature) {
-            module.setFeature(scalableFeature);
             module.getKineticLaw().referenceFeature(parameterIdentifier, scalableFeature);
             return this;
         }
@@ -267,6 +253,12 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         @Override
         public ParameterStep referenceParameter(String parameterIdentifier, double parameter) {
             module.getKineticLaw().referenceConstant(parameterIdentifier, parameter);
+            return this;
+        }
+
+        @Override
+        public ParameterStep referenceParameter(String parameterIdentifier, double parameter, FeatureOrigin origin) {
+            module.getKineticLaw().referenceConstant(parameterIdentifier, parameter, origin);
             return this;
         }
 
