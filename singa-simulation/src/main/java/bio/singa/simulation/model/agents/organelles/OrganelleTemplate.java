@@ -1,4 +1,4 @@
-package bio.singa.simulation.parser.organelles;
+package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.features.identifiers.GoTerm;
 import bio.singa.features.parameters.Environment;

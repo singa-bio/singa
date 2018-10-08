@@ -14,7 +14,7 @@ import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.sections.CellRegion;
 import bio.singa.simulation.model.sections.CellTopology;
-import bio.singa.simulation.parser.organelles.OrganelleTemplate;
+import bio.singa.simulation.model.agents.organelles.OrganelleTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

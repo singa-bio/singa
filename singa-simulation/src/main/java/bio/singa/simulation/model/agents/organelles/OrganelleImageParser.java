@@ -1,4 +1,4 @@
-package bio.singa.simulation.parser.organelles;
+package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
