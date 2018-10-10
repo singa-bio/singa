@@ -41,6 +41,7 @@ public class GifWriter {
      * @param timeBetweenFrames the time between frames in milliseconds
      * @param loopContinuously whether the gif should loop repeatedly
      * @author Elliot Kroo (elliot[at]kroo[dot]net)
+     * @throws IOException if an error occurs when writing the image
      */
     public GifWriter(Path targetFilePath, int imageType, int timeBetweenFrames, boolean loopContinuously) throws IOException {
         gifWriter = getWriter();
@@ -94,6 +95,7 @@ public class GifWriter {
 
     /**
      * Close this GifSequenceWriter. This does not close the underlying stream, just finishes off the GIF.
+     * @throws IOException If closing fails.
      */
     public void close() throws IOException {
         gifWriter.endWriteSequence();

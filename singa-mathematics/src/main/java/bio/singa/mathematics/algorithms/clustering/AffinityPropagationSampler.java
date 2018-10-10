@@ -27,7 +27,8 @@ public class AffinityPropagationSampler<DataType> {
         samplingPoints = new ArrayDeque<>();
         samplingResults = new TreeMap<>();
         stepSize = DEFAULT_STEP_SIZE;
-        run();
+        throw new UnsupportedOperationException("Sampling of affinity propagation is currently not supported");
+        // run();
     }
 
     private void run() {

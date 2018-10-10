@@ -68,6 +68,7 @@ public class ConcentrationPool {
 
     /**
      * Creates a copy of this concentration pool.
+     * @return The concentration pool.
      */
     public ConcentrationPool fullCopy() {
         return new ConcentrationPool(this);

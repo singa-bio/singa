@@ -22,16 +22,31 @@ public class GraphRenderOptions {
     private double nodeDiameter = 15;
     private Color nodeColor = Color.SEAGREEN;
     private boolean displayingNodes = true;
-
+    private Color nodeOutlineColor = Color.DIMGRAY;
+    private double nodeOutlineThickness = 3;
     private Color edgeColor = Color.DIMGRAY;
     private double edgeThickness = 3;
     private boolean displayingEdges = true;
-
     private Color identifierTextColor = Color.BLACK;
     // private Font identifierFont;
     private boolean displayingIdentifierText = false;
-
     private Color backgroundColor = Color.WHITE;
+
+    public double getNodeOutlineThickness() {
+        return nodeOutlineThickness;
+    }
+
+    public void setNodeOutlineThickness(double nodeOutlineThickness) {
+        this.nodeOutlineThickness = nodeOutlineThickness;
+    }
+
+    public Color getNodeOutlineColor() {
+        return nodeOutlineColor;
+    }
+
+    public void setNodeOutlineColor(Color nodeOutlineColor) {
+        this.nodeOutlineColor = nodeOutlineColor;
+    }
 
     public double getNodeDiameter() {
         return nodeDiameter;

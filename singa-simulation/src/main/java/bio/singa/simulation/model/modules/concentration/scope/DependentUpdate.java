@@ -34,6 +34,7 @@ public class DependentUpdate implements UpdateScope {
 
     /**
      * Initializes the update scope for the corresponding module.
+     * @param module The module.
      */
     public DependentUpdate(ConcentrationBasedModule<?> module) {
         this.module = module;

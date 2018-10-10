@@ -39,6 +39,7 @@ public class SemiDependentUpdate implements UpdateScope {
 
     /**
      * Initializes the update scope for the corresponding module.
+     * @param module The module.
      */
     public SemiDependentUpdate(ConcentrationBasedModule module) {
         this.module = module;

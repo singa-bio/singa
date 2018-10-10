@@ -1,23 +1,23 @@
 <img src="singa_logo_text.png" height="125"/>
 
-[![Build Status](https://travis-ci.org/cleberecht/singa.svg?branch=master)](https://travis-ci.org/cleberecht/singa)
+[![Build Status](https://travis-ci.org/singa-bio/singa.svg?branch=master)](https://travis-ci.org/singa-bio/singa)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 [![MMTF support](https://img.shields.io/badge/MMTF-supported-blue.svg)](https://mmtf.rcsb.org/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1239726.svg)](https://doi.org/10.5281/zenodo.1239726)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1320146.svg)](https://doi.org/10.5281/zenodo.1320146)
 
 SiNGA (**Si**mulation of **N**atural Systems using **G**raph **A**utomata) is an open-source library containing tools especially for structural bioinformatics and systems biology.
 
 Many aspects of the API are under development. API changes are frequent, never the less we try to keep them minimal.
 
 ## Quick start
-SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/de.bioforscher.singa). Simply add the desired modules to your ```pom.xml```:
+SiNGA is deployed to the [Maven Central Repository](https://mvnrepository.com/artifact/bio.singa). Simply add the desired modules to your ```pom.xml```:
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>bio.singa</groupId>
         <artifactId>singa-[module]</artifactId>
-        <version>0.3.3</version>
+        <version>0.4.2</version>
     </dependency>
     <!-- more dependencies -->
 </dependencies>

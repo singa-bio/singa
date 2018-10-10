@@ -36,9 +36,9 @@ public class Vectors {
         return true;
     }
 
-    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVcetors, Rectangle rectangle) {
-        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVcetors);
-        for (int i = 0; i < numberOfVcetors; i++) {
+    public static List<Vector2D> generateMultipleRandom2DVectors(int numberOfVectors, Rectangle rectangle) {
+        ArrayList<Vector2D> vectors = new ArrayList<>(numberOfVectors);
+        for (int i = 0; i < numberOfVectors; i++) {
             vectors.add(generateRandom2DVector(rectangle));
         }
         return vectors;
@@ -271,6 +271,7 @@ public class Vectors {
      * the collection.
      *
      * @param vectors The vectors to calculate the centroid from.
+     * @param <VectorType> The type of the vector.
      * @return The centroid.
      */
     public static <VectorType extends Vector> Vector getCentroid(Collection<VectorType> vectors) {

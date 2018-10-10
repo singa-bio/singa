@@ -157,6 +157,8 @@ public class ConcentrationDeltaManager {
     /**
      * Clears the list of potential deltas retaining updates from a specific module. Usually done after
      * {@link Updatable#shiftDeltas()} or after rejecting a time step.
+     *
+     * @param module The module.
      */
     public void clearPotentialDeltasBut(UpdateModule module) {
         potentialDeltas.removeIf(delta -> delta.getModule() != module);
