@@ -6,10 +6,12 @@ import bio.singa.mathematics.geometry.edges.Parabola;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
 import bio.singa.mathematics.geometry.faces.Rectangle;
+import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.vectors.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.util.*;
@@ -43,8 +45,8 @@ public interface Renderer {
         getGraphicsContext().fillOval(
                 point.getX() - radius,
                 point.getY() - radius,
-                radius*2.0,
-                radius*2.0);
+                radius * 2.0,
+                radius * 2.0);
     }
 
     /**
@@ -267,7 +269,8 @@ public interface Renderer {
     default void strokeTextCenteredOnPoint(String text, Vector2D center) {
         final TextAlignment initialTextAlign = getGraphicsContext().getTextAlign();
         getGraphicsContext().setTextAlign(TextAlignment.CENTER);
-        getGraphicsContext().fillText(text, center.getX(), center.getY());
+        double height = new Text(text).getLayoutBounds().getHeight()/4.0;
+        getGraphicsContext().fillText(text, center.getX(), center.getY()+height);
         getGraphicsContext().setTextAlign(initialTextAlign);
     }
 
@@ -311,6 +314,45 @@ public interface Renderer {
         return rectangle;
     }
 
+
+    default void strokeLineSegmentWithArrow(LineSegment lineSegment) {
+        Vector2D tail = lineSegment.getStartingPoint();
+        Vector2D head = lineSegment.getEndingPoint();
+
+        double arrowLength = 12;
+
+        double tipX = head.getX();
+        double tipY = tail.getY();
+
+        double tailX = tail.getX();
+        double tailY = tail.getY();
+
+        double dx = tipX - tailX;
+        double dy = tipY - tailY;
+
+        double theta = Math.atan2(dy, dx);
+
+        double rad = Math.toRadians(25); //35 angle, can be adjusted
+        double x = tipX - arrowLength * Math.cos(theta + rad);
+        double y = tipY - arrowLength * Math.sin(theta + rad);
+
+        double phi2 = Math.toRadians(-25);//-35 angle, can be adjusted
+        double x2 = tipX - arrowLength * Math.cos(theta + phi2);
+        double y2 = tipY - arrowLength * Math.sin(theta + phi2);
+
+        double[] arrowYs = new double[3];
+        arrowYs[0] = tipY;
+        arrowYs[1] = y;
+        arrowYs[2] = y2;
+
+        double[] arrowXs = new double[3];
+        arrowXs[0] = tipX;
+        arrowXs[1] = x;
+        arrowXs[2] = x2;
+        strokeStraight(tail, head);
+        getGraphicsContext().fillPolygon(arrowXs, arrowYs, 3);
+    }
+
     /**
      * Fills the polygon. <ul> <li> The color is determined by the FillColor (set by {@link
      * GraphicsContext#setFill(Paint)}).</li> </ul>
@@ -328,6 +370,10 @@ public interface Renderer {
             yPositions[index] = vertex.getY();
         }
         getGraphicsContext().fillPolygon(xPositions, yPositions, numberOfVertices);
+    }
+
+    default void fillPolygon(Vector2D... vertices) {
+        fillPolygon(new VertexPolygon(vertices));
     }
 
     default void strokePolygon(Polygon polygon) {
