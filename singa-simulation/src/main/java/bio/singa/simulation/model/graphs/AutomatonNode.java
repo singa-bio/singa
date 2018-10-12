@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.graphs.model.AbstractNode;
 import bio.singa.mathematics.topology.grids.rectangular.RectangularCoordinate;
@@ -220,7 +220,7 @@ public class AutomatonNode extends AbstractNode<AutomatonNode, Vector2D, Rectang
 
     public Quantity<Area> getMembraneArea() {
         if (membraneArea == null) {
-            membraneArea = Quantities.getQuantity(0.0, Environment.getAreaUnit());
+            membraneArea = Quantities.getQuantity(0.0, UnitRegistry.getAreaUnit());
             for (MembraneSegment membraneSegment : membraneSegments) {
                 membraneArea = membraneArea.add(membraneSegment.getArea());
             }

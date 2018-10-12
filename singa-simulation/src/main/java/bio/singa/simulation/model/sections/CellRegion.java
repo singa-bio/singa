@@ -1,7 +1,6 @@
 package bio.singa.simulation.model.sections;
 
 import bio.singa.features.identifiers.GoTerm;
-import bio.singa.features.parameters.Environment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,7 +73,6 @@ public class CellRegion {
         ConcentrationContainer container = new ConcentrationContainer();
         for (Map.Entry<CellTopology, CellSubsection> entry : cellSubSections.entrySet()) {
             container.initializeSubsection(entry.getValue(), entry.getKey());
-            entry.getValue().setPreferredConcentrationUnit(Environment.getConcentrationUnit());
         }
         return container;
     }

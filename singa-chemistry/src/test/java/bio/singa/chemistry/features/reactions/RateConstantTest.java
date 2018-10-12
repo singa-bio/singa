@@ -1,5 +1,8 @@
 package bio.singa.chemistry.features.reactions;
 
+import bio.singa.features.units.UnitRegistry;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
@@ -41,10 +44,17 @@ public class RateConstantTest {
                 .build();
     }
 
+    @Before
+    @After
+    public void cleanUp() {
+        UnitRegistry.reinitialize();
+    }
+
     @Test
     public void scaleZeroOrderRate() {
         // scale to 10 seconds
-        zeroOrder.scale(Quantities.getQuantity(10, SECOND));
+        UnitRegistry.setTime(Quantities.getQuantity(10, SECOND));
+        zeroOrder.scale();
         // / 10e-9 from nano mole per litre to mole per litre
         // * 10 from 10 seconds
         // / 10E-12 from litre to um3
@@ -57,7 +67,8 @@ public class RateConstantTest {
     public void scaleFirstOrderRate() {
         // scale to one minute
         // independent from concentration
-        firstOrder.scale(Quantities.getQuantity(1, MINUTE));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MINUTE));
+        firstOrder.scale();
         // * 60 from 1 minute (60) seconds
         // = 120 1/min
         assertEquals(new ProductUnit<>(ONE.divide(MINUTE)), firstOrder.getScaledQuantity().getUnit());
@@ -67,7 +78,8 @@ public class RateConstantTest {
     @Test
     public void scaleSecondOrderRate() {
         // scale to one milli second
-        secondOder.scale(Quantities.getQuantity(1, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MILLI(SECOND)));
+        secondOder.scale();
         // * 0.001 from milli mole to mole
         // / 60 from minute to seconds
         // / 0.001 from seconds to milli seconds

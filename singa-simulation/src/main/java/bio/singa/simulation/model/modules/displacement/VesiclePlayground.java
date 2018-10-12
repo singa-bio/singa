@@ -6,6 +6,7 @@ import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.chemistry.features.permeability.MembranePermeability;
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
@@ -75,14 +76,14 @@ public class VesiclePlayground extends Application implements Renderer {
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(500);
         Environment.setNodeSpacingToDiameter(systemExtend, 10);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         simulation = new Simulation();
 
         Vesicle vesicle = new Vesicle("0",
                 new Vector2D(220, 220),
                 Quantities.getQuantity(ThreadLocalRandom.current().nextDouble(100, 200), NANO(METRE))
-                        .to(Environment.getNodeDistance().getUnit()));
+                        .to(UnitRegistry.getSpaceUnit()));
 
         vesicle.getConcentrationContainer().set(CellTopology.INNER, water, 50.0);
 

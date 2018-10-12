@@ -7,8 +7,6 @@ import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
 
 import static tec.uom.se.unit.Units.METRE;
 import static tec.uom.se.unit.Units.SECOND;
@@ -108,17 +106,6 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
     @Override
     public Unit<OsmoticPermeability> getUnit() {
         return getFeatureContent().getUnit();
-    }
-
-    @Override
-    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
-        Unit<Length> length = targetLengthScale.getUnit();
-        // transform to specified unit
-        Quantity<OsmoticPermeability> transformedQuantity = getFeatureContent().to(length.multiply(length).multiply(length).divide(targetTimeScale.getUnit()).asType(OsmoticPermeability.class));
-        // transform to specified amount
-        scaledQuantity = transformedQuantity.multiply(targetTimeScale.getValue().doubleValue());
-        // and half
-        halfScaledQuantity = transformedQuantity.multiply(targetTimeScale.multiply(0.5).getValue().doubleValue());
     }
 
     @Override

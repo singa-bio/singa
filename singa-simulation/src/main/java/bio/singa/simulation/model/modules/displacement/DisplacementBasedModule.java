@@ -4,6 +4,7 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.ScalableFeature;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.modules.UpdateModule;
 import bio.singa.simulation.model.modules.concentration.ModuleState;
@@ -51,7 +52,7 @@ public class DisplacementBasedModule implements UpdateModule {
 
     public DisplacementBasedModule() {
         deltaFunctions = new HashMap<>();
-        displacementCutoff = Environment.convertSystemToSimulationScale(Environment.getNodeDistance().multiply(displacementCutoffFactor));
+        displacementCutoff = Environment.convertSystemToSimulationScale(UnitRegistry.getSpace().multiply(displacementCutoffFactor));
         referencedChemicalEntities = new HashSet<>();
         featureManager = new FeatureManager();
         state = ModuleState.PENDING;

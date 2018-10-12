@@ -1,5 +1,7 @@
 package bio.singa.features.model;
 
+import bio.singa.features.units.UnitRegistry;
+
 import javax.measure.Quantity;
 
 /**
@@ -16,6 +18,12 @@ public abstract class ScalableQuantityFeature<QuantityType extends Quantity<Quan
     public ScalableQuantityFeature(Quantity<QuantityType> featureContent, FeatureOrigin featureOrigin) {
         this.featureContent = featureContent;
         this.featureOrigin = featureOrigin;
+    }
+
+    @Override
+    public void scale() {
+        scaledQuantity = UnitRegistry.scale(featureContent);
+        halfScaledQuantity = scaledQuantity.multiply(0.5);
     }
 
     @Override

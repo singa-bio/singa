@@ -5,18 +5,19 @@ import bio.singa.features.model.ScalableFeature;
 import bio.singa.features.model.ScalableQuantityFeature;
 import bio.singa.features.quantities.MolarConcentration;
 import bio.singa.simulation.exceptions.ModuleCalculationException;
-import bio.singa.simulation.features.Constant;
-import bio.singa.simulation.model.rules.AppliedExpression;
+import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
+import tec.uom.se.quantity.Quantities;
 import uk.co.cogitolearning.cogpar.*;
 
 import javax.measure.Quantity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static tec.uom.se.AbstractUnit.ONE;
+
 /**
- * Dynamic kinetic laws allow for the definition of reaction kinetics based on equations. Equations are supplied to the
- * Kinetic law as {@link AppliedExpression}s.
+ * Dynamic kinetic laws allow for the definition of reaction kinetics based on equations.
  *
  * @author cl
  */
@@ -45,7 +46,7 @@ public class KineticLaw {
     /**
      * The parameters remaining constant in the course of the simulation.
      */
-    private Map<String, Constant> constantMap;
+    private Map<String, Parameter> parameterMap;
 
     public KineticLaw(String kineticLawString) {
         ExpressionParser parser = new ExpressionParser();
@@ -53,7 +54,7 @@ public class KineticLaw {
         expression = parser.parse(kineticLawString);
         featureMap = new HashMap<>();
         concentrationMap = new HashMap<>();
-        constantMap = new HashMap<>();
+        parameterMap = new HashMap<>();
     }
 
     public void referenceReactant(String parameterIdentifier, Reactant reactant) {
@@ -73,12 +74,12 @@ public class KineticLaw {
     }
 
     public void referenceConstant(String parameterIdentifier, double constant) {
-        constantMap.put(parameterIdentifier, new Constant(constant, FeatureOrigin.MANUALLY_ANNOTATED));
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), FeatureOrigin.MANUALLY_ANNOTATED));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
     public void referenceConstant(String parameterIdentifier, double constant, FeatureOrigin origin) {
-        constantMap.put(parameterIdentifier, new Constant(constant, origin));
+        parameterMap.put(parameterIdentifier, new Parameter<>(parameterIdentifier, Quantities.getQuantity(constant, ONE), origin));
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
@@ -102,12 +103,12 @@ public class KineticLaw {
         return expressionString;
     }
 
-    public Map<String, Constant> getConstantMap() {
-        return constantMap;
+    public Map<String, Parameter> getParameterMap() {
+        return parameterMap;
     }
 
-    public void setConstantMap(Map<String, Constant> constantMap) {
-        this.constantMap = constantMap;
+    public void setParameterMap(Map<String, Parameter> parameterMap) {
+        this.parameterMap = parameterMap;
     }
 
     public void scaleScalableFeatures() {

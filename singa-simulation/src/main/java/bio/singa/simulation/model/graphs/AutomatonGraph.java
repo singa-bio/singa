@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.graphs;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.grid.AbstractGridGraph;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.sections.CellRegion;
@@ -62,7 +62,7 @@ public class AutomatonGraph extends AbstractGridGraph<AutomatonNode, AutomatonEd
      * @param concentration The concentration in mol/l.
      */
     public void initializeSpeciesWithConcentration(ChemicalEntity entity, double concentration) {
-        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()));
+        initializeSpeciesWithConcentration(entity, Quantities.getQuantity(concentration, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()));
     }
 
     /**

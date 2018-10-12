@@ -1,7 +1,7 @@
 package bio.singa.simulation.model.modules.displacement.implementations;
 
 import bio.singa.core.utility.Pair;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.MotorMovementVelocity;
 import bio.singa.simulation.model.modules.displacement.DisplacementBasedModule;
@@ -65,7 +65,7 @@ public class VesicleTransport extends DisplacementBasedModule {
             return new DisplacementDelta(this, new Vector2D(0.0,0.0));
         }
         Quantity<Speed> speed = getScaledFeature(MotorMovementVelocity.class);
-        Quantity<Length> distance = Quantities.getQuantity(speed.getValue().doubleValue(), Environment.getNodeDistanceUnit());
+        Quantity<Length> distance = Quantities.getQuantity(speed.getValue().doubleValue(), UnitRegistry.getSpaceUnit());
         return new DisplacementDelta(this, guide.multiply(distance.getValue().doubleValue()));
     }
 

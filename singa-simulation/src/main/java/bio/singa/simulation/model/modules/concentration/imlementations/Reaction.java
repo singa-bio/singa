@@ -1,13 +1,13 @@
 package bio.singa.simulation.model.modules.concentration.imlementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.functions.SectionDeltaFunction;
-import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
+import bio.singa.simulation.model.modules.concentration.reactants.ReactantRole;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
 import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.PRODUCT;
+import static bio.singa.simulation.model.modules.concentration.reactants.ReactantRole.SUBSTRATE;
 
 /**
  * Reactions in general are {@link ConcentrationBasedModule}s following the laws of chemical kinetics. The calculation
@@ -134,11 +134,11 @@ public abstract class Reaction extends ConcentrationBasedModule<SectionDeltaFunc
         double velocity = calculateVelocity(concentrationContainer);
         for (Reactant substrate : substrates) {
             double deltaValue = -velocity * substrate.getStoichiometricNumber();
-            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), substrate.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), substrate.getEntity(), UnitRegistry.concentration(deltaValue)));
         }
         for (Reactant product : products) {
             double deltaValue = velocity * product.getStoichiometricNumber();
-            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), product.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+            deltas.add(new ConcentrationDelta(this, supplier.getCurrentSubsection(), product.getEntity(), UnitRegistry.concentration(deltaValue)));
         }
         return deltas;
     }

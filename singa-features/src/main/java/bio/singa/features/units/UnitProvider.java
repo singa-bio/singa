@@ -23,6 +23,7 @@ import static tec.uom.se.unit.Units.*;
 public final class UnitProvider {
 
     public static List<Unit<Time>> TIME_UNITS = new ArrayList<>();
+
     static {
         TIME_UNITS.add(NANO(SECOND));
         TIME_UNITS.add(MICRO(SECOND));

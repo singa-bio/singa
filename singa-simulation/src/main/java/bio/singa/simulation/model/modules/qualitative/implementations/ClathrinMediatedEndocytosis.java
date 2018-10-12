@@ -1,8 +1,8 @@
 package bio.singa.simulation.model.modules.qualitative.implementations;
 
 import bio.singa.chemistry.entities.ChemicalEntity;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.features.BuddingRate;
 import bio.singa.simulation.features.MaturationTime;
@@ -120,8 +120,8 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
             double molecules = vesicle.getArea().multiply(number / area.to(vesicle.getArea().getUnit())
                     .getValue().doubleValue()).getValue().doubleValue();
             // convert to concentration
-            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules, Environment.getSubsectionVolume())
-                    .to(Environment.getConcentrationUnit());
+            Quantity<MolarConcentration> concentration = MolarConcentration.moleculesToConcentration(molecules, UnitRegistry.getVolume())
+                    .to(UnitRegistry.getConcentrationUnit());
             // set concentration
             vesicle.getConcentrationContainer().initialize(CellTopology.MEMBRANE, chemicalEntity, concentration);
         }
@@ -131,7 +131,7 @@ public class ClathrinMediatedEndocytosis extends QualitativeModule {
         for (MembraneSegment segment : segments) {
             // probability = rate (1/area*time) * area * time step
             double probability = getFeature(BuddingRate.class).getFeatureContent().multiply(segment.getArea().to(SQUARE_NANOMETRE))
-                    .multiply(Environment.getTimeStep().to(SECOND)).getValue().doubleValue();
+                    .multiply(UnitRegistry.getTime().to(SECOND)).getValue().doubleValue();
             // roll if event happens
             if (ThreadLocalRandom.current().nextDouble() < probability) {
                 candidateEvents.add(createSpawnEvent(segment));

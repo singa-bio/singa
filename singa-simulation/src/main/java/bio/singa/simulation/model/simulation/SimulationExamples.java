@@ -8,6 +8,7 @@ import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.RateConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -50,7 +51,7 @@ public class SimulationExamples {
      */
     public static Simulation createDecompositionReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -88,7 +89,7 @@ public class SimulationExamples {
      */
     public static Simulation createSynthesisReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(1.0, SECOND));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, SECOND));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -125,7 +126,7 @@ public class SimulationExamples {
      */
     public static Simulation createEquilibriumReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(10.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(10.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
 
@@ -172,7 +173,7 @@ public class SimulationExamples {
      */
     public static Simulation createMichaelisMentenReactionExample() {
         // setup time step size
-        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, MILLI(SECOND)));
         // setup simulation
         Simulation simulation = new Simulation();
         // get required species
@@ -184,7 +185,7 @@ public class SimulationExamples {
         Enzyme aldolase = new Enzyme.Builder("P07752")
                 .name("Fructose-bisphosphate aldolase")
                 .assignFeature(new MolarMass(82142, MANUALLY_ANNOTATED))
-                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(Environment.getConcentrationUnit()), MANUALLY_ANNOTATED))
+                .assignFeature(new MichaelisConstant(Quantities.getQuantity(9.0e-3, MOLE_PER_LITRE).to(UnitRegistry.getConcentrationUnit()), MANUALLY_ANNOTATED))
                 .assignFeature(new TurnoverNumber(76, new ProductUnit<>(ONE.divide(MINUTE)), MANUALLY_ANNOTATED))
                 .build();
 
@@ -221,7 +222,7 @@ public class SimulationExamples {
     public static Simulation createDiffusionModuleExample(int numberOfNodes, Quantity<Time> timeStep) {
 
         // setup time step size as given
-        Environment.setTimeStep(timeStep);
+        UnitRegistry.setTime(timeStep);
         // setup node distance to diameter / (numberOfNodes - 1)
         Environment.setNodeSpacingToDiameter(Quantities.getQuantity(2500.0, NANO(METRE)), numberOfNodes);
 
@@ -269,7 +270,7 @@ public class SimulationExamples {
 
         // setup time step size
         logger.debug("Adjusting time step size ... ");
-        Environment.setTimeStep(Quantities.getQuantity(1.0, MILLI(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1.0, MILLI(SECOND)));
 
         // setup simulation
         Simulation simulation = new Simulation();

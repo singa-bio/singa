@@ -8,6 +8,7 @@ import bio.singa.chemistry.entities.Protein;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.model.QuantityFormatter;
 import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.javafx.renderer.Renderer;
 import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.Circle;
@@ -108,7 +109,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
         Environment.setSystemExtend(systemExtend);
         Environment.setSimulationExtend(simulationExtend);
         Environment.setNodeSpacingToDiameter(systemExtend, nodesHorizontal);
-        Environment.setTimeStep(Quantities.getQuantity(1, MICRO(SECOND)));
+        UnitRegistry.setTime(Quantities.getQuantity(1, MICRO(SECOND)));
 
         // setup species for clathrin decay
         ChemicalEntity clathrinHeavyChain = new Protein.Builder("Clathrin heavy chain")

@@ -6,8 +6,8 @@ import bio.singa.chemistry.features.reactions.MichaelisConstant;
 import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.exceptions.FeatureUnassignableException;
 import bio.singa.features.model.Feature;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.model.modules.concentration.ConcentrationDelta;
 import bio.singa.simulation.model.modules.concentration.ModuleBuilder;
 import bio.singa.simulation.model.modules.concentration.ModuleFactory;
@@ -53,11 +53,11 @@ public class MichaelisMentenReaction extends Reaction {
                 double velocity = calculateMembraneBasedVelocity(concentrationContainer);
                 for (Reactant substrate : substrates) {
                     double deltaValue = -velocity * substrate.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPreferredTopology()), substrate.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(substrate.getPreferredTopology()), substrate.getEntity(), UnitRegistry.concentration(deltaValue)));
                 }
                 for (Reactant product : products) {
                     double deltaValue = velocity * product.getStoichiometricNumber();
-                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPreferredTopology()), product.getEntity(), Quantities.getQuantity(deltaValue, Environment.getConcentrationUnit())));
+                    deltas.add(new ConcentrationDelta(this, concentrationContainer.getSubsection(product.getPreferredTopology()), product.getEntity(), UnitRegistry.concentration(deltaValue)));
                 }
             }
             return deltas;
@@ -69,7 +69,7 @@ public class MichaelisMentenReaction extends Reaction {
     public double calculateVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
         final Quantity<FirstOrderRate> kCat = getScaledFeature(TurnoverNumber.class);
-        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(Environment.getConcentrationUnit());
+        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(UnitRegistry.getConcentrationUnit());
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
         double substrateConcentration = concentrationContainer.get(supplier.getCurrentSubsection(), getSubstrateEntities().iterator().next()).getValue().doubleValue();
@@ -80,7 +80,7 @@ public class MichaelisMentenReaction extends Reaction {
     public double calculateMembraneBasedVelocity(ConcentrationContainer concentrationContainer) {
         // reaction rates for this reaction
         final Quantity<FirstOrderRate> kCat = getScaledFeature(TurnoverNumber.class);
-        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(Environment.getConcentrationUnit());
+        final Quantity<MolarConcentration> km = getFeature(MichaelisConstant.class).getFeatureContent().to(UnitRegistry.getConcentrationUnit());
         // (KCAT * enzyme * substrate) / KM + substrate
         // FIXME currently "only" the first substrate is considered
         Reactant reactant = getSubstrates().iterator().next();

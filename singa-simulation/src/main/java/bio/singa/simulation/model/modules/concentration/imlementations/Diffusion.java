@@ -4,8 +4,8 @@ import bio.singa.chemistry.entities.ChemicalEntity;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.model.Feature;
 import bio.singa.features.model.FeatureProvider;
-import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.features.Cargoes;
 import bio.singa.simulation.model.graphs.AutomatonNode;
 import bio.singa.simulation.model.modules.concentration.ConcentrationBasedModule;
@@ -18,7 +18,6 @@ import bio.singa.simulation.model.modules.concentration.specifity.EntitySpecific
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
-import tec.uom.se.quantity.Quantities;
 
 import javax.measure.Quantity;
 import java.util.*;
@@ -120,7 +119,7 @@ public class Diffusion extends ConcentrationBasedModule<EntityDeltaFunction> {
         // calculate next concentration
         final double delta = enteringConcentration - leavingConcentration;
         // return delta
-        return new ConcentrationDelta(this, subsection, entity, Quantities.getQuantity(delta, Environment.getConcentrationUnit()));
+        return new ConcentrationDelta(this, subsection, entity, UnitRegistry.concentration(delta));
     }
 
     private boolean onlyForReferencedEntities(ConcentrationContainer container) {

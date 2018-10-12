@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class KineticLawTest {
 
     @Test
-    public void shouldCalcualteVelocity() {
+    public void shouldCalculateVelocity() {
         // create law
         KineticLaw kl = new KineticLaw("1-D*ATP");
         // reference a constant
@@ -39,7 +39,7 @@ public class KineticLawTest {
         cc.initializeSubsection(CellSubsection.SECTION_A, CellTopology.INNER);
         cc.initialize(CellSubsection.SECTION_A, atp, Quantities.getQuantity(1, MOLE_PER_LITRE));
         // assertion
-        assertEquals(0.999999, kl.calculateVelocity(cc, false), 0.0);
+        assertEquals(1, kl.calculateVelocity(cc, false), 1e-16);
     }
 
 }

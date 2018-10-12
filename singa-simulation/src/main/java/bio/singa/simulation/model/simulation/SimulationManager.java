@@ -2,7 +2,7 @@ package bio.singa.simulation.model.simulation;
 
 import bio.singa.core.events.UpdateEventListener;
 import bio.singa.features.model.QuantityFormatter;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.simulation.events.*;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonNode;
@@ -76,12 +76,12 @@ public class SimulationManager extends Task<Simulation> {
 
     private long previousTimeMillis = 0;
 
-    private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
+    private Quantity<Time> previousTimeSimulation = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
 
     /**
      * The time for the next update to be issued (in simulation time).
      */
-    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, Environment.getTimeStep().getUnit());
+    private Quantity<Time> scheduledEmitTime = Quantities.getQuantity(0.0, UnitRegistry.getTimeUnit());
 
     private Quantity<Time> terminationTime;
 

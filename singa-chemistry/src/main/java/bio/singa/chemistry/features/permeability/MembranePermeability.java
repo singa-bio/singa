@@ -2,13 +2,12 @@ package bio.singa.chemistry.features.permeability;
 
 import bio.singa.features.model.FeatureOrigin;
 import bio.singa.features.model.ScalableQuantityFeature;
-import bio.singa.features.parameters.Environment;
+import bio.singa.features.units.UnitRegistry;
 import tec.uom.se.unit.ProductUnit;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
 
 import static tec.uom.se.unit.MetricPrefix.CENTI;
 import static tec.uom.se.unit.Units.METRE;
@@ -24,19 +23,8 @@ public class MembranePermeability extends ScalableQuantityFeature<MembranePermea
     public static final String SYMBOL = "P_d";
 
     public MembranePermeability(Quantity<MembranePermeability> membranePermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(membranePermeabilityQuantity.to(Environment.getNodeDistanceUnit().divide(SECOND).asType(MembranePermeability.class)),
+        super(membranePermeabilityQuantity.to(UnitRegistry.getSpaceUnit().divide(SECOND).asType(MembranePermeability.class)),
                 featureOrigin);
-    }
-
-    @Override
-    public void scale(Quantity<Time> targetTimeScale, Quantity<Length> targetLengthScale) {
-        // transform to specified unit
-        Quantity<MembranePermeability> transformedQuantity = getFeatureContent()
-                .to(targetLengthScale.getUnit().divide(targetTimeScale.getUnit()).asType(MembranePermeability.class));
-        // transform to specified amount (scaling by time)
-        scaledQuantity = transformedQuantity.multiply(targetTimeScale.getValue().doubleValue());
-        // and half
-        halfScaledQuantity = transformedQuantity.multiply(targetTimeScale.multiply(0.5).getValue().doubleValue());
     }
 
     @Override

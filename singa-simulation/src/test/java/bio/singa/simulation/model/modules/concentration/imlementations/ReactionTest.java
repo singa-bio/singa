@@ -8,6 +8,7 @@ import bio.singa.chemistry.features.reactions.TurnoverNumber;
 import bio.singa.features.identifiers.UniProtIdentifier;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.vectors.Vector2D;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -264,7 +265,7 @@ public class ReactionTest {
 
        VesicleLayer layer = new VesicleLayer(simulation);
        Vesicle vesicle = new Vesicle(new Vector2D(0.0,0.0),  Quantities.getQuantity(50, NANO(METRE)));
-       vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(Environment.getConcentrationUnit()));
+       vesicle.getConcentrationContainer().set(CellTopology.MEMBRANE, clathrinTriskelion, MolarConcentration.moleculesToConcentration(60, vesicle.getVolume()).to(UnitRegistry.getConcentrationUnit()));
        layer.addVesicle(vesicle);
        simulation.setVesicleLayer(layer);
 
