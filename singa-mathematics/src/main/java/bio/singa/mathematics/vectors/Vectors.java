@@ -365,4 +365,33 @@ public class Vectors {
     }
 
 
+    /**
+     * Calculates the dihedral angle between the two planes defined by (a,b,c) and (b,c,d)
+     *
+     * @param a Point of plane 1.
+     * @param b Point of plane 1 and 2.
+     * @param c Point of plane 1 and 2.
+     * @param d Point of plane 2.
+     * @return The dihedral angle in degrees.
+     */
+    public static double dihedralAngle(Vector3D a, Vector3D b, Vector3D c, Vector3D d) {
+
+        Vector3D ab = a.subtract(b);
+        Vector3D cb = c.subtract(b);
+        Vector3D bc = b.subtract(c);
+        Vector3D dc = d.subtract(c);
+
+        Vector3D abc = ab.crossProduct(cb);
+        Vector3D bcd = bc.crossProduct(dc);
+
+        double angle = abc.angleToInDegrees(bcd);
+
+        Vector vector = abc.crossProduct(bcd);
+        double v = cb.dotProduct(vector);
+        if (v < 0.0) {
+            return -angle;
+        } else {
+            return angle;
+        }
+    }
 }

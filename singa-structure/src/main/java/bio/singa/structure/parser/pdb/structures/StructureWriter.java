@@ -117,7 +117,7 @@ public class StructureWriter {
                     // TODO correct vocabulary has to be found for polymerType
                     // TODO sequenceIndex corresponds to SEQRES number which we do not consider for the moment
                     // TODO secStrucType is an integer and follows the DSSP numenclature, BioJava: DsspType
-                    structureAdapterInterface.setGroupInfo(family.getThreeLetterCode().toUpperCase(), leafSubstructure.getSerial(), insertionCode, "L-peptide linking", leafSubstructure.getAllAtoms().size(), 0, oneLetterCode, leafSubstructure.getSerial(), -1);
+                    structureAdapterInterface.setGroupInfo(leafSubstructure.getThreeLetterCode().toUpperCase(), leafSubstructure.getSerial(), insertionCode, "L-peptide linking", leafSubstructure.getAllAtoms().size(), 0, oneLetterCode, leafSubstructure.getSerial(), -1);
                     for (Atom atom : atoms) {
                         // TODO currently alternate location, occupancy, and B-factor are ignored
                         structureAdapterInterface.setAtomInfo(atom.getAtomName(), atom.getAtomIdentifier(), MmtfStructure.UNAVAILABLE_CHAR_VALUE,

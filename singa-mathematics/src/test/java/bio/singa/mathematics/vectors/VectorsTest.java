@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author fk
@@ -59,5 +60,88 @@ public class VectorsTest {
     @Test
     public void getIndexOfAbsoluteMaximalElement() {
         assertEquals(3, Vectors.getIndexWithAbsoluteMaximalElement(vector));
+    }
+
+    @Test
+    public void haveSameDimension() {
+    }
+
+    @Test
+    public void generateMultipleRandom2DVectors() {
+    }
+
+    @Test
+    public void generateRandom2DVector() {
+    }
+
+    @Test
+    public void generateStandardGaussian2DVector() {
+    }
+
+    @Test
+    public void generateRandomUnit2DVector() {
+    }
+
+    @Test
+    public void generateRandomVector3D() {
+    }
+
+    @Test
+    public void getMaximalValueForIndex() {
+    }
+
+    @Test
+    public void getMinimalValueForIndex() {
+    }
+
+    @Test
+    public void getIndexWithMaximalElement() {
+    }
+
+    @Test
+    public void getIndexWithMinimalElement() {
+    }
+
+    @Test
+    public void getIndexWithAbsoluteMaximalElement() {
+    }
+
+    @Test
+    public void getIndexWithAbsoluteMinimalElement() {
+    }
+
+    @Test
+    public void getVectorsWithMinimalValueForIndex() {
+    }
+
+    @Test
+    public void getCentroid() {
+    }
+
+    @Test
+    public void orthonormalizeVectors() {
+    }
+
+    @Test
+    public void gramSchmidtProjection() {
+    }
+
+    @Test
+    public void accumulateGramSchmidtProjection() {
+    }
+
+    @Test
+    public void dihedralAngle() {
+        Vector3D a = new Vector3D(-54.324, 183.296, -26.325);
+        Vector3D b = new Vector3D(-55.462, 184.385, -25.856);
+        Vector3D c = new Vector3D(-54.869, 185.861, -25.805);
+        Vector3D d = new Vector3D(-54.120, 186.257, -26.904);
+        assertEquals(46.828, Vectors.dihedralAngle(a, b, c, d), 1E-3);
+
+        Vector3D a1 = new Vector3D(0,0,0);
+        Vector3D b1 = new Vector3D(1,0,0);
+        Vector3D c1 = new Vector3D(2,0,0);
+        Vector3D d1 = new Vector3D(3,0,0);
+        assertTrue(Double.isNaN(Vectors.dihedralAngle(a1, b1, c1, d1)));
     }
 }
