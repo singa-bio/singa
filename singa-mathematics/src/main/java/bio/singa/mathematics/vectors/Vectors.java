@@ -111,30 +111,30 @@ public class Vectors {
     }
 
     /**
-     * Returns the standard deviation of an {@link Vector}s elements.
+     * Returns the variance of an {@link Vector}s elements.
      *
      * @param vector The {@link Vector} that holds the values.
      * @return The standard deviation of all {@link Vector} elements.
      */
-    public static double getStandardDeviation(Vector vector) {
+    public static double getVariance(Vector vector) {
         double mean = getAverage(vector);
         double dv = 0D;
         for (double d : vector.getElements()) {
             double dm = d - mean;
             dv += dm * dm;
         }
-        return Math.sqrt(dv / (vector.getDimension() - 1));
+        return dv / (vector.getDimension() - 1);
     }
 
+
     /**
-     * Returns the variance of an {@link Vector}s elements.
+     * Returns the standard deviation of an {@link Vector}s elements.
      *
      * @param vector The {@link Vector} that holds the values.
-     * @return The variance of all {@link Vector} elements.
+     * @return The standard deviation of all {@link Vector} elements.
      */
-    public static double getVariance(Vector vector) {
-        double standardDeviation = getStandardDeviation(vector);
-        return standardDeviation * standardDeviation;
+    public static double getStandardDeviation(Vector vector) {
+        return Math.sqrt(getVariance(vector));
     }
 
     /**
