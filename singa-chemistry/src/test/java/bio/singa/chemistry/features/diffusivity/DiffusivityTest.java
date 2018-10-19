@@ -3,17 +3,11 @@ package bio.singa.chemistry.features.diffusivity;
 import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.features.identifiers.ChEBIIdentifier;
 import bio.singa.features.model.FeatureOrigin;
-import bio.singa.features.units.UnitRegistry;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.Assert;
 import org.junit.Test;
-import tec.uom.se.quantity.Quantities;
 
 import static org.junit.Assert.assertEquals;
-import static tec.uom.se.unit.MetricPrefix.CENTI;
-import static tec.uom.se.unit.MetricPrefix.MILLI;
-import static tec.uom.se.unit.Units.METRE;
-import static tec.uom.se.unit.Units.SECOND;
 
 /**
  * @author cl
@@ -56,32 +50,6 @@ public class DiffusivityTest {
         assertEquals("Young Correlation", feature.getFeatureOrigin().getName());
         assertEquals(1.134227930559286E-6, feature.getValue().doubleValue(), 0.0);
         Assert.assertEquals(Diffusivity.SQUARE_CENTIMETRE_PER_SECOND, feature.getUnit());
-    }
-
-    @Test
-    public void shouldScaleDiffusivityCorrectly() {
-        Diffusivity diffusivity = new Diffusivity(1, FeatureOrigin.MANUALLY_ANNOTATED);
-        // double time step - double the scaled quantity
-        UnitRegistry.setTime(Quantities.getQuantity(2, SECOND));
-        UnitRegistry.setSpace(Quantities.getQuantity(1, CENTI(METRE)));
-        diffusivity.scale();
-        assertEquals(2.0, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
-        // double space step - divide by square of length
-        UnitRegistry.setTime(Quantities.getQuantity(1, SECOND));
-        UnitRegistry.setSpace(Quantities.getQuantity(2, CENTI(METRE)));
-        diffusivity.scale();
-        assertEquals(0.25, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
-        // change both (5 * 1/(10*10))
-        UnitRegistry.setTime(Quantities.getQuantity(5, SECOND));
-        UnitRegistry.setSpace(Quantities.getQuantity(0.1, CENTI(METRE)));
-        diffusivity.scale();
-        assertEquals(500, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
-        // some other units
-        UnitRegistry.setTime(Quantities.getQuantity(5, MILLI(SECOND)));
-        UnitRegistry.setSpace(Quantities.getQuantity(0.1, MILLI(METRE)));
-        diffusivity.scale();
-        assertEquals(50, diffusivity.getScaledQuantity().getValue().doubleValue(), 0.0);
-        UnitRegistry.reinitialize();
     }
 
 }

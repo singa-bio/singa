@@ -36,4 +36,8 @@ public class ParameterStorage {
         return getInstance().cache;
     }
 
+    public static void clear() {
+        getInstance().cache.clear();
+    }
+
 }

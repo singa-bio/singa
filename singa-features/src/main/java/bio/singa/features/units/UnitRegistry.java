@@ -13,6 +13,7 @@ import javax.measure.quantity.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static bio.singa.features.units.UnitProvider.MOLE_PER_LITRE;
 import static tec.uom.se.AbstractUnit.ONE;
 import static tec.uom.se.unit.MetricPrefix.MICRO;
 import static tec.uom.se.unit.MetricPrefix.NANO;
@@ -22,6 +23,8 @@ import static tec.uom.se.unit.Units.*;
  * @author cl
  */
 public class UnitRegistry {
+
+    // TODO maybe encapsulate units in objects to make them fixable (mol/l instead of mol/µl)
 
     private static UnitRegistry getInstance() {
         if (instance == null) {
@@ -89,6 +92,7 @@ public class UnitRegistry {
     }
 
     public static void setSpaceUnit(Unit<Length> unit) {
+        // only rescale if unit was updated
         getInstance().space = Quantities.getQuantity(getInstance().space.getValue().doubleValue(), unit);
         getInstance().defaultUnits.put(QuantityDimension.LENGTH, unit);
         rescaleRegisteredUnits();
@@ -131,8 +135,12 @@ public class UnitRegistry {
         setTimeUnit(DEFAULT_TIME.getUnit());
     }
 
+    public static void setUnit(Unit<?> unit) {
+        getInstance().defaultUnits.put(unit.getDimension(), unit);
+    }
+
     public static Unit<MolarConcentration> getConcentrationUnit() {
-        return getDefaultUnit(UnitProvider.MOLE_PER_LITRE).asType(MolarConcentration.class);
+        return getDefaultUnit(MOLE_PER_LITRE).asType(MolarConcentration.class);
     }
 
     public static Unit<Area> getAreaUnit() {
@@ -167,29 +175,22 @@ public class UnitRegistry {
 
     public static <QuantityType extends Quantity<QuantityType>> Quantity<QuantityType> scale(Quantity<QuantityType> quantity) {
         Quantity<QuantityType> convert = convert(quantity);
-        int spaceScale = ScalableFeature.getSpaceExponent(convert.getUnit());
-        if (spaceScale > 0) {
-            while (spaceScale > 0) {
-                convert = convert.divide(getSpaceScale());
-                spaceScale--;
+        double value = convert.getValue().doubleValue();
+        int spaceExponent = ScalableFeature.getSpaceExponent(convert.getUnit());
+        int timeExponent = ScalableFeature.getTimeExponent(convert.getUnit());
+        if (spaceExponent != 0 || timeExponent != 0) {
+            if (spaceExponent > 0 && getSpaceScale() != 1.0) {
+                value = value / Math.pow(getSpaceScale(), spaceExponent);
+            } else {
+                value = value * Math.pow(getSpaceScale(), Math.abs(spaceExponent));
             }
-        } else if (spaceScale < 0) {
-            while (spaceScale < 0) {
-                convert = convert.multiply(getSpaceScale());
-                spaceScale++;
+
+            if (timeExponent > 0 && getSpaceScale() != 1.0) {
+                value = value / Math.pow(getTimeScale(), timeExponent);
+            } else {
+                value = value * Math.pow(getTimeScale(), Math.abs(timeExponent));
             }
-        }
-        int timeScale = ScalableFeature.getTimeExponent(convert.getUnit());
-        if (timeScale > 0) {
-            while (timeScale > 0) {
-                convert = convert.divide(getTimeScale());
-                timeScale--;
-            }
-        } else if (timeScale < 0) {
-            while (timeScale < 0) {
-                convert = convert.multiply(getTimeScale());
-                timeScale++;
-            }
+            return Quantities.getQuantity(value, convert.getUnit());
         }
         return convert;
     }
@@ -246,6 +247,30 @@ public class UnitRegistry {
             // else use si units
             return Units.getInstance().getUnits(dimension).iterator().next();
         }
+    }
+
+    public static Map<Dimension, Unit> getDefaultUnits() {
+        return getInstance().defaultUnits;
+    }
+
+    public static boolean isTimeUnit(Unit<?> unit) {
+        return unit.isCompatible(SECOND);
+    }
+
+    public static boolean isInverseTimeUnit(Unit<?> unit) {
+        return unit.isCompatible(ONE.divide(SECOND));
+    }
+
+    public static boolean isLengthUnit(Unit<?> unit) {
+        return unit.isCompatible(METRE);
+    }
+
+    public static boolean isSubstanceUnit(Unit<?> unit) {
+        return unit.isCompatible(MOLE);
+    }
+
+    public static boolean isConcentrationUnit(Unit<?> unit) {
+        return unit.isCompatible(MOLE_PER_LITRE);
     }
 
 }

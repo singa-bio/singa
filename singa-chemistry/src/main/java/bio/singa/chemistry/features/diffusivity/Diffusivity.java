@@ -32,6 +32,14 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
     private static final FeatureOrigin EINSTEIN1905 = new FeatureOrigin(FeatureOrigin.OriginType.PREDICTION, "Strokes-Einstein Equation", "Einstein, Albert. \"Über die von der molekularkinetischen Theorie der Wärme geforderte Bewegung von in ruhenden Flüssigkeiten suspendierten Teilchen.\" Annalen der physik 322.8 (1905): 549-560.");
 
     /**
+     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
+     * for the first time.
+     */
+    public static void register() {
+        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
+    }
+
+    /**
      * The diffusivity can be calculated according to the Stokes–Einstein equation:
      * D = (k_B * T) / (6 * pi * nu * radius)
      * k_B is the {@link NaturalConstants#BOLTZMANN_CONSTANT} (in (N * m) / K),
@@ -59,14 +67,6 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
 
     public Diffusivity(double diffusivityQuantity, FeatureOrigin origin) {
         super(Quantities.getQuantity(diffusivityQuantity, SQUARE_CENTIMETRE_PER_SECOND), origin);
-    }
-
-    /**
-     * Every FeatureProvider that is registered in this method is invoked automatically when the Feature is requested
-     * for the first time.
-     */
-    public static void register() {
-        FeatureRegistry.addProviderForFeature(Diffusivity.class, DiffusivityProvider.class);
     }
 
     @Override
@@ -129,8 +129,4 @@ public class Diffusivity extends ScalableQuantityFeature<Diffusivity> implements
         return getFeatureContent().getUnit();
     }
 
-    @Override
-    public String toString() {
-        return SYMBOL+ " = "+getScaledQuantity();
-    }
 }

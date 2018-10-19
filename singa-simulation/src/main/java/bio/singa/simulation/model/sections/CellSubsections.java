@@ -12,8 +12,8 @@ import java.util.Map;
 public class CellSubsections {
 
     // http://colorbrewer2.org/?type=diverging&scheme=PRGn&n=7#type=qualitative&scheme=Set3&n=7
-    private static final Color lightBlue = color(114,211,199);
-    private static final Color yellow = color(114,164,223);
+    private static final Color lightBlue = color(141,211,199);
+    private static final Color yellow = color(255,255,179);
     private static final Color violett = color(190,186,218);
     private static final Color red = color(251,128,114);
     private static final Color darkBlue = color(128,177,211);
@@ -28,7 +28,7 @@ public class CellSubsections {
     public static final CellSubsection NUCLEAR_MEMBRANE = addSection(new CellSubsection("nuclear membrane", new GoTerm("GO:0031965")), violett);
     public static final CellSubsection EARLY_ENDOSOME_LUMEN = addSection(new CellSubsection("early endosome lumen", new GoTerm("GO:0031905")), orange);
     public static final CellSubsection EARLY_ENDOSOME_MEMBRANE = addSection(new CellSubsection("early endosome membrane", new GoTerm("GO:0031901")), orange);
-    public static final CellSubsection EXTRACELLULAR_REGION = addSection(new CellSubsection("extracellular region", new GoTerm("GO:0005576")), Color.WHITE);
+    public static final CellSubsection EXTRACELLULAR_REGION = addSection(new CellSubsection("extracellular region", new GoTerm("GO:0005576")), lightBlue);
 
     private static CellSubsection addSection(CellSubsection subsection, Color color) {
         colorMap.put(subsection.getGoTerm(), color);
@@ -36,7 +36,7 @@ public class CellSubsections {
     }
 
     public static Color getColor(GoTerm goTerm) {
-        return colorMap.getOrDefault(goTerm, Color.WHITE);
+        return colorMap.getOrDefault(goTerm, Color.LIGHTGRAY);
     }
 
     public static Color getColor(CellSubsection subsection) {

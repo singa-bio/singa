@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class SmilesTest {
 
     @Test
-    public void shouldUseChEBIToFetchMolarMass() {
+    public void shouldUseChEBIToFetchSmiles() {
         SmallMolecule testSpecies = new SmallMolecule.Builder("CHEBI:29802").build();
         // assign feature
         testSpecies.setFeature(Smiles.class);

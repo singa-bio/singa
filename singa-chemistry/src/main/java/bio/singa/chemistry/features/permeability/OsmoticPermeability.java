@@ -21,36 +21,29 @@ public class OsmoticPermeability extends ScalableQuantityFeature<OsmoticPermeabi
     /**
      * Unit most commonly used to describe osmotic permeability.
      */
-    public static final Unit<OsmoticPermeability> CUBIC_CENTIMETER_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(3).divide(SECOND));
-
-    /**
-     * Unit used to calculate in simulations since concentrations are stored in mol per litre
-     */
-    public static final Unit<OsmoticPermeability> LITRE_PER_SECOND = new ProductUnit<>(METRE.divide(10).pow(3).divide(SECOND));
+    public static final Unit<OsmoticPermeability> CUBIC_CENTIMETRE_PER_SECOND = new ProductUnit<>(METRE.divide(100).pow(3).divide(SECOND));
 
     public static final String SYMBOL = "p_f";
 
     /**
-     * Creates a new Instance of the {@link OsmoticPermeability} Feature. Internally osmotic permeability is saved as
-     * {@link OsmoticPermeability#LITRE_PER_SECOND} for easier calculations.
+     * Creates a new Instance of the {@link OsmoticPermeability} Feature.
      *
      * @param osmoticPermeabilityQuantity The osmotic permeability.
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(Quantity<OsmoticPermeability> osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(osmoticPermeabilityQuantity.to(CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
+        super(osmoticPermeabilityQuantity, featureOrigin);
     }
 
     /**
      * Creates a new Instance of the {@link OsmoticPermeability} Feature. Quantity is interpreted as
-     * {@link OsmoticPermeability#CUBIC_CENTIMETER_PER_SECOND}. Internally osmotic permeability is saved as
-     * {@link OsmoticPermeability#LITRE_PER_SECOND} for easier calculations.
+     * {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}.
      *
-     * @param osmoticPermeabilityQuantity The osmotic permeability in {@link OsmoticPermeability#CUBIC_CENTIMETER_PER_SECOND}
+     * @param osmoticPermeabilityQuantity The osmotic permeability in {@link OsmoticPermeability#CUBIC_CENTIMETRE_PER_SECOND}
      * @param featureOrigin The origin of the feature.
      */
     public OsmoticPermeability(double osmoticPermeabilityQuantity, FeatureOrigin featureOrigin) {
-        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETER_PER_SECOND), featureOrigin);
+        super(Quantities.getQuantity(osmoticPermeabilityQuantity, CUBIC_CENTIMETRE_PER_SECOND), featureOrigin);
     }
 
     @Override

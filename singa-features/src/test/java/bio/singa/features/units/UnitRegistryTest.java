@@ -60,7 +60,7 @@ public class UnitRegistryTest {
         UnitRegistry.setTimeScale(2);
         Quantity<?> second = UnitRegistry.scale(Quantities.getQuantity(1.0, MINUTE));
         // half the result
-        assertEquals(Quantities.getQuantity(3.0E7, UnitRegistry.DEFAULT_TIME.getUnit()), second);
+        assertEquals(Quantities.getQuantity(1.20E8, UnitRegistry.DEFAULT_TIME.getUnit()), second);
         // double the space scale
         UnitRegistry.setSpaceScale(2);
         Quantity<?> diffusivity = UnitRegistry.scale(Quantities.getQuantity(1.0, METRE.divide(100).pow(2).divide(SECOND)));
@@ -74,7 +74,8 @@ public class UnitRegistryTest {
         final ComparableQuantity<MolarConcentration> molePerCubicMicroMetre = molePerLitre.to(new ProductUnit<>(NANO(MOLE).divide(MICRO(METRE).multiply(MICRO(METRE).multiply(MICRO(METRE))))));
         assertEquals(molePerCubicMicroMetre, UnitRegistry.scale(molePerLitre));
         UnitRegistry.setSpace(Quantities.getQuantity(2, MICRO(METRE)));
-        assertEquals(1.0E-6 , UnitRegistry.scale(molePerLitre).getValue());
+        // 2*2*2 = 8
+        assertEquals(8.0E-6 , UnitRegistry.scale(molePerLitre).getValue());
     }
 
 }

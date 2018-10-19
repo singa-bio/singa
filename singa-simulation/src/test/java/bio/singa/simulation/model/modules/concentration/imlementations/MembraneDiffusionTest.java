@@ -18,6 +18,7 @@ import bio.singa.simulation.model.modules.displacement.VesicleLayer;
 import bio.singa.simulation.model.sections.CellTopology;
 import bio.singa.simulation.model.simulation.Simulation;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import tec.uom.se.ComparableQuantity;
 import tec.uom.se.quantity.Quantities;
@@ -53,8 +54,9 @@ public class MembraneDiffusionTest {
             .build();
 
     @After
+    @Before
     public void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test
@@ -101,7 +103,7 @@ public class MembraneDiffusionTest {
 
         double result = scaledQuantity.getValue().doubleValue() * concentration.getValue().doubleValue() * getArea().getValue().doubleValue();
 
-        assertEquals(1.4E-5, Quantities.getQuantity(result, unit).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
+        assertEquals(7.0E-6, Quantities.getQuantity(result, unit).to(MOLE_PER_LITRE).getValue().doubleValue(), 1.0E-16);
 
     }
 

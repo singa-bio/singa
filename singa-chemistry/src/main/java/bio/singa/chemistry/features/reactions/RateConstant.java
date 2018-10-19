@@ -35,11 +35,6 @@ public abstract class RateConstant<ReactionRateType extends ReactionRate<Reactio
         super(quantityTypeQuantity, featureOrigin);
     }
 
-    @Override
-    public String toString() {
-        return getSymbol() + " = " + getFeatureContent();
-    }
-
     public interface DirectionStep {
         OrderStep forward();
 

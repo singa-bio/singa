@@ -33,6 +33,7 @@ public class OrganelleTemplate {
     public void mapToSystemExtend() {
         Quantity<Length> systemScale = Environment.convertSimulationToSystemScale(1).to(scale.getUnit());
         scale(scale.getValue().doubleValue()/systemScale.getValue().doubleValue());
+        // clip negative to zero
     }
 
     public Quantity<Length> getScale() {
@@ -130,6 +131,17 @@ public class OrganelleTemplate {
 
     public void setMembraneRegion(CellRegion membraneRegion) {
         this.membraneRegion = membraneRegion;
+    }
+
+    public Map<Vector2D, CellRegion> getInverseRegionMap() {
+        Map<Vector2D, CellRegion> mapping = new HashMap<>();
+        for (Map.Entry<Integer, Set<Vector2D>> entry : groups.entrySet()) {
+            CellRegion region = regionMap.get(entry.getKey());
+            for (Vector2D vector : entry.getValue()) {
+                mapping.put(vector, region);
+            }
+        }
+        return mapping;
     }
 
     public CellRegion getRegion(Vector2D vector) {

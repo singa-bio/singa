@@ -2,6 +2,7 @@ package bio.singa.simulation.model.parameters;
 
 import bio.singa.features.identifiers.model.Identifier;
 import bio.singa.features.model.FeatureOrigin;
+import bio.singa.features.units.UnitRegistry;
 
 import javax.measure.Quantity;
 
@@ -22,6 +23,9 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
      */
     private Quantity<QuantityType> quantity;
 
+    protected Quantity<QuantityType> scaledQuantity;
+    protected Quantity<QuantityType> halfScaledQuantity;
+
     public Parameter(String identifier) {
         this.identifier = identifier;
     }
@@ -30,6 +34,11 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
         this.identifier = identifier;
         this.quantity = quantity;
         this.origin = origin;
+    }
+
+    public void scale() {
+        scaledQuantity = UnitRegistry.scale(quantity);
+        halfScaledQuantity = scaledQuantity.multiply(0.5);
     }
 
     public String getIdentifier() {
@@ -52,4 +61,16 @@ public class Parameter<QuantityType extends Quantity<QuantityType>> {
         this.quantity = quantity;
     }
 
+    public Quantity<QuantityType> getScaledQuantity() {
+        return scaledQuantity;
+    }
+
+    public Quantity<QuantityType> getHalfScaledQuantity() {
+        return halfScaledQuantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Parameter: " + identifier + " = " + getQuantity() + " (" + getScaledQuantity() + ")";
+    }
 }

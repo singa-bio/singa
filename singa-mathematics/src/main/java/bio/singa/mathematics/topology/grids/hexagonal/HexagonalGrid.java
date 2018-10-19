@@ -72,7 +72,6 @@ public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, Hexagon
         return false;
     }
 
-
     @Override
     public ValueType getValue(HexagonalCoordinate coordinate) {
         return getValue(coordinate.getQ(), coordinate.getR());
@@ -82,6 +81,11 @@ public class HexagonalGrid<ValueType> implements DiscreteGrid<ValueType, Hexagon
         ValueType nodeType = getValue(coordinate);
         setValue(coordinate, null);
         return nodeType;
+    }
+
+    @Override
+    public boolean isInRange(HexagonalCoordinate coordinate) {
+        return coordinate.getColumn() < width && coordinate.getColumn() > 0 && coordinate.getRow() < height && coordinate.getRow() > 0;
     }
 
     public int getWidth() {

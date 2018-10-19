@@ -39,14 +39,14 @@ public class KineticLaw {
     private Map<String, ScalableQuantityFeature> featureMap;
 
     /**
-     * The reactants involved in the reaction.
-     */
-    private Map<String, Reactant> concentrationMap;
-
-    /**
      * The parameters remaining constant in the course of the simulation.
      */
     private Map<String, Parameter> parameterMap;
+
+    /**
+     * The reactants involved in the reaction.
+     */
+    private Map<String, Reactant> concentrationMap;
 
     public KineticLaw(String kineticLawString) {
         ExpressionParser parser = new ExpressionParser();
@@ -83,6 +83,10 @@ public class KineticLaw {
         expression.accept(new SetVariable(parameterIdentifier, constant));
     }
 
+    public void referenceParameter(Parameter<?> parameter) {
+        parameterMap.put(parameter.getIdentifier(), parameter);
+    }
+
     public Map<String, ScalableQuantityFeature> getFeatureMap() {
         return featureMap;
     }
@@ -113,6 +117,7 @@ public class KineticLaw {
 
     public void scaleScalableFeatures() {
         getFeatureMap().values().forEach(ScalableFeature::scale);
+        getParameterMap().values().forEach(Parameter::scale);
     }
 
     /**
@@ -122,28 +127,38 @@ public class KineticLaw {
      * @return The velocity.
      */
     public double calculateVelocity(ConcentrationContainer concentrationContainer, boolean isStrutCalculation) {
-        // set feature parameters
-        for (Map.Entry<String, ScalableQuantityFeature> featureEntry : featureMap.entrySet()) {
+        // set features
+        for (Map.Entry<String, ScalableQuantityFeature> entry : featureMap.entrySet()) {
             Quantity<?> featureQuantity;
             if (isStrutCalculation) {
-                featureQuantity = featureEntry.getValue().getHalfScaledQuantity();
+                featureQuantity = entry.getValue().getHalfScaledQuantity();
             } else {
-                featureQuantity = featureEntry.getValue().getScaledQuantity();
+                featureQuantity = entry.getValue().getScaledQuantity();
             }
-            featureEntry.getValue().getFeatureContent().getValue().doubleValue();
-            SetVariable variable = new SetVariable(featureEntry.getKey(), featureQuantity.getValue().doubleValue());
+            SetVariable variable = new SetVariable(entry.getKey(), featureQuantity.getValue().doubleValue());
             expression.accept(variable);
         }
-        // set concentration parameters
-        for (Map.Entry<String, Reactant> reactantEntry : concentrationMap.entrySet()) {
-            Reactant reactant = reactantEntry.getValue();
+        // set parameters
+        for (Map.Entry<String, Parameter> entry : parameterMap.entrySet()) {
+            Quantity<?> parameterQuantity;
+            if (isStrutCalculation) {
+                parameterQuantity = entry.getValue().getHalfScaledQuantity();
+            } else {
+                parameterQuantity = entry.getValue().getScaledQuantity();
+            }
+            SetVariable variable = new SetVariable(entry.getKey(), parameterQuantity.getValue().doubleValue());
+            expression.accept(variable);
+        }
+        // set concentrations
+        for (Map.Entry<String, Reactant> entry : concentrationMap.entrySet()) {
+            Reactant reactant = entry.getValue();
             Quantity<MolarConcentration> concentration;
             if (reactant.getPreferredConcentrationUnit() != null) {
                 concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity()).to(reactant.getPreferredConcentrationUnit());
             } else {
                 concentration = concentrationContainer.get(reactant.getPreferredTopology(), reactant.getEntity());
             }
-            SetVariable variable = new SetVariable(reactantEntry.getKey(), concentration.getValue().doubleValue());
+            SetVariable variable = new SetVariable(entry.getKey(), concentration.getValue().doubleValue());
             expression.accept(variable);
         }
         // calculate

@@ -2,8 +2,6 @@ package bio.singa.simulation.model.agents.organelles;
 
 import bio.singa.core.utility.Pair;
 import bio.singa.core.utility.Resources;
-import bio.singa.mathematics.geometry.edges.LineSegment;
-import bio.singa.mathematics.geometry.edges.SimpleLineSegment;
 import bio.singa.mathematics.geometry.faces.VertexPolygon;
 import bio.singa.mathematics.geometry.model.Polygon;
 import bio.singa.mathematics.matrices.Matrices;
@@ -90,7 +88,7 @@ public class OrganelleImageParser {
                         scalePixels.add(new Vector2D(col, row));
                     } else {
                         // colored pixels will be traced and assigned to groups
-                        Vector2D vector = new Vector2D(col, row);
+                        Vector2D vector = new Vector2D(col-5, row-5);
                         templatePixels.add(vector);
                         addToGroup(rgb, vector);
                     }
@@ -113,32 +111,6 @@ public class OrganelleImageParser {
 
     private static boolean isBlack(int rgbValue) {
         return rgbValue == -16777216;
-    }
-
-    private List<LineSegment> connect(List<Vector2D> vectors) {
-        final double errorCutoff = templateImage.getWidth() * 0.3;
-        final Vector2D first = vectors.iterator().next();
-        List<LineSegment> segments = new ArrayList<>();
-        List<Vector2D> copy = new ArrayList<>(vectors);
-        copy.remove(first);
-        Vector2D previous = first;
-        // for each vector
-        while (!copy.isEmpty()) {
-            // determine closest neighbour
-            Map.Entry<Vector2D, Double> entry = EUCLIDEAN_METRIC.calculateClosestDistance(copy, previous);
-            if (entry.getValue() > errorCutoff) {
-                // remove nonsense connections
-                copy.remove(entry.getKey());
-            } else {
-                // add line segment
-                Vector2D next = entry.getKey();
-                segments.add(new SimpleLineSegment(previous, next));
-                copy.remove(next);
-                previous = next;
-            }
-        }
-        segments.add(new SimpleLineSegment(first, previous));
-        return segments;
     }
 
     private void determineScale() {

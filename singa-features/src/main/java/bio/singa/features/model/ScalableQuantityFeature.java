@@ -51,4 +51,8 @@ public abstract class ScalableQuantityFeature<QuantityType extends Quantity<Quan
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "Feature: " + (getSymbol() != null ? getSymbol() : getClass().getSimpleName()) + " = " + getFeatureContent() + " (" + getScaledQuantity() + ")";
+    }
 }

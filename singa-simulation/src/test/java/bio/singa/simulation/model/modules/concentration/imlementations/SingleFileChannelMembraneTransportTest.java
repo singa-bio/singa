@@ -35,7 +35,7 @@ public class SingleFileChannelMembraneTransportTest {
     @After
     @Before
     public void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test

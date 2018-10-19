@@ -77,6 +77,7 @@ public class MacroscopicLayerPlayground extends Application implements Renderer 
 
     private Canvas canvas;
     private FilamentLayer filamentLayer;
+
     private MembraneLayer membraneLayer;
     private Rectangle rectangle;
     private AutomatonGraph graph;

@@ -5,6 +5,7 @@ import bio.singa.chemistry.entities.SmallMolecule;
 import bio.singa.chemistry.features.diffusivity.Diffusivity;
 import bio.singa.features.parameters.Environment;
 import bio.singa.features.quantities.MolarConcentration;
+import bio.singa.features.units.UnitRegistry;
 import bio.singa.mathematics.graphs.model.Graphs;
 import bio.singa.simulation.model.graphs.AutomatonGraph;
 import bio.singa.simulation.model.graphs.AutomatonGraphs;
@@ -14,6 +15,7 @@ import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import tec.uom.se.quantity.Quantities;
 
@@ -71,9 +73,10 @@ public class DiffusionAtMembranesTest {
         return simulation;
     }
 
+    @Before
     @After
     public void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test

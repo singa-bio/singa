@@ -9,6 +9,7 @@ import bio.singa.simulation.model.modules.concentration.*;
 import bio.singa.simulation.model.modules.concentration.functions.UpdatableDeltaFunction;
 import bio.singa.simulation.model.modules.concentration.reactants.KineticLaw;
 import bio.singa.simulation.model.modules.concentration.reactants.Reactant;
+import bio.singa.simulation.model.parameters.Parameter;
 import bio.singa.simulation.model.sections.CellSubsection;
 import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
@@ -155,6 +156,8 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         ParameterStep referenceParameter(Reactant reactant);
 
+        ParameterStep referenceParameter(Parameter<?> reactant);
+
         ParameterStep referenceParameter(String parameterIdentifier, Reactant reactant);
 
         ParameterStep referenceParameter(String parameterIdentifier, double parameter);
@@ -210,6 +213,7 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
 
         @Override
         public BuildStep kineticLaw(KineticLaw kineticLaw) {
+            module.setKineticLaw(kineticLaw);
             for (Map.Entry<String, Reactant> reactantEntry : kineticLaw.getConcentrationMap().entrySet()) {
                 module.addReactant(reactantEntry.getValue());
                 module.addReferencedEntity(reactantEntry.getValue().getEntity());
@@ -229,6 +233,12 @@ public class DynamicReaction extends ConcentrationBasedModule<UpdatableDeltaFunc
         @Override
         public ParameterStep referenceParameter(String parameterIdentifier, ScalableQuantityFeature<?> scalableFeature) {
             module.getKineticLaw().referenceFeature(parameterIdentifier, scalableFeature);
+            return this;
+        }
+
+        @Override
+        public ParameterStep referenceParameter(Parameter<?> reactant) {
+            module.getKineticLaw().referenceParameter(reactant);
             return this;
         }
 

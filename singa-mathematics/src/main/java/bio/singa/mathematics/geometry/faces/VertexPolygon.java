@@ -24,6 +24,11 @@ public class VertexPolygon implements Polygon {
         this.vertices.sort(conterClockwise);
     }
 
+    public VertexPolygon(Collection<Vector2D> vertices, boolean forceSorting) {
+        this.vertices = new ArrayList<>(vertices);
+        centre = getCentroid();
+    }
+
     public VertexPolygon(List<LineSegment> lineSegments) {
         vertices = new ArrayList<>();
         for (LineSegment lineSegment : lineSegments) {

@@ -18,6 +18,7 @@ import bio.singa.simulation.model.sections.ConcentrationContainer;
 import bio.singa.simulation.model.simulation.Simulation;
 import bio.singa.structure.features.molarmass.MolarMass;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,14 @@ public class ComplexBuildingReactionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ComplexBuildingReactionTest.class);
 
+    @Before
     @After
     public void cleanUp() {
-        Environment.reset();
+        UnitRegistry.reinitialize();
     }
 
     @Test
     public void minimalSetUpTest() {
-        Environment.reset();
         logger.info("Testing section changing binding (minimal setup).");
         // the rate constants
         RateConstant forwardRate = RateConstant.create(1).forward().secondOrder().concentrationUnit(MOLE_PER_LITRE).timeUnit(SECOND).build();
@@ -87,23 +88,23 @@ public class ComplexBuildingReactionTest {
         membraneNode.getConcentrationContainer().set(MEMBRANE, binder, 1.0);
         membraneNode.getConcentrationContainer().set(MEMBRANE, complex, 1.0);
 
-        // forewared and backward reactions should cancel each other out
+        // forward and backward reactions should cancel each other out
         Quantity<MolarConcentration> empty = Environment.emptyConcentration();
         Quantity<MolarConcentration> one =  UnitRegistry.concentration(1.0, MOLE_PER_LITRE);
         for (int i = 0; i < 10; i++) {
             ConcentrationContainer container = membraneNode.getConcentrationContainer();
 
-            assertEquals(container.get(CellTopology.INNER, bindee), empty);
-            assertEquals(container.get(CellTopology.INNER, binder), empty);
-            assertEquals(container.get(CellTopology.INNER, complex), empty);
+            assertEquals(empty, container.get(CellTopology.INNER, bindee));
+            assertEquals(empty, container.get(CellTopology.INNER, binder));
+            assertEquals(empty, container.get(CellTopology.INNER, complex));
 
-            assertEquals(container.get(CellTopology.MEMBRANE, bindee), empty);
-            assertEquals(container.get(CellTopology.MEMBRANE, binder), one);
-            assertEquals(container.get(CellTopology.MEMBRANE, complex), one);
+            assertEquals(empty, container.get(CellTopology.MEMBRANE, bindee));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, binder));
+            assertEquals(one, container.get(CellTopology.MEMBRANE, complex));
 
-            assertEquals(container.get(CellTopology.OUTER, bindee), one);
-            assertEquals(container.get(CellTopology.OUTER, binder), empty);
-            assertEquals(container.get(CellTopology.OUTER, complex), empty);
+            assertEquals(one, container.get(CellTopology.OUTER, bindee));
+            assertEquals(empty, container.get(CellTopology.OUTER, binder));
+            assertEquals(empty, container.get(CellTopology.OUTER, complex));
 
             simulation.nextEpoch();
         }

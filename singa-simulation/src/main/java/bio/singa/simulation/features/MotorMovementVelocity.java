@@ -25,7 +25,7 @@ public class MotorMovementVelocity extends ScalableQuantityFeature<Speed> {
      */
     public static final MotorMovementVelocity DEFAULT_MOTOR_VELOCITY = new MotorMovementVelocity(Quantities.getQuantity(800.0, NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
-    public static final String SYMBOL = "v_ActinBoost";
+    public static final String SYMBOL = "v_m";
 
     public MotorMovementVelocity(Quantity<Speed> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity, featureOrigin);

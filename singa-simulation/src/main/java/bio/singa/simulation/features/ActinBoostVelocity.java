@@ -25,7 +25,7 @@ public class ActinBoostVelocity extends ScalableQuantityFeature<Speed> {
      */
     public static final ActinBoostVelocity DEFAULT_ACTIN_VELOCITY = new ActinBoostVelocity(Quantities.getQuantity(57.0, NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
-    public static final String SYMBOL = "v_ActinBoost";
+    public static final String SYMBOL = "v_b";
 
     public ActinBoostVelocity(Quantity<Speed> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity, featureOrigin);

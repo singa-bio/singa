@@ -26,7 +26,7 @@ public class BuddingRate extends ScalableQuantityFeature<SpawnRate> {
      */
     public static final BuddingRate DEFAULT_BUDDING_RATE = new BuddingRate(Quantities.getQuantity(3.0/10.0E8, PER_SQUARE_NANOMETRE_PER_SECOND), DefaultFeatureSources.EHRLICH2004);
 
-    public static final String SYMBOL = "k_Budding";
+    public static final String SYMBOL = "k_b";
 
     public BuddingRate(Quantity<SpawnRate> frequencyQuantity, FeatureOrigin featureOrigin) {
         super(frequencyQuantity.to(PER_SQUARE_NANOMETRE_PER_SECOND), featureOrigin);
