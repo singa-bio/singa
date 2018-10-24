@@ -4,11 +4,10 @@ import bio.singa.mathematics.exceptions.IncompatibleDimensionsException;
 import bio.singa.mathematics.matrices.SymmetricMatrix;
 import bio.singa.mathematics.metrics.implementations.JaccardMetric;
 import bio.singa.mathematics.metrics.implementations.MinkowskiMetric;
+import bio.singa.mathematics.metrics.implementations.TanimotoCoefficient;
 import bio.singa.mathematics.metrics.model.Metric;
 import bio.singa.mathematics.metrics.model.VectorMetricProvider;
-import bio.singa.mathematics.vectors.RegularVector;
-import bio.singa.mathematics.vectors.Vector2D;
-import bio.singa.mathematics.vectors.Vector3D;
+import bio.singa.mathematics.vectors.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -120,4 +119,12 @@ public class MetricTest {
         assertTrue(Arrays.deepEquals(expected, actual.getElements()));
     }
 
+    @Test
+    public void testTanimotoCoefficient() {
+        BitVector firstBitVector = new RegularBitVector(true, false, true, true, false, true);
+        BitVector secondBitVector = new RegularBitVector(true, true, false, true, false, false);
+        TanimotoCoefficient<BitVector> tanimotoCoefficient = new TanimotoCoefficient<>();
+        double distance = tanimotoCoefficient.calculateDistance(firstBitVector, secondBitVector);
+        assertEquals(0.4, distance, 1E-6);
+    }
 }

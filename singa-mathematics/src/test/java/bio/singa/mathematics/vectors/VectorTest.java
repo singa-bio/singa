@@ -69,7 +69,7 @@ public class VectorTest {
     }
 
     @Test
-    public void testDistanceCalculationWithDifferentMetic() {
+    public void testDistanceCalculationWithDifferentMetric() {
         double actual = first2DVector.distanceTo(second2DVector, VectorMetricProvider.MANHATTAN_METRIC);
         assertEquals(35.0, actual, 0.0);
     }

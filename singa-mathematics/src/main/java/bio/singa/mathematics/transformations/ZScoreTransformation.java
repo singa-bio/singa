@@ -8,8 +8,11 @@ import bio.singa.mathematics.vectors.Vector;
 import bio.singa.mathematics.vectors.Vectors;
 
 /**
- * A transformation for {@link Matrix} according to the standard deviation of elements.
+ * A transformation according to the standard deviation of elements.
  *
+ * <pre>
+ *     x' = (x - mean(X)) / std(X)
+ * </pre>
  * @author fk
  */
 public class ZScoreTransformation implements MatrixTransformation, VectorTransformation {
@@ -22,9 +25,9 @@ public class ZScoreTransformation implements MatrixTransformation, VectorTransfo
 
     @Override
     public RegularMatrix applyTo(Matrix matrix) {
-        Vector offDiagonalElements = new RegularVector(matrix.streamElements().toArray());
-        double variance = Vectors.getVariance(offDiagonalElements);
-        double expectedValue = Vectors.getAverage(offDiagonalElements);
+        Vector elementsVector = new RegularVector(matrix.streamElements().toArray());
+        double variance = Vectors.getVariance(elementsVector);
+        double expectedValue = Vectors.getAverage(elementsVector);
         double[][] transformedValues = new double[matrix.getRowDimension()][matrix.getColumnDimension()];
         for (int i = 0; i < matrix.getRowDimension(); i++) {
             for (int j = 0; j < matrix.getColumnDimension(); j++) {
